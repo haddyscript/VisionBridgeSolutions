@@ -572,28 +572,46 @@ $svgIcons = [
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div class="rounded-2xl border border-navy/10 p-8 hover:shadow-lg transition-shadow">
-                <div class="w-12 h-12 bg-navy rounded-xl flex items-center justify-center mb-5">
-                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                    </svg>
+            <div class="rounded-2xl border border-navy/10 overflow-hidden hover:shadow-xl transition-all duration-300 group">
+                <div class="w-full overflow-hidden" style="height:200px;flex-shrink:0;">
+                    <img src="{{ asset('image/vission-bridge-htumbnail.png') }}"
+                         alt="VisionBridge Solutions"
+                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                 </div>
-                <h3 class="font-bold text-navy text-xl mb-4">VisionBridge Solutions</h3>
-                <ul class="space-y-3">
-                    @foreach(['Client Acquisition','Marketing','Billing & Project Management','Customer Support','Hosting Ownership'] as $item)
-                    <li class="flex items-center gap-3 text-sm text-gray-600">
-                        <div class="w-2 h-2 rounded-full bg-gold shrink-0"></div>
-                        {{ $item }}
-                    </li>
-                    @endforeach
-                </ul>
+                <div class="p-8">
+                    <div class="w-12 h-12 bg-navy rounded-xl flex items-center justify-center mb-5">
+                        <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    </div>
+                    <h3 class="font-bold text-navy text-xl mb-4">VisionBridge Solutions</h3>
+                    <ul class="space-y-3">
+                        @foreach(['Client Acquisition','Marketing','Billing & Project Management','Customer Support','Hosting Ownership'] as $item)
+                        <li class="flex items-center gap-3 text-sm text-gray-600">
+                            <div class="w-2 h-2 rounded-full bg-gold shrink-0"></div>{{ $item }}
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
             </div>
 
-            <div class="rounded-2xl border border-teal/20 bg-teal/5 p-8 hover:shadow-lg transition-shadow">
-                <div class="w-12 h-12 bg-teal rounded-xl flex items-center justify-center mb-5">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
-                    </svg>
+            <a href="https://faithstack.johnnydavisglobalmission.org/" target="_blank" rel="noopener"
+               class="rounded-2xl border border-teal/20 bg-teal/5 overflow-hidden hover:shadow-xl transition-all duration-300 group block" style="text-decoration:none;">
+                {{-- FaithStack thumbnail --}}
+                <div class="w-full overflow-hidden" style="height:200px;">
+                    <img src="{{ asset('image/faithstack-thumbnail.png') }}"
+                         alt="FaithStack"
+                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                </div>
+                <div class="p-8">
+                <div class="flex items-center justify-between mb-5">
+                    <div class="w-12 h-12 bg-teal rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs font-semibold tracking-widest uppercase flex items-center gap-1.5" style="color:rgba(42,157,143,0.70);">
+                        Visit Site
+                        <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </span>
                 </div>
                 <h3 class="font-bold text-teal text-xl mb-4">FaithStack</h3>
                 <ul class="space-y-3">
