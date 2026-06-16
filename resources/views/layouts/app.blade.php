@@ -36,7 +36,9 @@
         html { scroll-behavior: smooth; }
 
         /* ─── Nav ─── */
-        .nav-link { @apply text-white/80 hover:text-gold transition-colors duration-200 text-sm font-medium; }
+        /* ─── Nav link (base) ─── */
+        .nav-link { @apply text-sm font-medium transition-colors duration-200; color:rgba(255,255,255,0.75); }
+        .nav-link:hover { color:#C9A84C; }
 
         /* ─── Re-usable buttons (outside hero) ─── */
         .btn-gold    { @apply inline-block bg-gold hover:bg-gold-dark text-navy font-semibold px-7 py-3 rounded-lg transition-all duration-200 shadow hover:shadow-lg; }
@@ -206,48 +208,119 @@
             will-change: transform, opacity;
             opacity: 0;
         }
+
+        /* ─── Floating pill nav ─── */
+        #nav-inner {
+            transition: background 0.50s ease, box-shadow 0.50s ease,
+                        border-radius 0.50s ease, max-width 0.55s ease,
+                        border-color 0.50s ease, height 0.40s ease, padding 0.40s ease;
+            border: 1px solid transparent;
+            max-width: 100%;
+        }
+        #nav-inner.nav-pill {
+            background: rgba(8,15,28,0.80);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border-color: rgba(255,255,255,0.08);
+            border-radius: 50px;
+            box-shadow: 0 8px 36px rgba(0,0,0,0.45), 0 0 0 1px rgba(201,168,76,0.07);
+            max-width: 940px;
+            height: 54px !important;
+        }
+
+        /* ─── Sliding hover capsule ─── */
+        #nav-cursor {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            height: 34px;
+            width: 80px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 8px;
+            pointer-events: none;
+            opacity: 0;
+            will-change: transform, width, opacity;
+        }
+
+        /* ─── CTA shimmer sweep ─── */
+        .nav-cta-btn {
+            position: relative;
+            overflow: hidden;
+            will-change: transform;
+        }
+        .nav-cta-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -80%;
+            width: 48%; height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.32), transparent);
+            transform: skewX(-18deg);
+            pointer-events: none;
+            animation: btn-shine 4.5s ease-in-out infinite 2.5s;
+        }
+        @keyframes btn-shine {
+            0%, 28%  { left: -80%; opacity: 0; }
+            30%      { opacity: 1; }
+            58%, 100%{ left: 155%; opacity: 0; }
+        }
     </style>
 </head>
 <body class="font-sans antialiased text-gray-800 bg-white">
 
     <!-- Navigation -->
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-navy/95 backdrop-blur-sm shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- Logo -->
-                <a href="#hero" class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-gold rounded-md flex items-center justify-center">
-                        <svg class="w-5 h-5 text-navy" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 2L2 7v11h5v-6h6v6h5V7L10 2z"/>
-                        </svg>
-                    </div>
-                    <span class="text-white font-bold text-lg leading-tight">VisionBridge<br><span class="text-gold text-xs font-medium tracking-widest uppercase">Solutions</span></span>
-                </a>
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50" style="padding:12px 16px 0;will-change:transform;">
 
-                <!-- Desktop Nav -->
-                <div class="hidden md:flex items-center gap-6">
-                    <a href="#about" class="nav-link">About</a>
-                    <a href="#services" class="nav-link">Services</a>
-                    <a href="#plans" class="nav-link">Plans</a>
-                    <a href="#portfolio" class="nav-link">Portfolio</a>
-                    <a href="#contact" class="btn-gold text-sm py-2 px-5">Get Started</a>
-                </div>
+        {{-- Floating pill inner wrapper --}}
+        <div id="nav-inner" class="mx-auto flex items-center justify-between px-5 sm:px-7" style="height:60px;">
 
-                <!-- Mobile Menu Button -->
-                <button id="menu-btn" class="md:hidden text-white focus:outline-none">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            {{-- Logo --}}
+            <a id="nav-logo" href="#hero" class="flex items-center gap-2.5 shrink-0 opacity-0">
+                <div class="w-8 h-8 bg-gold rounded-md flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-navy" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2L2 7v11h5v-6h6v6h5V7L10 2z"/>
                     </svg>
-                </button>
+                </div>
+                <span class="text-white font-bold text-lg leading-tight">VisionBridge<br>
+                    <span class="text-gold text-xs font-medium tracking-widest uppercase">Solutions</span>
+                </span>
+            </a>
+
+            {{-- Desktop links with sliding capsule --}}
+            <div id="nav-links" class="hidden md:flex items-center gap-0.5 relative">
+                <div id="nav-cursor"></div>
+                <a href="#about"     class="nav-link relative z-10 px-4 py-2 opacity-0">About</a>
+                <a href="#services"  class="nav-link relative z-10 px-4 py-2 opacity-0">Services</a>
+                <a href="#plans"     class="nav-link relative z-10 px-4 py-2 opacity-0">Plans</a>
+                <a href="#portfolio" class="nav-link relative z-10 px-4 py-2 opacity-0">Portfolio</a>
             </div>
 
-            <!-- Mobile Menu -->
-            <div id="mobile-menu" class="hidden md:hidden pb-4 flex flex-col gap-3">
-                <a href="#about" class="nav-link py-1">About</a>
-                <a href="#services" class="nav-link py-1">Services</a>
-                <a href="#plans" class="nav-link py-1">Plans</a>
-                <a href="#portfolio" class="nav-link py-1">Portfolio</a>
-                <a href="#contact" class="btn-gold text-center mt-2">Get Started</a>
+            {{-- Desktop CTA --}}
+            <a id="nav-cta" href="#contact"
+               class="nav-cta-btn hidden md:inline-flex items-center gap-2 bg-gold hover:bg-gold-light text-navy font-bold text-sm px-5 py-2.5 rounded-lg opacity-0 transition-colors duration-200">
+                Get Started
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
+
+            {{-- Mobile hamburger --}}
+            <button id="menu-btn" class="md:hidden text-white/80 hover:text-white focus:outline-none transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
+
+        {{-- Mobile dropdown (glassmorphism, outside pill) --}}
+        <div id="mobile-menu" class="hidden md:hidden mt-2 mx-2 rounded-2xl overflow-hidden"
+             style="background:rgba(8,15,28,0.92);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);">
+            <div class="flex flex-col p-4 gap-1">
+                <a href="#about"     class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">About</a>
+                <a href="#services"  class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">Services</a>
+                <a href="#plans"     class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">Plans</a>
+                <a href="#portfolio" class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">Portfolio</a>
+                <a href="#contact"   class="mt-2 bg-gold text-navy font-bold text-sm text-center px-4 py-2.5 rounded-xl">Get Started</a>
             </div>
         </div>
     </nav>
@@ -315,7 +388,95 @@
         });
     </script>
 
-    <!-- GSAP + ScrollTrigger -->
+    <!-- Nav Interactions (floating pill, hide/reveal, capsule hover, magnetic CTA) -->
+    <script defer>
+    (function () {
+        function initNav() {
+            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+                setTimeout(initNav, 80); return;
+            }
+
+            const navbar   = document.getElementById('navbar');
+            const inner    = document.getElementById('nav-inner');
+            const logo     = document.getElementById('nav-logo');
+            const cta      = document.getElementById('nav-cta');
+            const navLinks = document.getElementById('nav-links');
+            const cursor   = document.getElementById('nav-cursor');
+            const linkEls  = navLinks ? Array.from(navLinks.querySelectorAll('a')) : [];
+
+            // ── Entry: logo → links stagger → CTA ──────────────────────
+            gsap.timeline({ delay: 0.15 })
+                .fromTo(logo,    { opacity:0, y:-14 }, { opacity:1, y:0, duration:0.55, ease:'power3.out' })
+                .fromTo(linkEls, { opacity:0, y:-10 }, { opacity:1, y:0, duration:0.45, stagger:0.08, ease:'power2.out' }, '-=0.28')
+                .fromTo(cta,     { opacity:0, y:-10 }, { opacity:1, y:0, duration:0.40, ease:'power2.out' }, '-=0.20');
+
+            // ── Transparent → pill on scroll ────────────────────────────
+            ScrollTrigger.create({
+                start:       'top -50',
+                onEnter:     () => inner && inner.classList.add('nav-pill'),
+                onLeaveBack: () => {
+                    inner && inner.classList.remove('nav-pill');
+                    gsap.to(navbar, { y:0, duration:0.35, ease:'power3.out', overwrite:true });
+                },
+            });
+
+            // ── Smart hide/reveal on scroll direction ────────────────────
+            let lastY = 0, ticking = false;
+            window.addEventListener('scroll', () => {
+                if (ticking) return;
+                ticking = true;
+                requestAnimationFrame(() => {
+                    const y = window.scrollY;
+                    if (y < 80) {
+                        gsap.to(navbar, { y:0, duration:0.35, ease:'power3.out', overwrite:true });
+                    } else if (y > lastY + 6) {
+                        gsap.to(navbar, { y:-110, duration:0.40, ease:'power2.in', overwrite:true });
+                    } else if (y < lastY - 4) {
+                        gsap.to(navbar, { y:0, duration:0.40, ease:'power3.out', overwrite:true });
+                    }
+                    lastY   = y;
+                    ticking = false;
+                });
+            }, { passive: true });
+
+            // ── Sliding capsule across desktop links ─────────────────────
+            if (navLinks && cursor) {
+                linkEls.forEach(link => {
+                    link.addEventListener('mouseenter', () => {
+                        const lr = link.getBoundingClientRect();
+                        const nr = navLinks.getBoundingClientRect();
+                        gsap.to(cursor, {
+                            x: lr.left - nr.left - 8,
+                            width: lr.width + 16,
+                            opacity: 1,
+                            duration: 0.26,
+                            ease: 'power2.out',
+                        });
+                    });
+                });
+                navLinks.addEventListener('mouseleave', () => {
+                    gsap.to(cursor, { opacity:0, duration:0.20 });
+                });
+            }
+
+            // ── Magnetic pull on CTA ─────────────────────────────────────
+            if (cta) {
+                cta.addEventListener('mousemove', e => {
+                    const r  = cta.getBoundingClientRect();
+                    const cx = (e.clientX - r.left  - r.width  / 2) * 0.24;
+                    const cy = (e.clientY - r.top   - r.height / 2) * 0.24;
+                    gsap.to(cta, { x:cx, y:cy, duration:0.35, ease:'power2.out' });
+                });
+                cta.addEventListener('mouseleave', () => {
+                    gsap.to(cta, { x:0, y:0, duration:0.60, ease:'elastic.out(1,0.5)' });
+                });
+            }
+        }
+        initNav();
+    })();
+    </script>
+
+        <!-- GSAP + ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
 
