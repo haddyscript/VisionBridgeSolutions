@@ -139,26 +139,42 @@
 {{-- ============================================================
      WELCOME VIDEO SECTION
      ============================================================ --}}
-<section id="welcome" class="py-20 bg-gray-50">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Welcome</span>
-        <h2 class="section-title mb-4">A Message from Our Founder</h2>
-        <p class="section-subtitle mb-10">Hear directly from Johnny Davis about the mission behind VisionBridge Solutions and how we can help your organization thrive online.</p>
+<section id="welcome" class="py-28 relative overflow-hidden" style="background:radial-gradient(ellipse 90% 70% at 50% 55%,#132038 0%,#0b1525 48%,#07101c 100%);">
+    <div id="welcome-glow" class="absolute pointer-events-none" style="width:820px;height:820px;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.07) 0%,rgba(42,157,143,.05) 42%,transparent 70%);filter:blur(72px);will-change:transform;"></div>
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" style="z-index:2;">
+        <span id="welcome-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-5" style="opacity:0;">The VisionBridge Story</span>
+        <h2 class="font-display font-bold text-white leading-tight mb-5" style="font-size:clamp(2rem,4.5vw,3.2rem);">
+            <span class="welcome-word-wrap"><span class="welcome-word">Where</span></span>
+            <span class="welcome-word-wrap"><span class="welcome-word">Vision</span></span>
+            <span class="welcome-word-wrap"><span class="welcome-word">Meets</span></span>
+            <span class="welcome-word-wrap"><span class="welcome-word">the</span></span>
+            <span class="welcome-word-wrap"><span class="welcome-word">Digital</span></span>
+            <span class="welcome-word-wrap"><span class="welcome-word">World</span></span>
+        </h2>
+        <p id="welcome-sub" class="text-white/50 text-lg max-w-2xl mx-auto mb-12 leading-relaxed" style="opacity:0;">We bridge the gap between your vision and a powerful online presence — connecting organizations to the digital opportunities that drive real, lasting growth.</p>
 
-        <!-- Video placeholder -->
-        <div class="relative rounded-2xl overflow-hidden shadow-2xl aspect-video bg-navy flex items-center justify-center group cursor-pointer">
-            <div class="absolute inset-0 bg-gradient-to-br from-navy to-navy-dark opacity-90"></div>
-            <div class="relative z-10 text-center px-8">
-                <div class="w-20 h-20 rounded-full bg-gold flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <svg class="w-8 h-8 text-navy ml-1" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
+        <div id="welcome-video-wrap" class="relative rounded-3xl overflow-hidden" style="opacity:0;transform:scale(0.93);box-shadow:0 0 0 1px rgba(201,168,76,0.18),0 40px 100px rgba(0,0,0,0.75),0 12px 36px rgba(0,0,0,0.55);">
+            <div class="aspect-video relative">
+                <video id="welcome-video" preload="metadata" playsinline class="w-full h-full object-cover block">
+                    <source src="{{ asset('videos/VisionBridge_Solutions_welcome_v.mp4') }}" type="video/mp4">
+                </video>
+                <div id="welcome-play-overlay" class="absolute inset-0 flex items-center justify-center cursor-pointer" style="background:rgba(6,12,22,0.28);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);">
+                    <div id="welcome-play-inner" class="relative flex items-center justify-center" style="will-change:transform;">
+                        <span class="absolute rounded-full pointer-events-none" style="width:88px;height:88px;border:1.5px solid rgba(201,168,76,0.42);animation:play-pulse 2.4s ease-out infinite;"></span>
+                        <span class="absolute rounded-full pointer-events-none" style="width:88px;height:88px;border:1.5px solid rgba(201,168,76,0.22);animation:play-pulse 2.4s ease-out infinite 0.9s;"></span>
+                        <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center" style="background:linear-gradient(140deg,#DFC06A 0%,#C9A84C 55%,#A8872E 100%);box-shadow:0 0 52px rgba(201,168,76,0.45),0 8px 28px rgba(0,0,0,0.55);">
+                            <svg class="w-7 h-7 ml-1" fill="#111D33" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
                 </div>
-                <p class="text-white font-semibold text-lg">Welcome to VisionBridge Solutions</p>
-                <p class="text-white/50 text-sm mt-1">Johnny Davis — Founder</p>
             </div>
         </div>
-        <p class="text-gray-400 text-sm mt-4">Welcome video coming soon.</p>
+
+        <div id="welcome-credit" class="mt-8 flex items-center justify-center gap-4" style="opacity:0;">
+            <div class="h-px w-20" style="background:linear-gradient(to right,transparent,rgba(201,168,76,0.45));"></div>
+            <span class="text-xs tracking-widest uppercase font-medium" style="color:rgba(201,168,76,0.55);">VisionBridge Solutions — Building Websites. Expanding Reach.</span>
+            <div class="h-px w-20" style="background:linear-gradient(to left,transparent,rgba(201,168,76,0.45));"></div>
+        </div>
     </div>
 </section>
 
@@ -167,52 +183,67 @@
      ============================================================ --}}
 <section id="about" class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-14">
-            <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Who We Are</span>
-            <h2 class="section-title">About VisionBridge Solutions</h2>
+        <div class="text-center mb-16">
+            <span id="about-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Who We Are</span>
+            <h2 id="about-heading" class="section-title mt-1">About VisionBridge Solutions</h2>
         </div>
 
-        <!-- Brand image + Mission / Vision side-by-side -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16 items-stretch">
+        <!-- Mosaic image grid + Mission / Vision side-by-side -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-20 items-stretch">
 
-            <!-- Brand photo -->
-            <div class="relative rounded-2xl overflow-hidden shadow-2xl" style="min-height:420px;">
-                <img src="{{ asset('image/VisionBridge_Solutions_1.jpeg') }}"
-                     alt="VisionBridge Solutions"
-                     class="absolute inset-0 w-full h-full object-cover object-center"
-                     loading="lazy">
-                <!-- Gradient overlay — bottom fade so caption pops -->
-                <div class="absolute inset-0"
-                     style="background:linear-gradient(to top, rgba(17,29,51,0.92) 0%, rgba(17,29,51,0.30) 55%, transparent 100%);"></div>
-                <!-- Caption -->
-                <div class="absolute bottom-0 left-0 right-0 p-8">
-                    <p class="font-display font-bold text-lg leading-snug mb-2" style="color:#C9A84C;">
-                        "We don't just build websites — we bridge the gap between vision and digital presence."
-                    </p>
-                    <p class="text-white/50 text-sm tracking-wide">— VisionBridge Solutions</p>
+            {{-- Left: 3×2 mosaic with parallax wrapper --}}
+            <div id="about-mosaic-wrap">
+                <div id="about-mosaic" class="relative rounded-2xl overflow-hidden shadow-2xl"
+                     style="min-height:460px; --img:url('{{ asset('image/VisionBridge_Solutions_1.jpeg') }}');">
+
+                    {{-- 3 columns × 2 rows — each cell reveals a slice of the image --}}
+                    <div class="absolute inset-0 grid grid-cols-3 grid-rows-2" style="gap:3px;background:#08101e;">
+                        <div class="mosaic-panel" style="background-size:300% 200%;background-position:0%   0%;"></div>
+                        <div class="mosaic-panel" style="background-size:300% 200%;background-position:50%  0%;"></div>
+                        <div class="mosaic-panel" style="background-size:300% 200%;background-position:100% 0%;"></div>
+                        <div class="mosaic-panel" style="background-size:300% 200%;background-position:0%   100%;"></div>
+                        <div class="mosaic-panel" style="background-size:300% 200%;background-position:50%  100%;"></div>
+                        <div class="mosaic-panel" style="background-size:300% 200%;background-position:100% 100%;"></div>
+                    </div>
+
+                    {{-- Bottom gradient overlay --}}
+                    <div class="absolute inset-0 pointer-events-none" style="z-index:2;
+                         background:linear-gradient(to top, rgba(17,29,51,0.94) 0%, rgba(17,29,51,0.22) 52%, transparent 100%);"></div>
+
+                    {{-- Caption --}}
+                    <div class="absolute bottom-0 left-0 right-0 p-8" style="z-index:3;">
+                        <p id="about-mosaic-quote" class="font-display font-bold text-lg leading-snug mb-2"
+                           style="color:#C9A84C;">
+                            "We don't just build websites — we bridge the gap between vision and digital presence."
+                        </p>
+                        <p class="text-white/50 text-sm tracking-wide">— VisionBridge Solutions</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Mission & Vision stacked -->
-            <div class="flex flex-col gap-6">
-                <div class="bg-navy rounded-2xl p-8 text-white flex-1">
-                    <div class="w-12 h-12 bg-gold/20 rounded-xl flex items-center justify-center mb-5">
+            {{-- Right: Mission & Vision with tilt + glow --}}
+            <div class="about-cards flex flex-col gap-6">
+
+                <div class="about-card bg-navy rounded-2xl p-8 text-white flex-1">
+                    <div class="card-icon w-12 h-12 bg-gold/20 rounded-xl flex items-center justify-center mb-5">
                         <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-bold text-gold mb-3">Our Mission</h3>
-                    <p class="text-white/70 leading-relaxed">To help ministries, churches, nonprofits, entrepreneurs, and businesses establish a professional online presence through custom website development, ongoing support, and long-term website stability.</p>
+                    <h3 class="card-title text-xl font-bold text-gold mb-3">Our Mission</h3>
+                    <p class="card-body text-white/70 leading-relaxed">To help ministries, churches, nonprofits, entrepreneurs, and businesses establish a professional online presence through custom website development, ongoing support, and long-term website stability.</p>
                 </div>
-                <div class="bg-teal rounded-2xl p-8 text-white flex-1">
-                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-5">
+
+                <div class="about-card bg-teal rounded-2xl p-8 text-white flex-1">
+                    <div class="card-icon w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-5">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-3">Our Vision</h3>
-                    <p class="text-white/80 leading-relaxed">To become a trusted website solutions company that bridges the gap between vision and digital presence while helping clients maintain ownership, security, and confidence in their online future.</p>
+                    <h3 class="card-title text-xl font-bold text-white mb-3">Our Vision</h3>
+                    <p class="card-body text-white/80 leading-relaxed">To become a trusted website solutions company that bridges the gap between vision and digital presence while helping clients maintain ownership, security, and confidence in their online future.</p>
                 </div>
+
             </div>
         </div>
 
@@ -594,64 +625,169 @@
 (function () {
     'use strict';
 
-    // ================================================================
-    //  GSAP HERO ANIMATION  (x / y / opacity only — zero repaints)
-    // ================================================================
     function initGSAP() {
         if (typeof gsap === 'undefined') { setTimeout(initGSAP, 80); return; }
         gsap.registerPlugin(ScrollTrigger);
 
+        // ============================================================
+        //  HERO — entrance timeline
+        // ============================================================
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.3 });
 
-        tl.fromTo('#hero-badge',
-                { opacity: 0, y: 22 },
-                { opacity: 1, y: 0, duration: 0.65 })
-
-          .from('.hero-word',
-                { y: '110%', opacity: 0, duration: 0.75, stagger: 0.09 }, '-=0.30')
-
-          .fromTo('#hero-glow-line',
-                { opacity: 0, scaleX: 0 },
-                { opacity: 1, scaleX: 1, duration: 0.70, ease: 'power2.out' }, '-=0.15')
-
-          .fromTo('#hero-subtext',
-                { opacity: 0, y: 26 },
-                { opacity: 1, y: 0, duration: 0.60 }, '-=0.35')
-
-          .fromTo('#hero-trust',
-                { opacity: 0, y: 18 },
-                { opacity: 1, y: 0, duration: 0.50 }, '-=0.30')
-
-          .fromTo('#hero-ctas > a',
-                { opacity: 0, y: 22 },
-                { opacity: 1, y: 0, duration: 0.50, stagger: 0.13 }, '-=0.28')
-
-          .fromTo('.stat-item',
-                { opacity: 0, y: 20 },
-                { opacity: 1, y: 0, duration: 0.50, stagger: 0.10 }, '-=0.20')
-
+        tl.fromTo('#hero-badge',    { opacity:0, y:22 }, { opacity:1, y:0, duration:0.65 })
+          .from('.hero-word',       { y:'110%', opacity:0, duration:0.75, stagger:0.09 }, '-=0.30')
+          .fromTo('#hero-glow-line',{ opacity:0, scaleX:0 }, { opacity:1, scaleX:1, duration:0.70, ease:'power2.out' }, '-=0.15')
+          .fromTo('#hero-subtext',  { opacity:0, y:26 }, { opacity:1, y:0, duration:0.60 }, '-=0.35')
+          .fromTo('#hero-trust',    { opacity:0, y:18 }, { opacity:1, y:0, duration:0.50 }, '-=0.30')
+          .fromTo('#hero-ctas > a', { opacity:0, y:22 }, { opacity:1, y:0, duration:0.50, stagger:0.13 }, '-=0.28')
+          .fromTo('.stat-item',     { opacity:0, y:20 }, { opacity:1, y:0, duration:0.50, stagger:0.10 }, '-=0.20')
           .call(() => {
               const el = document.getElementById('stat-pct');
               if (!el) return;
               const o = { v: 0 };
-              gsap.to(o, {
-                  v: 100, duration: 2.5, ease: 'power2.out',
-                  onUpdate() { el.textContent = Math.round(o.v) + '%'; }
-              });
+              gsap.to(o, { v:100, duration:2.5, ease:'power2.out', onUpdate() { el.textContent = Math.round(o.v) + '%'; } });
           })
+          .fromTo('#hero-scroll-cue', { opacity:0 }, { opacity:1, duration:0.70 }, '-=1.90');
 
-          .fromTo('#hero-scroll-cue',
-                { opacity: 0 },
-                { opacity: 1, duration: 0.70 }, '-=1.90');
+        // ============================================================
+        //  ABOUT — section header fade-and-rise
+        // ============================================================
+        gsap.fromTo('#about-kicker',
+            { opacity:0, y:16 },
+            { opacity:1, y:0, duration:0.65, ease:'power3.out',
+              scrollTrigger:{ trigger:'#about', start:'top 82%', once:true } }
+        );
+        gsap.fromTo('#about-heading',
+            { opacity:0, y:30 },
+            { opacity:1, y:0, duration:0.80, ease:'power3.out', delay:0.12,
+              scrollTrigger:{ trigger:'#about', start:'top 82%', once:true } }
+        );
 
-        /* ── Below-fold card reveals ── */
-        document.querySelectorAll(
-            '.bg-white.rounded-xl, .bg-white.rounded-2xl, ' +
-            '.bg-navy.rounded-2xl, .bg-teal.rounded-2xl, .rounded-2xl.border'
-        ).forEach(el => {
+        // ── Mosaic panels: staggered scale-reveal ──
+        gsap.fromTo('.mosaic-panel',
+            { opacity:0, scale:1.08 },
+            { opacity:1, scale:1, duration:0.90,
+              stagger:{ amount:0.55, from:'start' }, ease:'power2.out',
+              scrollTrigger:{ trigger:'#about-mosaic', start:'top 80%', once:true } }
+        );
+
+        // ── Mosaic caption slides up ──
+        gsap.fromTo('#about-mosaic-quote',
+            { opacity:0, y:20 },
+            { opacity:1, y:0, duration:0.70, ease:'power3.out', delay:0.40,
+              scrollTrigger:{ trigger:'#about-mosaic', start:'top 80%', once:true } }
+        );
+
+        // ── Mosaic parallax (scrub) ──
+        gsap.to('#about-mosaic-wrap', {
+            y: -38, ease:'none',
+            scrollTrigger:{ trigger:'#about', start:'top bottom', end:'bottom top', scrub:2 }
+        });
+
+        // ── Cards: stagger entrance ──
+        gsap.fromTo('.about-card',
+            { opacity:0, y:46 },
+            { opacity:1, y:0, duration:0.80, stagger:0.18, ease:'power3.out',
+              scrollTrigger:{ trigger:'.about-cards', start:'top 82%', once:true } }
+        );
+
+        // ── Card content cascade: icon → title → body ──
+        document.querySelectorAll('.about-card').forEach(card => {
+            gsap.fromTo(
+                card.querySelectorAll('.card-icon, .card-title, .card-body'),
+                { opacity:0, y:18 },
+                { opacity:1, y:0, duration:0.55, stagger:0.11, ease:'power2.out', delay:0.22,
+                  scrollTrigger:{ trigger:card, start:'top 85%', once:true } }
+            );
+        });
+
+        // ── 3D tilt + cursor-glow tracking on about cards ──
+        document.querySelectorAll('.about-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const r  = card.getBoundingClientRect();
+                const cx = e.clientX - r.left - r.width  / 2;
+                const cy = e.clientY - r.top  - r.height / 2;
+                // 3D tilt
+                gsap.to(card, {
+                    rotateX: (-cy / r.height) * 7,
+                    rotateY: ( cx / r.width)  * 7,
+                    transformPerspective: 900,
+                    duration: 0.40, ease: 'power2.out'
+                });
+                // Cursor-glow CSS variable (used by ::after)
+                card.style.setProperty('--mx', ((e.clientX - r.left) / r.width  * 100) + '%');
+                card.style.setProperty('--my', ((e.clientY - r.top)  / r.height * 100) + '%');
+            }, { passive: true });
+
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, { rotateX:0, rotateY:0, duration:0.65, ease:'power3.out' });
+            });
+        });
+
+        // ============================================================
+        //  WELCOME — cinematic entrance
+        // ============================================================
+        const welcomeTl = gsap.timeline({
+            scrollTrigger:{ trigger:'#welcome', start:'top 78%', once:true }
+        });
+        welcomeTl
+            .fromTo('#welcome-kicker',
+                { opacity:0, y:14 },
+                { opacity:1, y:0, duration:0.60, ease:'power3.out' })
+            .from('.welcome-word',
+                { y:'105%', opacity:0, duration:0.72, stagger:0.08, ease:'power3.out' }, '-=0.28')
+            .fromTo('#welcome-sub',
+                { opacity:0, y:22 },
+                { opacity:1, y:0, duration:0.60, ease:'power2.out' }, '-=0.28')
+            .fromTo('#welcome-video-wrap',
+                { opacity:0, scale:0.93 },
+                { opacity:1, scale:1, duration:0.95, ease:'power2.out' }, '-=0.32')
+            .fromTo('#welcome-credit',
+                { opacity:0, y:12 },
+                { opacity:1, y:0, duration:0.55, ease:'power2.out' }, '-=0.50');
+
+        // Slow ambient glow parallax
+        gsap.to('#welcome-glow', {
+            y: -55, ease:'none',
+            scrollTrigger:{ trigger:'#welcome', start:'top bottom', end:'bottom top', scrub:3 }
+        });
+
+        // Custom play button — click to play + dismiss overlay
+        const wVideo   = document.getElementById('welcome-video');
+        const wOverlay = document.getElementById('welcome-play-overlay');
+        const wInner   = document.getElementById('welcome-play-inner');
+        if (wVideo && wOverlay) {
+            wOverlay.addEventListener('click', () => {
+                wVideo.controls = true;
+                wVideo.play();
+                gsap.to(wOverlay, {
+                    opacity:0, duration:0.40, ease:'power2.out',
+                    onComplete: () => { wOverlay.style.display = 'none'; }
+                });
+            });
+        }
+
+        // Magnetic hover — play circle follows cursor with elastic spring
+        if (wOverlay && wInner) {
+            wOverlay.addEventListener('mousemove', e => {
+                const r  = wOverlay.getBoundingClientRect();
+                const cx = e.clientX - r.left  - r.width  / 2;
+                const cy = e.clientY - r.top   - r.height / 2;
+                gsap.to(wInner, { x: cx * 0.09, y: cy * 0.09, duration:0.45, ease:'power2.out' });
+            }, { passive:true });
+            wOverlay.addEventListener('mouseleave', () => {
+                gsap.to(wInner, { x:0, y:0, duration:0.70, ease:'elastic.out(1,0.5)' });
+            });
+        }
+
+        // ============================================================
+        //  BELOW-FOLD generic reveals (white cards / border cards)
+        //  Exclude .about-card (handled above)
+        // ============================================================
+        document.querySelectorAll('.bg-white.rounded-xl, .bg-white.rounded-2xl, .rounded-2xl.border').forEach(el => {
             gsap.from(el, {
-                scrollTrigger: { trigger: el, start: 'top 92%', once: true },
-                opacity: 0, y: 38, duration: 0.65, ease: 'power2.out'
+                scrollTrigger:{ trigger:el, start:'top 92%', once:true },
+                opacity:0, y:38, duration:0.65, ease:'power2.out'
             });
         });
     }

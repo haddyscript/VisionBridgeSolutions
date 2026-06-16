@@ -161,6 +161,51 @@
             0%,100% { transform:translateY(0);   opacity:1; }
             60%      { transform:translateY(9px); opacity:.25; }
         }
+
+        /* ─── Welcome section ─── */
+        .welcome-word-wrap {
+            display:inline-block; overflow:hidden; vertical-align:bottom;
+            margin-right:0.22em; line-height:1.18; padding-bottom:0.05em;
+        }
+        .welcome-word-wrap:last-child { margin-right:0; }
+        .welcome-word { display:inline-block; will-change:transform,opacity; }
+        @keyframes play-pulse {
+            0%   { transform:scale(1);   opacity:0.85; }
+            100% { transform:scale(2.5); opacity:0; }
+        }
+
+        /* ─── About section ─── */
+        .about-card {
+            position: relative;
+            will-change: transform;
+            transition: box-shadow 0.35s ease;
+            --mx: 50%; --my: 50%;
+        }
+        /* Cursor-tracking radial glow */
+        .about-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: radial-gradient(200px circle at var(--mx) var(--my), rgba(255,255,255,0.09), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.30s;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .about-card:hover {
+            box-shadow: 0 22px 60px rgba(0,0,0,0.50), 0 0 0 1px rgba(201,168,76,0.22) inset;
+        }
+        .about-card:hover::after { opacity: 1; }
+        /* Lift card content above ::after overlay */
+        .about-card > * { position: relative; z-index: 2; }
+
+        /* Mosaic panels — start hidden; GSAP reveals each one */
+        .mosaic-panel {
+            background-image: var(--img);
+            will-change: transform, opacity;
+            opacity: 0;
+        }
     </style>
 </head>
 <body class="font-sans antialiased text-gray-800 bg-white">
