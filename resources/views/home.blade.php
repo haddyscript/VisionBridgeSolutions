@@ -185,18 +185,10 @@ $svgIcons = [
 
         <div id="welcome-video-wrap" class="relative rounded-3xl overflow-hidden" style="opacity:0;transform:scale(0.93);box-shadow:0 0 0 1px rgba(201,168,76,0.18),0 40px 100px rgba(0,0,0,0.75),0 12px 36px rgba(0,0,0,0.55);">
             <div class="aspect-video relative">
-                <video id="welcome-video" preload="metadata" playsinline class="w-full h-full object-cover block">
+                <video id="welcome-video" autoplay muted loop playsinline preload="auto" class="w-full h-full object-cover block">
                     <source src="{{ asset('videos/VisionBridge_Solutions_welcome_v.mp4') }}" type="video/mp4">
                 </video>
-                <div id="welcome-play-overlay" class="absolute inset-0 flex items-center justify-center cursor-pointer" style="background:rgba(6,12,22,0.28);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);">
-                    <div id="welcome-play-inner" class="relative flex items-center justify-center" style="will-change:transform;">
-                        <span class="absolute rounded-full pointer-events-none" style="width:88px;height:88px;border:1.5px solid rgba(201,168,76,0.42);animation:play-pulse 2.4s ease-out infinite;"></span>
-                        <span class="absolute rounded-full pointer-events-none" style="width:88px;height:88px;border:1.5px solid rgba(201,168,76,0.22);animation:play-pulse 2.4s ease-out infinite 0.9s;"></span>
-                        <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center" style="background:linear-gradient(140deg,#DFC06A 0%,#C9A84C 55%,#A8872E 100%);box-shadow:0 0 52px rgba(201,168,76,0.45),0 8px 28px rgba(0,0,0,0.55);">
-                            <svg class="w-7 h-7 ml-1" fill="#111D33" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
 
@@ -790,32 +782,19 @@ $svgIcons = [
             scrollTrigger:{ trigger:'#welcome', start:'top bottom', end:'bottom top', scrub:3 }
         });
 
-        // Custom play button — click to play + dismiss overlay
-        const wVideo   = document.getElementById('welcome-video');
-        const wOverlay = document.getElementById('welcome-play-overlay');
-        const wInner   = document.getElementById('welcome-play-inner');
-        if (wVideo && wOverlay) {
-            wOverlay.addEventListener('click', () => {
-                wVideo.controls = true;
-                wVideo.play();
-                gsap.to(wOverlay, {
-                    opacity:0, duration:0.40, ease:'power2.out',
-                    onComplete: () => { wOverlay.style.display = 'none'; }
+                // Auto-play when section enters viewport, pause when it leaves
+        const wVideo = document.getElementById('welcome-video');
+        if (wVideo) {
+            const wObs = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        wVideo.play().catch(() => {});
+                    } else {
+                        wVideo.pause();
+                    }
                 });
-            });
-        }
-
-        // Magnetic hover — play circle follows cursor with elastic spring
-        if (wOverlay && wInner) {
-            wOverlay.addEventListener('mousemove', e => {
-                const r  = wOverlay.getBoundingClientRect();
-                const cx = e.clientX - r.left  - r.width  / 2;
-                const cy = e.clientY - r.top   - r.height / 2;
-                gsap.to(wInner, { x: cx * 0.09, y: cy * 0.09, duration:0.45, ease:'power2.out' });
-            }, { passive:true });
-            wOverlay.addEventListener('mouseleave', () => {
-                gsap.to(wInner, { x:0, y:0, duration:0.70, ease:'elastic.out(1,0.5)' });
-            });
+            }, { threshold: 0.25 });
+            wObs.observe(wVideo);
         }
 
         // ============================================================
