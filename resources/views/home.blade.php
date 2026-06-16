@@ -655,96 +655,181 @@ $svgIcons = [
 (function () {
     'use strict';
 
+    // ─────────────────────────────────────────────────────────────────
+    //  ANIMATION CONSTANTS
+    //
+    //  TOGGLE — 'play none none reverse'
+    //    onEnter      → play   : elements reveal as section enters from below
+    //    onLeave      → none   : elements stay visible as you scroll past them
+    //    onEnterBack  → none   : still visible when scrolling back up into view
+    //    onLeaveBack  → reverse: elements elegantly un-reveal when scrolling
+    //                            back above the trigger point, ready to play again
+    //
+    //  SCRUB triggers bypass TOGGLE entirely — they're tied directly to the
+    //  scrollbar position so they naturally go forward and back with scroll.
+    // ─────────────────────────────────────────────────────────────────
+    const TOGGLE = 'play none none reverse';
+
+    // Reusable ScrollTrigger config for parallax scrub animations
+    function scrubST(trigger, scrub) {
+        return { trigger, start: 'top bottom', end: 'bottom top', scrub: scrub || 1.8 };
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    //  GENERIC .reveal-section SYSTEM
+    //
+    //  Drop class="reveal-section" on any section wrapper to get a free
+    //  fade+rise entrance. Optionally add data-stagger on child elements
+    //  to have them animate as an orchestrated group instead.
+    //
+    //  Usage:
+    //    <section class="reveal-section">…</section>
+    //    <section class="reveal-section">
+    //      <div data-stagger>card 1</div>
+    //      <div data-stagger>card 2</div>
+    //    </section>
+    // ─────────────────────────────────────────────────────────────────
+    function initRevealSections() {
+        document.querySelectorAll('.reveal-section').forEach(section => {
+            const staggerChildren = section.querySelectorAll('[data-stagger]');
+            if (staggerChildren.length) {
+                gsap.fromTo(staggerChildren,
+                    { opacity: 0, y: 40 },
+                    { opacity: 1, y: 0, duration: 0.72, stagger: 0.13, ease: 'power3.out',
+                      scrollTrigger: { trigger: section, start: 'top 82%', toggleActions: TOGGLE } }
+                );
+            } else {
+                gsap.fromTo(section,
+                    { opacity: 0, y: 30 },
+                    { opacity: 1, y: 0, duration: 0.80, ease: 'power3.out',
+                      scrollTrigger: { trigger: section, start: 'top 82%', toggleActions: TOGGLE } }
+                );
+            }
+        });
+    }
+
     function initGSAP() {
         if (typeof gsap === 'undefined') { setTimeout(initGSAP, 80); return; }
         gsap.registerPlugin(ScrollTrigger);
 
-        // ============================================================
-        //  HERO — entrance timeline
-        // ============================================================
-        const tl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.3 });
-
-        tl.fromTo('#hero-badge',    { opacity:0, y:22 }, { opacity:1, y:0, duration:0.65 })
-          .from('.hero-word',       { y:'110%', opacity:0, duration:0.75, stagger:0.09 }, '-=0.30')
-          .fromTo('#hero-glow-line',{ opacity:0, scaleX:0 }, { opacity:1, scaleX:1, duration:0.70, ease:'power2.out' }, '-=0.15')
-          .fromTo('#hero-subtext',  { opacity:0, y:26 }, { opacity:1, y:0, duration:0.60 }, '-=0.35')
-          .fromTo('#hero-trust',    { opacity:0, y:18 }, { opacity:1, y:0, duration:0.50 }, '-=0.30')
-          .fromTo('#hero-ctas > a', { opacity:0, y:22 }, { opacity:1, y:0, duration:0.50, stagger:0.13 }, '-=0.28')
-          .fromTo('.stat-item',     { opacity:0, y:20 }, { opacity:1, y:0, duration:0.50, stagger:0.10 }, '-=0.20')
-          .call(() => {
-              const el = document.getElementById('stat-pct');
-              if (!el) return;
-              const o = { v: 0 };
-              gsap.to(o, { v:100, duration:2.5, ease:'power2.out', onUpdate() { el.textContent = Math.round(o.v) + '%'; } });
-          })
-          .fromTo('#hero-scroll-cue', { opacity:0 }, { opacity:1, duration:0.70 }, '-=1.90');
+        // Run the generic reveal system first so section-specific tweens
+        // that share the same trigger don't double-fire on the same element
+        initRevealSections();
 
         // ============================================================
-        //  ABOUT — section header fade-and-rise
+        //  HERO — page-load entrance timeline (no ScrollTrigger needed:
+        //  hero is always the first thing visible on load)
         // ============================================================
-        gsap.fromTo('#about-kicker',
-            { opacity:0, y:16 },
-            { opacity:1, y:0, duration:0.65, ease:'power3.out',
-              scrollTrigger:{ trigger:'#about', start:'top 82%', once:true } }
-        );
-        gsap.fromTo('#about-heading',
-            { opacity:0, y:30 },
-            { opacity:1, y:0, duration:0.80, ease:'power3.out', delay:0.12,
-              scrollTrigger:{ trigger:'#about', start:'top 82%', once:true } }
-        );
+        const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.3 });
+
+        heroTl
+            .fromTo('#hero-badge',      { opacity:0, y:22  }, { opacity:1, y:0, duration:0.65 })
+            .from ('.hero-word',        { y:'110%', opacity:0, duration:0.75, stagger:0.09 }, '-=0.30')
+            .fromTo('#hero-glow-line',  { opacity:0, scaleX:0 }, { opacity:1, scaleX:1, duration:0.70, ease:'power2.out' }, '-=0.15')
+            .fromTo('#hero-subtext',    { opacity:0, y:26  }, { opacity:1, y:0, duration:0.60 }, '-=0.35')
+            .fromTo('#hero-trust',      { opacity:0, y:18  }, { opacity:1, y:0, duration:0.50 }, '-=0.30')
+            .fromTo('#hero-ctas > a',   { opacity:0, y:22  }, { opacity:1, y:0, duration:0.50, stagger:0.13 }, '-=0.28')
+            .fromTo('.stat-item',       { opacity:0, y:20  }, { opacity:1, y:0, duration:0.50, stagger:0.10 }, '-=0.20')
+            // Counter is driven by a side-effect; it lives inside the hero so
+            // no ScrollTrigger — fire once as part of the page-load sequence
+            .call(() => {
+                const el = document.getElementById('stat-pct');
+                if (!el) return;
+                const o = { v: 0 };
+                gsap.to(o, { v:100, duration:2.5, ease:'power2.out',
+                    onUpdate() { el.textContent = Math.round(o.v) + '%'; }
+                });
+            })
+            .fromTo('#hero-scroll-cue', { opacity:0 }, { opacity:1, duration:0.70 }, '-=1.90');
+
+        // ============================================================
+        //  WELCOME / FOUNDER'S MESSAGE — bi-directional timeline
+        //
+        //  TOGGLE on the parent ScrollTrigger means the entire timeline
+        //  plays forward on entry and reverses cleanly on scroll-back.
+        // ============================================================
+        gsap.timeline({
+            scrollTrigger: { trigger:'#welcome', start:'top 78%', toggleActions: TOGGLE }
+        })
+        .fromTo('#welcome-kicker',
+            { opacity:0, y:14 }, { opacity:1, y:0, duration:0.60, ease:'power3.out' })
+        .from('.welcome-word',
+            { y:'105%', opacity:0, duration:0.72, stagger:0.08, ease:'power3.out' }, '-=0.28')
+        .fromTo('#welcome-sub',
+            { opacity:0, y:22 }, { opacity:1, y:0, duration:0.60, ease:'power2.out' }, '-=0.28')
+        .fromTo('#welcome-video-wrap',
+            { opacity:0, scale:0.93 }, { opacity:1, scale:1, duration:0.95, ease:'power2.out' }, '-=0.32')
+        .fromTo('#welcome-credit',
+            { opacity:0, y:12 }, { opacity:1, y:0, duration:0.55, ease:'power2.out' }, '-=0.50');
+
+        // Ambient glow scrub — naturally reverses with scroll direction
+        gsap.to('#welcome-glow', { y:-55, ease:'none', scrollTrigger: scrubST('#welcome', 3) });
+
+        // Video: play/pause via IntersectionObserver (independent of GSAP)
+        const wVideo = document.getElementById('welcome-video');
+        if (wVideo) {
+            new IntersectionObserver(entries => {
+                entries[0].isIntersecting ? wVideo.play().catch(() => {}) : wVideo.pause();
+            }, { threshold: 0.25 }).observe(wVideo);
+        }
+
+        // ============================================================
+        //  ABOUT — header, mosaic, cards — all bi-directional
+        // ============================================================
+
+        // ── Section header: kicker + heading in a single timeline ──
+        gsap.timeline({
+            scrollTrigger: { trigger:'#about', start:'top 82%', toggleActions: TOGGLE }
+        })
+        .fromTo('#about-kicker',  { opacity:0, y:16 }, { opacity:1, y:0, duration:0.65, ease:'power3.out' })
+        .fromTo('#about-heading', { opacity:0, y:30 }, { opacity:1, y:0, duration:0.80, ease:'power3.out' }, '-=0.35');
 
         // ── Mosaic panels: staggered scale-reveal ──
         gsap.fromTo('.mosaic-panel',
             { opacity:0, scale:1.08 },
-            { opacity:1, scale:1, duration:0.90,
-              stagger:{ amount:0.55, from:'start' }, ease:'power2.out',
-              scrollTrigger:{ trigger:'#about-mosaic', start:'top 80%', once:true } }
+            { opacity:1, scale:1, duration:0.90, stagger:{ amount:0.55, from:'start' }, ease:'power2.out',
+              scrollTrigger: { trigger:'#about-mosaic', start:'top 80%', toggleActions: TOGGLE } }
         );
 
-        // ── Mosaic caption slides up ──
+        // ── Mosaic caption ──
         gsap.fromTo('#about-mosaic-quote',
             { opacity:0, y:20 },
-            { opacity:1, y:0, duration:0.70, ease:'power3.out', delay:0.40,
-              scrollTrigger:{ trigger:'#about-mosaic', start:'top 80%', once:true } }
+            { opacity:1, y:0, duration:0.70, ease:'power3.out',
+              scrollTrigger: { trigger:'#about-mosaic', start:'top 76%', toggleActions: TOGGLE } }
         );
 
-        // ── Mosaic parallax (scrub) ──
-        gsap.to('#about-mosaic-wrap', {
-            y: -38, ease:'none',
-            scrollTrigger:{ trigger:'#about', start:'top bottom', end:'bottom top', scrub:2 }
-        });
+        // ── Mosaic parallax scrub (bi-directional by nature) ──
+        gsap.to('#about-mosaic-wrap', { y:-38, ease:'none', scrollTrigger: scrubST('#about', 2) });
 
-        // ── Cards: stagger entrance ──
+        // ── Mission / Vision cards: stagger entrance ──
         gsap.fromTo('.about-card',
             { opacity:0, y:46 },
             { opacity:1, y:0, duration:0.80, stagger:0.18, ease:'power3.out',
-              scrollTrigger:{ trigger:'.about-cards', start:'top 82%', once:true } }
+              scrollTrigger: { trigger:'.about-cards', start:'top 82%', toggleActions: TOGGLE } }
         );
 
-        // ── Card content cascade: icon → title → body ──
+        // ── Card interior cascade: icon → title → body ──
         document.querySelectorAll('.about-card').forEach(card => {
             gsap.fromTo(
                 card.querySelectorAll('.card-icon, .card-title, .card-body'),
                 { opacity:0, y:18 },
-                { opacity:1, y:0, duration:0.55, stagger:0.11, ease:'power2.out', delay:0.22,
-                  scrollTrigger:{ trigger:card, start:'top 85%', once:true } }
+                { opacity:1, y:0, duration:0.55, stagger:0.11, ease:'power2.out',
+                  scrollTrigger: { trigger:card, start:'top 85%', toggleActions: TOGGLE } }
             );
         });
 
-        // ── 3D tilt + cursor-glow tracking on about cards ──
+        // ── 3D tilt + cursor-glow (hover; no ScrollTrigger) ──
         document.querySelectorAll('.about-card').forEach(card => {
             card.addEventListener('mousemove', e => {
                 const r  = card.getBoundingClientRect();
                 const cx = e.clientX - r.left - r.width  / 2;
                 const cy = e.clientY - r.top  - r.height / 2;
-                // 3D tilt
                 gsap.to(card, {
                     rotateX: (-cy / r.height) * 7,
                     rotateY: ( cx / r.width)  * 7,
                     transformPerspective: 900,
-                    duration: 0.40, ease: 'power2.out'
+                    duration: 0.40, ease: 'power2.out',
                 });
-                // Cursor-glow CSS variable (used by ::after)
                 card.style.setProperty('--mx', ((e.clientX - r.left) / r.width  * 100) + '%');
                 card.style.setProperty('--my', ((e.clientY - r.top)  / r.height * 100) + '%');
             }, { passive: true });
@@ -755,57 +840,23 @@ $svgIcons = [
         });
 
         // ============================================================
-        //  WELCOME — cinematic entrance
+        //  GENERIC BELOW-FOLD CARD REVEALS
+        //
+        //  Targets all white cards, service tiles, plan cards, portfolio
+        //  cards, and bordered panels across the page. Each gets its own
+        //  ScrollTrigger so they stagger naturally as the user scrolls.
+        //  .about-card elements are excluded (handled with finer control
+        //  above). scrub-based parallax parents are also untouched.
         // ============================================================
-        const welcomeTl = gsap.timeline({
-            scrollTrigger:{ trigger:'#welcome', start:'top 78%', once:true }
-        });
-        welcomeTl
-            .fromTo('#welcome-kicker',
-                { opacity:0, y:14 },
-                { opacity:1, y:0, duration:0.60, ease:'power3.out' })
-            .from('.welcome-word',
-                { y:'105%', opacity:0, duration:0.72, stagger:0.08, ease:'power3.out' }, '-=0.28')
-            .fromTo('#welcome-sub',
-                { opacity:0, y:22 },
-                { opacity:1, y:0, duration:0.60, ease:'power2.out' }, '-=0.28')
-            .fromTo('#welcome-video-wrap',
-                { opacity:0, scale:0.93 },
-                { opacity:1, scale:1, duration:0.95, ease:'power2.out' }, '-=0.32')
-            .fromTo('#welcome-credit',
-                { opacity:0, y:12 },
-                { opacity:1, y:0, duration:0.55, ease:'power2.out' }, '-=0.50');
-
-        // Slow ambient glow parallax
-        gsap.to('#welcome-glow', {
-            y: -55, ease:'none',
-            scrollTrigger:{ trigger:'#welcome', start:'top bottom', end:'bottom top', scrub:3 }
-        });
-
-                // Auto-play when section enters viewport, pause when it leaves
-        const wVideo = document.getElementById('welcome-video');
-        if (wVideo) {
-            const wObs = new IntersectionObserver(entries => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        wVideo.play().catch(() => {});
-                    } else {
-                        wVideo.pause();
-                    }
-                });
-            }, { threshold: 0.25 });
-            wObs.observe(wVideo);
-        }
-
-        // ============================================================
-        //  BELOW-FOLD generic reveals (white cards / border cards)
-        //  Exclude .about-card (handled above)
-        // ============================================================
-        document.querySelectorAll('.bg-white.rounded-xl, .bg-white.rounded-2xl, .rounded-2xl.border').forEach(el => {
-            gsap.from(el, {
-                scrollTrigger:{ trigger:el, start:'top 92%', once:true },
-                opacity:0, y:38, duration:0.65, ease:'power2.out'
-            });
+        document.querySelectorAll(
+            '.bg-white.rounded-xl, .bg-white.rounded-2xl, .rounded-2xl.border, .bg-gray-50.rounded-xl'
+        ).forEach(el => {
+            if (el.closest('.about-cards')) return; // about-cards use bespoke stagger above
+            gsap.fromTo(el,
+                { opacity:0, y:36 },
+                { opacity:1, y:0, duration:0.65, ease:'power2.out',
+                  scrollTrigger: { trigger:el, start:'top 92%', toggleActions: TOGGLE } }
+            );
         });
     }
 
