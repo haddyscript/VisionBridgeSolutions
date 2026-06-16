@@ -39,6 +39,7 @@
         /* ─── Nav link (base) ─── */
         .nav-link { @apply text-sm font-medium transition-colors duration-200; color:rgba(255,255,255,0.75); }
         .nav-link:hover { color:#C9A84C; }
+        .nav-link.is-active { color:#C9A84C !important; }
 
         /* ─── Re-usable buttons (outside hero) ─── */
         .btn-gold    { @apply inline-block bg-gold hover:bg-gold-dark text-navy font-semibold px-7 py-3 rounded-lg transition-all duration-200 shadow hover:shadow-lg; }
@@ -574,6 +575,26 @@
         @media (max-width: 1023px) {
             #hscroll-hint, #hscroll-progress { display: none; }
         }
+
+        /* ── Nav scroll-spy active dot ── */
+        #nav-active-dot {
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #C9A84C;
+            box-shadow: 0 0 7px rgba(201,168,76,0.75), 0 0 14px rgba(201,168,76,0.30);
+            opacity: 0;
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+        /* Mobile active link */
+        #mobile-menu a.is-active {
+            color: #C9A84C !important;
+            background: rgba(201,168,76,0.08);
+        }
     </style>
 </head>
 <body class="font-sans antialiased text-gray-800 bg-white">
@@ -599,6 +620,7 @@
             {{-- Desktop links with sliding capsule --}}
             <div id="nav-links" class="hidden md:flex items-center gap-0.5 relative">
                 <div id="nav-cursor"></div>
+                <div id="nav-active-dot"></div>
                 <a href="#about"     class="nav-link relative z-10 px-4 py-2 opacity-0">About</a>
                 <a href="#services"  class="nav-link relative z-10 px-4 py-2 opacity-0">Services</a>
                 <a href="#plans"     class="nav-link relative z-10 px-4 py-2 opacity-0">Plans</a>
@@ -836,6 +858,111 @@
             }
         }
         initNav();
+    })();
+    </script>
+
+    <!-- Scroll-spy: highlights the active nav link as the user scrolls -->
+    <script defer>
+    (function () {
+        function initScrollSpy() {
+            if (typeof gsap === 'undefined') { setTimeout(initScrollSpy, 80); return; }
+
+            const navLinksWrap = document.getElementById('nav-links');
+            const dot          = document.getElementById('nav-active-dot');
+
+            // Map section IDs → the nav href that should become active.
+            // Sections without a dedicated nav link inherit from the nearest section.
+            const idToHref = {
+                hero:        null,          // above the fold — no link lit
+                welcome:     '#about',
+                about:       '#about',
+                services:    '#services',
+                why:         '#services',   // "Why VisionBridge" lives in the services area
+                plans:       '#plans',
+                portfolio:   '#portfolio',
+                partnership: '#portfolio',
+                contact:     null,          // CTA button, not a nav-link
+            };
+
+            // Collect all trackable elements that exist in the DOM
+            const trackedEls = Object.keys(idToHref)
+                .map(id => document.getElementById(id))
+                .filter(Boolean);
+
+            // Desktop links keyed by href
+            const desktopLinks = {};
+            if (navLinksWrap) {
+                navLinksWrap.querySelectorAll('a.nav-link').forEach(a => {
+                    desktopLinks[a.getAttribute('href')] = a;
+                });
+            }
+
+            // Mobile links keyed by href
+            const mobileLinks = {};
+            const mobileMenu  = document.getElementById('mobile-menu');
+            if (mobileMenu) {
+                mobileMenu.querySelectorAll('a').forEach(a => {
+                    mobileLinks[a.getAttribute('href')] = a;
+                });
+            }
+
+            let currentHref = null;
+
+            function moveDot(linkEl) {
+                if (!dot || !navLinksWrap || !linkEl) return;
+                const lr      = linkEl.getBoundingClientRect();
+                const nr      = navLinksWrap.getBoundingClientRect();
+                const centerX = lr.left - nr.left + lr.width / 2 - 2; // center minus half-dot
+                gsap.to(dot, { x: centerX, opacity: 1, duration: 0.38, ease: 'power2.out', overwrite: true });
+            }
+
+            function setActive(href) {
+                if (href === currentHref) return;
+                currentHref = href;
+
+                Object.values(desktopLinks).forEach(a => a.classList.remove('is-active'));
+                Object.values(mobileLinks).forEach(a  => a.classList.remove('is-active'));
+
+                if (!href) {
+                    if (dot) gsap.to(dot, { opacity: 0, duration: 0.22, overwrite: true });
+                    return;
+                }
+
+                const dLink = desktopLinks[href];
+                if (dLink) { dLink.classList.add('is-active'); moveDot(dLink); }
+                else if (dot) gsap.to(dot, { opacity: 0, duration: 0.22, overwrite: true });
+
+                const mLink = mobileLinks[href];
+                if (mLink) mLink.classList.add('is-active');
+            }
+
+            // IntersectionObserver with a detection band in the upper-middle viewport.
+            // rootMargin '-28% 0px -52% 0px' means a section is "active" when its top
+            // edge is between 28% and 48% down from the viewport top.
+            const observer = new IntersectionObserver(entries => {
+                let best = null;
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        if (!best || entry.intersectionRatio > best.intersectionRatio) best = entry;
+                    }
+                });
+                if (best) setActive(idToHref[best.target.id] ?? null);
+            }, {
+                rootMargin: '-28% 0px -52% 0px',
+                threshold:  [0, 0.1, 0.25, 0.5],
+            });
+
+            trackedEls.forEach(el => observer.observe(el));
+
+            // Clicking a link immediately marks it active before scroll settles
+            [...Object.values(desktopLinks), ...Object.values(mobileLinks)].forEach(a => {
+                a.addEventListener('click', () => {
+                    const href = a.getAttribute('href');
+                    if (href && href.startsWith('#')) setActive(href);
+                });
+            });
+        }
+        initScrollSpy();
     })();
     </script>
 
