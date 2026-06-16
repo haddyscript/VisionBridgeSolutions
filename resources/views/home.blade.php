@@ -340,10 +340,10 @@ $svgIcons = [
                 ['icon'=>'book-open','image'=>'image/Ministry_Website_Development.jpeg',       'title'=>'Ministry Website Development',      'desc'=>'Websites crafted to expand the reach of ministries and share your message with the world.'],
                 ['icon'=>'heart',   'image'=>'image/Nonprofit_Website_Development.jpeg',    'title'=>'Nonprofit Website Development',     'desc'=>'Compelling nonprofit websites that tell your story and inspire support for your cause.'],
                 ['icon'=>'building','image'=>'image/Small_Business_Website_Development.jpeg','title'=>'Small Business Website Development', 'desc'=>'Affordable, professional websites that help small businesses compete and grow online.'],
-                ['icon'=>'refresh', 'title'=>'Website Redesign Services',               'desc'=>'Breathe new life into an outdated website with a modern, performance-focused redesign.'],
-                ['icon'=>'cog',     'title'=>'Website Maintenance Services',            'desc'=>'Regular updates, monitoring, and care to keep your website running at peak performance.'],
-                ['icon'=>'globe',   'title'=>'Hosting Management',                      'desc'=>'We manage your hosting environment so you can focus on running your organization.'],
-                ['icon'=>'cursor',  'title'=>'Website Consulting',                      'desc'=>'Strategic guidance on your website\'s direction, technology, and digital growth potential.'],
+                ['icon'=>'refresh', 'image'=>'image/Website_Redesign_Services.jpeg',     'title'=>'Website Redesign Services',     'desc'=>'Breathe new life into an outdated website with a modern, performance-focused redesign.'],
+                ['icon'=>'cog',     'image'=>'image/Website_Maintenance_Services.jpeg', 'title'=>'Website Maintenance Services',  'desc'=>'Regular updates, monitoring, and care to keep your website running at peak performance.'],
+                ['icon'=>'globe',   'image'=>'image/Hosting_Management.jpeg',           'title'=>'Hosting Management',            'desc'=>'We manage your hosting environment so you can focus on running your organization.'],
+                ['icon'=>'cursor',  'image'=>'image/Website_Consulting.jpeg',           'title'=>'Website Consulting',            'desc'=>'Strategic guidance on your website\'s direction, technology, and digital growth potential.'],
             ] as $service)
             <div class="bg-white rounded-2xl border border-gray-100 hover:border-teal/30 hover:shadow-xl transition-all duration-300 group overflow-hidden flex flex-col">
                 @if(isset($service['image']))
