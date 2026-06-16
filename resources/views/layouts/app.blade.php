@@ -336,6 +336,130 @@
         .footer-bottom-bar {
             will-change: opacity;
         }
+
+        /* ════════════════════════════════════════════════════════════
+           CORE VALUES — Premium glassmorphic cards with mouse-tracking
+           gradient border + interior spotlight
+           ════════════════════════════════════════════════════════════ */
+
+        /* Outer shell — 1px padding gap acts as the animated border.
+           --cx / --cy are set by JS on each card's own coordinate space. */
+        .value-card-outer {
+            border-radius: 18px;
+            padding: 1px;
+            background: radial-gradient(
+                300px circle at var(--cx, -9999px) var(--cy, -9999px),
+                rgba(201,168,76,0.55),
+                rgba(42,157,143,0.25) 48%,
+                rgba(255,255,255,0.07) 78%
+            );
+            will-change: transform, opacity;
+            opacity: 0; /* GSAP entrance animates this in */
+            cursor: default;
+        }
+
+        /* Inner card — dark premium bg + overflow:hidden for spotlight */
+        .value-card {
+            border-radius: 17px;
+            background: linear-gradient(148deg, #0d1c32 0%, #07111e 100%);
+            padding: 28px;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.38s ease;
+        }
+        .value-card-outer:hover .value-card {
+            box-shadow:
+                0 28px 70px rgba(0,0,0,0.60),
+                0 10px 28px rgba(0,0,0,0.42);
+        }
+
+        /* Interior spotlight — radial gradient tracks the same --cx / --cy */
+        .value-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                400px circle at var(--cx, -9999px) var(--cy, -9999px),
+                rgba(201,168,76,0.11),
+                rgba(42,157,143,0.07) 50%,
+                transparent 72%
+            );
+            opacity: 0;
+            transition: opacity 0.50s ease;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .value-card-outer:hover .value-card::before {
+            opacity: 1;
+        }
+
+        /* All direct children float above the spotlight pseudo-element */
+        .value-card > * { position: relative; z-index: 1; }
+
+        /* Card header row: icon (left) + number badge (right) */
+        .value-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        /* Icon wrapper */
+        .value-icon-wrap {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(201,168,76,0.12);
+            border: 1px solid rgba(201,168,76,0.20);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            will-change: transform;
+            flex-shrink: 0;
+        }
+
+        /* Card number badge (top-right) */
+        .value-number {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            color: rgba(201,168,76,0.18);
+            user-select: none;
+            padding-top: 5px;
+            transition: color 0.30s ease;
+        }
+        .value-card-outer:hover .value-number {
+            color: rgba(201,168,76,0.44);
+        }
+
+        /* Thin separator between header and body */
+        .value-card-divider {
+            width: 28px;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(201,168,76,0.35), transparent);
+            margin-bottom: 14px;
+        }
+
+        /* Title */
+        .value-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: rgba(255,255,255,0.90);
+            margin-bottom: 10px;
+            line-height: 1.30;
+            transition: color 0.26s ease;
+        }
+        .value-card-outer:hover .value-title {
+            color: #DFC06A;
+        }
+
+        /* Description */
+        .value-desc {
+            font-size: 0.875rem;
+            line-height: 1.72;
+            color: rgba(255,255,255,0.42);
+        }
     </style>
 </head>
 <body class="font-sans antialiased text-gray-800 bg-white">

@@ -203,20 +203,24 @@ $svgIcons = [
 {{-- ============================================================
      ABOUT SECTION
      ============================================================ --}}
-<section id="about" class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<section id="about" class="py-20 relative overflow-hidden" style="background:linear-gradient(180deg,#F4F7FC 0%,#FFFFFF 45%,#F7FAFB 100%);">
+    {{-- Ambient warmth — barely visible, just removes the cold white feel --}}
+    <div class="absolute pointer-events-none" style="width:700px;height:700px;top:-180px;right:-180px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.055) 0%,transparent 70%);filter:blur(80px);"></div>
+    <div class="absolute pointer-events-none" style="width:500px;height:500px;bottom:-120px;left:-100px;border-radius:50%;background:radial-gradient(circle,rgba(42,157,143,0.045) 0%,transparent 70%);filter:blur(64px);"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative" style="z-index:1;">
         <div class="text-center mb-16">
             <span id="about-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Who We Are</span>
             <h2 id="about-heading" class="section-title mt-1">About VisionBridge Solutions</h2>
+            <p class="text-sm mt-3 max-w-lg mx-auto" style="color:rgba(17,29,51,0.42);line-height:1.7;">A dedicated team building websites that give organizations the digital foundation they deserve.</p>
         </div>
 
         <!-- Mosaic image grid + Mission / Vision side-by-side -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-20 items-stretch">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-20" style="align-items:stretch;">
 
-            {{-- Left: 3×2 mosaic with parallax wrapper --}}
-            <div id="about-mosaic-wrap">
+            {{-- Left: 3×2 mosaic — align-self:stretch forces grid to give full row height --}}
+            <div id="about-mosaic-wrap" style="display:flex;flex-direction:column;align-self:stretch;">
                 <div id="about-mosaic" class="relative rounded-2xl overflow-hidden shadow-2xl"
-                     style="min-height:460px; --img:url('{{ asset('image/VisionBridge_Solutions_1.jpeg') }}');">
+                     style="flex:1 1 0%;min-height:380px; --img:url('{{ asset('image/VisionBridge_Solutions_1.jpeg') }}');">
 
                     {{-- 3 columns × 2 rows — each cell reveals a slice of the image --}}
                     <div class="absolute inset-0 grid grid-cols-3 grid-rows-2" style="gap:3px;background:#08101e;">
@@ -233,63 +237,83 @@ $svgIcons = [
                          background:linear-gradient(to top, rgba(17,29,51,0.94) 0%, rgba(17,29,51,0.22) 52%, transparent 100%);"></div>
 
                     {{-- Caption --}}
-                    <div class="absolute bottom-0 left-0 right-0 p-8" style="z-index:3;">
-                        <p id="about-mosaic-quote" class="font-display font-bold text-lg leading-snug mb-2"
+                    <div class="absolute bottom-0 left-0 right-0 p-6" style="z-index:3;">
+                        <p id="about-mosaic-quote" class="font-display font-bold text-base leading-snug mb-1.5"
                            style="color:#C9A84C;">
                             "We don't just build websites — we bridge the gap between vision and digital presence."
                         </p>
-                        <p class="text-white/50 text-sm tracking-wide">— VisionBridge Solutions</p>
+                        <p class="text-white/50 text-xs tracking-wide">— VisionBridge Solutions</p>
                     </div>
                 </div>
             </div>
 
-            {{-- Right: Mission & Vision with tilt + glow --}}
-            <div class="about-cards flex flex-col gap-6">
+            {{-- Right: Mission & Vision --}}
+            <div class="about-cards flex flex-col gap-5">
 
-                <div class="about-card bg-navy rounded-2xl p-8 text-white flex-1">
-                    <div class="card-icon w-12 h-12 bg-gold/20 rounded-xl flex items-center justify-center mb-5">
-                        <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {{-- Mission card — light, airy, gold-accented --}}
+                <div class="about-card rounded-2xl flex-1 relative overflow-hidden" style="padding:22px 24px;background:#FFFFFF;border:1px solid rgba(201,168,76,0.14);box-shadow:0 4px 28px rgba(17,29,51,0.07),0 1px 4px rgba(17,29,51,0.04);">
+                    <div class="absolute left-0 top-6 bottom-6 w-0.5 rounded-r-full" style="background:linear-gradient(180deg,#C9A84C 0%,rgba(201,168,76,0.15) 100%);"></div>
+                    <div class="card-icon w-10 h-10 rounded-xl flex items-center justify-center mb-4" style="background:rgba(201,168,76,0.09);border:1px solid rgba(201,168,76,0.18);">
+                        <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
                     </div>
-                    <h3 class="card-title text-xl font-bold text-gold mb-3">Our Mission</h3>
-                    <p class="card-body text-white/70 leading-relaxed">To help ministries, churches, nonprofits, entrepreneurs, and businesses establish a professional online presence through custom website development, ongoing support, and long-term website stability.</p>
+                    <h3 class="card-title font-bold mb-2" style="font-size:1rem;color:#111D33;">Our Mission</h3>
+                    <p class="card-body" style="font-size:0.845rem;line-height:1.68;color:rgba(17,29,51,0.56);">To help ministries, churches, nonprofits, entrepreneurs, and businesses establish a professional online presence through custom website development, ongoing support, and long-term website stability.</p>
                 </div>
 
-                <div class="about-card bg-teal rounded-2xl p-8 text-white flex-1">
-                    <div class="card-icon w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-5">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {{-- Vision card — soft teal tint, welcoming --}}
+                <div class="about-card rounded-2xl flex-1 relative overflow-hidden" style="padding:22px 24px;background:linear-gradient(135deg,#F0FAF9 0%,#EDFAF8 100%);border:1px solid rgba(42,157,143,0.18);box-shadow:0 4px 28px rgba(42,157,143,0.08),0 1px 4px rgba(42,157,143,0.04);">
+                    <div class="absolute left-0 top-6 bottom-6 w-0.5 rounded-r-full" style="background:linear-gradient(180deg,#2A9D8F 0%,rgba(42,157,143,0.15) 100%);"></div>
+                    <div class="card-icon w-10 h-10 rounded-xl flex items-center justify-center mb-4" style="background:rgba(42,157,143,0.12);border:1px solid rgba(42,157,143,0.22);">
+                        <svg class="w-5 h-5 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                         </svg>
                     </div>
-                    <h3 class="card-title text-xl font-bold text-white mb-3">Our Vision</h3>
-                    <p class="card-body text-white/80 leading-relaxed">To become a trusted website solutions company that bridges the gap between vision and digital presence while helping clients maintain ownership, security, and confidence in their online future.</p>
+                    <h3 class="card-title font-bold mb-2" style="font-size:1rem;color:#111D33;">Our Vision</h3>
+                    <p class="card-body" style="font-size:0.845rem;line-height:1.68;color:rgba(17,29,51,0.56);">To become a trusted website solutions company that bridges the gap between vision and digital presence while helping clients maintain ownership, security, and confidence in their online future.</p>
                 </div>
 
             </div>
         </div>
 
-        <!-- Core Values -->
-        <div class="text-center mb-10">
-            <h3 class="section-title">Our Core Values</h3>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach([
-                ['icon'=>'users','title'=>'Client Ownership','desc'=>'Your website, your brand, your data — always. We ensure you retain full ownership of every digital asset we create for you.'],
-                ['icon'=>'shield','title'=>'Long-Term Stability','desc'=>'We don\'t just build and disappear. We provide ongoing support to keep your website secure, updated, and performing.'],
-                ['icon'=>'sparkles','title'=>'Faith-Based Values','desc'=>'Rooted in integrity and service, we bring faith-based principles to every client relationship and project we undertake.'],
-                ['icon'=>'swatch','title'=>'Custom Solutions','desc'=>'No templates, no shortcuts. Every website is custom-designed to reflect your unique brand and mission.'],
-                ['icon'=>'trending-up','title'=>'Growth Focused','desc'=>'We design with your audience growth in mind — clear calls to action, strong messaging, and mobile-first delivery.'],
-                ['icon'=>'chat','title'=>'Professional Support','desc'=>'From first inquiry to launch and beyond, you\'ll always have a dedicated team ready to support your online presence.'],
-            ] as $value)
-            <div class="bg-gray-50 rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                <div class="w-12 h-12 bg-navy/10 rounded-xl flex items-center justify-center mb-4">
-                    <svg class="w-6 h-6 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$value['icon']] !!}</svg>
+        {{-- Core Values — dark panel with ambient depth --}}
+        <div class="mt-24 rounded-3xl relative overflow-hidden py-16 px-6 sm:py-20 sm:px-12 lg:py-24 lg:px-16" style="background:linear-gradient(148deg,#0c1a2e 0%,#070e1c 100%);">
+            <div class="hero-orb" style="width:640px;height:640px;top:-140px;right:-120px;background:radial-gradient(circle,rgba(42,157,143,0.10) 0%,transparent 70%);animation:orb-drift 24s ease-in-out infinite;filter:blur(52px);"></div>
+            <div class="hero-orb" style="width:480px;height:480px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(201,168,76,0.08) 0%,transparent 70%);animation:orb-drift 18s ease-in-out infinite reverse 3s;filter:blur(44px);"></div>
+            <div class="hero-grid-dots absolute inset-0 pointer-events-none" style="opacity:0.28;"></div>
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" style="width:300px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.40),transparent);"></div>
+            <div class="relative" style="z-index:1;">
+                <div class="text-center mb-14">
+                    <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">What We Stand For</span>
+                    <h3 class="font-display text-3xl md:text-4xl font-bold text-white">Our Core Values</h3>
+                    <div class="glow-line" style="width:52px;margin:14px auto 0;"></div>
                 </div>
-                <h4 class="font-bold text-navy text-lg mb-2">{{ $value['title'] }}</h4>
-                <p class="text-gray-500 text-sm leading-relaxed">{{ $value['desc'] }}</p>
+                <div id="values-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach([
+                        ['icon'=>'users',       'title'=>'Client Ownership',    'desc'=>'Your website, your brand, your data — always. We ensure you retain full ownership of every digital asset we create for you.'],
+                        ['icon'=>'shield',      'title'=>'Long-Term Stability',  'desc'=>'We don\'t just build and disappear. We provide ongoing support to keep your website secure, updated, and performing.'],
+                        ['icon'=>'sparkles',    'title'=>'Faith-Based Values',   'desc'=>'Rooted in integrity and service, we bring faith-based principles to every client relationship and project we undertake.'],
+                        ['icon'=>'swatch',      'title'=>'Custom Solutions',     'desc'=>'No templates, no shortcuts. Every website is custom-designed to reflect your unique brand and mission.'],
+                        ['icon'=>'trending-up', 'title'=>'Growth Focused',       'desc'=>'We design with your audience growth in mind — clear calls to action, strong messaging, and mobile-first delivery.'],
+                        ['icon'=>'chat',        'title'=>'Professional Support', 'desc'=>'From first inquiry to launch and beyond, you\'ll always have a dedicated team ready to support your online presence.'],
+                    ] as $value)
+                    <div class="value-card-outer">
+                        <div class="value-card">
+                            <div class="value-card-header">
+                                <div class="value-icon-wrap">
+                                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$value['icon']] !!}</svg>
+                                </div>
+                                <span class="value-number">{{ sprintf('%02d', $loop->iteration) }}</span>
+                            </div>
+                            <div class="value-card-divider"></div>
+                            <h4 class="value-title">{{ $value['title'] }}</h4>
+                            <p class="value-desc">{{ $value['desc'] }}</p>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
             </div>
-            @endforeach
         </div>
     </div>
 </section>
@@ -840,6 +864,40 @@ $svgIcons = [
         });
 
         // ============================================================
+        //  CORE VALUES — bi-directional stagger + icon spring hovers
+        // ============================================================
+
+        // Staggered entrance; user explicitly wants full play/reverse
+        // in both scroll directions for this section's cinematic effect
+        gsap.fromTo('.value-card-outer',
+            { opacity: 0, y: 38 },
+            {
+                opacity: 1, y: 0,
+                duration: 0.75,
+                stagger: 0.13,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '#values-grid',
+                    start:   'top 82%',
+                    toggleActions: 'play reverse play reverse',
+                },
+            }
+        );
+
+        // Icon spring micro-hover — GSAP elastic easing for organic feel
+        document.querySelectorAll('.value-card-outer').forEach(card => {
+            const icon = card.querySelector('.value-icon-wrap');
+            if (!icon) return;
+
+            card.addEventListener('mouseenter', () => {
+                gsap.to(icon, { y: -5, scale: 1.16, duration: 0.36, ease: 'back.out(2.8)' });
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(icon, { y: 0, scale: 1, duration: 0.62, ease: 'elastic.out(1, 0.42)' });
+            });
+        });
+
+        // ============================================================
         //  GENERIC BELOW-FOLD CARD REVEALS
         //
         //  Targets all white cards, service tiles, plan cards, portfolio
@@ -861,6 +919,28 @@ $svgIcons = [
     }
 
     initGSAP();
+
+    // ── Mouse-position tracking for gradient border + interior spotlight ──
+    // Runs without GSAP — purely sets CSS custom properties so the
+    // radial-gradient in CSS repositions in real-time (no reflow, no layout).
+    (function initValueCardGlow() {
+        document.querySelectorAll('.value-card-outer').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const r = card.getBoundingClientRect();
+                // --cx / --cy are relative to this card's own top-left corner.
+                // The same vars are inherited by .value-card::before for the
+                // interior spotlight — 1px offset from 1px padding is imperceptible.
+                card.style.setProperty('--cx', `${e.clientX - r.left}px`);
+                card.style.setProperty('--cy', `${e.clientY - r.top}px`);
+            }, { passive: true });
+
+            card.addEventListener('mouseleave', () => {
+                // Park gradient off-screen so border returns to neutral
+                card.style.setProperty('--cx', '-9999px');
+                card.style.setProperty('--cy', '-9999px');
+            }, { passive: true });
+        });
+    })();
 
 })();
 </script>
