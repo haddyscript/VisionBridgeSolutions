@@ -1,0 +1,10 @@
+vendor/
+node_modules/
+storage/logs/*
+bootstrap/cache/*
+.env
+composer.lock
+.git/
+.gitignore
+README.md
+nginx/
