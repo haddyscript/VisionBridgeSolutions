@@ -7,51 +7,132 @@
 {{-- ============================================================
      HERO SECTION
      ============================================================ --}}
-<section id="hero" class="relative min-h-screen flex items-center" style="background: linear-gradient(135deg, #1B2A4A 0%, #111D33 60%, #1E7268 100%);">
-    <!-- Decorative bridge arch overlay -->
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <svg class="absolute bottom-0 left-0 right-0 w-full opacity-10" viewBox="0 0 1440 320" preserveAspectRatio="none">
-            <path fill="#C9A84C" d="M0,224 C360,100 1080,100 1440,224 L1440,320 L0,320 Z"/>
-        </svg>
-        <div class="absolute top-20 right-10 w-72 h-72 bg-gold/5 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-20 left-10 w-96 h-96 bg-teal/5 rounded-full blur-3xl"></div>
+<section id="hero" class="relative min-h-screen flex items-center overflow-hidden" style="background:#080F1C;">
+
+    {{-- Layer 0 — Hero background video (autoplay, muted, loop) --}}
+    <video autoplay muted loop playsinline
+           style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
+        <source src="{{ asset('videos/Web_development_company_hero_video.mp4') }}" type="video/mp4">
+    </video>
+    {{-- Dark overlay so text stays legible over any video frame --}}
+    <div style="position:absolute;inset:0;background:rgba(6,11,22,0.68);pointer-events:none;"></div>
+
+    {{-- Layer 1 — dot-grid texture --}}
+    <div class="hero-grid-dots absolute inset-0 pointer-events-none" style="z-index:1;"></div>
+
+    {{-- Layer 1 — atmospheric CSS orbs (GPU-composed, zero CPU) --}}
+    <div class="hero-orb" style="width:580px;height:580px;top:-120px;right:-120px;z-index:1;
+         background:radial-gradient(circle,rgba(42,157,143,.11) 0%,transparent 70%);
+         animation:orb-drift 16s ease-in-out infinite;"></div>
+    <div class="hero-orb" style="width:420px;height:420px;bottom:-80px;left:-80px;z-index:1;
+         background:radial-gradient(circle,rgba(201,168,76,.08) 0%,transparent 70%);
+         animation:orb-drift 20s ease-in-out infinite reverse 3s;"></div>
+    <div class="hero-orb" style="width:260px;height:260px;top:55%;left:58%;z-index:1;
+         background:radial-gradient(circle,rgba(42,157,143,.07) 0%,transparent 70%);
+         animation:orb-drift 11s ease-in-out infinite 1.5s;"></div>
+
+    {{-- Layer 2 — vignette to push eye to centre --}}
+    <div class="absolute inset-0 pointer-events-none" style="z-index:2;
+         background:radial-gradient(ellipse at 50% 46%,transparent 28%,rgba(5,10,20,.65) 100%);"></div>
+
+    {{-- Layer 3 — floating glassmorphism cards (desktop only) --}}
+    <div class="float-card float-card-1 hidden lg:flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-lg shrink-0"
+             style="background:rgba(42,157,143,.25);">✅</div>
+        <div>
+            <p class="text-white text-xs font-semibold leading-none mb-0.5">Website Launched!</p>
+            <p class="text-white/40 text-xs">Delivered on time</p>
+        </div>
+    </div>
+    <div class="float-card float-card-2 hidden lg:flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-lg shrink-0"
+             style="background:rgba(201,168,76,.20);">⭐</div>
+        <div>
+            <p class="text-white text-xs font-semibold leading-none mb-0.5">5-Star Support</p>
+            <p class="text-white/40 text-xs">Always available</p>
+        </div>
     </div>
 
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 text-center">
-        <span class="inline-block bg-gold/20 text-gold text-xs font-semibold tracking-widest uppercase px-4 py-1 rounded-full mb-6">Website Development & Management</span>
-        <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-            Building Websites.<br><span class="text-gold">Expanding Reach.</span>
+    {{-- Layer 4 — content --}}
+    <div class="relative w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 text-center" style="z-index:4;">
+
+        {{-- Badge --}}
+        <div id="hero-badge" class="inline-flex items-center text-xs font-semibold tracking-widest uppercase px-5 py-2 rounded-full mb-8 opacity-0"
+             style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.75);">
+            <span class="live-dot"></span>
+            Website Development &amp; Management
+        </div>
+
+        {{-- Heading --}}
+        <h1 id="hero-heading" class="font-display font-bold leading-tight mb-3"
+            style="font-size:clamp(2.6rem,6vw,4.5rem);">
+            <span class="word-wrap"><span class="hero-word text-white">Building</span></span><span class="word-wrap"><span class="hero-word text-white">Websites.</span></span><br>
+            <span class="word-wrap"><span class="hero-word shimmer-gold">Expanding</span></span><span class="word-wrap"><span class="hero-word shimmer-gold">Reach.</span></span>
         </h1>
-        <p class="text-white/70 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            Custom websites designed to strengthen your brand, expand your reach, and protect your online presence.
+
+        {{-- Gold glow divider --}}
+        <div id="hero-glow-line" class="glow-line opacity-0"></div>
+
+        {{-- Subtext --}}
+        <p id="hero-subtext" class="text-white/60 text-lg sm:text-xl max-w-2xl mx-auto mb-8 leading-relaxed opacity-0">
+            Custom websites designed to strengthen your brand, expand your reach,<br class="hidden sm:block"> and protect your online presence.
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="#contact" class="btn-gold text-base">Start Your Project</a>
-            <a href="#contact" class="btn-outline text-base">Book A Consultation</a>
+
+        {{-- Social proof row --}}
+        <div id="hero-trust" class="flex items-center justify-center gap-3 mb-10 opacity-0">
+            <div class="flex -space-x-2">
+                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#2A9D8F;border-color:#080F1C;">J</div>
+                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#243762;border-color:#080F1C;">M</div>
+                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold" style="background:#C9A84C;border-color:#080F1C;color:#111D33;">S</div>
+                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#1E7268;border-color:#080F1C;">A</div>
+            </div>
+            <div class="h-4 w-px" style="background:rgba(255,255,255,.18);"></div>
+            <p class="text-sm" style="color:rgba(255,255,255,.5);">
+                Trusted by <span style="color:rgba(255,255,255,.85);font-weight:600;">20+ organizations</span>
+            </p>
         </div>
 
-        <!-- Stats row -->
-        <div class="mt-20 grid grid-cols-3 gap-6 max-w-xl mx-auto">
-            <div class="text-center">
-                <div class="text-3xl font-bold text-gold">100%</div>
-                <div class="text-white/50 text-sm mt-1">Client Ownership</div>
+        {{-- CTA buttons --}}
+        <div id="hero-ctas" class="flex flex-col sm:flex-row gap-4 justify-center mb-20">
+            <a href="#contact" class="hero-btn-primary opacity-0">
+                Start Your Project
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
+            <a href="#contact" class="hero-btn-secondary opacity-0">
+                <svg class="w-4 h-4 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Book A Consultation
+            </a>
+        </div>
+
+        {{-- Stats --}}
+        <div id="hero-stats" class="grid grid-cols-3 gap-6 max-w-xl mx-auto pt-8"
+             style="border-top:1px solid rgba(255,255,255,.10);">
+            <div class="stat-item text-center opacity-0">
+                <div id="stat-pct" class="text-3xl font-bold text-gold">0%</div>
+                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(255,255,255,.4);">Client Ownership</div>
             </div>
-            <div class="text-center border-x border-white/10">
+            <div class="stat-item text-center opacity-0" style="border-left:1px solid rgba(255,255,255,.10);border-right:1px solid rgba(255,255,255,.10);">
                 <div class="text-3xl font-bold text-gold">Custom</div>
-                <div class="text-white/50 text-sm mt-1">Every Project</div>
+                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(255,255,255,.4);">Every Project</div>
             </div>
-            <div class="text-center">
+            <div class="stat-item text-center opacity-0">
                 <div class="text-3xl font-bold text-gold">Long-Term</div>
-                <div class="text-white/50 text-sm mt-1">Support</div>
+                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(255,255,255,.4);">Support</div>
             </div>
         </div>
     </div>
 
-    <!-- Scroll cue -->
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <svg class="w-6 h-6 text-gold/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-        </svg>
+    {{-- Scroll indicator --}}
+    <div id="hero-scroll-cue" class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-0" style="z-index:4;">
+        <span class="text-xs tracking-widest uppercase" style="color:rgba(255,255,255,.28);">Scroll</span>
+        <div class="w-5 h-8 rounded-full flex items-start justify-center pt-1.5"
+             style="border:1.5px solid rgba(255,255,255,.2);">
+            <div class="w-1 h-2 rounded-full" style="background:rgba(201,168,76,.65);animation:scroll-dot 1.9s ease-in-out infinite;"></div>
+        </div>
     </div>
 </section>
 
@@ -91,25 +172,47 @@
             <h2 class="section-title">About VisionBridge Solutions</h2>
         </div>
 
-        <!-- Mission & Vision -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-            <div class="bg-navy rounded-2xl p-8 text-white">
-                <div class="w-12 h-12 bg-gold/20 rounded-xl flex items-center justify-center mb-5">
-                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                    </svg>
+        <!-- Brand image + Mission / Vision side-by-side -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16 items-stretch">
+
+            <!-- Brand photo -->
+            <div class="relative rounded-2xl overflow-hidden shadow-2xl" style="min-height:420px;">
+                <img src="{{ asset('image/VisionBridge_Solutions_1.jpeg') }}"
+                     alt="VisionBridge Solutions"
+                     class="absolute inset-0 w-full h-full object-cover object-center"
+                     loading="lazy">
+                <!-- Gradient overlay — bottom fade so caption pops -->
+                <div class="absolute inset-0"
+                     style="background:linear-gradient(to top, rgba(17,29,51,0.92) 0%, rgba(17,29,51,0.30) 55%, transparent 100%);"></div>
+                <!-- Caption -->
+                <div class="absolute bottom-0 left-0 right-0 p-8">
+                    <p class="font-display font-bold text-lg leading-snug mb-2" style="color:#C9A84C;">
+                        "We don't just build websites — we bridge the gap between vision and digital presence."
+                    </p>
+                    <p class="text-white/50 text-sm tracking-wide">— VisionBridge Solutions</p>
                 </div>
-                <h3 class="text-xl font-bold text-gold mb-3">Our Mission</h3>
-                <p class="text-white/70 leading-relaxed">To help ministries, churches, nonprofits, entrepreneurs, and businesses establish a professional online presence through custom website development, ongoing support, and long-term website stability.</p>
             </div>
-            <div class="bg-teal rounded-2xl p-8 text-white">
-                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-5">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                    </svg>
+
+            <!-- Mission & Vision stacked -->
+            <div class="flex flex-col gap-6">
+                <div class="bg-navy rounded-2xl p-8 text-white flex-1">
+                    <div class="w-12 h-12 bg-gold/20 rounded-xl flex items-center justify-center mb-5">
+                        <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gold mb-3">Our Mission</h3>
+                    <p class="text-white/70 leading-relaxed">To help ministries, churches, nonprofits, entrepreneurs, and businesses establish a professional online presence through custom website development, ongoing support, and long-term website stability.</p>
                 </div>
-                <h3 class="text-xl font-bold text-white mb-3">Our Vision</h3>
-                <p class="text-white/80 leading-relaxed">To become a trusted website solutions company that bridges the gap between vision and digital presence while helping clients maintain ownership, security, and confidence in their online future.</p>
+                <div class="bg-teal rounded-2xl p-8 text-white flex-1">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-5">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Our Vision</h3>
+                    <p class="text-white/80 leading-relaxed">To become a trusted website solutions company that bridges the gap between vision and digital presence while helping clients maintain ownership, security, and confidence in their online future.</p>
+                </div>
             </div>
         </div>
 
@@ -484,4 +587,77 @@
     </div>
 </section>
 
+@endsection
+
+@section('scripts')
+<script>
+(function () {
+    'use strict';
+
+    // ================================================================
+    //  GSAP HERO ANIMATION  (x / y / opacity only — zero repaints)
+    // ================================================================
+    function initGSAP() {
+        if (typeof gsap === 'undefined') { setTimeout(initGSAP, 80); return; }
+        gsap.registerPlugin(ScrollTrigger);
+
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.3 });
+
+        tl.fromTo('#hero-badge',
+                { opacity: 0, y: 22 },
+                { opacity: 1, y: 0, duration: 0.65 })
+
+          .from('.hero-word',
+                { y: '110%', opacity: 0, duration: 0.75, stagger: 0.09 }, '-=0.30')
+
+          .fromTo('#hero-glow-line',
+                { opacity: 0, scaleX: 0 },
+                { opacity: 1, scaleX: 1, duration: 0.70, ease: 'power2.out' }, '-=0.15')
+
+          .fromTo('#hero-subtext',
+                { opacity: 0, y: 26 },
+                { opacity: 1, y: 0, duration: 0.60 }, '-=0.35')
+
+          .fromTo('#hero-trust',
+                { opacity: 0, y: 18 },
+                { opacity: 1, y: 0, duration: 0.50 }, '-=0.30')
+
+          .fromTo('#hero-ctas > a',
+                { opacity: 0, y: 22 },
+                { opacity: 1, y: 0, duration: 0.50, stagger: 0.13 }, '-=0.28')
+
+          .fromTo('.stat-item',
+                { opacity: 0, y: 20 },
+                { opacity: 1, y: 0, duration: 0.50, stagger: 0.10 }, '-=0.20')
+
+          .call(() => {
+              const el = document.getElementById('stat-pct');
+              if (!el) return;
+              const o = { v: 0 };
+              gsap.to(o, {
+                  v: 100, duration: 2.5, ease: 'power2.out',
+                  onUpdate() { el.textContent = Math.round(o.v) + '%'; }
+              });
+          })
+
+          .fromTo('#hero-scroll-cue',
+                { opacity: 0 },
+                { opacity: 1, duration: 0.70 }, '-=1.90');
+
+        /* ── Below-fold card reveals ── */
+        document.querySelectorAll(
+            '.bg-white.rounded-xl, .bg-white.rounded-2xl, ' +
+            '.bg-navy.rounded-2xl, .bg-teal.rounded-2xl, .rounded-2xl.border'
+        ).forEach(el => {
+            gsap.from(el, {
+                scrollTrigger: { trigger: el, start: 'top 92%', once: true },
+                opacity: 0, y: 38, duration: 0.65, ease: 'power2.out'
+            });
+        });
+    }
+
+    initGSAP();
+
+})();
+</script>
 @endsection

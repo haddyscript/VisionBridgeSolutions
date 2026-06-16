@@ -31,13 +31,136 @@
         }
     </script>
 
-    <style>
+    {{-- type="text/tailwindcss" lets the Play CDN process @apply directives --}}
+    <style type="text/tailwindcss">
         html { scroll-behavior: smooth; }
+
+        /* ─── Nav ─── */
         .nav-link { @apply text-white/80 hover:text-gold transition-colors duration-200 text-sm font-medium; }
-        .btn-gold { @apply inline-block bg-gold hover:bg-gold-dark text-navy font-semibold px-7 py-3 rounded-lg transition-all duration-200 shadow hover:shadow-md; }
+
+        /* ─── Re-usable buttons (outside hero) ─── */
+        .btn-gold    { @apply inline-block bg-gold hover:bg-gold-dark text-navy font-semibold px-7 py-3 rounded-lg transition-all duration-200 shadow hover:shadow-lg; }
         .btn-outline { @apply inline-block border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-7 py-3 rounded-lg transition-all duration-200; }
-        .section-title { @apply font-display text-3xl md:text-4xl font-bold text-navy leading-tight; }
+
+        /* ─── Typography ─── */
+        .section-title    { @apply font-display text-3xl md:text-4xl font-bold text-navy leading-tight; }
         .section-subtitle { @apply text-gray-500 text-lg mt-3 max-w-2xl mx-auto; }
+
+        /* ─── Hero canvas ─── */
+        #hero-canvas { position:absolute; inset:0; width:100%; height:100%; display:block; }
+
+        /* ─── Word-mask reveal ─── */
+        .word-wrap  { display:inline-block; overflow:hidden; vertical-align:bottom; margin-right:0.26em; line-height:1.12; padding-bottom:0.06em; }
+        .word-wrap:last-child { margin-right:0; }
+        .hero-word  { display:inline-block; will-change:transform,opacity; }
+
+        /* ─── Gold shimmer text ─── */
+        .shimmer-gold {
+            background: linear-gradient(100deg,#C9A84C 0%,#FFF2A8 38%,#E8C96A 52%,#C9A84C 100%);
+            background-size: 240% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: text-shimmer 3.5s linear infinite;
+        }
+        @keyframes text-shimmer {
+            0%   { background-position: 220% center; }
+            100% { background-position: -220% center; }
+        }
+
+        /* ─── Pulsing "live" dot ─── */
+        .live-dot {
+            display:inline-block; width:7px; height:7px;
+            background:#2A9D8F; border-radius:50%;
+            margin-right:8px; vertical-align:middle; position:relative;
+        }
+        .live-dot::after {
+            content:''; position:absolute; inset:-4px; border-radius:50%;
+            border:1.5px solid rgba(42,157,143,.55);
+            animation: pulse-ring 2s ease-out infinite;
+        }
+        @keyframes pulse-ring {
+            0%   { transform:scale(1);   opacity:1; }
+            100% { transform:scale(2.4); opacity:0; }
+        }
+
+        /* ─── Hero CTA buttons ─── */
+        .hero-btn-primary {
+            position:relative; display:inline-flex; align-items:center; gap:8px;
+            background:#C9A84C; color:#111D33; font-weight:700;
+            padding:15px 34px; border-radius:10px; font-size:1rem;
+            overflow:hidden; letter-spacing:.01em;
+            transition: transform .22s, box-shadow .22s, background .22s;
+            will-change: transform;
+        }
+        .hero-btn-primary::after {
+            content:''; position:absolute; inset:0;
+            background:linear-gradient(135deg,rgba(255,255,255,.22) 0%,transparent 60%);
+            opacity:0; transition:opacity .22s;
+        }
+        .hero-btn-primary:hover { background:#DFC06A; transform:translateY(-3px); box-shadow:0 0 38px rgba(201,168,76,.48),0 8px 28px rgba(0,0,0,.35); }
+        .hero-btn-primary:hover::after { opacity:1; }
+
+        .hero-btn-secondary {
+            display:inline-flex; align-items:center; gap:8px;
+            border:1.5px solid rgba(255,255,255,.32); color:rgba(255,255,255,.88);
+            font-weight:600; padding:15px 34px; border-radius:10px; font-size:1rem;
+            background:rgba(255,255,255,.04);
+            backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+            transition: transform .22s, box-shadow .22s, border-color .22s, background .22s;
+            will-change: transform;
+        }
+        .hero-btn-secondary:hover { border-color:rgba(255,255,255,.7); background:rgba(255,255,255,.10); transform:translateY(-3px); box-shadow:0 8px 28px rgba(0,0,0,.3); }
+
+        /* ─── Floating glassmorphism cards ─── */
+        .float-card {
+            position:absolute; pointer-events:none; z-index:3;
+            background:rgba(255,255,255,.065); border:1px solid rgba(255,255,255,.12);
+            backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            border-radius:16px; padding:12px 18px;
+            will-change:transform;
+        }
+        .float-card-1 { bottom:24%; left:3.5%; animation:float-a 5s ease-in-out infinite; }
+        .float-card-2 { top:20%;   right:3.5%; animation:float-b 6.5s ease-in-out infinite; }
+        @keyframes float-a {
+            0%,100% { transform:translateY(0) rotate(-1deg); }
+            50%      { transform:translateY(-10px) rotate(0deg); }
+        }
+        @keyframes float-b {
+            0%,100% { transform:translateY(0) rotate(1deg); }
+            50%      { transform:translateY(-13px) rotate(0deg); }
+        }
+
+        /* ─── Atmospheric orbs ─── */
+        .hero-orb { position:absolute; border-radius:50%; pointer-events:none; will-change:transform; }
+        @keyframes orb-drift {
+            0%,100% { transform:translate(0,0) scale(1); }
+            33%      { transform:translate(28px,-22px) scale(1.05); }
+            66%      { transform:translate(-18px,14px) scale(.96); }
+        }
+
+        /* ─── Dot-grid texture ─── */
+        .hero-grid-dots {
+            background-image: radial-gradient(circle,rgba(255,255,255,.055) 1px,transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        /* ─── Glowing gold divider ─── */
+        .glow-line {
+            width:72px; height:2px; margin:18px auto;
+            background:linear-gradient(90deg,transparent,#C9A84C,transparent);
+            position:relative;
+        }
+        .glow-line::after {
+            content:''; position:absolute; inset:-2px;
+            background:inherit; filter:blur(5px); opacity:.65;
+        }
+
+        /* ─── Mouse-scroll indicator ─── */
+        @keyframes scroll-dot {
+            0%,100% { transform:translateY(0);   opacity:1; }
+            60%      { transform:translateY(9px); opacity:.25; }
+        }
     </style>
 </head>
 <body class="font-sans antialiased text-gray-800 bg-white">
@@ -137,18 +260,21 @@
     </footer>
 
     <script>
-        // Mobile menu toggle
         document.getElementById('menu-btn').addEventListener('click', () => {
             document.getElementById('mobile-menu').classList.toggle('hidden');
         });
-
-        // Close mobile menu on link click
         document.querySelectorAll('#mobile-menu a').forEach(link => {
             link.addEventListener('click', () => {
                 document.getElementById('mobile-menu').classList.add('hidden');
             });
         });
     </script>
+
+    <!-- GSAP + ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+
+    @yield('scripts')
 
 </body>
 </html>
