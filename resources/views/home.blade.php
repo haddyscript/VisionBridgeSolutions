@@ -380,7 +380,58 @@ $svgIcons = [
 <div id="hscroll-outer" style="overflow:hidden;position:relative;background:linear-gradient(160deg,#F7F9FC 0%,#FFFFFF 50%,#F3F7FB 100%);">
     {{-- Gold progress bar (filled by JS onUpdate) --}}
     <div id="hscroll-progress"></div>
-    {{-- "Scroll to continue" arrow hint --}}
+
+    {{-- Wipe backdrop — visible behind #why while it slides in.
+         Ambient orbs + centered progress ring give the "blank" area
+         a designed feel so the user understands something is happening. --}}
+    <div id="hscroll-backdrop" aria-hidden="true">
+        {{-- Ambient orbs matching the why section --}}
+        <div style="position:absolute;width:540px;height:540px;top:-160px;right:-120px;background:radial-gradient(circle,rgba(201,168,76,0.09) 0%,transparent 70%);filter:blur(64px);pointer-events:none;"></div>
+        <div style="position:absolute;width:400px;height:400px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.07) 0%,transparent 70%);filter:blur(52px);pointer-events:none;"></div>
+        {{-- Dot texture --}}
+        <div style="position:absolute;inset:0;opacity:0.22;background-image:radial-gradient(circle,rgba(17,29,51,0.045) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;"></div>
+
+        {{-- Centered indicator: progress ring + arrow + label --}}
+        <div id="hscroll-indicator">
+            {{-- Circular SVG progress ring --}}
+            <div id="hscroll-ring-wrap">
+                <svg id="hscroll-ring-svg" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {{-- Track --}}
+                    <circle cx="44" cy="44" r="36" stroke="rgba(201,168,76,0.14)" stroke-width="3"/>
+                    {{-- Animated fill (stroke-dashoffset driven by JS) --}}
+                    <circle id="hscroll-ring-fill" cx="44" cy="44" r="36"
+                            stroke="#C9A84C" stroke-width="3"
+                            stroke-linecap="round"
+                            stroke-dasharray="226"
+                            stroke-dashoffset="226"
+                            style="transform:rotate(-90deg);transform-origin:44px 44px;"/>
+                </svg>
+                {{-- Right-pointing arrow inside ring --}}
+                <div id="hscroll-ring-icon">
+                    <svg width="22" height="22" fill="none" stroke="#C9A84C" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </div>
+            </div>
+            {{-- Percentage counter --}}
+            <div id="hscroll-pct" style="font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:#C9A84C;letter-spacing:0.04em;">0%</div>
+            {{-- Label --}}
+            <div id="hscroll-label">
+                <span>Loading</span>
+                <span style="color:#C9A84C;font-weight:700;">Why VisionBridge</span>
+            </div>
+            {{-- Decorative separator --}}
+            <div style="width:32px;height:1.5px;background:linear-gradient(90deg,rgba(201,168,76,0.60),transparent);border-radius:2px;margin-top:4px;"></div>
+        </div>
+
+        {{-- Left-edge peek label (anchored to left side, fades in from 0%) --}}
+        <div id="hscroll-edge-label">
+            <div style="width:1.5px;height:40px;background:linear-gradient(180deg,transparent,#C9A84C,transparent);"></div>
+            <span>WHY VISIONBRIDGE</span>
+        </div>
+    </div>
+
+    {{-- "Scroll to continue" hint (desktop, fades out as wipe starts) --}}
     <div id="hscroll-hint">
         <div id="hscroll-hint-arrow">
             <svg width="14" height="14" fill="none" stroke="#C9A84C" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
@@ -1101,25 +1152,29 @@ $svgIcons = [
         function initHorizontalWipe() {
             if (window.innerWidth < 1024) return;
 
-            const outer       = document.getElementById('hscroll-outer');
-            const why         = document.getElementById('why');
-            const progressBar = document.getElementById('hscroll-progress');
-            const hint        = document.getElementById('hscroll-hint');
+            const outer     = document.getElementById('hscroll-outer');
+            const why       = document.getElementById('why');
+            const bar       = document.getElementById('hscroll-progress');
+            const hint      = document.getElementById('hscroll-hint');
+            const ringFill  = document.getElementById('hscroll-ring-fill');
+            const pctEl     = document.getElementById('hscroll-pct');
+            const edgeLabel = document.getElementById('hscroll-edge-label');
             if (!outer || !why) return;
 
             const vw = () => window.innerWidth;
+            const CIRCUMFERENCE = 226; // 2π × r(36) ≈ 226
 
             // Push #why off-screen to the right so it's invisible at rest
-            gsap.set(why, { x: vw(), willChange: 'transform' });
+            gsap.set(why, { x: vw(), willChange: 'transform', zIndex: 1, position: 'relative' });
 
-            // Services cards staggered reveal (fires as user scrolls into services)
+            // Services cards staggered reveal
             gsap.fromTo('#services .grid > div',
                 { opacity:0, y:40 },
                 { opacity:1, y:0, duration:0.60, stagger:0.07, ease:'power2.out',
                   scrollTrigger: { trigger:'#services', start:'top 80%', toggleActions: TOGGLE } }
             );
 
-            // Why section content reveals — staged entrance once wipe is 80% done
+            // Why section content reveals — fire at 80% wipe progress
             const whyRevealTl = gsap.timeline({ paused: true });
             whyRevealTl
                 .fromTo('#why-heading-block',
@@ -1142,15 +1197,40 @@ $svgIcons = [
                     invalidateOnRefresh: true,
                     onRefresh() { gsap.set(why, { x: vw() }); },
                     onUpdate(self) {
-                        if (progressBar) progressBar.style.width = (self.progress * 100) + '%';
-                        if (hint) hint.style.opacity = 1 - Math.min(self.progress * 6, 1);
-                        if (self.progress >= 0.80 && whyRevealTl.progress() === 0) {
+                        const p = self.progress;
+                        const pct = Math.round(p * 100);
+
+                        // Gold bottom bar
+                        if (bar) bar.style.width = pct + '%';
+
+                        // SVG ring fill (stroke-dashoffset decreases as progress increases)
+                        if (ringFill) ringFill.style.strokeDashoffset = CIRCUMFERENCE * (1 - p);
+
+                        // Percentage counter
+                        if (pctEl) pctEl.textContent = pct + '%';
+
+                        // Hint arrow fades out immediately
+                        if (hint) hint.style.opacity = 1 - Math.min(p * 8, 1);
+
+                        // Edge label fades in during first 40% then out after 70%
+                        if (edgeLabel) {
+                            const edgeOpacity = p < 0.4
+                                ? p / 0.4
+                                : p < 0.7 ? 1 : 1 - ((p - 0.7) / 0.3);
+                            edgeLabel.style.opacity = Math.max(0, Math.min(1, edgeOpacity));
+                        }
+
+                        // Trigger why reveals when #why is 80% into view
+                        if (p >= 0.80 && whyRevealTl.progress() === 0) {
                             whyRevealTl.play();
                         }
                     },
                     onLeaveBack() {
                         whyRevealTl.pause(0);
                         gsap.set(why, { x: vw() });
+                        if (ringFill) ringFill.style.strokeDashoffset = CIRCUMFERENCE;
+                        if (pctEl)    pctEl.textContent = '0%';
+                        if (bar)      bar.style.width = '0%';
                     },
                 }
             });

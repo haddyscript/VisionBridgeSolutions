@@ -449,16 +449,98 @@
             position: relative;
             overflow: hidden;
         }
+
+        /* Backdrop — fills the outer behind #why while it slides in */
+        #hscroll-backdrop {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Centered wipe indicator */
+        #hscroll-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        #hscroll-ring-wrap {
+            position: relative;
+            width: 88px;
+            height: 88px;
+        }
+        #hscroll-ring-svg {
+            width: 88px;
+            height: 88px;
+        }
+        #hscroll-ring-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #hscroll-pct {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #C9A84C;
+            letter-spacing: 0.04em;
+        }
+        #hscroll-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            text-align: center;
+        }
+        #hscroll-label span {
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(17,29,51,0.35);
+            line-height: 1.4;
+        }
+
+        /* Left-edge "WHY VISIONBRIDGE" peek label */
+        #hscroll-edge-label {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+        }
+        #hscroll-edge-label span {
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: rgba(17,29,51,0.30);
+            writing-mode: vertical-rl;
+        }
+
         /* Progress bar — gold line at bottom of the pinned container */
         #hscroll-progress {
             position: absolute;
             bottom: 0;
             left: 0;
-            height: 2px;
+            height: 3px;
             width: 0%;
             background: linear-gradient(90deg, #C9A84C 0%, rgba(42,157,143,0.70) 100%);
             z-index: 99;
             pointer-events: none;
+            box-shadow: 0 0 10px rgba(201,168,76,0.40);
         }
         /* "Scroll to continue" hint — fades out once wipe starts */
         #hscroll-hint {
