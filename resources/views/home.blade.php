@@ -615,25 +615,63 @@ $svgIcons = [
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             @foreach([
-                ['title'=>'Johnny Davis Global Missions','category'=>'Ministry','color'=>'from-navy to-teal','icon'=>'globe'],
-                ['title'=>'Johnny Davis Ministries','category'=>'Ministry','color'=>'from-navy-dark to-navy','icon'=>'book-open'],
-                ['title'=>'Mercy City Eleven 22 Church','category'=>'Church','color'=>'from-teal to-teal-dark','icon'=>'home'],
+                ['title'=>'Johnny Davis Global Missions','category'=>'Ministry',   'color'=>'from-navy to-teal',     'icon'=>'globe',    'image'=>'image/johnnydavisglobalmission.png','url'=>'https://johnnydavisglobalmissions.org/'],
+                ['title'=>'Johnny Davis Ministries',     'category'=>'Ministry',   'color'=>'from-navy-dark to-navy','icon'=>'book-open','image'=>'image/johnnydavisministries.png',   'url'=>'https://johnnydavisministries.org/'],
+                ['title'=>'Mercy City Eleven 22 Church', 'category'=>'Church',     'color'=>'from-teal to-teal-dark','icon'=>'home'],
                 ['title'=>'Future VisionBridge Projects','category'=>'Coming Soon','color'=>'from-gold-dark to-gold','icon'=>'sparkles'],
             ] as $project)
-            <div class="group rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer">
-                <div class="h-48 bg-gradient-to-br {{ $project['color'] }} flex items-center justify-center relative">
-                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
+            @php $hasLink = !empty($project['url']); @endphp
+            @if($hasLink)
+            <a href="{{ $project['url'] }}" target="_blank" rel="noopener"
+               class="group rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 block" style="text-decoration:none;">
+            @else
+            <div class="group rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-default">
+            @endif
+
+                {{-- Thumbnail or gradient fallback --}}
+                <div class="relative overflow-hidden" style="height:192px;">
+                    @if(!empty($project['image']))
+                    <img src="{{ asset($project['image']) }}"
+                         alt="{{ $project['title'] }}"
+                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    @else
+                    <div class="h-full bg-gradient-to-br {{ $project['color'] }} flex items-center justify-center">
+                        <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
+                        </div>
                     </div>
-                    <div class="absolute inset-0 bg-navy/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <span class="text-white font-semibold text-sm bg-white/20 px-4 py-2 rounded-full">View Project</span>
+                    @endif
+                    {{-- Hover overlay --}}
+                    <div class="absolute inset-0 bg-navy/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        @if($hasLink)
+                        <span class="text-white font-semibold text-sm bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30 flex items-center gap-2">
+                            Visit Site
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </span>
+                        @else
+                        <span class="text-white font-semibold text-sm bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">View Project</span>
+                        @endif
                     </div>
                 </div>
-                <div class="bg-white p-5">
-                    <span class="text-teal text-xs font-semibold tracking-widest uppercase">{{ $project['category'] }}</span>
-                    <h4 class="font-bold text-navy mt-1 text-base leading-snug">{{ $project['title'] }}</h4>
+
+                {{-- Card footer --}}
+                <div class="bg-white p-5 flex items-start justify-between gap-3">
+                    <div>
+                        <span class="text-teal text-xs font-semibold tracking-widest uppercase">{{ $project['category'] }}</span>
+                        <h4 class="font-bold text-navy mt-1 text-base leading-snug group-hover:text-teal transition-colors duration-200">{{ $project['title'] }}</h4>
+                    </div>
+                    @if($hasLink)
+                    <div class="shrink-0 w-8 h-8 rounded-full border border-teal/25 flex items-center justify-center mt-1 group-hover:bg-teal group-hover:border-teal transition-all duration-200">
+                        <svg class="w-3.5 h-3.5 text-teal group-hover:text-white transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </div>
+                    @endif
                 </div>
+
+            @if($hasLink)
+            </a>
+            @else
             </div>
+            @endif
             @endforeach
         </div>
     </div>
