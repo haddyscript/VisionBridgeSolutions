@@ -29,7 +29,9 @@ WORKDIR /var/www
 COPY . .
 
 RUN composer config policy.advisories.block false \
-    && composer update --no-interaction --optimize-autoloader --no-dev
+    && composer update --no-interaction --optimize-autoloader
+
+RUN php artisan package:discover --ansi || true
 
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 775 /var/www/storage \
