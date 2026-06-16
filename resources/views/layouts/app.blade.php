@@ -443,6 +443,55 @@
             line-height: 1.72;
             color: rgba(17,29,51,0.50);
         }
+
+        /* ── Horizontal Wipe: Services → Why VisionBridge ── */
+        #hscroll-outer {
+            position: relative;
+            overflow: hidden;
+        }
+        /* Progress bar — gold line at bottom of the pinned container */
+        #hscroll-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            width: 0%;
+            background: linear-gradient(90deg, #C9A84C 0%, rgba(42,157,143,0.70) 100%);
+            z-index: 99;
+            pointer-events: none;
+        }
+        /* "Scroll to continue" hint — fades out once wipe starts */
+        #hscroll-hint {
+            position: absolute;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            z-index: 10;
+            pointer-events: none;
+        }
+        #hscroll-hint span {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: rgba(17,29,51,0.38);
+        }
+        #hscroll-hint-arrow {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(201,168,76,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @media (max-width: 1023px) {
+            #hscroll-hint, #hscroll-progress { display: none; }
+        }
     </style>
 </head>
 <body class="font-sans antialiased text-gray-800 bg-white">

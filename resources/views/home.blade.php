@@ -322,7 +322,8 @@ $svgIcons = [
 </section>
 
 {{-- ============================================================
-     SERVICES SECTION
+     SERVICES SECTION — normal full-height scroll
+     User sees all 10 cards before the wipe zone is reached.
      ============================================================ --}}
 <section id="services" class="py-20" style="background: linear-gradient(180deg, #F8F9FA 0%, #EEF2F7 100%);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -369,6 +370,24 @@ $svgIcons = [
 </section>
 
 {{-- ============================================================
+     HORIZONTAL WIPE ZONE
+     #hscroll-outer clips #why horizontally (overflow:hidden).
+     On desktop: #why starts translateX(100vw) and is pushed into
+     view by ScrollTrigger's scrub pin. The outer's background
+     matches #why so the brief "entry" moment looks seamless.
+     On mobile: #why sits in normal flow with no translateX.
+     ============================================================ --}}
+<div id="hscroll-outer" style="overflow:hidden;position:relative;background:linear-gradient(160deg,#F7F9FC 0%,#FFFFFF 50%,#F3F7FB 100%);">
+    {{-- Gold progress bar (filled by JS onUpdate) --}}
+    <div id="hscroll-progress"></div>
+    {{-- "Scroll to continue" arrow hint --}}
+    <div id="hscroll-hint">
+        <div id="hscroll-hint-arrow">
+            <svg width="14" height="14" fill="none" stroke="#C9A84C" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </div>
+        <span>scroll</span>
+    </div>
+{{-- ============================================================
      WHY CHOOSE US SECTION
      ============================================================ --}}
 <section id="why" class="py-24 relative overflow-hidden" style="background:linear-gradient(160deg,#F7F9FC 0%,#FFFFFF 50%,#F3F7FB 100%);">
@@ -384,7 +403,7 @@ $svgIcons = [
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center mb-20">
 
             {{-- Left: heading block --}}
-            <div>
+            <div id="why-heading-block">
                 <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-5">Why VisionBridge</span>
                 <h2 class="font-display font-bold leading-tight mb-5" style="font-size:clamp(2.2rem,4vw,3.4rem);color:#111D33;">
                     Why Choose<br>
@@ -395,7 +414,7 @@ $svgIcons = [
             </div>
 
             {{-- Right: premium quote card --}}
-            <div class="relative">
+            <div id="why-quote-card" class="relative">
                 {{-- Giant decorative quote mark --}}
                 <div class="absolute pointer-events-none select-none" style="font-size:12rem;line-height:1;color:rgba(201,168,76,0.08);font-family:'Playfair Display',serif;font-weight:700;top:-36px;left:-16px;z-index:0;">"</div>
                 <div class="relative rounded-3xl" style="z-index:1;background:#FFFFFF;border:1px solid rgba(201,168,76,0.18);box-shadow:0 10px 52px rgba(17,29,51,0.07),0 2px 8px rgba(17,29,51,0.04);padding:36px 40px;">
@@ -411,7 +430,7 @@ $svgIcons = [
         </div>
 
         {{-- 4 premium feature cards --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div id="why-feature-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             @foreach([
                 ['icon'=>'lock',  'title'=>'Ownership First',     'desc'=>'You own everything — domain, content, hosting, data. Always.'],
                 ['icon'=>'mobile','title'=>'Mobile-First Design',  'desc'=>'Every site is built to perform beautifully on any device.'],
@@ -434,6 +453,7 @@ $svgIcons = [
 
     </div>
 </section>
+</div>{{-- /hscroll-outer --}}
 
 {{-- ============================================================
      MAINTENANCE PLANS SECTION
@@ -1056,12 +1076,86 @@ $svgIcons = [
             '.bg-white.rounded-xl, .bg-white.rounded-2xl, .rounded-2xl.border, .bg-gray-50.rounded-xl'
         ).forEach(el => {
             if (el.closest('.about-cards')) return; // about-cards use bespoke stagger above
+            if (el.closest('#hscroll-strip'))  return; // horizontal wipe section handles its own reveals
             gsap.fromTo(el,
                 { opacity:0, y:36 },
                 { opacity:1, y:0, duration:0.65, ease:'power2.out',
                   scrollTrigger: { trigger:el, start:'top 92%', toggleActions: TOGGLE } }
             );
         });
+
+        // ============================================================
+        //  HORIZONTAL WIPE — Services → Why VisionBridge
+        //
+        //  Architecture: #services is a normal full-height section so
+        //  the user scrolls all 10 cards naturally. #hscroll-outer
+        //  (right after services) clips #why via overflow:hidden.
+        //  On desktop: #why starts at translateX(100vw) off-screen.
+        //  When #hscroll-outer hits the viewport top, ScrollTrigger
+        //  pins it and scrubs #why from x:100vw → x:0 (slides in
+        //  from the right like a page turn). After the wipe, unpin
+        //  and normal scroll continues through the why content.
+        //  On mobile (< 1024px): no transform is applied; both
+        //  sections stack vertically as usual.
+        // ============================================================
+        function initHorizontalWipe() {
+            if (window.innerWidth < 1024) return;
+
+            const outer       = document.getElementById('hscroll-outer');
+            const why         = document.getElementById('why');
+            const progressBar = document.getElementById('hscroll-progress');
+            const hint        = document.getElementById('hscroll-hint');
+            if (!outer || !why) return;
+
+            const vw = () => window.innerWidth;
+
+            // Push #why off-screen to the right so it's invisible at rest
+            gsap.set(why, { x: vw(), willChange: 'transform' });
+
+            // Services cards staggered reveal (fires as user scrolls into services)
+            gsap.fromTo('#services .grid > div',
+                { opacity:0, y:40 },
+                { opacity:1, y:0, duration:0.60, stagger:0.07, ease:'power2.out',
+                  scrollTrigger: { trigger:'#services', start:'top 80%', toggleActions: TOGGLE } }
+            );
+
+            // Why section content reveals — staged entrance once wipe is 80% done
+            const whyRevealTl = gsap.timeline({ paused: true });
+            whyRevealTl
+                .fromTo('#why-heading-block',
+                    { opacity:0, x:-40 }, { opacity:1, x:0, duration:0.75, ease:'power3.out' })
+                .fromTo('#why-quote-card',
+                    { opacity:0, x:40 },  { opacity:1, x:0, duration:0.75, ease:'power3.out' }, '-=0.50')
+                .fromTo('#why-feature-cards > div',
+                    { opacity:0, y:36 }, { opacity:1, y:0, duration:0.60, stagger:0.11, ease:'back.out(1.4)' }, '-=0.30');
+
+            // Main wipe: scrub #why from x:100vw → x:0 while outer is pinned
+            gsap.to(why, {
+                x: 0,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: outer,
+                    pin: true,
+                    scrub: 1.2,
+                    start: 'top top',
+                    end: () => '+=' + vw(),
+                    invalidateOnRefresh: true,
+                    onRefresh() { gsap.set(why, { x: vw() }); },
+                    onUpdate(self) {
+                        if (progressBar) progressBar.style.width = (self.progress * 100) + '%';
+                        if (hint) hint.style.opacity = 1 - Math.min(self.progress * 6, 1);
+                        if (self.progress >= 0.80 && whyRevealTl.progress() === 0) {
+                            whyRevealTl.play();
+                        }
+                    },
+                    onLeaveBack() {
+                        whyRevealTl.pause(0);
+                        gsap.set(why, { x: vw() });
+                    },
+                }
+            });
+        }
+        initHorizontalWipe();
     }
 
     initGSAP();
