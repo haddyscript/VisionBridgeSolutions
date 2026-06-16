@@ -328,12 +328,13 @@ $svgIcons = [
 <section id="services" class="py-20" style="background: linear-gradient(180deg, #F8F9FA 0%, #EEF2F7 100%);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-14">
-            <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">What We Offer</span>
-            <h2 class="section-title">Our Services</h2>
-            <p class="section-subtitle">From initial design to long-term maintenance — we cover everything your online presence needs.</p>
+            <span id="services-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">What We Offer</span>
+            <h2 id="services-heading" class="section-title">Our Services</h2>
+            <div id="services-accent-line"></div>
+            <p id="services-subtitle" class="section-subtitle">From initial design to long-term maintenance — we cover everything your online presence needs.</p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div id="services-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach([
                 ['icon'=>'desktop', 'image'=>'image/Custom_Website_Development.jpeg',  'title'=>'Custom Website Development',       'desc'=>'Fully custom websites built to reflect your unique brand identity and business goals.'],
                 ['icon'=>'document','image'=>'image/Landing_Page_Development.jpeg',     'title'=>'Landing Page Development',          'desc'=>'High-converting landing pages designed to capture leads and drive specific actions.'],
@@ -346,12 +347,19 @@ $svgIcons = [
                 ['icon'=>'globe',   'image'=>'image/Hosting_Management.jpeg',           'title'=>'Hosting Management',            'desc'=>'We manage your hosting environment so you can focus on running your organization.'],
                 ['icon'=>'cursor',  'image'=>'image/Website_Consulting.jpeg',           'title'=>'Website Consulting',            'desc'=>'Strategic guidance on your website\'s direction, technology, and digital growth potential.'],
             ] as $service)
-            <div class="bg-white rounded-2xl border border-gray-100 hover:border-teal/30 hover:shadow-xl transition-all duration-300 group overflow-hidden flex flex-col">
+            <div class="services-card bg-white rounded-2xl border border-gray-100 group overflow-hidden flex flex-col relative">
                 @if(isset($service['image']))
-                <div class="w-full overflow-hidden" style="height:188px;flex-shrink:0;">
+                <div class="w-full overflow-hidden relative" style="height:188px;flex-shrink:0;">
                     <img src="{{ asset($service['image']) }}"
                          alt="{{ $service['title'] }}"
-                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                         class="w-full h-full object-cover transition-transform duration-600 group-hover:scale-108"
+                         style="transition-duration:600ms;">
+                    {{-- Gradient overlay + gold arrow on hover --}}
+                    <div class="svc-img-overlay">
+                        <div class="svc-arrow">
+                            <svg width="14" height="14" fill="none" stroke="#111D33" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                        </div>
+                    </div>
                 </div>
                 @endif
                 <div class="p-6 flex flex-col flex-1">
@@ -360,8 +368,8 @@ $svgIcons = [
                         <svg class="w-6 h-6 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$service['icon']] !!}</svg>
                     </div>
                     @endif
-                    <h4 class="font-bold text-navy text-base mb-2 group-hover:text-teal transition-colors">{{ $service['title'] }}</h4>
-                    <p class="text-gray-500 text-sm leading-relaxed">{{ $service['desc'] }}</p>
+                    <h4 class="svc-title font-bold text-navy text-base mb-2 transition-colors duration-200 group-hover:text-teal">{{ $service['title'] }}</h4>
+                    <p class="svc-desc text-gray-500 text-sm leading-relaxed">{{ $service['desc'] }}</p>
                 </div>
             </div>
             @endforeach
@@ -1081,6 +1089,64 @@ $svgIcons = [
         });
 
         // ============================================================
+        //  SERVICES — cinematic header + row-wave card reveal
+        // ============================================================
+
+        // ── Header: kicker sweeps from left, heading skews up, accent
+        //    line draws right, subtitle floats in ──
+        gsap.set(['#services-kicker','#services-heading','#services-accent-line','#services-subtitle'], { opacity:0 });
+        gsap.timeline({
+            scrollTrigger: { trigger:'#services', start:'top 78%', toggleActions: TOGGLE }
+        })
+        .fromTo('#services-kicker',
+            { opacity:0, x:-24, letterSpacing:'0.32em' },
+            { opacity:1, x:0,   letterSpacing:'0.16em', duration:0.65, ease:'power3.out' })
+        .fromTo('#services-heading',
+            { opacity:0, y:48, skewY:2 },
+            { opacity:1, y:0,  skewY:0, duration:0.85, ease:'power3.out' }, '-=0.30')
+        .fromTo('#services-accent-line',
+            { opacity:0, scaleX:0 },
+            { opacity:1, scaleX:1, duration:0.55, ease:'power2.out', transformOrigin:'left center' }, '-=0.40')
+        .fromTo('#services-subtitle',
+            { opacity:0, y:18 },
+            { opacity:1, y:0, duration:0.55, ease:'power2.out' }, '-=0.30');
+
+        // ── Cards: row-by-row wave (axis:'y') with spring scale ──
+        // gsap.set prevents the generic card-reveal system from animating
+        // these cards first (it's excluded via the #hscroll-strip guard, but
+        // we also set here so initial state is clean on all breakpoints).
+        gsap.set('.services-card', { opacity:0, y:52, scale:0.91 });
+        gsap.to('.services-card', {
+            opacity:1, y:0, scale:1,
+            duration:0.72,
+            ease: 'back.out(1.4)',
+            stagger: {
+                amount: 0.90,
+                grid:   [4, 3],   // 4 rows × 3 cols (matches lg:grid-cols-3)
+                axis:   'y',      // row-by-row cascade
+                from:   'start',
+            },
+            scrollTrigger: {
+                trigger: '#services-grid',
+                start:   'top 84%',
+                toggleActions: TOGGLE,
+            },
+        });
+
+        // ── Card interior cascade: title then desc fade in after card ──
+        document.querySelectorAll('.services-card').forEach((card, i) => {
+            const title = card.querySelector('.svc-title');
+            const desc  = card.querySelector('.svc-desc');
+            const delay = i * 0.07; // matches card stagger rhythm
+
+            gsap.timeline({
+                scrollTrigger: { trigger: card, start: 'top 90%', toggleActions: TOGGLE }
+            })
+            .fromTo(title, { opacity:0, y:12 }, { opacity:1, y:0, duration:0.42, ease:'power2.out', delay })
+            .fromTo(desc,  { opacity:0, y:8  }, { opacity:1, y:0, duration:0.38, ease:'power2.out' }, '-=0.18');
+        });
+
+        // ============================================================
         //  CORE VALUES — bi-directional stagger + icon spring hovers
         // ============================================================
 
@@ -1126,8 +1192,9 @@ $svgIcons = [
         document.querySelectorAll(
             '.bg-white.rounded-xl, .bg-white.rounded-2xl, .rounded-2xl.border, .bg-gray-50.rounded-xl'
         ).forEach(el => {
-            if (el.closest('.about-cards')) return; // about-cards use bespoke stagger above
-            if (el.closest('#hscroll-strip'))  return; // horizontal wipe section handles its own reveals
+            if (el.closest('.about-cards'))  return; // about-cards use bespoke stagger above
+            if (el.closest('#hscroll-strip')) return; // horizontal wipe section handles its own reveals
+            if (el.classList.contains('services-card')) return; // services uses row-wave stagger above
             gsap.fromTo(el,
                 { opacity:0, y:36 },
                 { opacity:1, y:0, duration:0.65, ease:'power2.out',
@@ -1167,12 +1234,7 @@ $svgIcons = [
             // Push #why off-screen to the right so it's invisible at rest
             gsap.set(why, { x: vw(), willChange: 'transform', zIndex: 1, position: 'relative' });
 
-            // Services cards staggered reveal
-            gsap.fromTo('#services .grid > div',
-                { opacity:0, y:40 },
-                { opacity:1, y:0, duration:0.60, stagger:0.07, ease:'power2.out',
-                  scrollTrigger: { trigger:'#services', start:'top 80%', toggleActions: TOGGLE } }
-            );
+            // Services section animations are handled in initGSAP (works on all breakpoints)
 
             // Why section content reveals — fire at 80% wipe progress
             const whyRevealTl = gsap.timeline({ paused: true });

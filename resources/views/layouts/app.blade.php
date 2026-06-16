@@ -576,6 +576,70 @@
             #hscroll-hint, #hscroll-progress { display: none; }
         }
 
+        /* ── Services section ── */
+        /* Gold accent line drawn by GSAP on scroll-in */
+        #services-accent-line {
+            height: 2px;
+            width: 56px;
+            margin: 16px auto 20px;
+            background: linear-gradient(90deg, #C9A84C, rgba(201,168,76,0.18));
+            border-radius: 2px;
+            transform-origin: left center;
+        }
+        /* Card base — spring hover lift */
+        .services-card {
+            transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1),
+                        box-shadow 0.32s ease,
+                        border-color 0.28s ease;
+            will-change: transform;
+        }
+        .services-card:hover {
+            transform: translateY(-9px);
+            box-shadow: 0 24px 60px rgba(17,29,51,0.10), 0 8px 20px rgba(17,29,51,0.06);
+            border-color: rgba(201,168,76,0.28) !important;
+        }
+        /* Gold top-line accent that draws in on hover */
+        .services-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #C9A84C, rgba(42,157,143,0.60));
+            border-radius: 2px 2px 0 0;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.36s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .services-card:hover::before { transform: scaleX(1); }
+        /* Image overlay: dark gradient + gold arrow appears on hover */
+        .svc-img-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(17,29,51,0.55) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 12px;
+        }
+        .services-card:hover .svc-img-overlay { opacity: 1; }
+        .svc-arrow {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: #C9A84C;
+            display: flex; align-items: center; justify-content: center;
+            transform: translate(8px, 8px) scale(0.7);
+            opacity: 0;
+            transition: transform 0.32s cubic-bezier(0.34,1.56,0.64,1),
+                        opacity 0.28s ease;
+            transition-delay: 0.06s;
+        }
+        .services-card:hover .svc-arrow {
+            transform: translate(0,0) scale(1);
+            opacity: 1;
+        }
+
         /* ── Nav scroll-spy active dot ── */
         #nav-active-dot {
             position: absolute;
