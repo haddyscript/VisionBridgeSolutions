@@ -840,48 +840,75 @@ $svgIcons = [
         }
 
         // ============================================================
-        //  ABOUT — header, mosaic, cards — all bi-directional
+        //  ABOUT — cinematic entrance sequence
         // ============================================================
 
-        // ── Section header: kicker + heading in a single timeline ──
+        // ── Section header: kicker sweeps from left, heading skews in ──
         gsap.timeline({
-            scrollTrigger: { trigger:'#about', start:'top 82%', toggleActions: TOGGLE }
+            scrollTrigger: { trigger:'#about', start:'top 80%', toggleActions: TOGGLE }
         })
-        .fromTo('#about-kicker',  { opacity:0, y:16 }, { opacity:1, y:0, duration:0.65, ease:'power3.out' })
-        .fromTo('#about-heading', { opacity:0, y:30 }, { opacity:1, y:0, duration:0.80, ease:'power3.out' }, '-=0.35');
+        .fromTo('#about-kicker',
+            { opacity:0, x:-28, letterSpacing:'0.35em' },
+            { opacity:1, x:0,   letterSpacing:'0.16em', duration:0.72, ease:'power3.out' })
+        .fromTo('#about-heading',
+            { opacity:0, y:44, skewY:2 },
+            { opacity:1, y:0,  skewY:0, duration:0.95, ease:'power3.out' }, '-=0.38')
+        .fromTo('#about .text-center p',
+            { opacity:0, y:18 },
+            { opacity:1, y:0, duration:0.60, ease:'power2.out' }, '-=0.42');
 
-        // ── Mosaic panels: staggered scale-reveal ──
+        // ── Mosaic panels: center-out ripple wave reveal ──
+        gsap.set('.mosaic-panel', { opacity:1 });
         gsap.fromTo('.mosaic-panel',
-            { opacity:0, scale:1.08 },
-            { opacity:1, scale:1, duration:0.90, stagger:{ amount:0.55, from:'start' }, ease:'power2.out',
-              scrollTrigger: { trigger:'#about-mosaic', start:'top 80%', toggleActions: TOGGLE } }
+            { opacity:0, scale:1.14, y:14 },
+            {
+                opacity:1, scale:1, y:0,
+                duration:0.88,
+                stagger:{ amount:0.65, from:'center', grid:[2,3] },
+                ease:'power2.out',
+                scrollTrigger: { trigger:'#about-mosaic', start:'top 80%', toggleActions: TOGGLE }
+            }
         );
 
-        // ── Mosaic caption ──
+        // ── Mosaic caption: slides up after panels settle ──
         gsap.fromTo('#about-mosaic-quote',
-            { opacity:0, y:20 },
-            { opacity:1, y:0, duration:0.70, ease:'power3.out',
-              scrollTrigger: { trigger:'#about-mosaic', start:'top 76%', toggleActions: TOGGLE } }
+            { opacity:0, y:26 },
+            { opacity:1, y:0, duration:0.75, ease:'power3.out',
+              scrollTrigger: { trigger:'#about-mosaic', start:'top 72%', toggleActions: TOGGLE } }
         );
 
-        // ── Mosaic parallax scrub (bi-directional by nature) ──
-        gsap.to('#about-mosaic-wrap', { y:-38, ease:'none', scrollTrigger: scrubST('#about', 2) });
+        // ── Mosaic parallax — deeper travel for more depth feel ──
+        gsap.to('#about-mosaic-wrap', { y:-60, ease:'none', scrollTrigger: scrubST('#about', 2) });
 
-        // ── Mission / Vision cards: stagger entrance ──
+        // ── Subtle perspective tilt on mosaic as you scroll through ──
+        gsap.fromTo('#about-mosaic',
+            { rotateY:2, transformPerspective:1400 },
+            { rotateY:-2, ease:'none', scrollTrigger: scrubST('#about', 2.5) }
+        );
+
+        // ── Cards: spring entrance — scale + lift with back.out ──
         gsap.fromTo('.about-card',
-            { opacity:0, y:46 },
-            { opacity:1, y:0, duration:0.80, stagger:0.18, ease:'power3.out',
-              scrollTrigger: { trigger:'.about-cards', start:'top 82%', toggleActions: TOGGLE } }
+            { opacity:0, y:60, scale:0.94 },
+            { opacity:1, y:0, scale:1, duration:0.88, stagger:0.24, ease:'back.out(1.5)',
+              scrollTrigger: { trigger:'.about-cards', start:'top 84%', toggleActions: TOGGLE } }
         );
 
-        // ── Card interior cascade: icon → title → body ──
+        // ── Card interior cascade: accent line draws → icon springs → text slides ──
         document.querySelectorAll('.about-card').forEach(card => {
-            gsap.fromTo(
-                card.querySelectorAll('.card-icon, .card-title, .card-body'),
-                { opacity:0, y:18 },
-                { opacity:1, y:0, duration:0.55, stagger:0.11, ease:'power2.out',
-                  scrollTrigger: { trigger:card, start:'top 85%', toggleActions: TOGGLE } }
-            );
+            const accentLine = card.querySelector('div:first-child');
+            const icon  = card.querySelector('.card-icon');
+            const title = card.querySelector('.card-title');
+            const body  = card.querySelector('.card-body');
+
+            const tl = gsap.timeline({
+                scrollTrigger: { trigger:card, start:'top 88%', toggleActions: TOGGLE }
+            });
+            if (accentLine) tl.fromTo(accentLine,
+                { scaleY:0, transformOrigin:'top center' },
+                { scaleY:1, duration:0.50, ease:'power3.out' });
+            if (icon)  tl.fromTo(icon,  { opacity:0, scale:0.60 }, { opacity:1, scale:1, duration:0.52, ease:'back.out(2)' }, '-=0.22');
+            if (title) tl.fromTo(title, { opacity:0, x:-18 },      { opacity:1, x:0,    duration:0.46, ease:'power2.out' },   '-=0.22');
+            if (body)  tl.fromTo(body,  { opacity:0, y:14 },       { opacity:1, y:0,    duration:0.50, ease:'power2.out' },   '-=0.28');
         });
 
         // ── 3D tilt + cursor-glow (hover; no ScrollTrigger) ──
@@ -891,17 +918,17 @@ $svgIcons = [
                 const cx = e.clientX - r.left - r.width  / 2;
                 const cy = e.clientY - r.top  - r.height / 2;
                 gsap.to(card, {
-                    rotateX: (-cy / r.height) * 7,
-                    rotateY: ( cx / r.width)  * 7,
+                    rotateX: (-cy / r.height) * 8,
+                    rotateY: ( cx / r.width)  * 8,
                     transformPerspective: 900,
-                    duration: 0.40, ease: 'power2.out',
+                    duration: 0.38, ease: 'power2.out',
                 });
                 card.style.setProperty('--mx', ((e.clientX - r.left) / r.width  * 100) + '%');
                 card.style.setProperty('--my', ((e.clientY - r.top)  / r.height * 100) + '%');
             }, { passive: true });
 
             card.addEventListener('mouseleave', () => {
-                gsap.to(card, { rotateX:0, rotateY:0, duration:0.65, ease:'power3.out' });
+                gsap.to(card, { rotateX:0, rotateY:0, duration:0.70, ease:'back.out(1.4)' });
             });
         });
 
