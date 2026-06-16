@@ -4,6 +4,32 @@
 
 @section('content')
 
+@php
+$svgIcons = [
+    'check'       => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>',
+    'star'        => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>',
+    'users'       => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>',
+    'shield'      => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>',
+    'sparkles'    => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>',
+    'swatch'      => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>',
+    'trending-up' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>',
+    'chat'        => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>',
+    'desktop'     => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>',
+    'document'    => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>',
+    'home'        => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>',
+    'book-open'   => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>',
+    'heart'       => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>',
+    'building'    => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>',
+    'refresh'     => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>',
+    'cog'         => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>',
+    'globe'       => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>',
+    'cursor'      => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>',
+    'lock'        => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>',
+    'mobile'      => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>',
+    'bolt'        => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>',
+];
+@endphp
+
 {{-- ============================================================
      HERO SECTION
      ============================================================ --}}
@@ -37,16 +63,20 @@
 
     {{-- Layer 3 — floating glassmorphism cards (desktop only) --}}
     <div class="float-card float-card-1 hidden lg:flex items-center gap-3">
-        <div class="w-9 h-9 rounded-full flex items-center justify-center text-lg shrink-0"
-             style="background:rgba(42,157,143,.25);">✅</div>
+        <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+             style="background:rgba(42,157,143,.25);">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        </div>
         <div>
             <p class="text-white text-xs font-semibold leading-none mb-0.5">Website Launched!</p>
             <p class="text-white/40 text-xs">Delivered on time</p>
         </div>
     </div>
     <div class="float-card float-card-2 hidden lg:flex items-center gap-3">
-        <div class="w-9 h-9 rounded-full flex items-center justify-center text-lg shrink-0"
-             style="background:rgba(201,168,76,.20);">⭐</div>
+        <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+             style="background:rgba(201,168,76,.20);">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+        </div>
         <div>
             <p class="text-white text-xs font-semibold leading-none mb-0.5">5-Star Support</p>
             <p class="text-white/40 text-xs">Always available</p>
@@ -253,15 +283,17 @@
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach([
-                ['icon'=>'🤝','title'=>'Client Ownership','desc'=>'Your website, your brand, your data — always. We ensure you retain full ownership of every digital asset we create for you.'],
-                ['icon'=>'🛡️','title'=>'Long-Term Stability','desc'=>'We don\'t just build and disappear. We provide ongoing support to keep your website secure, updated, and performing.'],
-                ['icon'=>'✝️','title'=>'Faith-Based Values','desc'=>'Rooted in integrity and service, we bring faith-based principles to every client relationship and project we undertake.'],
-                ['icon'=>'🎨','title'=>'Custom Solutions','desc'=>'No templates, no shortcuts. Every website is custom-designed to reflect your unique brand and mission.'],
-                ['icon'=>'📈','title'=>'Growth Focused','desc'=>'We design with your audience growth in mind — clear calls to action, strong messaging, and mobile-first delivery.'],
-                ['icon'=>'💬','title'=>'Professional Support','desc'=>'From first inquiry to launch and beyond, you\'ll always have a dedicated team ready to support your online presence.'],
+                ['icon'=>'users','title'=>'Client Ownership','desc'=>'Your website, your brand, your data — always. We ensure you retain full ownership of every digital asset we create for you.'],
+                ['icon'=>'shield','title'=>'Long-Term Stability','desc'=>'We don\'t just build and disappear. We provide ongoing support to keep your website secure, updated, and performing.'],
+                ['icon'=>'sparkles','title'=>'Faith-Based Values','desc'=>'Rooted in integrity and service, we bring faith-based principles to every client relationship and project we undertake.'],
+                ['icon'=>'swatch','title'=>'Custom Solutions','desc'=>'No templates, no shortcuts. Every website is custom-designed to reflect your unique brand and mission.'],
+                ['icon'=>'trending-up','title'=>'Growth Focused','desc'=>'We design with your audience growth in mind — clear calls to action, strong messaging, and mobile-first delivery.'],
+                ['icon'=>'chat','title'=>'Professional Support','desc'=>'From first inquiry to launch and beyond, you\'ll always have a dedicated team ready to support your online presence.'],
             ] as $value)
             <div class="bg-gray-50 rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                <div class="text-3xl mb-3">{{ $value['icon'] }}</div>
+                <div class="w-12 h-12 bg-navy/10 rounded-xl flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$value['icon']] !!}</svg>
+                </div>
                 <h4 class="font-bold text-navy text-lg mb-2">{{ $value['title'] }}</h4>
                 <p class="text-gray-500 text-sm leading-relaxed">{{ $value['desc'] }}</p>
             </div>
@@ -283,19 +315,21 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach([
-                ['icon'=>'💻','title'=>'Custom Website Development','desc'=>'Fully custom websites built to reflect your unique brand identity and business goals.'],
-                ['icon'=>'📄','title'=>'Landing Page Development','desc'=>'High-converting landing pages designed to capture leads and drive specific actions.'],
-                ['icon'=>'⛪','title'=>'Church Website Development','desc'=>'Professional church websites that connect congregations and communicate your ministry\'s heart.'],
-                ['icon'=>'🙏','title'=>'Ministry Website Development','desc'=>'Websites crafted to expand the reach of ministries and share your message with the world.'],
-                ['icon'=>'❤️','title'=>'Nonprofit Website Development','desc'=>'Compelling nonprofit websites that tell your story and inspire support for your cause.'],
-                ['icon'=>'🏢','title'=>'Small Business Website Development','desc'=>'Affordable, professional websites that help small businesses compete and grow online.'],
-                ['icon'=>'🔄','title'=>'Website Redesign Services','desc'=>'Breathe new life into an outdated website with a modern, performance-focused redesign.'],
-                ['icon'=>'🔧','title'=>'Website Maintenance Services','desc'=>'Regular updates, monitoring, and care to keep your website running at peak performance.'],
-                ['icon'=>'🌐','title'=>'Hosting Management','desc'=>'We manage your hosting environment so you can focus on running your organization.'],
-                ['icon'=>'🎯','title'=>'Website Consulting','desc'=>'Strategic guidance on your website\'s direction, technology, and digital growth potential.'],
+                ['icon'=>'desktop','title'=>'Custom Website Development','desc'=>'Fully custom websites built to reflect your unique brand identity and business goals.'],
+                ['icon'=>'document','title'=>'Landing Page Development','desc'=>'High-converting landing pages designed to capture leads and drive specific actions.'],
+                ['icon'=>'home','title'=>'Church Website Development','desc'=>'Professional church websites that connect congregations and communicate your ministry\'s heart.'],
+                ['icon'=>'book-open','title'=>'Ministry Website Development','desc'=>'Websites crafted to expand the reach of ministries and share your message with the world.'],
+                ['icon'=>'heart','title'=>'Nonprofit Website Development','desc'=>'Compelling nonprofit websites that tell your story and inspire support for your cause.'],
+                ['icon'=>'building','title'=>'Small Business Website Development','desc'=>'Affordable, professional websites that help small businesses compete and grow online.'],
+                ['icon'=>'refresh','title'=>'Website Redesign Services','desc'=>'Breathe new life into an outdated website with a modern, performance-focused redesign.'],
+                ['icon'=>'cog','title'=>'Website Maintenance Services','desc'=>'Regular updates, monitoring, and care to keep your website running at peak performance.'],
+                ['icon'=>'globe','title'=>'Hosting Management','desc'=>'We manage your hosting environment so you can focus on running your organization.'],
+                ['icon'=>'cursor','title'=>'Website Consulting','desc'=>'Strategic guidance on your website\'s direction, technology, and digital growth potential.'],
             ] as $service)
             <div class="bg-white rounded-xl p-6 border border-gray-100 hover:border-teal/30 hover:shadow-lg transition-all duration-200 group">
-                <div class="text-3xl mb-4">{{ $service['icon'] }}</div>
+                <div class="w-12 h-12 bg-teal/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-teal/20 transition-colors">
+                    <svg class="w-6 h-6 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$service['icon']] !!}</svg>
+                </div>
                 <h4 class="font-bold text-navy text-base mb-2 group-hover:text-teal transition-colors">{{ $service['title'] }}</h4>
                 <p class="text-gray-500 text-sm leading-relaxed">{{ $service['desc'] }}</p>
             </div>
@@ -326,13 +360,15 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             @foreach([
-                ['icon'=>'🔒','title'=>'Ownership First','desc'=>'You own everything — domain, content, hosting, data. Always.'],
-                ['icon'=>'📱','title'=>'Mobile-First Design','desc'=>'Every site is built to perform beautifully on any device.'],
-                ['icon'=>'🤝','title'=>'Partnership Approach','desc'=>'We work with you, not just for you, through every stage.'],
-                ['icon'=>'⚡','title'=>'Fast & Reliable','desc'=>'Optimized for speed, uptime, and a seamless user experience.'],
+                ['icon'=>'lock','title'=>'Ownership First','desc'=>'You own everything — domain, content, hosting, data. Always.'],
+                ['icon'=>'mobile','title'=>'Mobile-First Design','desc'=>'Every site is built to perform beautifully on any device.'],
+                ['icon'=>'users','title'=>'Partnership Approach','desc'=>'We work with you, not just for you, through every stage.'],
+                ['icon'=>'bolt','title'=>'Fast & Reliable','desc'=>'Optimized for speed, uptime, and a seamless user experience.'],
             ] as $point)
             <div class="text-center p-6">
-                <div class="text-4xl mb-4">{{ $point['icon'] }}</div>
+                <div class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+                    <svg class="w-7 h-7 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$point['icon']] !!}</svg>
+                </div>
                 <h4 class="font-bold text-gold text-lg mb-2">{{ $point['title'] }}</h4>
                 <p class="text-white/60 text-sm leading-relaxed">{{ $point['desc'] }}</p>
             </div>
@@ -442,14 +478,16 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             @foreach([
-                ['title'=>'Johnny Davis Global Missions','category'=>'Ministry','color'=>'from-navy to-teal','icon'=>'🌍'],
-                ['title'=>'Johnny Davis Ministries','category'=>'Ministry','color'=>'from-navy-dark to-navy','icon'=>'✝️'],
-                ['title'=>'Mercy City Eleven 22 Church','category'=>'Church','color'=>'from-teal to-teal-dark','icon'=>'⛪'],
-                ['title'=>'Future VisionBridge Projects','category'=>'Coming Soon','color'=>'from-gold-dark to-gold','icon'=>'✨'],
+                ['title'=>'Johnny Davis Global Missions','category'=>'Ministry','color'=>'from-navy to-teal','icon'=>'globe'],
+                ['title'=>'Johnny Davis Ministries','category'=>'Ministry','color'=>'from-navy-dark to-navy','icon'=>'book-open'],
+                ['title'=>'Mercy City Eleven 22 Church','category'=>'Church','color'=>'from-teal to-teal-dark','icon'=>'home'],
+                ['title'=>'Future VisionBridge Projects','category'=>'Coming Soon','color'=>'from-gold-dark to-gold','icon'=>'sparkles'],
             ] as $project)
             <div class="group rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer">
                 <div class="h-48 bg-gradient-to-br {{ $project['color'] }} flex items-center justify-center relative">
-                    <div class="text-5xl">{{ $project['icon'] }}</div>
+                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
+                    </div>
                     <div class="absolute inset-0 bg-navy/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <span class="text-white font-semibold text-sm bg-white/20 px-4 py-2 rounded-full">View Project</span>
                     </div>
