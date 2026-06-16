@@ -264,6 +264,78 @@
             30%      { opacity: 1; }
             58%, 100%{ left: 155%; opacity: 0; }
         }
+
+        /* ─── Footer: unpeel / reveal ─── */
+        #page-wrapper {
+            position: relative;
+            z-index: 2;
+            /* No background set here — each page section carries its own solid bg.
+               The transparent #footer-spacer at the bottom lets the fixed footer show through. */
+        }
+        #site-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1;
+            will-change: transform;
+            overflow: visible;
+        }
+
+        /* ─── Footer: flowing SVG wave ─── */
+        .footer-wave-top {
+            position: relative;
+            height: 72px;
+            overflow: hidden;
+            margin-bottom: -2px; /* seal gap to footer bg */
+            pointer-events: none;
+        }
+        .footer-wave-svg {
+            width: 300%;
+            height: 100%;
+            display: block;
+            position: relative;
+            will-change: transform;
+        }
+        .footer-wave-svg .wave-teal {
+            animation: wave-glide-teal 18s linear infinite;
+        }
+        .footer-wave-svg .wave-main {
+            animation: wave-glide-main 12s linear infinite;
+        }
+        @keyframes wave-glide-main {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-33.333%); }
+        }
+        @keyframes wave-glide-teal {
+            0%   { transform: translateX(-8%); }
+            100% { transform: translateX(-41.333%); }
+        }
+
+        /* ─── Footer: link hover underline ─── */
+        .footer-link {
+            position: relative;
+            display: inline-block;
+        }
+        .footer-link-bar {
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: #C9A84C;
+            transform: scaleX(0);
+            transform-origin: center;
+            will-change: transform;
+        }
+
+        /* ─── Footer: column entrance (GSAP sets from) ─── */
+        .footer-col {
+            will-change: transform, opacity;
+        }
+        .footer-bottom-bar {
+            will-change: opacity;
+        }
     </style>
 </head>
 <body class="font-sans antialiased text-gray-800 bg-white">
@@ -326,15 +398,54 @@
     </nav>
 
     <!-- Page Content -->
-    @yield('content')
+    <div id="page-wrapper">
+        @yield('content')
+        {{-- Spacer so fixed footer doesn't overlap last section content.
+             Height is set dynamically by footer-reveal.js once footer renders. --}}
+        <div id="footer-spacer"></div>
+    </div>
 
-    <!-- Footer -->
-    <footer class="bg-navy-dark text-white pt-16 pb-8" style="background-color:#111D33">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- ═══════════════════════════════════════════════════════
+         FOOTER — fixed behind page content (unpeel reveal)
+         ═══════════════════════════════════════════════════════ -->
+    <footer id="site-footer" class="text-white" style="background-color:#111D33;">
+
+        {{-- ── Flowing organic wave top border ── --}}
+        <div class="footer-wave-top" aria-hidden="true">
+            {{--
+                The SVG is 300% wide (3× tiled wave cycle).
+                The CSS translateX animations shift each layer by -33.333%
+                for a seamless, infinite horizontal glide.
+            --}}
+            <svg class="footer-wave-svg" viewBox="0 0 4320 72"
+                 preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                {{-- Teal ambient glow layer (behind) --}}
+                <path class="wave-teal"
+                    fill="rgba(42,157,143,0.22)"
+                    d="M0,42
+                       C180,14 360,66 540,42 C720,14 900,66 1080,42 C1260,14 1380,56 1440,42
+                       C1620,14 1800,66 1980,42 C2160,14 2340,66 2520,42 C2700,14 2820,56 2880,42
+                       C3060,14 3240,66 3420,42 C3600,14 3780,66 3960,42 C4140,14 4260,56 4320,42
+                       L4320,72 L0,72 Z"/>
+                {{-- Main footer-color wave (front, fills footer bg upward) --}}
+                <path class="wave-main"
+                    fill="#111D33"
+                    d="M0,36
+                       C200,8  400,60 600,32 C800,5  1000,58 1200,32 C1340,14 1400,46 1440,36
+                       C1640,8  1840,60 2040,32 C2240,5  2440,58 2640,32 C2780,14 2840,46 2880,36
+                       C3080,8  3280,60 3480,32 C3680,5  3880,58 4080,32 C4220,14 4280,46 4320,36
+                       L4320,72 L0,72 Z"/>
+            </svg>
+        </div>
+
+        {{-- ── Main columns ── --}}
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
-                <div>
+
+                {{-- Column 1: Brand --}}
+                <div id="footer-col-1" class="footer-col">
                     <div class="flex items-center gap-2 mb-4">
-                        <div class="w-8 h-8 bg-gold rounded-md flex items-center justify-center">
+                        <div class="w-8 h-8 bg-gold rounded-md flex items-center justify-center shrink-0">
                             <svg class="w-5 h-5 text-navy" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10 2L2 7v11h5v-6h6v6h5V7L10 2z"/>
                             </svg>
@@ -343,35 +454,49 @@
                     </div>
                     <p class="text-white/60 text-sm leading-relaxed">Building Websites. Expanding Reach.<br>Helping organizations establish a professional online presence.</p>
                 </div>
-                <div>
+
+                {{-- Column 2: Quick Links --}}
+                <div id="footer-col-2" class="footer-col">
                     <h4 class="font-semibold text-gold mb-4">Quick Links</h4>
-                    <ul class="space-y-2 text-sm text-white/60">
-                        <li><a href="#about" class="hover:text-gold transition-colors">About Us</a></li>
-                        <li><a href="#services" class="hover:text-gold transition-colors">Services</a></li>
-                        <li><a href="#plans" class="hover:text-gold transition-colors">Maintenance Plans</a></li>
-                        <li><a href="#portfolio" class="hover:text-gold transition-colors">Portfolio</a></li>
-                        <li><a href="#contact" class="hover:text-gold transition-colors">Contact</a></li>
+                    <ul class="space-y-3 text-sm text-white/60">
+                        <li><a href="#about"     class="footer-link hover:text-gold">About Us<span class="footer-link-bar"></span></a></li>
+                        <li><a href="#services"  class="footer-link hover:text-gold">Services<span class="footer-link-bar"></span></a></li>
+                        <li><a href="#plans"     class="footer-link hover:text-gold">Maintenance Plans<span class="footer-link-bar"></span></a></li>
+                        <li><a href="#portfolio" class="footer-link hover:text-gold">Portfolio<span class="footer-link-bar"></span></a></li>
+                        <li><a href="#contact"   class="footer-link hover:text-gold">Contact<span class="footer-link-bar"></span></a></li>
                     </ul>
                 </div>
-                <div>
+
+                {{-- Column 3: Contact --}}
+                <div id="footer-col-3" class="footer-col">
                     <h4 class="font-semibold text-gold mb-4">Contact</h4>
-                    <ul class="space-y-2 text-sm text-white/60">
+                    <ul class="space-y-3 text-sm text-white/60">
                         <li class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-teal shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                            info@visionbridgesolutions.com
+                            <svg class="w-4 h-4 text-teal shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            <a href="mailto:info@visionbridgesolutions.com" class="footer-link hover:text-gold">
+                                info@visionbridgesolutions.com<span class="footer-link-bar"></span>
+                            </a>
                         </li>
                         <li class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-teal shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                            (555) 000-0000
+                            <svg class="w-4 h-4 text-teal shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                            </svg>
+                            <a href="tel:5550000000" class="footer-link hover:text-gold">
+                                (555) 000-0000<span class="footer-link-bar"></span>
+                            </a>
                         </li>
                     </ul>
                 </div>
             </div>
-            <div class="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/40">
+
+            {{-- Bottom bar --}}
+            <div id="footer-bottom" class="footer-bottom-bar border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/40">
                 <p>&copy; {{ date('Y') }} VisionBridge Solutions. All rights reserved.</p>
                 <div class="flex gap-6">
-                    <a href="#" class="hover:text-gold transition-colors">Privacy Policy</a>
-                    <a href="#" class="hover:text-gold transition-colors">Terms of Service</a>
+                    <a href="#" class="footer-link hover:text-gold">Privacy Policy<span class="footer-link-bar"></span></a>
+                    <a href="#" class="footer-link hover:text-gold">Terms of Service<span class="footer-link-bar"></span></a>
                 </div>
             </div>
         </div>
@@ -479,6 +604,82 @@
         <!-- GSAP + ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+
+    <!-- ═══════════════════════════════════════════════════════
+         FOOTER ANIMATION — unpeel spacer + stagger entrance
+         + GSAP underline micro-hovers on all footer links
+         ═══════════════════════════════════════════════════════ -->
+    <script defer>
+    (function () {
+        function initFooter() {
+            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+                setTimeout(initFooter, 80); return;
+            }
+
+            const footer  = document.getElementById('site-footer');
+            const spacer  = document.getElementById('footer-spacer');
+            const cols    = ['footer-col-1', 'footer-col-2', 'footer-col-3'].map(id => document.getElementById(id));
+            const bottom  = document.getElementById('footer-bottom');
+
+            // ── 1. Spacer: keep bottom of page-wrapper = footer height ──
+            function syncSpacer() {
+                if (footer && spacer) {
+                    // Include the wave overhang so content fully clears footer
+                    spacer.style.height = footer.offsetHeight + 'px';
+                    ScrollTrigger.refresh();
+                }
+            }
+            syncSpacer();
+            window.addEventListener('resize', syncSpacer, { passive: true });
+
+            // ── 2. Staggered column entrance (trigger on spacer entering viewport) ──
+            if (spacer && cols.every(Boolean) && bottom) {
+                // Set initial hidden state in JS (keeps CSS clean of layout-affecting props)
+                gsap.set(cols,   { opacity: 0, y: 38 });
+                gsap.set(bottom, { opacity: 0 });
+
+                ScrollTrigger.create({
+                    trigger: spacer,
+                    start:   'top 88%',
+                    once:    true,
+                    onEnter: () => {
+                        gsap.timeline({ defaults: { ease: 'power3.out' } })
+                            .to(cols, {
+                                opacity:  1,
+                                y:        0,
+                                duration: 0.80,
+                                stagger:  0.16,
+                            })
+                            .to(bottom, {
+                                opacity:  1,
+                                duration: 0.55,
+                            }, '-=0.20');
+                    },
+                });
+            }
+
+            // ── 3. GSAP underline micro-hovers (center-outward draw) ──
+            document.querySelectorAll('.footer-link').forEach(link => {
+                const bar = link.querySelector('.footer-link-bar');
+                if (!bar) return;
+
+                link.addEventListener('mouseenter', () => {
+                    gsap.killTweensOf([link, bar]);
+                    // Slight horizontal nudge on the text + underline draws in
+                    gsap.to(link, { x: 5, duration: 0.30, ease: 'power3.out' });
+                    gsap.to(bar,  { scaleX: 1, duration: 0.34, ease: 'power3.out' });
+                });
+
+                link.addEventListener('mouseleave', () => {
+                    gsap.killTweensOf([link, bar]);
+                    gsap.to(link, { x: 0, duration: 0.45, ease: 'power3.out' });
+                    gsap.to(bar,  { scaleX: 0, duration: 0.28, ease: 'power2.in' });
+                });
+            });
+        }
+        initFooter();
+    })();
+    </script>
 
     @yield('scripts')
 
