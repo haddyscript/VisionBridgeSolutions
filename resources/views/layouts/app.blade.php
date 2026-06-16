@@ -576,6 +576,123 @@
             #hscroll-hint, #hscroll-progress { display: none; }
         }
 
+        /* ── Portfolio section ── */
+        .portfolio-card {
+            border-radius: 18px;
+            overflow: hidden;
+            background: #FFFFFF;
+            border: 1px solid rgba(17,29,51,0.07);
+            box-shadow: 0 4px 20px rgba(17,29,51,0.06), 0 1px 4px rgba(17,29,51,0.04);
+            transition: transform 0.40s cubic-bezier(0.34,1.56,0.64,1),
+                        box-shadow 0.34s ease,
+                        border-color 0.28s ease;
+            will-change: transform;
+            transform-style: preserve-3d;
+        }
+        .portfolio-card:hover {
+            transform: translateY(-12px) scale(1.01);
+            box-shadow: 0 32px 70px rgba(17,29,51,0.12), 0 10px 24px rgba(17,29,51,0.07);
+            border-color: rgba(201,168,76,0.30);
+        }
+        /* Browser chrome bar */
+        .pf-chrome {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 10px;
+            height: 30px;
+            background: rgba(17,29,51,0.88);
+            backdrop-filter: blur(8px);
+            flex-shrink: 0;
+        }
+        .pf-dots { display:flex; align-items:center; gap:4px; flex-shrink:0; }
+        .pf-dots span { width:7px; height:7px; border-radius:50%; display:block; }
+        .pf-urlbar {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            height: 16px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 4px;
+            padding: 0 7px;
+            font-size: 0.58rem;
+            color: rgba(255,255,255,0.50);
+            font-family: 'Inter', monospace;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .pf-live-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #28C840;
+            flex-shrink: 0;
+            box-shadow: 0 0 5px rgba(40,200,64,0.70);
+            animation: pf-pulse 2s ease-out infinite;
+        }
+        @keyframes pf-pulse {
+            0%,100% { box-shadow: 0 0 4px rgba(40,200,64,0.70); }
+            50%      { box-shadow: 0 0 10px rgba(40,200,64,0.90); }
+        }
+        /* "Visit Live Site" CTA button inside hover overlay */
+        .pf-cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #111D33;
+            background: #C9A84C;
+            padding: 9px 20px;
+            border-radius: 30px;
+            letter-spacing: 0.02em;
+            transform: translateY(10px) scale(0.92);
+            opacity: 0;
+            transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1),
+                        opacity 0.28s ease;
+            transition-delay: 0.05s;
+        }
+        .portfolio-card:hover .pf-cta-btn {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        /* Card footer */
+        .pf-footer {
+            padding: 16px 18px 18px;
+            background: #FFFFFF;
+        }
+        .pf-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #111D33;
+            line-height: 1.35;
+            transition: color 0.22s ease;
+        }
+        .portfolio-card:hover .pf-title { color: #2A9D8F; }
+        /* Live badge in footer */
+        .pf-live-badge {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #28C840;
+            box-shadow: 0 0 5px rgba(40,200,64,0.65);
+            animation: pf-pulse 2s ease-out infinite;
+        }
+        /* Coming soon shimmer sweep */
+        .pf-shimmer-sweep {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg,
+                transparent 30%,
+                rgba(255,255,255,0.18) 50%,
+                transparent 70%);
+            background-size: 200% 100%;
+            animation: pf-shimmer 2.8s linear infinite;
+        }
+        @keyframes pf-shimmer {
+            0%   { background-position: 200% center; }
+            100% { background-position: -200% center; }
+        }
+
         /* ── Services section ── */
         /* Gold accent line drawn by GSAP on scroll-in */
         #services-accent-line {

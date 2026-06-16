@@ -605,66 +605,119 @@ $svgIcons = [
 {{-- ============================================================
      PORTFOLIO SECTION
      ============================================================ --}}
-<section id="portfolio" class="py-20 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-14">
-            <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Our Work</span>
-            <h2 class="section-title">Featured Projects</h2>
-            <p class="section-subtitle">A selection of websites we've built for ministries, churches, and organizations.</p>
+<section id="portfolio" class="py-24 relative overflow-hidden" style="background:linear-gradient(160deg,#F4F7FC 0%,#FFFFFF 50%,#F0F5FB 100%);">
+    {{-- Ambient orbs --}}
+    <div class="hero-orb" style="width:580px;height:580px;top:-160px;left:-140px;background:radial-gradient(circle,rgba(42,157,143,0.07) 0%,transparent 70%);filter:blur(70px);animation:orb-drift 20s ease-in-out infinite;"></div>
+    <div class="hero-orb" style="width:480px;height:480px;bottom:-120px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,0.08) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 16s ease-in-out infinite reverse 4s;"></div>
+    <div class="absolute inset-0 pointer-events-none" style="opacity:0.20;background-image:radial-gradient(circle,rgba(17,29,51,0.045) 1px,transparent 1px);background-size:28px 28px;"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
+
+        {{-- Section header --}}
+        <div class="text-center mb-16">
+            <span id="portfolio-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Our Work</span>
+            <h2 id="portfolio-heading" class="section-title">Featured Projects</h2>
+            <div id="portfolio-accent-line" style="width:56px;height:2px;background:linear-gradient(90deg,#C9A84C,rgba(201,168,76,0.18));border-radius:2px;margin:16px auto 20px;transform-origin:left center;"></div>
+            <p id="portfolio-subtitle" class="section-subtitle">A selection of websites we've built for ministries, churches, and organizations.</p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {{-- Cards grid --}}
+        <div id="portfolio-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
             @foreach([
-                ['title'=>'Johnny Davis Global Missions','category'=>'Ministry',   'color'=>'from-navy to-teal',     'icon'=>'globe',    'image'=>'image/johnnydavisglobalmission.png','url'=>'https://johnnydavisglobalmissions.org/'],
-                ['title'=>'Johnny Davis Ministries',     'category'=>'Ministry',   'color'=>'from-navy-dark to-navy','icon'=>'book-open','image'=>'image/johnnydavisministries.png',   'url'=>'https://johnnydavisministries.org/'],
-                ['title'=>'Mercy City Eleven 22 Church', 'category'=>'Church',     'color'=>'from-teal to-teal-dark','icon'=>'home'],
-                ['title'=>'Future VisionBridge Projects','category'=>'Coming Soon','color'=>'from-gold-dark to-gold','icon'=>'sparkles'],
+                ['num'=>'01','title'=>'Johnny Davis Global Missions','category'=>'Ministry',   'domain'=>'johnnydavisglobalmissions.org','color'=>'from-navy to-teal',     'icon'=>'globe',    'image'=>'image/johnnydavisglobalmission.png','url'=>'https://johnnydavisglobalmissions.org/','live'=>true],
+                ['num'=>'02','title'=>'Johnny Davis Ministries',     'category'=>'Ministry',   'domain'=>'johnnydavisministries.org',    'color'=>'from-navy-dark to-navy','icon'=>'book-open','image'=>'image/johnnydavisministries.png',   'url'=>'https://johnnydavisministries.org/',   'live'=>true],
+                ['num'=>'03','title'=>'Mercy City Eleven 22 Church', 'category'=>'Church',     'domain'=>'mercycityeleven22.org',         'color'=>'from-teal to-teal-dark','icon'=>'home'],
+                ['num'=>'04','title'=>'Future VisionBridge Projects','category'=>'Coming Soon','domain'=>'visionbridgesolutions.com',     'color'=>'from-gold-dark to-gold','icon'=>'sparkles'],
             ] as $project)
-            @php $hasLink = !empty($project['url']); @endphp
-            @if($hasLink)
-            <a href="{{ $project['url'] }}" target="_blank" rel="noopener"
-               class="group rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 block" style="text-decoration:none;">
-            @else
-            <div class="group rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-default">
-            @endif
+            @php $hasLink = !empty($project['url']); $isLive = !empty($project['live']); @endphp
 
-                {{-- Thumbnail or gradient fallback --}}
-                <div class="relative overflow-hidden" style="height:192px;">
+            @if($hasLink)
+            <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="portfolio-card group block" style="text-decoration:none;">
+            @else
+            <div class="portfolio-card group">
+            @endif
+                {{-- Browser chrome mockup --}}
+                <div class="pf-chrome">
+                    <div class="pf-dots">
+                        <span style="background:#FF5F57;"></span>
+                        <span style="background:#FFBD2E;"></span>
+                        <span style="background:#28C840;"></span>
+                    </div>
+                    <div class="pf-urlbar">
+                        <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.45)" stroke-width="2.5" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        <span>{{ $project['domain'] }}</span>
+                    </div>
+                    @if($isLive)
+                    <div class="pf-live-dot" title="Live site"></div>
+                    @endif
+                </div>
+
+                {{-- Image / gradient area --}}
+                <div class="relative overflow-hidden" style="height:210px;">
                     @if(!empty($project['image']))
-                    <img src="{{ asset($project['image']) }}"
-                         alt="{{ $project['title'] }}"
-                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    <img src="{{ asset($project['image']) }}" alt="{{ $project['title'] }}"
+                         class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-110">
+                    @elseif($project['num'] === '03')
+                    {{-- Church: geometric mesh pattern --}}
+                    <div class="h-full flex items-center justify-center relative" style="background:linear-gradient(135deg,#1E7268 0%,#2A9D8F 60%,#3DBFB0 100%);">
+                        <div class="absolute inset-0" style="background-image:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(255,255,255,0.05) 28px,rgba(255,255,255,0.05) 29px),repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(255,255,255,0.05) 28px,rgba(255,255,255,0.05) 29px);"></div>
+                        <div class="w-20 h-20 rounded-2xl flex items-center justify-center" style="background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.25);">
+                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
+                        </div>
+                    </div>
                     @else
-                    <div class="h-full bg-gradient-to-br {{ $project['color'] }} flex items-center justify-center">
-                        <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
+                    {{-- Coming soon: animated gold shimmer --}}
+                    <div class="h-full relative overflow-hidden flex items-center justify-center" style="background:linear-gradient(135deg,#A8872E 0%,#C9A84C 50%,#DFC06A 100%);">
+                        <div class="pf-shimmer-sweep"></div>
+                        <div class="absolute inset-0" style="background-image:radial-gradient(circle at 30% 50%, rgba(255,255,255,0.12) 0%, transparent 50%);"></div>
+                        <div class="relative z-10 text-center">
+                            <div class="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-3" style="background:rgba(17,29,51,0.18);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.20);">
+                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
+                            </div>
+                            <span style="font-size:0.65rem;font-weight:700;letter-spacing:0.20em;text-transform:uppercase;color:rgba(17,29,51,0.55);">Coming Soon</span>
                         </div>
                     </div>
                     @endif
-                    {{-- Hover overlay --}}
-                    <div class="absolute inset-0 bg-navy/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+
+                    {{-- Hover overlay with CTA --}}
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-350 flex flex-col items-center justify-center gap-3"
+                         style="background:linear-gradient(to top,rgba(17,29,51,0.78) 0%,rgba(17,29,51,0.35) 100%);backdrop-filter:blur(2px);">
                         @if($hasLink)
-                        <span class="text-white font-semibold text-sm bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30 flex items-center gap-2">
-                            Visit Site
+                        <span class="pf-cta-btn">
+                            Visit Live Site
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                         </span>
                         @else
-                        <span class="text-white font-semibold text-sm bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">View Project</span>
+                        <span class="pf-cta-btn" style="cursor:default;">
+                            {{ $project['num'] === '04' ? 'Stay Tuned' : 'More Details' }}
+                        </span>
                         @endif
+                    </div>
+
+                    {{-- Category badge (top-left corner of image) --}}
+                    <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-white font-semibold" style="font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;background:rgba(17,29,51,0.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.18);">
+                        {{ $project['category'] }}
                     </div>
                 </div>
 
                 {{-- Card footer --}}
-                <div class="bg-white p-5 flex items-start justify-between gap-3">
-                    <div>
-                        <span class="text-teal text-xs font-semibold tracking-widest uppercase">{{ $project['category'] }}</span>
-                        <h4 class="font-bold text-navy mt-1 text-base leading-snug group-hover:text-teal transition-colors duration-200">{{ $project['title'] }}</h4>
+                <div class="pf-footer">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.18em;color:rgba(201,168,76,0.70);margin-bottom:4px;">{{ $project['num'] }}</div>
+                            <h4 class="pf-title">{{ $project['title'] }}</h4>
+                        </div>
+                        @if($isLive)
+                        <div class="shrink-0 flex items-center gap-1.5 mt-1">
+                            <div class="pf-live-badge"></div>
+                            <span style="font-size:0.60rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(42,157,143,0.80);">Live</span>
+                        </div>
+                        @elseif($project['num'] === '04')
+                        <div class="shrink-0 mt-1">
+                            <span style="font-size:0.60rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(201,168,76,0.65);">Soon</span>
+                        </div>
+                        @endif
                     </div>
-                    @if($hasLink)
-                    <div class="shrink-0 w-8 h-8 rounded-full border border-teal/25 flex items-center justify-center mt-1 group-hover:bg-teal group-hover:border-teal transition-all duration-200">
-                        <svg class="w-3.5 h-3.5 text-teal group-hover:text-white transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                    </div>
-                    @endif
                 </div>
 
             @if($hasLink)
@@ -1185,6 +1238,60 @@ $svgIcons = [
         });
 
         // ============================================================
+        //  PORTFOLIO — cinematic header + dealt-card entrance + 3D tilt
+        // ============================================================
+
+        // Header timeline
+        gsap.set(['#portfolio-kicker','#portfolio-heading','#portfolio-accent-line','#portfolio-subtitle'], { opacity:0 });
+        gsap.timeline({
+            scrollTrigger: { trigger:'#portfolio', start:'top 78%', toggleActions: TOGGLE }
+        })
+        .fromTo('#portfolio-kicker',
+            { opacity:0, x:-22, letterSpacing:'0.32em' },
+            { opacity:1, x:0,   letterSpacing:'0.16em', duration:0.60, ease:'power3.out' })
+        .fromTo('#portfolio-heading',
+            { opacity:0, y:44, skewY:2 },
+            { opacity:1, y:0,  skewY:0, duration:0.80, ease:'power3.out' }, '-=0.28')
+        .fromTo('#portfolio-accent-line',
+            { opacity:0, scaleX:0 },
+            { opacity:1, scaleX:1, duration:0.50, ease:'power2.out' }, '-=0.38')
+        .fromTo('#portfolio-subtitle',
+            { opacity:0, y:16 },
+            { opacity:1, y:0, duration:0.50, ease:'power2.out' }, '-=0.28');
+
+        // Cards: "dealt" entrance — each card rotates in from a slight tilt
+        gsap.set('.portfolio-card', { opacity:0, y:60, rotateY:6, transformPerspective:1200, transformOrigin:'center bottom' });
+        gsap.to('.portfolio-card', {
+            opacity:1, y:0, rotateY:0,
+            duration:0.80,
+            ease: 'back.out(1.5)',
+            stagger: { amount:0.65, from:'start' },
+            scrollTrigger: {
+                trigger: '#portfolio-grid',
+                start:   'top 85%',
+                toggleActions: TOGGLE,
+            }
+        });
+
+        // 3D tilt on mouse move (same pattern as about-cards)
+        document.querySelectorAll('.portfolio-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const r  = card.getBoundingClientRect();
+                const cx = e.clientX - r.left - r.width  / 2;
+                const cy = e.clientY - r.top  - r.height / 2;
+                gsap.to(card, {
+                    rotateX: (-cy / r.height) * 6,
+                    rotateY: ( cx / r.width)  * 6,
+                    transformPerspective: 1000,
+                    duration: 0.40, ease: 'power2.out',
+                });
+            }, { passive: true });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, { rotateX:0, rotateY:0, duration:0.65, ease:'back.out(1.4)' });
+            });
+        });
+
+        // ============================================================
         //  CORE VALUES — bi-directional stagger + icon spring hovers
         // ============================================================
 
@@ -1232,7 +1339,8 @@ $svgIcons = [
         ).forEach(el => {
             if (el.closest('.about-cards'))  return; // about-cards use bespoke stagger above
             if (el.closest('#hscroll-strip')) return; // horizontal wipe section handles its own reveals
-            if (el.classList.contains('services-card')) return; // services uses row-wave stagger above
+            if (el.classList.contains('services-card'))   return; // services uses row-wave stagger above
+            if (el.classList.contains('portfolio-card')) return; // portfolio uses dealt-card entrance above
             gsap.fromTo(el,
                 { opacity:0, y:36 },
                 { opacity:1, y:0, duration:0.65, ease:'power2.out',
