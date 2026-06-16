@@ -371,39 +371,67 @@ $svgIcons = [
 {{-- ============================================================
      WHY CHOOSE US SECTION
      ============================================================ --}}
-<section id="why" class="py-20 bg-navy text-white relative overflow-hidden">
-    <div class="absolute inset-0 pointer-events-none opacity-5">
-        <svg class="w-full h-full" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice">
-            <path d="M0,200 Q200,50 400,200 Q600,350 800,200" stroke="#C9A84C" stroke-width="80" fill="none"/>
-        </svg>
-    </div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-14">
-            <span class="inline-block text-gold text-sm font-semibold tracking-widest uppercase mb-3">Why VisionBridge</span>
-            <h2 class="font-display text-3xl md:text-4xl font-bold text-white mb-6">Why Choose VisionBridge Solutions?</h2>
-            <div class="max-w-3xl mx-auto bg-white/5 border border-gold/30 rounded-2xl p-8">
-                <p class="text-gold text-xl md:text-2xl font-display font-bold leading-relaxed">
-                    "We don't just build custom websites — we help protect the long-term stability of our clients' online presence."
-                </p>
+<section id="why" class="py-24 relative overflow-hidden" style="background:linear-gradient(160deg,#F7F9FC 0%,#FFFFFF 50%,#F3F7FB 100%);">
+    {{-- Ambient orbs --}}
+    <div class="hero-orb" style="width:640px;height:640px;top:-180px;right:-160px;background:radial-gradient(circle,rgba(201,168,76,0.07) 0%,transparent 70%);animation:orb-drift 22s ease-in-out infinite;filter:blur(72px);"></div>
+    <div class="hero-orb" style="width:480px;height:480px;bottom:-120px;left:-100px;background:radial-gradient(circle,rgba(42,157,143,0.06) 0%,transparent 70%);animation:orb-drift 18s ease-in-out infinite reverse 5s;filter:blur(58px);"></div>
+    {{-- Dot texture --}}
+    <div class="absolute inset-0 pointer-events-none" style="opacity:0.28;background-image:radial-gradient(circle,rgba(17,29,51,0.045) 1px,transparent 1px);background-size:28px 28px;"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
+
+        {{-- Split: heading (left) + quote card (right) --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center mb-20">
+
+            {{-- Left: heading block --}}
+            <div>
+                <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-5">Why VisionBridge</span>
+                <h2 class="font-display font-bold leading-tight mb-5" style="font-size:clamp(2.2rem,4vw,3.4rem);color:#111D33;">
+                    Why Choose<br>
+                    <span style="color:#C9A84C;">VisionBridge</span><br>Solutions?
+                </h2>
+                <div style="width:48px;height:2px;background:linear-gradient(90deg,#C9A84C,rgba(201,168,76,0.15));border-radius:2px;margin-bottom:22px;"></div>
+                <p class="text-lg leading-relaxed" style="color:rgba(17,29,51,0.50);max-width:390px;">We're not just a website agency — we're your long-term digital partner committed to your growth and lasting online stability.</p>
+            </div>
+
+            {{-- Right: premium quote card --}}
+            <div class="relative">
+                {{-- Giant decorative quote mark --}}
+                <div class="absolute pointer-events-none select-none" style="font-size:12rem;line-height:1;color:rgba(201,168,76,0.08);font-family:'Playfair Display',serif;font-weight:700;top:-36px;left:-16px;z-index:0;">"</div>
+                <div class="relative rounded-3xl" style="z-index:1;background:#FFFFFF;border:1px solid rgba(201,168,76,0.18);box-shadow:0 10px 52px rgba(17,29,51,0.07),0 2px 8px rgba(17,29,51,0.04);padding:36px 40px;">
+                    <p class="font-display font-bold leading-snug mb-7" style="font-size:1.2rem;color:#111D33;line-height:1.55;">
+                        "We don't just build custom websites — we help protect the long-term stability of our clients' online presence."
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <div class="h-px flex-1" style="background:linear-gradient(90deg,rgba(201,168,76,0.42),transparent);"></div>
+                        <span class="text-xs font-semibold tracking-widest uppercase" style="color:rgba(201,168,76,0.68);">VisionBridge Solutions</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {{-- 4 premium feature cards --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             @foreach([
-                ['icon'=>'lock','title'=>'Ownership First','desc'=>'You own everything — domain, content, hosting, data. Always.'],
-                ['icon'=>'mobile','title'=>'Mobile-First Design','desc'=>'Every site is built to perform beautifully on any device.'],
-                ['icon'=>'users','title'=>'Partnership Approach','desc'=>'We work with you, not just for you, through every stage.'],
-                ['icon'=>'bolt','title'=>'Fast & Reliable','desc'=>'Optimized for speed, uptime, and a seamless user experience.'],
+                ['icon'=>'lock',  'title'=>'Ownership First',     'desc'=>'You own everything — domain, content, hosting, data. Always.'],
+                ['icon'=>'mobile','title'=>'Mobile-First Design',  'desc'=>'Every site is built to perform beautifully on any device.'],
+                ['icon'=>'users', 'title'=>'Partnership Approach', 'desc'=>'We work with you, not just for you, through every stage.'],
+                ['icon'=>'bolt',  'title'=>'Fast & Reliable',      'desc'=>'Optimized for speed, uptime, and a seamless user experience.'],
             ] as $point)
-            <div class="text-center p-6">
-                <div class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-                    <svg class="w-7 h-7 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$point['icon']] !!}</svg>
+            <div class="group rounded-2xl p-7 hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 cursor-default"
+                 style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.07);box-shadow:0 2px 12px rgba(17,29,51,0.05),0 1px 3px rgba(17,29,51,0.03);">
+                <div class="text-xs font-bold tracking-widest mb-5 select-none" style="color:rgba(17,29,51,0.11);">{{ sprintf('%02d', $loop->iteration) }}</div>
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-all duration-300 group-hover:scale-110"
+                     style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.16);">
+                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$point['icon']] !!}</svg>
                 </div>
-                <h4 class="font-bold text-gold text-lg mb-2">{{ $point['title'] }}</h4>
-                <p class="text-white/60 text-sm leading-relaxed">{{ $point['desc'] }}</p>
+                <div class="mb-4 transition-all duration-500 group-hover:w-12" style="width:24px;height:1.5px;background:linear-gradient(90deg,#C9A84C,rgba(201,168,76,0.12));border-radius:2px;"></div>
+                <h4 class="font-bold text-base mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#111D33;">{{ $point['title'] }}</h4>
+                <p class="text-sm leading-relaxed" style="color:rgba(17,29,51,0.50);">{{ $point['desc'] }}</p>
             </div>
             @endforeach
         </div>
+
     </div>
 </section>
 
