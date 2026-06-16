@@ -277,16 +277,19 @@ $svgIcons = [
             </div>
         </div>
 
-        {{-- Core Values — dark panel with ambient depth --}}
-        <div class="mt-24 rounded-3xl relative overflow-hidden py-16 px-6 sm:py-20 sm:px-12 lg:py-24 lg:px-16" style="background:linear-gradient(148deg,#0c1a2e 0%,#070e1c 100%);">
-            <div class="hero-orb" style="width:640px;height:640px;top:-140px;right:-120px;background:radial-gradient(circle,rgba(42,157,143,0.10) 0%,transparent 70%);animation:orb-drift 24s ease-in-out infinite;filter:blur(52px);"></div>
-            <div class="hero-orb" style="width:480px;height:480px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(201,168,76,0.08) 0%,transparent 70%);animation:orb-drift 18s ease-in-out infinite reverse 3s;filter:blur(44px);"></div>
-            <div class="hero-grid-dots absolute inset-0 pointer-events-none" style="opacity:0.28;"></div>
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" style="width:300px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.40),transparent);"></div>
+        {{-- Core Values — light, welcoming panel --}}
+        <div class="mt-20 rounded-3xl relative overflow-hidden py-16 px-6 sm:py-20 sm:px-12 lg:py-24 lg:px-16" style="background:linear-gradient(145deg,#F4F7FC 0%,#FAFBFD 55%,#EFF4FA 100%);">
+            {{-- Ambient orbs — barely visible, just add warmth --}}
+            <div class="hero-orb" style="width:580px;height:580px;top:-160px;right:-140px;background:radial-gradient(circle,rgba(201,168,76,0.07) 0%,transparent 70%);animation:orb-drift 26s ease-in-out infinite;filter:blur(64px);"></div>
+            <div class="hero-orb" style="width:420px;height:420px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.06) 0%,transparent 70%);animation:orb-drift 20s ease-in-out infinite reverse 4s;filter:blur(52px);"></div>
+            {{-- Dot texture — very light on light bg --}}
+            <div class="absolute inset-0 pointer-events-none" style="opacity:0.35;background-image:radial-gradient(circle,rgba(17,29,51,0.045) 1px,transparent 1px);background-size:28px 28px;"></div>
+            {{-- Thin gold accent line across top --}}
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" style="width:240px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.32),transparent);"></div>
             <div class="relative" style="z-index:1;">
                 <div class="text-center mb-14">
                     <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">What We Stand For</span>
-                    <h3 class="font-display text-3xl md:text-4xl font-bold text-white">Our Core Values</h3>
+                    <h3 class="font-display text-3xl md:text-4xl font-bold" style="color:#111D33;">Our Core Values</h3>
                     <div class="glow-line" style="width:52px;margin:14px auto 0;"></div>
                 </div>
                 <div id="values-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

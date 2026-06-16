@@ -338,66 +338,53 @@
         }
 
         /* ════════════════════════════════════════════════════════════
-           CORE VALUES — Premium glassmorphic cards with mouse-tracking
-           gradient border + interior spotlight
+           CORE VALUES — Light, smooth, welcoming cards
            ════════════════════════════════════════════════════════════ */
 
-        /* Outer shell — 1px padding gap acts as the animated border.
-           --cx / --cy are set by JS on each card's own coordinate space. */
         .value-card-outer {
-            border-radius: 18px;
-            padding: 1px;
-            background: radial-gradient(
-                300px circle at var(--cx, -9999px) var(--cy, -9999px),
-                rgba(201,168,76,0.55),
-                rgba(42,157,143,0.25) 48%,
-                rgba(255,255,255,0.07) 78%
-            );
+            border-radius: 20px;
             will-change: transform, opacity;
-            opacity: 0; /* GSAP entrance animates this in */
+            opacity: 0;
             cursor: default;
+            transition: transform 0.36s cubic-bezier(0.34,1.56,0.64,1);
         }
+        .value-card-outer:hover { transform: translateY(-6px); }
 
-        /* Inner card — dark premium bg + overflow:hidden for spotlight */
         .value-card {
-            border-radius: 17px;
-            background: linear-gradient(148deg, #0d1c32 0%, #07111e 100%);
+            border-radius: 20px;
+            background: #FFFFFF;
             padding: 28px;
             height: 100%;
             position: relative;
             overflow: hidden;
-            transition: box-shadow 0.38s ease;
+            border: 1px solid rgba(17,29,51,0.07);
+            box-shadow: 0 2px 12px rgba(17,29,51,0.05), 0 1px 3px rgba(17,29,51,0.03);
+            transition: box-shadow 0.32s ease, border-color 0.32s ease;
         }
         .value-card-outer:hover .value-card {
-            box-shadow:
-                0 28px 70px rgba(0,0,0,0.60),
-                0 10px 28px rgba(0,0,0,0.42);
+            box-shadow: 0 20px 52px rgba(17,29,51,0.09), 0 6px 18px rgba(17,29,51,0.05);
+            border-color: rgba(201,168,76,0.24);
         }
 
-        /* Interior spotlight — radial gradient tracks the same --cx / --cy */
         .value-card::before {
             content: '';
             position: absolute;
             inset: 0;
             background: radial-gradient(
-                400px circle at var(--cx, -9999px) var(--cy, -9999px),
-                rgba(201,168,76,0.11),
-                rgba(42,157,143,0.07) 50%,
+                380px circle at var(--cx, -9999px) var(--cy, -9999px),
+                rgba(201,168,76,0.055),
+                rgba(42,157,143,0.03) 52%,
                 transparent 72%
             );
             opacity: 0;
-            transition: opacity 0.50s ease;
+            transition: opacity 0.45s ease;
             pointer-events: none;
             z-index: 0;
         }
-        .value-card-outer:hover .value-card::before {
-            opacity: 1;
-        }
+        .value-card-outer:hover .value-card::before { opacity: 1; }
 
-        /* All direct children float above the spotlight pseudo-element */
         .value-card > * { position: relative; z-index: 1; }
 
-        /* Card header row: icon (left) + number badge (right) */
         .value-card-header {
             display: flex;
             align-items: flex-start;
@@ -405,60 +392,56 @@
             margin-bottom: 20px;
         }
 
-        /* Icon wrapper */
         .value-icon-wrap {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            background: rgba(201,168,76,0.12);
-            border: 1px solid rgba(201,168,76,0.20);
+            width: 46px;
+            height: 46px;
+            border-radius: 13px;
+            background: rgba(201,168,76,0.08);
+            border: 1px solid rgba(201,168,76,0.16);
             display: flex;
             align-items: center;
             justify-content: center;
             will-change: transform;
             flex-shrink: 0;
+            transition: background 0.30s ease, border-color 0.30s ease;
+        }
+        .value-card-outer:hover .value-icon-wrap {
+            background: rgba(201,168,76,0.14);
+            border-color: rgba(201,168,76,0.30);
         }
 
-        /* Card number badge (top-right) */
         .value-number {
             font-size: 0.68rem;
             font-weight: 700;
             letter-spacing: 0.16em;
-            color: rgba(201,168,76,0.18);
+            color: rgba(17,29,51,0.13);
             user-select: none;
             padding-top: 5px;
             transition: color 0.30s ease;
         }
-        .value-card-outer:hover .value-number {
-            color: rgba(201,168,76,0.44);
-        }
+        .value-card-outer:hover .value-number { color: rgba(201,168,76,0.65); }
 
-        /* Thin separator between header and body */
         .value-card-divider {
             width: 28px;
             height: 1px;
-            background: linear-gradient(90deg, rgba(201,168,76,0.35), transparent);
+            background: linear-gradient(90deg, rgba(201,168,76,0.38), transparent);
             margin-bottom: 14px;
         }
 
-        /* Title */
         .value-title {
             font-weight: 700;
             font-size: 1rem;
-            color: rgba(255,255,255,0.90);
+            color: #111D33;
             margin-bottom: 10px;
             line-height: 1.30;
             transition: color 0.26s ease;
         }
-        .value-card-outer:hover .value-title {
-            color: #DFC06A;
-        }
+        .value-card-outer:hover .value-title { color: #C9A84C; }
 
-        /* Description */
         .value-desc {
             font-size: 0.875rem;
             line-height: 1.72;
-            color: rgba(255,255,255,0.42);
+            color: rgba(17,29,51,0.50);
         }
     </style>
 </head>
