@@ -334,23 +334,34 @@ $svgIcons = [
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach([
-                ['icon'=>'desktop','title'=>'Custom Website Development','desc'=>'Fully custom websites built to reflect your unique brand identity and business goals.'],
-                ['icon'=>'document','title'=>'Landing Page Development','desc'=>'High-converting landing pages designed to capture leads and drive specific actions.'],
-                ['icon'=>'home','title'=>'Church Website Development','desc'=>'Professional church websites that connect congregations and communicate your ministry\'s heart.'],
-                ['icon'=>'book-open','title'=>'Ministry Website Development','desc'=>'Websites crafted to expand the reach of ministries and share your message with the world.'],
-                ['icon'=>'heart','title'=>'Nonprofit Website Development','desc'=>'Compelling nonprofit websites that tell your story and inspire support for your cause.'],
-                ['icon'=>'building','title'=>'Small Business Website Development','desc'=>'Affordable, professional websites that help small businesses compete and grow online.'],
-                ['icon'=>'refresh','title'=>'Website Redesign Services','desc'=>'Breathe new life into an outdated website with a modern, performance-focused redesign.'],
-                ['icon'=>'cog','title'=>'Website Maintenance Services','desc'=>'Regular updates, monitoring, and care to keep your website running at peak performance.'],
-                ['icon'=>'globe','title'=>'Hosting Management','desc'=>'We manage your hosting environment so you can focus on running your organization.'],
-                ['icon'=>'cursor','title'=>'Website Consulting','desc'=>'Strategic guidance on your website\'s direction, technology, and digital growth potential.'],
+                ['icon'=>'desktop', 'image'=>'image/Custom_Website_Development.jpeg',  'title'=>'Custom Website Development',       'desc'=>'Fully custom websites built to reflect your unique brand identity and business goals.'],
+                ['icon'=>'document','image'=>'image/Landing_Page_Development.jpeg',     'title'=>'Landing Page Development',          'desc'=>'High-converting landing pages designed to capture leads and drive specific actions.'],
+                ['icon'=>'home',    'image'=>'image/Church_website_development.jpeg',   'title'=>'Church Website Development',        'desc'=>'Professional church websites that connect congregations and communicate your ministry\'s heart.'],
+                ['icon'=>'book-open','title'=>'Ministry Website Development',           'desc'=>'Websites crafted to expand the reach of ministries and share your message with the world.'],
+                ['icon'=>'heart',   'title'=>'Nonprofit Website Development',           'desc'=>'Compelling nonprofit websites that tell your story and inspire support for your cause.'],
+                ['icon'=>'building','title'=>'Small Business Website Development',      'desc'=>'Affordable, professional websites that help small businesses compete and grow online.'],
+                ['icon'=>'refresh', 'title'=>'Website Redesign Services',               'desc'=>'Breathe new life into an outdated website with a modern, performance-focused redesign.'],
+                ['icon'=>'cog',     'title'=>'Website Maintenance Services',            'desc'=>'Regular updates, monitoring, and care to keep your website running at peak performance.'],
+                ['icon'=>'globe',   'title'=>'Hosting Management',                      'desc'=>'We manage your hosting environment so you can focus on running your organization.'],
+                ['icon'=>'cursor',  'title'=>'Website Consulting',                      'desc'=>'Strategic guidance on your website\'s direction, technology, and digital growth potential.'],
             ] as $service)
-            <div class="bg-white rounded-xl p-6 border border-gray-100 hover:border-teal/30 hover:shadow-lg transition-all duration-200 group">
-                <div class="w-12 h-12 bg-teal/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-teal/20 transition-colors">
-                    <svg class="w-6 h-6 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$service['icon']] !!}</svg>
+            <div class="bg-white rounded-2xl border border-gray-100 hover:border-teal/30 hover:shadow-xl transition-all duration-300 group overflow-hidden flex flex-col">
+                @if(isset($service['image']))
+                <div class="w-full overflow-hidden" style="height:188px;flex-shrink:0;">
+                    <img src="{{ asset($service['image']) }}"
+                         alt="{{ $service['title'] }}"
+                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                 </div>
-                <h4 class="font-bold text-navy text-base mb-2 group-hover:text-teal transition-colors">{{ $service['title'] }}</h4>
-                <p class="text-gray-500 text-sm leading-relaxed">{{ $service['desc'] }}</p>
+                @endif
+                <div class="p-6 flex flex-col flex-1">
+                    @if(!isset($service['image']))
+                    <div class="w-12 h-12 bg-teal/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-teal/20 transition-colors">
+                        <svg class="w-6 h-6 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$service['icon']] !!}</svg>
+                    </div>
+                    @endif
+                    <h4 class="font-bold text-navy text-base mb-2 group-hover:text-teal transition-colors">{{ $service['title'] }}</h4>
+                    <p class="text-gray-500 text-sm leading-relaxed">{{ $service['desc'] }}</p>
+                </div>
             </div>
             @endforeach
         </div>
