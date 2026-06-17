@@ -846,6 +846,96 @@
             .pf-stat-num   { font-size: 1.65rem; }
         }
 
+        /* ── Portfolio Detail Modal ── */
+        #pf-modal-backdrop {
+            position: fixed; inset: 0; z-index: 10000;
+            background: rgba(10,18,38,0.74);
+            backdrop-filter: blur(12px) saturate(0.80);
+            display: flex; align-items: center; justify-content: center;
+            padding: 24px;
+            opacity: 0; pointer-events: none;
+        }
+        #pf-modal {
+            position: relative; width: 100%; max-width: 940px;
+            border-radius: 22px; overflow: hidden;
+            background: #FFFFFF;
+            box-shadow: 0 48px 120px rgba(17,29,51,0.30), 0 12px 40px rgba(17,29,51,0.14), 0 0 0 1px rgba(201,168,76,0.14);
+            opacity: 0;
+        }
+        #pf-modal-close {
+            position: absolute; top: 42px; right: 16px; z-index: 20;
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(255,255,255,0.14); border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.75);
+            transition: background 0.22s ease, color 0.22s ease, transform 0.22s ease;
+        }
+        #pf-modal-close:hover { background: rgba(255,255,255,0.24); color: #fff; transform: rotate(90deg); }
+        .pf-modal-chrome {
+            height: 36px; padding: 0 14px;
+            background: rgba(17,29,51,0.92);
+            display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+        }
+        .pf-modal-body { display: flex; height: 460px; }
+        .pf-modal-img-panel {
+            flex: 0 0 56%; position: relative; overflow: hidden;
+            background: linear-gradient(135deg, #111D33 0%, #1A2A42 100%);
+        }
+        .pf-modal-img-panel img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+        .pf-modal-no-image {
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.72rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+            color: rgba(255,255,255,0.28);
+        }
+        .pf-modal-details {
+            flex: 1; padding: 34px 36px 28px;
+            display: flex; flex-direction: column; overflow-y: auto;
+        }
+        .pf-modal-num {
+            font-size: 0.62rem; font-weight: 700; letter-spacing: 0.22em;
+            color: rgba(201,168,76,0.68); margin-bottom: 6px;
+        }
+        .pf-modal-category-badge {
+            display: inline-block;
+            font-size: 0.58rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+            color: rgba(17,29,51,0.60); background: rgba(17,29,51,0.07);
+            padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(17,29,51,0.10);
+            margin-bottom: 14px; width: fit-content;
+        }
+        .pf-modal-separator {
+            width: 36px; height: 1.5px;
+            background: linear-gradient(90deg, #C9A84C, rgba(201,168,76,0.15));
+            border-radius: 2px; margin-bottom: 14px;
+        }
+        .pf-modal-title { font-size: 1.42rem; font-weight: 800; color: #111D33; line-height: 1.22; margin-bottom: 11px; }
+        .pf-modal-desc  { font-size: 0.85rem; color: rgba(17,29,51,0.50); line-height: 1.70; margin-bottom: 16px; }
+        .pf-modal-domain {
+            font-size: 0.68rem; color: rgba(17,29,51,0.32);
+            font-family: 'Inter', monospace; margin-bottom: 20px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .pf-modal-cta {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 0.82rem; font-weight: 700; color: #111D33;
+            background: #C9A84C; padding: 11px 24px; border-radius: 30px;
+            text-decoration: none; letter-spacing: 0.02em; align-self: flex-start; margin-top: auto;
+            transition: background 0.22s ease, transform 0.22s ease;
+        }
+        .pf-modal-cta:hover { background: #B8962E; transform: translateY(-2px); }
+        .pf-modal-cta-soon {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 0.82rem; font-weight: 700; color: rgba(17,29,51,0.30);
+            background: rgba(17,29,51,0.06); padding: 11px 24px; border-radius: 30px;
+            letter-spacing: 0.02em; cursor: default; align-self: flex-start; margin-top: auto;
+        }
+        @media (max-width: 640px) {
+            .pf-modal-body { flex-direction: column; height: auto; max-height: 82vh; overflow-y: auto; }
+            .pf-modal-img-panel { flex: 0 0 180px; }
+            .pf-modal-details { padding: 22px; }
+            .pf-modal-title { font-size: 1.10rem; }
+        }
+
         /* ── Services section ── */
         /* Gold accent line drawn by GSAP on scroll-in */
         #services-accent-line {

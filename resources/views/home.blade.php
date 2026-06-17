@@ -656,9 +656,9 @@ $svgIcons = [
         @php
         $portfolioProjects = [
             ['num'=>'01','title'=>'Johnny Davis Global Missions','category'=>'Ministry',   'domain'=>'johnnydavisglobalmissions.org','icon'=>'globe',    'image'=>'image/johnnydavisglobalmission.png','url'=>'https://johnnydavisglobalmissions.org/','live'=>true, 'desc'=>'Empowering global ministry with a professional online presence that connects communities worldwide through faith, outreach, and digital innovation.','tags'=>['Ministry','Custom Design','WordPress']],
-            ['num'=>'02','title'=>'Johnny Davis Ministries',     'category'=>'Ministry',   'domain'=>'johnnydavisministries.org',    'icon'=>'book-open','image'=>'image/johnnydavisministries.png',   'url'=>'https://johnnydavisministries.org/',   'live'=>true, 'tags'=>['Ministry','WordPress']],
-            ['num'=>'03','title'=>'Mercy City Eleven 22 Church', 'category'=>'Church',     'domain'=>'mercycityeleven22.org',         'icon'=>'home',                                                                                                               'tags'=>['Church','Custom Design']],
-            ['num'=>'04','title'=>'Future VisionBridge Projects','category'=>'Coming Soon','domain'=>'visionbridgesolutions.com',     'icon'=>'sparkles',                                                                                                           'tags'=>['Future Project']],
+            ['num'=>'02','title'=>'Johnny Davis Ministries',     'category'=>'Ministry',   'domain'=>'johnnydavisministries.org',    'icon'=>'book-open','image'=>'image/johnnydavisministries.png',   'url'=>'https://johnnydavisministries.org/',   'live'=>true, 'desc'=>'Daily devotionals, sermons, and ministry resources reaching thousands of believers worldwide through the power of purposeful digital outreach.','tags'=>['Ministry','WordPress']],
+            ['num'=>'03','title'=>'Mercy City Eleven 22 Church', 'category'=>'Church',     'domain'=>'mercycityeleven22.org',         'icon'=>'home',     'soon'=>true,                                                                                              'desc'=>'A vibrant church community website in development — designed to unite members, share the Gospel, and serve the congregation online.','tags'=>['Church','Custom Design']],
+            ['num'=>'04','title'=>'Future VisionBridge Projects','category'=>'Coming Soon','domain'=>'visionbridgesolutions.com',     'icon'=>'sparkles', 'soon'=>true,                                                                                              'desc'=>'Exciting new projects are on the horizon. Stay tuned as VisionBridge continues to grow and serve more ministries and organizations.','tags'=>['Future Project']],
         ];
         $feat = $portfolioProjects[0];
         @endphp
@@ -669,7 +669,16 @@ $svgIcons = [
             {{-- ── Featured card (01) ── --}}
             <a href="{{ $feat['url'] }}" target="_blank" rel="noopener"
                class="portfolio-card portfolio-card-featured group block"
-               style="text-decoration:none;">
+               style="text-decoration:none;"
+               data-project-num="{{ $feat['num'] }}"
+               data-project-title="{{ $feat['title'] }}"
+               data-project-desc="{{ $feat['desc'] ?? '' }}"
+               data-project-image="{{ asset($feat['image'] ?? '') }}"
+               data-project-url="{{ $feat['url'] ?? '' }}"
+               data-project-tags="{{ implode(',', $feat['tags'] ?? []) }}"
+               data-project-live="{{ !empty($feat['live']) ? 'true' : 'false' }}"
+               data-project-domain="{{ $feat['domain'] }}"
+               data-project-category="{{ $feat['category'] }}">
                 <div class="pf-shimmer"></div>
                 {{-- Browser chrome --}}
                 <div class="pf-chrome">
@@ -727,10 +736,13 @@ $svgIcons = [
                 @foreach(array_slice($portfolioProjects, 1) as $project)
                 @php $hasLink = !empty($project['url']); $isLive = !empty($project['live']); @endphp
 
+                @php
+                $projData = 'data-project-num="'.e($project['num']).'" data-project-title="'.e($project['title']).'" data-project-desc="'.e($project['desc'] ?? '').'" data-project-image="'.e(asset($project['image'] ?? '')).'" data-project-url="'.e($project['url'] ?? '').'" data-project-tags="'.e(implode(',', $project['tags'] ?? [])).'" data-project-live="'.(!empty($project['live']) ? 'true' : 'false').'" data-project-domain="'.e($project['domain']).'" data-project-category="'.e($project['category']).'"';
+                @endphp
                 @if($hasLink)
-                <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="portfolio-card group block" style="text-decoration:none;">
+                <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="portfolio-card group block" style="text-decoration:none;" {!! $projData !!}>
                 @else
-                <div class="portfolio-card group">
+                <div class="portfolio-card group" {!! $projData !!}>
                 @endif
                     <div class="pf-shimmer"></div>
                     {{-- Browser chrome --}}
@@ -1457,51 +1469,7 @@ $svgIcons = [
             if (portfolioSection) io.observe(portfolioSection);
         })();
 
-        // ── Portfolio card hover: 3D tilt + spotlight + shimmer ──
-        (function initPortfolioCardHover() {
-            const TILT = 5;
-            const LIFT = -14;
-
-            document.querySelectorAll('.portfolio-card').forEach(card => {
-                const featImg = card.querySelector('.pf-featured-img img');
-                const regImg  = card.querySelector('.relative.overflow-hidden img');
-                const img     = featImg || regImg;
-
-                card.addEventListener('mouseenter', () => {
-                    gsap.to(card, {
-                        y: LIFT, scale: 1.02, transformPerspective: 900,
-                        boxShadow: '0 32px 72px rgba(17,29,51,0.14), 0 10px 28px rgba(17,29,51,0.08), 0 0 0 1px rgba(201,168,76,0.18)',
-                        duration: 0.48, ease: 'back.out(1.5)', overwrite: 'auto',
-                    });
-                    if (img) gsap.to(img, { scale: 1.08, duration: 0.70, ease: 'power2.out' });
-                    card.classList.remove('pf-shimmering');
-                    void card.offsetWidth;
-                    card.classList.add('pf-shimmering');
-                }, { passive: true });
-
-                card.addEventListener('mousemove', e => {
-                    const r  = card.getBoundingClientRect();
-                    const dx = (e.clientX - (r.left + r.width  / 2)) / (r.width  / 2);
-                    const dy = (e.clientY - (r.top  + r.height / 2)) / (r.height / 2);
-                    gsap.to(card, {
-                        rotationY:  dx * TILT, rotationX: -dy * TILT,
-                        duration: 0.30, ease: 'power2.out', overwrite: 'auto',
-                    });
-                    card.style.setProperty('--mx', `${e.clientX - r.left}px`);
-                    card.style.setProperty('--my', `${e.clientY - r.top}px`);
-                }, { passive: true });
-
-                card.addEventListener('mouseleave', () => {
-                    gsap.to(card, {
-                        y: 0, scale: 1, rotationX: 0, rotationY: 0,
-                        boxShadow: '0 4px 20px rgba(17,29,51,0.06), 0 1px 4px rgba(17,29,51,0.04)',
-                        duration: 0.55, ease: 'back.out(1.3)', overwrite: 'auto',
-                    });
-                    if (img) gsap.to(img, { scale: 1, duration: 0.55, ease: 'power2.out' });
-                    card.classList.remove('pf-shimmering');
-                }, { passive: true });
-            });
-        })();
+        // Portfolio hover + modal handled by initPortfolioInteractions() below
 
         // ============================================================
         //  CORE VALUES — Curtains Clip-Wipe reveal
@@ -1842,4 +1810,146 @@ function toggleServices() {
     });
 })();
 </script>
+
+{{-- ── Portfolio Detail Modal ── --}}
+<div id="pf-modal-backdrop">
+    <div id="pf-modal">
+        <button id="pf-modal-close" aria-label="Close">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+        {{-- Browser chrome --}}
+        <div class="pf-modal-chrome">
+            <div class="pf-dots">
+                <span style="background:#FF5F57;"></span>
+                <span style="background:#FFBD2E;"></span>
+                <span style="background:#28C840;"></span>
+            </div>
+            <div class="pf-urlbar" id="pf-modal-url-bar"></div>
+            <div id="pf-modal-live-dot" class="pf-live-dot" style="display:none;"></div>
+        </div>
+        {{-- Body --}}
+        <div class="pf-modal-body">
+            <div class="pf-modal-img-panel">
+                <img id="pf-modal-img" src="" alt="" style="display:none;">
+                <div id="pf-modal-no-image" class="pf-modal-no-image" style="display:none;">Coming Soon</div>
+            </div>
+            <div class="pf-modal-details">
+                <div class="pf-modal-num" id="pf-modal-num"></div>
+                <div class="pf-modal-category-badge" id="pf-modal-category"></div>
+                <div class="pf-modal-separator"></div>
+                <h2 class="pf-modal-title" id="pf-modal-title"></h2>
+                <p class="pf-modal-desc" id="pf-modal-desc"></p>
+                <div class="pf-tags" id="pf-modal-tags" style="margin-bottom:16px;"></div>
+                <div class="pf-modal-domain" id="pf-modal-domain"></div>
+                <div id="pf-modal-cta-wrap"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ── Portfolio interactions: clean hover + click-to-modal ──
+(function initPortfolioInteractions() {
+    // Smooth hover: lift + spotlight, NO tilt
+    document.querySelectorAll('.portfolio-card').forEach(card => {
+        card.style.cursor = 'pointer';
+
+        card.addEventListener('mouseenter', () => {
+            gsap.to(card, {
+                y: -14, scale: 1.025, transformPerspective: 900,
+                boxShadow: '0 28px 70px rgba(17,29,51,0.14), 0 8px 28px rgba(17,29,51,0.08), 0 0 0 1.5px rgba(201,168,76,0.24)',
+                duration: 0.45, ease: 'back.out(1.5)', overwrite: 'auto',
+            });
+            card.classList.remove('pf-shimmering');
+            void card.offsetWidth;
+            card.classList.add('pf-shimmering');
+        }, { passive: true });
+
+        card.addEventListener('mousemove', e => {
+            const r = card.getBoundingClientRect();
+            card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+            card.style.setProperty('--my', `${e.clientY - r.top}px`);
+        }, { passive: true });
+
+        card.addEventListener('mouseleave', () => {
+            gsap.to(card, {
+                y: 0, scale: 1,
+                boxShadow: '0 4px 20px rgba(17,29,51,0.06), 0 1px 4px rgba(17,29,51,0.04)',
+                duration: 0.55, ease: 'back.out(1.3)', overwrite: 'auto',
+            });
+            card.classList.remove('pf-shimmering');
+        }, { passive: true });
+    });
+
+    // Modal
+    const backdrop = document.getElementById('pf-modal-backdrop');
+    const modal    = document.getElementById('pf-modal');
+    const closeBtn = document.getElementById('pf-modal-close');
+    if (!backdrop || !modal) return;
+
+    function openModal(card) {
+        const d = card.dataset;
+
+        document.getElementById('pf-modal-num').textContent     = d.projectNum      || '';
+        document.getElementById('pf-modal-title').textContent   = d.projectTitle    || '';
+        document.getElementById('pf-modal-desc').textContent    = d.projectDesc     || '';
+        document.getElementById('pf-modal-category').textContent= d.projectCategory || '';
+
+        const urlBar = document.getElementById('pf-modal-url-bar');
+        urlBar.innerHTML = `<svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.45)" stroke-width="2.5" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg><span>${d.projectDomain || ''}</span>`;
+
+        const liveDot = document.getElementById('pf-modal-live-dot');
+        liveDot.style.display = d.projectLive === 'true' ? '' : 'none';
+
+        const imgEl = document.getElementById('pf-modal-img');
+        const noImg = document.getElementById('pf-modal-no-image');
+        if (d.projectImage && !d.projectImage.endsWith('/')) {
+            imgEl.src = d.projectImage; imgEl.alt = d.projectTitle || '';
+            imgEl.style.display = ''; noImg.style.display = 'none';
+        } else {
+            imgEl.style.display = 'none'; noImg.style.display = '';
+        }
+
+        const tagsEl = document.getElementById('pf-modal-tags');
+        tagsEl.innerHTML = (d.projectTags || '').split(',').filter(Boolean)
+            .map(t => `<span class="pf-tag">${t.trim()}</span>`).join('');
+
+        const domainEl = document.getElementById('pf-modal-domain');
+        domainEl.innerHTML = d.projectDomain
+            ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:0.40;"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20"/></svg> ${d.projectDomain}`
+            : '';
+
+        const ctaWrap = document.getElementById('pf-modal-cta-wrap');
+        if (d.projectUrl && d.projectLive === 'true') {
+            ctaWrap.innerHTML = `<a class="pf-modal-cta" href="${d.projectUrl}" target="_blank" rel="noopener">Visit Live Site <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>`;
+        } else {
+            ctaWrap.innerHTML = `<div class="pf-modal-cta-soon">Coming Soon</div>`;
+        }
+
+        backdrop.style.pointerEvents = 'all';
+        document.body.style.overflow = 'hidden';
+        gsap.to(backdrop, { opacity: 1, duration: 0.35, ease: 'power2.out' });
+        gsap.fromTo(modal,
+            { opacity: 0, scale: 0.88, y: 30 },
+            { opacity: 1, scale: 1,    y: 0,  duration: 0.52, ease: 'back.out(1.45)' }
+        );
+    }
+
+    function closeModal() {
+        gsap.to(modal,    { opacity: 0, scale: 0.92, y: 18, duration: 0.28, ease: 'power3.in' });
+        gsap.to(backdrop, { opacity: 0, duration: 0.30, delay: 0.06, ease: 'power2.in',
+            onComplete() { backdrop.style.pointerEvents = 'none'; document.body.style.overflow = ''; }
+        });
+    }
+
+    document.querySelectorAll('.portfolio-card').forEach(card => {
+        card.addEventListener('click', e => { e.preventDefault(); openModal(card); });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', e => { if (e.target === backdrop) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+})();
+</script>
+
 @endsection
