@@ -618,17 +618,12 @@
             background: #FFFFFF;
             border: 1px solid rgba(17,29,51,0.07);
             box-shadow: 0 4px 20px rgba(17,29,51,0.06), 0 1px 4px rgba(17,29,51,0.04);
-            transition: transform 0.40s cubic-bezier(0.34,1.56,0.64,1),
-                        box-shadow 0.34s ease,
-                        border-color 0.28s ease;
+            transition: border-color 0.28s ease;
             will-change: transform;
             transform-style: preserve-3d;
+            position: relative;
         }
-        .portfolio-card:hover {
-            transform: translateY(-12px) scale(1.01);
-            box-shadow: 0 32px 70px rgba(17,29,51,0.12), 0 10px 24px rgba(17,29,51,0.07);
-            border-color: rgba(201,168,76,0.30);
-        }
+        .portfolio-card:hover { border-color: rgba(201,168,76,0.30); }
         /* Browser chrome bar */
         .pf-chrome {
             display: flex;
@@ -726,6 +721,129 @@
         @keyframes pf-shimmer {
             0%   { background-position: 200% center; }
             100% { background-position: -200% center; }
+        }
+
+        /* ── Portfolio card enhancements ── */
+        /* Gold top-line drawn in on hover */
+        .portfolio-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, #C9A84C 0%, rgba(42,157,143,0.75) 60%, #C9A84C 100%);
+            background-size: 200% 100%;
+            border-radius: 2px 2px 0 0;
+            transform: scaleX(0); transform-origin: left;
+            transition: transform 0.40s cubic-bezier(0.34,1.56,0.64,1); z-index: 2;
+        }
+        .portfolio-card:hover::before { transform: scaleX(1); }
+        /* Cursor-following spotlight glow */
+        .portfolio-card::after {
+            content: ''; position: absolute; inset: 0; border-radius: inherit;
+            background: radial-gradient(circle 200px at var(--mx,50%) var(--my,50%), rgba(201,168,76,0.09) 0%, transparent 70%);
+            opacity: 0; transition: opacity 0.40s ease; pointer-events: none; z-index: 1;
+        }
+        .portfolio-card:hover::after { opacity: 1; }
+        /* One-shot shimmer sweep on mouseenter */
+        .pf-shimmer {
+            position: absolute; inset: 0;
+            background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.26) 48%, rgba(201,168,76,0.09) 52%, transparent 80%);
+            transform: translateX(-120%); pointer-events: none; z-index: 3; border-radius: inherit;
+        }
+        .portfolio-card.pf-shimmering .pf-shimmer { animation: pf-card-shine 0.72s cubic-bezier(0.4,0,0.2,1) forwards; }
+        @keyframes pf-card-shine { to { transform: translateX(140%); } }
+
+        /* ── Featured hero card (01) ── */
+        .portfolio-card-featured {
+            animation: pf-featured-border 5s ease-in-out infinite;
+        }
+        @keyframes pf-featured-border {
+            0%,100% { border-color: rgba(201,168,76,0.18); }
+            50%      { border-color: rgba(201,168,76,0.45); box-shadow: 0 8px 40px rgba(201,168,76,0.10), 0 4px 16px rgba(17,29,51,0.05); }
+        }
+        .pf-featured-body { display: flex; }
+        .pf-featured-img  { flex: 0 0 58%; position: relative; overflow: hidden; }
+        .pf-featured-img img {
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: top;
+            transition: transform 0.70s cubic-bezier(0.25,0.46,0.45,0.94);
+        }
+        .portfolio-card-featured:hover .pf-featured-img img { transform: scale(1.07); }
+        .pf-featured-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(17,29,51,0.72) 0%, rgba(17,29,51,0.28) 100%);
+            backdrop-filter: blur(2px);
+            opacity: 0; transition: opacity 0.35s ease;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .portfolio-card-featured:hover .pf-featured-overlay { opacity: 1; }
+        .pf-featured-details {
+            flex: 1; padding: 32px 36px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            background: #FFFFFF;
+        }
+        .pf-featured-num {
+            font-size: 0.62rem; font-weight: 700; letter-spacing: 0.22em;
+            color: rgba(201,168,76,0.68); margin-bottom: 8px;
+        }
+        .pf-featured-separator {
+            width: 32px; height: 1.5px;
+            background: linear-gradient(90deg, #C9A84C, rgba(201,168,76,0.15));
+            border-radius: 2px; margin-bottom: 14px;
+            transition: width 0.40s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .portfolio-card-featured:hover .pf-featured-separator { width: 68px; }
+        .pf-featured-title {
+            font-size: 1.40rem; font-weight: 800; color: #111D33;
+            line-height: 1.25; margin-bottom: 10px;
+            transition: color 0.22s ease;
+        }
+        .portfolio-card-featured:hover .pf-featured-title { color: #2A9D8F; }
+        .pf-featured-desc {
+            font-size: 0.86rem; color: rgba(17,29,51,0.50);
+            line-height: 1.65; margin-bottom: 18px;
+        }
+        /* Tag chips (used in featured and regular card footers) */
+        .pf-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .pf-tag {
+            font-size: 0.59rem; font-weight: 700; letter-spacing: 0.13em;
+            text-transform: uppercase; color: rgba(17,29,51,0.52);
+            background: rgba(17,29,51,0.05); border: 1px solid rgba(17,29,51,0.09);
+            padding: 3px 9px; border-radius: 20px;
+            transition: background 0.22s ease, border-color 0.22s ease, color 0.22s ease;
+        }
+        .portfolio-card:hover .pf-tag,
+        .portfolio-card-featured:hover .pf-tag {
+            background: rgba(201,168,76,0.08);
+            border-color: rgba(201,168,76,0.30);
+            color: rgba(201,168,76,0.90);
+        }
+        .pf-featured-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            padding-top: 16px; border-top: 1px solid rgba(17,29,51,0.07); margin-top: 18px;
+        }
+        .pf-live-text {
+            font-size: 0.60rem; font-weight: 700; letter-spacing: 0.14em;
+            text-transform: uppercase; color: rgba(42,157,143,0.82);
+        }
+        .pf-visit-hint {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 0.72rem; font-weight: 700; color: rgba(201,168,76,0.80);
+            opacity: 0; transform: translateX(-10px);
+            transition: opacity 0.30s ease 0.08s, transform 0.30s ease 0.08s;
+        }
+        .portfolio-card-featured:hover .pf-visit-hint { opacity: 1; transform: translateX(0); }
+        /* Stats bar */
+        #pf-stats-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; }
+        .pf-stat-item { text-align: center; padding: 0 44px; }
+        .pf-stats-divider { width: 1px; height: 38px; background: linear-gradient(180deg, transparent, rgba(17,29,51,0.12), transparent); }
+        .pf-stat-num { font-size: 2.20rem; font-weight: 800; color: #111D33; line-height: 1; margin-bottom: 5px; }
+        .pf-stat-label { font-size: 0.69rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(17,29,51,0.38); }
+        @media (max-width: 767px) {
+            .pf-featured-body  { flex-direction: column; }
+            .pf-featured-img   { flex: 0 0 200px; }
+            .pf-featured-details { padding: 22px; }
+            .pf-featured-title { font-size: 1.10rem; }
+            .pf-stat-item  { padding: 0 20px; }
+            .pf-stat-num   { font-size: 1.65rem; }
         }
 
         /* ── Services section ── */

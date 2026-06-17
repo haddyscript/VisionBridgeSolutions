@@ -653,22 +653,25 @@ $svgIcons = [
             <p id="portfolio-subtitle" class="section-subtitle">A selection of websites we've built for ministries, churches, and organizations.</p>
         </div>
 
-        {{-- Cards grid --}}
-        <div id="portfolio-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
-            @foreach([
-                ['num'=>'01','title'=>'Johnny Davis Global Missions','category'=>'Ministry',   'domain'=>'johnnydavisglobalmissions.org','color'=>'from-navy to-teal',     'icon'=>'globe',    'image'=>'image/johnnydavisglobalmission.png','url'=>'https://johnnydavisglobalmissions.org/','live'=>true],
-                ['num'=>'02','title'=>'Johnny Davis Ministries',     'category'=>'Ministry',   'domain'=>'johnnydavisministries.org',    'color'=>'from-navy-dark to-navy','icon'=>'book-open','image'=>'image/johnnydavisministries.png',   'url'=>'https://johnnydavisministries.org/',   'live'=>true],
-                ['num'=>'03','title'=>'Mercy City Eleven 22 Church', 'category'=>'Church',     'domain'=>'mercycityeleven22.org',         'color'=>'from-teal to-teal-dark','icon'=>'home'],
-                ['num'=>'04','title'=>'Future VisionBridge Projects','category'=>'Coming Soon','domain'=>'visionbridgesolutions.com',     'color'=>'from-gold-dark to-gold','icon'=>'sparkles'],
-            ] as $project)
-            @php $hasLink = !empty($project['url']); $isLive = !empty($project['live']); @endphp
+        @php
+        $portfolioProjects = [
+            ['num'=>'01','title'=>'Johnny Davis Global Missions','category'=>'Ministry',   'domain'=>'johnnydavisglobalmissions.org','icon'=>'globe',    'image'=>'image/johnnydavisglobalmission.png','url'=>'https://johnnydavisglobalmissions.org/','live'=>true, 'desc'=>'Empowering global ministry with a professional online presence that connects communities worldwide through faith, outreach, and digital innovation.','tags'=>['Ministry','Custom Design','WordPress']],
+            ['num'=>'02','title'=>'Johnny Davis Ministries',     'category'=>'Ministry',   'domain'=>'johnnydavisministries.org',    'icon'=>'book-open','image'=>'image/johnnydavisministries.png',   'url'=>'https://johnnydavisministries.org/',   'live'=>true, 'tags'=>['Ministry','WordPress']],
+            ['num'=>'03','title'=>'Mercy City Eleven 22 Church', 'category'=>'Church',     'domain'=>'mercycityeleven22.org',         'icon'=>'home',                                                                                                               'tags'=>['Church','Custom Design']],
+            ['num'=>'04','title'=>'Future VisionBridge Projects','category'=>'Coming Soon','domain'=>'visionbridgesolutions.com',     'icon'=>'sparkles',                                                                                                           'tags'=>['Future Project']],
+        ];
+        $feat = $portfolioProjects[0];
+        @endphp
 
-            @if($hasLink)
-            <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="portfolio-card group block" style="text-decoration:none;">
-            @else
-            <div class="portfolio-card group">
-            @endif
-                {{-- Browser chrome mockup --}}
+        {{-- Cards grid: featured hero + 3 regular --}}
+        <div id="portfolio-grid" class="flex flex-col gap-7">
+
+            {{-- ── Featured card (01) ── --}}
+            <a href="{{ $feat['url'] }}" target="_blank" rel="noopener"
+               class="portfolio-card portfolio-card-featured group block"
+               style="text-decoration:none;">
+                <div class="pf-shimmer"></div>
+                {{-- Browser chrome --}}
                 <div class="pf-chrome">
                     <div class="pf-dots">
                         <span style="background:#FF5F57;"></span>
@@ -677,88 +680,176 @@ $svgIcons = [
                     </div>
                     <div class="pf-urlbar">
                         <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.45)" stroke-width="2.5" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                        <span>{{ $project['domain'] }}</span>
+                        <span>{{ $feat['domain'] }}</span>
                     </div>
-                    @if($isLive)
                     <div class="pf-live-dot" title="Live site"></div>
-                    @endif
                 </div>
-
-                {{-- Image / gradient area --}}
-                <div class="relative overflow-hidden" style="height:210px;">
-                    @if(!empty($project['image']))
-                    <img src="{{ asset($project['image']) }}" alt="{{ $project['title'] }}"
-                         class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-110">
-                    @elseif($project['num'] === '03')
-                    {{-- Church: geometric mesh pattern --}}
-                    <div class="h-full flex items-center justify-center relative" style="background:linear-gradient(135deg,#1E7268 0%,#2A9D8F 60%,#3DBFB0 100%);">
-                        <div class="absolute inset-0" style="background-image:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(255,255,255,0.05) 28px,rgba(255,255,255,0.05) 29px),repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(255,255,255,0.05) 28px,rgba(255,255,255,0.05) 29px);"></div>
-                        <div class="w-20 h-20 rounded-2xl flex items-center justify-center" style="background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.25);">
-                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
+                {{-- Featured body: image left + details right --}}
+                <div class="pf-featured-body" style="height:300px;">
+                    <div class="pf-featured-img">
+                        <img src="{{ asset($feat['image']) }}" alt="{{ $feat['title'] }}">
+                        <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-white font-semibold" style="font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;background:rgba(17,29,51,0.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.18);">{{ $feat['category'] }}</div>
+                        <div class="pf-featured-overlay">
+                            <span class="pf-cta-btn">
+                                Visit Live Site
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            </span>
                         </div>
                     </div>
-                    @else
-                    {{-- Coming soon: animated gold shimmer --}}
-                    <div class="h-full relative overflow-hidden flex items-center justify-center" style="background:linear-gradient(135deg,#A8872E 0%,#C9A84C 50%,#DFC06A 100%);">
-                        <div class="pf-shimmer-sweep"></div>
-                        <div class="absolute inset-0" style="background-image:radial-gradient(circle at 30% 50%, rgba(255,255,255,0.12) 0%, transparent 50%);"></div>
-                        <div class="relative z-10 text-center">
-                            <div class="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-3" style="background:rgba(17,29,51,0.18);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.20);">
-                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
-                            </div>
-                            <span style="font-size:0.65rem;font-weight:700;letter-spacing:0.20em;text-transform:uppercase;color:rgba(17,29,51,0.55);">Coming Soon</span>
-                        </div>
-                    </div>
-                    @endif
-
-                    {{-- Hover overlay with CTA --}}
-                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-350 flex flex-col items-center justify-center gap-3"
-                         style="background:linear-gradient(to top,rgba(17,29,51,0.78) 0%,rgba(17,29,51,0.35) 100%);backdrop-filter:blur(2px);">
-                        @if($hasLink)
-                        <span class="pf-cta-btn">
-                            Visit Live Site
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                        </span>
-                        @else
-                        <span class="pf-cta-btn" style="cursor:default;">
-                            {{ $project['num'] === '04' ? 'Stay Tuned' : 'More Details' }}
-                        </span>
-                        @endif
-                    </div>
-
-                    {{-- Category badge (top-left corner of image) --}}
-                    <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-white font-semibold" style="font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;background:rgba(17,29,51,0.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.18);">
-                        {{ $project['category'] }}
-                    </div>
-                </div>
-
-                {{-- Card footer --}}
-                <div class="pf-footer">
-                    <div class="flex items-start justify-between gap-3">
+                    <div class="pf-featured-details">
                         <div>
-                            <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.18em;color:rgba(201,168,76,0.70);margin-bottom:4px;">{{ $project['num'] }}</div>
-                            <h4 class="pf-title">{{ $project['title'] }}</h4>
+                            <div class="pf-featured-num">{{ $feat['num'] }}</div>
+                            <div class="pf-featured-separator"></div>
+                            <h3 class="pf-featured-title">{{ $feat['title'] }}</h3>
+                            <p class="pf-featured-desc">{{ $feat['desc'] }}</p>
+                            <div class="pf-tags">
+                                @foreach($feat['tags'] as $tag)
+                                <span class="pf-tag">{{ $tag }}</span>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="pf-featured-footer">
+                            <div class="flex items-center gap-2">
+                                <div class="pf-live-badge"></div>
+                                <span class="pf-live-text">Live Site</span>
+                            </div>
+                            <div class="pf-visit-hint">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                <span>Visit Site</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            {{-- ── Three supporting cards ── --}}
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-7">
+                @foreach(array_slice($portfolioProjects, 1) as $project)
+                @php $hasLink = !empty($project['url']); $isLive = !empty($project['live']); @endphp
+
+                @if($hasLink)
+                <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="portfolio-card group block" style="text-decoration:none;">
+                @else
+                <div class="portfolio-card group">
+                @endif
+                    <div class="pf-shimmer"></div>
+                    {{-- Browser chrome --}}
+                    <div class="pf-chrome">
+                        <div class="pf-dots">
+                            <span style="background:#FF5F57;"></span>
+                            <span style="background:#FFBD2E;"></span>
+                            <span style="background:#28C840;"></span>
+                        </div>
+                        <div class="pf-urlbar">
+                            <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.45)" stroke-width="2.5" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            <span>{{ $project['domain'] }}</span>
                         </div>
                         @if($isLive)
-                        <div class="shrink-0 flex items-center gap-1.5 mt-1">
-                            <div class="pf-live-badge"></div>
-                            <span style="font-size:0.60rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(42,157,143,0.80);">Live</span>
-                        </div>
-                        @elseif($project['num'] === '04')
-                        <div class="shrink-0 mt-1">
-                            <span style="font-size:0.60rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(201,168,76,0.65);">Soon</span>
-                        </div>
+                        <div class="pf-live-dot" title="Live site"></div>
                         @endif
                     </div>
-                </div>
+                    {{-- Image / gradient area --}}
+                    <div class="relative overflow-hidden" style="height:210px;">
+                        @if(!empty($project['image']))
+                        <img src="{{ asset($project['image']) }}" alt="{{ $project['title'] }}"
+                             class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-110">
+                        @elseif($project['num'] === '03')
+                        <div class="h-full flex items-center justify-center relative" style="background:linear-gradient(135deg,#1E7268 0%,#2A9D8F 60%,#3DBFB0 100%);">
+                            <div class="absolute inset-0" style="background-image:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(255,255,255,0.05) 28px,rgba(255,255,255,0.05) 29px),repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(255,255,255,0.05) 28px,rgba(255,255,255,0.05) 29px);"></div>
+                            <div class="w-20 h-20 rounded-2xl flex items-center justify-center" style="background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.25);">
+                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
+                            </div>
+                        </div>
+                        @else
+                        <div class="h-full relative overflow-hidden flex items-center justify-center" style="background:linear-gradient(135deg,#A8872E 0%,#C9A84C 50%,#DFC06A 100%);">
+                            <div class="pf-shimmer-sweep"></div>
+                            <div class="absolute inset-0" style="background-image:radial-gradient(circle at 30% 50%, rgba(255,255,255,0.12) 0%, transparent 50%);"></div>
+                            <div class="relative z-10 text-center">
+                                <div class="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-3" style="background:rgba(17,29,51,0.18);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.20);">
+                                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
+                                </div>
+                                <span style="font-size:0.65rem;font-weight:700;letter-spacing:0.20em;text-transform:uppercase;color:rgba(17,29,51,0.55);">Coming Soon</span>
+                            </div>
+                        </div>
+                        @endif
+                        {{-- Hover overlay --}}
+                        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-350 flex items-center justify-center"
+                             style="background:linear-gradient(to top,rgba(17,29,51,0.78) 0%,rgba(17,29,51,0.35) 100%);backdrop-filter:blur(2px);">
+                            @if($hasLink)
+                            <span class="pf-cta-btn">
+                                Visit Live Site
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            </span>
+                            @else
+                            <span class="pf-cta-btn" style="cursor:default;">
+                                {{ $project['num'] === '04' ? 'Stay Tuned' : 'More Details' }}
+                            </span>
+                            @endif
+                        </div>
+                        {{-- Category badge --}}
+                        <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-white font-semibold" style="font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;background:rgba(17,29,51,0.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.18);">
+                            {{ $project['category'] }}
+                        </div>
+                    </div>
+                    {{-- Card footer --}}
+                    <div class="pf-footer">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex-1 min-w-0">
+                                <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.18em;color:rgba(201,168,76,0.70);margin-bottom:4px;">{{ $project['num'] }}</div>
+                                <h4 class="pf-title">{{ $project['title'] }}</h4>
+                                @if(!empty($project['tags']))
+                                <div class="pf-tags" style="margin-top:8px;">
+                                    @foreach($project['tags'] as $tag)
+                                    <span class="pf-tag">{{ $tag }}</span>
+                                    @endforeach
+                                </div>
+                                @endif
+                            </div>
+                            @if($isLive)
+                            <div class="shrink-0 flex items-center gap-1.5 mt-1">
+                                <div class="pf-live-badge"></div>
+                                <span style="font-size:0.60rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(42,157,143,0.80);">Live</span>
+                            </div>
+                            @elseif($project['num'] === '04')
+                            <div class="shrink-0 mt-1">
+                                <span style="font-size:0.60rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(201,168,76,0.65);">Soon</span>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
 
-            @if($hasLink)
-            </a>
-            @else
+                @if($hasLink)
+                </a>
+                @else
+                </div>
+                @endif
+                @endforeach
             </div>
-            @endif
-            @endforeach
         </div>
+
+        {{-- Stats bar --}}
+        <div id="pf-stats-bar" style="margin-top:56px;padding-top:40px;border-top:1px solid rgba(17,29,51,0.07);opacity:0;">
+            <div class="pf-stat-item">
+                <div class="pf-stat-num" data-target="4" data-suffix="">4</div>
+                <div class="pf-stat-label">Projects Built</div>
+            </div>
+            <div class="pf-stats-divider"></div>
+            <div class="pf-stat-item">
+                <div class="pf-stat-num" data-target="2" data-suffix="">2</div>
+                <div class="pf-stat-label">Live Sites</div>
+            </div>
+            <div class="pf-stats-divider"></div>
+            <div class="pf-stat-item">
+                <div class="pf-stat-num" data-target="100" data-suffix="%">100%</div>
+                <div class="pf-stat-label">Custom Built</div>
+            </div>
+            <div class="pf-stats-divider"></div>
+            <div class="pf-stat-item">
+                <div class="pf-stat-num" data-target="1" data-suffix="">1</div>
+                <div class="pf-stat-label">Dedicated Partner</div>
+            </div>
+        </div>
+
     </div>
 </section>
 
@@ -1339,18 +1430,23 @@ $svgIcons = [
                         { opacity:0, y:16 },
                         { opacity:1, y:0, duration:0.50, ease:'power2.out' }, '-=0.28');
 
-                // Cards: scale-up zoom — 85% → 100% with back.out(1.55) overshoot so
-                // each card "settles" into place like it's landing from above
+                // Cards: scale-up zoom — 85% → 100% with back.out(1.55) overshoot
                 gsap.fromTo('.portfolio-card',
                     { opacity:0, scale:0.85, y:44 },
-                    {
-                        opacity:1, scale:1, y:0,
-                        duration:0.82,
-                        ease: 'back.out(1.55)',
-                        stagger: 0.13,
-                        delay: 0.22,
-                    }
+                    { opacity:1, scale:1, y:0, duration:0.82, ease:'back.out(1.55)', stagger:0.13, delay:0.22 }
                 );
+
+                // Stats bar fade in + number counters
+                gsap.to('#pf-stats-bar', { opacity:1, duration:0.65, delay:0.80 });
+                document.querySelectorAll('.pf-stat-num').forEach(el => {
+                    const target = parseInt(el.dataset.target, 10);
+                    const suffix = el.dataset.suffix || '';
+                    const obj    = { val: 0 };
+                    gsap.to(obj, {
+                        val: target, duration: 1.40, delay: 0.90, ease: 'power2.out',
+                        onUpdate() { el.textContent = Math.round(obj.val) + suffix; },
+                    });
+                });
             }
 
             const io = new IntersectionObserver((entries) => {
@@ -1361,23 +1457,51 @@ $svgIcons = [
             if (portfolioSection) io.observe(portfolioSection);
         })();
 
-        // 3D tilt on mouse move (event-based — unaffected by GSAP pin)
-        document.querySelectorAll('.portfolio-card').forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const r  = card.getBoundingClientRect();
-                const cx = e.clientX - r.left - r.width  / 2;
-                const cy = e.clientY - r.top  - r.height / 2;
-                gsap.to(card, {
-                    rotateX: (-cy / r.height) * 6,
-                    rotateY: ( cx / r.width)  * 6,
-                    transformPerspective: 1000,
-                    duration: 0.40, ease: 'power2.out',
-                });
-            }, { passive: true });
-            card.addEventListener('mouseleave', () => {
-                gsap.to(card, { rotateX:0, rotateY:0, duration:0.65, ease:'back.out(1.4)' });
+        // ── Portfolio card hover: 3D tilt + spotlight + shimmer ──
+        (function initPortfolioCardHover() {
+            const TILT = 5;
+            const LIFT = -14;
+
+            document.querySelectorAll('.portfolio-card').forEach(card => {
+                const featImg = card.querySelector('.pf-featured-img img');
+                const regImg  = card.querySelector('.relative.overflow-hidden img');
+                const img     = featImg || regImg;
+
+                card.addEventListener('mouseenter', () => {
+                    gsap.to(card, {
+                        y: LIFT, scale: 1.02, transformPerspective: 900,
+                        boxShadow: '0 32px 72px rgba(17,29,51,0.14), 0 10px 28px rgba(17,29,51,0.08), 0 0 0 1px rgba(201,168,76,0.18)',
+                        duration: 0.48, ease: 'back.out(1.5)', overwrite: 'auto',
+                    });
+                    if (img) gsap.to(img, { scale: 1.08, duration: 0.70, ease: 'power2.out' });
+                    card.classList.remove('pf-shimmering');
+                    void card.offsetWidth;
+                    card.classList.add('pf-shimmering');
+                }, { passive: true });
+
+                card.addEventListener('mousemove', e => {
+                    const r  = card.getBoundingClientRect();
+                    const dx = (e.clientX - (r.left + r.width  / 2)) / (r.width  / 2);
+                    const dy = (e.clientY - (r.top  + r.height / 2)) / (r.height / 2);
+                    gsap.to(card, {
+                        rotationY:  dx * TILT, rotationX: -dy * TILT,
+                        duration: 0.30, ease: 'power2.out', overwrite: 'auto',
+                    });
+                    card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+                    card.style.setProperty('--my', `${e.clientY - r.top}px`);
+                }, { passive: true });
+
+                card.addEventListener('mouseleave', () => {
+                    gsap.to(card, {
+                        y: 0, scale: 1, rotationX: 0, rotationY: 0,
+                        boxShadow: '0 4px 20px rgba(17,29,51,0.06), 0 1px 4px rgba(17,29,51,0.04)',
+                        duration: 0.55, ease: 'back.out(1.3)', overwrite: 'auto',
+                    });
+                    if (img) gsap.to(img, { scale: 1, duration: 0.55, ease: 'power2.out' });
+                    card.classList.remove('pf-shimmering');
+                }, { passive: true });
             });
-        });
+        })();
 
         // ============================================================
         //  CORE VALUES — Curtains Clip-Wipe reveal
