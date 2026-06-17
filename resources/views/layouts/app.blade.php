@@ -708,58 +708,137 @@
             border-radius: 2px;
             transform-origin: left center;
         }
-        /* Card base — spring hover lift */
+        /* Card base — GSAP controls transform + shadow; CSS handles border & decorative */
         .services-card {
-            transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1),
-                        box-shadow 0.32s ease,
-                        border-color 0.28s ease;
+            transition: border-color 0.30s ease;
             will-change: transform;
+            transform-style: preserve-3d;
         }
         .services-card:hover {
-            transform: translateY(-9px);
-            box-shadow: 0 24px 60px rgba(17,29,51,0.10), 0 8px 20px rgba(17,29,51,0.06);
-            border-color: rgba(201,168,76,0.28) !important;
+            border-color: rgba(201,168,76,0.42) !important;
         }
         /* Gold top-line accent that draws in on hover */
         .services-card::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #C9A84C, rgba(42,157,143,0.60));
+            height: 2.5px;
+            background: linear-gradient(90deg, #C9A84C 0%, rgba(42,157,143,0.75) 60%, #C9A84C 100%);
+            background-size: 200% 100%;
             border-radius: 2px 2px 0 0;
             transform: scaleX(0);
             transform-origin: left;
-            transition: transform 0.36s cubic-bezier(0.34,1.56,0.64,1);
+            transition: transform 0.40s cubic-bezier(0.34,1.56,0.64,1);
+            animation: none;
+            z-index: 2;
         }
-        .services-card:hover::before { transform: scaleX(1); }
-        /* Image overlay: dark gradient + gold arrow appears on hover */
+        .services-card:hover::before {
+            transform: scaleX(1);
+            animation: svc-line-shimmer 1.8s linear 0.4s infinite;
+        }
+        @keyframes svc-line-shimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        /* Mouse spotlight that follows cursor */
+        .services-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: radial-gradient(circle 160px at var(--mx,50%) var(--my,50%), rgba(201,168,76,0.10) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.40s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .services-card:hover::after { opacity: 1; }
+        /* Single shimmer sweep on hover entry */
+        .svc-shimmer {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(110deg,
+                transparent 20%,
+                rgba(255,255,255,0.28) 48%,
+                rgba(201,168,76,0.10) 52%,
+                transparent 80%);
+            transform: translateX(-120%);
+            pointer-events: none;
+            z-index: 3;
+            border-radius: inherit;
+        }
+        .services-card.svc-shimmering .svc-shimmer {
+            animation: svc-card-shine 0.70s cubic-bezier(0.4,0,0.2,1) forwards;
+        }
+        @keyframes svc-card-shine {
+            to { transform: translateX(140%); }
+        }
+        /* Gold underline that draws under the title */
+        .svc-title-line {
+            display: block;
+            height: 1.5px;
+            width: 100%;
+            background: linear-gradient(90deg, #C9A84C, rgba(42,157,143,0.65));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1) 0.05s;
+            border-radius: 1px;
+            margin-top: 5px;
+            margin-bottom: 2px;
+        }
+        .services-card:hover .svc-title-line { transform: scaleX(1); }
+        /* Image overlay: richer gradient + gold arrow */
         .svc-img-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top, rgba(17,29,51,0.55) 0%, transparent 60%);
+            background: linear-gradient(to top,
+                rgba(17,29,51,0.72) 0%,
+                rgba(17,29,51,0.18) 50%,
+                transparent 100%);
             opacity: 0;
-            transition: opacity 0.35s ease;
+            transition: opacity 0.38s ease;
             display: flex;
             align-items: flex-end;
             justify-content: flex-end;
             padding: 12px;
         }
         .services-card:hover .svc-img-overlay { opacity: 1; }
+        /* Arrow circle + pulsing ring */
         .svc-arrow {
-            width: 32px; height: 32px;
+            position: relative;
+            width: 34px; height: 34px;
             border-radius: 50%;
             background: #C9A84C;
             display: flex; align-items: center; justify-content: center;
-            transform: translate(8px, 8px) scale(0.7);
+            transform: translate(10px, 10px) scale(0.65);
             opacity: 0;
-            transition: transform 0.32s cubic-bezier(0.34,1.56,0.64,1),
+            transition: transform 0.36s cubic-bezier(0.34,1.56,0.64,1),
                         opacity 0.28s ease;
-            transition-delay: 0.06s;
+            transition-delay: 0.08s;
+            flex-shrink: 0;
         }
         .services-card:hover .svc-arrow {
             transform: translate(0,0) scale(1);
             opacity: 1;
+        }
+        .svc-arrow-ring {
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(201,168,76,0.55);
+            transform: scale(0.6);
+            opacity: 0;
+            transition: transform 0.40s cubic-bezier(0.34,1.56,0.64,1) 0.18s,
+                        opacity 0.30s ease 0.18s;
+        }
+        .services-card:hover .svc-arrow-ring {
+            transform: scale(1);
+            opacity: 1;
+            animation: svc-ring-pulse 1.6s ease-in-out 0.45s infinite;
+        }
+        @keyframes svc-ring-pulse {
+            0%, 100% { transform: scale(1);    opacity: 0.80; }
+            55%       { transform: scale(1.55); opacity: 0; }
         }
 
         /* ── Services toggle button ── */

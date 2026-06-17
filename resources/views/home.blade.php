@@ -366,28 +366,32 @@ $svgIcons = [
             ] as $service)
             <div class="services-card bg-white rounded-2xl border border-gray-100 group overflow-hidden flex flex-col relative"
                  @if($loop->iteration > 3) data-svc-extra style="visibility:hidden;pointer-events:none;" @endif>
+                {{-- Shimmer sweep (triggered by JS on mouseenter) --}}
+                <div class="svc-shimmer"></div>
                 @if(isset($service['image']))
                 <div class="w-full overflow-hidden relative" style="height:188px;flex-shrink:0;">
                     <img src="{{ asset($service['image']) }}"
                          alt="{{ $service['title'] }}"
-                         class="w-full h-full object-cover transition-transform duration-600 group-hover:scale-108"
-                         style="transition-duration:600ms;">
-                    {{-- Gradient overlay + gold arrow on hover --}}
+                         class="w-full h-full object-cover"
+                         style="transition:transform 0.65s cubic-bezier(0.25,0.46,0.45,0.94);transform-origin:center;">
+                    {{-- Gradient overlay + arrow on hover --}}
                     <div class="svc-img-overlay">
                         <div class="svc-arrow">
-                            <svg width="14" height="14" fill="none" stroke="#111D33" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                            <div class="svc-arrow-ring"></div>
+                            <svg width="13" height="13" fill="none" stroke="#111D33" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                         </div>
                     </div>
                 </div>
                 @endif
                 <div class="p-6 flex flex-col flex-1">
                     @if(!isset($service['image']))
-                    <div class="w-12 h-12 bg-teal/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-teal/20 transition-colors">
+                    <div class="w-12 h-12 bg-teal/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-teal/20 transition-colors duration-300">
                         <svg class="w-6 h-6 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$service['icon']] !!}</svg>
                     </div>
                     @endif
-                    <h4 class="svc-title font-bold text-navy text-base mb-2 transition-colors duration-200 group-hover:text-teal">{{ $service['title'] }}</h4>
-                    <p class="svc-desc text-gray-500 text-sm leading-relaxed">{{ $service['desc'] }}</p>
+                    <h4 class="svc-title font-bold text-navy text-base transition-colors duration-250 group-hover:text-teal">{{ $service['title'] }}</h4>
+                    <span class="svc-title-line"></span>
+                    <p class="svc-desc text-gray-500 text-sm leading-relaxed mt-2">{{ $service['desc'] }}</p>
                 </div>
             </div>
             @endforeach
@@ -1607,5 +1611,64 @@ function toggleServices() {
         btn.dataset.expanded = 'false';
     }
 }
+
+// ── Services card hover: 3D tilt + spotlight + shimmer ──
+(function initServiceCardHover() {
+    const TILT      = 7;   // max degrees
+    const LIFT      = -12; // px rise on hover
+
+    document.querySelectorAll('.services-card').forEach(card => {
+        const img = card.querySelector('img');
+
+        // ── mouseenter: spring lift + shimmer sweep ──
+        card.addEventListener('mouseenter', () => {
+            gsap.to(card, {
+                y: LIFT,
+                scale: 1.025,
+                transformPerspective: 700,
+                boxShadow: '0 32px 72px rgba(17,29,51,0.16), 0 10px 28px rgba(17,29,51,0.09), 0 0 0 1px rgba(201,168,76,0.12)',
+                duration: 0.45,
+                ease: 'back.out(1.5)',
+                overwrite: 'auto',
+            });
+            if (img) gsap.to(img, { scale: 1.10, duration: 0.65, ease: 'power2.out' });
+
+            // trigger one-shot shimmer
+            card.classList.remove('svc-shimmering');
+            void card.offsetWidth; // reflow so animation restarts
+            card.classList.add('svc-shimmering');
+        }, { passive: true });
+
+        // ── mousemove: 3D tilt + spotlight ──
+        card.addEventListener('mousemove', e => {
+            const r  = card.getBoundingClientRect();
+            const dx = (e.clientX - (r.left + r.width  / 2)) / (r.width  / 2); // -1..+1
+            const dy = (e.clientY - (r.top  + r.height / 2)) / (r.height / 2); // -1..+1
+            gsap.to(card, {
+                rotationY:  dx * TILT,
+                rotationX: -dy * TILT,
+                duration: 0.28,
+                ease: 'power2.out',
+                overwrite: 'auto',
+            });
+            card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+            card.style.setProperty('--my', `${e.clientY - r.top}px`);
+        }, { passive: true });
+
+        // ── mouseleave: spring back to rest ──
+        card.addEventListener('mouseleave', () => {
+            gsap.to(card, {
+                y: 0, scale: 1,
+                rotationX: 0, rotationY: 0,
+                boxShadow: '0 0 0 0 transparent',
+                duration: 0.55,
+                ease: 'back.out(1.3)',
+                overwrite: 'auto',
+            });
+            if (img) gsap.to(img, { scale: 1, duration: 0.55, ease: 'power2.out' });
+            card.classList.remove('svc-shimmering');
+        }, { passive: true });
+    });
+})();
 </script>
 @endsection
