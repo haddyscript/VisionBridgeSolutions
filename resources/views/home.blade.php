@@ -408,9 +408,12 @@ $svgIcons = [
      matches #why so the brief "entry" moment looks seamless.
      On mobile: #why sits in normal flow with no translateX.
      ============================================================ --}}
+{{-- Track + bar are fixed to viewport (outside hscroll-outer so overflow:hidden doesn't clip them) --}}
+<div id="hscroll-track"></div>
+<div id="hscroll-progress"></div>
+
 <div id="hscroll-outer" style="overflow:hidden;position:relative;background:linear-gradient(160deg,#F7F9FC 0%,#FFFFFF 50%,#F3F7FB 100%);">
-    {{-- Gold progress bar (filled by JS onUpdate) --}}
-    <div id="hscroll-progress"></div>
+
 
     {{-- Wipe backdrop — visible behind #why while it slides in.
          Ambient orbs + centered progress ring give the "blank" area
@@ -1301,42 +1304,58 @@ $svgIcons = [
         })();
 
         // ============================================================
-        //  PORTFOLIO — cinematic header + dealt-card entrance + 3D tilt
+        //  PORTFOLIO — IntersectionObserver (ScrollTrigger positions are
+        //  unreliable after the GSAP pin; same fix as Plans section)
         // ============================================================
+        (function() {
+            let portfolioAnimated = false;
 
-        // Header timeline
-        gsap.set(['#portfolio-kicker','#portfolio-heading','#portfolio-accent-line','#portfolio-subtitle'], { opacity:0 });
-        gsap.timeline({
-            scrollTrigger: { trigger:'#portfolio', start:'top 78%', toggleActions: TOGGLE }
-        })
-        .fromTo('#portfolio-kicker',
-            { opacity:0, x:-22, letterSpacing:'0.32em' },
-            { opacity:1, x:0,   letterSpacing:'0.16em', duration:0.60, ease:'power3.out' })
-        .fromTo('#portfolio-heading',
-            { opacity:0, y:44, skewY:2 },
-            { opacity:1, y:0,  skewY:0, duration:0.80, ease:'power3.out' }, '-=0.28')
-        .fromTo('#portfolio-accent-line',
-            { opacity:0, scaleX:0 },
-            { opacity:1, scaleX:1, duration:0.50, ease:'power2.out' }, '-=0.38')
-        .fromTo('#portfolio-subtitle',
-            { opacity:0, y:16 },
-            { opacity:1, y:0, duration:0.50, ease:'power2.out' }, '-=0.28');
+            // Set hidden initial state immediately so elements don't flash visible
+            gsap.set(['#portfolio-kicker','#portfolio-heading','#portfolio-accent-line','#portfolio-subtitle'], { opacity:0 });
+            gsap.set('.portfolio-card', { opacity:0, scale:0.85, y:44, transformOrigin:'center bottom' });
 
-        // Cards: "dealt" entrance — each card rotates in from a slight tilt
-        gsap.set('.portfolio-card', { opacity:0, y:60, rotateY:6, transformPerspective:1200, transformOrigin:'center bottom' });
-        gsap.to('.portfolio-card', {
-            opacity:1, y:0, rotateY:0,
-            duration:0.80,
-            ease: 'back.out(1.5)',
-            stagger: { amount:0.65, from:'start' },
-            scrollTrigger: {
-                trigger: '#portfolio-grid',
-                start:   'top 85%',
-                toggleActions: TOGGLE,
+            function runPortfolioAnimation() {
+                if (portfolioAnimated) return;
+                portfolioAnimated = true;
+
+                // Header cascade: kicker sweeps left → heading rises → accent draws → subtitle fades
+                gsap.timeline()
+                    .fromTo('#portfolio-kicker',
+                        { opacity:0, x:-22, letterSpacing:'0.32em' },
+                        { opacity:1, x:0,   letterSpacing:'0.16em', duration:0.60, ease:'power3.out' })
+                    .fromTo('#portfolio-heading',
+                        { opacity:0, y:44, skewY:2 },
+                        { opacity:1, y:0,  skewY:0, duration:0.80, ease:'power3.out' }, '-=0.28')
+                    .fromTo('#portfolio-accent-line',
+                        { opacity:0, scaleX:0 },
+                        { opacity:1, scaleX:1, duration:0.50, ease:'power2.out', transformOrigin:'left center' }, '-=0.38')
+                    .fromTo('#portfolio-subtitle',
+                        { opacity:0, y:16 },
+                        { opacity:1, y:0, duration:0.50, ease:'power2.out' }, '-=0.28');
+
+                // Cards: scale-up zoom — 85% → 100% with back.out(1.55) overshoot so
+                // each card "settles" into place like it's landing from above
+                gsap.fromTo('.portfolio-card',
+                    { opacity:0, scale:0.85, y:44 },
+                    {
+                        opacity:1, scale:1, y:0,
+                        duration:0.82,
+                        ease: 'back.out(1.55)',
+                        stagger: 0.13,
+                        delay: 0.22,
+                    }
+                );
             }
-        });
 
-        // 3D tilt on mouse move (same pattern as about-cards)
+            const io = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) { runPortfolioAnimation(); io.disconnect(); }
+            }, { threshold: 0.08 });
+
+            const portfolioSection = document.getElementById('portfolio');
+            if (portfolioSection) io.observe(portfolioSection);
+        })();
+
+        // 3D tilt on mouse move (event-based — unaffected by GSAP pin)
         document.querySelectorAll('.portfolio-card').forEach(card => {
             card.addEventListener('mousemove', e => {
                 const r  = card.getBoundingClientRect();
@@ -1451,11 +1470,15 @@ $svgIcons = [
             const outer     = document.getElementById('hscroll-outer');
             const why       = document.getElementById('why');
             const bar       = document.getElementById('hscroll-progress');
+            const track     = document.getElementById('hscroll-track');
             const hint      = document.getElementById('hscroll-hint');
             const ringFill  = document.getElementById('hscroll-ring-fill');
             const pctEl     = document.getElementById('hscroll-pct');
             const edgeLabel = document.getElementById('hscroll-edge-label');
             if (!outer || !why) return;
+
+            const showBar = () => { if (bar) bar.style.opacity='1'; if (track) track.style.opacity='1'; };
+            const hideBar = () => { if (bar) bar.style.opacity='0'; if (track) track.style.opacity='0'; };
 
             const vw = () => window.innerWidth;
             const CIRCUMFERENCE = 226; // 2π × r(36) ≈ 226
@@ -1487,6 +1510,7 @@ $svgIcons = [
                     end: () => '+=' + vw(),
                     invalidateOnRefresh: true,
                     onRefresh() { gsap.set(why, { x: vw() }); },
+                    onEnter()   { showBar(); },
                     onUpdate(self) {
                         const p = self.progress;
                         const pct = Math.round(p * 100);
@@ -1516,13 +1540,19 @@ $svgIcons = [
                             whyRevealTl.play();
                         }
                     },
+                    onLeave() {
+                        // Wipe complete — fade out bar after a short pause
+                        gsap.to([bar, track], { opacity: 0, duration: 0.5, delay: 0.6 });
+                    },
                     onLeaveBack() {
+                        hideBar();
                         whyRevealTl.pause(0);
                         gsap.set(why, { x: vw() });
                         if (ringFill) ringFill.style.strokeDashoffset = CIRCUMFERENCE;
                         if (pctEl)    pctEl.textContent = '0%';
                         if (bar)      bar.style.width = '0%';
                     },
+                    onEnterBack() { showBar(); },
                 }
             });
         }

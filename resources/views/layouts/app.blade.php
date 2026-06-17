@@ -536,17 +536,31 @@
             writing-mode: vertical-rl;
         }
 
-        /* Progress bar — gold line at bottom of the pinned container */
+        /* Track + bar are fixed to the viewport — must live outside overflow:hidden container */
+        #hscroll-track {
+            position: fixed;
+            bottom: 24px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: rgba(201,168,76,0.18);
+            z-index: 9998;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
         #hscroll-progress {
-            position: absolute;
-            bottom: 0;
+            position: fixed;
+            bottom: 24px;
             left: 0;
             height: 3px;
             width: 0%;
-            background: linear-gradient(90deg, #C9A84C 0%, rgba(42,157,143,0.70) 100%);
-            z-index: 99;
+            background: #C9A84C;
+            z-index: 9999;
             pointer-events: none;
-            box-shadow: 0 0 10px rgba(201,168,76,0.40);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            box-shadow: 0 0 8px 2px rgba(201,168,76,0.55);
         }
         /* "Scroll to continue" hint — fades out once wipe starts */
         #hscroll-hint {
@@ -577,8 +591,8 @@
             align-items: center;
             justify-content: center;
         }
-        @media (max-width: 1023px) {
-            #hscroll-hint, #hscroll-progress { display: none; }
+        @media (max-width: 767px) {
+            #hscroll-hint, #hscroll-track, #hscroll-progress { display: none; }
         }
 
         /* ── Portfolio section ── */
