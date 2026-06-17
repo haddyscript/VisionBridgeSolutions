@@ -365,7 +365,7 @@ $svgIcons = [
                 ['icon'=>'cursor',  'image'=>'image/Website_Consulting.jpeg',           'title'=>'Website Consulting',            'desc'=>'Strategic guidance on your website\'s direction, technology, and digital growth potential.'],
             ] as $service)
             <div class="services-card bg-white rounded-2xl border border-gray-100 group overflow-hidden flex flex-col relative"
-                 @if($loop->iteration > 3) data-svc-extra style="display:none;" @endif>
+                 @if($loop->iteration > 3) data-svc-extra style="visibility:hidden;pointer-events:none;" @endif>
                 @if(isset($service['image']))
                 <div class="w-full overflow-hidden relative" style="height:188px;flex-shrink:0;">
                     <img src="{{ asset($service['image']) }}"
@@ -1552,6 +1552,8 @@ $svgIcons = [
 })();
 
 // ── Services toggle (global so inline onclick can reach it) ──
+// Extra cards use visibility:hidden (not display:none) so page height never
+// changes — GSAP pin positions remain valid with no ScrollTrigger.refresh() needed.
 function toggleServices() {
     const extras  = document.querySelectorAll('[data-svc-extra]');
     const label   = document.getElementById('svc-toggle-label');
@@ -1560,8 +1562,11 @@ function toggleServices() {
     const expanded = btn.dataset.expanded === 'true';
 
     if (!expanded) {
-        // Reveal: set display first so GSAP can compute layout
-        extras.forEach(el => { el.style.display = ''; });
+        // Make visible first (cards already occupy layout space)
+        extras.forEach(el => {
+            el.style.visibility = 'visible';
+            el.style.pointerEvents = '';
+        });
 
         // Cinematic cascade — blur focus-in + spring scale + rise
         gsap.fromTo([...extras],
@@ -1575,7 +1580,6 @@ function toggleServices() {
             }
         );
 
-        // Animate label swap: fade out → swap → fade in
         gsap.to(label, { opacity: 0, y: -6, duration: 0.18, ease: 'power2.in', onComplete: () => {
             label.textContent = 'See Less';
             gsap.fromTo(label, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.22, ease: 'power2.out' });
@@ -1583,13 +1587,15 @@ function toggleServices() {
         icon.style.transform = 'rotate(180deg)';
         btn.dataset.expanded = 'true';
     } else {
-        // Collapse: fade + drop extra cards out
         gsap.to([...extras], {
             opacity: 0, y: 30, scale: 0.90, filter: 'blur(6px)',
             duration: 0.38, ease: 'power3.in',
             stagger: { amount: 0.25, from: 'end' },
             onComplete: () => {
-                extras.forEach(el => { el.style.display = 'none'; });
+                extras.forEach(el => {
+                    el.style.visibility = 'hidden';
+                    el.style.pointerEvents = 'none';
+                });
             }
         });
 
