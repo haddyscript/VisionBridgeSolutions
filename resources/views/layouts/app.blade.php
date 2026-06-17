@@ -535,6 +535,22 @@
             color: rgba(17,29,51,0.30);
             writing-mode: vertical-rl;
         }
+        /* Gliding arrow beside the edge label */
+        #hscroll-edge-arrow {
+            display: flex;
+            align-items: center;
+            animation: edge-arrow-glide 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+            opacity: 0.55;
+        }
+        #hscroll-edge-arrow svg {
+            filter: drop-shadow(0 0 4px rgba(201,168,76,0.45));
+        }
+        @keyframes edge-arrow-glide {
+            0%   { transform: translateX(-6px); opacity: 0; }
+            20%  { opacity: 0.55; }
+            80%  { opacity: 0.55; }
+            100% { transform: translateX(10px); opacity: 0; }
+        }
 
         /* Track + bar are fixed to the viewport — must live outside overflow:hidden container */
         #hscroll-track {

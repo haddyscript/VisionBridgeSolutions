@@ -462,6 +462,12 @@ $svgIcons = [
         <div id="hscroll-edge-label">
             <div style="width:1.5px;height:40px;background:linear-gradient(180deg,transparent,#C9A84C,transparent);"></div>
             <span>WHY VISIONBRIDGE</span>
+            {{-- Gliding arrow pointing right --}}
+            <div id="hscroll-edge-arrow" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M13 6l6 6-6 6"/>
+                </svg>
+            </div>
         </div>
     </div>
 
