@@ -496,17 +496,17 @@ $svgIcons = [
         {{-- 4 premium feature cards --}}
         <div id="why-feature-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             @foreach([
-                ['icon'=>'lock',  'title'=>'Ownership First',     'desc'=>'You own everything — domain, content, hosting, data. Always.'],
-                ['icon'=>'mobile','title'=>'Mobile-First Design',  'desc'=>'Every site is built to perform beautifully on any device.'],
-                ['icon'=>'users', 'title'=>'Partnership Approach', 'desc'=>'We work with you, not just for you, through every stage.'],
-                ['icon'=>'bolt',  'title'=>'Fast & Reliable',      'desc'=>'Optimized for speed, uptime, and a seamless user experience.'],
+                ['image'=>'image/Ownership_First.png',       'title'=>'Ownership First',     'desc'=>'You own everything — domain, content, hosting, data. Always.'],
+                ['image'=>'image/Mobile_First_Design.png',   'title'=>'Mobile-First Design',  'desc'=>'Every site is built to perform beautifully on any device.'],
+                ['image'=>'image/Partnership_Approach.png',  'title'=>'Partnership Approach', 'desc'=>'We work with you, not just for you, through every stage.'],
+                ['image'=>'image/Fast_Reliable.png',         'title'=>'Fast & Reliable',      'desc'=>'Optimized for speed, uptime, and a seamless user experience.'],
             ] as $point)
             <div class="group rounded-2xl p-7 hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 cursor-default"
                  style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.07);box-shadow:0 2px 12px rgba(17,29,51,0.05),0 1px 3px rgba(17,29,51,0.03);">
                 <div class="text-xs font-bold tracking-widest mb-5 select-none" style="color:rgba(17,29,51,0.11);">{{ sprintf('%02d', $loop->iteration) }}</div>
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-all duration-300 group-hover:scale-110"
-                     style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.16);">
-                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$point['icon']] !!}</svg>
+                <div class="w-12 h-12 rounded-xl overflow-hidden mb-5 transition-all duration-300 group-hover:scale-110"
+                     style="border:1px solid rgba(201,168,76,0.16);">
+                    <img src="{{ asset($point['image']) }}" alt="{{ $point['title'] }}" style="width:100%;height:100%;object-fit:cover;">
                 </div>
                 <div class="mb-4 transition-all duration-500 group-hover:w-12" style="width:24px;height:1.5px;background:linear-gradient(90deg,#C9A84C,rgba(201,168,76,0.12));border-radius:2px;"></div>
                 <h4 class="font-bold text-base mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#111D33;">{{ $point['title'] }}</h4>
