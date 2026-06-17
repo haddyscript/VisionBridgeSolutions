@@ -330,13 +330,25 @@ $svgIcons = [
      SERVICES SECTION — normal full-height scroll
      User sees all 10 cards before the wipe zone is reached.
      ============================================================ --}}
-<section id="services" class="py-20" style="background: linear-gradient(180deg, #F8F9FA 0%, #EEF2F7 100%);">
+<section id="services" class="pt-20 pb-72" style="background: linear-gradient(180deg, #F8F9FA 0%, #EEF2F7 100%);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-14">
             <span id="services-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">What We Offer</span>
             <h2 id="services-heading" class="section-title">Our Services</h2>
             <div id="services-accent-line"></div>
             <p id="services-subtitle" class="section-subtitle">From initial design to long-term maintenance — we cover everything your online presence needs.</p>
+        </div>
+
+        {{-- Toggle button sits above the grid so it's always reachable --}}
+        <div class="flex justify-center mb-10">
+            <button id="svc-toggle-btn" onclick="toggleServices()"
+                    class="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full font-semibold text-sm transition-all duration-300"
+                    style="background:#111D33;color:#C9A84C;border:1.5px solid rgba(201,168,76,0.30);letter-spacing:0.04em;">
+                <span id="svc-toggle-label">View All Services</span>
+                <svg id="svc-toggle-icon" class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
         </div>
 
         <div id="services-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -352,7 +364,8 @@ $svgIcons = [
                 ['icon'=>'globe',   'image'=>'image/Hosting_Management.jpeg',           'title'=>'Hosting Management',            'desc'=>'We manage your hosting environment so you can focus on running your organization.'],
                 ['icon'=>'cursor',  'image'=>'image/Website_Consulting.jpeg',           'title'=>'Website Consulting',            'desc'=>'Strategic guidance on your website\'s direction, technology, and digital growth potential.'],
             ] as $service)
-            <div class="services-card bg-white rounded-2xl border border-gray-100 group overflow-hidden flex flex-col relative">
+            <div class="services-card bg-white rounded-2xl border border-gray-100 group overflow-hidden flex flex-col relative"
+                 @if($loop->iteration > 3) data-svc-extra style="display:none;" @endif>
                 @if(isset($service['image']))
                 <div class="w-full overflow-hidden relative" style="height:188px;flex-shrink:0;">
                     <img src="{{ asset($service['image']) }}"
@@ -379,6 +392,7 @@ $svgIcons = [
             </div>
             @endforeach
         </div>
+
     </div>
 </section>
 
@@ -1486,5 +1500,56 @@ $svgIcons = [
     })();
 
 })();
+
+// ── Services toggle (global so inline onclick can reach it) ──
+function toggleServices() {
+    const extras  = document.querySelectorAll('[data-svc-extra]');
+    const label   = document.getElementById('svc-toggle-label');
+    const icon    = document.getElementById('svc-toggle-icon');
+    const btn     = document.getElementById('svc-toggle-btn');
+    const expanded = btn.dataset.expanded === 'true';
+
+    if (!expanded) {
+        // Reveal: set display first so GSAP can compute layout
+        extras.forEach(el => { el.style.display = ''; });
+
+        // Cinematic cascade — blur focus-in + spring scale + rise
+        gsap.fromTo([...extras],
+            { opacity: 0, y: 64, scale: 0.84, filter: 'blur(10px)' },
+            {
+                opacity: 1, y: 0, scale: 1, filter: 'blur(0px)',
+                duration: 0.72,
+                ease: 'back.out(1.55)',
+                stagger: { amount: 0.55, from: 'start' },
+                clearProps: 'filter',
+            }
+        );
+
+        // Animate label swap: fade out → swap → fade in
+        gsap.to(label, { opacity: 0, y: -6, duration: 0.18, ease: 'power2.in', onComplete: () => {
+            label.textContent = 'See Less';
+            gsap.fromTo(label, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.22, ease: 'power2.out' });
+        }});
+        icon.style.transform = 'rotate(180deg)';
+        btn.dataset.expanded = 'true';
+    } else {
+        // Collapse: fade + drop extra cards out
+        gsap.to([...extras], {
+            opacity: 0, y: 30, scale: 0.90, filter: 'blur(6px)',
+            duration: 0.38, ease: 'power3.in',
+            stagger: { amount: 0.25, from: 'end' },
+            onComplete: () => {
+                extras.forEach(el => { el.style.display = 'none'; });
+            }
+        });
+
+        gsap.to(label, { opacity: 0, y: -6, duration: 0.18, ease: 'power2.in', onComplete: () => {
+            label.textContent = 'View All Services';
+            gsap.fromTo(label, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.22, ease: 'power2.out' });
+        }});
+        icon.style.transform = 'rotate(0deg)';
+        btn.dataset.expanded = 'false';
+    }
+}
 </script>
 @endsection

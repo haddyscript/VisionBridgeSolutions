@@ -762,6 +762,52 @@
             opacity: 1;
         }
 
+        /* ── Services toggle button ── */
+        #svc-toggle-btn {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.32s cubic-bezier(0.34,1.56,0.64,1),
+                        box-shadow 0.32s ease,
+                        border-color 0.32s ease;
+            will-change: transform;
+            animation: svc-btn-glow 3.2s ease-in-out infinite;
+        }
+        /* Shimmer sweep on hover */
+        #svc-toggle-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -80%;
+            width: 48%; height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(201,168,76,0.30), transparent);
+            transform: skewX(-18deg);
+            pointer-events: none;
+        }
+        #svc-toggle-btn:hover::before {
+            animation: svc-shine 0.55s ease forwards;
+        }
+        @keyframes svc-shine {
+            0%   { left: -80%; opacity: 0; }
+            6%   { opacity: 1; }
+            100% { left: 160%; opacity: 0; }
+        }
+        #svc-toggle-btn:hover {
+            transform: translateY(-4px) scale(1.04);
+            box-shadow: 0 0 32px rgba(201,168,76,0.25), 0 10px 28px rgba(17,29,51,0.30);
+            border-color: rgba(201,168,76,0.60) !important;
+        }
+        #svc-toggle-btn:active {
+            transform: translateY(0) scale(0.97);
+            transition-duration: 0.12s;
+        }
+        /* Idle border-glow pulse */
+        @keyframes svc-btn-glow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(201,168,76,0); }
+            50%       { box-shadow: 0 0 20px 4px rgba(201,168,76,0.16); }
+        }
+        #svc-toggle-btn #svc-toggle-icon {
+            transition: transform 0.40s cubic-bezier(0.34,1.56,0.64,1);
+        }
+
         /* ── Nav scroll-spy active dot ── */
         #nav-active-dot {
             position: absolute;
