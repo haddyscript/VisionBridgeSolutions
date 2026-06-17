@@ -296,10 +296,10 @@ $svgIcons = [
                     @foreach([
                         ['icon'=>'users',       'image'=>'image/Client_Ownership.png',    'title'=>'Client Ownership',    'desc'=>'Your website, your brand, your data — always. We ensure you retain full ownership of every digital asset we create for you.'],
                         ['icon'=>'shield',      'image'=>'image/Long_Term_Stability.png', 'title'=>'Long-Term Stability',  'desc'=>'We don\'t just build and disappear. We provide ongoing support to keep your website secure, updated, and performing.'],
-                        ['icon'=>'sparkles',    'title'=>'Faith-Based Values',   'desc'=>'Rooted in integrity and service, we bring faith-based principles to every client relationship and project we undertake.'],
-                        ['icon'=>'swatch',      'title'=>'Custom Solutions',     'desc'=>'No templates, no shortcuts. Every website is custom-designed to reflect your unique brand and mission.'],
-                        ['icon'=>'trending-up', 'title'=>'Growth Focused',       'desc'=>'We design with your audience growth in mind — clear calls to action, strong messaging, and mobile-first delivery.'],
-                        ['icon'=>'chat',        'title'=>'Professional Support', 'desc'=>'From first inquiry to launch and beyond, you\'ll always have a dedicated team ready to support your online presence.'],
+                        ['icon'=>'sparkles',    'image'=>'image/Faith_Base_Values.png',    'title'=>'Faith-Based Values',   'desc'=>'Rooted in integrity and service, we bring faith-based principles to every client relationship and project we undertake.'],
+                        ['icon'=>'swatch',      'image'=>'image/Custom_Solutions.png',     'title'=>'Custom Solutions',     'desc'=>'No templates, no shortcuts. Every website is custom-designed to reflect your unique brand and mission.'],
+                        ['icon'=>'trending-up', 'image'=>'image/Growth_Focused.png',       'title'=>'Growth Focused',       'desc'=>'We design with your audience growth in mind — clear calls to action, strong messaging, and mobile-first delivery.'],
+                        ['icon'=>'chat',        'image'=>'image/Professional_Support.png', 'title'=>'Professional Support', 'desc'=>'From first inquiry to launch and beyond, you\'ll always have a dedicated team ready to support your online presence.'],
                     ] as $value)
                     <div class="value-card-outer">
                         <div class="value-card">
