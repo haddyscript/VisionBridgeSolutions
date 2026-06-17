@@ -442,6 +442,8 @@
         }
         .value-card-outer:hover .value-title { color: #C9A84C; }
 
+        .value-card-outer:hover .value-card-photo { transform: scale(1.07); }
+
         .value-desc {
             font-size: 0.875rem;
             line-height: 1.72;

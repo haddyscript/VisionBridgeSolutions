@@ -294,8 +294,8 @@ $svgIcons = [
                 </div>
                 <div id="values-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach([
-                        ['icon'=>'users',       'title'=>'Client Ownership',    'desc'=>'Your website, your brand, your data — always. We ensure you retain full ownership of every digital asset we create for you.'],
-                        ['icon'=>'shield',      'title'=>'Long-Term Stability',  'desc'=>'We don\'t just build and disappear. We provide ongoing support to keep your website secure, updated, and performing.'],
+                        ['icon'=>'users',       'image'=>'image/Client_Ownership.png',    'title'=>'Client Ownership',    'desc'=>'Your website, your brand, your data — always. We ensure you retain full ownership of every digital asset we create for you.'],
+                        ['icon'=>'shield',      'image'=>'image/Long_Term_Stability.png', 'title'=>'Long-Term Stability',  'desc'=>'We don\'t just build and disappear. We provide ongoing support to keep your website secure, updated, and performing.'],
                         ['icon'=>'sparkles',    'title'=>'Faith-Based Values',   'desc'=>'Rooted in integrity and service, we bring faith-based principles to every client relationship and project we undertake.'],
                         ['icon'=>'swatch',      'title'=>'Custom Solutions',     'desc'=>'No templates, no shortcuts. Every website is custom-designed to reflect your unique brand and mission.'],
                         ['icon'=>'trending-up', 'title'=>'Growth Focused',       'desc'=>'We design with your audience growth in mind — clear calls to action, strong messaging, and mobile-first delivery.'],
@@ -304,9 +304,18 @@ $svgIcons = [
                     <div class="value-card-outer">
                         <div class="value-card">
                             <div class="value-card-header">
+                                @if(!empty($value['image']))
+                                <div class="value-icon-wrap" style="overflow:hidden;padding:0;">
+                                    <img src="{{ asset($value['image']) }}"
+                                         alt="{{ $value['title'] }}"
+                                         class="value-card-photo"
+                                         style="width:100%;height:100%;object-fit:cover;transition:transform 0.55s ease;">
+                                </div>
+                                @else
                                 <div class="value-icon-wrap">
                                     <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$value['icon']] !!}</svg>
                                 </div>
+                                @endif
                                 <span class="value-number">{{ sprintf('%02d', $loop->iteration) }}</span>
                             </div>
                             <div class="value-card-divider"></div>
