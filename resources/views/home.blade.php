@@ -539,14 +539,14 @@ $svgIcons = [
 <section id="plans" class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-14">
-            <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Ongoing Care</span>
-            <h2 class="section-title">Website Maintenance Plans</h2>
-            <p class="section-subtitle">Keep your website secure, updated, and performing — month after month.</p>
+            <span id="plans-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3" style="opacity:0;transform:translateX(-20px)">Ongoing Care</span>
+            <h2 id="plans-heading" class="section-title" style="opacity:0;transform:translateY(40px)">Website Maintenance Plans</h2>
+            <p id="plans-subtitle" class="section-subtitle" style="opacity:0;transform:translateY(20px)">Keep your website secure, updated, and performing — month after month.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div id="plans-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <!-- Essential Care -->
-            <div class="relative rounded-2xl border-2 border-gold shadow-xl overflow-hidden">
+            <div class="plans-card relative rounded-2xl border-2 border-gold shadow-xl overflow-hidden" style="opacity:0;transform:translateY(60px) scale(0.92)">
                 <div class="bg-gold px-6 py-4 text-navy text-center">
                     <span class="text-xs font-bold tracking-widest uppercase">Most Popular</span>
                 </div>
@@ -571,7 +571,7 @@ $svgIcons = [
             </div>
 
             <!-- Growth Care -->
-            <div class="rounded-2xl border-2 border-gray-100 overflow-hidden opacity-70">
+            <div class="plans-card plans-card-dim rounded-2xl border-2 border-gray-100 overflow-hidden" style="opacity:0;transform:translateY(60px) scale(0.92)">
                 <div class="bg-gray-100 px-6 py-4 text-gray-500 text-center">
                     <span class="text-xs font-bold tracking-widest uppercase">Coming Soon</span>
                 </div>
@@ -595,7 +595,7 @@ $svgIcons = [
             </div>
 
             <!-- Premium Care -->
-            <div class="rounded-2xl border-2 border-gray-100 overflow-hidden opacity-70">
+            <div class="plans-card plans-card-dim rounded-2xl border-2 border-gray-100 overflow-hidden" style="opacity:0;transform:translateY(60px) scale(0.92)">
                 <div class="bg-gray-100 px-6 py-4 text-gray-500 text-center">
                     <span class="text-xs font-bold tracking-widest uppercase">Coming Soon</span>
                 </div>
@@ -1245,6 +1245,56 @@ $svgIcons = [
             .fromTo(title, { opacity:0, y:12 }, { opacity:1, y:0, duration:0.42, ease:'power2.out', delay })
             .fromTo(desc,  { opacity:0, y:8  }, { opacity:1, y:0, duration:0.38, ease:'power2.out' }, '-=0.18');
         });
+
+        // ============================================================
+        //  ONGOING CARE / MAINTENANCE PLANS
+        //  Uses IntersectionObserver (bypasses GSAP pin interference from
+        //  the horizontal wipe section which skews ScrollTrigger positions)
+        // ============================================================
+        (function() {
+            let plansAnimated = false;
+
+            function runPlansAnimation() {
+                if (plansAnimated) return;
+                plansAnimated = true;
+
+                // Header cascade
+                gsap.timeline()
+                    .to('#plans-kicker',   { opacity:1, x:0, letterSpacing:'0.16em', duration:0.60, ease:'power3.out' })
+                    .to('#plans-heading',  { opacity:1, y:0, duration:0.80, ease:'power3.out' }, '-=0.30')
+                    .to('#plans-subtitle', { opacity:1, y:0, duration:0.52, ease:'power2.out' }, '-=0.34');
+
+                // Featured card
+                gsap.to('.plans-card:first-child', {
+                    opacity:1, y:0, scale:1,
+                    duration:0.85, ease:'back.out(1.5)', delay:0.25,
+                });
+                // Coming Soon cards land at 0.70
+                gsap.to('.plans-card-dim', {
+                    opacity:0.70, y:0, scale:1,
+                    duration:0.85, ease:'back.out(1.5)', stagger:0.16, delay:0.41,
+                });
+
+                // Price count-up
+                const priceEl = document.querySelector('#plans-grid .plans-card:first-child .text-5xl');
+                if (priceEl) {
+                    gsap.fromTo({ val:0 }, { val:59 }, {
+                        duration:1.10, ease:'power2.out', delay:0.70,
+                        onUpdate() { priceEl.textContent = '$' + Math.round(this.targets()[0].val); },
+                    });
+                }
+            }
+
+            const io = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    runPlansAnimation();
+                    io.disconnect();
+                }
+            }, { threshold: 0.12 });
+
+            const plansSection = document.getElementById('plans');
+            if (plansSection) io.observe(plansSection);
+        })();
 
         // ============================================================
         //  PORTFOLIO — cinematic header + dealt-card entrance + 3D tilt
