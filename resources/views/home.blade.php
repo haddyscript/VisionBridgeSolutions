@@ -812,154 +812,144 @@ $svgIcons = [
 </section>
 
 {{-- ============================================================
-     CONTACT SECTION — light, welcoming, premium
+     CONTACT SECTION — dark, cinematic
      ============================================================ --}}
-<section id="contact" class="py-24 relative overflow-hidden" style="background:linear-gradient(160deg,#F4F7FC 0%,#FFFFFF 50%,#F0F5FB 100%);">
-    <div class="hero-orb" style="width:620px;height:620px;top:-180px;right:-160px;background:radial-gradient(circle,rgba(201,168,76,0.07) 0%,transparent 70%);animation:orb-drift 22s ease-in-out infinite;filter:blur(72px);"></div>
-    <div class="hero-orb" style="width:480px;height:480px;bottom:-140px;left:-100px;background:radial-gradient(circle,rgba(42,157,143,0.06) 0%,transparent 70%);animation:orb-drift 18s ease-in-out infinite reverse 4s;filter:blur(60px);"></div>
-    <div class="absolute inset-0 pointer-events-none" style="opacity:0.25;background-image:radial-gradient(circle,rgba(17,29,51,0.045) 1px,transparent 1px);background-size:28px 28px;"></div>
+<section id="contact" class="relative overflow-hidden py-24" style="background:#080F1C;">
+
+    {{-- Ambient orbs --}}
+    <div class="hero-orb" style="width:600px;height:600px;top:-160px;right:-160px;background:radial-gradient(circle,rgba(201,168,76,0.08) 0%,transparent 70%);filter:blur(80px);animation:orb-drift 22s ease-in-out infinite;"></div>
+    <div class="hero-orb" style="width:480px;height:480px;bottom:-140px;left:-100px;background:radial-gradient(circle,rgba(42,157,143,0.07) 0%,transparent 70%);filter:blur(68px);animation:orb-drift 18s ease-in-out infinite reverse 4s;"></div>
+
+    {{-- Large watermark "CONTACT" text --}}
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden" style="z-index:0;">
+        <span class="font-display font-bold uppercase" style="font-size:clamp(6rem,18vw,16rem);color:rgba(255,255,255,0.03);letter-spacing:0.12em;white-space:nowrap;">CONTACT</span>
+    </div>
+
     <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
-        <div class="text-center mb-16">
-            <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-4">Let's Connect</span>
-            <h2 class="font-display font-bold leading-tight mb-4" style="font-size:clamp(2rem,4vw,3.2rem);color:#111D33;">Ready to Start<br><span style="color:#C9A84C;">Your Project?</span></h2>
-            <div style="width:48px;height:2px;background:linear-gradient(90deg,#C9A84C,rgba(201,168,76,0.15));border-radius:2px;margin:0 auto 18px;"></div>
-            <p class="text-lg max-w-xl mx-auto" style="color:rgba(17,29,51,0.50);">We'll get back to you within 24 hours to discuss your vision and how we can help.</p>
-        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
 
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
+            {{-- ── Left: info panel ── --}}
+            <div class="flex flex-col gap-6">
 
-            {{-- Left info panel (2 cols) --}}
-            <div class="lg:col-span-2 flex flex-col gap-5">
-
-                <div class="rounded-2xl p-7" style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.07);box-shadow:0 4px 24px rgba(17,29,51,0.06);">
-                    <h3 class="font-display font-bold text-xl mb-2" style="color:#111D33;">We'd love to hear from you.</h3>
-                    <p class="text-sm leading-relaxed" style="color:rgba(17,29,51,0.50);">Whether you're starting fresh or need to elevate an existing presence — we're here to help every step of the way.</p>
+                {{-- Badge --}}
+                <div class="inline-flex items-center gap-2 self-start px-4 py-2 rounded-full" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);">
+                    <div class="w-5 h-5 rounded-full flex items-center justify-center" style="background:rgba(201,168,76,0.20);">
+                        <svg class="w-3 h-3 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                    </div>
+                    <span class="text-xs font-semibold tracking-widest uppercase" style="color:rgba(255,255,255,0.65);">Let's Connect</span>
                 </div>
 
-                <div class="rounded-2xl p-5 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300" style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.07);box-shadow:0 2px 12px rgba(17,29,51,0.05);">
-                    <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110" style="background:rgba(201,168,76,0.09);border:1px solid rgba(201,168,76,0.18);">
-                        <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                    </div>
-                    <div>
-                        <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(17,29,51,0.35);">Phone</p>
-                        <p class="font-semibold text-sm" style="color:#111D33;">(555) 000-0000</p>
-                    </div>
+                {{-- Heading --}}
+                <div>
+                    <h2 class="font-display font-bold text-white leading-tight mb-3" style="font-size:clamp(2.2rem,4.5vw,3.4rem);">
+                        Get in<br><span style="color:#C9A84C;">Touch</span>
+                    </h2>
+                    <p class="text-base leading-relaxed" style="color:rgba(255,255,255,0.45);max-width:380px;">Have questions or ready to start your project? We'll get back to you within 24 hours.</p>
                 </div>
 
-                <div class="rounded-2xl p-5 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300" style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.07);box-shadow:0 2px 12px rgba(17,29,51,0.05);">
-                    <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110" style="background:rgba(42,157,143,0.08);border:1px solid rgba(42,157,143,0.16);">
-                        <svg class="w-5 h-5 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    </div>
-                    <div>
-                        <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(17,29,51,0.35);">Email</p>
-                        <p class="font-semibold text-sm" style="color:#111D33;">info@visionbridgesolutions.com</p>
-                    </div>
-                </div>
+                {{-- Contact cards --}}
+                <div class="flex flex-col gap-3 mt-2">
 
-                <div class="rounded-2xl p-6" style="background:linear-gradient(135deg,#F0FAF9 0%,#EDFAF8 100%);border:1px solid rgba(42,157,143,0.18);box-shadow:0 4px 20px rgba(42,157,143,0.07);">
-                    <div class="flex items-center gap-2 mb-2">
-                        <div class="w-2 h-2 rounded-full bg-teal"></div>
-                        <span class="text-xs font-semibold tracking-widest uppercase" style="color:rgba(42,157,143,0.75);">Free Consultation</span>
+                    {{-- Email --}}
+                    <div class="group flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:-translate-y-0.5" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+                        <div class="w-11 h-11 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,0.92);border:1px solid rgba(201,168,76,0.20);">
+                            <img src="{{ asset('image/Email_us.png') }}" alt="Email us" style="width:78%;height:78%;object-fit:contain;">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(255,255,255,0.35);">Email us</p>
+                            <p class="text-sm font-semibold text-white truncate">info@visionbridgesolutions.com</p>
+                        </div>
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-gold/20" style="background:rgba(255,255,255,0.06);">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="rgba(255,255,255,0.50)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                        </div>
                     </div>
-                    <h4 class="font-bold mb-1" style="color:#111D33;font-size:0.95rem;">Prefer to talk first?</h4>
-                    <p class="text-sm mb-4" style="color:rgba(17,29,51,0.52);">Book a free 30-minute call and let's discuss your vision together.</p>
-                    <a href="#" class="inline-flex items-center gap-2 font-bold text-sm px-5 py-2.5 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg" style="background:#C9A84C;color:#111D33;">
-                        Book A Consultation
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                    </a>
-                </div>
 
-                <div class="grid grid-cols-3 gap-3">
-                    @foreach([['24h','Response Time'],['Free','Consultation'],['100%','Ownership']] as $badge)
-                    <div class="rounded-xl p-3 text-center" style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.07);box-shadow:0 1px 6px rgba(17,29,51,0.04);">
-                        <div class="font-display font-bold text-base" style="color:#C9A84C;">{{ $badge[0] }}</div>
-                        <div class="text-xs leading-tight mt-0.5" style="color:rgba(17,29,51,0.45);">{{ $badge[1] }}</div>
+                    {{-- Phone --}}
+                    <div class="group flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:-translate-y-0.5" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+                        <div class="w-11 h-11 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,0.92);border:1px solid rgba(42,157,143,0.22);">
+                            <img src="{{ asset('image/Call_us.png') }}" alt="Call us" style="width:78%;height:78%;object-fit:contain;">
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(255,255,255,0.35);">Call us</p>
+                            <p class="text-sm font-semibold text-white">(555) 000-0000</p>
+                        </div>
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-gold/20" style="background:rgba(255,255,255,0.06);">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="rgba(255,255,255,0.50)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                        </div>
                     </div>
-                    @endforeach
+
+                    {{-- Consultation --}}
+                    <div class="group flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:-translate-y-0.5" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+                        <div class="w-11 h-11 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,0.92);border:1px solid rgba(201,168,76,0.20);">
+                            <img src="{{ asset('image/Free_Consultation.png') }}" alt="Free Consultation" style="width:78%;height:78%;object-fit:contain;">
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(255,255,255,0.35);">Free Consultation</p>
+                            <p class="text-sm font-semibold text-white">Book a 30-minute call</p>
+                        </div>
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-gold/20" style="background:rgba(255,255,255,0.06);">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="rgba(255,255,255,0.50)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {{-- Right: Form (3 cols) --}}
-            <div class="lg:col-span-3">
-                <div class="rounded-3xl overflow-hidden" style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.08);box-shadow:0 12px 52px rgba(17,29,51,0.08),0 3px 10px rgba(17,29,51,0.04);">
-                    <div style="height:3px;background:linear-gradient(90deg,#C9A84C,rgba(42,157,143,0.60),rgba(201,168,76,0.30));"></div>
-                    <div class="p-8 sm:p-10">
-                        <h3 class="font-bold text-lg mb-6" style="color:#111D33;">Send Us a Message</h3>
-                        <form action="#" method="POST" class="space-y-4">
-                            @csrf
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-widest mb-1.5" style="color:rgba(17,29,51,0.45);">First Name</label>
-                                    <input type="text" name="first_name" required placeholder="Johnny"
-                                           class="w-full rounded-xl px-4 py-3 text-sm focus:outline-none transition-all duration-200"
-                                           style="border:1px solid rgba(17,29,51,0.12);background:#FAFBFC;color:#111D33;"
-                                           onfocus="this.style.borderColor='#2A9D8F';this.style.boxShadow='0 0 0 3px rgba(42,157,143,0.12)'"
-                                           onblur="this.style.borderColor='rgba(17,29,51,0.12)';this.style.boxShadow='none'">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-widest mb-1.5" style="color:rgba(17,29,51,0.45);">Last Name</label>
-                                    <input type="text" name="last_name" required placeholder="Davis"
-                                           class="w-full rounded-xl px-4 py-3 text-sm focus:outline-none transition-all duration-200"
-                                           style="border:1px solid rgba(17,29,51,0.12);background:#FAFBFC;color:#111D33;"
-                                           onfocus="this.style.borderColor='#2A9D8F';this.style.boxShadow='0 0 0 3px rgba(42,157,143,0.12)'"
-                                           onblur="this.style.borderColor='rgba(17,29,51,0.12)';this.style.boxShadow='none'">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase tracking-widest mb-1.5" style="color:rgba(17,29,51,0.45);">Email Address</label>
-                                <input type="email" name="email" required placeholder="you@example.com"
-                                       class="w-full rounded-xl px-4 py-3 text-sm focus:outline-none transition-all duration-200"
-                                       style="border:1px solid rgba(17,29,51,0.12);background:#FAFBFC;color:#111D33;"
-                                       onfocus="this.style.borderColor='#2A9D8F';this.style.boxShadow='0 0 0 3px rgba(42,157,143,0.12)'"
-                                       onblur="this.style.borderColor='rgba(17,29,51,0.12)';this.style.boxShadow='none'">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase tracking-widest mb-1.5" style="color:rgba(17,29,51,0.45);">Organization / Business</label>
-                                <input type="text" name="organization" placeholder="Your Church, Ministry, or Business"
-                                       class="w-full rounded-xl px-4 py-3 text-sm focus:outline-none transition-all duration-200"
-                                       style="border:1px solid rgba(17,29,51,0.12);background:#FAFBFC;color:#111D33;"
-                                       onfocus="this.style.borderColor='#2A9D8F';this.style.boxShadow='0 0 0 3px rgba(42,157,143,0.12)'"
-                                       onblur="this.style.borderColor='rgba(17,29,51,0.12)';this.style.boxShadow='none'">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase tracking-widest mb-1.5" style="color:rgba(17,29,51,0.45);">Service You're Interested In</label>
-                                <select name="service"
-                                        class="w-full rounded-xl px-4 py-3 text-sm focus:outline-none transition-all duration-200"
-                                        style="border:1px solid rgba(17,29,51,0.12);background:#FAFBFC;color:rgba(17,29,51,0.65);"
-                                        onfocus="this.style.borderColor='#2A9D8F';this.style.boxShadow='0 0 0 3px rgba(42,157,143,0.12)'"
-                                        onblur="this.style.borderColor='rgba(17,29,51,0.12)';this.style.boxShadow='none'">
-                                    <option value="">Select a service...</option>
-                                    <option>Custom Website Development</option>
-                                    <option>Church Website Development</option>
-                                    <option>Ministry Website Development</option>
-                                    <option>Nonprofit Website Development</option>
-                                    <option>Small Business Website Development</option>
-                                    <option>Landing Page Development</option>
-                                    <option>Website Redesign</option>
-                                    <option>Website Maintenance</option>
-                                    <option>Hosting Management</option>
-                                    <option>Website Consulting</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase tracking-widest mb-1.5" style="color:rgba(17,29,51,0.45);">Tell Us About Your Project</label>
-                                <textarea name="message" rows="4" placeholder="Share a little about your vision and what you need..."
-                                          class="w-full rounded-xl px-4 py-3 text-sm focus:outline-none transition-all duration-200 resize-none"
-                                          style="border:1px solid rgba(17,29,51,0.12);background:#FAFBFC;color:#111D33;"
-                                          onfocus="this.style.borderColor='#2A9D8F';this.style.boxShadow='0 0 0 3px rgba(42,157,143,0.12)'"
-                                          onblur="this.style.borderColor='rgba(17,29,51,0.12)';this.style.boxShadow='none'"></textarea>
-                            </div>
-                            <button type="submit"
-                                    class="w-full flex items-center justify-center gap-2 font-bold text-base py-3.5 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl"
-                                    style="background:#C9A84C;color:#111D33;"
-                                    onmouseover="this.style.background='#DFC06A'"
-                                    onmouseout="this.style.background='#C9A84C'">
-                                Send Message
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                            </button>
-                        </form>
+            {{-- ── Right: Form ── --}}
+            <div class="rounded-3xl p-8 sm:p-10" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(12px);">
+                <form action="#" method="POST" class="space-y-4">
+                    @csrf
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <input type="text" name="first_name" required placeholder="First Name"
+                               class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
+                               style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:#fff;"
+                               onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
+                               onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">
+                        <input type="text" name="last_name" required placeholder="Last Name"
+                               class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
+                               style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:#fff;"
+                               onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
+                               onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">
                     </div>
-                </div>
+                    <input type="email" name="email" required placeholder="Email Address"
+                           class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
+                           style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:#fff;"
+                           onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
+                           onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">
+                    <input type="text" name="organization" placeholder="Organization / Business"
+                           class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
+                           style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:#fff;"
+                           onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
+                           onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">
+                    <select name="service"
+                            class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
+                            style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:rgba(255,255,255,0.55);"
+                            onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
+                            onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">
+                        <option value="" style="background:#111D33;">Select a service...</option>
+                        <option style="background:#111D33;">Custom Website Development</option>
+                        <option style="background:#111D33;">Church Website Development</option>
+                        <option style="background:#111D33;">Ministry Website Development</option>
+                        <option style="background:#111D33;">Nonprofit Website Development</option>
+                        <option style="background:#111D33;">Small Business Website Development</option>
+                        <option style="background:#111D33;">Landing Page Development</option>
+                        <option style="background:#111D33;">Website Redesign</option>
+                        <option style="background:#111D33;">Website Maintenance</option>
+                        <option style="background:#111D33;">Hosting Management</option>
+                        <option style="background:#111D33;">Website Consulting</option>
+                    </select>
+                    <textarea name="message" rows="5" placeholder="Tell us about your project..."
+                              class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200 resize-none"
+                              style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:#fff;"
+                              onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
+                              onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'"></textarea>
+                    <button type="submit"
+                            class="w-full font-bold text-base py-4 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-2xl"
+                            style="background:#ffffff;color:#111D33;"
+                            onmouseover="this.style.background='#C9A84C'"
+                            onmouseout="this.style.background='#ffffff'">
+                        Send Message
+                    </button>
+                </form>
             </div>
 
         </div>
