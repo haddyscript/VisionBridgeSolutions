@@ -344,8 +344,8 @@
 
         .value-card-outer {
             border-radius: 20px;
-            will-change: transform, opacity;
-            opacity: 0;
+            will-change: transform;
+            opacity: 1;
             cursor: default;
             transition: transform 0.36s cubic-bezier(0.34,1.56,0.64,1);
         }

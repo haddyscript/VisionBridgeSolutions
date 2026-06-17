@@ -763,7 +763,7 @@ $svgIcons = [
                 </div>
             </div>
 
-            <a href="https://faithstack.johnnydavisglobalmission.org/" target="_blank" rel="noopener"
+            <a 
                class="rounded-2xl border border-teal/20 bg-teal/5 overflow-hidden hover:shadow-xl transition-all duration-300 group block" style="text-decoration:none;">
                 {{-- FaithStack thumbnail --}}
                 <div class="w-full overflow-hidden" style="height:200px;">
@@ -1292,25 +1292,45 @@ $svgIcons = [
         });
 
         // ============================================================
-        //  CORE VALUES — bi-directional stagger + icon spring hovers
+        //  CORE VALUES — Curtains Clip-Wipe reveal
         // ============================================================
 
-        // Staggered entrance; user explicitly wants full play/reverse
-        // in both scroll directions for this section's cinematic effect
-        gsap.fromTo('.value-card-outer',
-            { opacity: 0, y: 38 },
-            {
-                opacity: 1, y: 0,
-                duration: 0.75,
-                stagger: 0.13,
-                ease: 'power3.out',
-                scrollTrigger: {
-                    trigger: '#values-grid',
-                    start:   'top 82%',
-                    toggleActions: 'play reverse play reverse',
-                },
-            }
-        );
+        // Two overlay panels cover each card (left + right half).
+        // On scroll-in they slide outward like theater curtains, one
+        // card at a time. Curtains close again on scroll-back.
+        document.querySelectorAll('.value-card-outer').forEach(card => {
+            card.style.position = 'relative';
+            card.style.overflow = 'hidden';
+            ['l', 'r'].forEach(side => {
+                const el = document.createElement('div');
+                el.className = 'val-curtain val-curtain-' + side;
+                Object.assign(el.style, {
+                    position:      'absolute',
+                    top:           '0',
+                    bottom:        '0',
+                    width:         '51%',
+                    background:    'linear-gradient(145deg,#F4F7FC 0%,#FAFBFD 55%,#EFF4FA 100%)',
+                    zIndex:        '10',
+                    pointerEvents: 'none',
+                    willChange:    'transform',
+                });
+                el.style[side === 'l' ? 'left' : 'right'] = '0';
+                card.appendChild(el);
+            });
+        });
+
+        // One timeline owns the single ScrollTrigger so both curtain
+        // directions animate in lock-step and toggle/reverse cleanly.
+        const curtainTl = gsap.timeline({
+            scrollTrigger: {
+                trigger:       '#values-grid',
+                start:         'top 85%',
+                toggleActions: 'play reverse play reverse',
+            },
+        });
+        curtainTl
+            .to('.val-curtain-l', { x: '-100%', duration: 1.35, ease: 'power3.inOut', stagger: 0.15 }, 0)
+            .to('.val-curtain-r', { x:  '100%', duration: 1.35, ease: 'power3.inOut', stagger: 0.15 }, 0);
 
         // Icon spring micro-hover — GSAP elastic easing for organic feel
         document.querySelectorAll('.value-card-outer').forEach(card => {
