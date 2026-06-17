@@ -330,7 +330,7 @@ $svgIcons = [
      SERVICES SECTION — normal full-height scroll
      User sees all 10 cards before the wipe zone is reached.
      ============================================================ --}}
-<section id="services" class="pt-20 pb-72" style="background: linear-gradient(180deg, #F8F9FA 0%, #EEF2F7 100%);">
+<section id="services" class="pt-20 pb-16" style="background: linear-gradient(180deg, #F8F9FA 0%, #EEF2F7 100%);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-14">
             <span id="services-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">What We Offer</span>
@@ -365,7 +365,7 @@ $svgIcons = [
                 ['icon'=>'cursor',  'image'=>'image/Website_Consulting.jpeg',           'title'=>'Website Consulting',            'desc'=>'Strategic guidance on your website\'s direction, technology, and digital growth potential.'],
             ] as $service)
             <div class="services-card bg-white rounded-2xl border border-gray-100 group overflow-hidden flex flex-col relative"
-                 @if($loop->iteration > 3) data-svc-extra style="visibility:hidden;pointer-events:none;" @endif>
+                 @if($loop->iteration > 3) data-svc-extra style="display:none;" @endif>
                 {{-- Shimmer sweep (triggered by JS on mouseenter) --}}
                 <div class="svc-shimmer"></div>
                 @if(isset($service['image']))
@@ -1503,13 +1503,18 @@ $svgIcons = [
                 x: 0,
                 ease: 'none',
                 scrollTrigger: {
+                    id: 'hscroll-wipe',
                     trigger: outer,
                     pin: true,
                     scrub: 1.2,
                     start: 'top top',
                     end: () => '+=' + vw(),
                     invalidateOnRefresh: true,
-                    onRefresh() { gsap.set(why, { x: vw() }); },
+                    onRefresh(self) {
+                        // Only reset #why when wipe hasn't started — prevents
+                        // disrupting a mid-wipe position after a refresh call
+                        if (self.progress <= 0.01) gsap.set(why, { x: vw() });
+                    },
                     onEnter()   { showBar(); },
                     onUpdate(self) {
                         const p = self.progress;
@@ -1586,21 +1591,29 @@ $svgIcons = [
 })();
 
 // ── Services toggle (global so inline onclick can reach it) ──
-// Extra cards use visibility:hidden (not display:none) so page height never
-// changes — GSAP pin positions remain valid with no ScrollTrigger.refresh() needed.
+// Uses display:none to eliminate the gap in collapsed state.
+// After each toggle, calls ScrollTrigger.refresh() safely — the improved
+// onRefresh only resets #why when progress ≤ 1%, so mid-wipe refreshes
+// don't jump the wipe back to the start.
 function toggleServices() {
-    const extras  = document.querySelectorAll('[data-svc-extra]');
-    const label   = document.getElementById('svc-toggle-label');
-    const icon    = document.getElementById('svc-toggle-icon');
-    const btn     = document.getElementById('svc-toggle-btn');
+    const extras   = document.querySelectorAll('[data-svc-extra]');
+    const label    = document.getElementById('svc-toggle-label');
+    const icon     = document.getElementById('svc-toggle-icon');
+    const btn      = document.getElementById('svc-toggle-btn');
     const expanded = btn.dataset.expanded === 'true';
 
+    const safeRefresh = () => {
+        if (window.innerWidth < 1024) return; // wipe only exists on desktop
+        const wipeST = typeof ScrollTrigger !== 'undefined' && ScrollTrigger.getById('hscroll-wipe');
+        // Refresh ONLY the wipe instance (not global — global refresh rebuilds all pin
+        // spacers and corrupts the layout). Only safe when pin hasn't fired yet (progress ≤ 0).
+        if (wipeST && wipeST.progress <= 0.01) wipeST.refresh();
+    };
+
     if (!expanded) {
-        // Make visible first (cards already occupy layout space)
-        extras.forEach(el => {
-            el.style.visibility = 'visible';
-            el.style.pointerEvents = '';
-        });
+        // Show cards before animating
+        extras.forEach(el => { el.style.display = ''; });
+        safeRefresh();
 
         // Cinematic cascade — blur focus-in + spring scale + rise
         gsap.fromTo([...extras],
@@ -1626,10 +1639,8 @@ function toggleServices() {
             duration: 0.38, ease: 'power3.in',
             stagger: { amount: 0.25, from: 'end' },
             onComplete: () => {
-                extras.forEach(el => {
-                    el.style.visibility = 'hidden';
-                    el.style.pointerEvents = 'none';
-                });
+                extras.forEach(el => { el.style.display = 'none'; });
+                safeRefresh();
             }
         });
 
