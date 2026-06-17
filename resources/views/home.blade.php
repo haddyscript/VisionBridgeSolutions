@@ -253,10 +253,8 @@ $svgIcons = [
                 {{-- Mission card — light, airy, gold-accented --}}
                 <div class="about-card rounded-2xl flex-1 relative overflow-hidden" style="padding:22px 24px;background:#FFFFFF;border:1px solid rgba(201,168,76,0.14);box-shadow:0 4px 28px rgba(17,29,51,0.07),0 1px 4px rgba(17,29,51,0.04);">
                     <div class="absolute left-0 top-6 bottom-6 w-0.5 rounded-r-full" style="background:linear-gradient(180deg,#C9A84C 0%,rgba(201,168,76,0.15) 100%);"></div>
-                    <div class="card-icon w-10 h-10 rounded-xl flex items-center justify-center mb-4" style="background:rgba(201,168,76,0.09);border:1px solid rgba(201,168,76,0.18);">
-                        <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
+                    <div class="card-icon w-10 h-10 rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(201,168,76,0.18);">
+                        <img src="{{ asset('image/Our_Mission.png') }}" alt="Our Mission" style="width:100%;height:100%;object-fit:cover;">
                     </div>
                     <h3 class="card-title font-bold mb-2" style="font-size:1rem;color:#111D33;">Our Mission</h3>
                     <p class="card-body" style="font-size:0.845rem;line-height:1.68;color:rgba(17,29,51,0.56);">To help ministries, churches, nonprofits, entrepreneurs, and businesses establish a professional online presence through custom website development, ongoing support, and long-term website stability.</p>
@@ -265,10 +263,8 @@ $svgIcons = [
                 {{-- Vision card — soft teal tint, welcoming --}}
                 <div class="about-card rounded-2xl flex-1 relative overflow-hidden" style="padding:22px 24px;background:linear-gradient(135deg,#F0FAF9 0%,#EDFAF8 100%);border:1px solid rgba(42,157,143,0.18);box-shadow:0 4px 28px rgba(42,157,143,0.08),0 1px 4px rgba(42,157,143,0.04);">
                     <div class="absolute left-0 top-6 bottom-6 w-0.5 rounded-r-full" style="background:linear-gradient(180deg,#2A9D8F 0%,rgba(42,157,143,0.15) 100%);"></div>
-                    <div class="card-icon w-10 h-10 rounded-xl flex items-center justify-center mb-4" style="background:rgba(42,157,143,0.12);border:1px solid rgba(42,157,143,0.22);">
-                        <svg class="w-5 h-5 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                        </svg>
+                    <div class="card-icon w-10 h-10 rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(42,157,143,0.22);">
+                        <img src="{{ asset('image/Our_Vision.png') }}" alt="Our Vision" style="width:100%;height:100%;object-fit:cover;">
                     </div>
                     <h3 class="card-title font-bold mb-2" style="font-size:1rem;color:#111D33;">Our Vision</h3>
                     <p class="card-body" style="font-size:0.845rem;line-height:1.68;color:rgba(17,29,51,0.56);">To become a trusted website solutions company that bridges the gap between vision and digital presence while helping clients maintain ownership, security, and confidence in their online future.</p>
