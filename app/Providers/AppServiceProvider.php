@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\ContactMessage;
 use App\Models\IntakeSubmission;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -23,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('layouts.admin', function ($view) {
             $view->with('newIntakeCount', IntakeSubmission::where('status', 'new')->count());
+            $view->with('unreadContactCount', ContactMessage::whereNull('read_at')->count());
         });
     }
 }

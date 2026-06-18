@@ -5,6 +5,16 @@
 
 @section('content')
 
+<form method="GET" class="flex items-center justify-end gap-2 mb-5">
+    <label class="text-xs font-semibold uppercase tracking-wide text-gray-400">Sort by</label>
+    <select name="sort" onchange="this.form.submit()"
+            class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+        @foreach (\App\Http\Controllers\Admin\ContactMessageController::SORTS as $value => $label)
+            <option value="{{ $value }}" {{ $sort === $value ? 'selected' : '' }}>{{ $label }}</option>
+        @endforeach
+    </select>
+</form>
+
 @if ($messages->isEmpty())
     <div class="bg-white rounded-xl border border-gray-200 p-10 text-center">
         <p class="text-gray-500">No messages from the "Get in Touch" form yet.</p>
@@ -12,14 +22,24 @@
 @else
     <div class="space-y-4">
         @foreach ($messages as $message)
-            <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <div class="bg-white rounded-xl border p-6 {{ $message->isRead() ? 'border-gray-200' : 'border-gold/40 shadow-sm' }}" style="{{ $message->isRead() ? '' : 'background:linear-gradient(to right, rgba(201,168,76,0.05), #ffffff 12%);' }}">
                 <div class="flex flex-wrap items-start justify-between gap-4 mb-3">
-                    <div>
-                        <p class="font-semibold text-navy">{{ $message->first_name }} {{ $message->last_name }}</p>
-                        <a href="mailto:{{ $message->email }}" class="text-sm text-gold-dark hover:underline">{{ $message->email }}</a>
-                        @if ($message->organization)
-                            <span class="text-sm text-gray-400"> &middot; {{ $message->organization }}</span>
+                    <div class="flex items-center gap-2.5">
+                        @if (! $message->isRead())
+                            <span class="w-2 h-2 rounded-full bg-gold shrink-0" title="Unread"></span>
                         @endif
+                        <div>
+                            <p class="font-semibold text-navy {{ $message->isRead() ? '' : 'font-bold' }}">
+                                {{ $message->first_name }} {{ $message->last_name }}
+                                @if (! $message->isRead())
+                                    <span class="ml-1.5 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">New</span>
+                                @endif
+                            </p>
+                            <a href="mailto:{{ $message->email }}" class="text-sm text-gold-dark hover:underline">{{ $message->email }}</a>
+                            @if ($message->organization)
+                                <span class="text-sm text-gray-400"> &middot; {{ $message->organization }}</span>
+                            @endif
+                        </div>
                     </div>
                     <div class="text-right shrink-0">
                         @if ($message->service)
@@ -32,8 +52,23 @@
                 </div>
 
                 @if ($message->message)
-                    <p class="text-sm text-gray-700 whitespace-pre-line border-t border-gray-100 pt-3">{{ $message->message }}</p>
+                    <p class="text-sm text-gray-700 whitespace-pre-line border-t border-gray-100 pt-3 mb-3">{{ $message->message }}</p>
                 @endif
+
+                <form method="POST" action="{{ route('admin.contact-messages.toggle-read', $message) }}" class="flex justify-end">
+                    @csrf
+                    @method('PATCH')
+                    @if ($message->isRead())
+                        <button type="submit" class="text-xs font-semibold text-navy bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full transition-colors">
+                            Mark as Unread
+                        </button>
+                    @else
+                        <button type="submit" class="inline-flex items-center gap-1.5 text-xs font-semibold text-gold-dark bg-gold/10 border border-gold/30 px-3 py-1.5 rounded-full hover:bg-gold/15 transition-colors">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            Mark as Read
+                        </button>
+                    @endif
+                </form>
             </div>
         @endforeach
     </div>

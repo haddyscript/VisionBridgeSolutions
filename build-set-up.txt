@@ -17,7 +17,7 @@ docker compose exec app composer require stripe/stripe-php --no-interaction 2>&1
 # website
 http://localhost:8000/login
 
-# php myadmin
+# php myadmins
 http://localhost:8080/
 
 

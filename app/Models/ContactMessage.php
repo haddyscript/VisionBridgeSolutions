@@ -13,5 +13,18 @@ class ContactMessage extends Model
         'organization',
         'service',
         'message',
+        'read_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'read_at' => 'datetime',
+        ];
+    }
+
+    public function isRead(): bool
+    {
+        return $this->read_at !== null;
+    }
 }
