@@ -38,7 +38,7 @@ class UploadController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $originalName = $file->getClientOriginalName();
-            $path = $file->store("projects/{$project->id}/{$validated['category']}", 'public');
+            $path = $file->store("projects/{$project->id}/{$validated['category']}", 'client_uploads');
         }
 
         $project->uploads()->create([
@@ -57,7 +57,7 @@ class UploadController extends Controller
         $this->authorizeProject($request, $upload->project);
 
         if ($upload->path) {
-            Storage::disk('public')->delete($upload->path);
+            Storage::disk('client_uploads')->delete($upload->path);
         }
 
         $upload->delete();

@@ -27,6 +27,6 @@ class Upload extends Model
 
     public function url(): ?string
     {
-        return $this->path ? asset('storage/'.$this->path) : null;
+        return $this->path ? asset('client-uploads/'.$this->path) : null;
     }
 }

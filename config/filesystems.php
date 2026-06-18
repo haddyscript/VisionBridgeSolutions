@@ -47,6 +47,15 @@ return [
             'report' => false,
         ],
 
+        'client_uploads' => [
+            'driver' => 'local',
+            'root' => public_path('client-uploads'),
+            'url' => env('APP_URL').'/client-uploads',
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
