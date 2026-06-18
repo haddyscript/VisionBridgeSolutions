@@ -32,7 +32,7 @@ Secure portal allowing clients to:
 • Track Project Progress
 ---------------------------------------------------------------------------------
 
-# ON GOING NOW
+# DONE
 
 
 Client Intake Portal

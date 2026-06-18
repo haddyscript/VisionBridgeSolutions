@@ -39,5 +39,14 @@ class DatabaseSeeder extends Seeder
                 ['title' => 'Launch', 'status' => 'pending', 'position' => 5],
             ]);
         }
+
+        User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'FaithStack Admin',
+                'role' => 'admin',
+                'password' => bcrypt('password'),
+            ]
+        );
     }
 }
