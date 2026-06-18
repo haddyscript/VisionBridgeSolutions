@@ -24,3 +24,6 @@ http://localhost:8080/
 # check routes
 
 docker compose exec app php artisan route:list --path=payments 2>&1; docker compose exec app php artisan route:list --path=stripe 2>&1
+
+# refreshment
+docker compose exec app php artisan view:cache 2>&1 | grep -v "^time="; docker compose exec app php artisan view:clear 2>&1 | grep -v "^time="; docker compose exec app php artisan route:list --path=care-plans 2>&1 | grep -v "^time="

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\IntakeSubmissionController as AdminIntakeSubmissionController;
+use App\Http\Controllers\Admin\MaintenancePlanController as AdminMaintenancePlanController;
 use App\Http\Controllers\Admin\MilestoneController as AdminMilestoneController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\IntakeController;
+use App\Models\MaintenancePlan;
 use App\Http\Controllers\Portal\CategoryController;
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\PaymentController as PortalPaymentController;
@@ -20,7 +22,9 @@ use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('home');
+    return view('home', [
+        'carePlans' => MaintenancePlan::orderBy('sort_order')->get(),
+    ]);
 })->name('home');
 
 Route::get('/get-started', [IntakeController::class, 'create'])->name('intake.create');
@@ -76,4 +80,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/subscriptions/{subscription}', [AdminSubscriptionController::class, 'destroy'])->name('subscriptions.destroy');
 
     Route::patch('/uploads/{upload}/approve', [UploadApprovalController::class, 'toggle'])->name('uploads.approve');
+
+    Route::get('/care-plans', [AdminMaintenancePlanController::class, 'index'])->name('care-plans.index');
+    Route::post('/care-plans', [AdminMaintenancePlanController::class, 'store'])->name('care-plans.store');
+    Route::patch('/care-plans/{carePlan}', [AdminMaintenancePlanController::class, 'update'])->name('care-plans.update');
+    Route::delete('/care-plans/{carePlan}', [AdminMaintenancePlanController::class, 'destroy'])->name('care-plans.destroy');
 });

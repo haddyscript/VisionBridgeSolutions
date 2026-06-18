@@ -558,78 +558,41 @@ $svgIcons = [
         </div>
 
         <div id="plans-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <!-- Essential Care -->
-            <div class="plans-card relative rounded-2xl border-2 border-gold shadow-xl overflow-hidden" style="opacity:0;transform:translateY(60px) scale(0.92)">
-                <div class="bg-gold px-6 py-4 text-navy text-center">
-                    <span class="text-xs font-bold tracking-widest uppercase">Most Popular</span>
-                </div>
-                <div class="bg-white p-8 text-center">
-                    <h3 class="font-bold text-navy text-xl mb-1">Essential Care Plan</h3>
-                    <div class="my-6">
-                        <span class="text-5xl font-bold text-navy">$59</span>
-                        <span class="text-gray-400 text-sm">/month</span>
+            @foreach ($carePlans as $plan)
+                <div class="plans-card {{ $plan->is_available ? 'relative border-2 border-gold shadow-xl' : 'plans-card-dim border-2 border-gray-100' }} rounded-2xl overflow-hidden" style="opacity:0;transform:translateY(60px) scale(0.92)">
+                    @if ($plan->badge)
+                        <div class="{{ $plan->is_available ? 'bg-gold text-navy' : 'bg-gray-100 text-gray-500' }} px-6 py-4 text-center">
+                            <span class="text-xs font-bold tracking-widest uppercase">{{ $plan->badge }}</span>
+                        </div>
+                    @endif
+                    <div class="bg-white p-8 text-center">
+                        <h3 class="font-bold text-navy text-xl mb-1">{{ $plan->name }}</h3>
+                        <div class="my-6">
+                            @if ($plan->formattedPrice())
+                                <span class="text-5xl font-bold text-navy" data-target="{{ $plan->price / 100 }}">{{ $plan->formattedPrice() }}</span>
+                                <span class="text-gray-400 text-sm">/{{ $plan->interval }}</span>
+                            @else
+                                <span class="text-3xl font-bold text-gray-300">Coming Soon</span>
+                            @endif
+                        </div>
+                        <ul class="text-left space-y-3 mb-8">
+                            @foreach ($plan->features as $item)
+                            <li class="flex items-center gap-3 text-sm {{ $plan->is_available ? 'text-gray-600' : 'text-gray-400' }}">
+                                <svg class="w-5 h-5 {{ $plan->is_available ? 'text-teal' : 'text-gray-300' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                {{ $item }}
+                            </li>
+                            @endforeach
+                        </ul>
+                        @if ($plan->is_available)
+                            <a href="{{ $plan->cta_url }}" class="btn-gold w-full text-center block">{{ $plan->cta_label }}</a>
+                        @else
+                            <button disabled class="w-full bg-gray-100 text-gray-400 font-semibold px-7 py-3 rounded-lg cursor-not-allowed">{{ $plan->cta_label }}</button>
+                        @endif
                     </div>
-                    <ul class="text-left space-y-3 mb-8">
-                        @foreach(['Website Updates','Security Monitoring','Monthly Backups','Content Changes','Email Support','Basic Website Maintenance'] as $item)
-                        <li class="flex items-center gap-3 text-sm text-gray-600">
-                            <svg class="w-5 h-5 text-teal shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            {{ $item }}
-                        </li>
-                        @endforeach
-                    </ul>
-                    <a href="#contact" class="btn-gold w-full text-center block">Get Started</a>
                 </div>
-            </div>
-
-            <!-- Growth Care -->
-            <div class="plans-card plans-card-dim rounded-2xl border-2 border-gray-100 overflow-hidden" style="opacity:0;transform:translateY(60px) scale(0.92)">
-                <div class="bg-gray-100 px-6 py-4 text-gray-500 text-center">
-                    <span class="text-xs font-bold tracking-widest uppercase">Coming Soon</span>
-                </div>
-                <div class="bg-white p-8 text-center">
-                    <h3 class="font-bold text-navy text-xl mb-1">Growth Care Plan</h3>
-                    <div class="my-6">
-                        <span class="text-3xl font-bold text-gray-300">Coming Soon</span>
-                    </div>
-                    <ul class="text-left space-y-3 mb-8">
-                        @foreach(['Everything in Essential','Priority Support','SEO Monitoring','Performance Reports','Additional Content Changes'] as $item)
-                        <li class="flex items-center gap-3 text-sm text-gray-400">
-                            <svg class="w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            {{ $item }}
-                        </li>
-                        @endforeach
-                    </ul>
-                    <button disabled class="w-full bg-gray-100 text-gray-400 font-semibold px-7 py-3 rounded-lg cursor-not-allowed">Coming Soon</button>
-                </div>
-            </div>
-
-            <!-- Premium Care -->
-            <div class="plans-card plans-card-dim rounded-2xl border-2 border-gray-100 overflow-hidden" style="opacity:0;transform:translateY(60px) scale(0.92)">
-                <div class="bg-gray-100 px-6 py-4 text-gray-500 text-center">
-                    <span class="text-xs font-bold tracking-widest uppercase">Coming Soon</span>
-                </div>
-                <div class="bg-white p-8 text-center">
-                    <h3 class="font-bold text-navy text-xl mb-1">Premium Care Plan</h3>
-                    <div class="my-6">
-                        <span class="text-3xl font-bold text-gray-300">Coming Soon</span>
-                    </div>
-                    <ul class="text-left space-y-3 mb-8">
-                        @foreach(['Everything in Growth','Dedicated Account Manager','Monthly Strategy Call','Advanced Analytics','Custom Integrations'] as $item)
-                        <li class="flex items-center gap-3 text-sm text-gray-400">
-                            <svg class="w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            {{ $item }}
-                        </li>
-                        @endforeach
-                    </ul>
-                    <button disabled class="w-full bg-gray-100 text-gray-400 font-semibold px-7 py-3 rounded-lg cursor-not-allowed">Coming Soon</button>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 </section>
@@ -1412,8 +1375,9 @@ $svgIcons = [
 
                 // Price count-up
                 const priceEl = document.querySelector('#plans-grid .plans-card:first-child .text-5xl');
-                if (priceEl) {
-                    gsap.fromTo({ val:0 }, { val:59 }, {
+                const priceTarget = priceEl ? parseFloat(priceEl.dataset.target) : null;
+                if (priceEl && priceTarget) {
+                    gsap.fromTo({ val:0 }, { val:priceTarget }, {
                         duration:1.10, ease:'power2.out', delay:0.70,
                         onUpdate() { priceEl.textContent = '$' + Math.round(this.targets()[0].val); },
                     });
