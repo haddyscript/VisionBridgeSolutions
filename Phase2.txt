@@ -10,7 +10,7 @@ Payment will be issued upon completion, approval, and launch of Phase 2.
 Phase 2 Deliverables
 
 ---------------------------------------------------------------------------------
-# On going Now
+# DONE
 Client Portal
 
 Secure portal allowing clients to:
@@ -32,6 +32,7 @@ Secure portal allowing clients to:
 • Track Project Progress
 ---------------------------------------------------------------------------------
 
+# ON GOING NOW
 
 
 Client Intake Portal
@@ -60,6 +61,7 @@ New clients can submit:
 
 ---------------------------------------------------------------------------------
 
+
 FaithStack Team Portal
 
 Secure access for FaithStack to:
@@ -73,6 +75,10 @@ Secure access for FaithStack to:
 • Access Project Resources
 
 • Manage Assigned Website Projects
+
+
+
+---------------------------------------------------------------------------------
 
 Payment System Integration
 
