@@ -96,6 +96,8 @@ System should support:
 
 • Automated Client Onboarding Workflow
 
+---------------------------------------------------------------------------------
+
 Maintenance Management
 
 System should support:
@@ -108,7 +110,7 @@ System should support:
 
 • Future Service Expansion
 
-⸻
+⸻---------------------------------------------------------------------------------
 
 VISIONBRIDGE WEBSITE MAINTENANCE
 

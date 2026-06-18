@@ -1148,6 +1148,9 @@
 </head>
 <body class="font-sans antialiased text-gray-800 bg-white">
 
+    {{-- Section anchors only exist on the homepage; from other pages, link back home first --}}
+    @php $homeAnchor = request()->routeIs('home') ? '' : route('home'); @endphp
+
     <!-- Navigation -->
     <nav id="navbar" class="fixed top-0 left-0 right-0 z-50" style="padding:12px 16px 0;will-change:transform;">
 
@@ -1155,7 +1158,7 @@
         <div id="nav-inner" class="mx-auto flex items-center justify-between px-5 sm:px-7" style="height:60px;">
 
             {{-- Logo --}}
-            <a id="nav-logo" href="#hero" class="flex items-center gap-2.5 shrink-0 opacity-0">
+            <a id="nav-logo" href="{{ $homeAnchor }}#hero" class="flex items-center gap-2.5 shrink-0 opacity-0">
                 <div class="w-8 h-8 bg-gold rounded-md flex items-center justify-center shrink-0">
                     <svg class="w-5 h-5 text-navy" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10 2L2 7v11h5v-6h6v6h5V7L10 2z"/>
@@ -1170,20 +1173,23 @@
             <div id="nav-links" class="hidden md:flex items-center gap-0.5 relative">
                 <div id="nav-cursor"></div>
                 <div id="nav-active-dot"></div>
-                <a href="#about"     class="nav-link relative z-10 px-4 py-2 opacity-0">About</a>
-                <a href="#services"  class="nav-link relative z-10 px-4 py-2 opacity-0">Services</a>
-                <a href="#plans"     class="nav-link relative z-10 px-4 py-2 opacity-0">Plans</a>
-                <a href="#portfolio" class="nav-link relative z-10 px-4 py-2 opacity-0">Portfolio</a>
+                <a href="{{ $homeAnchor }}#about"     class="nav-link relative z-10 px-4 py-2 opacity-0">About</a>
+                <a href="{{ $homeAnchor }}#services"  class="nav-link relative z-10 px-4 py-2 opacity-0">Services</a>
+                <a href="{{ $homeAnchor }}#plans"     class="nav-link relative z-10 px-4 py-2 opacity-0">Plans</a>
+                <a href="{{ $homeAnchor }}#portfolio" class="nav-link relative z-10 px-4 py-2 opacity-0">Portfolio</a>
             </div>
 
             {{-- Desktop CTA --}}
-            <a id="nav-cta" href="#contact"
-               class="nav-cta-btn hidden md:inline-flex items-center gap-2 bg-gold hover:bg-gold-light text-navy font-bold text-sm px-5 py-2.5 rounded-lg opacity-0 transition-colors duration-200">
-                Get Started
-                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                </svg>
-            </a>
+            <div class="hidden md:flex items-center gap-4">
+                <a id="nav-login" href="{{ route('login') }}" class="nav-link relative z-10 opacity-0">Client Login</a>
+                <a id="nav-cta" href="{{ $homeAnchor }}#contact"
+                   class="nav-cta-btn inline-flex items-center gap-2 bg-gold hover:bg-gold-light text-navy font-bold text-sm px-5 py-2.5 rounded-lg opacity-0 transition-colors duration-200">
+                    Get Started
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </a>
+            </div>
 
             {{-- Mobile hamburger --}}
             <button id="menu-btn" class="md:hidden text-white/80 hover:text-white focus:outline-none transition-colors">
@@ -1197,11 +1203,12 @@
         <div id="mobile-menu" class="hidden md:hidden mt-2 mx-2 rounded-2xl overflow-hidden"
              style="background:rgba(8,15,28,0.92);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);">
             <div class="flex flex-col p-4 gap-1">
-                <a href="#about"     class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">About</a>
-                <a href="#services"  class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">Services</a>
-                <a href="#plans"     class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">Plans</a>
-                <a href="#portfolio" class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">Portfolio</a>
-                <a href="#contact"   class="mt-2 bg-gold text-navy font-bold text-sm text-center px-4 py-2.5 rounded-xl">Get Started</a>
+                <a href="{{ $homeAnchor }}#about"     class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">About</a>
+                <a href="{{ $homeAnchor }}#services"  class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">Services</a>
+                <a href="{{ $homeAnchor }}#plans"     class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">Plans</a>
+                <a href="{{ $homeAnchor }}#portfolio" class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">Portfolio</a>
+                <a href="{{ route('login') }}" class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">Client Login</a>
+                <a href="{{ $homeAnchor }}#contact"   class="mt-2 bg-gold text-navy font-bold text-sm text-center px-4 py-2.5 rounded-xl">Get Started</a>
             </div>
         </div>
     </nav>
@@ -1334,15 +1341,16 @@
             const inner    = document.getElementById('nav-inner');
             const logo     = document.getElementById('nav-logo');
             const cta      = document.getElementById('nav-cta');
+            const login    = document.getElementById('nav-login');
             const navLinks = document.getElementById('nav-links');
             const cursor   = document.getElementById('nav-cursor');
             const linkEls  = navLinks ? Array.from(navLinks.querySelectorAll('a')) : [];
 
             // ── Entry: logo → links stagger → CTA ──────────────────────
             gsap.timeline({ delay: 0.15 })
-                .fromTo(logo,    { opacity:0, y:-14 }, { opacity:1, y:0, duration:0.55, ease:'power3.out' })
-                .fromTo(linkEls, { opacity:0, y:-10 }, { opacity:1, y:0, duration:0.45, stagger:0.08, ease:'power2.out' }, '-=0.28')
-                .fromTo(cta,     { opacity:0, y:-10 }, { opacity:1, y:0, duration:0.40, ease:'power2.out' }, '-=0.20');
+                .fromTo(logo,        { opacity:0, y:-14 }, { opacity:1, y:0, duration:0.55, ease:'power3.out' })
+                .fromTo(linkEls,     { opacity:0, y:-10 }, { opacity:1, y:0, duration:0.45, stagger:0.08, ease:'power2.out' }, '-=0.28')
+                .fromTo([login, cta],{ opacity:0, y:-10 }, { opacity:1, y:0, duration:0.40, stagger:0.08, ease:'power2.out' }, '-=0.20');
 
             // ── Transparent → pill on scroll ────────────────────────────
             ScrollTrigger.create({
