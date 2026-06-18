@@ -55,6 +55,31 @@
     </div>
 </div>
 
+@php
+    $pendingPaymentCount = $project->payments->where('status', 'pending')->count();
+@endphp
+
+{{-- Tabs --}}
+<div class="flex items-center gap-1 border-b border-gray-200 mb-6">
+    <button type="button" data-tab-button="overview" onclick="showProjectTab('overview')"
+            class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-gold text-navy">
+        Overview
+    </button>
+    <button type="button" data-tab-button="billing" onclick="showProjectTab('billing')"
+            class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-navy transition-colors">
+        Billing
+        @if ($pendingPaymentCount > 0)
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">{{ $pendingPaymentCount }}</span>
+        @endif
+    </button>
+    <button type="button" data-tab-button="files" onclick="showProjectTab('files')"
+            class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-navy transition-colors">
+        Files &amp; Content
+    </button>
+</div>
+
+<div data-tab-panel="overview">
+
 {{-- Milestones --}}
 <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
     <h3 class="font-semibold text-navy mb-4">Milestones</h3>
@@ -98,6 +123,10 @@
         </button>
     </form>
 </div>
+
+</div>
+
+<div data-tab-panel="billing" class="hidden">
 
 {{-- Payments --}}
 @php
@@ -207,6 +236,10 @@
     @endif
 </div>
 
+</div>
+
+<div data-tab-panel="files" class="hidden">
+
 {{-- Project files & content --}}
 @foreach ($categories as $cat => $meta)
     @php $items = $uploadsByCategory->get($cat, $empty); @endphp
@@ -281,5 +314,22 @@
         @endif
     </div>
 @endforeach
+
+</div>
+
+<script>
+    function showProjectTab(tab) {
+        document.querySelectorAll('[data-tab-panel]').forEach((el) => {
+            el.classList.toggle('hidden', el.dataset.tabPanel !== tab);
+        });
+        document.querySelectorAll('[data-tab-button]').forEach((el) => {
+            const active = el.dataset.tabButton === tab;
+            el.classList.toggle('border-gold', active);
+            el.classList.toggle('text-navy', active);
+            el.classList.toggle('border-transparent', !active);
+            el.classList.toggle('text-gray-400', !active);
+        });
+    }
+</script>
 
 @endsection
