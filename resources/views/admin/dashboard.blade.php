@@ -48,7 +48,13 @@
                         </td>
                         <td class="px-5 py-3.5 text-gray-700">{{ $project->progressPercent() }}%</td>
                         <td class="px-5 py-3.5 text-gray-700">{{ $project->uploads->whereNotIn('category', ['content', 'revision'])->count() }}</td>
-                        <td class="px-5 py-3.5 text-gray-700">{{ $project->uploads->where('category', 'revision')->count() }}</td>
+                        <td class="px-5 py-3.5 text-gray-700">
+                            @php $openRevisions = $project->uploads->where('category', 'revision')->whereNull('approved_at')->count(); @endphp
+                            {{ $project->uploads->where('category', 'revision')->count() }}
+                            @if ($openRevisions > 0)
+                                <span class="ml-1 inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-500">{{ $openRevisions }} open</span>
+                            @endif
+                        </td>
                         <td class="px-5 py-3.5 text-right">
                             <a href="{{ route('admin.projects.show', $project) }}" class="text-gold-dark font-semibold hover:underline">Manage</a>
                         </td>
