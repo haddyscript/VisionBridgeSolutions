@@ -32,6 +32,33 @@
         ];
     @endphp
 
+    @if ($project->status === 'onboarding')
+        <div class="rounded-xl p-6 mb-8" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
+            <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-2">Welcome to Your Client Portal</p>
+            <h2 class="font-display text-xl font-bold text-white mb-2">Let's get your project started 👋</h2>
+            <p class="text-sm text-white/60 mb-5 max-w-2xl">
+                This is where you'll share everything we need to build your website. Use the sections below to
+                upload files and submit content — we'll review everything and keep your progress updated here.
+            </p>
+            <div class="flex flex-col sm:flex-row sm:items-start gap-3">
+                @php $steps = [
+                    'Upload your logo, photos, and any documents',
+                    'Submit your website content and marketing materials',
+                    'Track your project\'s progress on this page anytime',
+                ]; @endphp
+                @foreach ($steps as $i => $step)
+                    <div class="flex items-start gap-2.5 flex-1">
+                        <span class="w-5 h-5 rounded-full bg-gold/20 text-gold text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{{ $i + 1 }}</span>
+                        <span class="text-sm text-white/80">{{ $step }}</span>
+                    </div>
+                    @if (! $loop->last)
+                        <svg class="hidden sm:block w-4 h-4 text-white/25 shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    @endif
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     {{-- Project header --}}
     <div class="bg-white rounded-xl border border-gray-200 p-6 mb-8">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
@@ -87,7 +114,12 @@
                     </svg>
                 </div>
                 <p class="font-semibold text-navy text-sm">{{ $info['label'] }}</p>
-                <p class="text-xs text-gray-400 mt-1">{{ $info['count'] }} item{{ $info['count'] === 1 ? '' : 's' }}</p>
+                <p class="text-xs text-gray-400 mt-1 mb-2">{{ $info['description'] }}</p>
+                @if ($info['count'] > 0)
+                    <p class="text-xs font-medium text-teal-dark">{{ $info['count'] }} item{{ $info['count'] === 1 ? '' : 's' }} uploaded</p>
+                @else
+                    <p class="text-xs font-medium text-gold-dark">Nothing here yet &middot; tap to add</p>
+                @endif
             </a>
         @endforeach
     </div>

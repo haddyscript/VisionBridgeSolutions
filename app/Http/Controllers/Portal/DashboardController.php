@@ -15,6 +15,7 @@ class DashboardController extends Controller
         $counts = collect(CategoryController::CATEGORIES)
             ->map(fn ($meta, $category) => [
                 'label' => $meta['label'],
+                'description' => $meta['description'],
                 'count' => $project ? $project->uploads->where('category', $category)->count() : 0,
             ]);
 

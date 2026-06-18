@@ -56,7 +56,7 @@
             </div>
 
             <nav class="flex-1 overflow-y-auto py-5 px-3 space-y-0.5">
-                <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mb-2">Dashboard</p>
+                <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mb-2">Client Portal</p>
                 <a href="{{ route('portal.dashboard') }}"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.dashboard') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

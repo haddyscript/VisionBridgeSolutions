@@ -8,13 +8,13 @@ use Illuminate\Http\Request;
 class CategoryController extends Controller
 {
     public const CATEGORIES = [
-        'image' => ['label' => 'Images', 'type' => 'file', 'accept' => 'image/*', 'icon' => 'image'],
-        'video' => ['label' => 'Videos', 'type' => 'file', 'accept' => 'video/*', 'icon' => 'video'],
-        'logo' => ['label' => 'Logos', 'type' => 'file', 'accept' => 'image/*', 'icon' => 'logo'],
-        'document' => ['label' => 'Documents', 'type' => 'file', 'accept' => '.pdf,.doc,.docx,.txt', 'icon' => 'document'],
-        'marketing' => ['label' => 'Marketing Materials', 'type' => 'file', 'accept' => '', 'icon' => 'marketing'],
-        'content' => ['label' => 'Website Content', 'type' => 'text', 'placeholder' => 'Paste or describe the website copy you would like used...', 'icon' => 'content'],
-        'revision' => ['label' => 'Revisions', 'type' => 'text', 'placeholder' => 'Describe the changes you would like made...', 'icon' => 'revision'],
+        'image' => ['label' => 'Images', 'type' => 'file', 'accept' => 'image/*', 'icon' => 'image', 'description' => 'Photos of your team, space, or work'],
+        'video' => ['label' => 'Videos', 'type' => 'file', 'accept' => 'video/*', 'icon' => 'video', 'description' => 'Promo or testimonial videos'],
+        'logo' => ['label' => 'Logos', 'type' => 'file', 'accept' => 'image/*', 'icon' => 'logo', 'description' => 'Your brand logo files'],
+        'document' => ['label' => 'Documents', 'type' => 'file', 'accept' => '.pdf,.doc,.docx,.txt', 'icon' => 'document', 'description' => 'Brochures, policies, or other files'],
+        'marketing' => ['label' => 'Marketing Materials', 'type' => 'file', 'accept' => '', 'icon' => 'marketing', 'description' => 'Flyers, social graphics, and other assets'],
+        'content' => ['label' => 'Website Content', 'type' => 'text', 'placeholder' => 'Paste or describe the website copy you would like used...', 'icon' => 'content', 'description' => 'Text and copy for your website pages'],
+        'revision' => ['label' => 'Revisions', 'type' => 'text', 'placeholder' => 'Describe the changes you would like made...', 'icon' => 'revision', 'description' => 'Requested changes to your site'],
     ];
 
     public function show(Request $request, string $category)
