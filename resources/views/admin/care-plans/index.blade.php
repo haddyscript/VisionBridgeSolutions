@@ -10,20 +10,20 @@
 <div class="space-y-6 mb-8">
     @foreach ($plans as $plan)
         <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold text-navy">{{ $plan->name }}</h3>
+                <form method="POST" action="{{ route('admin.care-plans.destroy', $plan) }}" onsubmit="return confirm('Remove this plan card?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-7 h-7 rounded-full text-gray-400 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </form>
+            </div>
+
             <form method="POST" action="{{ route('admin.care-plans.update', $plan) }}">
                 @csrf
                 @method('PATCH')
-
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-semibold text-navy">{{ $plan->name }}</h3>
-                    <form method="POST" action="{{ route('admin.care-plans.destroy', $plan) }}" onsubmit="return confirm('Remove this plan card?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="w-7 h-7 rounded-full text-gray-400 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                    </form>
-                </div>
 
                 <div class="grid sm:grid-cols-2 gap-4 mb-4">
                     <div>

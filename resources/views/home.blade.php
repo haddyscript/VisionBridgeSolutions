@@ -559,9 +559,9 @@ $svgIcons = [
 
         <div id="plans-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             @foreach ($carePlans as $plan)
-                <div class="plans-card {{ $plan->is_available ? 'relative border-2 border-gold shadow-xl' : 'plans-card-dim border-2 border-gray-100' }} rounded-2xl overflow-hidden" style="opacity:0;transform:translateY(60px) scale(0.92)">
+                <div class="plans-card group {{ $plan->is_available ? 'relative border-2 border-gold shadow-xl hover:-translate-y-2 hover:shadow-2xl hover:border-gold-dark' : 'plans-card-dim border-2 border-gray-100 hover:border-gray-300' }} rounded-2xl overflow-hidden transition-all duration-300" style="opacity:0;transform:translateY(60px) scale(0.92)">
                     @if ($plan->badge)
-                        <div class="{{ $plan->is_available ? 'bg-gold text-navy' : 'bg-gray-100 text-gray-500' }} px-6 py-4 text-center">
+                        <div class="{{ $plan->is_available ? 'bg-gold text-navy group-hover:bg-gold-light' : 'bg-gray-100 text-gray-500' }} px-6 py-4 text-center transition-colors duration-300">
                             <span class="text-xs font-bold tracking-widest uppercase">{{ $plan->badge }}</span>
                         </div>
                     @endif
@@ -569,15 +569,15 @@ $svgIcons = [
                         <h3 class="font-bold text-navy text-xl mb-1">{{ $plan->name }}</h3>
                         <div class="my-6">
                             @if ($plan->formattedPrice())
-                                <span class="text-5xl font-bold text-navy" data-target="{{ $plan->price / 100 }}">{{ $plan->formattedPrice() }}</span>
+                                <span class="inline-block text-5xl font-bold text-navy transition-transform duration-300 {{ $plan->is_available ? 'group-hover:scale-110' : '' }}" data-target="{{ $plan->price / 100 }}">{{ $plan->formattedPrice() }}</span>
                                 <span class="text-gray-400 text-sm">/{{ $plan->interval }}</span>
                             @else
                                 <span class="text-3xl font-bold text-gray-300">Coming Soon</span>
                             @endif
                         </div>
-                        <ul class="text-left space-y-3 mb-8">
+                        <ul class="text-left space-y-1 mb-8">
                             @foreach ($plan->features as $item)
-                            <li class="flex items-center gap-3 text-sm {{ $plan->is_available ? 'text-gray-600' : 'text-gray-400' }}">
+                            <li class="flex items-center gap-3 text-sm rounded-lg px-2 py-1.5 -mx-2 {{ $plan->is_available ? 'text-gray-600 hover:bg-gold/5' : 'text-gray-400' }} transition-colors duration-150">
                                 <svg class="w-5 h-5 {{ $plan->is_available ? 'text-teal' : 'text-gray-300' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                 </svg>
@@ -586,7 +586,12 @@ $svgIcons = [
                             @endforeach
                         </ul>
                         @if ($plan->is_available)
-                            <a href="{{ $plan->cta_url }}" class="btn-gold w-full text-center block">{{ $plan->cta_label }}</a>
+                            <a href="{{ $plan->cta_url }}" class="btn-gold w-full text-center flex items-center justify-center gap-2">
+                                {{ $plan->cta_label }}
+                                <svg class="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                </svg>
+                            </a>
                         @else
                             <button disabled class="w-full bg-gray-100 text-gray-400 font-semibold px-7 py-3 rounded-lg cursor-not-allowed">{{ $plan->cta_label }}</button>
                         @endif
@@ -1362,10 +1367,10 @@ $svgIcons = [
                     .to('#plans-heading',  { opacity:1, y:0, duration:0.80, ease:'power3.out' }, '-=0.30')
                     .to('#plans-subtitle', { opacity:1, y:0, duration:0.52, ease:'power2.out' }, '-=0.34');
 
-                // Featured card
-                gsap.to('.plans-card:first-child', {
+                // Available cards
+                gsap.to('.plans-card:not(.plans-card-dim)', {
                     opacity:1, y:0, scale:1,
-                    duration:0.85, ease:'back.out(1.5)', delay:0.25,
+                    duration:0.85, ease:'back.out(1.5)', stagger:0.16, delay:0.25,
                 });
                 // Coming Soon cards land at 0.70
                 gsap.to('.plans-card-dim', {
@@ -1374,7 +1379,7 @@ $svgIcons = [
                 });
 
                 // Price count-up
-                const priceEl = document.querySelector('#plans-grid .plans-card:first-child .text-5xl');
+                const priceEl = document.querySelector('#plans-grid .plans-card:not(.plans-card-dim) .text-5xl');
                 const priceTarget = priceEl ? parseFloat(priceEl.dataset.target) : null;
                 if (priceEl && priceTarget) {
                     gsap.fromTo({ val:0 }, { val:priceTarget }, {
