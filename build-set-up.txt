@@ -10,9 +10,17 @@ php artisan seed --force
 docker compose exec app php artisan migrate --force
 docker compose exec app php artisan db:seed --force
 
+docker compose exec app composer config policy.advisories.block false 2>&1 && grep -n -A3 '"policy"' composer.json
+docker compose exec app composer require stripe/stripe-php --no-interaction 2>&1
+
 
 # website
 http://localhost:8000/login
 
 # php myadmin
 http://localhost:8080/
+
+
+# check routes
+
+docker compose exec app php artisan route:list --path=payments 2>&1; docker compose exec app php artisan route:list --path=stripe 2>&1

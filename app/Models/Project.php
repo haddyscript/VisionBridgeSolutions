@@ -28,6 +28,21 @@ class Project extends Model
         return $this->hasMany(Upload::class)->latest();
     }
 
+    public function payments()
+    {
+        return $this->hasMany(Payment::class)->latest();
+    }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class)->latest();
+    }
+
+    public function subscription()
+    {
+        return $this->hasOne(Subscription::class)->latestOfMany();
+    }
+
     public function progressPercent(): int
     {
         $total = $this->milestones->count();

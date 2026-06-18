@@ -88,7 +88,7 @@ System should support:
 
 • Debit Card Payments
 
-• ACH Bank Transfers
+• ACH Bank Transferss
 
 • Recurring Monthly Maintenance Billing
 

@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Stripe\Customer;
+use Stripe\Stripe;
 
 class User extends Authenticatable
 {
@@ -22,6 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'stripe_customer_id',
     ];
 
     /**
@@ -55,5 +58,23 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function getOrCreateStripeCustomerId(): string
+    {
+        if ($this->stripe_customer_id) {
+            return $this->stripe_customer_id;
+        }
+
+        Stripe::setApiKey(config('services.stripe.secret'));
+
+        $customer = Customer::create([
+            'name' => $this->name,
+            'email' => $this->email,
+        ]);
+
+        $this->update(['stripe_customer_id' => $customer->id]);
+
+        return $customer->id;
     }
 }

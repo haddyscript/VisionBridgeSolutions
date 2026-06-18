@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Subscription extends Model
+{
+    protected $fillable = [
+        'project_id',
+        'description',
+        'amount',
+        'currency',
+        'interval',
+        'status',
+        'stripe_checkout_session_id',
+        'stripe_subscription_id',
+        'current_period_end',
+        'canceled_at',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'current_period_end' => 'datetime',
+            'canceled_at' => 'datetime',
+        ];
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
+    }
+
+    public function isCanceled(): bool
+    {
+        return $this->status === 'canceled';
+    }
+
+    public function formattedAmount(): string
+    {
+        return '$'.number_format($this->amount / 100, 2).'/'.$this->interval;
+    }
+}

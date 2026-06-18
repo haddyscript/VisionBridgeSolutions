@@ -99,6 +99,114 @@
     </form>
 </div>
 
+{{-- Payments --}}
+@php
+    $paymentStatusColors = [
+        'pending' => 'bg-gold/15 text-gold-dark',
+        'paid' => 'bg-teal/15 text-teal-dark',
+        'failed' => 'bg-red-50 text-red-500',
+        'canceled' => 'bg-gray-100 text-gray-500',
+    ];
+@endphp
+<div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+    <h3 class="font-semibold text-navy mb-4">Payments</h3>
+
+    <div class="space-y-2 mb-5">
+        @foreach ($project->payments as $payment)
+            <div class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 px-4 py-2.5">
+                <div>
+                    <span class="text-sm text-navy">{{ $payment->description }}</span>
+                    <span class="text-sm text-gray-400 ml-2">{{ $payment->formattedAmount() }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $paymentStatusColors[$payment->status] ?? 'bg-gray-100 text-gray-500' }}">
+                        {{ ucfirst($payment->status) }}
+                    </span>
+                    @if ($payment->isPending())
+                        <form method="POST" action="{{ route('admin.payments.destroy', $payment) }}" onsubmit="return confirm('Remove this payment request?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="w-7 h-7 rounded-full text-gray-400 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </form>
+                    @endif
+                </div>
+            </div>
+        @endforeach
+        @if ($project->payments->isEmpty())
+            <p class="text-sm text-gray-400">No payment requests yet.</p>
+        @endif
+    </div>
+
+    <form method="POST" action="{{ route('admin.payments.store', $project) }}" class="flex items-center gap-3">
+        @csrf
+        <input type="text" name="description" placeholder="What's this payment for..." required
+               class="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+        <input type="number" name="amount" step="0.01" min="1" placeholder="Amount (USD)" required
+               class="w-40 rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+        <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+            Request
+        </button>
+    </form>
+</div>
+
+{{-- Maintenance Plan --}}
+@php
+    $subscriptionStatusColors = [
+        'pending' => 'bg-gold/15 text-gold-dark',
+        'active' => 'bg-teal/15 text-teal-dark',
+        'past_due' => 'bg-red-50 text-red-500',
+        'canceled' => 'bg-gray-100 text-gray-500',
+    ];
+    $subscriptionStatusLabels = [
+        'pending' => 'Pending',
+        'active' => 'Active',
+        'past_due' => 'Past Due',
+        'canceled' => 'Canceled',
+    ];
+    $currentSubscription = $project->subscription;
+@endphp
+<div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+    <h3 class="font-semibold text-navy mb-4">Maintenance Plan</h3>
+
+    @if ($currentSubscription && ! $currentSubscription->isCanceled())
+        <div class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 px-4 py-2.5">
+            <div>
+                <span class="text-sm text-navy">{{ $currentSubscription->description }}</span>
+                <span class="text-sm text-gray-400 ml-2">{{ $currentSubscription->formattedAmount() }}</span>
+                @if ($currentSubscription->current_period_end)
+                    <span class="text-xs text-gray-400 ml-2">renews {{ $currentSubscription->current_period_end->format('M j, Y') }}</span>
+                @endif
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $subscriptionStatusColors[$currentSubscription->status] ?? 'bg-gray-100 text-gray-500' }}">
+                    {{ $subscriptionStatusLabels[$currentSubscription->status] ?? $currentSubscription->status }}
+                </span>
+                <form method="POST" action="{{ route('admin.subscriptions.destroy', $currentSubscription) }}" onsubmit="return confirm('Cancel this maintenance plan?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-7 h-7 rounded-full text-gray-400 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    @else
+        <p class="text-sm text-gray-400 mb-4">No active maintenance plan.</p>
+        <form method="POST" action="{{ route('admin.subscriptions.store', $project) }}" class="flex items-center gap-3">
+            @csrf
+            <input type="text" name="description" placeholder="e.g. Monthly Website Maintenance" required
+                   class="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+            <input type="number" name="amount" step="0.01" min="1" placeholder="Amount / month (USD)" required
+                   class="w-48 rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+            <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                Request
+            </button>
+        </form>
+    @endif
+</div>
+
 {{-- Project files & content --}}
 @foreach ($categories as $cat => $meta)
     @php $items = $uploadsByCategory->get($cat, $empty); @endphp
