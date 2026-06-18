@@ -3,3 +3,6 @@ PLEASE RUN INSIDE THE DOCKER
 
 php artisan migrate --force
 
+
+php artisan seed --force
+

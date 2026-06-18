@@ -1,6 +1,7 @@
 @extends('layouts.portal')
 
-@section('title', 'Client Portal – VisionBridge Solutions')
+@section('title', 'Overview – Client Portal')
+@section('page-title', 'Overview')
 
 @section('content')
 
@@ -20,15 +21,22 @@
             'launched'    => 'Launched',
             'maintenance' => 'Maintenance',
         ];
-        $uploadsByCategory = $project->uploads->groupBy('category');
-        $empty = collect();
+        $categoryIcons = [
+            'image' => 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z',
+            'video' => 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z',
+            'logo' => 'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343',
+            'document' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+            'marketing' => 'M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z',
+            'content' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z',
+            'revision' => 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15',
+        ];
     @endphp
 
     {{-- Project header --}}
     <div class="bg-white rounded-xl border border-gray-200 p-6 mb-8">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div>
-                <h1 class="font-display text-2xl font-bold text-navy">{{ $project->name }}</h1>
+                <h2 class="font-display text-2xl font-bold text-navy">{{ $project->name }}</h2>
                 @if ($project->description)
                     <p class="text-gray-500 text-sm mt-1">{{ $project->description }}</p>
                 @endif
@@ -68,21 +76,20 @@
         @endif
     </div>
 
-    {{-- File uploads --}}
-    <h2 class="font-display text-lg font-bold text-navy mb-4">Project Files</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        @include('portal.partials.file-upload-section', ['category' => 'image', 'label' => 'Images', 'accept' => 'image/*', 'items' => $uploadsByCategory->get('image', $empty)])
-        @include('portal.partials.file-upload-section', ['category' => 'video', 'label' => 'Videos', 'accept' => 'video/*', 'items' => $uploadsByCategory->get('video', $empty)])
-        @include('portal.partials.file-upload-section', ['category' => 'logo', 'label' => 'Logos', 'accept' => 'image/*', 'items' => $uploadsByCategory->get('logo', $empty)])
-        @include('portal.partials.file-upload-section', ['category' => 'document', 'label' => 'Documents', 'accept' => '.pdf,.doc,.docx,.txt', 'items' => $uploadsByCategory->get('document', $empty)])
-        @include('portal.partials.file-upload-section', ['category' => 'marketing', 'label' => 'Marketing Materials', 'accept' => '', 'items' => $uploadsByCategory->get('marketing', $empty)])
-    </div>
-
-    {{-- Content & revisions --}}
-    <h2 class="font-display text-lg font-bold text-navy mb-4">Content &amp; Revisions</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        @include('portal.partials.text-submission-section', ['category' => 'content', 'label' => 'Submit Website Content', 'placeholder' => 'Paste or describe the website copy you would like used...', 'items' => $uploadsByCategory->get('content', $empty)])
-        @include('portal.partials.text-submission-section', ['category' => 'revision', 'label' => 'Submit Revisions', 'placeholder' => 'Describe the changes you would like made...', 'items' => $uploadsByCategory->get('revision', $empty)])
+    {{-- Category tiles --}}
+    <h3 class="font-display text-base font-bold text-navy mb-4">Project Sections</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        @foreach ($counts as $cat => $info)
+            <a href="{{ route('portal.category', $cat) }}" class="bg-white rounded-xl border border-gray-200 p-5 hover:border-gold/40 hover:shadow-sm transition-all group">
+                <div class="w-10 h-10 rounded-lg bg-navy/5 group-hover:bg-gold/15 flex items-center justify-center mb-3 transition-colors">
+                    <svg class="w-5 h-5 text-navy group-hover:text-gold-dark transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $categoryIcons[$cat] }}"/>
+                    </svg>
+                </div>
+                <p class="font-semibold text-navy text-sm">{{ $info['label'] }}</p>
+                <p class="text-xs text-gray-400 mt-1">{{ $info['count'] }} item{{ $info['count'] === 1 ? '' : 's' }}</p>
+            </a>
+        @endforeach
     </div>
 
 @endif
