@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\IntakeConfirmationMail;
 use App\Mail\NewIntakeSubmissionMail;
 use App\Models\IntakeSubmission;
 use Illuminate\Http\Request;
@@ -70,6 +71,7 @@ class IntakeController extends Controller
         }
 
         Mail::to(config('mail.admin_address'))->send(new NewIntakeSubmissionMail($submission));
+        Mail::to($submission->contact_email)->send(new IntakeConfirmationMail($submission));
 
         return redirect()->route('intake.create')->with('status', 'submitted');
     }
