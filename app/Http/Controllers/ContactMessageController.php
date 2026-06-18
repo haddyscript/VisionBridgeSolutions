@@ -24,6 +24,12 @@ class ContactMessageController extends Controller
 
         Mail::to(config('mail.contact_address'))->send(new NewContactMessageMail($contactMessage));
 
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => "Thanks for reaching out! We've received your message and will get back to you within 24 hours.",
+            ]);
+        }
+
         return redirect(route('home').'#contact')->with('status', 'contact_sent');
     }
 }

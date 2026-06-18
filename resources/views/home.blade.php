@@ -995,21 +995,23 @@ $svgIcons = [
             {{-- ── Right: Form ── --}}
             <div class="rounded-3xl p-8 sm:p-10" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(12px);">
 
-                @if (session('status') === 'contact_sent')
-                    <div class="mb-5 rounded-xl px-4 py-3.5 text-sm" style="background:rgba(42,157,143,0.12);border:1px solid rgba(42,157,143,0.30);color:#7fd9cd;">
-                        Thanks for reaching out! We've received your message and will get back to you within 24 hours.
-                    </div>
-                @endif
+                <div id="contact-feedback">
+                    @if (session('status') === 'contact_sent')
+                        <div class="mb-5 rounded-xl px-4 py-3.5 text-sm" style="background:rgba(42,157,143,0.12);border:1px solid rgba(42,157,143,0.30);color:#7fd9cd;">
+                            Thanks for reaching out! We've received your message and will get back to you within 24 hours.
+                        </div>
+                    @endif
 
-                @if ($errors->any())
-                    <div class="mb-5 rounded-xl px-4 py-3.5 text-sm" style="background:rgba(220,38,38,0.10);border:1px solid rgba(220,38,38,0.30);color:#fca5a5;">
-                        @foreach ($errors->all() as $error)
-                            <p>{{ $error }}</p>
-                        @endforeach
-                    </div>
-                @endif
+                    @if ($errors->any())
+                        <div class="mb-5 rounded-xl px-4 py-3.5 text-sm" style="background:rgba(220,38,38,0.10);border:1px solid rgba(220,38,38,0.30);color:#fca5a5;">
+                            @foreach ($errors->all() as $error)
+                                <p>{{ $error }}</p>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
 
-                <form action="{{ route('contact.store') }}" method="POST" class="space-y-4">
+                <form id="contact-form" action="{{ route('contact.store') }}" method="POST" class="space-y-4">
                     @csrf
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <input type="text" name="first_name" value="{{ old('first_name') }}" required placeholder="First Name"
@@ -1059,17 +1061,73 @@ $svgIcons = [
                               style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:#fff;"
                               onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
                               onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">{{ old('message') }}</textarea>
-                    <button type="submit"
-                            class="w-full font-bold text-base py-4 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-2xl"
+                    <button type="submit" id="contact-submit"
+                            class="w-full font-bold text-base py-4 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-2xl disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none flex items-center justify-center gap-2"
                             style="background:#ffffff;color:#111D33;"
-                            onmouseover="this.style.background='#C9A84C'"
-                            onmouseout="this.style.background='#ffffff'">
-                        Send Message
+                            onmouseover="if(!this.disabled) this.style.background='#C9A84C'"
+                            onmouseout="if(!this.disabled) this.style.background='#ffffff'">
+                        <span id="contact-submit-label">Send Message</span>
                     </button>
                 </form>
             </div>
 
         </div>
+
+        <script>
+            (function () {
+                const form = document.getElementById('contact-form');
+                const feedback = document.getElementById('contact-feedback');
+                const submitBtn = document.getElementById('contact-submit');
+                const submitLabel = document.getElementById('contact-submit-label');
+
+                if (!form) return;
+
+                function renderBanner(type, lines) {
+                    const palette = type === 'success'
+                        ? { bg: 'rgba(42,157,143,0.12)', border: 'rgba(42,157,143,0.30)', color: '#7fd9cd' }
+                        : { bg: 'rgba(220,38,38,0.10)', border: 'rgba(220,38,38,0.30)', color: '#fca5a5' };
+
+                    const paragraphs = lines.map((line) => `<p>${line}</p>`).join('');
+
+                    feedback.innerHTML = `<div class="mb-5 rounded-xl px-4 py-3.5 text-sm" style="background:${palette.bg};border:1px solid ${palette.border};color:${palette.color};">${paragraphs}</div>`;
+                }
+
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+
+                    submitBtn.disabled = true;
+                    submitLabel.textContent = 'Sending...';
+
+                    fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: new FormData(form),
+                    })
+                        .then((response) => response.json().then((data) => ({ status: response.status, data })))
+                        .then(({ status, data }) => {
+                            if (status === 200) {
+                                renderBanner('success', [data.message]);
+                                form.reset();
+                            } else if (status === 422 && data.errors) {
+                                renderBanner('error', Object.values(data.errors).flat());
+                            } else {
+                                renderBanner('error', ['Something went wrong. Please try again.']);
+                            }
+                            feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        })
+                        .catch(() => {
+                            renderBanner('error', ['Something went wrong. Please check your connection and try again.']);
+                        })
+                        .finally(() => {
+                            submitBtn.disabled = false;
+                            submitLabel.textContent = 'Send Message';
+                        });
+                });
+            })();
+        </script>
     </div>
 </section>
 
