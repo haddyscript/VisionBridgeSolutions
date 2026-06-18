@@ -1,0 +1,23 @@
+
+1. Install Homebrew (skip if you already have it)
+- /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+brew install docker-compose
+brew install colima
+
+colima start
+
+colima stop
+colima start --cpu 4 --memory 6
+
+
+docker compose up --build
+
+docker ps
+
+
+docker compose start
+docker compose stop
+
+# update the nginx
+docker compose up -d --build app nginx
