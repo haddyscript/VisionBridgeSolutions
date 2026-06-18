@@ -34,10 +34,12 @@ class UploadController extends Controller
 
         $path = null;
         $originalName = null;
+        $size = null;
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $originalName = $file->getClientOriginalName();
+            $size = $file->getSize();
             $path = $file->store("projects/{$project->id}/{$validated['category']}", 'client_uploads');
         }
 
@@ -46,6 +48,7 @@ class UploadController extends Controller
             'category' => $validated['category'],
             'original_name' => $originalName,
             'path' => $path,
+            'size' => $size,
             'body' => $validated['body'] ?? null,
         ]);
 
