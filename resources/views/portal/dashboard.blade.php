@@ -7,8 +7,8 @@
 
 @if (! $project)
 
-    <div class="bg-white rounded-xl border border-gray-200 p-10 text-center">
-        <p class="text-gray-500">No project has been set up for your account yet. Please contact your VisionBridge representative.</p>
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+        <p class="text-gray-500 dark:text-gray-400">No project has been set up for your account yet. Please contact your VisionBridge representative.</p>
     </div>
 
 @else
@@ -60,12 +60,12 @@
     @endif
 
     {{-- Project header --}}
-    <div class="bg-white rounded-xl border border-gray-200 p-6 mb-8">
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div>
-                <h2 class="font-display text-2xl font-bold text-navy">{{ $project->name }}</h2>
+                <h2 class="font-display text-2xl font-bold text-navy dark:text-white">{{ $project->name }}</h2>
                 @if ($project->description)
-                    <p class="text-gray-500 text-sm mt-1">{{ $project->description }}</p>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">{{ $project->description }}</p>
                 @endif
             </div>
             <span class="inline-block text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full bg-gold/15 text-gold-dark">
@@ -73,11 +73,11 @@
             </span>
         </div>
 
-        <div class="flex items-center justify-between text-sm text-gray-500 mb-2">
+        <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">
             <span>Project Progress</span>
-            <span class="font-semibold text-navy">{{ $project->progressPercent() }}%</span>
+            <span class="font-semibold text-navy dark:text-white">{{ $project->progressPercent() }}%</span>
         </div>
-        <div class="w-full h-2 rounded-full bg-gray-100 overflow-hidden">
+        <div class="w-full h-2 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
             <div class="h-full bg-gold rounded-full" style="width: {{ $project->progressPercent() }}%"></div>
         </div>
 
@@ -89,13 +89,13 @@
                             <span class="w-4 h-4 rounded-full bg-teal flex items-center justify-center shrink-0">
                                 <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                             </span>
-                            <span class="text-gray-400 line-through">{{ $milestone->title }}</span>
+                            <span class="text-gray-400 dark:text-gray-500 line-through">{{ $milestone->title }}</span>
                         @elseif ($milestone->status === 'in_progress')
                             <span class="w-4 h-4 rounded-full border-2 border-gold shrink-0"></span>
-                            <span class="text-navy font-medium">{{ $milestone->title }}</span>
+                            <span class="text-navy dark:text-white font-medium">{{ $milestone->title }}</span>
                         @else
-                            <span class="w-4 h-4 rounded-full border-2 border-gray-300 shrink-0"></span>
-                            <span class="text-gray-500">{{ $milestone->title }}</span>
+                            <span class="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-600 shrink-0"></span>
+                            <span class="text-gray-500 dark:text-gray-400">{{ $milestone->title }}</span>
                         @endif
                     </li>
                 @endforeach
@@ -104,17 +104,17 @@
     </div>
 
     {{-- Category tiles --}}
-    <h3 class="font-display text-base font-bold text-navy mb-4">Project Sections</h3>
+    <h3 class="font-display text-base font-bold text-navy dark:text-white mb-4">Project Sections</h3>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         @foreach ($counts as $cat => $info)
-            <a href="{{ route('portal.category', $cat) }}" class="bg-white rounded-xl border border-gray-200 p-5 hover:border-gold/40 hover:shadow-sm transition-all group">
+            <a href="{{ route('portal.category', $cat) }}" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 hover:border-gold/40 hover:shadow-sm transition-all group">
                 <div class="w-10 h-10 rounded-lg bg-navy/5 group-hover:bg-gold/15 flex items-center justify-center mb-3 transition-colors">
-                    <svg class="w-5 h-5 text-navy group-hover:text-gold-dark transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-navy dark:text-white group-hover:text-gold-dark transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $categoryIcons[$cat] }}"/>
                     </svg>
                 </div>
-                <p class="font-semibold text-navy text-sm">{{ $info['label'] }}</p>
-                <p class="text-xs text-gray-400 mt-1 mb-2">{{ $info['description'] }}</p>
+                <p class="font-semibold text-navy dark:text-white text-sm">{{ $info['label'] }}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 mb-2">{{ $info['description'] }}</p>
                 @if ($info['count'] > 0)
                     <p class="text-xs font-medium text-teal-dark">{{ $info['count'] }} item{{ $info['count'] === 1 ? '' : 's' }} uploaded</p>
                 @else

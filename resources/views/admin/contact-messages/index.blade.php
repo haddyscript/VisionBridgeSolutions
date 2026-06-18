@@ -6,9 +6,9 @@
 @section('content')
 
 <form method="GET" class="flex items-center justify-end gap-2 mb-5">
-    <label class="text-xs font-semibold uppercase tracking-wide text-gray-400">Sort by</label>
+    <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Sort by</label>
     <select name="sort" onchange="this.form.submit()"
-            class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+            class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
         @foreach (\App\Http\Controllers\Admin\ContactMessageController::SORTS as $value => $label)
             <option value="{{ $value }}" {{ $sort === $value ? 'selected' : '' }}>{{ $label }}</option>
         @endforeach
@@ -16,20 +16,20 @@
 </form>
 
 @if ($messages->isEmpty())
-    <div class="bg-white rounded-xl border border-gray-200 p-10 text-center">
-        <p class="text-gray-500">No messages from the "Get in Touch" form yet.</p>
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+        <p class="text-gray-500 dark:text-gray-400">No messages from the "Get in Touch" form yet.</p>
     </div>
 @else
     <div class="space-y-4">
         @foreach ($messages as $message)
-            <div class="bg-white rounded-xl border p-6 {{ $message->isRead() ? 'border-gray-200' : 'border-gold/40 shadow-sm' }}" style="{{ $message->isRead() ? '' : 'background:linear-gradient(to right, rgba(201,168,76,0.05), #ffffff 12%);' }}">
+            <div class="bg-white dark:bg-gray-800 rounded-xl border p-6 {{ $message->isRead() ? 'border-gray-200 dark:border-gray-700' : 'border-gold/40 shadow-sm' }}" style="{{ $message->isRead() ? '' : 'background:linear-gradient(to right, rgba(201,168,76,0.05), #ffffff 12%);' }}">
                 <div class="flex flex-wrap items-start justify-between gap-4 mb-3">
                     <div class="flex items-center gap-2.5">
                         @if (! $message->isRead())
                             <span class="w-2 h-2 rounded-full bg-gold shrink-0" title="Unread"></span>
                         @endif
                         <div>
-                            <p class="font-semibold text-navy {{ $message->isRead() ? '' : 'font-bold' }}">
+                            <p class="font-semibold text-navy dark:text-white {{ $message->isRead() ? '' : 'font-bold' }}">
                                 {{ $message->first_name }} {{ $message->last_name }}
                                 @if (! $message->isRead())
                                     <span class="ml-1.5 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">New</span>
@@ -37,7 +37,7 @@
                             </p>
                             <a href="mailto:{{ $message->email }}" class="text-sm text-gold-dark hover:underline">{{ $message->email }}</a>
                             @if ($message->organization)
-                                <span class="text-sm text-gray-400"> &middot; {{ $message->organization }}</span>
+                                <span class="text-sm text-gray-400 dark:text-gray-500"> &middot; {{ $message->organization }}</span>
                             @endif
                         </div>
                     </div>
@@ -47,19 +47,19 @@
                                 {{ $message->service }}
                             </span>
                         @endif
-                        <p class="text-xs text-gray-400">{{ $message->created_at->format('M j, Y \a\t g:ia') }}</p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500">{{ $message->created_at->format('M j, Y \a\t g:ia') }}</p>
                     </div>
                 </div>
 
                 @if ($message->message)
-                    <p class="text-sm text-gray-700 whitespace-pre-line border-t border-gray-100 pt-3 mb-3">{{ $message->message }}</p>
+                    <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line border-t border-gray-100 dark:border-gray-700/60 pt-3 mb-3">{{ $message->message }}</p>
                 @endif
 
                 <form method="POST" action="{{ route('admin.contact-messages.toggle-read', $message) }}" class="flex justify-end">
                     @csrf
                     @method('PATCH')
                     @if ($message->isRead())
-                        <button type="submit" class="text-xs font-semibold text-navy bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full transition-colors">
+                        <button type="submit" class="text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 px-3 py-1.5 rounded-full transition-colors">
                             Mark as Unread
                         </button>
                     @else

@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'role',
         'stripe_customer_id',
+        'theme',
     ];
 
     /**
@@ -58,6 +59,11 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function isDarkTheme(): bool
+    {
+        return $this->theme === 'dark';
     }
 
     public function getOrCreateStripeCustomerId(): string

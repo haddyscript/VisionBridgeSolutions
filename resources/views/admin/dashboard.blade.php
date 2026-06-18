@@ -16,13 +16,13 @@
 @endphp
 
 @if ($projects->isEmpty())
-    <div class="bg-white rounded-xl border border-gray-200 p-10 text-center">
-        <p class="text-gray-500">No client projects yet.</p>
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+        <p class="text-gray-500 dark:text-gray-400">No client projects yet.</p>
     </div>
 @else
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-400">
+            <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
                 <tr>
                     <th class="px-5 py-3">Client</th>
                     <th class="px-5 py-3">Project</th>
@@ -33,26 +33,26 @@
                     <th class="px-5 py-3"></th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100">
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                 @foreach ($projects as $project)
                     <tr class="hover:bg-gray-50/60">
                         <td class="px-5 py-3.5">
-                            <p class="font-medium text-navy">{{ $project->user->name }}</p>
-                            <p class="text-xs text-gray-400">{{ $project->user->email }}</p>
+                            <p class="font-medium text-navy dark:text-white">{{ $project->user->name }}</p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $project->user->email }}</p>
                         </td>
-                        <td class="px-5 py-3.5 text-gray-700">{{ $project->name }}</td>
+                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $project->name }}</td>
                         <td class="px-5 py-3.5">
                             <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-gold/15 text-gold-dark">
                                 {{ $statusLabels[$project->status] ?? $project->status }}
                             </span>
                         </td>
-                        <td class="px-5 py-3.5 text-gray-700">{{ $project->progressPercent() }}%</td>
-                        <td class="px-5 py-3.5 text-gray-700">{{ $project->uploads->whereNotIn('category', ['content', 'revision'])->count() }}</td>
-                        <td class="px-5 py-3.5 text-gray-700">
+                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $project->progressPercent() }}%</td>
+                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $project->uploads->whereNotIn('category', ['content', 'revision'])->count() }}</td>
+                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">
                             @php $openRevisions = $project->uploads->where('category', 'revision')->whereNull('approved_at')->count(); @endphp
                             {{ $project->uploads->where('category', 'revision')->count() }}
                             @if ($openRevisions > 0)
-                                <span class="ml-1 inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-500">{{ $openRevisions }} open</span>
+                                <span class="ml-1 inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">{{ $openRevisions }} open</span>
                             @endif
                         </td>
                         <td class="px-5 py-3.5 text-right">
