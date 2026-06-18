@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PaymentReceiptMail;
+use App\Mail\SubscriptionReceiptMail;
 use App\Models\Payment;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Stripe\Checkout\Session;
+use Stripe\Exception\ApiErrorException;
 use Stripe\Exception\SignatureVerificationException;
+use Stripe\Stripe;
 use Stripe\Webhook;
 
 class StripeWebhookController extends Controller
@@ -29,6 +36,7 @@ class StripeWebhookController extends Controller
             'checkout.session.completed' => $this->handleCheckoutCompleted($event->data->object),
             'customer.subscription.updated' => $this->handleSubscriptionUpdated($event->data->object),
             'customer.subscription.deleted' => $this->handleSubscriptionDeleted($event->data->object),
+            'invoice.payment_succeeded' => $this->handleInvoicePaymentSucceeded($event->data->object),
             default => null,
         };
 
@@ -50,7 +58,7 @@ class StripeWebhookController extends Controller
             return;
         }
 
-        $payment = Payment::where('stripe_checkout_session_id', $session->id)->first();
+        $payment = Payment::with('project.user')->where('stripe_checkout_session_id', $session->id)->first();
 
         if ($payment && $payment->isPending()) {
             $payment->update([
@@ -58,6 +66,27 @@ class StripeWebhookController extends Controller
                 'stripe_payment_intent_id' => $session->payment_intent,
                 'paid_at' => now(),
             ]);
+
+            Mail::to($payment->project->user->email)->send(
+                new PaymentReceiptMail($payment, $this->fetchReceiptUrl($session->id))
+            );
+        }
+    }
+
+    private function fetchReceiptUrl(string $sessionId): ?string
+    {
+        try {
+            Stripe::setApiKey(config('services.stripe.secret'));
+
+            $session = Session::retrieve($sessionId, [
+                'expand' => ['payment_intent.latest_charge'],
+            ]);
+
+            return $session->payment_intent?->latest_charge?->receipt_url;
+        } catch (ApiErrorException $e) {
+            Log::warning('Could not fetch Stripe receipt URL.', ['error' => $e->getMessage()]);
+
+            return null;
         }
     }
 
@@ -83,7 +112,7 @@ class StripeWebhookController extends Controller
         $subscription->update([
             'status' => $statusMap[$stripeSubscription->status] ?? $subscription->status,
             'current_period_end' => $stripeSubscription->current_period_end
-                ? \Illuminate\Support\Carbon::createFromTimestamp($stripeSubscription->current_period_end)
+                ? Carbon::createFromTimestamp($stripeSubscription->current_period_end)
                 : null,
         ]);
     }
@@ -94,5 +123,27 @@ class StripeWebhookController extends Controller
             'status' => 'canceled',
             'canceled_at' => now(),
         ]);
+    }
+
+    private function handleInvoicePaymentSucceeded($invoice): void
+    {
+        if (! $invoice->subscription) {
+            return;
+        }
+
+        $subscription = Subscription::with('project.user')->where('stripe_subscription_id', $invoice->subscription)->first();
+
+        if (! $subscription) {
+            return;
+        }
+
+        Mail::to($subscription->project->user->email)->send(
+            new SubscriptionReceiptMail(
+                $subscription,
+                $invoice->amount_paid,
+                Carbon::createFromTimestamp($invoice->status_transitions->paid_at ?? $invoice->created),
+                $invoice->hosted_invoice_url,
+            )
+        );
     }
 }
