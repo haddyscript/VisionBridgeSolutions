@@ -1026,26 +1026,41 @@ $svgIcons = [
 
             {{-- ── Right: Form ── --}}
             <div class="rounded-3xl p-8 sm:p-10" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(12px);">
-                <form action="#" method="POST" class="space-y-4">
+
+                @if (session('status') === 'contact_sent')
+                    <div class="mb-5 rounded-xl px-4 py-3.5 text-sm" style="background:rgba(42,157,143,0.12);border:1px solid rgba(42,157,143,0.30);color:#7fd9cd;">
+                        Thanks for reaching out! We've received your message and will get back to you within 24 hours.
+                    </div>
+                @endif
+
+                @if ($errors->any())
+                    <div class="mb-5 rounded-xl px-4 py-3.5 text-sm" style="background:rgba(220,38,38,0.10);border:1px solid rgba(220,38,38,0.30);color:#fca5a5;">
+                        @foreach ($errors->all() as $error)
+                            <p>{{ $error }}</p>
+                        @endforeach
+                    </div>
+                @endif
+
+                <form action="{{ route('contact.store') }}" method="POST" class="space-y-4">
                     @csrf
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <input type="text" name="first_name" required placeholder="First Name"
+                        <input type="text" name="first_name" value="{{ old('first_name') }}" required placeholder="First Name"
                                class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
                                style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:#fff;"
                                onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
                                onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">
-                        <input type="text" name="last_name" required placeholder="Last Name"
+                        <input type="text" name="last_name" value="{{ old('last_name') }}" required placeholder="Last Name"
                                class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
                                style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:#fff;"
                                onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
                                onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">
                     </div>
-                    <input type="email" name="email" required placeholder="Email Address"
+                    <input type="email" name="email" value="{{ old('email') }}" required placeholder="Email Address"
                            class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
                            style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:#fff;"
                            onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
                            onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">
-                    <input type="text" name="organization" placeholder="Organization / Business"
+                    <input type="text" name="organization" value="{{ old('organization') }}" placeholder="Organization / Business"
                            class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
                            style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:#fff;"
                            onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
@@ -1056,22 +1071,26 @@ $svgIcons = [
                             onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
                             onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">
                         <option value="" style="background:#111D33;">Select a service...</option>
-                        <option style="background:#111D33;">Custom Website Development</option>
-                        <option style="background:#111D33;">Church Website Development</option>
-                        <option style="background:#111D33;">Ministry Website Development</option>
-                        <option style="background:#111D33;">Nonprofit Website Development</option>
-                        <option style="background:#111D33;">Small Business Website Development</option>
-                        <option style="background:#111D33;">Landing Page Development</option>
-                        <option style="background:#111D33;">Website Redesign</option>
-                        <option style="background:#111D33;">Website Maintenance</option>
-                        <option style="background:#111D33;">Hosting Management</option>
-                        <option style="background:#111D33;">Website Consulting</option>
+                        @foreach ([
+                            'Custom Website Development',
+                            'Church Website Development',
+                            'Ministry Website Development',
+                            'Nonprofit Website Development',
+                            'Small Business Website Development',
+                            'Landing Page Development',
+                            'Website Redesign',
+                            'Website Maintenance',
+                            'Hosting Management',
+                            'Website Consulting',
+                        ] as $option)
+                            <option style="background:#111D33;" {{ old('service') === $option ? 'selected' : '' }}>{{ $option }}</option>
+                        @endforeach
                     </select>
                     <textarea name="message" rows="5" placeholder="Tell us about your project..."
                               class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200 resize-none"
                               style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:#fff;"
                               onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
-                              onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'"></textarea>
+                              onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">{{ old('message') }}</textarea>
                     <button type="submit"
                             class="w-full font-bold text-base py-4 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-2xl"
                             style="background:#ffffff;color:#111D33;"

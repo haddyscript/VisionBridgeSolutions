@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
 use App\Http\Controllers\Admin\UploadApprovalController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\IntakeController;
 use App\Http\Controllers\Portal\CategoryController;
 use App\Http\Controllers\Portal\DashboardController;
@@ -19,6 +20,8 @@ Route::get('/', function () {
 
 Route::get('/get-started', [IntakeController::class, 'create'])->name('intake.create');
 Route::post('/get-started', [IntakeController::class, 'store'])->name('intake.store');
+
+Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.store');
 
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');

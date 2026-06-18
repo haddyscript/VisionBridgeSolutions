@@ -125,4 +125,15 @@ return [
 
     'admin_address' => env('MAIL_ADMIN_ADDRESS', env('MAIL_FROM_ADDRESS', 'hello@example.com')),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Contact Form Notification Address
+    |--------------------------------------------------------------------------
+    |
+    | Where submissions from the public "Get in Touch" contact form are sent.
+    |
+    */
+
+    'contact_address' => env('MAIL_CONTACT_ADDRESS', 'johnnydavis45@yahoo.com'),
+
 ];
