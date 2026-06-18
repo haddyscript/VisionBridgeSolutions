@@ -1,0 +1,116 @@
+PHASE 2 – CLIENT MANAGEMENT &amp; PORTAL SYSTEM
+
+Phase 2 Compensation:
+$150
+
+Payment Terms
+
+Payment will be issued upon completion, approval, and launch of Phase 2.
+
+Phase 2 Deliverables
+
+---------------------------------------------------------------------------------
+# On going Now
+Client Portal
+
+Secure portal allowing clients to:
+
+• Upload Images
+
+• Upload Videos
+
+• Upload Logos
+
+• Upload Documents
+
+• Submit Website Content
+
+• Submit Revisions
+
+• Upload Marketing Materials
+
+• Track Project Progress
+---------------------------------------------------------------------------------
+
+
+
+Client Intake Portal
+
+New clients can submit:
+
+• Organization Information
+
+• Mission Statement
+
+• Vision Statement
+
+• Contact Information
+
+• Service Information
+
+• Website Requirements
+
+• Photos
+
+• Videos
+
+• Logos
+
+• Social Media Links
+
+FaithStack Team Portal
+
+Secure access for FaithStack to:
+
+• View Client Content
+
+• Access Approved Files
+
+• Access Revision Requests
+
+• Access Project Resources
+
+• Manage Assigned Website Projects
+
+Payment System Integration
+
+System should support:
+
+• Credit Card Payments
+
+• Debit Card Payments
+
+• ACH Bank Transfers
+
+• Recurring Monthly Maintenance Billing
+
+• Automatic Subscription Payments
+
+• Automated Client Onboarding Workflow
+
+Maintenance Management
+
+System should support:
+
+• Automated Monthly Maintenance Billing
+
+• Maintenance Plan Tracking
+
+• Active Client Management
+
+• Future Service Expansion
+
+⸻
+
+VISIONBRIDGE WEBSITE MAINTENANCE
+
+Upon completion of the VisionBridge website, FaithStack will provide ongoing maintenance
+and support services.
+
+Compensation:
+
+• FaithStack shall receive $20 per month for ongoing website maintenance services while
+actively maintaining the VisionBridge website.
+
+• Maintenance services include website updates, monitoring, and approved maintenance-
+related tasks.
