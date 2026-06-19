@@ -108,7 +108,21 @@ class StripeWebhookController extends Controller
                 'expand' => ['payment_intent.latest_charge'],
             ]);
 
-            return $session->payment_intent?->latest_charge?->receipt_url;
+            $paymentIntent = $session->payment_intent;
+
+            if (is_string($paymentIntent)) {
+                $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntent, [
+                    'expand' => ['latest_charge'],
+                ]);
+            }
+
+            $latestCharge = $paymentIntent?->latest_charge;
+
+            if (is_string($latestCharge)) {
+                $latestCharge = \Stripe\Charge::retrieve($latestCharge);
+            }
+
+            return $latestCharge?->receipt_url;
         } catch (ApiErrorException $e) {
             Log::warning('Could not fetch Stripe receipt URL.', ['error' => $e->getMessage()]);
 
