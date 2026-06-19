@@ -13,9 +13,17 @@
                 <circle cx="18" cy="18" r="15.5" fill="none" stroke="#C9A84C" stroke-width="3"
                         stroke-dasharray="{{ $gsProgress }} {{ $gsCircumference }}" stroke-linecap="round"/>
             </svg>
+            @if ($gsCompleted < $gsTotal)
+                <span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-navy-dark"></span>
+            @endif
         </span>
         <span class="min-w-0 flex-1">
-            <span class="block text-sm font-semibold text-white truncate">Getting Started</span>
+            <span class="flex items-center gap-1.5">
+                <span class="text-sm font-semibold text-white truncate">Getting Started</span>
+                @if ($gsCompleted < $gsTotal)
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500 text-white shrink-0">{{ $gsTotal - $gsCompleted }}</span>
+                @endif
+            </span>
             <span class="block text-xs text-white/40">{{ $gsCompleted }} of {{ $gsTotal }} tasks completed</span>
         </span>
         <svg id="getting-started-chevron" class="w-4 h-4 text-white/30 shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
