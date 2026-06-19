@@ -49,7 +49,7 @@ return [
 
         'client_uploads' => [
             'driver' => 'local',
-            'root' => public_path('client-uploads'),
+            'root' => env('CLIENT_UPLOADS_PATH', public_path('client-uploads')),
             'url' => env('APP_URL').'/client-uploads',
             'visibility' => 'public',
             'throw' => false,
