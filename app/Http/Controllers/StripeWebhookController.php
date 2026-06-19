@@ -37,6 +37,7 @@ class StripeWebhookController extends Controller
             'customer.subscription.updated' => $this->handleSubscriptionUpdated($event->data->object),
             'customer.subscription.deleted' => $this->handleSubscriptionDeleted($event->data->object),
             'invoice.payment_succeeded' => $this->handleInvoicePaymentSucceeded($event->data->object),
+            'payment_intent.succeeded' => $this->handlePaymentIntentSucceeded($event->data->object),
             default => null,
         };
 
@@ -71,6 +72,31 @@ class StripeWebhookController extends Controller
                 new PaymentReceiptMail($payment, $this->fetchReceiptUrl($session->id))
             );
         }
+    }
+
+    private function handlePaymentIntentSucceeded($paymentIntent): void
+    {
+        $sessionId = $paymentIntent->payment_details->order_reference ?? null;
+
+        if (! $sessionId) {
+            return;
+        }
+
+        $payment = Payment::with('project.user')->where('stripe_checkout_session_id', $sessionId)->first();
+
+        if (! $payment || ! $payment->isPending()) {
+            return;
+        }
+
+        $payment->update([
+            'status' => 'paid',
+            'stripe_payment_intent_id' => $paymentIntent->id,
+            'paid_at' => now(),
+        ]);
+
+        Mail::to($payment->project->user->email)->send(
+            new PaymentReceiptMail($payment, $this->fetchReceiptUrl($sessionId))
+        );
     }
 
     private function fetchReceiptUrl(string $sessionId): ?string
