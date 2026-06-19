@@ -6,10 +6,14 @@ php artisan migrate --force
 
 php artisan seed --force
 
-
+# Terminal
 docker compose exec app php artisan migrate --force
 docker compose exec app php artisan db:seed --force
 
+# Inside docker
+php artisan migrate --force && php artisan db:seed --force
+
+# For Stripe payment 
 docker compose exec app composer config policy.advisories.block false 2>&1 && grep -n -A3 '"policy"' composer.json
 docker compose exec app composer require stripe/stripe-php --no-interaction 2>&1
 
@@ -25,5 +29,8 @@ http://localhost:8080/
 
 docker compose exec app php artisan route:list --path=payments 2>&1; docker compose exec app php artisan route:list --path=stripe 2>&1
 
-# refreshment
+# Terminal refreshment
 docker compose exec app php artisan view:cache 2>&1 | grep -v "^time="; docker compose exec app php artisan view:clear 2>&1 | grep -v "^time="; docker compose exec app php artisan route:list --path=care-plans 2>&1 | grep -v "^time="
+
+# Docker 
+php artisan view:cache 2>&1 | grep -v "^time="; php artisan view:clear 2>&1 | grep -v "^time="; php artisan route:list --path=care-plans 2>&1 | grep -v "^time="

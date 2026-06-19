@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\MilestoneController as AdminMilestoneController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
+use App\Http\Controllers\Admin\TeamController as AdminTeamController;
 use App\Http\Controllers\Admin\UploadApprovalController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -92,4 +93,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/care-plans', [AdminMaintenancePlanController::class, 'store'])->name('care-plans.store');
     Route::patch('/care-plans/{carePlan}', [AdminMaintenancePlanController::class, 'update'])->name('care-plans.update');
     Route::delete('/care-plans/{carePlan}', [AdminMaintenancePlanController::class, 'destroy'])->name('care-plans.destroy');
+
+    Route::get('/team', [AdminTeamController::class, 'index'])->name('team.index');
+    Route::post('/team', [AdminTeamController::class, 'store'])->name('team.store');
+    Route::patch('/team/password', [AdminTeamController::class, 'updatePassword'])->name('team.password.update');
+    Route::delete('/team/{user}', [AdminTeamController::class, 'destroy'])->name('team.destroy');
 });
