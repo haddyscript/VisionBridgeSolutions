@@ -155,7 +155,9 @@
                     <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $paymentStatusColors[$payment->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
                         {{ ucfirst($payment->status) }}
                     </span>
-                    @if ($payment->isPending())
+                    @if ($payment->isPending() && $payment->stripe_checkout_session_id)
+                        <span class="text-xs text-gray-400 dark:text-gray-500" title="A Stripe checkout session is in progress for this payment — sync or wait before removing.">Checkout in progress</span>
+                    @elseif ($payment->isPending())
                         <form method="POST" action="{{ route('admin.payments.destroy', $payment) }}" onsubmit="return confirm('Remove this payment request?')">
                             @csrf
                             @method('DELETE')

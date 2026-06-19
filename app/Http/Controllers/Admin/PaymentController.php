@@ -37,6 +37,7 @@ class PaymentController extends Controller
     public function destroy(Payment $payment)
     {
         abort_unless($payment->isPending(), 422, 'Only pending payment requests can be removed.');
+        abort_if($payment->stripe_checkout_session_id, 422, 'This payment already has a Stripe checkout session in progress and can\'t be removed — the client may be mid-payment. Use "Sync with Stripe" to check its status first.');
 
         $payment->delete();
 
