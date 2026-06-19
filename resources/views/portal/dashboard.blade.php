@@ -6,34 +6,74 @@
 @section('content')
 
 @if ($showPaymentReminder)
-    <div id="payment-reminder-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 rounded-full bg-red-500/15 text-red-500 flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div id="payment-reminder-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 opacity-0 transition-opacity duration-200">
+        <div id="payment-reminder-card" class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden scale-95 transition-transform duration-200">
+
+            <button type="button" id="payment-reminder-close" aria-label="Close" class="absolute top-4 right-4 text-white/70 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+
+            <div class="px-6 pt-7 pb-6" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
+                <div class="w-12 h-12 rounded-full bg-gold/15 text-gold flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14.18A1 1 0 003 19.5h18a1 1 0 00.86-1.46L13.71 3.86a1 1 0 00-1.72 0z"/>
                     </svg>
                 </div>
-                <h2 class="font-display text-lg font-bold text-navy dark:text-white">You have a pending payment</h2>
+                <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Payment Reminder</p>
+                <h2 class="font-display text-xl font-bold text-white">You have a pending payment</h2>
             </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                There's an outstanding invoice on your account. Please complete the payment to keep your project moving forward.
-            </p>
-            <div class="flex justify-end gap-3">
-                <button type="button" id="payment-reminder-dismiss" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                    Remind me later
-                </button>
-                <a href="{{ route('portal.payments.index') }}" class="px-4 py-2 rounded-lg text-sm font-semibold bg-gold text-navy hover:bg-gold-dark transition-colors">
-                    View Payment
-                </a>
+
+            <div class="px-6 py-6">
+                @if ($pendingPayment)
+                    <div class="flex items-center justify-between rounded-xl border border-gray-200 dark:border-gray-700 px-4 py-3 mb-5">
+                        <div class="min-w-0 pr-3">
+                            <p class="text-sm font-medium text-navy dark:text-white truncate">{{ $pendingPayment->description }}</p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Pending</p>
+                        </div>
+                        <p class="font-display text-lg font-bold text-navy dark:text-white shrink-0">{{ $pendingPayment->formattedAmount() }}</p>
+                    </div>
+                @endif
+
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                    Please complete this payment to keep your project moving forward without delay.
+                </p>
+
+                <div class="flex flex-col sm:flex-row sm:justify-end gap-2.5">
+                    <button type="button" id="payment-reminder-dismiss" class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        Remind me later
+                    </button>
+                    <a href="{{ route('portal.payments.index') }}" class="text-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-gold text-navy hover:bg-gold-dark transition-colors">
+                        View &amp; Pay Now
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        document.getElementById('payment-reminder-dismiss')?.addEventListener('click', function () {
-            document.getElementById('payment-reminder-modal')?.remove();
-        });
+        (function () {
+            const overlay = document.getElementById('payment-reminder-modal');
+            const card = document.getElementById('payment-reminder-card');
+
+            requestAnimationFrame(() => {
+                overlay.classList.remove('opacity-0');
+                card.classList.remove('scale-95');
+            });
+
+            function closeModal() {
+                overlay.classList.add('opacity-0');
+                card.classList.add('scale-95');
+                setTimeout(() => overlay.remove(), 200);
+            }
+
+            document.getElementById('payment-reminder-dismiss')?.addEventListener('click', closeModal);
+            document.getElementById('payment-reminder-close')?.addEventListener('click', closeModal);
+            overlay.addEventListener('click', function (e) {
+                if (e.target === overlay) closeModal();
+            });
+        })();
     </script>
 @endif
 

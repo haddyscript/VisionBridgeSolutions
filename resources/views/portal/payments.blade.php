@@ -222,9 +222,12 @@
                     </div>
 
                     <div id="modal-pay-action" class="hidden pt-2">
-                        <a id="modal-pay-link" href="#" class="block text-center bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-3 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
-                            Pay Now
-                        </a>
+                        <form id="modal-pay-form" method="POST" action="#">
+                            @csrf
+                            <button type="submit" class="block w-full text-center bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-3 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                                Pay Now
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -306,7 +309,7 @@
 
             const payAction = document.getElementById('modal-pay-action');
             if (d.checkoutUrl) {
-                document.getElementById('modal-pay-link').href = d.checkoutUrl;
+                document.getElementById('modal-pay-form').action = d.checkoutUrl;
                 payAction.classList.remove('hidden');
             } else {
                 payAction.classList.add('hidden');

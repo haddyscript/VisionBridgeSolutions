@@ -10,7 +10,7 @@ class DashboardController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $project = $request->user()->projects()->with('milestones', 'uploads')->first();
+        $project = $request->user()->projects()->with('milestones', 'uploads', 'payments')->first();
 
         $counts = collect(CategoryController::CATEGORIES)
             ->map(fn ($meta, $category) => [
@@ -19,13 +19,16 @@ class DashboardController extends Controller
                 'count' => $project ? $project->uploads->where('category', $category)->count() : 0,
             ]);
 
+        $pendingPayment = $project?->payments->firstWhere('status', 'pending');
+
         $showPaymentReminder = $request->session()->pull('show_payment_reminder', false)
-            && $request->user()->hasPendingPayment();
+            && $pendingPayment !== null;
 
         return view('portal.dashboard', [
             'project' => $project,
             'counts' => $counts,
             'showPaymentReminder' => $showPaymentReminder,
+            'pendingPayment' => $pendingPayment,
         ]);
     }
 }

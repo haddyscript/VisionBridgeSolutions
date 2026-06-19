@@ -33,3 +33,7 @@ Goal: reduce wasted searches, redundant file reads, and unnecessary token spend.
 
 ## 7. Ask, Don't Assume
 - If a request is ambiguous (e.g. "fix the upload path"), ask me which file/module before touching anything, rather than guessing and exploring.
+
+
+## 8. Git Commit Message
+- After completing any code change (edit, fix, new feature), always end your response with a ready-to-use commit message in this format:
