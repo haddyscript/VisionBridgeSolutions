@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Models\Project;
+use App\Services\PaymentReconciler;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -40,5 +41,12 @@ class PaymentController extends Controller
         $payment->delete();
 
         return back()->with('status', 'Payment request removed.');
+    }
+
+    public function sync(Payment $payment, PaymentReconciler $reconciler)
+    {
+        $payment->load('project.user');
+
+        return back()->with('status', $reconciler->reconcile($payment));
     }
 }

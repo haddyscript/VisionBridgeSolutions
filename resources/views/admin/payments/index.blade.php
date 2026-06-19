@@ -93,10 +93,21 @@
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $payment->created_at->format('M j, Y') }}</td>
                         <td class="px-5 py-3.5 text-right">
-                            <span class="inline-flex items-center gap-1 text-gold-dark font-semibold group-hover:gap-1.5 transition-all">
-                                View
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                            </span>
+                            <div class="flex items-center justify-end gap-3">
+                                @if ($payment->isPending() && $payment->stripe_checkout_session_id)
+                                    <form method="POST" action="{{ route('admin.payments.sync', $payment) }}" onclick="event.stopPropagation()">
+                                        @csrf
+                                        <button type="submit" title="Check with Stripe whether this was actually paid" class="inline-flex items-center gap-1.5 text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-teal/15 hover:text-teal-dark border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-full transition-colors">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                            Sync with Stripe
+                                        </button>
+                                    </form>
+                                @endif
+                                <span class="inline-flex items-center gap-1 text-gold-dark font-semibold group-hover:gap-1.5 transition-all">
+                                    View
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </span>
+                            </div>
                         </td>
                     </tr>
                 @endforeach

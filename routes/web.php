@@ -99,6 +99,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments.index');
     Route::post('/projects/{project}/payments', [AdminPaymentController::class, 'store'])->name('payments.store');
     Route::delete('/payments/{payment}', [AdminPaymentController::class, 'destroy'])->name('payments.destroy');
+    Route::post('/payments/{payment}/sync', [AdminPaymentController::class, 'sync'])->name('payments.sync');
 
     Route::get('/subscriptions', [AdminSubscriptionController::class, 'index'])->name('subscriptions.index');
     Route::post('/projects/{project}/subscriptions', [AdminSubscriptionController::class, 'store'])->name('subscriptions.store');
