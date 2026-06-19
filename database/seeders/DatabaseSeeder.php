@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
         }
 
         User::updateOrCreate(
-            ['email' => 'admin@example.com'],
+            ['email' => 'admin@visionbridgesolutions.com'],
             [
                 'name' => 'FaithStack Admin',
                 'role' => 'admin',
