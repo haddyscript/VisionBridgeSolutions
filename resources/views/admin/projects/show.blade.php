@@ -31,6 +31,10 @@
             <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">Client</p>
             <p class="font-semibold text-navy dark:text-white">{{ $project->user->name }}</p>
             <p class="text-sm text-gray-500 dark:text-gray-400">{{ $project->user->email }}</p>
+            <button type="button" onclick="openResetPasswordModal()" class="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3 py-2 rounded-lg transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                Reset Password to "admin123"
+            </button>
         </div>
 
         <form method="POST" action="{{ route('admin.projects.update', $project) }}" class="flex items-center gap-2">
@@ -317,6 +321,34 @@
 
 </div>
 
+{{-- Reset Password confirm modal --}}
+<div id="reset-password-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div id="reset-password-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
+
+    <div id="reset-password-panel" class="relative w-full max-w-sm transform scale-95 opacity-0 transition-all duration-200">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
+            <div class="w-11 h-11 rounded-full bg-gold/15 text-gold-dark flex items-center justify-center mb-4">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            </div>
+            <h2 class="font-display text-lg font-bold text-navy dark:text-white mb-2">Reset client password?</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                {{ $project->user->name }}'s password will be reset to <strong class="text-navy dark:text-white">"admin123"</strong>. They should change it immediately after logging in.
+            </p>
+            <div class="flex justify-end gap-2.5">
+                <button type="button" onclick="closeResetPasswordModal()" class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    Cancel
+                </button>
+                <form method="POST" action="{{ route('admin.projects.reset-client-password', $project) }}">
+                    @csrf
+                    <button type="submit" class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-gold hover:bg-gold-dark text-navy-dark transition-colors">
+                        Reset Password
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     function showProjectTab(tab) {
         document.querySelectorAll('[data-tab-panel]').forEach((el) => {
@@ -332,6 +364,32 @@
             el.classList.toggle('dark:text-gray-500', !active);
         });
     }
+
+    (function () {
+        const modal = document.getElementById('reset-password-modal');
+        const backdrop = document.getElementById('reset-password-backdrop');
+        const panel = document.getElementById('reset-password-panel');
+
+        window.openResetPasswordModal = function () {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            requestAnimationFrame(function () {
+                backdrop.classList.remove('opacity-0');
+                panel.classList.remove('scale-95', 'opacity-0');
+            });
+        };
+
+        window.closeResetPasswordModal = function () {
+            backdrop.classList.add('opacity-0');
+            panel.classList.add('scale-95', 'opacity-0');
+            setTimeout(function () {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 200);
+        };
+
+        backdrop?.addEventListener('click', closeResetPasswordModal);
+    })();
 </script>
 
 @endsection

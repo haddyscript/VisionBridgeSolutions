@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class ProjectController extends Controller
 {
@@ -27,5 +28,14 @@ class ProjectController extends Controller
         $project->update($validated);
 
         return back()->with('status', 'Project status updated.');
+    }
+
+    public function resetClientPassword(Project $project)
+    {
+        $project->user->update([
+            'password' => Hash::make('admin123'),
+        ]);
+
+        return back()->with('status', "Password reset to \"admin123\" for {$project->user->name}.");
     }
 }
