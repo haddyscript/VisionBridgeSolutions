@@ -62,17 +62,20 @@
                             <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 28px;">
                                 <tr>
                                     <td style="background-color:#C9A84C; border-radius:10px;">
-                                        <a href="{{ route('login') }}"
+                                        <a href="{{ $resetUrl ?? route('login') }}"
                                            style="display:inline-block; padding:14px 32px; font-size:15px; font-weight:700; color:#111D33; text-decoration:none;">
-                                            Go to Your Client Portal
+                                            {{ $resetUrl ? 'Set Your Password' : 'Go to Your Client Portal' }}
                                         </a>
                                     </td>
                                 </tr>
                             </table>
 
                             <p style="font-size:13px; line-height:1.6; color:#9ca3af; margin:0;">
-                                Signed in as <strong style="color:#4b5563;">{{ $user->email }}</strong>. If you didn't
-                                create this account, please contact us right away.
+                                Your account email is <strong style="color:#4b5563;">{{ $user->email }}</strong>.
+                                @if ($resetUrl)
+                                    Use the button above to set your password and sign in.
+                                @endif
+                                If you didn't expect this account, please contact us right away.
                             </p>
                         </td>
                     </tr>

@@ -69,6 +69,17 @@
                     @endforeach
                 </select>
             </form>
+
+            @if ($submission->project_id)
+                <a href="{{ route('admin.projects.show', $submission->project_id) }}" class="mt-5 pt-5 border-t border-gray-100 dark:border-gray-700/60 flex items-center justify-center gap-2 text-sm font-semibold text-teal-dark hover:underline">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    View Client Project
+                </a>
+            @else
+                <button type="button" onclick="openConvertModal()" class="mt-5 pt-5 border-t border-gray-100 dark:border-gray-700/60 w-full bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all">
+                    Approve &amp; Create Client
+                </button>
+            @endif
         </div>
 
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4 text-sm">
@@ -204,5 +215,76 @@
         @endforeach
     </div>
 </div>
+
+@if (! $submission->project_id)
+    {{-- Approve & Create Client Modal --}}
+    <div id="convert-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div id="convert-modal-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
+
+        <div id="convert-modal-panel" class="relative w-full max-w-md transform scale-95 opacity-0 transition-all duration-200">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+                <div class="px-6 pt-6 pb-5" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
+                    <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Approve &amp; Create Client</p>
+                    <h2 class="font-display text-lg font-bold text-white">{{ $submission->contact_name }} — {{ $submission->organization_name }}</h2>
+                    <p class="text-sm text-white/50 mt-1">This creates a client account and project, then emails them a link to set their password.</p>
+                </div>
+
+                <form method="POST" action="{{ route('admin.intake-submissions.convert', $submission) }}" class="px-6 py-6 space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Project Name</label>
+                        <input type="text" name="project_name" required value="{{ old('project_name', $submission->organization_name.'\'s Website') }}"
+                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Project Description (optional)</label>
+                        <textarea name="project_description" rows="3"
+                                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">{{ old('project_description', $submission->website_requirements) }}</textarea>
+                    </div>
+
+                    <div class="flex justify-end gap-2.5 pt-2">
+                        <button type="button" onclick="closeConvertModal()" class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-gold hover:bg-gold-dark text-navy-dark transition-colors">
+                            Create Client &amp; Project
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const modal = document.getElementById('convert-modal');
+            const backdrop = document.getElementById('convert-modal-backdrop');
+            const panel = document.getElementById('convert-modal-panel');
+
+            window.openConvertModal = function () {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                requestAnimationFrame(function () {
+                    backdrop.classList.remove('opacity-0');
+                    panel.classList.remove('scale-95', 'opacity-0');
+                });
+            };
+
+            window.closeConvertModal = function () {
+                backdrop.classList.add('opacity-0');
+                panel.classList.add('scale-95', 'opacity-0');
+                setTimeout(function () {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 200);
+            };
+
+            backdrop?.addEventListener('click', closeConvertModal);
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeConvertModal();
+            });
+        })();
+    </script>
+@endif
 
 @endsection

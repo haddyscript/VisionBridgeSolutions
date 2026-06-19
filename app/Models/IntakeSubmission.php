@@ -18,6 +18,7 @@ class IntakeSubmission extends Model
         'website_requirements',
         'social_links',
         'status',
+        'project_id',
     ];
 
     protected function casts(): array
@@ -31,5 +32,10 @@ class IntakeSubmission extends Model
     public function files()
     {
         return $this->hasMany(IntakeFile::class);
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
     }
 }

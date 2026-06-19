@@ -35,7 +35,14 @@ Goal: reduce wasted searches, redundant file reads, and unnecessary token spend.
 - If a request is ambiguous (e.g. "fix the upload path"), ask me which file/module before touching anything, rather than guessing and exploring.
 
 
-## 8. Git Commit Message
+## 10. File Editing Method
+- When reading or writing files, use direct file read/edit tools only.
+- **Do NOT write Python scripts, shell scripts, or one-off code** to read, parse, modify, or generate files (e.g. no `python3 -c "..."`, no temporary `.py`/`.sh` helper scripts) unless I explicitly ask for a script as the deliverable.
+- This applies to all file types — PHP, Blade, JS, CSS, JSON, env files, etc. Edit them directly.
+- Scripts add unnecessary processing time and token overhead for simple read/write tasks — go straight to the file.
+
+
+## 9. Git Commit Message
 - After completing any code change (edit, fix, new feature), always end your response with a ready-to-use commit message in this format:
 - - Keep the message concise (under ~72 characters for the summary line) and written in imperative mood (e.g. "Fix upload path", "Add pending payment nav indicator").
 - If the change touches multiple unrelated things, suggest splitting into multiple commits and give a commit message for each.
