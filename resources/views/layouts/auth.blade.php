@@ -38,7 +38,7 @@
             <div class="absolute inset-0 opacity-20" style="background-image:radial-gradient(circle,rgba(255,255,255,0.3) 1px,transparent 1px);background-size:22px 22px;"></div>
             <div class="absolute -top-20 -left-10 w-64 h-64 rounded-full" style="background:radial-gradient(circle,rgba(201,168,76,0.16) 0%,transparent 70%);"></div>
             <div class="absolute bottom-10 left-20 w-48 h-48 rounded-full" style="background:radial-gradient(circle,rgba(42,157,143,0.14) 0%,transparent 70%);"></div>
-            <div class="absolute bottom-0 left-0 w-3/4 h-28" style="background-image:radial-gradient(circle,rgba(255,255,255,0.5) 1.5px,transparent 1.5px);background-size:14px 14px;"></div>
+            <div class="absolute bottom-0 left-1/4 w-3/4 h-28" style="background-image:radial-gradient(circle,rgba(255,255,255,0.5) 1.5px,transparent 1.5px);background-size:14px 14px;"></div>
 
             <div class="relative max-w-sm pl-4">
                 <div class="flex items-center gap-2.5 mb-10">
@@ -90,9 +90,6 @@
                 </ul>
             </div>
         </div>
-
-        {{-- Dot accent crossing the diagonal seam --}}
-        <div class="hidden lg:block lg:absolute bottom-0 left-[40%] w-32 h-28 z-10" style="background-image:radial-gradient(circle,rgba(27,42,74,0.35) 1.5px,transparent 1.5px);background-size:14px 14px;"></div>
 
         {{-- Form panel --}}
         <div class="flex-1 flex items-center justify-center px-4 py-12 lg:ml-[58%]">
