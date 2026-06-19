@@ -31,8 +31,9 @@
                 'a' => 'The Project Files section is split into four categories: Images (photos of your team, space, or work), Videos (promo or testimonial videos), Logos (your brand logo files), and Documents (brochures, policies, or other files).',
             ],
             [
-                'q' => 'Is there a file size or type limit?',
-                'a' => 'Yes, large files may be rejected. If an upload fails, try a smaller file or a more common format (JPG/PNG for images, MP4 for video, PDF for documents) and try again, or let us know and we\'ll help.',
+                'id' => 'file-formats',
+                'q' => 'What file formats should I upload?',
+                'a' => 'Images and logos: JPG or PNG. Videos: MP4 works best. Documents: PDF is preferred. Very large files may be rejected — if an upload fails, try a smaller file or a more common format and try again, or let us know and we\'ll help.',
             ],
             [
                 'q' => 'Can I delete something I uploaded by mistake?',
@@ -45,6 +46,7 @@
         ],
         'Website Content & Revisions' => [
             [
+                'id' => 'website-content',
                 'q' => 'What goes in "Website Content"?',
                 'a' => 'Use this section to share the actual text you want on your site — your mission statement, service descriptions, About Us copy, calls to action, and anything else you want visitors to read.',
             ],
@@ -53,6 +55,7 @@
                 'a' => 'Marketing Materials is for supporting assets like flyers, social graphics, and promotional copy. Website Content is specifically for the text that will live on your website pages.',
             ],
             [
+                'id' => 'request-revision',
                 'q' => 'How do I request a change to my site?',
                 'a' => 'Use the Revisions section to describe what you\'d like changed. Our team reviews revision requests and updates your project milestones as the work is completed.',
             ],
@@ -73,6 +76,7 @@
                 'a' => 'You\'ll see a red dot next to "Payments" in the sidebar, and a reminder pop-up may appear right after you log in if something is pending. You can always check the Payments page directly for the full picture.',
             ],
             [
+                'id' => 'how-to-pay',
                 'q' => 'How do I pay an invoice?',
                 'a' => 'Go to the Payments page, find the pending item (or click it to see full transaction details), and click "Pay Now." You\'ll be taken to a secure Stripe checkout page to complete payment by card.',
             ],
@@ -123,7 +127,7 @@
             <h3 class="font-display text-sm font-bold uppercase tracking-wide text-gold-dark mb-3">{{ $title }}</h3>
             <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700/60 overflow-hidden">
                 @foreach ($items as $item)
-                    <details class="group">
+                    <details class="group" @if (! empty($item['id'])) id="{{ $item['id'] }}" @endif>
                         <summary class="list-none flex items-center justify-between gap-3 px-5 py-4 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
                             <span class="text-sm font-medium text-navy dark:text-white">{{ $item['q'] }}</span>
                             <svg class="w-4 h-4 text-gray-400 shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -137,5 +141,15 @@
         </div>
     @endforeach
 </div>
+
+<script>
+    if (location.hash) {
+        const target = document.querySelector(location.hash);
+        if (target && target.tagName === 'DETAILS') {
+            target.open = true;
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+</script>
 
 @endsection

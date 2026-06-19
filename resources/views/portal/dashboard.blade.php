@@ -128,7 +128,26 @@
                     @endif
                 @endforeach
             </div>
+            <a href="{{ route('portal.faq') }}#file-formats" class="inline-flex items-center gap-1.5 text-sm text-gold-dark hover:underline mt-4">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                What file formats should I upload?
+            </a>
         </div>
+    @endif
+
+    @if ($pendingPayment)
+        <a href="{{ route('portal.payments.index') }}" class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 px-5 py-4 mb-8 hover:border-red-300 dark:hover:border-red-500/50 transition-colors">
+            <div class="flex items-center gap-3">
+                <span class="w-9 h-9 rounded-full bg-red-500/15 text-red-500 flex items-center justify-center shrink-0">
+                    <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14.18A1 1 0 003 19.5h18a1 1 0 00.86-1.46L13.71 3.86a1 1 0 00-1.72 0z"/></svg>
+                </span>
+                <p class="text-sm text-red-700 dark:text-red-300">
+                    <span class="font-semibold">Payment due: {{ $pendingPayment->formattedAmount() }}</span>
+                    &middot; Pending since {{ $pendingPayment->created_at->format('M j, Y') }}
+                </p>
+            </div>
+            <span class="text-xs font-semibold uppercase tracking-wide text-red-600 dark:text-red-400 shrink-0">View &amp; Pay &rarr;</span>
+        </a>
     @endif
 
     {{-- Project header --}}
