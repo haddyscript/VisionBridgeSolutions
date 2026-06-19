@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AdminPaymentNotificationMail;
 use App\Mail\PaymentReceiptMail;
 use App\Mail\SubscriptionReceiptMail;
 use App\Models\Payment;
@@ -71,6 +72,8 @@ class StripeWebhookController extends Controller
             Mail::to($payment->project->user->email)->send(
                 new PaymentReceiptMail($payment, $this->fetchReceiptUrl($session->id))
             );
+
+            $this->notifyAdminOfPayment($payment);
         }
     }
 
@@ -97,6 +100,19 @@ class StripeWebhookController extends Controller
         Mail::to($payment->project->user->email)->send(
             new PaymentReceiptMail($payment, $this->fetchReceiptUrl($sessionId))
         );
+
+        $this->notifyAdminOfPayment($payment);
+    }
+
+    private function notifyAdminOfPayment(Payment $payment): void
+    {
+        Mail::to(config('mail.admin_address'))->send(new AdminPaymentNotificationMail(
+            $payment,
+            $payment->project->user->name,
+            $payment->project->name,
+            $payment->formattedAmount(),
+            $payment->paid_at ?? now(),
+        ));
     }
 
     private function fetchReceiptUrl(string $sessionId): ?string
@@ -177,13 +193,23 @@ class StripeWebhookController extends Controller
             return;
         }
 
+        $paidAt = Carbon::createFromTimestamp($invoice->status_transitions->paid_at ?? $invoice->created);
+
         Mail::to($subscription->project->user->email)->send(
             new SubscriptionReceiptMail(
                 $subscription,
                 $invoice->amount_paid,
-                Carbon::createFromTimestamp($invoice->status_transitions->paid_at ?? $invoice->created),
+                $paidAt,
                 $invoice->hosted_invoice_url,
             )
         );
+
+        Mail::to(config('mail.admin_address'))->send(new AdminPaymentNotificationMail(
+            $subscription,
+            $subscription->project->user->name,
+            $subscription->project->name,
+            '$'.number_format($invoice->amount_paid / 100, 2),
+            $paidAt,
+        ));
     }
 }
