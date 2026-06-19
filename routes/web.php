@@ -73,6 +73,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/portal/account', [PortalAccountController::class, 'index'])->name('portal.account.index');
     Route::patch('/portal/account/profile', [PortalAccountController::class, 'updateProfile'])->name('portal.account.profile.update');
     Route::patch('/portal/account/password', [PortalAccountController::class, 'updatePassword'])->name('portal.account.password.update');
+
+    Route::view('/portal/faq', 'portal.faq')->name('portal.faq');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -113,4 +115,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/team/profile', [AdminTeamController::class, 'updateProfile'])->name('team.profile.update');
     Route::patch('/team/password', [AdminTeamController::class, 'updatePassword'])->name('team.password.update');
     Route::delete('/team/{user}', [AdminTeamController::class, 'destroy'])->name('team.destroy');
+
+    Route::view('/faq', 'admin.faq')->name('faq');
 });
