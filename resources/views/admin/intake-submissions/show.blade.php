@@ -71,10 +71,19 @@
             </form>
 
             @if ($submission->project_id)
-                <a href="{{ route('admin.projects.show', $submission->project_id) }}" class="mt-5 pt-5 border-t border-gray-100 dark:border-gray-700/60 flex items-center justify-center gap-2 text-sm font-semibold text-teal-dark hover:underline">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                    View Client Project
-                </a>
+                <div class="mt-5 pt-5 border-t border-gray-100 dark:border-gray-700/60 space-y-2.5">
+                    <a href="{{ route('admin.projects.show', $submission->project_id) }}" class="flex items-center justify-center gap-2 text-sm font-semibold text-teal-dark hover:underline">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        View Client Project
+                    </a>
+                    <form method="POST" action="{{ route('admin.intake-submissions.resend-welcome-email', $submission) }}">
+                        @csrf
+                        <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3 py-2 rounded-lg transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            Resend Welcome Email
+                        </button>
+                    </form>
+                </div>
             @else
                 <button type="button" onclick="openConvertModal()" class="mt-5 pt-5 border-t border-gray-100 dark:border-gray-700/60 w-full bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all">
                     Approve &amp; Create Client
