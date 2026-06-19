@@ -5,14 +5,17 @@
 
 @section('content')
 
-<form method="GET" class="flex items-center justify-end gap-2 mb-5">
+<form method="GET" class="flex items-center justify-end gap-2.5 mb-5">
     <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Sort by</label>
-    <select name="sort" onchange="this.form.submit()"
-            class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-        @foreach (\App\Http\Controllers\Admin\ContactMessageController::SORTS as $value => $label)
-            <option value="{{ $value }}" {{ $sort === $value ? 'selected' : '' }}>{{ $label }}</option>
-        @endforeach
-    </select>
+    <div class="relative">
+        <select name="sort" onchange="this.form.submit()"
+                class="appearance-none rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-sm pl-3 pr-9 py-2 text-sm font-semibold text-navy dark:text-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold cursor-pointer hover:border-gold/50 transition-colors">
+            @foreach (\App\Http\Controllers\Admin\ContactMessageController::SORTS as $value => $label)
+                <option value="{{ $value }}" {{ $sort === $value ? 'selected' : '' }}>{{ $label }}</option>
+            @endforeach
+        </select>
+        <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+    </div>
 </form>
 
 @if ($messages->isEmpty())
