@@ -16,6 +16,7 @@ class DashboardController extends Controller
             ->map(fn ($meta, $category) => [
                 'label' => $meta['label'],
                 'description' => $meta['description'],
+                'why' => $meta['why'],
                 'count' => $project ? $project->uploads->where('category', $category)->count() : 0,
             ]);
 

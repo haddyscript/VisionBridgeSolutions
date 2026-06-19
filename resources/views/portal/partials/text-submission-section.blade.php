@@ -25,7 +25,7 @@
     </form>
 
     @if ($items->isEmpty())
-        <p class="text-sm text-gray-400 dark:text-gray-500">Nothing submitted yet.</p>
+        <p class="text-sm text-gray-400 dark:text-gray-500">{{ $why ?? 'Nothing submitted yet.' }}</p>
     @else
         <div class="space-y-3">
             @foreach ($items as $item)

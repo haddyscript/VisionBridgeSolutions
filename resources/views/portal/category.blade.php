@@ -28,6 +28,7 @@
                 'label' => $meta['label'],
                 'accept' => $meta['accept'],
                 'items' => $items,
+                'why' => $meta['why'],
             ])
         @else
             @include('portal.partials.text-submission-section', [
@@ -35,6 +36,7 @@
                 'label' => $meta['label'],
                 'placeholder' => $meta['placeholder'],
                 'items' => $items,
+                'why' => $meta['why'],
             ])
         @endif
     </div>

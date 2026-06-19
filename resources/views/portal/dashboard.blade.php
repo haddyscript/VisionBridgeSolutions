@@ -209,7 +209,7 @@
                 @if ($info['count'] > 0)
                     <p class="text-xs font-medium text-teal-dark">{{ $info['count'] }} item{{ $info['count'] === 1 ? '' : 's' }} uploaded</p>
                 @else
-                    <p class="text-xs font-medium text-gold-dark">Nothing here yet &middot; tap to add</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 leading-snug">{{ $info['why'] }}</p>
                 @endif
             </a>
         @endforeach

@@ -24,7 +24,7 @@
     </form>
 
     @if ($items->isEmpty())
-        <p class="text-sm text-gray-400 dark:text-gray-500">No files uploaded yet.</p>
+        <p class="text-sm text-gray-400 dark:text-gray-500">{{ $why ?? 'No files uploaded yet.' }}</p>
 
     @elseif ($isVisual)
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
