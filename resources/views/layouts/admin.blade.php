@@ -105,7 +105,9 @@
                 </a>
             </nav>
 
-            <div class="border-t border-white/10 p-3 shrink-0">
+            <div class="border-t border-white/10 pt-3 shrink-0">
+                @include('partials.getting-started')
+
                 <div class="flex items-center gap-3 px-3 py-2 mb-1">
                     <div class="w-8 h-8 rounded-full bg-gold/20 text-gold flex items-center justify-center text-sm font-semibold shrink-0">
                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
