@@ -53,7 +53,7 @@ return [
             'url' => env('APP_URL').'/client-uploads',
             'visibility' => 'public',
             'throw' => false,
-            'report' => false,
+            'report' => true,
         ],
 
         's3' => [
