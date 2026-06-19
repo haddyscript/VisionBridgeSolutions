@@ -19,9 +19,13 @@ class DashboardController extends Controller
                 'count' => $project ? $project->uploads->where('category', $category)->count() : 0,
             ]);
 
+        $showPaymentReminder = $request->session()->pull('show_payment_reminder', false)
+            && $request->user()->hasPendingPayment();
+
         return view('portal.dashboard', [
             'project' => $project,
             'counts' => $counts,
+            'showPaymentReminder' => $showPaymentReminder,
         ]);
     }
 }

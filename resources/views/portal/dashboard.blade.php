@@ -5,6 +5,38 @@
 
 @section('content')
 
+@if ($showPaymentReminder)
+    <div id="payment-reminder-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full bg-red-500/15 text-red-500 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14.18A1 1 0 003 19.5h18a1 1 0 00.86-1.46L13.71 3.86a1 1 0 00-1.72 0z"/>
+                    </svg>
+                </div>
+                <h2 class="font-display text-lg font-bold text-navy dark:text-white">You have a pending payment</h2>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                There's an outstanding invoice on your account. Please complete the payment to keep your project moving forward.
+            </p>
+            <div class="flex justify-end gap-3">
+                <button type="button" id="payment-reminder-dismiss" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    Remind me later
+                </button>
+                <a href="{{ route('portal.payments.index') }}" class="px-4 py-2 rounded-lg text-sm font-semibold bg-gold text-navy hover:bg-gold-dark transition-colors">
+                    View Payment
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('payment-reminder-dismiss')?.addEventListener('click', function () {
+            document.getElementById('payment-reminder-modal')?.remove();
+        });
+    </script>
+@endif
+
 @if (! $project)
 
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">

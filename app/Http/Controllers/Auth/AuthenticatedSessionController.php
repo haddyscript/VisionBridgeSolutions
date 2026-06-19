@@ -30,6 +30,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if (! $request->user()->isAdmin()) {
+            $request->session()->put('show_payment_reminder', true);
+        }
+
         $destination = $request->user()->isAdmin() ? route('admin.dashboard') : route('portal.dashboard');
 
         return redirect()->intended($destination);
