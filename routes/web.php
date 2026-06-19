@@ -17,6 +17,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\IntakeController;
 use App\Models\MaintenancePlan;
+use App\Http\Controllers\Portal\AccountController as PortalAccountController;
 use App\Http\Controllers\Portal\CategoryController;
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\PaymentController as PortalPaymentController;
@@ -68,6 +69,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/portal/subscriptions/{subscription}/checkout', [PortalSubscriptionController::class, 'checkout'])->name('portal.subscriptions.checkout');
     Route::get('/portal/billing-portal', [PortalSubscriptionController::class, 'billingPortal'])->name('portal.billing-portal');
+
+    Route::get('/portal/account', [PortalAccountController::class, 'index'])->name('portal.account.index');
+    Route::patch('/portal/account/profile', [PortalAccountController::class, 'updateProfile'])->name('portal.account.profile.update');
+    Route::patch('/portal/account/password', [PortalAccountController::class, 'updatePassword'])->name('portal.account.password.update');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
