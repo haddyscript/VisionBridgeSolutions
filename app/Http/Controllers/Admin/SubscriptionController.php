@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Stripe\Exception\ApiErrorException;
 use Stripe\Stripe;
 
 class SubscriptionController extends Controller
@@ -41,7 +43,19 @@ class SubscriptionController extends Controller
         if ($subscription->stripe_subscription_id) {
             Stripe::setApiKey(config('services.stripe.secret'));
 
-            \Stripe\Subscription::retrieve($subscription->stripe_subscription_id)->cancel();
+            try {
+                \Stripe\Subscription::retrieve($subscription->stripe_subscription_id)->cancel();
+            } catch (ApiErrorException $e) {
+                Log::warning('Could not cancel Stripe subscription.', [
+                    'subscription_id' => $subscription->id,
+                    'stripe_subscription_id' => $subscription->stripe_subscription_id,
+                    'error' => $e->getMessage(),
+                ]);
+
+                return back()->withErrors([
+                    'subscription' => 'Could not reach Stripe to cancel this plan ('.$e->getMessage().'). The plan was NOT canceled locally either, so it\'s still showing as active. Please try again or cancel it directly in the Stripe dashboard.',
+                ]);
+            }
         }
 
         $subscription->update(['status' => 'canceled', 'canceled_at' => now()]);
