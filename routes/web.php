@@ -104,6 +104,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/team', [AdminTeamController::class, 'index'])->name('team.index');
     Route::post('/team', [AdminTeamController::class, 'store'])->name('team.store');
+    Route::patch('/team/profile', [AdminTeamController::class, 'updateProfile'])->name('team.profile.update');
     Route::patch('/team/password', [AdminTeamController::class, 'updatePassword'])->name('team.password.update');
     Route::delete('/team/{user}', [AdminTeamController::class, 'destroy'])->name('team.destroy');
 });

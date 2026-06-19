@@ -34,6 +34,18 @@ class TeamController extends Controller
         return back()->with('status', 'Team member added.');
     }
 
+    public function updateProfile(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $request->user()->id],
+        ]);
+
+        $request->user()->update($validated);
+
+        return back()->with('status', 'Profile updated.');
+    }
+
     public function updatePassword(Request $request)
     {
         $validated = $request->validate([
