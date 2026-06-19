@@ -105,26 +105,26 @@
     @endphp
 
     @if ($project->status === 'onboarding')
-        <div class="rounded-xl p-6 mb-8" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
-            <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-2">Welcome to Your Client Portal</p>
-            <h2 class="font-display text-xl font-bold text-white mb-2">Let's get your project started 👋</h2>
-            <p class="text-sm text-white/60 mb-5 max-w-2xl">
-                This is where you'll share everything we need to build your website. Use the sections below to
-                upload files and submit content — we'll review everything and keep your progress updated here.
+        <div class="rounded-xl p-6 mb-8 border border-gold/20 dark:border-gold/10" style="background:linear-gradient(135deg,rgba(201,168,76,0.10),rgba(42,157,143,0.08));">
+            <p class="text-xs font-semibold uppercase tracking-widest text-gold-dark mb-2">Hey {{ explode(' ', auth()->user()->name)[0] }} 👋</p>
+            <h2 class="font-display text-xl font-bold text-navy dark:text-white mb-2">Glad to have you here — let's get started</h2>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-5 max-w-2xl">
+                Drop your logo, photos, and any content you'd like on the site below, and we'll take it from there.
+                You can check back here anytime to see how things are coming along.
             </p>
             <div class="flex flex-col sm:flex-row sm:items-start gap-3">
                 @php $steps = [
-                    'Upload your logo, photos, and any documents',
-                    'Submit your website content and marketing materials',
-                    'Track your project\'s progress on this page anytime',
+                    'Add your logo, photos, and docs',
+                    'Tell us what you want the site to say',
+                    'Watch the progress bar move as we build',
                 ]; @endphp
                 @foreach ($steps as $i => $step)
                     <div class="flex items-start gap-2.5 flex-1">
-                        <span class="w-5 h-5 rounded-full bg-gold/20 text-gold text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{{ $i + 1 }}</span>
-                        <span class="text-sm text-white/80">{{ $step }}</span>
+                        <span class="w-5 h-5 rounded-full bg-gold/20 text-gold-dark text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{{ $i + 1 }}</span>
+                        <span class="text-sm text-navy/70 dark:text-white/80">{{ $step }}</span>
                     </div>
                     @if (! $loop->last)
-                        <svg class="hidden sm:block w-4 h-4 text-white/25 shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        <svg class="hidden sm:block w-4 h-4 text-navy/20 dark:text-white/25 shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     @endif
                 @endforeach
             </div>
