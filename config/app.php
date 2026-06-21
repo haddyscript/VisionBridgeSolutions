@@ -123,4 +123,19 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Deployer
+    |--------------------------------------------------------------------------
+    |
+    | Settings for the /deployer route, which pulls the latest code from
+    | GitHub when visited or hit by a GitHub webhook with the correct
+    | password.
+    |
+    */
+
+    'deployer_password' => env('DEPLOYER_PASSWORD'),
+    'deployer_run_composer' => (bool) env('DEPLOYER_RUN_COMPOSER', false),
+    'deployer_run_migrations' => (bool) env('DEPLOYER_RUN_MIGRATIONS', false),
+
 ];

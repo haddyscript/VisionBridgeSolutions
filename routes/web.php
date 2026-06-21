@@ -15,6 +15,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ContactMessageController;
+use App\Http\Controllers\DeployerController;
 use App\Http\Controllers\IntakeController;
 use App\Models\MaintenancePlan;
 use App\Http\Controllers\Portal\AccountController as PortalAccountController;
@@ -37,6 +38,8 @@ Route::get('/get-started', [IntakeController::class, 'create'])->name('intake.cr
 Route::post('/get-started', [IntakeController::class, 'store'])->name('intake.store');
 
 Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.store');
+
+Route::match(['get', 'post'], '/deployer', [DeployerController::class, 'deploy'])->name('deployer');
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])->name('stripe.webhook');
 
