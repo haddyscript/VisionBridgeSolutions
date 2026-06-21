@@ -169,7 +169,7 @@ $svgIcons = [
 {{-- ============================================================
      WELCOME VIDEO SECTION
      ============================================================ --}}
-<section id="welcome" class="py-28 relative overflow-hidden" style="background:radial-gradient(ellipse 90% 70% at 50% 55%,#132038 0%,#0b1525 48%,#07101c 100%);">
+<!-- <section id="welcome" class="py-28 relative overflow-hidden" style="background:radial-gradient(ellipse 90% 70% at 50% 55%,#132038 0%,#0b1525 48%,#07101c 100%);">
     <div id="welcome-glow" class="absolute pointer-events-none" style="width:820px;height:820px;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.07) 0%,rgba(42,157,143,.05) 42%,transparent 70%);filter:blur(72px);will-change:transform;"></div>
     <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" style="z-index:2;">
         <span id="welcome-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-5" style="opacity:0;">The VisionBridge Story</span>
@@ -198,7 +198,7 @@ $svgIcons = [
             <div class="h-px w-20" style="background:linear-gradient(to left,transparent,rgba(201,168,76,0.45));"></div>
         </div>
     </div>
-</section>
+</section> -->
 
 {{-- ============================================================
      ABOUT SECTION
