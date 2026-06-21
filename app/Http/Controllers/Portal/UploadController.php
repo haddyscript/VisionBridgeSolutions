@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Mail\NewClientUploadMail;
+use App\Mail\SystemAlertMail;
 use App\Models\Project;
 use App\Models\Upload;
 use Illuminate\Http\Request;
@@ -43,6 +44,21 @@ class UploadController extends Controller
             $originalName = $file->getClientOriginalName();
             $size = $file->getSize();
             $path = $file->store("projects/{$project->id}/{$validated['category']}", 'client_uploads');
+
+            if ($path === false) {
+                Mail::to(config('mail.admin_address'))->send(new SystemAlertMail(
+                    'Client Upload Disk Write Failed',
+                    "A client's file upload could not be saved to disk. The client uploads disk may be full or misconfigured.",
+                    [
+                        'Project' => $project->name,
+                        'Client' => $request->user()->name,
+                        'File' => $originalName,
+                        'Category' => $validated['category'],
+                    ],
+                ));
+
+                return back()->withErrors(['file' => 'Something went wrong saving your file. Please try again or contact support.']);
+            }
         }
 
         $upload = $project->uploads()->create([

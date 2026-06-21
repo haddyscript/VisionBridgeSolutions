@@ -6,10 +6,12 @@ use App\Mail\AdminPaymentNotificationMail;
 use App\Mail\PaymentReceiptMail;
 use App\Mail\SubscriptionReceiptMail;
 use App\Mail\SubscriptionStatusAlertMail;
+use App\Mail\SystemAlertMail;
 use App\Models\Payment;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Stripe\Checkout\Session;
@@ -30,6 +32,14 @@ class StripeWebhookController extends Controller
             );
         } catch (SignatureVerificationException $e) {
             Log::warning('Stripe webhook signature verification failed.', ['error' => $e->getMessage()]);
+
+            if (Cache::add('system-alert:stripe-signature-failure', true, now()->addMinutes(15))) {
+                Mail::to(config('mail.admin_address'))->send(new SystemAlertMail(
+                    'Stripe Webhook Signature Verification Failed',
+                    "A request to the Stripe webhook endpoint failed signature verification. This usually means a misconfigured webhook secret, or could indicate someone probing the endpoint. Further alerts of this type are suppressed for 15 minutes.",
+                    ['Error' => $e->getMessage()],
+                ));
+            }
 
             return response('Invalid signature.', 400);
         }
