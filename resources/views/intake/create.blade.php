@@ -6,7 +6,6 @@
 
 <section class="bg-gray-50 min-h-screen pt-36 pb-24 px-4">
     <div class="max-w-3xl mx-auto">
-
         <div class="text-center mb-10">
             <p class="text-xs font-bold uppercase tracking-widest text-gold-dark mb-3">Client Intake</p>
             <h1 class="font-display text-3xl md:text-4xl font-bold text-navy mb-3">Tell Us About Your Organization</h1>
@@ -32,7 +31,11 @@
                 <a href="{{ url('/') }}" class="inline-block mt-6 text-gold-dark font-semibold hover:underline">Back to Homepage</a>
             </div>
 
-        @else
+        @endif
+    </div>
+
+    @if (session('status') !== 'submitted')
+        <div class="max-w-5xl mx-auto">
 
             @if ($errors->any())
                 <div class="mb-6 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
@@ -42,8 +45,10 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('intake.store') }}" enctype="multipart/form-data" class="space-y-6">
+            <form method="POST" action="{{ route('intake.store') }}" enctype="multipart/form-data">
                 @csrf
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                 {{-- Organization Information --}}
                 <div class="bg-white rounded-2xl border border-gray-200 p-7">
@@ -172,13 +177,15 @@
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-gold hover:bg-gold-dark text-navy font-bold text-base py-4 rounded-xl transition-colors shadow">
+                </div>
+
+                <button type="submit" class="w-full mt-6 bg-gold hover:bg-gold-dark text-navy font-bold text-base py-4 rounded-xl transition-colors shadow">
                     Submit Your Information
                 </button>
             </form>
 
-        @endif
-    </div>
+        </div>
+    @endif
 </section>
 
 @endsection
