@@ -83,6 +83,12 @@
                             <textarea name="mission_statement" rows="3"
                                       placeholder="e.g. We exist to equip families with biblical resources for everyday life."
                                       class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('mission_statement') }}</textarea>
+                            <div class="mt-2 flex flex-wrap gap-2">
+                                <button type="button" class="example-chip text-xs font-medium text-gold-dark bg-gold/10 hover:bg-gold/20 px-3 py-1.5 rounded-full transition-colors"
+                                        data-target="mission_statement" data-text="We exist to equip families with biblical resources for everyday life.">Example: Church/Ministry</button>
+                                <button type="button" class="example-chip text-xs font-medium text-gold-dark bg-gold/10 hover:bg-gold/20 px-3 py-1.5 rounded-full transition-colors"
+                                        data-target="mission_statement" data-text="We help small businesses in our community grow through quality products and honest service.">Example: Business</button>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-navy mb-1">Vision Statement</label>
@@ -90,6 +96,12 @@
                             <textarea name="vision_statement" rows="3"
                                       placeholder="e.g. To see every family in our city rooted in faith and community."
                                       class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('vision_statement') }}</textarea>
+                            <div class="mt-2 flex flex-wrap gap-2">
+                                <button type="button" class="example-chip text-xs font-medium text-gold-dark bg-gold/10 hover:bg-gold/20 px-3 py-1.5 rounded-full transition-colors"
+                                        data-target="vision_statement" data-text="To see every family in our city rooted in faith and community.">Example: Church/Ministry</button>
+                                <button type="button" class="example-chip text-xs font-medium text-gold-dark bg-gold/10 hover:bg-gold/20 px-3 py-1.5 rounded-full transition-colors"
+                                        data-target="vision_statement" data-text="To become the go-to trusted partner for businesses across the region.">Example: Business</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -142,6 +154,12 @@
                     <p class="text-xs text-gray-400 mb-1.5">Pages you need, key features, deadlines, or anything else relevant to your project.</p>
                     <textarea name="website_requirements" rows="4" placeholder="e.g. We need a Home, About, Events, and Donate page. We'd like online giving and an events calendar. Hoping to launch by end of next month."
                               class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('website_requirements') }}</textarea>
+                    <div class="mt-2 flex flex-wrap gap-2">
+                        <button type="button" class="example-chip text-xs font-medium text-gold-dark bg-gold/10 hover:bg-gold/20 px-3 py-1.5 rounded-full transition-colors"
+                                data-target="website_requirements" data-text="We need a Home, About, Events, and Donate page. We'd like online giving and an events calendar. Hoping to launch by end of next month.">Example: Church/Nonprofit</button>
+                        <button type="button" class="example-chip text-xs font-medium text-gold-dark bg-gold/10 hover:bg-gold/20 px-3 py-1.5 rounded-full transition-colors"
+                                data-target="website_requirements" data-text="We need a Home, Services, Pricing, and Contact page, plus an online store to sell our products. Hoping to launch within 6 weeks.">Example: Business</button>
+                    </div>
                 </div>
 
                 {{-- Photos, Videos, Logos --}}
@@ -194,4 +212,17 @@
     @endif
 </section>
 
+@endsection
+
+@section('scripts')
+<script>
+    document.querySelectorAll('.example-chip').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const field = document.querySelector(`[name="${btn.dataset.target}"]`);
+            if (!field) return;
+            field.value = btn.dataset.text;
+            field.focus();
+        });
+    });
+</script>
 @endsection
