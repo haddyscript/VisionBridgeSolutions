@@ -161,9 +161,9 @@
                 </div>
 
                 {{-- Social Media Links --}}
-                <div class="bg-white rounded-2xl border border-gray-200 p-7">
+                <div class="bg-white rounded-2xl border border-gray-200 p-7 lg:col-span-2">
                     <h3 class="font-display text-lg font-bold text-navy mb-5">Social Media Links</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         @foreach ([
                             'website' => 'Current Website', 'facebook' => 'Facebook', 'instagram' => 'Instagram',
                             'twitter' => 'Twitter / X', 'linkedin' => 'LinkedIn', 'youtube' => 'YouTube', 'tiktok' => 'TikTok',
