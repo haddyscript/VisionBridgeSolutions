@@ -57,6 +57,7 @@
                         <div class="sm:col-span-2">
                             <label class="block text-sm font-medium text-navy mb-1">Organization Name *</label>
                             <input type="text" name="organization_name" value="{{ old('organization_name') }}" required
+                                   placeholder="e.g. Grace Community Church"
                                    class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                         </div>
                         <div class="sm:col-span-2">
@@ -78,12 +79,16 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-navy mb-1">Mission Statement</label>
+                            <p class="text-xs text-gray-400 mb-1.5">What does your organization do, and who do you serve?</p>
                             <textarea name="mission_statement" rows="3"
+                                      placeholder="e.g. We exist to equip families with biblical resources for everyday life."
                                       class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('mission_statement') }}</textarea>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-navy mb-1">Vision Statement</label>
+                            <p class="text-xs text-gray-400 mb-1.5">What future are you working toward?</p>
                             <textarea name="vision_statement" rows="3"
+                                      placeholder="e.g. To see every family in our city rooted in faith and community."
                                       class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('vision_statement') }}</textarea>
                         </div>
                     </div>
@@ -134,7 +139,8 @@
                 {{-- Website Requirements --}}
                 <div class="bg-white rounded-2xl border border-gray-200 p-7">
                     <h3 class="font-display text-lg font-bold text-navy mb-5">Website Requirements</h3>
-                    <textarea name="website_requirements" rows="4" placeholder="Tell us about pages you need, features, deadlines, or anything else relevant to your project..."
+                    <p class="text-xs text-gray-400 mb-1.5">Pages you need, key features, deadlines, or anything else relevant to your project.</p>
+                    <textarea name="website_requirements" rows="4" placeholder="e.g. We need a Home, About, Events, and Donate page. We'd like online giving and an events calendar. Hoping to launch by end of next month."
                               class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('website_requirements') }}</textarea>
                 </div>
 
