@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\NewClientRegistrationMail;
 use App\Mail\WelcomeClientMail;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -42,6 +43,7 @@ class RegisteredUserController extends Controller
         ]);
 
         Mail::to($user->email)->send(new WelcomeClientMail($user));
+        Mail::to(config('mail.admin_address'))->send(new NewClientRegistrationMail($user));
 
         Auth::login($user);
 

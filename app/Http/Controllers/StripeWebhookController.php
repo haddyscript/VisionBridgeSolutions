@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\AdminPaymentNotificationMail;
 use App\Mail\PaymentReceiptMail;
 use App\Mail\SubscriptionReceiptMail;
+use App\Mail\SubscriptionStatusAlertMail;
 use App\Models\Payment;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
@@ -148,7 +149,7 @@ class StripeWebhookController extends Controller
 
     private function handleSubscriptionUpdated($stripeSubscription): void
     {
-        $subscription = Subscription::where('stripe_subscription_id', $stripeSubscription->id)->first();
+        $subscription = Subscription::with('project.user')->where('stripe_subscription_id', $stripeSubscription->id)->first();
 
         if (! $subscription) {
             return;
@@ -165,20 +166,35 @@ class StripeWebhookController extends Controller
             'paused' => 'canceled',
         ];
 
+        $previousStatus = $subscription->status;
+        $newStatus = $statusMap[$stripeSubscription->status] ?? $subscription->status;
+
         $subscription->update([
-            'status' => $statusMap[$stripeSubscription->status] ?? $subscription->status,
+            'status' => $newStatus,
             'current_period_end' => $stripeSubscription->current_period_end
                 ? Carbon::createFromTimestamp($stripeSubscription->current_period_end)
                 : null,
         ]);
+
+        if ($newStatus !== $previousStatus && in_array($newStatus, ['past_due', 'canceled'], true)) {
+            Mail::to(config('mail.admin_address'))->send(new SubscriptionStatusAlertMail($subscription));
+        }
     }
 
     private function handleSubscriptionDeleted($stripeSubscription): void
     {
-        Subscription::where('stripe_subscription_id', $stripeSubscription->id)->first()?->update([
+        $subscription = Subscription::with('project.user')->where('stripe_subscription_id', $stripeSubscription->id)->first();
+
+        if (! $subscription) {
+            return;
+        }
+
+        $subscription->update([
             'status' => 'canceled',
             'canceled_at' => now(),
         ]);
+
+        Mail::to(config('mail.admin_address'))->send(new SubscriptionStatusAlertMail($subscription));
     }
 
     private function handleInvoicePaymentSucceeded($invoice): void

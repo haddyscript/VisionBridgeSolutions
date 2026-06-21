@@ -134,6 +134,6 @@ return [
     |
     */
 
-    'contact_address' => env('MAIL_CONTACT_ADDRESS', 'johnnydavis45@yahoo.com'),
+    'contact_address' => env('MAIL_CONTACT_ADDRESS', env('MAIL_ADMIN_ADDRESS', env('MAIL_FROM_ADDRESS', 'hello@example.com'))),
 
 ];

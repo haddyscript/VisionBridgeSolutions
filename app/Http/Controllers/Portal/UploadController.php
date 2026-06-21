@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Mail\NewClientUploadMail;
 use App\Models\Project;
 use App\Models\Upload;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class UploadController extends Controller
@@ -43,7 +45,7 @@ class UploadController extends Controller
             $path = $file->store("projects/{$project->id}/{$validated['category']}", 'client_uploads');
         }
 
-        $project->uploads()->create([
+        $upload = $project->uploads()->create([
             'user_id' => $request->user()->id,
             'category' => $validated['category'],
             'original_name' => $originalName,
@@ -51,6 +53,11 @@ class UploadController extends Controller
             'size' => $size,
             'body' => $validated['body'] ?? null,
         ]);
+
+        $upload->setRelation('project', $project);
+        $upload->setRelation('user', $request->user());
+
+        Mail::to(config('mail.admin_address'))->send(new NewClientUploadMail($upload));
 
         return back()->with('status', 'Submitted successfully.');
     }
