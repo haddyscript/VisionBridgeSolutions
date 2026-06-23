@@ -10,8 +10,8 @@ A plain-language summary of everything the site and client portal offer today.
 | "Get Started" form | New prospects fill out a detailed form about their project; we review it and turn it into a client account |
 | Contact form | A simple "Get in Touch" form that emails us directly |
 | Book a Consultation | A calendar booking tool — visitors pick a day and an open time slot (weekdays, 9am–5pm) to request a consultation |
-| Create an account | Visitors can also sign up for a client account directly, without going through the intake form |
-| Client sign in | Standard login, with "remember me" and a "forgot password" recovery option |
+| Create an account | Visitors can also sign up for a client account directly, without going through the intake form; they must verify their email before they can use the portal |
+| Client sign in | Standard login, with "remember me" and a "forgot password" recovery option; already-logged-in users get sent straight to their portal or admin dashboard instead of the homepage |
 
 ## 2. Client Portal (for logged-in clients)
 
@@ -26,7 +26,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Payments | Clients see what's owed and paid, pay securely online, search/filter their payment history, and download/print a receipt or their full statement |
 | Maintenance Plans | Clients can start a recurring care plan and manage their billing (update card, cancel, etc.) themselves |
 | Account Settings | Clients update their name, email, or password — changing the password or email sends a security alert email |
-| Help & FAQ | A searchable list of common questions and answers |
+| Help & FAQ | A searchable list of common questions and answers, with expand/collapse all and a quick "Was this helpful?" rating on each answer |
 | Need Help? | Our support email and phone number, always visible in the sidebar |
 | Getting Started checklist | A simple progress tracker showing new clients what to do first |
 | Light / dark mode | Clients can switch the portal's appearance to their preference |
