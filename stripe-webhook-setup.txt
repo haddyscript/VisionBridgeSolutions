@@ -4,6 +4,7 @@
  -> paste https://johnny-davis-global-mission-main-yaxzaf.free.laravel.cloud/stripe/webhook
 
 Under "Select events", add these:
+- checkout.session.completed
 - invoice.payment_succeeded
 - invoice.payment_failed
 - customer.subscription.updated
