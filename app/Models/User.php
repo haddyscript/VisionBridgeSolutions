@@ -56,6 +56,11 @@ class User extends Authenticatable
         return $this->hasMany(Project::class);
     }
 
+    public function calendarEvents()
+    {
+        return $this->hasMany(CalendarEvent::class);
+    }
+
     public function hasPendingPayment(): bool
     {
         return Payment::whereIn('project_id', $this->projects()->pluck('id'))
