@@ -215,14 +215,42 @@ class StripeWebhookController extends Controller
 
     private function handleInvoicePaymentSucceeded($invoice): void
     {
-        if (! $invoice->subscription) {
+        $stripeSubscriptionId = $invoice->parent->subscription_details->subscription
+            ?? $invoice->subscription
+            ?? null;
+
+        if (! $stripeSubscriptionId) {
             return;
         }
 
-        $subscription = Subscription::with('project.user')->where('stripe_subscription_id', $invoice->subscription)->first();
+        Stripe::setApiKey(config('services.stripe.secret'));
+
+        $subscription = Subscription::with('project.user')->where('stripe_subscription_id', $stripeSubscriptionId)->first();
+        $stripeSubscription = null;
+
+        if (! $subscription) {
+            $stripeSubscription = \Stripe\Subscription::retrieve($stripeSubscriptionId);
+            $localId = $stripeSubscription->metadata->subscription_id ?? null;
+
+            if ($localId) {
+                $subscription = Subscription::with('project.user')->where('id', $localId)->first();
+            }
+        }
 
         if (! $subscription) {
             return;
+        }
+
+        if ($subscription->isPending()) {
+            $stripeSubscription ??= \Stripe\Subscription::retrieve($stripeSubscriptionId);
+
+            $subscription->update([
+                'status' => 'active',
+                'stripe_subscription_id' => $stripeSubscriptionId,
+                'current_period_end' => $stripeSubscription->current_period_end
+                    ? Carbon::createFromTimestamp($stripeSubscription->current_period_end)
+                    : null,
+            ]);
         }
 
         $paidAt = Carbon::createFromTimestamp($invoice->status_transitions->paid_at ?? $invoice->created);

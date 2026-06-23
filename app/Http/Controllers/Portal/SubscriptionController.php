@@ -41,6 +41,11 @@ class SubscriptionController extends Controller
             'metadata' => [
                 'subscription_id' => $subscription->id,
             ],
+            'subscription_data' => [
+                'metadata' => [
+                    'subscription_id' => $subscription->id,
+                ],
+            ],
         ]);
 
         $subscription->update(['stripe_checkout_session_id' => $session->id]);
