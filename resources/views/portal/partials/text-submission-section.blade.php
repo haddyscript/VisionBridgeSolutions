@@ -67,6 +67,14 @@
                             @endif
                         </a>
                     @endif
+
+                    @if ($item->hasAdminReply())
+                        <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700/60 rounded-lg bg-navy/5 dark:bg-white/5 -mx-4 -mb-3.5 px-4 pb-3.5">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gold-dark mb-1">Reply from VisionBridge</p>
+                            <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">{{ $item->admin_reply }}</p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ $item->admin_replied_at->format('M j, Y \a\t g:ia') }}</p>
+                        </div>
+                    @endif
                 </div>
             @endforeach
         </div>

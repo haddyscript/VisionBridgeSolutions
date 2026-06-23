@@ -339,6 +339,24 @@
                                 {{ $item->original_name }}
                             </a>
                         @endif
+
+                        @if ($item->hasAdminReply())
+                            <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700/60">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-gold-dark mb-1">Your Reply</p>
+                                <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">{{ $item->admin_reply }}</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Sent {{ $item->admin_replied_at->diffForHumans() }}</p>
+                            </div>
+                        @endif
+
+                        <form method="POST" action="{{ route('admin.uploads.reply', $item) }}" class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700/60 flex items-start gap-2">
+                            @csrf
+                            @method('PATCH')
+                            <textarea name="admin_reply" rows="2" placeholder="{{ $item->hasAdminReply() ? 'Update your reply...' : 'Reply to this submission...' }}" required
+                                      class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">{{ $item->admin_reply }}</textarea>
+                            <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                                {{ $item->hasAdminReply() ? 'Update' : 'Reply' }}
+                            </button>
+                        </form>
                     </div>
                 @endforeach
             </div>
