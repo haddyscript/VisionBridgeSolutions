@@ -122,18 +122,36 @@
         <p class="text-sm text-gray-500 dark:text-gray-400">Everything you need to know about how your project works, from onboarding to launch. Can't find an answer? Reach out to your VisionBridge representative directly.</p>
     </div>
 
+    <div class="flex flex-wrap items-center gap-3 mb-5">
+        <div class="relative flex-1 min-w-[220px]">
+            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+            <input type="text" id="faq-search" placeholder="Search questions..."
+                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+        </div>
+        <button type="button" id="faq-expand-all" class="text-sm font-semibold text-gold-dark hover:underline shrink-0">Expand All</button>
+        <button type="button" id="faq-collapse-all" class="text-sm font-semibold text-gold-dark hover:underline shrink-0">Collapse All</button>
+    </div>
+
+    <p id="faq-empty-state" class="hidden text-sm text-gray-400 dark:text-gray-500 text-center py-6">No questions match your search.</p>
+
     @foreach ($sections as $title => $items)
-        <div class="mb-6">
+        <div class="faq-section mb-6">
             <h3 class="font-display text-sm font-bold uppercase tracking-wide text-gold-dark mb-3">{{ $title }}</h3>
             <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700/60 overflow-hidden">
                 @foreach ($items as $item)
-                    <details class="group" @if (! empty($item['id'])) id="{{ $item['id'] }}" @endif>
+                    <details class="faq-item group" data-search="{{ strtolower($item['q'].' '.$item['a']) }}" @if (! empty($item['id'])) id="{{ $item['id'] }}" @endif>
                         <summary class="list-none flex items-center justify-between gap-3 px-5 py-4 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
                             <span class="text-sm font-medium text-navy dark:text-white">{{ $item['q'] }}</span>
                             <svg class="w-4 h-4 text-gray-400 shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </summary>
                         <div class="px-5 pb-4 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                             {{ $item['a'] }}
+                        </div>
+                        <div class="faq-feedback flex items-center gap-3 px-5 pb-4 text-xs text-gray-400 dark:text-gray-500" data-question="{{ $item['q'] }}">
+                            <span class="faq-feedback-prompt">Was this helpful?</span>
+                            <button type="button" class="faq-feedback-btn font-semibold text-gray-500 dark:text-gray-400 hover:text-teal-dark" data-helpful="1">Yes</button>
+                            <button type="button" class="faq-feedback-btn font-semibold text-gray-500 dark:text-gray-400 hover:text-red-500" data-helpful="0">No</button>
+                            <span class="faq-feedback-thanks hidden text-teal-dark font-medium">Thanks for your feedback!</span>
                         </div>
                     </details>
                 @endforeach
@@ -143,6 +161,65 @@
 </div>
 
 <script>
+(function () {
+    const searchInput = document.getElementById('faq-search');
+    const emptyState = document.getElementById('faq-empty-state');
+
+    function applyFaqSearch() {
+        const query = searchInput.value.trim().toLowerCase();
+
+        document.querySelectorAll('.faq-section').forEach(function (section) {
+            let sectionHasVisible = false;
+
+            section.querySelectorAll('.faq-item').forEach(function (item) {
+                const matches = !query || item.dataset.search.includes(query);
+                item.classList.toggle('hidden', !matches);
+                if (matches) {
+                    sectionHasVisible = true;
+                    if (query) item.open = true;
+                }
+            });
+
+            section.classList.toggle('hidden', !sectionHasVisible);
+        });
+
+        const anyVisible = document.querySelector('.faq-item:not(.hidden)');
+        emptyState.classList.toggle('hidden', !!anyVisible);
+    }
+
+    searchInput?.addEventListener('input', applyFaqSearch);
+
+    document.getElementById('faq-expand-all')?.addEventListener('click', function () {
+        document.querySelectorAll('.faq-item').forEach(function (item) { item.open = true; });
+    });
+
+    document.getElementById('faq-collapse-all')?.addEventListener('click', function () {
+        document.querySelectorAll('.faq-item').forEach(function (item) { item.open = false; });
+    });
+
+    document.querySelectorAll('.faq-feedback-btn').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const wrap = btn.closest('.faq-feedback');
+
+            fetch('{{ route('portal.faq.feedback') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                },
+                body: JSON.stringify({
+                    question: wrap.dataset.question,
+                    helpful: btn.dataset.helpful === '1',
+                }),
+            });
+
+            wrap.querySelectorAll('.faq-feedback-prompt, .faq-feedback-btn').forEach(function (el) { el.classList.add('hidden'); });
+            wrap.querySelector('.faq-feedback-thanks').classList.remove('hidden');
+        });
+    });
+
     if (location.hash) {
         const target = document.querySelector(location.hash);
         if (target && target.tagName === 'DETAILS') {
@@ -150,6 +227,7 @@
             target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }
+})();
 </script>
 
 @endsection

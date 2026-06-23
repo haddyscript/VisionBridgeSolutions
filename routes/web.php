@@ -24,6 +24,7 @@ use App\Models\MaintenancePlan;
 use App\Http\Controllers\Portal\AccountController as PortalAccountController;
 use App\Http\Controllers\Portal\CategoryController;
 use App\Http\Controllers\Portal\DashboardController;
+use App\Http\Controllers\Portal\FaqFeedbackController;
 use App\Http\Controllers\Portal\PaymentController as PortalPaymentController;
 use App\Http\Controllers\Portal\SubscriptionController as PortalSubscriptionController;
 use App\Http\Controllers\Portal\UploadController;
@@ -87,6 +88,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/portal/account/password', [PortalAccountController::class, 'updatePassword'])->name('portal.account.password.update');
 
     Route::view('/portal/faq', 'portal.faq')->name('portal.faq');
+    Route::post('/portal/faq/feedback', [FaqFeedbackController::class, 'store'])->name('portal.faq.feedback');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
