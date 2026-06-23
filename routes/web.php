@@ -13,9 +13,12 @@ use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionContro
 use App\Http\Controllers\Admin\TeamController as AdminTeamController;
 use App\Http\Controllers\Admin\UploadApprovalController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\DeployerController;
@@ -69,6 +72,12 @@ Route::middleware('auth')->group(function () {
 
     Route::patch('/theme', [ThemeController::class, 'update'])->name('theme.update');
 
+    Route::get('/email/verify', EmailVerificationPromptController::class)->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', VerifyEmailController::class)->middleware('signed')->name('verification.verify');
+    Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])->middleware('throttle:6,1')->name('verification.send');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/portal', DashboardController::class)->name('portal.dashboard');
     Route::get('/portal/files/{category}', [CategoryController::class, 'show'])->name('portal.category');
     Route::get('/portal/files/{category}/download', [CategoryController::class, 'downloadAll'])->name('portal.category.download');

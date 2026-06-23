@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\NewClientRegistrationMail;
-use App\Mail\WelcomeClientMail;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -42,11 +41,12 @@ class RegisteredUserController extends Controller
             'name' => $user->name.'\'s Website',
         ]);
 
-        Mail::to($user->email)->send(new WelcomeClientMail($user));
         Mail::to(config('mail.admin_address'))->send(new NewClientRegistrationMail($user));
+
+        $user->sendEmailVerificationNotification();
 
         Auth::login($user);
 
-        return redirect()->route('portal.dashboard');
+        return redirect()->route('verification.notice');
     }
 }
