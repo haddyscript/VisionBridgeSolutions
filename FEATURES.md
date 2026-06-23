@@ -23,7 +23,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Project Files | Clients upload photos, videos, logos, documents, and marketing materials, organized into tabs under one menu item; shows upload progress and whether we've approved each file |
 | Download everything | One click to download all the files in a category as a single zip |
 | Website Content & Revisions | Clients submit website copy or change requests; each one shows whether it's still open or we've addressed it, and we can reply directly — they're emailed when we do |
-| Payments | Clients see what's owed and paid, pay securely online, and can download/print a receipt |
+| Payments | Clients see what's owed and paid, pay securely online, can download/print a receipt, and download their full payment history as a spreadsheet |
 | Maintenance Plans | Clients can start a recurring care plan and manage their billing (update card, cancel, etc.) themselves |
 | Account Settings | Clients update their name, email, or password — changing the password or email sends a security alert email |
 | Help & FAQ | A searchable list of common questions and answers |
@@ -56,6 +56,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Client pays | Client | They click "Pay Now" and pay securely by card |
 | Client reviews a payment | Client | Click any payment to see its status, date, and a receipt-ready transaction ID |
 | Client gets a receipt | Client | A clean, printable receipt page they can save as a PDF |
+| Client downloads a full statement | Client | One click downloads their entire payment history as a spreadsheet file for their own records/bookkeeping |
 | We cancel an unpaid request | Our team | Only possible if the client hasn't started paying yet |
 | We double-check a stuck payment | Our team | One click re-checks the payment's real status with our payment provider |
 | We set up a recurring plan | Our team | A monthly maintenance/care plan tied to a project |
