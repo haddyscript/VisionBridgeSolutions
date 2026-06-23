@@ -96,6 +96,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/consultations/{consultation}', [AdminConsultationController::class, 'update'])->name('consultations.update');
     Route::post('/consultations/{consultation}/send-confirmation', [AdminConsultationController::class, 'sendConfirmation'])->name('consultations.send-confirmation');
     Route::patch('/consultations/{consultation}/read', [AdminConsultationController::class, 'toggleRead'])->name('consultations.toggle-read');
+    Route::delete('/consultations/{consultation}', [AdminConsultationController::class, 'destroy'])->name('consultations.destroy');
 
     Route::get('/intake-submissions', [AdminIntakeSubmissionController::class, 'index'])->name('intake-submissions.index');
     Route::get('/intake-submissions/{intakeSubmission}', [AdminIntakeSubmissionController::class, 'show'])->name('intake-submissions.show');

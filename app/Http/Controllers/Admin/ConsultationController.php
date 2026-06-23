@@ -38,6 +38,10 @@ class ConsultationController extends Controller
 
     public function show(Consultation $consultation)
     {
+        if (! $consultation->isRead()) {
+            $consultation->update(['read_at' => now()]);
+        }
+
         return view('admin.consultations.show', [
             'consultation' => $consultation,
         ]);
@@ -75,5 +79,12 @@ class ConsultationController extends Controller
         ]);
 
         return back()->with('status', $consultation->isRead() ? 'Marked as read.' : 'Marked as unread.');
+    }
+
+    public function destroy(Consultation $consultation)
+    {
+        $consultation->delete();
+
+        return redirect()->route('admin.consultations.index')->with('status', 'Consultation deleted.');
     }
 }
