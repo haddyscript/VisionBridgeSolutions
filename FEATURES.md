@@ -1,91 +1,84 @@
-# VisionBridge Solutions — Feature List
+# VisionBridge Solutions — What the Website Can Do
 
-## Public (visitors, not logged in)
+A plain-language summary of everything the site and client portal offer today.
 
-| Feature | Description |
+## 1. Public Website (for visitors)
+
+| Feature | What it does |
 |---|---|
-| Home page | Marketing site — hero, about, services, maintenance plans, portfolio, contact section |
-| Get Started intake form | Multi-field onboarding form; submissions reviewed by admin and converted into a client account + project |
-| Contact form | "Get in Touch" form on the home page; emails admin + contact address |
-| Book a Consultation | Calendly-style calendar + time-slot picker (weekdays, 9am–5pm); books a consultation request |
-| Client registration | Self-service sign-up; creates a user account and a starter project automatically |
-| Client login / logout | Standard auth with "remember me" |
-| Forgot / reset password | Email-based password reset flow |
+| Home page | The marketing site — about us, services, care plans, portfolio, and a contact section |
+| "Get Started" form | New prospects fill out a detailed form about their project; we review it and turn it into a client account |
+| Contact form | A simple "Get in Touch" form that emails us directly |
+| Book a Consultation | A calendar booking tool — visitors pick a day and an open time slot (weekdays, 9am–5pm) to request a consultation |
+| Create an account | Visitors can also sign up for a client account directly, without going through the intake form |
+| Client sign in | Standard login, with "remember me" and a "forgot password" recovery option |
 
-## Client Portal (logged-in clients)
+## 2. Client Portal (for logged-in clients)
 
-| Feature | Description |
+| Feature | What it does |
 |---|---|
-| Dashboard / Overview | Project status, progress bar, milestone timeline with due/completed dates, payment reminder pop-up |
-| Project Files | Upload Images, Videos, Logos, Documents, Marketing Materials via tabs under one sidebar entry; upload progress bar; approved badge |
-| Download All | Download every file in a category as a single zip |
-| Website Content & Revisions | Submit text + optional file; shows Open/Addressed status and admin replies |
-| Payments — one-time | View pending/paid invoices, pay via Stripe Checkout, transaction detail modal |
-| Payment receipts | Printable receipt page per paid payment |
-| Maintenance Plan | View/start a recurring plan, manage billing via Stripe customer portal |
-| Account Settings | Update name/email (requires current password, alerts old email on change), change password (sends notification email) |
-| FAQ & Help Guide | Searchable accordion of common questions, deep-linkable by section |
-| Need Help card | Support email/phone shown in sidebar on every page |
-| Getting Started checklist | Circular-progress tracker of onboarding tasks in sidebar |
-| Dark / light theme toggle | Persisted per user |
+| Project Overview | Shows project status, a progress bar, and a timeline of milestones with due/completed dates |
+| Project Files | Clients upload photos, videos, logos, documents, and marketing materials, organized into tabs; shows upload progress and whether we've approved each file |
+| Download everything | One click to download all the files in a category as a single zip |
+| Website Content & Revisions | Clients submit website copy or change requests; each one shows whether it's still open or we've addressed it, and we can reply directly |
+| Payments | Clients see what's owed and paid, pay securely online, and can download/print a receipt |
+| Maintenance Plans | Clients can start a recurring care plan and manage their billing (update card, cancel, etc.) themselves |
+| Account Settings | Clients update their name, email, or password — changing the password or email sends a security alert email |
+| Help & FAQ | A searchable list of common questions and answers |
+| Need Help? | Our support email and phone number, always visible in the sidebar |
+| Getting Started checklist | A simple progress tracker showing new clients what to do first |
+| Light / dark mode | Clients can switch the portal's appearance to their preference |
 
-## Admin
+## 3. Admin Dashboard (for our team)
 
-| Feature | Description |
+| Feature | What it does |
 |---|---|
-| Dashboard | List of all client projects |
-| Contact Messages | Sortable, paginated inbox; mark read/unread |
-| Consultations | Sortable, paginated list; detail page to edit status/date/meeting link/notes; one-click client notification (Confirmed/Rescheduled/Cancelled); delete; auto-marks read on view |
-| Intake Submissions | Paginated list + detail view; update status; Approve & Create Client (converts submission into user + project, sends welcome email); resend welcome email |
-| Project detail | Client info, reset client password, project status, milestones (add with due date, update status, delete), Files & Content tab |
-| File approval | Mark uploaded files as Approved (visible to client) |
-| Revision/Content replies | Mark text submissions Addressed; reply to client (emails them) |
-| Payments | Request one-time payments, view list, delete pending, sync with Stripe |
-| Maintenance Plans | Request a recurring plan for a project, cancel a plan |
-| Care Plan Pricing | Manage the maintenance plan tiers shown on the public site |
-| Team | Manage admin users, update own profile/password |
-| FAQ & Help Guide | Static admin reference page |
-| Stripe webhook handling | Background sync of payments/subscriptions and receipt emails (not a UI page) |
+| All Projects | A list of every client project |
+| Contact Messages | An inbox of everyone who used the Contact form, sortable and searchable by page |
+| Consultations | An inbox of every consultation request — confirm, reschedule, or cancel with one click, which automatically emails the client |
+| Get Started Submissions | An inbox of every intake form — review details, then approve a project to instantly create the client's account and send their welcome email |
+| Project Management | Per-project page to reset a client's password, update project status, manage milestones (with due dates), and review their files/content |
+| File Approval | Mark a client's uploaded file as approved, which they'll see reflected in their portal |
+| Revision Replies | Mark a client's change request as addressed, and reply to them directly (they get an email) |
+| Payment Requests | Create one-time payment requests for a project, remove unpaid ones, and re-check a payment's status if something looks stuck |
+| Maintenance Plans | Set up or cancel a client's recurring care plan |
+| Care Plan Pricing | Control the pricing tiers shown on the public website |
+| Team Management | Add/manage other admin team members |
 
-## Payments & Billing
+## 4. Payments & Billing, in Plain Terms
 
-| Feature | Where | Description |
+| What happens | Who does it | Details |
 |---|---|---|
-| Request one-time payment | Admin | Create a payment request (description + amount) for a project |
-| Pay invoice | Client Portal | "Pay Now" launches Stripe Checkout for a pending payment |
-| Transaction detail modal | Client Portal | Click any payment row to see status, currency, dates, and transaction ID (copyable) |
-| Payment receipt | Client Portal | Printable receipt page for any paid payment ("Print / Save as PDF") |
-| Delete pending payment | Admin | Remove a pending request; blocked if a Stripe checkout session is already in progress |
-| Sync with Stripe | Admin | Manually reconcile a payment's status against Stripe if it's stuck (`PaymentReconciler`) |
-| Request maintenance plan | Admin | Create a recurring subscription request (description + monthly amount) for a project |
-| Start maintenance plan | Client Portal | "Start Plan" launches Stripe Checkout in subscription mode |
-| Manage billing | Client Portal | "Manage Billing" opens Stripe's customer billing portal (update card, cancel, etc.) |
-| Cancel maintenance plan | Admin | Cancel a project's active/past-due subscription |
-| Payment reminder | Client Portal | One-time pop-up on login if a payment is pending; dismissible |
-| Pending payment indicator | Client Portal | Red dot next to "Payments" in the sidebar while a payment is outstanding |
-| Stripe webhook sync | Backend | Auto-updates payment/subscription status from `checkout.session.completed`, `payment_intent.succeeded`, `invoice.payment_succeeded`, `customer.subscription.updated/deleted` |
-| Subscription failure alerts | Backend | Admin is emailed when a subscription cancel/update fails or a subscription goes past due/canceled |
+| We ask for a payment | Our team | We create a payment request with a description and amount |
+| Client pays | Client | They click "Pay Now" and pay securely by card |
+| Client reviews a payment | Client | Click any payment to see its status, date, and a receipt-ready transaction ID |
+| Client gets a receipt | Client | A clean, printable receipt page they can save as a PDF |
+| We cancel an unpaid request | Our team | Only possible if the client hasn't started paying yet |
+| We double-check a stuck payment | Our team | One click re-checks the payment's real status with our payment provider |
+| We set up a recurring plan | Our team | A monthly maintenance/care plan tied to a project |
+| Client starts the plan | Client | Pays securely to activate it |
+| Client manages their own billing | Client | Update their card or cancel, without needing to ask us |
+| We cancel a plan | Our team | Ends a client's active recurring plan |
+| Client gets a payment reminder | Client | A friendly pop-up appears if something is still owed |
+| Payments stay in sync automatically | Behind the scenes | Our payment provider notifies the system the moment a payment or plan changes status, so records are always accurate without manual work |
+| We get alerted if something's wrong | Our team | If a recurring plan fails or falls behind, we're emailed right away |
 
-## Emails
+## 5. Automatic Emails
 
-| Email | Trigger | Recipient |
-|---|---|---|
-| IntakeConfirmationMail | Get Started form submitted | Submitter |
-| NewIntakeSubmissionMail | Get Started form submitted | Admin |
-| NewContactMessageMail | Contact form submitted | Admin / contact address |
-| ConsultationReceivedMail | Consultation booked | Client |
-| NewConsultationMail | Consultation booked | Admin / contact address |
-| ConsultationConfirmedMail | Admin sets status to Confirmed (one-click notify) | Client |
-| ConsultationRescheduledMail | Admin sets status to Rescheduled (one-click notify) | Client |
-| ConsultationCancelledMail | Admin sets status to Cancelled (one-click notify) | Client |
-| WelcomeClientMail | Intake approved & converted, or resend triggered | Client |
-| NewClientRegistrationMail | Client self-registers | Admin |
-| AccountEmailChangedMail | Client changes their account email | Old email address |
-| AccountPasswordChangedMail | Client changes their password | Client |
-| NewClientUploadMail | Client uploads a file or text submission | Admin |
-| UploadRepliedMail | Admin replies to a revision/content submission | Client |
-| PaymentReceiptMail | One-time payment succeeds | Client |
-| SubscriptionReceiptMail | Maintenance plan invoice paid | Client |
-| AdminPaymentNotificationMail | Any payment (one-time or subscription) succeeds | Admin |
-| SubscriptionStatusAlertMail | Subscription becomes past due or canceled | Admin |
-| SystemAlertMail | System-level failure (disk write, Stripe signature, etc.) | Admin |
+| Email goes out when... | Who receives it |
+|---|---|
+| Someone submits the "Get Started" form | The submitter (confirmation) and our team |
+| Someone submits the Contact form | Our team |
+| Someone books a consultation | The client (confirmation) and our team |
+| We confirm, reschedule, or cancel a consultation | The client |
+| A client account is created or a welcome email is resent | The client |
+| Someone creates their own account | Our team |
+| A client changes their account email | Their old email address (as a security check) |
+| A client changes their password | The client (as a security check) |
+| A client uploads a file or submits content/revisions | Our team |
+| We reply to a client's revision/content request | The client |
+| A one-time payment is completed | The client (receipt) |
+| A maintenance plan payment is completed | The client (receipt) |
+| Any payment is completed | Our team |
+| A maintenance plan falls past due or is canceled | Our team |
+| Something technical breaks behind the scenes | Our team (so we can fix it fast) |
