@@ -75,6 +75,13 @@
                 </div>
 
                 <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Meeting Link (Zoom / Google Meet)</label>
+                    <input type="url" name="meeting_link" placeholder="https://zoom.us/j/... or https://meet.google.com/..."
+                           value="{{ old('meeting_link', $consultation->meeting_link) }}"
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                </div>
+
+                <div>
                     <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Admin Notes</label>
                     <textarea name="admin_notes" rows="4" placeholder="Internal notes about this booking..."
                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">{{ old('admin_notes', $consultation->admin_notes) }}</textarea>
@@ -83,6 +90,21 @@
                 <button type="submit" class="w-full bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all">
                     Save Changes
                 </button>
+            </form>
+
+            <form method="POST" action="{{ route('admin.consultations.send-confirmation', $consultation) }}" class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700/60">
+                @csrf
+                <button type="submit"
+                        @if (! $consultation->meeting_link) disabled @endif
+                        class="w-full inline-flex items-center justify-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-lg transition-all {{ $consultation->meeting_link ? 'bg-teal hover:bg-teal-dark text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    Send Confirmation Email
+                </button>
+                @if (! $consultation->meeting_link)
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center">Add and save a meeting link first.</p>
+                @elseif ($consultation->confirmation_sent_at)
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center">Last sent {{ $consultation->confirmation_sent_at->diffForHumans() }}.</p>
+                @endif
             </form>
         </div>
 
