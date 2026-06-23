@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ConsultationReceivedMail;
 use App\Mail\NewConsultationMail;
 use App\Models\Consultation;
 use Illuminate\Http\Request;
@@ -29,6 +30,8 @@ class ConsultationController extends Controller
         Mail::to(config('mail.admin_address'))
             ->cc(config('mail.contact_address'))
             ->send(new NewConsultationMail($consultation));
+
+        Mail::to($consultation->email)->send(new ConsultationReceivedMail($consultation));
 
         if ($request->wantsJson()) {
             return response()->json([
