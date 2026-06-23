@@ -32,7 +32,7 @@
                                     @foreach ($context as $key => $value)
                                         <tr>
                                             <td style="padding:10px 16px; border-bottom:1px solid #f0f0f0; font-size:13px; color:#9ca3af;">{{ $key }}</td>
-                                            <td style="padding:10px 16px; border-bottom:1px solid #f0f0f0; font-size:13px; color:#111D33;">{{ $value }}</td>
+                                            <td style="padding:10px 16px; border-bottom:1px solid #f0f0f0; font-size:13px; color:#111D33;">{{ is_scalar($value) || $value === null ? $value : json_encode($value) }}</td>
                                         </tr>
                                     @endforeach
                                 </table>
