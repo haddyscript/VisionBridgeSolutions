@@ -94,7 +94,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/consultations', [AdminConsultationController::class, 'index'])->name('consultations.index');
     Route::get('/consultations/{consultation}', [AdminConsultationController::class, 'show'])->name('consultations.show');
     Route::patch('/consultations/{consultation}', [AdminConsultationController::class, 'update'])->name('consultations.update');
-    Route::post('/consultations/{consultation}/send-confirmation', [AdminConsultationController::class, 'sendConfirmation'])->name('consultations.send-confirmation');
+    Route::post('/consultations/{consultation}/notify', [AdminConsultationController::class, 'notifyClient'])->name('consultations.notify');
     Route::patch('/consultations/{consultation}/read', [AdminConsultationController::class, 'toggleRead'])->name('consultations.toggle-read');
     Route::delete('/consultations/{consultation}', [AdminConsultationController::class, 'destroy'])->name('consultations.destroy');
 

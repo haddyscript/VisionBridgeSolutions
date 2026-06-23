@@ -149,16 +149,36 @@
             })();
             </script>
 
-            <form method="POST" action="{{ route('admin.consultations.send-confirmation', $consultation) }}" class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700/60">
+            @php
+                $notifyLabels = [
+                    'confirmed' => 'Send Confirmation Email',
+                    'rescheduled' => 'Send Reschedule Notice',
+                    'cancelled' => 'Send Cancellation Email',
+                ];
+                $notifyReady = match ($consultation->status) {
+                    'confirmed' => (bool) $consultation->meeting_link,
+                    'rescheduled' => (bool) $consultation->preferred_at,
+                    'cancelled' => true,
+                    default => false,
+                };
+                $notifyHint = match (true) {
+                    $consultation->status === 'new' => 'Set status to Confirmed, Rescheduled, or Cancelled to notify the client.',
+                    $consultation->status === 'confirmed' && ! $notifyReady => 'Add and save a meeting link first.',
+                    $consultation->status === 'rescheduled' && ! $notifyReady => 'Set and save the new date/time first.',
+                    default => null,
+                };
+            @endphp
+
+            <form method="POST" action="{{ route('admin.consultations.notify', $consultation) }}" class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700/60">
                 @csrf
                 <button type="submit"
-                        @if (! $consultation->meeting_link) disabled @endif
-                        class="w-full inline-flex items-center justify-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-lg transition-all {{ $consultation->meeting_link ? 'bg-teal hover:bg-teal-dark text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed' }}">
+                        @if (! $notifyReady) disabled @endif
+                        class="w-full inline-flex items-center justify-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-lg transition-all {{ $notifyReady ? 'bg-teal hover:bg-teal-dark text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed' }}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    Send Confirmation Email
+                    {{ $notifyLabels[$consultation->status] ?? 'Notify Client' }}
                 </button>
-                @if (! $consultation->meeting_link)
-                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center">Add and save a meeting link first.</p>
+                @if ($notifyHint)
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center">{{ $notifyHint }}</p>
                 @elseif ($consultation->confirmation_sent_at)
                     <p class="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center">Last sent {{ $consultation->confirmation_sent_at->diffForHumans() }}.</p>
                 @endif

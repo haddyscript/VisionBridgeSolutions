@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ConsultationCancelledMail;
 use App\Mail\ConsultationConfirmedMail;
+use App\Mail\ConsultationRescheduledMail;
 use App\Models\Consultation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -61,15 +63,25 @@ class ConsultationController extends Controller
         return back()->with('status', 'Consultation updated.');
     }
 
-    public function sendConfirmation(Consultation $consultation)
+    public function notifyClient(Consultation $consultation)
     {
-        abort_unless($consultation->meeting_link, 422, 'Add a meeting link before sending the confirmation email.');
+        if ($consultation->status === 'confirmed') {
+            abort_unless($consultation->meeting_link, 422, 'Add a meeting link before notifying the client.');
+            $mailable = new ConsultationConfirmedMail($consultation);
+        } elseif ($consultation->status === 'rescheduled') {
+            abort_unless($consultation->preferred_at, 422, 'Set the new preferred date/time before notifying the client.');
+            $mailable = new ConsultationRescheduledMail($consultation);
+        } elseif ($consultation->status === 'cancelled') {
+            $mailable = new ConsultationCancelledMail($consultation);
+        } else {
+            abort(422, 'Set the status to Confirmed, Rescheduled, or Cancelled before notifying the client.');
+        }
 
-        Mail::to($consultation->email)->send(new ConsultationConfirmedMail($consultation));
+        Mail::to($consultation->email)->send($mailable);
 
         $consultation->update(['confirmation_sent_at' => now()]);
 
-        return back()->with('status', 'Confirmation email sent to the client.');
+        return back()->with('status', 'Notification email sent to the client.');
     }
 
     public function toggleRead(Consultation $consultation)
