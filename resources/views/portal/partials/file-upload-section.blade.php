@@ -10,7 +10,15 @@
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
     <div class="flex items-center justify-between mb-4">
         <h3 class="font-semibold text-navy dark:text-white">{{ $label }}</h3>
-        <span class="text-xs text-gray-400 dark:text-gray-500">{{ $items->count() }} file{{ $items->count() === 1 ? '' : 's' }}</span>
+        <div class="flex items-center gap-3">
+            <span class="text-xs text-gray-400 dark:text-gray-500">{{ $items->count() }} file{{ $items->count() === 1 ? '' : 's' }}</span>
+            @if ($items->isNotEmpty())
+                <a href="{{ route('portal.category.download', $category) }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-gold-dark hover:underline">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+                    Download All
+                </a>
+            @endif
+        </div>
     </div>
 
     <form method="POST" action="{{ route('portal.uploads.store', $project) }}" enctype="multipart/form-data" class="upload-form mb-5" data-category="{{ $category }}">

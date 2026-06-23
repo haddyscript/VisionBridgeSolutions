@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use ZipArchive;
 
 class CategoryController extends Controller
 {
@@ -30,5 +33,53 @@ class CategoryController extends Controller
             'meta' => self::CATEGORIES[$category],
             'items' => $project->uploads->where('category', $category)->values(),
         ]);
+    }
+
+    public function downloadAll(Request $request, string $category)
+    {
+        abort_unless(array_key_exists($category, self::CATEGORIES), 404);
+        abort_unless(self::CATEGORIES[$category]['type'] === 'file', 404);
+
+        $project = $request->user()->projects()->with('uploads')->first();
+        abort_unless($project, 404);
+
+        $items = $project->uploads->where('category', $category)->whereNotNull('path')->values();
+        abort_if($items->isEmpty(), 404);
+
+        $disk = Storage::disk('client_uploads');
+        $tempDir = storage_path('app/tmp');
+        if (! is_dir($tempDir)) {
+            mkdir($tempDir, 0755, true);
+        }
+
+        $tempPath = $tempDir.'/'.Str::uuid().'.zip';
+
+        $zip = new ZipArchive();
+        $zip->open($tempPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+        $usedNames = [];
+        foreach ($items as $item) {
+            if (! $disk->exists($item->path)) {
+                continue;
+            }
+
+            $name = $item->original_name ?: basename($item->path);
+            $base = pathinfo($name, PATHINFO_FILENAME);
+            $ext = pathinfo($name, PATHINFO_EXTENSION);
+            $suffix = 1;
+
+            while (in_array($name, $usedNames, true)) {
+                $name = $base.' ('.$suffix++.')'.($ext ? '.'.$ext : '');
+            }
+
+            $usedNames[] = $name;
+            $zip->addFromString($name, $disk->get($item->path));
+        }
+
+        $zip->close();
+
+        $zipName = Str::slug($project->name).'-'.$category.'.zip';
+
+        return response()->download($tempPath, $zipName)->deleteFileAfterSend(true);
     }
 }

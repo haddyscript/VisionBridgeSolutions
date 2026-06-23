@@ -69,6 +69,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/portal', DashboardController::class)->name('portal.dashboard');
     Route::get('/portal/files/{category}', [CategoryController::class, 'show'])->name('portal.category');
+    Route::get('/portal/files/{category}/download', [CategoryController::class, 'downloadAll'])->name('portal.category.download');
     Route::post('/portal/projects/{project}/uploads', [UploadController::class, 'store'])->name('portal.uploads.store');
     Route::delete('/portal/uploads/{upload}', [UploadController::class, 'destroy'])->name('portal.uploads.destroy');
 
