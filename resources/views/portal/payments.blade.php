@@ -82,7 +82,16 @@
 
     {{-- Maintenance Plan --}}
     @if ($subscription && ! $subscription->isCanceled())
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 mb-6 hover:shadow-md transition-shadow">
+        <div class="subscription-card cursor-pointer bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 mb-6 hover:shadow-md hover:border-gold/40 transition-all"
+             data-description="{{ $subscription->description }}"
+             data-amount="{{ $subscription->formattedAmount() }}"
+             data-status="{{ $subscription->status }}"
+             data-status-label="{{ $subscription->status === 'past_due' ? 'Past Due' : ucfirst($subscription->status) }}"
+             data-started="{{ $subscription->created_at->format('M j, Y') }}"
+             data-period-end="{{ $subscription->current_period_end?->format('M j, Y') }}"
+             data-cancel-at-period-end="{{ $subscription->cancel_at_period_end ? '1' : '0' }}"
+             data-checkout-url="{{ $subscription->isPending() ? route('portal.subscriptions.checkout', $subscription) : '' }}"
+             data-billing-portal-url="{{ ! $subscription->isPending() ? route('portal.billing-portal') : '' }}">
             <div class="flex flex-wrap items-center justify-between gap-5">
                 <div class="flex items-center gap-4">
                     <span class="w-12 h-12 rounded-xl bg-teal/10 flex items-center justify-center shrink-0">
@@ -115,7 +124,7 @@
                     @endif
                     @if ($subscription->isPending())
                         @if ($subscription->stripe_checkout_session_id)
-                            <form method="POST" action="{{ route('portal.subscriptions.refresh', $subscription) }}">
+                            <form method="POST" action="{{ route('portal.subscriptions.refresh', $subscription) }}" onclick="event.stopPropagation()">
                                 @csrf
                                 <button type="submit" title="Already paid? Check the real status with Stripe" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 px-4 py-2.5 rounded-lg transition-colors">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
@@ -123,14 +132,14 @@
                                 </button>
                             </form>
                         @endif
-                        <form method="POST" action="{{ route('portal.subscriptions.checkout', $subscription) }}">
+                        <form method="POST" action="{{ route('portal.subscriptions.checkout', $subscription) }}" onclick="event.stopPropagation()">
                             @csrf
                             <button type="submit" class="bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
                                 Start Plan
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('portal.billing-portal') }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 px-4 py-2.5 rounded-lg transition-colors">
+                        <a href="{{ route('portal.billing-portal') }}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 px-4 py-2.5 rounded-lg transition-colors">
                             Manage Billing
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                         </a>
@@ -306,6 +315,61 @@
         </div>
     </div>
 
+    {{-- Maintenance Plan Detail Modal --}}
+    <div id="subscription-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div id="subscription-modal-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+
+        <div id="subscription-modal-panel" class="relative w-full max-w-md transform scale-95 opacity-0 transition-all duration-300">
+            <div class="relative overflow-hidden rounded-2xl shadow-2xl" style="background:linear-gradient(135deg,#111D33,#1B2A4A 60%,#1B2A4A);">
+                <div class="absolute -top-20 -right-12 w-56 h-56 rounded-full" style="background:radial-gradient(circle,rgba(201,168,76,0.20) 0%,transparent 70%);"></div>
+                <div class="absolute -bottom-24 -left-10 w-56 h-56 rounded-full" style="background:radial-gradient(circle,rgba(42,157,143,0.16) 0%,transparent 70%);"></div>
+
+                <button type="button" onclick="closeSubscriptionModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/70 hover:text-white transition-colors z-10">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+
+                <div class="relative px-7 pt-8 pb-6 text-center">
+                    <div class="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center bg-teal/15">
+                        <svg class="w-7 h-7 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    </div>
+                    <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Maintenance Plan</p>
+                    <p id="sub-modal-amount" class="font-display text-3xl font-bold text-white"></p>
+                    <p id="sub-modal-description" class="text-sm text-white/50 mt-1"></p>
+                </div>
+
+                <div class="relative bg-white dark:bg-gray-800 rounded-t-2xl px-7 py-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Status</span>
+                        <span id="sub-modal-status-badge" class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full"></span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Started</span>
+                        <span id="sub-modal-started" class="text-sm font-semibold text-navy dark:text-white"></span>
+                    </div>
+                    <div id="sub-modal-period-row" class="flex items-center justify-between">
+                        <span id="sub-modal-period-label" class="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500"></span>
+                        <span id="sub-modal-period-end" class="text-sm font-semibold text-navy dark:text-white"></span>
+                    </div>
+
+                    <div id="sub-modal-start-action" class="hidden pt-2">
+                        <form id="sub-modal-start-form" method="POST" action="#">
+                            @csrf
+                            <button type="submit" class="block w-full text-center bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-3 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                                Start Plan
+                            </button>
+                        </form>
+                    </div>
+
+                    <div id="sub-modal-billing-action" class="hidden pt-2">
+                        <a id="sub-modal-billing-link" href="#" target="_blank" rel="noopener" class="block w-full text-center bg-navy hover:bg-navy-light text-white text-sm font-semibold px-5 py-3 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                            Manage Billing
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endif
 
 <script>
@@ -313,12 +377,16 @@
         const statusColors = {
             pending: 'bg-gold/15 text-gold-dark',
             paid: 'bg-teal/15 text-teal-dark',
+            active: 'bg-teal/15 text-teal-dark',
+            past_due: 'bg-red-50 text-red-500',
             failed: 'bg-red-50 text-red-500',
             canceled: 'bg-gray-100 text-gray-500',
         };
         const statusDots = {
             pending: 'bg-gold',
             paid: 'bg-teal',
+            active: 'bg-teal',
+            past_due: 'bg-red-500',
             failed: 'bg-red-500',
             canceled: 'bg-gray-400',
         };
@@ -413,6 +481,73 @@
             }, 200);
         };
 
+        const subModal = document.getElementById('subscription-modal');
+        const subBackdrop = document.getElementById('subscription-modal-backdrop');
+        const subPanel = document.getElementById('subscription-modal-panel');
+
+        window.openSubscriptionModal = function (card) {
+            const d = card.dataset;
+            const cancelAtPeriodEnd = d.cancelAtPeriodEnd === '1';
+
+            document.getElementById('sub-modal-amount').textContent = d.amount;
+            document.getElementById('sub-modal-description').textContent = d.description;
+            document.getElementById('sub-modal-started').textContent = d.started;
+
+            const badge = document.getElementById('sub-modal-status-badge');
+            const badgeStatus = cancelAtPeriodEnd && d.status === 'active' ? 'past_due' : d.status;
+            badge.className = 'inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full ' + (statusColors[badgeStatus] || 'bg-gray-100 text-gray-500');
+            badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full ' + (statusDots[badgeStatus] || 'bg-gray-400') + '"></span>' + (cancelAtPeriodEnd && d.status === 'active' ? 'Canceling' : d.statusLabel);
+
+            const periodRow = document.getElementById('sub-modal-period-row');
+            if (d.periodEnd) {
+                document.getElementById('sub-modal-period-label').textContent = cancelAtPeriodEnd ? 'Cancels On' : 'Renews On';
+                document.getElementById('sub-modal-period-end').textContent = d.periodEnd;
+                periodRow.classList.remove('hidden');
+            } else {
+                periodRow.classList.add('hidden');
+            }
+
+            const startAction = document.getElementById('sub-modal-start-action');
+            if (d.checkoutUrl) {
+                document.getElementById('sub-modal-start-form').action = d.checkoutUrl;
+                startAction.classList.remove('hidden');
+            } else {
+                startAction.classList.add('hidden');
+            }
+
+            const billingAction = document.getElementById('sub-modal-billing-action');
+            if (d.billingPortalUrl) {
+                document.getElementById('sub-modal-billing-link').href = d.billingPortalUrl;
+                billingAction.classList.remove('hidden');
+            } else {
+                billingAction.classList.add('hidden');
+            }
+
+            subModal.classList.remove('hidden');
+            subModal.classList.add('flex');
+            requestAnimationFrame(function () {
+                subBackdrop.classList.remove('opacity-0');
+                subPanel.classList.remove('scale-95', 'opacity-0');
+            });
+        };
+
+        window.closeSubscriptionModal = function () {
+            subBackdrop.classList.add('opacity-0');
+            subPanel.classList.add('scale-95', 'opacity-0');
+            setTimeout(function () {
+                subModal.classList.add('hidden');
+                subModal.classList.remove('flex');
+            }, 200);
+        };
+
+        document.querySelectorAll('.subscription-card').forEach(function (card) {
+            card.addEventListener('click', function () {
+                window.openSubscriptionModal(card);
+            });
+        });
+
+        subBackdrop?.addEventListener('click', closeSubscriptionModal);
+
         window.copyTransactionId = function () {
             const el = document.getElementById('modal-intent');
             const textEl = document.getElementById('modal-intent-text');
@@ -468,7 +603,10 @@
 
         backdrop?.addEventListener('click', closePaymentModal);
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') closePaymentModal();
+            if (e.key === 'Escape') {
+                closePaymentModal();
+                closeSubscriptionModal();
+            }
         });
     })();
 </script>
