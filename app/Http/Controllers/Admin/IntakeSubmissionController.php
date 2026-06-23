@@ -17,7 +17,7 @@ class IntakeSubmissionController extends Controller
 {
     public function index()
     {
-        $submissions = IntakeSubmission::withCount('files')->latest()->get();
+        $submissions = IntakeSubmission::withCount('files')->latest()->paginate(15)->withQueryString();
 
         return view('admin.intake-submissions.index', [
             'submissions' => $submissions,

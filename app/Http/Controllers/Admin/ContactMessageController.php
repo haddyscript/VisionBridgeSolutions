@@ -29,7 +29,7 @@ class ContactMessageController extends Controller
         };
 
         return view('admin.contact-messages.index', [
-            'messages' => $query->get(),
+            'messages' => $query->paginate(15)->withQueryString(),
             'sort' => $sort,
         ]);
     }

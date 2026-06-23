@@ -92,6 +92,10 @@
             </div>
         @endforeach
     </div>
+
+    <div class="mt-6">
+        {{ $consultations->links() }}
+    </div>
 @endif
 
 @endsection

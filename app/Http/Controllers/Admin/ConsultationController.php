@@ -33,7 +33,7 @@ class ConsultationController extends Controller
         };
 
         return view('admin.consultations.index', [
-            'consultations' => $query->get(),
+            'consultations' => $query->paginate(15)->withQueryString(),
             'sort' => $sort,
         ]);
     }
