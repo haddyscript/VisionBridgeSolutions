@@ -14,6 +14,8 @@ class Consultation extends Model
         'message',
         'status',
         'admin_notes',
+        'meeting_link',
+        'confirmation_sent_at',
         'read_at',
     ];
 
@@ -21,6 +23,7 @@ class Consultation extends Model
     {
         return [
             'preferred_at' => 'datetime',
+            'confirmation_sent_at' => 'datetime',
             'read_at' => 'datetime',
         ];
     }
