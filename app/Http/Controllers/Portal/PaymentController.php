@@ -68,4 +68,33 @@ class PaymentController extends Controller
             'project' => $project,
         ]);
     }
+
+    public function statement(Request $request)
+    {
+        $project = $request->user()->projects()->with('payments')->first();
+
+        abort_unless($project, 404);
+
+        $filename = 'visionbridge-statement-'.now()->format('Y-m-d').'.csv';
+
+        return response()->streamDownload(function () use ($project) {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, ['Date', 'Description', 'Amount', 'Currency', 'Status', 'Paid On', 'Transaction ID']);
+
+            foreach ($project->payments as $payment) {
+                fputcsv($handle, [
+                    $payment->created_at->format('Y-m-d'),
+                    $payment->description,
+                    number_format($payment->amount / 100, 2),
+                    strtoupper($payment->currency),
+                    ucfirst($payment->status),
+                    $payment->paid_at?->format('Y-m-d') ?? '',
+                    $payment->stripe_payment_intent_id ?? '',
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, ['Content-Type' => 'text/csv']);
+    }
 }
