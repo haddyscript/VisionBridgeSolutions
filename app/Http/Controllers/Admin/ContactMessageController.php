@@ -12,7 +12,7 @@ class ContactMessageController extends Controller
         'newest' => 'Newest First',
         'oldest' => 'Oldest First',
         'unread' => 'Unread First',
-        'name' => 'Name (A-Z)',
+        'name'   => 'Name (A-Z)',
     ];
 
     public function index(Request $request)
