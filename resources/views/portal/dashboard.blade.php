@@ -181,12 +181,21 @@
                                 <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                             </span>
                             <span class="text-gray-400 dark:text-gray-500 line-through">{{ $milestone->title }}</span>
+                            @if ($milestone->completed_at)
+                                <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Completed {{ $milestone->completed_at->format('M j, Y') }}</span>
+                            @endif
                         @elseif ($milestone->status === 'in_progress')
                             <span class="w-4 h-4 rounded-full border-2 border-gold shrink-0"></span>
                             <span class="text-navy dark:text-white font-medium">{{ $milestone->title }}</span>
+                            @if ($milestone->due_date)
+                                <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
+                            @endif
                         @else
                             <span class="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-600 shrink-0"></span>
                             <span class="text-gray-500 dark:text-gray-400">{{ $milestone->title }}</span>
+                            @if ($milestone->due_date)
+                                <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
+                            @endif
                         @endif
                     </li>
                 @endforeach

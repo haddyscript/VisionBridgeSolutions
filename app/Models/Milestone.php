@@ -10,8 +10,18 @@ class Milestone extends Model
         'project_id',
         'title',
         'status',
+        'due_date',
+        'completed_at',
         'position',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'due_date' => 'date',
+            'completed_at' => 'datetime',
+        ];
+    }
 
     public function project()
     {
