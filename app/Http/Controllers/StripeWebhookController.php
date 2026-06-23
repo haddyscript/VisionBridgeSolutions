@@ -74,14 +74,17 @@ class StripeWebhookController extends Controller
         $payment = Payment::with('project.user')->where('stripe_checkout_session_id', $session->id)->first();
 
         if ($payment && $payment->isPending()) {
+            $receiptUrl = $this->fetchReceiptUrl($session->id);
+
             $payment->update([
                 'status' => 'paid',
                 'stripe_payment_intent_id' => $session->payment_intent,
+                'stripe_receipt_url' => $receiptUrl,
                 'paid_at' => now(),
             ]);
 
             Mail::to($payment->project->user->email)->send(
-                new PaymentReceiptMail($payment, $this->fetchReceiptUrl($session->id))
+                new PaymentReceiptMail($payment, $receiptUrl)
             );
 
             $this->notifyAdminOfPayment($payment);
@@ -102,14 +105,17 @@ class StripeWebhookController extends Controller
             return;
         }
 
+        $receiptUrl = $this->fetchReceiptUrl($sessionId);
+
         $payment->update([
             'status' => 'paid',
             'stripe_payment_intent_id' => $paymentIntent->id,
+            'stripe_receipt_url' => $receiptUrl,
             'paid_at' => now(),
         ]);
 
         Mail::to($payment->project->user->email)->send(
-            new PaymentReceiptMail($payment, $this->fetchReceiptUrl($sessionId))
+            new PaymentReceiptMail($payment, $receiptUrl)
         );
 
         $this->notifyAdminOfPayment($payment);

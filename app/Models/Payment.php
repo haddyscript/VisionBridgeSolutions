@@ -14,6 +14,7 @@ class Payment extends Model
         'status',
         'stripe_checkout_session_id',
         'stripe_payment_intent_id',
+        'stripe_receipt_url',
         'paid_at',
     ];
 

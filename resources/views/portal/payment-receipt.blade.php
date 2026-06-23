@@ -52,9 +52,17 @@
         </div>
 
         <div class="px-8 py-7 space-y-5">
-            <div class="flex items-center justify-between pb-5 border-b border-gray-100">
-                <span class="text-sm text-gray-500">Amount Paid</span>
-                <span class="font-display text-2xl font-bold text-navy">{{ $payment->formattedAmount() }} {{ strtoupper($payment->currency) }}</span>
+            <div class="flex items-start justify-between pb-5 border-b border-gray-100">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">Bill From</p>
+                    <p class="text-sm font-semibold text-navy">VisionBridge Solutions</p>
+                    <p class="text-sm text-gray-500">{{ config('mail.admin_address') }}</p>
+                    <p class="text-sm text-gray-500">(555) 000-0000</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">Amount Paid</p>
+                    <p class="font-display text-2xl font-bold text-navy">{{ $payment->formattedAmount() }} {{ strtoupper($payment->currency) }}</p>
+                </div>
             </div>
 
             <div class="flex items-center justify-between">
@@ -76,6 +84,15 @@
                 <div class="flex items-center justify-between gap-4">
                     <span class="text-sm text-gray-500 shrink-0">Transaction ID</span>
                     <span class="text-sm font-mono text-navy truncate">{{ $payment->stripe_payment_intent_id }}</span>
+                </div>
+            @endif
+
+            @if ($payment->stripe_receipt_url)
+                <div class="text-center">
+                    <a href="{{ $payment->stripe_receipt_url }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-dark hover:underline">
+                        View Official Stripe Receipt
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
                 </div>
             @endif
 
