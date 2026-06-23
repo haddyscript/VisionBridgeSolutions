@@ -28,7 +28,7 @@
         'Uploading Files' => [
             [
                 'q' => 'What kinds of files can I upload?',
-                'a' => 'The Project Files section is split into four categories: Images (photos of your team, space, or work), Videos (promo or testimonial videos), Logos (your brand logo files), and Documents (brochures, policies, or other files).',
+                'a' => 'The Project Files section is split into five categories: Images (photos of your team, space, or work), Videos (promo or testimonial videos), Logos (your brand logo files), Documents (brochures, policies, or other files), and Marketing Materials (flyers, social graphics, and other assets).',
             ],
             [
                 'id' => 'file-formats',

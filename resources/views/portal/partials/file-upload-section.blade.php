@@ -69,6 +69,12 @@
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </form>
+                    @if ($item->isApproved())
+                        <span class="absolute top-1.5 left-1.5 inline-flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-teal text-white shadow">
+                            <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            Approved
+                        </span>
+                    @endif
                     <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-1.5">{{ $item->original_name }}</p>
                 </div>
             @endforeach
@@ -95,7 +101,15 @@
                             <span class="text-[0.6rem] font-bold uppercase {{ $colors['text'] }}">{{ $item->extension() ?: 'FILE' }}</span>
                         </span>
                         <span class="min-w-0">
-                            <span class="block text-sm font-medium text-navy dark:text-white group-hover:text-gold-dark truncate">{{ $item->original_name }}</span>
+                            <span class="flex items-center gap-2">
+                                <span class="block text-sm font-medium text-navy dark:text-white group-hover:text-gold-dark truncate">{{ $item->original_name }}</span>
+                                @if ($item->isApproved())
+                                    <span class="shrink-0 inline-flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-teal/10 text-teal-dark">
+                                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                        Approved
+                                    </span>
+                                @endif
+                            </span>
                             <span class="block text-xs text-gray-400 dark:text-gray-500">
                                 {{ $item->created_at->format('M j, Y') }}
                                 @if ($item->formattedSize())
