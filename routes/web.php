@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ConsultationController as AdminConsultationController;
 use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\IntakeSubmissionController as AdminIntakeSubmissionController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\DeployerController;
 use App\Http\Controllers\IntakeController;
@@ -38,6 +40,9 @@ Route::get('/get-started', [IntakeController::class, 'create'])->name('intake.cr
 Route::post('/get-started', [IntakeController::class, 'store'])->name('intake.store');
 
 Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.store');
+
+Route::get('/book-consultation', [ConsultationController::class, 'create'])->name('consultation.create');
+Route::post('/book-consultation', [ConsultationController::class, 'store'])->name('consultation.store');
 
 Route::match(['get', 'post'], '/deployer', [DeployerController::class, 'deploy'])->name('deployer');
 
@@ -85,6 +90,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/contact-messages', [AdminContactMessageController::class, 'index'])->name('contact-messages.index');
     Route::patch('/contact-messages/{contactMessage}/read', [AdminContactMessageController::class, 'toggleRead'])->name('contact-messages.toggle-read');
+
+    Route::get('/consultations', [AdminConsultationController::class, 'index'])->name('consultations.index');
+    Route::patch('/consultations/{consultation}/read', [AdminConsultationController::class, 'toggleRead'])->name('consultations.toggle-read');
 
     Route::get('/intake-submissions', [AdminIntakeSubmissionController::class, 'index'])->name('intake-submissions.index');
     Route::get('/intake-submissions/{intakeSubmission}', [AdminIntakeSubmissionController::class, 'show'])->name('intake-submissions.show');
