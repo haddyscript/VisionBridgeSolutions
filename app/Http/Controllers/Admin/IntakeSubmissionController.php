@@ -67,6 +67,7 @@ class IntakeSubmissionController extends Controller
                     'email' => $locked->contact_email,
                     'password' => Str::random(40),
                     'role' => 'client',
+                    'email_verified_at' => now(),
                 ]);
 
                 $project = $user->projects()->create([
