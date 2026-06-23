@@ -28,6 +28,7 @@ class SubscriptionReceiptMail extends Mailable
     public function build()
     {
         return $this->subject('Payment Receipt — '.$this->formattedAmountPaid().' — VisionBridge Solutions')
-            ->view('emails.subscription-receipt');
+            ->view('emails.subscription-receipt')
+            ->with(['formattedAmountPaid' => $this->formattedAmountPaid()]);
     }
 }
