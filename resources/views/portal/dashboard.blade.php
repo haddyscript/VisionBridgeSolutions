@@ -159,9 +159,17 @@
                     <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">{{ $project->description }}</p>
                 @endif
             </div>
-            <span class="inline-block text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full bg-gold/15 text-gold-dark">
-                {{ $statusLabels[$project->status] ?? $project->status }}
-            </span>
+            <div class="flex items-center gap-2 shrink-0">
+                @if ($project->preview_url)
+                    <a href="{{ $project->preview_url }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-gold/15 hover:bg-gold/25 px-4 py-2 rounded-lg transition-colors">
+                        <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        View Live Preview
+                    </a>
+                @endif
+                <span class="inline-block text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full bg-gold/15 text-gold-dark">
+                    {{ $statusLabels[$project->status] ?? $project->status }}
+                </span>
+            </div>
         </div>
 
         <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">

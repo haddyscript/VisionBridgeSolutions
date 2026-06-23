@@ -50,6 +50,17 @@
         </form>
     </div>
 
+    <form method="POST" action="{{ route('admin.projects.update', $project) }}" class="flex items-center gap-2">
+        @csrf
+        @method('PATCH')
+        <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 shrink-0">Preview URL</label>
+        <input type="url" name="preview_url" value="{{ old('preview_url', $project->preview_url) }}" placeholder="https://staging.example.com"
+               class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+        <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+            Save
+        </button>
+    </form>
+
     <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">
         <span>Project Progress</span>
         <span class="font-semibold text-navy dark:text-white">{{ $project->progressPercent() }}%</span>

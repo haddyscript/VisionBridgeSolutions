@@ -22,12 +22,13 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:onboarding,in_progress,review,launched,maintenance'],
+            'status' => ['sometimes', 'required', 'in:onboarding,in_progress,review,launched,maintenance'],
+            'preview_url' => ['sometimes', 'nullable', 'url', 'max:255'],
         ]);
 
         $project->update($validated);
 
-        return back()->with('status', 'Project status updated.');
+        return back()->with('status', 'Project updated.');
     }
 
     public function resetClientPassword(Project $project)
