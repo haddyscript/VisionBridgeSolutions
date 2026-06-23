@@ -18,9 +18,10 @@ A plain-language summary of everything the site and client portal offer today.
 | Feature | What it does |
 |---|---|
 | Project Overview | Shows project status, a progress bar, and a timeline of milestones with due/completed dates |
-| Project Files | Clients upload photos, videos, logos, documents, and marketing materials, organized into tabs; shows upload progress and whether we've approved each file |
+| Recent Activity feed | A single, up-to-date list on the Overview page showing milestones completed, files approved, replies from our team, and payments received — all in one place, newest first |
+| Project Files | Clients upload photos, videos, logos, documents, and marketing materials, organized into tabs under one menu item; shows upload progress and whether we've approved each file |
 | Download everything | One click to download all the files in a category as a single zip |
-| Website Content & Revisions | Clients submit website copy or change requests; each one shows whether it's still open or we've addressed it, and we can reply directly |
+| Website Content & Revisions | Clients submit website copy or change requests; each one shows whether it's still open or we've addressed it, and we can reply directly — they're emailed when we do |
 | Payments | Clients see what's owed and paid, pay securely online, and can download/print a receipt |
 | Maintenance Plans | Clients can start a recurring care plan and manage their billing (update card, cancel, etc.) themselves |
 | Account Settings | Clients update their name, email, or password — changing the password or email sends a security alert email |
@@ -39,7 +40,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Get Started Submissions | An inbox of every intake form — review details, then approve a project to instantly create the client's account and send their welcome email |
 | Project Management | Per-project page to reset a client's password, update project status, manage milestones (with due dates), and review their files/content |
 | File Approval | Mark a client's uploaded file as approved, which they'll see reflected in their portal |
-| Revision Replies | Mark a client's change request as addressed, and reply to them directly (they get an email) |
+| Revision Replies | Mark a client's change request as addressed, and reply to them directly (they get an email); replies can be edited later |
 | Payment Requests | Create one-time payment requests for a project, remove unpaid ones, and re-check a payment's status if something looks stuck |
 | Maintenance Plans | Set up or cancel a client's recurring care plan |
 | Care Plan Pricing | Control the pricing tiers shown on the public website |
