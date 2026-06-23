@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Consultation;
 use App\Models\ContactMessage;
 use App\Models\IntakeSubmission;
 use App\Models\MaintenancePlan;
@@ -30,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layouts.admin', function ($view) {
             $view->with('newIntakeCount', IntakeSubmission::where('status', 'new')->count());
             $view->with('unreadContactCount', ContactMessage::whereNull('read_at')->count());
+            $view->with('unreadConsultationCount', Consultation::whereNull('read_at')->count());
             $view->with('gettingStartedTasks', $this->adminGettingStartedTasks());
         });
 
