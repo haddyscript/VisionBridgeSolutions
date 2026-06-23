@@ -46,3 +46,27 @@
 | Team | Manage admin users, update own profile/password |
 | FAQ & Help Guide | Static admin reference page |
 | Stripe webhook handling | Background sync of payments/subscriptions and receipt emails (not a UI page) |
+
+## Emails
+
+| Email | Trigger | Recipient |
+|---|---|---|
+| IntakeConfirmationMail | Get Started form submitted | Submitter |
+| NewIntakeSubmissionMail | Get Started form submitted | Admin |
+| NewContactMessageMail | Contact form submitted | Admin / contact address |
+| ConsultationReceivedMail | Consultation booked | Client |
+| NewConsultationMail | Consultation booked | Admin / contact address |
+| ConsultationConfirmedMail | Admin sets status to Confirmed (one-click notify) | Client |
+| ConsultationRescheduledMail | Admin sets status to Rescheduled (one-click notify) | Client |
+| ConsultationCancelledMail | Admin sets status to Cancelled (one-click notify) | Client |
+| WelcomeClientMail | Intake approved & converted, or resend triggered | Client |
+| NewClientRegistrationMail | Client self-registers | Admin |
+| AccountEmailChangedMail | Client changes their account email | Old email address |
+| AccountPasswordChangedMail | Client changes their password | Client |
+| NewClientUploadMail | Client uploads a file or text submission | Admin |
+| UploadRepliedMail | Admin replies to a revision/content submission | Client |
+| PaymentReceiptMail | One-time payment succeeds | Client |
+| SubscriptionReceiptMail | Maintenance plan invoice paid | Client |
+| AdminPaymentNotificationMail | Any payment (one-time or subscription) succeeds | Admin |
+| SubscriptionStatusAlertMail | Subscription becomes past due or canceled | Admin |
+| SystemAlertMail | System-level failure (disk write, Stripe signature, etc.) | Admin |
