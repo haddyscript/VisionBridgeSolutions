@@ -154,7 +154,8 @@
                          data-paid-at="{{ $payment->paid_at?->format('M j, Y \a\t g:i A') }}"
                          data-intent="{{ $payment->stripe_payment_intent_id }}"
                          data-session="{{ $payment->stripe_checkout_session_id }}"
-                         data-checkout-url="{{ $payment->isPending() ? route('portal.payments.checkout', $payment) : '' }}">
+                         data-checkout-url="{{ $payment->isPending() ? route('portal.payments.checkout', $payment) : '' }}"
+                         data-receipt-url="{{ $payment->isPaid() ? route('portal.payments.receipt', $payment) : '' }}">
                         <span class="absolute left-0 top-3 bottom-3 w-1 rounded-full {{ $statusDots[$payment->status] ?? 'bg-gray-400' }} opacity-0 group-hover:opacity-100 transition-opacity"></span>
                         <div class="flex items-center gap-4">
                             <span class="w-10 h-10 rounded-lg bg-navy/5 dark:bg-white/5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
@@ -236,6 +237,12 @@
                                 Pay Now
                             </button>
                         </form>
+                    </div>
+
+                    <div id="modal-receipt-action" class="hidden pt-2">
+                        <a id="modal-receipt-link" href="#" target="_blank" class="block w-full text-center bg-navy hover:bg-navy-light text-white text-sm font-semibold px-5 py-3 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                            View Receipt
+                        </a>
                     </div>
                 </div>
             </div>
@@ -321,6 +328,14 @@
                 payAction.classList.remove('hidden');
             } else {
                 payAction.classList.add('hidden');
+            }
+
+            const receiptAction = document.getElementById('modal-receipt-action');
+            if (d.receiptUrl) {
+                document.getElementById('modal-receipt-link').href = d.receiptUrl;
+                receiptAction.classList.remove('hidden');
+            } else {
+                receiptAction.classList.add('hidden');
             }
 
             modal.classList.remove('hidden');

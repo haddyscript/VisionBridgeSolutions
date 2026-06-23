@@ -55,4 +55,17 @@ class PaymentController extends Controller
 
         return redirect()->away($session->url);
     }
+
+    public function receipt(Request $request, Payment $payment)
+    {
+        $project = $request->user()->projects()->first();
+
+        abort_unless($project && $payment->project_id === $project->id, 403);
+        abort_unless($payment->isPaid(), 404);
+
+        return view('portal.payment-receipt', [
+            'payment' => $payment,
+            'project' => $project,
+        ]);
+    }
 }
