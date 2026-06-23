@@ -13,14 +13,25 @@
         <span class="text-xs text-gray-400 dark:text-gray-500">{{ $items->count() }} file{{ $items->count() === 1 ? '' : 's' }}</span>
     </div>
 
-    <form method="POST" action="{{ route('portal.uploads.store', $project) }}" enctype="multipart/form-data" class="flex items-center gap-3 mb-5">
+    <form method="POST" action="{{ route('portal.uploads.store', $project) }}" enctype="multipart/form-data" class="upload-form mb-5" data-category="{{ $category }}">
         @csrf
         <input type="hidden" name="category" value="{{ $category }}">
-        <input type="file" name="file" accept="{{ $accept }}" required
-               class="flex-1 text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gold/15 file:text-navy dark:text-white file:font-semibold file:text-sm hover:file:bg-gold/25">
-        <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-            Upload
-        </button>
+        <div class="upload-form-fields flex items-center gap-3">
+            <input type="file" name="file" accept="{{ $accept }}" required
+                   class="flex-1 text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gold/15 file:text-navy dark:text-white file:font-semibold file:text-sm hover:file:bg-gold/25">
+            <button type="submit" class="upload-submit-btn shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                Upload
+            </button>
+        </div>
+        <div class="upload-progress-wrap hidden mt-3">
+            <div class="flex items-center justify-between mb-1.5">
+                <span class="upload-progress-label text-xs font-medium text-gray-500 dark:text-gray-400">Uploading…</span>
+                <span class="upload-progress-pct text-xs font-semibold text-navy dark:text-white">0%</span>
+            </div>
+            <div class="w-full h-2 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                <div class="upload-progress-bar h-full bg-gold rounded-full transition-all" style="width:0%"></div>
+            </div>
+        </div>
     </form>
 
     @if ($items->isEmpty())
@@ -97,3 +108,73 @@
         </div>
     @endif
 </div>
+
+<script>
+(function () {
+    const form = document.currentScript.closest('div').querySelector('.upload-form');
+    if (!form) return;
+
+    const fields = form.querySelector('.upload-form-fields');
+    const progressWrap = form.querySelector('.upload-progress-wrap');
+    const progressBar = form.querySelector('.upload-progress-bar');
+    const progressPct = form.querySelector('.upload-progress-pct');
+    const progressLabel = form.querySelector('.upload-progress-label');
+    const submitBtn = form.querySelector('.upload-submit-btn');
+
+    function resetForm(message, isError) {
+        progressLabel.textContent = message;
+        progressLabel.classList.toggle('text-red-500', isError);
+        progressBar.classList.toggle('bg-red-500', isError);
+
+        if (!isError) {
+            window.location.reload();
+            return;
+        }
+
+        submitBtn.disabled = false;
+        setTimeout(function () {
+            fields.classList.remove('hidden');
+            progressWrap.classList.add('hidden');
+            progressBar.style.width = '0%';
+            progressPct.textContent = '0%';
+            progressLabel.classList.remove('text-red-500');
+            progressBar.classList.remove('bg-red-500');
+        }, 2500);
+    }
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        fields.classList.add('hidden');
+        progressWrap.classList.remove('hidden');
+        submitBtn.disabled = true;
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', form.action, true);
+        xhr.setRequestHeader('Accept', 'application/json');
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+        xhr.upload.addEventListener('progress', function (evt) {
+            if (!evt.lengthComputable) return;
+            const pct = Math.round((evt.loaded / evt.total) * 100);
+            progressBar.style.width = pct + '%';
+            progressPct.textContent = pct + '%';
+        });
+
+        xhr.addEventListener('load', function () {
+            let message = 'Something went wrong. Please try again.';
+            try {
+                message = JSON.parse(xhr.responseText).message || message;
+            } catch (err) {}
+
+            resetForm(message, xhr.status >= 400);
+        });
+
+        xhr.addEventListener('error', function () {
+            resetForm('Something went wrong. Please try again.', true);
+        });
+
+        xhr.send(new FormData(form));
+    });
+})();
+</script>

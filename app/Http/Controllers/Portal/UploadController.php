@@ -27,12 +27,12 @@ class UploadController extends Controller
         ]);
 
         if (in_array($validated['category'], self::FILE_CATEGORIES, true) && ! $request->hasFile('file')) {
-            return back()->withErrors(['file' => 'Please choose a file to upload.']);
+            return $this->errorResponse($request, 'file', 'Please choose a file to upload.');
         }
 
         if (in_array($validated['category'], self::TEXT_CATEGORIES, true)
             && ! $request->hasFile('file') && empty($validated['body'])) {
-            return back()->withErrors(['body' => 'Please add a message or attach a file.']);
+            return $this->errorResponse($request, 'body', 'Please add a message or attach a file.');
         }
 
         $path = null;
@@ -57,7 +57,7 @@ class UploadController extends Controller
                     ],
                 ));
 
-                return back()->withErrors(['file' => 'Something went wrong saving your file. Please try again or contact support.']);
+                return $this->errorResponse($request, 'file', 'Something went wrong saving your file. Please try again or contact support.');
             }
         }
 
@@ -75,7 +75,20 @@ class UploadController extends Controller
 
         Mail::to(config('mail.admin_address'))->send(new NewClientUploadMail($upload));
 
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Submitted successfully.']);
+        }
+
         return back()->with('status', 'Submitted successfully.');
+    }
+
+    private function errorResponse(Request $request, string $field, string $message)
+    {
+        if ($request->wantsJson()) {
+            return response()->json(['message' => $message], 422);
+        }
+
+        return back()->withErrors([$field => $message]);
     }
 
     public function destroy(Request $request, Upload $upload)
