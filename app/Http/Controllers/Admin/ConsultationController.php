@@ -45,6 +45,7 @@ class ConsultationController extends Controller
     {
         $validated = $request->validate([
             'status' => ['required', 'in:new,confirmed,rescheduled,cancelled'],
+            'preferred_at' => ['nullable', 'date'],
             'admin_notes' => ['nullable', 'string', 'max:5000'],
         ]);
 

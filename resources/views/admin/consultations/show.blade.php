@@ -68,6 +68,13 @@
                 </div>
 
                 <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Preferred Date/Time</label>
+                    <input type="datetime-local" name="preferred_at"
+                           value="{{ old('preferred_at', $consultation->preferred_at?->format('Y-m-d\TH:i')) }}"
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                </div>
+
+                <div>
                     <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Admin Notes</label>
                     <textarea name="admin_notes" rows="4" placeholder="Internal notes about this booking..."
                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">{{ old('admin_notes', $consultation->admin_notes) }}</textarea>
