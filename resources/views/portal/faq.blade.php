@@ -10,7 +10,7 @@
         'Getting Started' => [
             [
                 'q' => 'How did my account get created?',
-                'a' => 'After you submit the "Get Started" intake form on our website, our team reviews it and approves your project. Once approved, we create your client account and project, and you receive a welcome email with a link to set your password and sign in.',
+                'a' => 'Most accounts are created after you submit the "Get Started" intake form on our website — our team reviews it, approves your project, and you receive a welcome email with a link to set your password and sign in. You can also create an account directly by registering on our site, which sets up your project automatically.',
             ],
             [
                 'q' => 'What can I do once I log in?',
