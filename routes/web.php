@@ -90,6 +90,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/portal/payments-statement', [PortalPaymentController::class, 'statement'])->name('portal.payments.statement');
 
     Route::post('/portal/subscriptions/{subscription}/checkout', [PortalSubscriptionController::class, 'checkout'])->name('portal.subscriptions.checkout');
+    Route::post('/portal/subscriptions/{subscription}/refresh', [PortalSubscriptionController::class, 'refresh'])->name('portal.subscriptions.refresh');
     Route::get('/portal/billing-portal', [PortalSubscriptionController::class, 'billingPortal'])->name('portal.billing-portal');
 
     Route::get('/portal/account', [PortalAccountController::class, 'index'])->name('portal.account.index');

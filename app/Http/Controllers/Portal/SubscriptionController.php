@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
+use App\Services\SubscriptionReconciler;
 use Illuminate\Http\Request;
 use Stripe\BillingPortal\Session as BillingPortalSession;
 use Stripe\Checkout\Session as CheckoutSession;
@@ -45,6 +46,15 @@ class SubscriptionController extends Controller
         $subscription->update(['stripe_checkout_session_id' => $session->id]);
 
         return redirect()->away($session->url);
+    }
+
+    public function refresh(Request $request, Subscription $subscription, SubscriptionReconciler $reconciler)
+    {
+        $project = $request->user()->projects()->first();
+
+        abort_unless($project && $subscription->project_id === $project->id, 403);
+
+        return back()->with('status', $reconciler->reconcile($subscription));
     }
 
     public function billingPortal(Request $request)
