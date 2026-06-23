@@ -68,16 +68,17 @@
                     Overview
                 </a>
 
+                @php
+                    $fileCategories = ['image', 'video', 'logo', 'document', 'marketing'];
+                @endphp
                 <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mt-5 mb-2">Project Files</p>
-                @foreach (['image' => 'Images', 'video' => 'Videos', 'logo' => 'Logos', 'document' => 'Documents', 'marketing' => 'Marketing Materials'] as $cat => $label)
-                    <a href="{{ route('portal.category', $cat) }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.category') && request()->route('category') === $cat ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $categoryIcons[$cat] }}"/>
-                        </svg>
-                        {{ $label }}
-                    </a>
-                @endforeach
+                <a href="{{ route('portal.category', 'image') }}"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.category') && in_array(request()->route('category'), $fileCategories, true) ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Project Files
+                </a>
 
                 <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mt-5 mb-2">Content &amp; Revisions</p>
                 @foreach (['content' => 'Website Content', 'revision' => 'Revisions'] as $cat => $label)
