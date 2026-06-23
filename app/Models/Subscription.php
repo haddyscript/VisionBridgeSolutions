@@ -16,6 +16,7 @@ class Subscription extends Model
         'stripe_checkout_session_id',
         'stripe_subscription_id',
         'current_period_end',
+        'cancel_at_period_end',
         'canceled_at',
     ];
 
@@ -23,6 +24,7 @@ class Subscription extends Model
     {
         return [
             'current_period_end' => 'datetime',
+            'cancel_at_period_end' => 'boolean',
             'canceled_at' => 'datetime',
         ];
     }

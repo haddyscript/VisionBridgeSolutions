@@ -230,7 +230,9 @@
             <div>
                 <span class="text-sm text-navy dark:text-white">{{ $currentSubscription->description }}</span>
                 <span class="text-sm text-gray-400 dark:text-gray-500 ml-2">{{ $currentSubscription->formattedAmount() }}</span>
-                @if ($currentSubscription->current_period_end)
+                @if ($currentSubscription->cancel_at_period_end && $currentSubscription->current_period_end)
+                    <span class="text-xs text-red-500 ml-2">cancels {{ $currentSubscription->current_period_end->format('M j, Y') }}</span>
+                @elseif ($currentSubscription->current_period_end)
                     <span class="text-xs text-gray-400 dark:text-gray-500 ml-2">renews {{ $currentSubscription->current_period_end->format('M j, Y') }}</span>
                 @endif
             </div>

@@ -190,6 +190,7 @@ class StripeWebhookController extends Controller
             'current_period_end' => $stripeSubscription->current_period_end
                 ? Carbon::createFromTimestamp($stripeSubscription->current_period_end)
                 : null,
+            'cancel_at_period_end' => $stripeSubscription->cancel_at_period_end ?? false,
         ]);
 
         if ($newStatus !== $previousStatus && in_array($newStatus, ['past_due', 'canceled'], true)) {

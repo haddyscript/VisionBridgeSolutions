@@ -47,9 +47,15 @@
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $subscription->description }}</td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $subscription->formattedAmount() }}</td>
                         <td class="px-5 py-3.5">
-                            <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $statusColors[$subscription->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
-                                {{ $statusLabels[$subscription->status] ?? $subscription->status }}
-                            </span>
+                            @if ($subscription->cancel_at_period_end && $subscription->isActive())
+                                <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">
+                                    Cancels {{ $subscription->current_period_end?->format('M j') }}
+                                </span>
+                            @else
+                                <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $statusColors[$subscription->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
+                                    {{ $statusLabels[$subscription->status] ?? $subscription->status }}
+                                </span>
+                            @endif
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $subscription->current_period_end?->format('M j, Y') ?? '—' }}</td>
                         <td class="px-5 py-3.5 text-right">

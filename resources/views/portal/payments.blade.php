@@ -93,17 +93,26 @@
                         <p class="font-display text-lg font-bold text-navy dark:text-white">{{ $subscription->description }}</p>
                         <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
                             {{ $subscription->formattedAmount() }}
-                            @if ($subscription->current_period_end)
+                            @if ($subscription->cancel_at_period_end && $subscription->current_period_end)
+                                &middot; cancels {{ $subscription->current_period_end->format('M j, Y') }}
+                            @elseif ($subscription->current_period_end)
                                 &middot; renews {{ $subscription->current_period_end->format('M j, Y') }}
                             @endif
                         </p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full {{ $statusColors[$subscription->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
-                        <span class="w-1.5 h-1.5 rounded-full {{ $statusDots[$subscription->status] ?? 'bg-gray-400' }}"></span>
-                        {{ $subscription->status === 'past_due' ? 'Past Due' : ucfirst($subscription->status) }}
-                    </span>
+                    @if ($subscription->cancel_at_period_end && $subscription->isActive())
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">
+                            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                            Cancels {{ $subscription->current_period_end?->format('M j') }}
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full {{ $statusColors[$subscription->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ $statusDots[$subscription->status] ?? 'bg-gray-400' }}"></span>
+                            {{ $subscription->status === 'past_due' ? 'Past Due' : ucfirst($subscription->status) }}
+                        </span>
+                    @endif
                     @if ($subscription->isPending())
                         @if ($subscription->stripe_checkout_session_id)
                             <form method="POST" action="{{ route('portal.subscriptions.refresh', $subscription) }}">
