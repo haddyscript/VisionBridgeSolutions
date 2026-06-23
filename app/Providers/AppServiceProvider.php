@@ -9,6 +9,7 @@ use App\Models\MaintenancePlan;
 use App\Models\Milestone;
 use App\Models\Project;
 use App\Models\User;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -28,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        RedirectIfAuthenticated::redirectUsing(function ($request) {
+            return $request->user()->isAdmin() ? route('admin.dashboard') : route('portal.dashboard');
+        });
+
         View::composer('layouts.admin', function ($view) {
             $view->with('newIntakeCount', IntakeSubmission::where('status', 'new')->count());
             $view->with('unreadContactCount', ContactMessage::whereNull('read_at')->count());
