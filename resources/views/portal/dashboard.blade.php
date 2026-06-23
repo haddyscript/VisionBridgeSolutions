@@ -203,6 +203,38 @@
         @endif
     </div>
 
+    {{-- Recent Activity --}}
+    @if ($activity->isNotEmpty())
+        @php
+            $activityIcons = [
+                'milestone' => ['bg' => 'bg-teal/10', 'text' => 'text-teal-dark', 'path' => 'M5 13l4 4L19 7'],
+                'approved' => ['bg' => 'bg-teal/10', 'text' => 'text-teal-dark', 'path' => 'M5 13l4 4L19 7'],
+                'reply' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z'],
+                'payment' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M9 7h6m0 0v6m0-6L4 21'],
+            ];
+        @endphp
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
+            <h3 class="font-display text-base font-bold text-navy dark:text-white mb-4">Recent Activity</h3>
+            <ul class="space-y-4">
+                @foreach ($activity as $event)
+                    @php $icon = $activityIcons[$event['icon']] ?? $activityIcons['milestone']; @endphp
+                    <li class="flex items-start gap-3">
+                        <span class="w-8 h-8 rounded-full {{ $icon['bg'] }} flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4 {{ $icon['text'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon['path'] }}"/></svg>
+                        </span>
+                        <div class="min-w-0">
+                            <p class="text-sm font-medium text-navy dark:text-white">{{ $event['title'] }}</p>
+                            @if ($event['description'])
+                                <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ $event['description'] }}</p>
+                            @endif
+                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $event['at']->diffForHumans() }}</p>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     {{-- Category tiles --}}
     <h3 class="font-display text-base font-bold text-navy dark:text-white mb-4">Project Sections</h3>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

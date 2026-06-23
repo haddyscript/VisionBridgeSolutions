@@ -30,6 +30,58 @@ class DashboardController extends Controller
             'counts' => $counts,
             'showPaymentReminder' => $showPaymentReminder,
             'pendingPayment' => $pendingPayment,
+            'activity' => $project ? $this->buildActivity($project) : collect(),
         ]);
+    }
+
+    private function buildActivity($project)
+    {
+        $activity = collect();
+
+        foreach ($project->milestones as $milestone) {
+            if ($milestone->status === 'completed' && $milestone->completed_at) {
+                $activity->push([
+                    'icon' => 'milestone',
+                    'title' => 'Milestone completed',
+                    'description' => $milestone->title,
+                    'at' => $milestone->completed_at,
+                ]);
+            }
+        }
+
+        foreach ($project->uploads as $upload) {
+            if ($upload->approved_at) {
+                $activity->push([
+                    'icon' => 'approved',
+                    'title' => 'File approved',
+                    'description' => $upload->original_name,
+                    'at' => $upload->approved_at,
+                ]);
+            }
+
+            if ($upload->admin_replied_at) {
+                $label = CategoryController::CATEGORIES[$upload->category]['label'] ?? 'submission';
+
+                $activity->push([
+                    'icon' => 'reply',
+                    'title' => 'VisionBridge replied to your '.$label,
+                    'description' => $upload->admin_reply,
+                    'at' => $upload->admin_replied_at,
+                ]);
+            }
+        }
+
+        foreach ($project->payments as $payment) {
+            if ($payment->isPaid() && $payment->paid_at) {
+                $activity->push([
+                    'icon' => 'payment',
+                    'title' => 'Payment received',
+                    'description' => $payment->description.' — '.$payment->formattedAmount(),
+                    'at' => $payment->paid_at,
+                ]);
+            }
+        }
+
+        return $activity->sortByDesc('at')->take(8)->values();
     }
 }
