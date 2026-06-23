@@ -47,6 +47,25 @@
 | FAQ & Help Guide | Static admin reference page |
 | Stripe webhook handling | Background sync of payments/subscriptions and receipt emails (not a UI page) |
 
+## Payments & Billing
+
+| Feature | Where | Description |
+|---|---|---|
+| Request one-time payment | Admin | Create a payment request (description + amount) for a project |
+| Pay invoice | Client Portal | "Pay Now" launches Stripe Checkout for a pending payment |
+| Transaction detail modal | Client Portal | Click any payment row to see status, currency, dates, and transaction ID (copyable) |
+| Payment receipt | Client Portal | Printable receipt page for any paid payment ("Print / Save as PDF") |
+| Delete pending payment | Admin | Remove a pending request; blocked if a Stripe checkout session is already in progress |
+| Sync with Stripe | Admin | Manually reconcile a payment's status against Stripe if it's stuck (`PaymentReconciler`) |
+| Request maintenance plan | Admin | Create a recurring subscription request (description + monthly amount) for a project |
+| Start maintenance plan | Client Portal | "Start Plan" launches Stripe Checkout in subscription mode |
+| Manage billing | Client Portal | "Manage Billing" opens Stripe's customer billing portal (update card, cancel, etc.) |
+| Cancel maintenance plan | Admin | Cancel a project's active/past-due subscription |
+| Payment reminder | Client Portal | One-time pop-up on login if a payment is pending; dismissible |
+| Pending payment indicator | Client Portal | Red dot next to "Payments" in the sidebar while a payment is outstanding |
+| Stripe webhook sync | Backend | Auto-updates payment/subscription status from `checkout.session.completed`, `payment_intent.succeeded`, `invoice.payment_succeeded`, `customer.subscription.updated/deleted` |
+| Subscription failure alerts | Backend | Admin is emailed when a subscription cancel/update fails or a subscription goes past due/canceled |
+
 ## Emails
 
 | Email | Trigger | Recipient |
