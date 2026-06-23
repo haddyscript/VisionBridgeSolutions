@@ -5,6 +5,21 @@
 
 @section('content')
 
+@php
+    $statusLabels = [
+        'new' => 'New',
+        'confirmed' => 'Confirmed',
+        'rescheduled' => 'Rescheduled',
+        'cancelled' => 'Cancelled',
+    ];
+    $statusColors = [
+        'new' => 'bg-gold/15 text-gold-dark',
+        'confirmed' => 'bg-emerald-100 text-emerald-700',
+        'rescheduled' => 'bg-teal/15 text-teal-dark',
+        'cancelled' => 'bg-red-100 text-red-600',
+    ];
+@endphp
+
 <form method="GET" class="flex items-center justify-end gap-2.5 mb-5">
     <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Sort by</label>
     <div class="relative">
@@ -32,12 +47,13 @@
                             <span class="w-2 h-2 rounded-full bg-gold shrink-0" title="Unread"></span>
                         @endif
                         <div>
-                            <p class="font-semibold text-navy dark:text-white {{ $consultation->isRead() ? '' : 'font-bold' }}">
+                            <a href="{{ route('admin.consultations.show', $consultation) }}" class="font-semibold text-navy dark:text-white hover:text-gold-dark {{ $consultation->isRead() ? '' : 'font-bold' }}">
                                 {{ $consultation->name }}
                                 @if (! $consultation->isRead())
                                     <span class="ml-1.5 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">New</span>
                                 @endif
-                            </p>
+                            </a>
+                            <br>
                             <a href="mailto:{{ $consultation->email }}" class="text-sm text-gold-dark hover:underline">{{ $consultation->email }}</a>
                             @if ($consultation->phone)
                                 <span class="text-sm text-gray-400 dark:text-gray-500"> &middot; {{ $consultation->phone }}</span>
@@ -45,10 +61,11 @@
                         </div>
                     </div>
                     <div class="text-right shrink-0">
+                        <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $statusColors[$consultation->status] ?? 'bg-gray-100 text-gray-600' }} mb-1">
+                            {{ $statusLabels[$consultation->status] ?? $consultation->status }}
+                        </span>
                         @if ($consultation->preferred_at)
-                            <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-gold/15 text-gold-dark mb-1">
-                                {{ $consultation->preferred_at->format('M j, Y \a\t g:ia') }}
-                            </span>
+                            <p class="text-xs text-navy dark:text-white font-medium">{{ $consultation->preferred_at->format('M j, Y \a\t g:ia') }}</p>
                         @endif
                         <p class="text-xs text-gray-400 dark:text-gray-500">Submitted {{ $consultation->created_at->format('M j, Y \a\t g:ia') }}</p>
                     </div>

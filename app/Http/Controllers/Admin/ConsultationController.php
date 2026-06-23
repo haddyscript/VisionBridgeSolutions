@@ -34,6 +34,25 @@ class ConsultationController extends Controller
         ]);
     }
 
+    public function show(Consultation $consultation)
+    {
+        return view('admin.consultations.show', [
+            'consultation' => $consultation,
+        ]);
+    }
+
+    public function update(Request $request, Consultation $consultation)
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'in:new,confirmed,rescheduled,cancelled'],
+            'admin_notes' => ['nullable', 'string', 'max:5000'],
+        ]);
+
+        $consultation->update($validated);
+
+        return back()->with('status', 'Consultation updated.');
+    }
+
     public function toggleRead(Consultation $consultation)
     {
         $consultation->update([

@@ -12,6 +12,8 @@ class Consultation extends Model
         'phone',
         'preferred_at',
         'message',
+        'status',
+        'admin_notes',
         'read_at',
     ];
 
