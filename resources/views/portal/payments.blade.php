@@ -125,7 +125,7 @@
     {{-- One-Time Payments --}}
     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-            <h3 class="font-display text-lg font-bold text-navy dark:text-white">Payment History</h3>
+            <h3 class="font-display text-lg font-bold text-navy dark:text-white">Payment History <span class="text-gray-400 dark:text-gray-500 font-normal">({{ $payments->count() }})</span></h3>
             <div class="flex items-center gap-4">
                 @if ($payments->isNotEmpty())
                     <a href="{{ route('portal.payments.statement') }}" class="inline-flex items-center gap-1.5 text-sm text-gold-dark hover:underline">
@@ -150,49 +150,73 @@
                 <p class="text-sm text-gray-400 dark:text-gray-500">No payment requests yet. Your VisionBridge representative will let you know when one is ready.</p>
             </div>
         @else
-            <div class="space-y-3">
-                @foreach ($payments as $payment)
-                    <div class="payment-row group relative flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-100 dark:border-gray-700/60 px-5 py-4 cursor-pointer transition-all hover:border-gold/40 hover:shadow-lg hover:-translate-y-0.5"
-                         data-description="{{ $payment->description }}"
-                         data-amount="{{ $payment->formattedAmount() }}"
-                         data-status="{{ $payment->status }}"
-                         data-status-label="{{ $payment->status === 'past_due' ? 'Past Due' : ucfirst($payment->status) }}"
-                         data-currency="{{ strtoupper($payment->currency) }}"
-                         data-created="{{ $payment->created_at->format('M j, Y \a\t g:i A') }}"
-                         data-paid-at="{{ $payment->paid_at?->format('M j, Y \a\t g:i A') }}"
-                         data-intent="{{ $payment->stripe_payment_intent_id }}"
-                         data-session="{{ $payment->stripe_checkout_session_id }}"
-                         data-checkout-url="{{ $payment->isPending() ? route('portal.payments.checkout', $payment) : '' }}"
-                         data-receipt-url="{{ $payment->isPaid() ? route('portal.payments.receipt', $payment) : '' }}">
-                        <span class="absolute left-0 top-3 bottom-3 w-1 rounded-full {{ $statusDots[$payment->status] ?? 'bg-gray-400' }} opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                        <div class="flex items-center gap-4">
-                            <span class="w-10 h-10 rounded-lg bg-navy/5 dark:bg-white/5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
-                                <svg class="w-[1.125rem] h-[1.125rem] text-navy dark:text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 0v6m0-6L4 21"/></svg>
-                            </span>
-                            <div>
-                                <p class="font-medium text-navy dark:text-white">{{ $payment->description }}</p>
-                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $payment->created_at->format('M j, Y') }}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="font-display text-lg font-bold text-navy dark:text-white">{{ $payment->formattedAmount() }}</span>
-                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full {{ $statusColors[$payment->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
-                                <span class="w-1.5 h-1.5 rounded-full {{ $statusDots[$payment->status] ?? 'bg-gray-400' }}"></span>
-                                {{ ucfirst($payment->status) }}
-                            </span>
-                            @if ($payment->isPending())
-                                <form method="POST" action="{{ route('portal.payments.checkout', $payment) }}" onclick="event.stopPropagation()">
-                                    @csrf
-                                    <button type="submit" class="bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
-                                        Pay Now
-                                    </button>
-                                </form>
-                            @endif
-                            <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gold transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                        </div>
-                    </div>
-                @endforeach
+            <div class="flex flex-wrap items-center gap-3 mb-4">
+                <div class="relative flex-1 min-w-[200px]">
+                    <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+                    <input type="text" id="payment-search" placeholder="Search payments..."
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                </div>
+                <select id="payment-status-filter"
+                        class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="paid">Paid</option>
+                    <option value="failed">Failed</option>
+                    <option value="canceled">Canceled</option>
+                </select>
             </div>
+
+            <p id="payment-empty-state" class="hidden text-sm text-gray-400 dark:text-gray-500 text-center py-6">No payments match your search.</p>
+
+            @foreach ($payments->groupBy(fn ($p) => $p->created_at->format('F Y')) as $monthLabel => $monthPayments)
+                <div class="payment-month-group">
+                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mt-5 mb-2.5">{{ $monthLabel }}</p>
+                    <div class="space-y-3">
+                        @foreach ($monthPayments as $payment)
+                            <div class="payment-row group relative flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-100 dark:border-gray-700/60 px-5 py-4 cursor-pointer transition-all hover:border-gold/40 hover:shadow-lg hover:-translate-y-0.5"
+                                 data-search="{{ strtolower($payment->description) }}"
+                                 data-description="{{ $payment->description }}"
+                                 data-amount="{{ $payment->formattedAmount() }}"
+                                 data-status="{{ $payment->status }}"
+                                 data-status-label="{{ $payment->status === 'past_due' ? 'Past Due' : ucfirst($payment->status) }}"
+                                 data-currency="{{ strtoupper($payment->currency) }}"
+                                 data-created="{{ $payment->created_at->format('M j, Y \a\t g:i A') }}"
+                                 data-paid-at="{{ $payment->paid_at?->format('M j, Y \a\t g:i A') }}"
+                                 data-intent="{{ $payment->stripe_payment_intent_id }}"
+                                 data-session="{{ $payment->stripe_checkout_session_id }}"
+                                 data-checkout-url="{{ $payment->isPending() ? route('portal.payments.checkout', $payment) : '' }}"
+                                 data-receipt-url="{{ $payment->isPaid() ? route('portal.payments.receipt', $payment) : '' }}">
+                                <span class="absolute left-0 top-3 bottom-3 w-1 rounded-full {{ $statusDots[$payment->status] ?? 'bg-gray-400' }} opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                <div class="flex items-center gap-4">
+                                    <span class="w-10 h-10 rounded-lg bg-navy/5 dark:bg-white/5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
+                                        <svg class="w-[1.125rem] h-[1.125rem] text-navy dark:text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 0v6m0-6L4 21"/></svg>
+                                    </span>
+                                    <div>
+                                        <p class="font-medium text-navy dark:text-white">{{ $payment->description }}</p>
+                                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $payment->created_at->format('M j, Y') }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span class="font-display text-lg font-bold text-navy dark:text-white">{{ $payment->formattedAmount() }}</span>
+                                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full {{ $statusColors[$payment->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
+                                        <span class="w-1.5 h-1.5 rounded-full {{ $statusDots[$payment->status] ?? 'bg-gray-400' }}"></span>
+                                        {{ ucfirst($payment->status) }}
+                                    </span>
+                                    @if ($payment->isPending())
+                                        <form method="POST" action="{{ route('portal.payments.checkout', $payment) }}" onclick="event.stopPropagation()">
+                                            @csrf
+                                            <button type="submit" class="bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                                                Pay Now
+                                            </button>
+                                        </form>
+                                    @endif
+                                    <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gold transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endforeach
         @endif
     </div>
 
@@ -217,6 +241,10 @@
                 </div>
 
                 <div class="relative bg-white dark:bg-gray-800 rounded-t-2xl px-7 py-6 space-y-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <span class="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 shrink-0">Description</span>
+                        <span id="modal-description-row" class="text-sm font-semibold text-navy dark:text-white text-right"></span>
+                    </div>
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Status</span>
                         <span id="modal-status-badge" class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full"></span>
@@ -235,7 +263,10 @@
                     </div>
                     <div id="modal-intent-row" class="flex items-center justify-between gap-3">
                         <span class="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 shrink-0">Transaction ID</span>
-                        <button type="button" onclick="copyTransactionId()" id="modal-intent" class="text-sm font-mono text-navy dark:text-white truncate hover:text-gold transition-colors" title="Click to copy"></button>
+                        <button type="button" onclick="copyTransactionId()" id="modal-intent" class="inline-flex items-center gap-1.5 text-sm font-mono text-navy dark:text-white hover:text-gold transition-colors" title="Click to copy">
+                            <span id="modal-intent-text" class="truncate max-w-[160px]"></span>
+                            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                        </button>
                     </div>
 
                     <div id="modal-pay-action" class="hidden pt-2">
@@ -301,6 +332,7 @@
 
             document.getElementById('modal-amount').textContent = d.amount;
             document.getElementById('modal-description').textContent = d.description;
+            document.getElementById('modal-description-row').textContent = d.description;
             document.getElementById('modal-currency').textContent = d.currency;
             document.getElementById('modal-created').textContent = d.created;
 
@@ -323,7 +355,7 @@
             const intentRow = document.getElementById('modal-intent-row');
             const intentEl = document.getElementById('modal-intent');
             if (d.intent) {
-                intentEl.textContent = d.intent;
+                document.getElementById('modal-intent-text').textContent = d.intent;
                 intentEl.dataset.fullId = d.intent;
                 intentRow.classList.remove('hidden');
             } else {
@@ -365,14 +397,50 @@
 
         window.copyTransactionId = function () {
             const el = document.getElementById('modal-intent');
+            const textEl = document.getElementById('modal-intent-text');
             const id = el.dataset.fullId;
             if (!id) return;
             navigator.clipboard.writeText(id).then(function () {
-                const original = el.textContent;
-                el.textContent = 'Copied!';
-                setTimeout(function () { el.textContent = original; }, 1200);
+                const original = textEl.textContent;
+                textEl.textContent = 'Copied!';
+                setTimeout(function () { textEl.textContent = original; }, 1200);
             });
         };
+
+        const searchInput = document.getElementById('payment-search');
+        const statusFilter = document.getElementById('payment-status-filter');
+        const emptyState = document.getElementById('payment-empty-state');
+
+        function applyPaymentFilters() {
+            if (!searchInput || !statusFilter) return;
+
+            const query = searchInput.value.trim().toLowerCase();
+            const status = statusFilter.value;
+            let visibleCount = 0;
+
+            document.querySelectorAll('.payment-month-group').forEach(function (group) {
+                let groupHasVisible = false;
+
+                group.querySelectorAll('.payment-row').forEach(function (row) {
+                    const matchesQuery = !query || row.dataset.search.includes(query);
+                    const matchesStatus = !status || row.dataset.status === status;
+                    const visible = matchesQuery && matchesStatus;
+
+                    row.classList.toggle('hidden', !visible);
+                    if (visible) {
+                        groupHasVisible = true;
+                        visibleCount++;
+                    }
+                });
+
+                group.classList.toggle('hidden', !groupHasVisible);
+            });
+
+            emptyState.classList.toggle('hidden', visibleCount > 0);
+        }
+
+        searchInput?.addEventListener('input', applyPaymentFilters);
+        statusFilter?.addEventListener('change', applyPaymentFilters);
 
         document.querySelectorAll('.payment-row').forEach(function (row) {
             row.addEventListener('click', function () {
