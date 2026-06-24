@@ -17,7 +17,7 @@
                                 VisionBridge Solutions
                             </p>
                             <h1 style="color:#ffffff; font-size:20px; font-weight:800; margin:8px 0 0;">
-                                We Replied to Your {{ \App\Http\Controllers\Portal\CategoryController::CATEGORIES[$upload->category]['label'] ?? 'Submission' }}
+                                We Replied to Your {{ \App\Http\Controllers\Portal\CategoryController::CATEGORIES[$reply->upload->category]['label'] ?? 'Submission' }}
                             </h1>
                         </td>
                     </tr>
@@ -25,15 +25,15 @@
                     <tr>
                         <td style="padding:32px;">
 
-                            <p style="font-size:14px; color:#374151; margin:0 0 20px;">Hi {{ $upload->user->name }},</p>
+                            <p style="font-size:14px; color:#374151; margin:0 0 20px;">Hi {{ $reply->upload->user->name }},</p>
 
-                            @if ($upload->body)
+                            @if ($reply->upload->body)
                                 <h2 style="font-size:13px; color:#9CA3AF; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 8px;">Your Submission</h2>
-                                <p style="font-size:14px; color:#374151; margin:0 0 20px; white-space:pre-line;">{{ $upload->body }}</p>
+                                <p style="font-size:14px; color:#374151; margin:0 0 20px; white-space:pre-line;">{{ $reply->upload->body }}</p>
                             @endif
 
                             <h2 style="font-size:13px; color:#9CA3AF; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 8px;">Our Reply</h2>
-                            <p style="font-size:14px; color:#111D33; font-weight:600; margin:0 0 20px; white-space:pre-line;">{{ $upload->admin_reply }}</p>
+                            <p style="font-size:14px; color:#111D33; font-weight:600; margin:0 0 20px; white-space:pre-line;">{{ $reply->body }}</p>
 
                             <p style="font-size:14px; color:#374151; margin:0;">Log in to your client portal to view this and respond if needed.</p>
 

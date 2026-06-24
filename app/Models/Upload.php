@@ -15,26 +15,18 @@ class Upload extends Model
         'size',
         'body',
         'approved_at',
-        'admin_reply',
-        'admin_replied_at',
     ];
 
     protected function casts(): array
     {
         return [
             'approved_at' => 'datetime',
-            'admin_replied_at' => 'datetime',
         ];
     }
 
     public function isApproved(): bool
     {
         return $this->approved_at !== null;
-    }
-
-    public function hasAdminReply(): bool
-    {
-        return ! empty($this->admin_reply);
     }
 
     public function project()
@@ -45,6 +37,11 @@ class Upload extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function replies()
+    {
+        return $this->hasMany(UploadReply::class)->oldest();
     }
 
     public function url(): ?string

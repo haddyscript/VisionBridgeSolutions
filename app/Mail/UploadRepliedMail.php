@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\Upload;
+use App\Models\UploadReply;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -11,7 +11,7 @@ class UploadRepliedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public Upload $upload)
+    public function __construct(public UploadReply $reply)
     {
     }
 

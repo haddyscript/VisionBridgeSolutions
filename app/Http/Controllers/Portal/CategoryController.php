@@ -24,7 +24,7 @@ class CategoryController extends Controller
     {
         abort_unless(array_key_exists($category, self::CATEGORIES), 404);
 
-        $project = $request->user()->projects()->with('uploads')->first();
+        $project = $request->user()->projects()->with('uploads.replies')->first();
         abort_unless($project, 404);
 
         return view('portal.category', [

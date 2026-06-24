@@ -10,7 +10,7 @@ class DashboardController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $project = $request->user()->projects()->with('milestones', 'uploads', 'payments')->first();
+        $project = $request->user()->projects()->with('milestones', 'uploads.replies', 'payments')->first();
 
         $counts = collect(CategoryController::CATEGORIES)
             ->map(fn ($meta, $category) => [
@@ -59,14 +59,14 @@ class DashboardController extends Controller
                 ]);
             }
 
-            if ($upload->admin_replied_at) {
+            foreach ($upload->replies as $reply) {
                 $label = CategoryController::CATEGORIES[$upload->category]['label'] ?? 'submission';
 
                 $activity->push([
                     'icon' => 'reply',
                     'title' => 'VisionBridge replied to your '.$label,
-                    'description' => $upload->admin_reply,
-                    'at' => $upload->admin_replied_at,
+                    'description' => $reply->body,
+                    'at' => $reply->created_at,
                 ]);
             }
         }

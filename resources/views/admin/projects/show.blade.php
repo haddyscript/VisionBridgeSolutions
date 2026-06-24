@@ -391,36 +391,31 @@
                             </div>
                         </div>
 
-                        @if ($item->hasAdminReply())
+                        @foreach ($item->replies as $reply)
                             {{-- Admin reply bubble --}}
-                            <div id="reply-bubble-{{ $item->id }}" class="flex items-start justify-end gap-2.5 max-w-[85%] ml-auto mt-3">
+                            <div class="flex items-start justify-end gap-2.5 max-w-[85%] ml-auto mt-3">
                                 <div class="rounded-2xl rounded-tr-sm bg-navy text-white px-4 py-2.5">
                                     <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>
-                                    <p class="text-sm whitespace-pre-line">{{ $item->admin_reply }}</p>
-                                    <div class="flex items-center justify-between gap-3 mt-1.5">
-                                        <p class="text-xs text-white/40">{{ $item->admin_replied_at->diffForHumans() }}</p>
-                                        <button type="button" onclick="document.getElementById('reply-bubble-{{ $item->id }}').classList.add('hidden'); document.getElementById('reply-form-{{ $item->id }}').classList.remove('hidden');" class="text-xs text-gold hover:underline shrink-0">
-                                            Edit
-                                        </button>
-                                    </div>
+                                    <p class="text-sm whitespace-pre-line">{{ $reply->body }}</p>
+                                    <p class="text-xs text-white/40 mt-1.5">{{ $reply->created_at->diffForHumans() }}</p>
                                 </div>
                                 <span class="w-7 h-7 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0">VB</span>
                             </div>
-                        @else
-                            <div class="flex justify-end mt-3">
-                                <button type="button" onclick="document.getElementById('reply-form-{{ $item->id }}').classList.remove('hidden'); this.closest('div').classList.add('hidden');" class="text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3 py-1.5 rounded-full transition-colors">
-                                    Reply
-                                </button>
-                            </div>
-                        @endif
+                        @endforeach
+
+                        <div id="reply-toggle-{{ $item->id }}" class="flex justify-end mt-3">
+                            <button type="button" onclick="document.getElementById('reply-form-{{ $item->id }}').classList.remove('hidden'); document.getElementById('reply-toggle-{{ $item->id }}').classList.add('hidden');" class="text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3 py-1.5 rounded-full transition-colors">
+                                Reply
+                            </button>
+                        </div>
 
                         <form id="reply-form-{{ $item->id }}" method="POST" action="{{ route('admin.uploads.reply', $item) }}" class="hidden mt-3 flex items-start gap-2">
                             @csrf
                             @method('PATCH')
-                            <textarea name="admin_reply" rows="2" placeholder="{{ $item->hasAdminReply() ? 'Update your reply...' : 'Reply to this submission...' }}" required
-                                      class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">{{ $item->admin_reply }}</textarea>
+                            <textarea name="admin_reply" rows="2" placeholder="Reply to this submission..." required
+                                      class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
                             <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-                                {{ $item->hasAdminReply() ? 'Update' : 'Reply' }}
+                                Reply
                             </button>
                         </form>
                     </div>

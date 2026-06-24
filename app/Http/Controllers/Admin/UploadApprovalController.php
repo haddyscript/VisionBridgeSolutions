@@ -25,12 +25,12 @@ class UploadApprovalController extends Controller
             'admin_reply' => ['required', 'string', 'max:5000'],
         ]);
 
-        $upload->update([
-            'admin_reply' => $validated['admin_reply'],
-            'admin_replied_at' => now(),
+        $reply = $upload->replies()->create([
+            'user_id' => $request->user()->id,
+            'body' => $validated['admin_reply'],
         ]);
 
-        Mail::to($upload->user->email)->send(new UploadRepliedMail($upload));
+        Mail::to($upload->user->email)->send(new UploadRepliedMail($reply));
 
         return back()->with('status', 'Reply sent to client.');
     }

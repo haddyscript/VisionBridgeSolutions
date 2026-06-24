@@ -72,17 +72,17 @@
                         </div>
                     </div>
 
-                    @if ($item->hasAdminReply())
+                    @foreach ($item->replies as $reply)
                         {{-- VisionBridge reply bubble --}}
                         <div class="flex items-start gap-2.5 max-w-[90%] mt-3">
                             <span class="w-7 h-7 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0">VB</span>
                             <div class="rounded-2xl rounded-tl-sm bg-navy text-white px-4 py-2.5">
                                 <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>
-                                <p class="text-sm whitespace-pre-line">{{ $item->admin_reply }}</p>
-                                <p class="text-xs text-white/40 mt-1">{{ $item->admin_replied_at->format('M j, Y \a\t g:ia') }}</p>
+                                <p class="text-sm whitespace-pre-line">{{ $reply->body }}</p>
+                                <p class="text-xs text-white/40 mt-1">{{ $reply->created_at->format('M j, Y \a\t g:ia') }}</p>
                             </div>
                         </div>
-                    @endif
+                    @endforeach
                 </div>
             @endforeach
         </div>

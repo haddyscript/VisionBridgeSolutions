@@ -11,7 +11,7 @@ class ProjectController extends Controller
 {
     public function show(Project $project)
     {
-        $project->load('user', 'milestones', 'uploads.user', 'payments', 'subscription');
+        $project->load('user', 'milestones', 'uploads.user', 'uploads.replies', 'payments', 'subscription');
 
         return view('admin.projects.show', [
             'project' => $project,
