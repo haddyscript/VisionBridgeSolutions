@@ -82,7 +82,7 @@
 
     {{-- Maintenance Plan --}}
     @if ($subscription && ! $subscription->isCanceled())
-        <div class="subscription-card cursor-pointer bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 mb-6 hover:shadow-md hover:border-gold/40 transition-all"
+        <div id="maintenance-plan-card" class="subscription-card cursor-pointer bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 mb-6 hover:shadow-md hover:border-gold/40 transition-all"
              data-description="{{ $subscription->description }}"
              data-amount="{{ $subscription->formattedAmount() }}"
              data-status="{{ $subscription->status }}"
@@ -124,7 +124,7 @@
                     @endif
                     @if ($subscription->isPending())
                         @if ($subscription->stripe_checkout_session_id)
-                            <form method="POST" action="{{ route('portal.subscriptions.refresh', $subscription) }}" onclick="event.stopPropagation()">
+                            <form method="POST" action="{{ route('portal.subscriptions.refresh', $subscription) }}" onclick="event.stopPropagation()" data-ajax-target="maintenance-plan-card">
                                 @csrf
                                 <button type="submit" title="Already paid? Check the real status with Stripe" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 px-4 py-2.5 rounded-lg transition-colors">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
@@ -139,7 +139,7 @@
                             </button>
                         </form>
                     @else
-                        <form method="POST" action="{{ route('portal.subscriptions.refresh', $subscription) }}" onclick="event.stopPropagation()">
+                        <form method="POST" action="{{ route('portal.subscriptions.refresh', $subscription) }}" onclick="event.stopPropagation()" data-ajax-target="maintenance-plan-card">
                             @csrf
                             <button type="submit" title="Status looks out of date? Re-check it with Stripe" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 px-4 py-2.5 rounded-lg transition-colors">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
@@ -547,13 +547,66 @@
             }, 200);
         };
 
-        document.querySelectorAll('.subscription-card').forEach(function (card) {
-            card.addEventListener('click', function () {
-                window.openSubscriptionModal(card);
+        function bindSubscriptionCard(root) {
+            const cards = root.querySelectorAll('.subscription-card');
+            const all = root.matches && root.matches('.subscription-card') ? [root, ...cards] : cards;
+            all.forEach(function (card) {
+                if (card.dataset.cardBound) return;
+                card.dataset.cardBound = '1';
+                card.addEventListener('click', function () {
+                    window.openSubscriptionModal(card);
+                });
             });
-        });
+        }
+
+        bindSubscriptionCard(document);
 
         subBackdrop?.addEventListener('click', closeSubscriptionModal);
+
+        // No-reload submission for the Maintenance Plan's Refresh Status form: swaps
+        // in the freshly rendered card HTML instead of doing a full page navigation.
+        function bindAjaxForms(root) {
+            root.querySelectorAll('form[data-ajax-target]').forEach(function (form) {
+                if (form.dataset.ajaxBound) return;
+                form.dataset.ajaxBound = '1';
+
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const targetIds = form.dataset.ajaxTarget.split(' ').filter(Boolean);
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    if (submitBtn) submitBtn.disabled = true;
+
+                    fetch(form.action, {
+                        method: 'POST',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        body: new FormData(form),
+                    })
+                        .then(function (response) { return response.text(); })
+                        .then(function (html) {
+                            const doc = new DOMParser().parseFromString(html, 'text/html');
+
+                            targetIds.forEach(function (id) {
+                                const freshEl = doc.getElementById(id);
+                                const liveEl = document.getElementById(id);
+                                if (freshEl && liveEl) {
+                                    liveEl.replaceWith(freshEl);
+                                    bindSubscriptionCard(freshEl);
+                                    bindAjaxForms(freshEl);
+                                }
+                            });
+                        })
+                        .catch(function () {
+                            alert('Something went wrong. Please try again.');
+                        })
+                        .finally(function () {
+                            if (submitBtn) submitBtn.disabled = false;
+                        });
+                });
+            });
+        }
+
+        bindAjaxForms(document);
 
         window.copyTransactionId = function () {
             const el = document.getElementById('modal-intent');
