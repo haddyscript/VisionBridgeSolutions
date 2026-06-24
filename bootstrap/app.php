@@ -15,6 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
         ]);
 
+        $middleware->web(append: [
+            \App\Http\Middleware\UpdateLastSeen::class,
+        ]);
+
         $middleware->validateCsrfTokens(except: [
             'stripe/webhook',
             'deployer',

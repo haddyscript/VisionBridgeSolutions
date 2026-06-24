@@ -37,7 +37,15 @@
                 @foreach ($projects as $project)
                     <tr class="hover:bg-gray-50/60">
                         <td class="px-5 py-3.5">
-                            <p class="font-medium text-navy dark:text-white">{{ $project->user->name }}</p>
+                            <p class="font-medium text-navy dark:text-white flex items-center gap-2">
+                                {{ $project->user->name }}
+                                @if ($project->user->isOnline())
+                                    <span class="inline-flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wide text-teal-dark">
+                                        <span class="w-2 h-2 rounded-full bg-teal-dark" title="Online now"></span>
+                                        Online
+                                    </span>
+                                @endif
+                            </p>
                             <p class="text-xs text-gray-400 dark:text-gray-500">{{ $project->user->email }}</p>
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $project->name }}</td>
@@ -49,7 +57,7 @@
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $project->progressPercent() }}%</td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $project->uploads->whereNotIn('category', ['content', 'revision'])->count() }}</td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">
-                            @php $openRevisions = $project->uploads->where('category', 'revision')->whereNull('approved_at')->count(); @endphp
+                            @php $openRevisions = $project->uploads->where('category', 'revision')->where('status', '!=', 'addressed')->count(); @endphp
                             {{ $project->uploads->where('category', 'revision')->count() }}
                             @if ($openRevisions > 0)
                                 <span class="ml-1 inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">{{ $openRevisions }} open</span>
