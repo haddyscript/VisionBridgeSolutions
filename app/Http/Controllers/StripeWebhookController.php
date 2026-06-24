@@ -185,12 +185,20 @@ class StripeWebhookController extends Controller
         $previousStatus = $subscription->status;
         $newStatus = $statusMap[$stripeSubscription->status] ?? $subscription->status;
 
+        // Stripe's "flexible" billing mode (2025+) moved current_period_end off the
+        // subscription object and onto each subscription item, and represents a
+        // scheduled cancellation via `cancel_at` rather than always setting the
+        // `cancel_at_period_end` boolean. Check both shapes for compatibility.
+        $periodEnd = $stripeSubscription->current_period_end
+            ?? ($stripeSubscription->items->data[0]->current_period_end ?? null);
+
+        $cancelAtPeriodEnd = (bool) ($stripeSubscription->cancel_at_period_end ?? false)
+            || ! empty($stripeSubscription->cancel_at);
+
         $subscription->update([
             'status' => $newStatus,
-            'current_period_end' => $stripeSubscription->current_period_end
-                ? Carbon::createFromTimestamp($stripeSubscription->current_period_end)
-                : null,
-            'cancel_at_period_end' => $stripeSubscription->cancel_at_period_end ?? false,
+            'current_period_end' => $periodEnd ? Carbon::createFromTimestamp($periodEnd) : null,
+            'cancel_at_period_end' => $cancelAtPeriodEnd,
         ]);
 
         if ($newStatus !== $previousStatus && in_array($newStatus, ['past_due', 'canceled'], true)) {
