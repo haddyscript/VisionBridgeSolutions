@@ -22,9 +22,9 @@ A plain-language summary of everything the site and client portal offer today.
 | Recent Activity feed | A single, up-to-date list on the Overview page showing milestones completed, files approved, replies from our team, and payments received — all in one place, newest first |
 | Project Files | Clients upload photos, videos, logos, documents, and marketing materials, organized into tabs under one menu item; shows upload progress and whether we've approved each file |
 | Download everything | One click to download all the files in a category as a single zip |
-| Website Content & Revisions | Clients submit website copy or change requests as a chat-style thread; each one shows whether it's still open or we've addressed it, and both we and the client can reply back and forth as many times as needed — replies are emailed instantly |
+| Website Content & Revisions | Clients submit website copy or change requests as a chat-style thread; each one shows its status (Open → In Progress → Addressed), and both we and the client can reply back and forth as many times as needed — replies are emailed instantly |
 | Payments | Clients see what's owed and paid, pay securely online, search/filter their payment history, and download/print a receipt or their full statement |
-| Maintenance Plans | Clients can start a recurring care plan and manage their billing (update card, cancel, etc.) themselves |
+| Maintenance Plans | Clients can start a recurring care plan and manage their billing (update card, cancel, etc.) themselves; a "Refresh Status" button instantly re-checks their plan with our payment provider if it ever looks out of date |
 | Account Settings | Clients update their name, email, or password — changing the password or email sends a security alert email |
 | Help & FAQ | A searchable list of common questions and answers, with expand/collapse all and a quick "Was this helpful?" rating on each answer |
 | Need Help? | Our support email and phone number, always visible in the sidebar |
@@ -40,9 +40,9 @@ A plain-language summary of everything the site and client portal offer today.
 | Contact Messages | An inbox of everyone who used the Contact form, sortable and searchable by page |
 | Consultations | An inbox of every consultation request — confirm, reschedule, or cancel with one click, which automatically emails the client |
 | Get Started Submissions | An inbox of every intake form — review details, then approve a project to instantly create the client's account and send their welcome email |
-| Project Management | Per-project page to reset a client's password, update project status, set a live preview link, manually override the progress percentage (or let it auto-calculate from milestones/status), manage milestones (with due dates), and review their files, website content, and revisions in separate tabs |
+| Project Management | Per-project page to reset a client's password, update project status, set a live preview link, manually override the progress percentage (or let it auto-calculate from milestones/status), manage milestones (with due dates), and review their files, website content, and revisions in separate tabs — every save, update, or delete happens instantly with no page reload, and deletions ask for confirmation with a clean popup instead of the browser's plain alert |
 | File Approval | Mark a client's uploaded file as approved, which they'll see reflected in their portal |
-| Revision & Content Threads | Mark a client's change request as addressed, and go back and forth with them in a live chat-style thread — every reply sends instantly with no page reload and emails the other side |
+| Revision & Content Threads | Move a client's change request through Open → In Progress → Addressed, and go back and forth with them in a live chat-style thread — every status change and reply sends instantly with no page reload and emails the other side |
 | Payment Requests | Create one-time payment requests for a project, remove unpaid ones, and re-check a payment's status if something looks stuck |
 | Maintenance Plans | Set up or cancel a client's recurring care plan |
 | Care Plan Pricing | Control the pricing tiers shown on the public website |
@@ -61,7 +61,7 @@ A plain-language summary of everything the site and client portal offer today.
 | We double-check a stuck payment | Our team | One click re-checks the payment's real status with our payment provider |
 | We set up a recurring plan | Our team | A monthly maintenance/care plan tied to a project |
 | Client starts the plan | Client | Pays securely to activate it |
-| Client manages their own billing | Client | Update their card or cancel, without needing to ask us |
+| Client manages their own billing | Client | Update their card or cancel, without needing to ask us; can also click "Refresh Status" to instantly re-sync their plan if it ever looks out of date |
 | We cancel a plan | Our team | Ends a client's active recurring plan |
 | Client gets a payment reminder | Client | A friendly pop-up appears if something is still owed |
 | Payments stay in sync automatically | Behind the scenes | Our payment provider notifies the system the moment a payment or plan changes status, so records are always accurate without manual work |
