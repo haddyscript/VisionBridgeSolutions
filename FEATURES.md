@@ -35,8 +35,8 @@ A plain-language summary of everything the site and client portal offer today.
 
 | Feature | What it does |
 |---|---|
-| All Projects | A list of every client project, with a green "Online" indicator next to a client's name if they're currently active in the portal |
-| Calendar | A month view combining every consultation booking and milestone due date in one place, plus the ability to add and remove our own reminders/tasks |
+| All Projects | A list of every client project, with a green "Online" indicator next to a client's name if they're currently active in the portal, and a different status badge color for each project stage |
+| Calendar | A month view combining every consultation booking and milestone due date in one place, plus the ability to add and remove our own reminders/tasks; clicking a task opens a popup with its full details and a quick way to remove it |
 | Contact Messages | An inbox of everyone who used the Contact form, sortable and searchable by page |
 | Consultations | An inbox of every consultation request — confirm, reschedule, or cancel with one click, which automatically emails the client |
 | Get Started Submissions | An inbox of every intake form — review details, then approve a project to instantly create the client's account and send their welcome email |
@@ -45,7 +45,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Revision & Content Threads | Move a client's change request through Open → In Progress → Addressed, and go back and forth with them in a live chat-style thread — every status change and reply sends instantly with no page reload and emails the other side |
 | Payment Requests | Create one-time payment requests for a project, remove unpaid ones, and re-check a payment's status if something looks stuck |
 | Maintenance Plans | Set up or cancel a client's recurring care plan |
-| Care Plan Pricing | Control the pricing tiers shown on the public website |
+| Care Plan Pricing | Control the pricing tiers shown on the public website — each plan collapses to a quick summary and expands to edit, with a live preview showing exactly how the card will look on the homepage as you type |
 | Team Management | Add/manage other admin team members |
 
 ## 4. Payments & Billing, in Plain Terms
