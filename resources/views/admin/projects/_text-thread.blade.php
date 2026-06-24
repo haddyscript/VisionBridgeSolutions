@@ -31,7 +31,7 @@
                 <div class="rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3.5">
                     <div class="flex items-start justify-between gap-4 mb-1.5">
                         <p class="text-xs text-gray-400 dark:text-gray-500">{{ $item->created_at->format('M j, Y \a\t g:ia') }} &middot; from {{ $item->user->name }}</p>
-                        <form method="POST" action="{{ route('admin.uploads.status', $item) }}" class="shrink-0">
+                        <form method="POST" action="{{ route('admin.uploads.status', $item) }}" class="shrink-0" data-ajax-target="{{ $panelId ?? '' }} {{ $cat === 'revision' ? 'tabbtn-revision' : '' }}">
                             @csrf
                             @method('PATCH')
                             <select name="status" onchange="this.form.submit()"

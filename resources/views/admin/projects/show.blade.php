@@ -25,7 +25,7 @@
 </a>
 
 {{-- Client + project header --}}
-<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+<div id="header-card" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
     <div class="flex flex-wrap items-start justify-between gap-4 mb-5">
         <div>
             <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">Client</p>
@@ -37,7 +37,7 @@
             </button>
         </div>
 
-        <form method="POST" action="{{ route('admin.projects.update', $project) }}" class="flex items-center gap-2">
+        <form method="POST" action="{{ route('admin.projects.update', $project) }}" class="flex items-center gap-2" data-ajax-target="header-card">
             @csrf
             @method('PATCH')
             <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Status</label>
@@ -50,7 +50,7 @@
         </form>
     </div>
 
-    <form method="POST" action="{{ route('admin.projects.update', $project) }}" class="flex items-center gap-2">
+    <form method="POST" action="{{ route('admin.projects.update', $project) }}" class="flex items-center gap-2" data-ajax-target="header-card">
         @csrf
         @method('PATCH')
         <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 shrink-0">Preview URL</label>
@@ -77,7 +77,7 @@
     </div>
 
     <div class="flex items-center gap-2">
-        <form method="POST" action="{{ route('admin.projects.update', $project) }}" class="flex items-center gap-2">
+        <form method="POST" action="{{ route('admin.projects.update', $project) }}" class="flex items-center gap-2" data-ajax-target="header-card">
             @csrf
             @method('PATCH')
             <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 shrink-0">Override Progress %</label>
@@ -88,7 +88,7 @@
             </button>
         </form>
         @if ($project->isProgressOverridden())
-            <form method="POST" action="{{ route('admin.projects.update', $project) }}">
+            <form method="POST" action="{{ route('admin.projects.update', $project) }}" data-ajax-target="header-card">
                 @csrf
                 @method('PATCH')
                 <input type="hidden" name="progress_override" value="">
@@ -110,7 +110,7 @@
             class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-gold text-navy dark:text-white">
         Overview
     </button>
-    <button type="button" data-tab-button="billing" onclick="showProjectTab('billing')"
+    <button id="tabbtn-billing" type="button" data-tab-button="billing" onclick="showProjectTab('billing')"
             class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
         Billing
         @if ($pendingPaymentCount > 0)
@@ -125,17 +125,17 @@
             class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
         Website Content
     </button>
-    <button type="button" data-tab-button="revision" onclick="showProjectTab('revision')"
+    <button id="tabbtn-revision" type="button" data-tab-button="revision" onclick="showProjectTab('revision')"
             class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
         Revisions
-        @php $openRevisionCount = $uploadsByCategory->get('revision', $empty)->where('approved_at', null)->count(); @endphp
+        @php $openRevisionCount = $uploadsByCategory->get('revision', $empty)->where('status', '!=', 'addressed')->count(); @endphp
         @if ($openRevisionCount > 0)
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">{{ $openRevisionCount }}</span>
         @endif
     </button>
 </div>
 
-<div data-tab-panel="overview">
+<div id="panel-overview" data-tab-panel="overview">
 
 {{-- Milestones --}}
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
@@ -153,7 +153,7 @@
                     @endif
                 </div>
                 <div class="flex items-center gap-2">
-                    <form method="POST" action="{{ route('admin.milestones.update', $milestone) }}">
+                    <form method="POST" action="{{ route('admin.milestones.update', $milestone) }}" data-ajax-target="header-card panel-overview">
                         @csrf
                         @method('PATCH')
                         <select name="status" onchange="this.form.submit()"
@@ -163,7 +163,7 @@
                             @endforeach
                         </select>
                     </form>
-                    <form method="POST" action="{{ route('admin.milestones.destroy', $milestone) }}" onsubmit="return confirm('Remove this milestone?')">
+                    <form method="POST" action="{{ route('admin.milestones.destroy', $milestone) }}" onsubmit="return confirm('Remove this milestone?')" data-ajax-target="header-card panel-overview">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
@@ -178,7 +178,7 @@
         @endif
     </div>
 
-    <form method="POST" action="{{ route('admin.milestones.store', $project) }}" class="flex items-center gap-3">
+    <form method="POST" action="{{ route('admin.milestones.store', $project) }}" class="flex items-center gap-3" data-ajax-target="header-card panel-overview">
         @csrf
         <input type="text" name="title" placeholder="Add a milestone..." required
                class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
@@ -192,7 +192,7 @@
 
 </div>
 
-<div data-tab-panel="billing" class="hidden">
+<div id="panel-billing" data-tab-panel="billing" class="hidden">
 
 {{-- Payments --}}
 @php
@@ -220,7 +220,7 @@
                     @if ($payment->isPending() && $payment->stripe_checkout_session_id)
                         <span class="text-xs text-gray-400 dark:text-gray-500" title="A Stripe checkout session is in progress for this payment — sync or wait before removing.">Checkout in progress</span>
                     @elseif ($payment->isPending())
-                        <form method="POST" action="{{ route('admin.payments.destroy', $payment) }}" onsubmit="return confirm('Remove this payment request?')">
+                        <form method="POST" action="{{ route('admin.payments.destroy', $payment) }}" onsubmit="return confirm('Remove this payment request?')" data-ajax-target="panel-billing tabbtn-billing">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
@@ -236,7 +236,7 @@
         @endif
     </div>
 
-    <form method="POST" action="{{ route('admin.payments.store', $project) }}" class="flex items-center gap-3">
+    <form method="POST" action="{{ route('admin.payments.store', $project) }}" class="flex items-center gap-3" data-ajax-target="panel-billing tabbtn-billing">
         @csrf
         <input type="text" name="description" placeholder="What's this payment for..." required
                class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
@@ -282,7 +282,7 @@
                 <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $subscriptionStatusColors[$currentSubscription->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
                     {{ $subscriptionStatusLabels[$currentSubscription->status] ?? $currentSubscription->status }}
                 </span>
-                <form method="POST" action="{{ route('admin.subscriptions.destroy', $currentSubscription) }}" onsubmit="return confirm('Cancel this maintenance plan?')">
+                <form method="POST" action="{{ route('admin.subscriptions.destroy', $currentSubscription) }}" onsubmit="return confirm('Cancel this maintenance plan?')" data-ajax-target="panel-billing">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
@@ -293,7 +293,7 @@
         </div>
     @else
         <p class="text-sm text-gray-400 dark:text-gray-500 mb-4">No active maintenance plan.</p>
-        <form method="POST" action="{{ route('admin.subscriptions.store', $project) }}" class="flex items-center gap-3">
+        <form method="POST" action="{{ route('admin.subscriptions.store', $project) }}" class="flex items-center gap-3" data-ajax-target="panel-billing">
             @csrf
             <input type="text" name="description" placeholder="e.g. Monthly Website Maintenance" required
                    class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
@@ -308,7 +308,7 @@
 
 </div>
 
-<div data-tab-panel="files" class="hidden">
+<div id="panel-files" data-tab-panel="files" class="hidden">
 
 {{-- Project files --}}
 @foreach ($categories as $cat => $meta)
@@ -344,7 +344,7 @@
                                 </span>
                             </span>
                         </a>
-                        <form method="POST" action="{{ route('admin.uploads.approve', $item) }}" class="shrink-0">
+                        <form method="POST" action="{{ route('admin.uploads.approve', $item) }}" class="shrink-0" data-ajax-target="panel-files">
                             @csrf
                             @method('PATCH')
                             @if ($item->isApproved())
@@ -367,12 +367,12 @@
 
 </div>
 
-<div data-tab-panel="content" class="hidden">
-    @include('admin.projects._text-thread', ['cat' => 'content', 'meta' => $categories['content']])
+<div id="panel-content" data-tab-panel="content" class="hidden">
+    @include('admin.projects._text-thread', ['cat' => 'content', 'meta' => $categories['content'], 'panelId' => 'panel-content'])
 </div>
 
-<div data-tab-panel="revision" class="hidden">
-    @include('admin.projects._text-thread', ['cat' => 'revision', 'meta' => $categories['revision']])
+<div id="panel-revision" data-tab-panel="revision" class="hidden">
+    @include('admin.projects._text-thread', ['cat' => 'revision', 'meta' => $categories['revision'], 'panelId' => 'panel-revision'])
 </div>
 
 <script>
@@ -467,7 +467,11 @@
 </div>
 
 <script>
+    let currentProjectTab = 'overview';
+
     function showProjectTab(tab) {
+        currentProjectTab = tab;
+
         document.querySelectorAll('[data-tab-panel]').forEach((el) => {
             el.classList.toggle('hidden', el.dataset.tabPanel !== tab);
         });
@@ -481,6 +485,62 @@
             el.classList.toggle('dark:text-gray-500', !active);
         });
     }
+
+    {{-- Generic no-reload form submission: any form with data-ajax-target submits via
+         fetch, swaps in the freshly rendered HTML for each listed container id, then
+         reapplies the current tab's visibility/styling since swapped-in markup reflects
+         the server's default state, not the client's current tab selection. --}}
+    (function () {
+        function bindAjaxForms(root) {
+            root.querySelectorAll('form[data-ajax-target]').forEach((form) => {
+                if (form.dataset.ajaxBound) return;
+                form.dataset.ajaxBound = '1';
+
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const targetIds = form.dataset.ajaxTarget.split(' ').filter(Boolean);
+                    const submitBtns = form.querySelectorAll('button[type="submit"]');
+                    submitBtns.forEach((b) => (b.disabled = true));
+
+                    fetch(form.action, {
+                        method: 'POST',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        body: new FormData(form),
+                    })
+                        .then((response) => response.text())
+                        .then((html) => {
+                            const doc = new DOMParser().parseFromString(html, 'text/html');
+
+                            const errorBanner = doc.querySelector('main .bg-red-50.border-red-200');
+                            if (errorBanner) {
+                                alert(errorBanner.textContent.trim());
+                                return;
+                            }
+
+                            targetIds.forEach((id) => {
+                                const freshEl = doc.getElementById(id);
+                                const liveEl = document.getElementById(id);
+                                if (freshEl && liveEl) {
+                                    liveEl.replaceWith(freshEl);
+                                    bindAjaxForms(freshEl);
+                                }
+                            });
+
+                            showProjectTab(currentProjectTab);
+                        })
+                        .catch(() => {
+                            alert('Something went wrong. Please try again.');
+                        })
+                        .finally(() => {
+                            submitBtns.forEach((b) => (b.disabled = false));
+                        });
+                });
+            });
+        }
+
+        bindAjaxForms(document);
+    })();
 
     (function () {
         const modal = document.getElementById('reset-password-modal');
