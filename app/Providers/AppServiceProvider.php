@@ -10,6 +10,7 @@ use App\Models\Milestone;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -42,7 +43,22 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('layouts.portal', function ($view) {
             $view->with('gettingStartedTasks', $this->clientGettingStartedTasks());
+            $view->with('unreadActivityCount', $this->clientUnreadActivityCount());
         });
+    }
+
+    private function clientUnreadActivityCount(): int
+    {
+        $user = Auth::user();
+        $project = $user?->projects()->with('milestones', 'uploads.replies', 'payments')->first();
+
+        if (! $project) {
+            return 0;
+        }
+
+        $since = $user->activity_last_read_at ?? Carbon::createFromTimestamp(0);
+
+        return $project->recentActivity()->filter(fn ($event) => $event['at']->gt($since))->count();
     }
 
     private function adminGettingStartedTasks(): array

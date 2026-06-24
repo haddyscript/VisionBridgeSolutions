@@ -27,6 +27,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'stripe_customer_id',
         'theme',
         'email_verified_at',
+        'activity_last_read_at',
+        'notify_on_replies',
+        'notify_on_consultations',
     ];
 
     /**
@@ -49,6 +52,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'last_seen_at' => 'datetime',
+            'activity_last_read_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

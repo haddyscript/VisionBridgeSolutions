@@ -72,4 +72,73 @@ class Project extends Model
     {
         return $this->progress_override !== null;
     }
+
+    public function nextMilestone(): ?Milestone
+    {
+        return $this->milestones
+            ->where('status', '!=', 'completed')
+            ->whereNotNull('due_date')
+            ->sortBy('due_date')
+            ->first();
+    }
+
+    /**
+     * Builds the project's activity feed (admin replies, approvals, completed
+     * milestones, received payments), newest first. Assumes milestones,
+     * uploads.replies, and payments are already eager loaded.
+     */
+    public function recentActivity()
+    {
+        $activity = collect();
+
+        foreach ($this->milestones as $milestone) {
+            if ($milestone->status === 'completed' && $milestone->completed_at) {
+                $activity->push([
+                    'icon' => 'milestone',
+                    'title' => 'Milestone completed',
+                    'description' => $milestone->title,
+                    'at' => $milestone->completed_at,
+                ]);
+            }
+        }
+
+        foreach ($this->uploads as $upload) {
+            if ($upload->approved_at) {
+                $activity->push([
+                    'icon' => 'approved',
+                    'title' => 'File approved',
+                    'description' => $upload->original_name,
+                    'at' => $upload->approved_at,
+                ]);
+            }
+
+            foreach ($upload->replies as $reply) {
+                if ($reply->user_id === $upload->user_id) {
+                    continue;
+                }
+
+                $label = \App\Http\Controllers\Portal\CategoryController::CATEGORIES[$upload->category]['label'] ?? 'submission';
+
+                $activity->push([
+                    'icon' => 'reply',
+                    'title' => 'VisionBridge replied to your '.$label,
+                    'description' => $reply->body,
+                    'at' => $reply->created_at,
+                ]);
+            }
+        }
+
+        foreach ($this->payments as $payment) {
+            if ($payment->isPaid() && $payment->paid_at) {
+                $activity->push([
+                    'icon' => 'payment',
+                    'title' => 'Payment received',
+                    'description' => $payment->description.' — '.$payment->formattedAmount(),
+                    'at' => $payment->paid_at,
+                ]);
+            }
+        }
+
+        return $activity->sortByDesc('at')->values();
+    }
 }
