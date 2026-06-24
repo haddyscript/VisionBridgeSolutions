@@ -438,9 +438,15 @@
             const uploadId = form.dataset.uploadId;
             const textarea = form.querySelector('textarea[name="admin_reply"]');
             const submitBtn = form.querySelector('button[type="submit"]');
-            const body = textarea.value;
+            const originalBtnHtml = submitBtn.innerHTML;
 
             submitBtn.disabled = true;
+            submitBtn.innerHTML =
+                '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">' +
+                    '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>' +
+                    '<path class="opacity-75" fill="currentColor" d="M12 2a10 10 0 0110 10h-4a6 6 0 00-6-6V2z"></path>' +
+                '</svg> Sending…';
+            submitBtn.classList.add('inline-flex', 'items-center', 'gap-2');
 
             fetch(form.action, {
                 method: 'POST',
@@ -479,6 +485,7 @@
                 })
                 .finally(function () {
                     submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
                 });
         });
     });
