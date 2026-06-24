@@ -59,4 +59,14 @@ class AccountController extends Controller
 
         return back()->with('status', 'Password updated.');
     }
+
+    public function updateNotifications(Request $request)
+    {
+        $request->user()->update([
+            'notify_on_replies' => $request->boolean('notify_on_replies'),
+            'notify_on_consultations' => $request->boolean('notify_on_consultations'),
+        ]);
+
+        return back()->with('status', 'Notification preferences updated.');
+    }
 }

@@ -98,6 +98,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/portal/account', [PortalAccountController::class, 'index'])->name('portal.account.index');
     Route::patch('/portal/account/profile', [PortalAccountController::class, 'updateProfile'])->name('portal.account.profile.update');
     Route::patch('/portal/account/password', [PortalAccountController::class, 'updatePassword'])->name('portal.account.password.update');
+    Route::patch('/portal/account/notifications', [PortalAccountController::class, 'updateNotifications'])->name('portal.account.notifications.update');
 
     Route::view('/portal/faq', 'portal.faq')->name('portal.faq');
     Route::post('/portal/faq/feedback', [FaqFeedbackController::class, 'store'])->name('portal.faq.feedback');

@@ -41,7 +41,9 @@ class UploadApprovalController extends Controller
             'body' => $validated['admin_reply'],
         ]);
 
-        Mail::to($upload->user->email)->send(new UploadRepliedMail($reply));
+        if ($upload->user->notify_on_replies) {
+            Mail::to($upload->user->email)->send(new UploadRepliedMail($reply));
+        }
 
         if ($request->wantsJson()) {
             return response()->json([

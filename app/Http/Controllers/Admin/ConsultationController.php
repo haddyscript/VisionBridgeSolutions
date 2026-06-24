@@ -7,6 +7,7 @@ use App\Mail\ConsultationCancelledMail;
 use App\Mail\ConsultationConfirmedMail;
 use App\Mail\ConsultationRescheduledMail;
 use App\Models\Consultation;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -77,7 +78,11 @@ class ConsultationController extends Controller
             abort(422, 'Set the status to Confirmed, Rescheduled, or Cancelled before notifying the client.');
         }
 
-        Mail::to($consultation->email)->send($mailable);
+        $account = User::where('email', $consultation->email)->first();
+
+        if (! $account || $account->notify_on_consultations) {
+            Mail::to($consultation->email)->send($mailable);
+        }
 
         $consultation->update(['confirmation_sent_at' => now()]);
 
