@@ -19,6 +19,17 @@ class UploadApprovalController extends Controller
         return back()->with('status', $upload->isApproved() ? 'File approved.' : 'Approval removed.');
     }
 
+    public function updateStatus(Request $request, Upload $upload)
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'in:open,in_progress,addressed'],
+        ]);
+
+        $upload->update($validated);
+
+        return back()->with('status', 'Status updated.');
+    }
+
     public function reply(Request $request, Upload $upload)
     {
         $validated = $request->validate([

@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Upload extends Model
 {
+    public const STATUSES = [
+        'open' => 'Open',
+        'in_progress' => 'In Progress',
+        'addressed' => 'Addressed',
+    ];
+
     protected $fillable = [
         'project_id',
         'user_id',
@@ -15,6 +21,7 @@ class Upload extends Model
         'size',
         'body',
         'approved_at',
+        'status',
     ];
 
     protected function casts(): array
@@ -27,6 +34,11 @@ class Upload extends Model
     public function isApproved(): bool
     {
         return $this->approved_at !== null;
+    }
+
+    public function isAddressed(): bool
+    {
+        return $this->status === 'addressed';
     }
 
     public function project()

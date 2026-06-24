@@ -143,6 +143,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/subscriptions/{subscription}', [AdminSubscriptionController::class, 'destroy'])->name('subscriptions.destroy');
 
     Route::patch('/uploads/{upload}/approve', [UploadApprovalController::class, 'toggle'])->name('uploads.approve');
+    Route::patch('/uploads/{upload}/status', [UploadApprovalController::class, 'updateStatus'])->name('uploads.status');
     Route::patch('/uploads/{upload}/reply', [UploadApprovalController::class, 'reply'])->name('uploads.reply');
 
     Route::get('/care-plans', [AdminMaintenancePlanController::class, 'index'])->name('care-plans.index');
