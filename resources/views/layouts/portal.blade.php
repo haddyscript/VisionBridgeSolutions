@@ -246,5 +246,108 @@
         });
     </script>
 
+    {{-- Generic confirm modal, used for delete actions instead of the native browser confirm() --}}
+    <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div id="confirm-modal-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
+
+        <div id="confirm-modal-panel" class="relative w-full max-w-sm transform scale-95 opacity-0 transition-all duration-200">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
+                <div class="w-11 h-11 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center mb-4">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14.18A1 1 0 003 19.5h18a1 1 0 00.86-1.46L13.71 3.86a1 1 0 00-1.72 0z"/></svg>
+                </div>
+                <h2 class="font-display text-lg font-bold text-navy dark:text-white mb-2">Are you sure?</h2>
+                <p id="confirm-modal-message" class="text-sm text-gray-500 dark:text-gray-400 mb-6"></p>
+                <div class="flex justify-end gap-2.5">
+                    <button type="button" id="confirm-modal-cancel" class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="button" id="confirm-modal-confirm" class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-red-500 hover:bg-red-600 text-white transition-colors">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const modal = document.getElementById('confirm-modal');
+            const backdrop = document.getElementById('confirm-modal-backdrop');
+            const panel = document.getElementById('confirm-modal-panel');
+            const message = document.getElementById('confirm-modal-message');
+            const cancelBtn = document.getElementById('confirm-modal-cancel');
+            const confirmBtn = document.getElementById('confirm-modal-confirm');
+
+            function openConfirmModal() {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                requestAnimationFrame(function () {
+                    backdrop.classList.remove('opacity-0');
+                    panel.classList.remove('scale-95', 'opacity-0');
+                });
+            }
+
+            function closeConfirmModal() {
+                backdrop.classList.add('opacity-0');
+                panel.classList.add('scale-95', 'opacity-0');
+                setTimeout(function () {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 200);
+            }
+
+            window.confirmAction = function (text) {
+                message.textContent = text;
+                openConfirmModal();
+
+                return new Promise(function (resolve) {
+                    function onConfirm() {
+                        cleanup();
+                        closeConfirmModal();
+                        resolve(true);
+                    }
+                    function onCancel() {
+                        cleanup();
+                        closeConfirmModal();
+                        resolve(false);
+                    }
+                    function cleanup() {
+                        confirmBtn.removeEventListener('click', onConfirm);
+                        cancelBtn.removeEventListener('click', onCancel);
+                        backdrop.removeEventListener('click', onCancel);
+                    }
+
+                    confirmBtn.addEventListener('click', onConfirm);
+                    cancelBtn.addEventListener('click', onCancel);
+                    backdrop.addEventListener('click', onCancel);
+                });
+            };
+
+            // Generic confirm-before-submit: any form with data-confirm shows the
+            // modal instead of the native confirm() before submitting normally.
+            function bindConfirmForms(root) {
+                root.querySelectorAll('form[data-confirm]').forEach(function (form) {
+                    if (form.dataset.confirmBound) return;
+                    form.dataset.confirmBound = '1';
+
+                    form.addEventListener('submit', function (e) {
+                        if (form.dataset.confirmAccepted) return;
+                        e.preventDefault();
+
+                        window.confirmAction(form.dataset.confirm).then(function (ok) {
+                            if (ok) {
+                                form.dataset.confirmAccepted = '1';
+                                form.requestSubmit();
+                            }
+                        });
+                    });
+                });
+            }
+
+            bindConfirmForms(document);
+            window.bindConfirmForms = bindConfirmForms;
+        })();
+    </script>
+
 </body>
 </html>

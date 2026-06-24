@@ -61,7 +61,7 @@
                             <img src="{{ $item->url() }}" alt="{{ $item->original_name }}" class="w-full h-full object-cover">
                         @endif
                     </a>
-                    <form method="POST" action="{{ route('portal.uploads.destroy', $item) }}" onsubmit="return confirm('Remove this file?')"
+                    <form method="POST" action="{{ route('portal.uploads.destroy', $item) }}" data-confirm="Remove this file?"
                           class="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                         @csrf
                         @method('DELETE')
@@ -118,7 +118,7 @@
                             </span>
                         </span>
                     </a>
-                    <form method="POST" action="{{ route('portal.uploads.destroy', $item) }}" onsubmit="return confirm('Remove this file?')" class="shrink-0">
+                    <form method="POST" action="{{ route('portal.uploads.destroy', $item) }}" data-confirm="Remove this file?" class="shrink-0">
                         @csrf
                         @method('DELETE')
                         <button type="submit" title="Remove" class="w-8 h-8 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">

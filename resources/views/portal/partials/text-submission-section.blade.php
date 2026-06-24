@@ -52,7 +52,7 @@
                                 <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">Open</span>
                             @endif
                         </div>
-                        <form method="POST" action="{{ route('portal.uploads.destroy', $item) }}" onsubmit="return confirm('Remove this submission?')" onclick="event.stopPropagation()" class="shrink-0">
+                        <form method="POST" action="{{ route('portal.uploads.destroy', $item) }}" data-confirm="Remove this submission?" onclick="event.stopPropagation()" class="shrink-0">
                             @csrf
                             @method('DELETE')
                             <button type="submit" title="Remove" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
