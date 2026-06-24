@@ -27,11 +27,19 @@
     @if ($items->isEmpty())
         <p class="text-sm text-gray-400 dark:text-gray-500">{{ $why ?? 'Nothing submitted yet.' }}</p>
     @else
-        <div class="space-y-3">
+        <div class="space-y-2.5">
             @foreach ($items as $item)
-                <div class="rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3.5">
-                    <div class="flex items-start justify-between gap-4">
-                        <div class="flex items-center gap-2.5">
+                @php
+                    $borderColor = match ($item->status) {
+                        'addressed' => 'border-l-teal',
+                        'in_progress' => 'border-l-gold',
+                        default => 'border-l-red-400',
+                    };
+                @endphp
+                <details class="group rounded-lg border border-gray-200 dark:border-gray-700 border-l-4 {{ $borderColor }} px-4 py-3" {{ $item->status !== 'addressed' ? 'open' : '' }}>
+                    <summary class="flex items-center justify-between gap-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 transition-transform duration-200 group-open:rotate-90 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             <span class="text-xs text-gray-400 dark:text-gray-500">{{ $item->created_at->format('M j, Y \a\t g:ia') }}</span>
                             @if ($item->status === 'addressed')
                                 <span class="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-teal/10 text-teal-dark">
@@ -44,17 +52,17 @@
                                 <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">Open</span>
                             @endif
                         </div>
-                        <form method="POST" action="{{ route('portal.uploads.destroy', $item) }}" onsubmit="return confirm('Remove this submission?')" class="shrink-0">
+                        <form method="POST" action="{{ route('portal.uploads.destroy', $item) }}" onsubmit="return confirm('Remove this submission?')" onclick="event.stopPropagation()" class="shrink-0">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" title="Remove" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors -mt-1 -mr-1">
+                            <button type="submit" title="Remove" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
                         </form>
-                    </div>
+                    </summary>
 
                     {{-- Your message bubble --}}
-                    <div class="flex items-start justify-end gap-2.5 max-w-[90%] ml-auto mt-2">
+                    <div class="flex items-start justify-end gap-2.5 max-w-[90%] ml-auto mt-3">
                         <div class="rounded-2xl rounded-tr-sm bg-gold/10 px-4 py-2.5">
                             @if ($item->body)
                                 <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line">{{ $item->body }}</p>
@@ -112,7 +120,7 @@
                             Reply
                         </button>
                     </form>
-                </div>
+                </details>
             @endforeach
         </div>
     @endif
