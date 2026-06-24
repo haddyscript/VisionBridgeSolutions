@@ -379,6 +379,31 @@
 
 @endif
 
+{{-- Transient toast for no-reload actions like Refresh Status --}}
+<div id="toast" class="fixed bottom-6 right-6 z-50 max-w-sm transform translate-y-2 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="flex items-center gap-2.5 text-sm font-medium text-teal-dark dark:text-teal-light bg-white dark:bg-gray-800 border border-teal/30 shadow-lg rounded-lg px-4 py-3">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        <span id="toast-message"></span>
+    </div>
+</div>
+
+<script>
+    (function () {
+        let toastTimeout;
+        window.showToast = function (message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = message;
+
+            clearTimeout(toastTimeout);
+            toast.classList.remove('translate-y-2', 'opacity-0');
+
+            toastTimeout = setTimeout(function () {
+                toast.classList.add('translate-y-2', 'opacity-0');
+            }, 3000);
+        };
+    })();
+</script>
+
 <script>
     (function () {
         const statusColors = {
@@ -605,6 +630,11 @@
                                     bindAjaxForms(freshEl);
                                 }
                             });
+
+                            const flash = doc.getElementById('flash-status-banner');
+                            if (flash && window.showToast) {
+                                window.showToast(flash.textContent.trim());
+                            }
                         })
                         .catch(function () {
                             alert('Something went wrong. Please try again.');
