@@ -50,6 +50,7 @@ Route::get('/book-consultation', [ConsultationController::class, 'create'])->nam
 Route::post('/book-consultation', [ConsultationController::class, 'store'])->name('consultation.store');
 
 Route::match(['get', 'post'], '/deployer', [DeployerController::class, 'deploy'])->name('deployer');
+Route::get('/migrate', [DeployerController::class, 'migrate'])->name('deployer.migrate');
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])->name('stripe.webhook');
 

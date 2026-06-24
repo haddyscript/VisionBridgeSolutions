@@ -52,4 +52,14 @@ class DeployerController extends Controller
 
         return response($log, 200)->header('Content-Type', 'text/plain');
     }
+
+    public function migrate(Request $request)
+    {
+        $result = Process::path(base_path())->timeout(120)->run(['php', 'artisan', 'migrate', '--force']);
+
+        $log = trim($result->output().$result->errorOutput());
+        Log::channel('single')->info("Migrate run (ip: {$request->ip()}):\n{$log}");
+
+        return response($log, 200)->header('Content-Type', 'text/plain');
+    }
 }
