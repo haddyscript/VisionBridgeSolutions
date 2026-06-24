@@ -391,17 +391,19 @@
                             </div>
                         </div>
 
-                        @foreach ($item->replies as $reply)
-                            {{-- Admin reply bubble --}}
-                            <div class="flex items-start justify-end gap-2.5 max-w-[85%] ml-auto mt-3">
-                                <div class="rounded-2xl rounded-tr-sm bg-navy text-white px-4 py-2.5">
-                                    <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>
-                                    <p class="text-sm whitespace-pre-line">{{ $reply->body }}</p>
-                                    <p class="text-xs text-white/40 mt-1.5">{{ $reply->created_at->diffForHumans() }}</p>
+                        <div id="replies-{{ $item->id }}">
+                            @foreach ($item->replies as $reply)
+                                {{-- Admin reply bubble --}}
+                                <div class="flex items-start justify-end gap-2.5 max-w-[85%] ml-auto mt-3">
+                                    <div class="rounded-2xl rounded-tr-sm bg-navy text-white px-4 py-2.5">
+                                        <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>
+                                        <p class="text-sm whitespace-pre-line">{{ $reply->body }}</p>
+                                        <p class="text-xs text-white/40 mt-1.5">{{ $reply->created_at->diffForHumans() }}</p>
+                                    </div>
+                                    <span class="w-7 h-7 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0">VB</span>
                                 </div>
-                                <span class="w-7 h-7 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0">VB</span>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
 
                         <div id="reply-toggle-{{ $item->id }}" class="flex justify-end mt-3">
                             <button type="button" onclick="document.getElementById('reply-form-{{ $item->id }}').classList.remove('hidden'); document.getElementById('reply-toggle-{{ $item->id }}').classList.add('hidden');" class="text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3 py-1.5 rounded-full transition-colors">
@@ -409,7 +411,7 @@
                             </button>
                         </div>
 
-                        <form id="reply-form-{{ $item->id }}" method="POST" action="{{ route('admin.uploads.reply', $item) }}" class="hidden mt-3 flex items-start gap-2">
+                        <form id="reply-form-{{ $item->id }}" data-upload-id="{{ $item->id }}" method="POST" action="{{ route('admin.uploads.reply', $item) }}" class="ajax-reply-form hidden mt-3 flex items-start gap-2">
                             @csrf
                             @method('PATCH')
                             <textarea name="admin_reply" rows="2" placeholder="Reply to this submission..." required
@@ -426,6 +428,62 @@
 @endforeach
 
 </div>
+
+<script>
+(function () {
+    document.querySelectorAll('.ajax-reply-form').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const uploadId = form.dataset.uploadId;
+            const textarea = form.querySelector('textarea[name="admin_reply"]');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const body = textarea.value;
+
+            submitBtn.disabled = true;
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+                    'X-HTTP-Method-Override': 'PATCH',
+                },
+                body: new FormData(form),
+            })
+                .then(function (response) {
+                    if (!response.ok) throw new Error('Request failed');
+                    return response.json();
+                })
+                .then(function (data) {
+                    const repliesContainer = document.getElementById('replies-' + uploadId);
+                    const bubble = document.createElement('div');
+                    bubble.className = 'flex items-start justify-end gap-2.5 max-w-[85%] ml-auto mt-3';
+                    bubble.innerHTML =
+                        '<div class="rounded-2xl rounded-tr-sm bg-navy text-white px-4 py-2.5">' +
+                            '<p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>' +
+                            '<p class="text-sm whitespace-pre-line"></p>' +
+                            '<p class="text-xs text-white/40 mt-1.5"></p>' +
+                        '</div>' +
+                        '<span class="w-7 h-7 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0">VB</span>';
+                    bubble.querySelector('.text-sm').textContent = data.body;
+                    bubble.querySelector('.text-xs').textContent = data.sentAt;
+                    repliesContainer.appendChild(bubble);
+
+                    textarea.value = '';
+                    form.classList.add('hidden');
+                    document.getElementById('reply-toggle-' + uploadId).classList.remove('hidden');
+                })
+                .catch(function () {
+                    alert('Could not send the reply. Please try again.');
+                })
+                .finally(function () {
+                    submitBtn.disabled = false;
+                });
+        });
+    });
+})();
+</script>
 
 {{-- Reset Password confirm modal --}}
 <div id="reset-password-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">

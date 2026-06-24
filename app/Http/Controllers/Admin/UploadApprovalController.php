@@ -32,6 +32,14 @@ class UploadApprovalController extends Controller
 
         Mail::to($upload->user->email)->send(new UploadRepliedMail($reply));
 
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Reply sent to client.',
+                'body' => $reply->body,
+                'sentAt' => $reply->created_at->diffForHumans(),
+            ]);
+        }
+
         return back()->with('status', 'Reply sent to client.');
     }
 }
