@@ -34,7 +34,7 @@
                         <form method="POST" action="{{ route('admin.uploads.status', $item) }}" class="shrink-0" data-ajax-target="{{ $panelId ?? '' }} {{ $cat === 'revision' ? 'tabbtn-revision' : '' }}">
                             @csrf
                             @method('PATCH')
-                            <select name="status" onchange="this.form.submit()"
+                            <select name="status" onchange="this.form.requestSubmit()"
                                     class="text-xs font-semibold rounded-full px-3 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-gold {{ $statusColors[$item->status] ?? 'bg-gray-100 text-gray-500' }}">
                                 @foreach (\App\Models\Upload::STATUSES as $value => $label)
                                     <option value="{{ $value }}" {{ $item->status === $value ? 'selected' : '' }}>{{ $label }}</option>

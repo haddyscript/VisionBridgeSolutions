@@ -41,7 +41,7 @@
             @csrf
             @method('PATCH')
             <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Status</label>
-            <select name="status" onchange="this.form.submit()"
+            <select name="status" onchange="this.form.requestSubmit()"
                     class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
                 @foreach ($statusLabels as $value => $label)
                     <option value="{{ $value }}" {{ $project->status === $value ? 'selected' : '' }}>{{ $label }}</option>
@@ -156,7 +156,7 @@
                     <form method="POST" action="{{ route('admin.milestones.update', $milestone) }}" data-ajax-target="header-card panel-overview">
                         @csrf
                         @method('PATCH')
-                        <select name="status" onchange="this.form.submit()"
+                        <select name="status" onchange="this.form.requestSubmit()"
                                 class="rounded-lg border border-gray-300 dark:border-gray-600 px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
                             @foreach ($milestoneStatuses as $value => $label)
                                 <option value="{{ $value }}" {{ $milestone->status === $value ? 'selected' : '' }}>{{ $label }}</option>
@@ -486,10 +486,10 @@
         });
     }
 
-    {{-- Generic no-reload form submission: any form with data-ajax-target submits via
-         fetch, swaps in the freshly rendered HTML for each listed container id, then
-         reapplies the current tab's visibility/styling since swapped-in markup reflects
-         the server's default state, not the client's current tab selection. --}}
+    // Generic no-reload form submission: any form with data-ajax-target submits via
+    // fetch, swaps in the freshly rendered HTML for each listed container id, then
+    // reapplies the current tab's visibility/styling since swapped-in markup reflects
+    // the server's default state, not the client's current tab selection.
     (function () {
         function bindAjaxForms(root) {
             root.querySelectorAll('form[data-ajax-target]').forEach((form) => {
