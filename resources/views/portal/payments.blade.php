@@ -575,7 +575,17 @@
 
                     const targetIds = form.dataset.ajaxTarget.split(' ').filter(Boolean);
                     const submitBtn = form.querySelector('button[type="submit"]');
-                    if (submitBtn) submitBtn.disabled = true;
+                    const originalBtnHtml = submitBtn ? submitBtn.innerHTML : null;
+
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML =
+                            '<svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">' +
+                                '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>' +
+                                '<path class="opacity-75" fill="currentColor" d="M12 2a10 10 0 0110 10h-4a6 6 0 00-6-6V2z"></path>' +
+                            '</svg> Refreshing…';
+                        submitBtn.classList.add('inline-flex', 'items-center', 'gap-2');
+                    }
 
                     fetch(form.action, {
                         method: 'POST',
@@ -600,7 +610,10 @@
                             alert('Something went wrong. Please try again.');
                         })
                         .finally(function () {
-                            if (submitBtn) submitBtn.disabled = false;
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = originalBtnHtml;
+                            }
                         });
                 });
             });
