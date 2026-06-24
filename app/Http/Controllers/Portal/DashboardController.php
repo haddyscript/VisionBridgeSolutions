@@ -60,6 +60,10 @@ class DashboardController extends Controller
             }
 
             foreach ($upload->replies as $reply) {
+                if ($reply->user_id === $upload->user_id) {
+                    continue;
+                }
+
                 $label = CategoryController::CATEGORIES[$upload->category]['label'] ?? 'submission';
 
                 $activity->push([

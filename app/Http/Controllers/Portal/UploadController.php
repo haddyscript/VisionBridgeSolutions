@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ClientReplyMail;
 use App\Mail\NewClientUploadMail;
 use App\Mail\SystemAlertMail;
 use App\Models\Project;
@@ -89,6 +90,32 @@ class UploadController extends Controller
         }
 
         return back()->withErrors([$field => $message]);
+    }
+
+    public function reply(Request $request, Upload $upload)
+    {
+        $this->authorizeProject($request, $upload->project);
+
+        $validated = $request->validate([
+            'body' => ['required', 'string', 'max:5000'],
+        ]);
+
+        $reply = $upload->replies()->create([
+            'user_id' => $request->user()->id,
+            'body' => $validated['body'],
+        ]);
+
+        Mail::to(config('mail.admin_address'))->send(new ClientReplyMail($reply));
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Reply sent.',
+                'body' => $reply->body,
+                'sentAt' => $reply->created_at->diffForHumans(),
+            ]);
+        }
+
+        return back()->with('status', 'Reply sent.');
     }
 
     public function destroy(Request $request, Upload $upload)

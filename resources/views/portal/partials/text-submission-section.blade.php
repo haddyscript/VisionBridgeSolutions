@@ -72,19 +72,109 @@
                         </div>
                     </div>
 
-                    @foreach ($item->replies as $reply)
-                        {{-- VisionBridge reply bubble --}}
-                        <div class="flex items-start gap-2.5 max-w-[90%] mt-3">
-                            <span class="w-7 h-7 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0">VB</span>
-                            <div class="rounded-2xl rounded-tl-sm bg-navy text-white px-4 py-2.5">
-                                <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>
-                                <p class="text-sm whitespace-pre-line">{{ $reply->body }}</p>
-                                <p class="text-xs text-white/40 mt-1">{{ $reply->created_at->format('M j, Y \a\t g:ia') }}</p>
-                            </div>
-                        </div>
-                    @endforeach
+                    <div id="replies-{{ $item->id }}">
+                        @foreach ($item->replies as $reply)
+                            @if ($reply->user_id === $item->user_id)
+                                {{-- Your reply bubble --}}
+                                <div class="flex items-start justify-end gap-2.5 max-w-[90%] ml-auto mt-3">
+                                    <div class="rounded-2xl rounded-tr-sm bg-gold/10 px-4 py-2.5">
+                                        <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line">{{ $reply->body }}</p>
+                                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ $reply->created_at->format('M j, Y \a\t g:ia') }}</p>
+                                    </div>
+                                </div>
+                            @else
+                                {{-- VisionBridge reply bubble --}}
+                                <div class="flex items-start gap-2.5 max-w-[90%] mt-3">
+                                    <span class="w-7 h-7 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0">VB</span>
+                                    <div class="rounded-2xl rounded-tl-sm bg-navy text-white px-4 py-2.5">
+                                        <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>
+                                        <p class="text-sm whitespace-pre-line">{{ $reply->body }}</p>
+                                        <p class="text-xs text-white/40 mt-1">{{ $reply->created_at->format('M j, Y \a\t g:ia') }}</p>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+
+                    <div id="client-reply-toggle-{{ $item->id }}" class="flex justify-end mt-3">
+                        <button type="button" onclick="document.getElementById('client-reply-form-{{ $item->id }}').classList.remove('hidden'); document.getElementById('client-reply-toggle-{{ $item->id }}').classList.add('hidden');" class="text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3 py-1.5 rounded-full transition-colors">
+                            Reply
+                        </button>
+                    </div>
+
+                    <form id="client-reply-form-{{ $item->id }}" data-upload-id="{{ $item->id }}" method="POST" action="{{ route('portal.uploads.reply', $item) }}" class="ajax-client-reply-form hidden mt-3 flex items-start gap-2">
+                        @csrf
+                        <textarea name="body" rows="2" placeholder="Write a reply..." required
+                                  class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
+                        <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                            Reply
+                        </button>
+                    </form>
                 </div>
             @endforeach
         </div>
     @endif
 </div>
+
+<script>
+(function () {
+    document.querySelectorAll('.ajax-client-reply-form').forEach(function (form) {
+        if (form.dataset.bound) return;
+        form.dataset.bound = '1';
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const uploadId = form.dataset.uploadId;
+            const textarea = form.querySelector('textarea[name="body"]');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn.innerHTML;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML =
+                '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">' +
+                    '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>' +
+                    '<path class="opacity-75" fill="currentColor" d="M12 2a10 10 0 0110 10h-4a6 6 0 00-6-6V2z"></path>' +
+                '</svg> Sending…';
+            submitBtn.classList.add('inline-flex', 'items-center', 'gap-2');
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+                },
+                body: new FormData(form),
+            })
+                .then(function (response) {
+                    if (!response.ok) throw new Error('Request failed');
+                    return response.json();
+                })
+                .then(function (data) {
+                    const repliesContainer = document.getElementById('replies-' + uploadId);
+                    const bubble = document.createElement('div');
+                    bubble.className = 'flex items-start justify-end gap-2.5 max-w-[90%] ml-auto mt-3';
+                    bubble.innerHTML =
+                        '<div class="rounded-2xl rounded-tr-sm bg-gold/10 px-4 py-2.5">' +
+                            '<p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line"></p>' +
+                            '<p class="text-xs text-gray-400 dark:text-gray-500 mt-1"></p>' +
+                        '</div>';
+                    bubble.querySelector('.text-sm').textContent = data.body;
+                    bubble.querySelector('.text-xs').textContent = data.sentAt;
+                    repliesContainer.appendChild(bubble);
+
+                    textarea.value = '';
+                    form.classList.add('hidden');
+                    document.getElementById('client-reply-toggle-' + uploadId).classList.remove('hidden');
+                })
+                .catch(function () {
+                    alert('Could not send the reply. Please try again.');
+                })
+                .finally(function () {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
+                });
+        });
+    });
+})();
+</script>

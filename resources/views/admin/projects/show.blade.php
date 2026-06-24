@@ -393,15 +393,28 @@
 
                         <div id="replies-{{ $item->id }}">
                             @foreach ($item->replies as $reply)
-                                {{-- Admin reply bubble --}}
-                                <div class="flex items-start justify-end gap-2.5 max-w-[85%] ml-auto mt-3">
-                                    <div class="rounded-2xl rounded-tr-sm bg-navy text-white px-4 py-2.5">
-                                        <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>
-                                        <p class="text-sm whitespace-pre-line">{{ $reply->body }}</p>
-                                        <p class="text-xs text-white/40 mt-1.5">{{ $reply->created_at->diffForHumans() }}</p>
+                                @if ($reply->user_id === $item->user_id)
+                                    {{-- Client reply bubble --}}
+                                    <div class="flex items-start gap-2.5 max-w-[85%] mt-3">
+                                        <span class="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold flex items-center justify-center shrink-0">
+                                            {{ strtoupper(substr($item->user->name, 0, 1)) }}
+                                        </span>
+                                        <div class="rounded-2xl rounded-tl-sm bg-gray-100 dark:bg-gray-700/60 px-4 py-2.5">
+                                            <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line">{{ $reply->body }}</p>
+                                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5">{{ $reply->created_at->diffForHumans() }}</p>
+                                        </div>
                                     </div>
-                                    <span class="w-7 h-7 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0">VB</span>
-                                </div>
+                                @else
+                                    {{-- Admin reply bubble --}}
+                                    <div class="flex items-start justify-end gap-2.5 max-w-[85%] ml-auto mt-3">
+                                        <div class="rounded-2xl rounded-tr-sm bg-navy text-white px-4 py-2.5">
+                                            <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>
+                                            <p class="text-sm whitespace-pre-line">{{ $reply->body }}</p>
+                                            <p class="text-xs text-white/40 mt-1.5">{{ $reply->created_at->diffForHumans() }}</p>
+                                        </div>
+                                        <span class="w-7 h-7 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0">VB</span>
+                                    </div>
+                                @endif
                             @endforeach
                         </div>
 
