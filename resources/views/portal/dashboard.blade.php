@@ -185,6 +185,28 @@
             <div class="h-full bg-gold rounded-full" style="width: {{ $project->progressPercent() }}%"></div>
         </div>
 
+        @php $nextMilestone = $project->nextMilestone(); @endphp
+        @if ($nextMilestone)
+            <div class="flex items-center gap-2.5 mt-4 text-sm">
+                <span class="w-7 h-7 rounded-full bg-gold/15 text-gold-dark flex items-center justify-center shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </span>
+                <p class="text-gray-600 dark:text-gray-300">
+                    <span class="font-semibold text-navy dark:text-white">Next: {{ $nextMilestone->title }}</span>
+                    @if ($nextMilestone->due_date->isPast())
+                        <span class="text-red-500 font-medium">&middot; Overdue since {{ $nextMilestone->due_date->format('M j, Y') }}</span>
+                    @else
+                        <span class="text-gray-400 dark:text-gray-500">&middot; Due {{ $nextMilestone->due_date->format('M j, Y') }} ({{ $nextMilestone->due_date->diffForHumans() }})</span>
+                    @endif
+                </p>
+            </div>
+        @elseif (in_array($project->status, ['launched', 'maintenance'], true))
+            <p class="text-sm text-teal-dark mt-4 flex items-center gap-2">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                All milestones complete — your site is live!
+            </p>
+        @endif
+
         @if ($project->milestones->isNotEmpty())
             <ul class="mt-5 space-y-2">
                 @foreach ($project->milestones as $milestone)
