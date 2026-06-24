@@ -173,7 +173,12 @@
         </div>
 
         <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">
-            <span>Project Progress</span>
+            <span>
+                Project Progress
+                @if ($project->milestones->isNotEmpty() && ! $project->isProgressOverridden())
+                    <span class="text-xs text-gray-400 dark:text-gray-500">({{ $project->milestones->where('status', 'completed')->count() }} of {{ $project->milestones->count() }} milestones)</span>
+                @endif
+            </span>
             <span class="font-semibold text-navy dark:text-white">{{ $project->progressPercent() }}%</span>
         </div>
         <div class="w-full h-2 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">

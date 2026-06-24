@@ -24,6 +24,7 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'status' => ['sometimes', 'required', 'in:onboarding,in_progress,review,launched,maintenance'],
             'preview_url' => ['sometimes', 'nullable', 'url', 'max:255'],
+            'progress_override' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:100'],
         ]);
 
         $project->update($validated);

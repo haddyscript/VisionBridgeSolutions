@@ -12,6 +12,7 @@ class Project extends Model
         'description',
         'preview_url',
         'status',
+        'progress_override',
     ];
 
     public function user()
@@ -46,14 +47,29 @@ class Project extends Model
 
     public function progressPercent(): int
     {
-        $total = $this->milestones->count();
-
-        if ($total === 0) {
-            return 0;
+        if ($this->progress_override !== null) {
+            return $this->progress_override;
         }
 
-        $completed = $this->milestones->where('status', 'completed')->count();
+        $total = $this->milestones->count();
 
-        return (int) round(($completed / $total) * 100);
+        if ($total > 0) {
+            $completed = $this->milestones->where('status', 'completed')->count();
+
+            return (int) round(($completed / $total) * 100);
+        }
+
+        return match ($this->status) {
+            'onboarding' => 10,
+            'in_progress' => 40,
+            'review' => 75,
+            'launched', 'maintenance' => 100,
+            default => 0,
+        };
+    }
+
+    public function isProgressOverridden(): bool
+    {
+        return $this->progress_override !== null;
     }
 }

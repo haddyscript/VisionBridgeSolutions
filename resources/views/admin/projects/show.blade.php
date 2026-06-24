@@ -62,11 +62,41 @@
     </form>
 
     <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">
-        <span>Project Progress</span>
+        <span>
+            Project Progress
+            @if ($project->milestones->isNotEmpty() && ! $project->isProgressOverridden())
+                <span class="text-xs text-gray-400 dark:text-gray-500">({{ $project->milestones->where('status', 'completed')->count() }} of {{ $project->milestones->count() }} milestones completed)</span>
+            @elseif ($project->isProgressOverridden())
+                <span class="text-xs text-gold-dark">(manually set)</span>
+            @endif
+        </span>
         <span class="font-semibold text-navy dark:text-white">{{ $project->progressPercent() }}%</span>
     </div>
-    <div class="w-full h-2 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
+    <div class="w-full h-2 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden mb-3">
         <div class="h-full bg-gold rounded-full" style="width: {{ $project->progressPercent() }}%"></div>
+    </div>
+
+    <div class="flex items-center gap-2">
+        <form method="POST" action="{{ route('admin.projects.update', $project) }}" class="flex items-center gap-2">
+            @csrf
+            @method('PATCH')
+            <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 shrink-0">Override Progress %</label>
+            <input type="number" name="progress_override" min="0" max="100" placeholder="auto" value="{{ old('progress_override', $project->progress_override) }}"
+                   class="w-24 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+            <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                Save
+            </button>
+        </form>
+        @if ($project->isProgressOverridden())
+            <form method="POST" action="{{ route('admin.projects.update', $project) }}">
+                @csrf
+                @method('PATCH')
+                <input type="hidden" name="progress_override" value="">
+                <button type="submit" class="shrink-0 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white px-3 py-2 transition-colors">
+                    Clear (use auto)
+                </button>
+            </form>
+        @endif
     </div>
 </div>
 
