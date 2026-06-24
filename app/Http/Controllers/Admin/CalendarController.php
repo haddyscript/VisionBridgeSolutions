@@ -34,6 +34,9 @@ class CalendarController extends Controller
                 'time' => $task->time ? Carbon::parse($task->time)->format('g:ia') : null,
                 'url' => null,
                 'id' => $task->id,
+                'date' => $task->date->format('M j, Y'),
+                'notes' => $task->notes,
+                'destroyUrl' => route('admin.calendar.events.destroy', $task),
             ];
         }
 

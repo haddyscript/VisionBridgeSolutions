@@ -85,9 +85,17 @@
                                 @if ($event['time']) {{ $event['time'] }} &middot; @endif {{ $event['title'] }}
                             </a>
                         @else
-                            <span class="block text-[0.68rem] font-medium px-1.5 py-1 rounded-md truncate {{ $chipColors[$event['type']] }}">
+                            <button type="button"
+                                    onclick="openEventModal({
+                                        title: @js($event['title']),
+                                        date: @js($event['date'] ?? ''),
+                                        time: @js($event['time'] ?? ''),
+                                        notes: @js($event['notes'] ?? ''),
+                                        destroyUrl: @js($event['destroyUrl'] ?? ''),
+                                    })"
+                                    class="block w-full text-left text-[0.68rem] font-medium px-1.5 py-1 rounded-md truncate {{ $chipColors[$event['type']] }}">
                                 @if ($event['time']) {{ $event['time'] }} &middot; @endif {{ $event['title'] }}
-                            </span>
+                            </button>
                         @endif
                     @endforeach
                     @if (count($events) > 3)
@@ -124,5 +132,71 @@
         </div>
     </div>
 @endif
+
+{{-- Task detail modal --}}
+<div id="event-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div id="event-modal-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200" onclick="closeEventModal()"></div>
+
+    <div id="event-modal-panel" class="relative w-full max-w-sm transform scale-95 opacity-0 transition-all duration-200">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
+            <div class="w-11 h-11 rounded-full bg-navy/10 dark:bg-white/10 text-navy dark:text-white flex items-center justify-center mb-4">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            </div>
+            <h2 id="event-modal-title" class="font-display text-lg font-bold text-navy dark:text-white mb-1"></h2>
+            <p id="event-modal-datetime" class="text-sm text-gray-500 dark:text-gray-400 mb-4"></p>
+            <p id="event-modal-notes" class="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-line mb-6"></p>
+            <div class="flex justify-end gap-2.5">
+                <button type="button" onclick="closeEventModal()" class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    Close
+                </button>
+                <form id="event-modal-destroy-form" method="POST" action="" onsubmit="return confirm('Remove this task?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-red-500 hover:bg-red-600 text-white transition-colors">
+                        Remove
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openEventModal(event) {
+        document.getElementById('event-modal-title').textContent = event.title;
+
+        const parts = [event.date, event.time].filter(Boolean);
+        document.getElementById('event-modal-datetime').textContent = parts.join(' · ');
+
+        const notesEl = document.getElementById('event-modal-notes');
+        notesEl.textContent = event.notes || '';
+        notesEl.classList.toggle('hidden', !event.notes);
+
+        document.getElementById('event-modal-destroy-form').action = event.destroyUrl;
+
+        const modal = document.getElementById('event-modal');
+        const backdrop = document.getElementById('event-modal-backdrop');
+        const panel = document.getElementById('event-modal-panel');
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        requestAnimationFrame(function () {
+            backdrop.classList.remove('opacity-0');
+            panel.classList.remove('scale-95', 'opacity-0');
+        });
+    }
+
+    function closeEventModal() {
+        const backdrop = document.getElementById('event-modal-backdrop');
+        const panel = document.getElementById('event-modal-panel');
+
+        backdrop.classList.add('opacity-0');
+        panel.classList.add('scale-95', 'opacity-0');
+        setTimeout(function () {
+            document.getElementById('event-modal').classList.add('hidden');
+            document.getElementById('event-modal').classList.remove('flex');
+        }, 200);
+    }
+</script>
 
 @endsection
