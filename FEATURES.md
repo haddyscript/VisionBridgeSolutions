@@ -17,7 +17,7 @@ A plain-language summary of everything the site and client portal offer today.
 
 | Feature | What it does |
 |---|---|
-| Project Overview | Shows project status, a progress bar, and a timeline of milestones with due/completed dates |
+| Project Overview | Shows project status, a progress bar (with milestone count shown alongside it), and a timeline of milestones with due/completed dates |
 | Live Preview | A "View Live Preview" button on the Overview page that links straight to the in-progress staging site, once we've set one up |
 | Recent Activity feed | A single, up-to-date list on the Overview page showing milestones completed, files approved, replies from our team, and payments received — all in one place, newest first |
 | Project Files | Clients upload photos, videos, logos, documents, and marketing materials, organized into tabs under one menu item; shows upload progress and whether we've approved each file |
@@ -40,7 +40,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Contact Messages | An inbox of everyone who used the Contact form, sortable and searchable by page |
 | Consultations | An inbox of every consultation request — confirm, reschedule, or cancel with one click, which automatically emails the client |
 | Get Started Submissions | An inbox of every intake form — review details, then approve a project to instantly create the client's account and send their welcome email |
-| Project Management | Per-project page to reset a client's password, update project status, set a live preview link, manage milestones (with due dates), and review their files/content |
+| Project Management | Per-project page to reset a client's password, update project status, set a live preview link, manually override the progress percentage (or let it auto-calculate from milestones/status), manage milestones (with due dates), and review their files/content |
 | File Approval | Mark a client's uploaded file as approved, which they'll see reflected in their portal |
 | Revision Replies | Mark a client's change request as addressed, and reply to them directly (they get an email); replies can be edited later |
 | Payment Requests | Create one-time payment requests for a project, remove unpaid ones, and re-check a payment's status if something looks stuck |
