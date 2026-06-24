@@ -374,24 +374,47 @@
                                 @endif
                             </form>
                         </div>
-                        @if ($item->body)
-                            <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">{{ $item->body }}</p>
-                        @endif
-                        @if ($item->path)
-                            <a href="{{ $item->url() }}" target="_blank" class="mt-2 inline-flex items-center gap-2 text-sm text-gold-dark hover:underline">
-                                {{ $item->original_name }}
-                            </a>
-                        @endif
+                        {{-- Client message bubble --}}
+                        <div class="flex items-start gap-2.5 max-w-[85%]">
+                            <span class="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold flex items-center justify-center shrink-0">
+                                {{ strtoupper(substr($item->user->name, 0, 1)) }}
+                            </span>
+                            <div class="rounded-2xl rounded-tl-sm bg-gray-100 dark:bg-gray-700/60 px-4 py-2.5">
+                                @if ($item->body)
+                                    <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line">{{ $item->body }}</p>
+                                @endif
+                                @if ($item->path)
+                                    <a href="{{ $item->url() }}" target="_blank" class="inline-flex items-center gap-2 text-sm text-gold-dark hover:underline {{ $item->body ? 'mt-2' : '' }}">
+                                        {{ $item->original_name }}
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
 
                         @if ($item->hasAdminReply())
-                            <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700/60">
-                                <p class="text-xs font-semibold uppercase tracking-wide text-gold-dark mb-1">Your Reply</p>
-                                <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">{{ $item->admin_reply }}</p>
-                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Sent {{ $item->admin_replied_at->diffForHumans() }}</p>
+                            {{-- Admin reply bubble --}}
+                            <div id="reply-bubble-{{ $item->id }}" class="flex items-start justify-end gap-2.5 max-w-[85%] ml-auto mt-3">
+                                <div class="rounded-2xl rounded-tr-sm bg-navy text-white px-4 py-2.5">
+                                    <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>
+                                    <p class="text-sm whitespace-pre-line">{{ $item->admin_reply }}</p>
+                                    <div class="flex items-center justify-between gap-3 mt-1.5">
+                                        <p class="text-xs text-white/40">{{ $item->admin_replied_at->diffForHumans() }}</p>
+                                        <button type="button" onclick="document.getElementById('reply-bubble-{{ $item->id }}').classList.add('hidden'); document.getElementById('reply-form-{{ $item->id }}').classList.remove('hidden');" class="text-xs text-gold hover:underline shrink-0">
+                                            Edit
+                                        </button>
+                                    </div>
+                                </div>
+                                <span class="w-7 h-7 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0">VB</span>
+                            </div>
+                        @else
+                            <div class="flex justify-end mt-3">
+                                <button type="button" onclick="document.getElementById('reply-form-{{ $item->id }}').classList.remove('hidden'); this.closest('div').classList.add('hidden');" class="text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3 py-1.5 rounded-full transition-colors">
+                                    Reply
+                                </button>
                             </div>
                         @endif
 
-                        <form method="POST" action="{{ route('admin.uploads.reply', $item) }}" class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700/60 flex items-start gap-2">
+                        <form id="reply-form-{{ $item->id }}" method="POST" action="{{ route('admin.uploads.reply', $item) }}" class="hidden mt-3 flex items-start gap-2">
                             @csrf
                             @method('PATCH')
                             <textarea name="admin_reply" rows="2" placeholder="{{ $item->hasAdminReply() ? 'Update your reply...' : 'Reply to this submission...' }}" required

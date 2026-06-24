@@ -51,28 +51,36 @@
                         </form>
                     </div>
 
-                    @if ($item->body)
-                        <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line mt-2">{{ $item->body }}</p>
-                    @endif
-
-                    @if ($item->path)
-                        <a href="{{ $item->url() }}" target="_blank"
-                           class="mt-3 inline-flex items-center gap-2 rounded-lg bg-gold/8 border border-gold/20 px-3 py-2 text-sm text-navy dark:text-white hover:text-gold-dark transition-colors">
-                            <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 10-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
-                            </svg>
-                            <span class="truncate max-w-[220px]">{{ $item->original_name }}</span>
-                            @if ($item->formattedSize())
-                                <span class="text-xs text-gray-400 dark:text-gray-500">({{ $item->formattedSize() }})</span>
+                    {{-- Your message bubble --}}
+                    <div class="flex items-start justify-end gap-2.5 max-w-[90%] ml-auto mt-2">
+                        <div class="rounded-2xl rounded-tr-sm bg-gold/10 px-4 py-2.5">
+                            @if ($item->body)
+                                <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line">{{ $item->body }}</p>
                             @endif
-                        </a>
-                    @endif
+                            @if ($item->path)
+                                <a href="{{ $item->url() }}" target="_blank"
+                                   class="inline-flex items-center gap-2 text-sm text-navy dark:text-white hover:text-gold-dark transition-colors {{ $item->body ? 'mt-2' : '' }}">
+                                    <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 10-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                                    </svg>
+                                    <span class="truncate max-w-[200px]">{{ $item->original_name }}</span>
+                                    @if ($item->formattedSize())
+                                        <span class="text-xs text-gray-400 dark:text-gray-500">({{ $item->formattedSize() }})</span>
+                                    @endif
+                                </a>
+                            @endif
+                        </div>
+                    </div>
 
                     @if ($item->hasAdminReply())
-                        <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700/60 rounded-lg bg-navy/5 dark:bg-white/5 -mx-4 -mb-3.5 px-4 pb-3.5">
-                            <p class="text-xs font-semibold uppercase tracking-wide text-gold-dark mb-1">Reply from VisionBridge</p>
-                            <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">{{ $item->admin_reply }}</p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ $item->admin_replied_at->format('M j, Y \a\t g:ia') }}</p>
+                        {{-- VisionBridge reply bubble --}}
+                        <div class="flex items-start gap-2.5 max-w-[90%] mt-3">
+                            <span class="w-7 h-7 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0">VB</span>
+                            <div class="rounded-2xl rounded-tl-sm bg-navy text-white px-4 py-2.5">
+                                <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>
+                                <p class="text-sm whitespace-pre-line">{{ $item->admin_reply }}</p>
+                                <p class="text-xs text-white/40 mt-1">{{ $item->admin_replied_at->format('M j, Y \a\t g:ia') }}</p>
+                            </div>
                         </div>
                     @endif
                 </div>

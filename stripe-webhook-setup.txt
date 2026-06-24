@@ -1,7 +1,7 @@
 ### steps to register webhook to Stripe
  -> Developers → Webhooks
  -> Click "Add endpoint"
- -> paste https://johnny-davis-global-mission-main-yaxzaf.free.laravel.cloud/stripe/webhook
+ -> paste https://maroon-magpie-775843.hostingersite.com/stripe/webhook
 
 Under "Select events", add these:
 - checkout.session.completed
