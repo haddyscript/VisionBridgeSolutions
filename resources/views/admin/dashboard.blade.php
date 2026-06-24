@@ -13,6 +13,13 @@
         'launched'    => 'Launched',
         'maintenance' => 'Maintenance',
     ];
+    $statusColors = [
+        'onboarding'  => 'bg-gold/15 text-gold-dark',
+        'in_progress' => 'bg-navy/10 text-navy dark:bg-white/10 dark:text-white',
+        'review'      => 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300',
+        'launched'    => 'bg-teal/15 text-teal-dark',
+        'maintenance' => 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400',
+    ];
 @endphp
 
 @if ($projects->isEmpty())
@@ -50,7 +57,7 @@
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $project->name }}</td>
                         <td class="px-5 py-3.5">
-                            <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-gold/15 text-gold-dark">
+                            <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $statusColors[$project->status] ?? 'bg-gray-100 text-gray-500' }}">
                                 {{ $statusLabels[$project->status] ?? $project->status }}
                             </span>
                         </td>
