@@ -34,6 +34,11 @@ Goal: reduce wasted searches, redundant file reads, and unnecessary token spend.
 ## 7. Ask, Don't Assume
 - If a request is ambiguous (e.g. "fix the upload path"), ask me which file/module before touching anything, rather than guessing and exploring.
 
+## 8. FEATURES.md Sync
+- After any code change (edit, fix, new feature), check whether it warrants an entry in FEATURES.md (e.g. new feature, behavior change, new config/env var, removed functionality).
+- Minor internal fixes, refactors, or typo corrections do not need an entry.
+- If it does qualify, update FEATURES.md as part of the same response — don't ask permission first, just do it and mention it in the summary.
+- If unsure whether a change is "feature-worthy," default to asking me rather than skipping it silently.
 
 ## 10. File Editing Method
 - When reading or writing files, use direct file read/edit tools only.
