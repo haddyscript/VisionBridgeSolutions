@@ -11,26 +11,28 @@
             <h1 class="font-display text-2xl sm:text-3xl font-bold text-navy mb-2">Book A Consultation</h1>
             <p class="text-gray-500 text-sm mb-6">Pick a date and time that works for you, and we'll confirm your consultation within 24 hours.</p>
 
-            @if (session('status') === 'consultation_sent')
-                <div class="mb-6 text-sm text-teal-dark bg-teal/10 border border-teal/30 rounded-lg px-4 py-3">
-                    Thanks! Your consultation request has been received. We'll be in touch within 24 hours to confirm.
-                </div>
-            @endif
+            <div id="form-banner">
+                @if (session('status') === 'consultation_sent')
+                    <div class="mb-6 text-sm text-teal-dark bg-teal/10 border border-teal/30 rounded-lg px-4 py-3">
+                        Thanks! Your consultation request has been received. We'll be in touch within 24 hours to confirm.
+                    </div>
+                @endif
 
-            @if ($errors->any())
-                <div class="mb-6 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
-                    @foreach ($errors->all() as $error)
-                        <p>{{ $error }}</p>
-                    @endforeach
-                </div>
-            @endif
+                @if ($errors->any())
+                    <div class="mb-6 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+                        @foreach ($errors->all() as $error)
+                            <p>{{ $error }}</p>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
         </div>
 
         <form method="POST" action="{{ route('consultation.store') }}" id="consultation-form">
             @csrf
             <input type="hidden" name="preferred_at" id="preferred_at" value="{{ old('preferred_at') }}">
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-0 border-t border-gray-100">
+            <div id="consultation-form-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-0 border-t border-gray-100">
 
                 {{-- Calendar + time slots --}}
                 <div class="px-8 sm:px-10 py-8 border-b lg:border-b-0 lg:border-r border-gray-100">
@@ -118,8 +120,8 @@
                                   class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('message') }}</textarea>
                     </div>
 
-                    <button type="submit" class="btn-gold w-full text-center">
-                        Book Consultation
+                    <button type="submit" id="consultation-submit-btn" class="btn-gold w-full text-center inline-flex items-center justify-center gap-2">
+                        <span id="consultation-submit-label">Book Consultation</span>
                     </button>
                 </div>
             </div>
@@ -438,11 +440,65 @@
         renderCalendar();
     });
 
-    document.getElementById('consultation-form').addEventListener('submit', (e) => {
+    const consultationForm = document.getElementById('consultation-form');
+    const submitBtn        = document.getElementById('consultation-submit-btn');
+    const submitLabel      = document.getElementById('consultation-submit-label');
+    const formBanner       = document.getElementById('form-banner');
+    const formGrid         = document.getElementById('consultation-form-grid');
+
+    function setBanner(type, messages) {
+        const styles = type === 'success'
+            ? 'text-teal-dark bg-teal/10 border border-teal/30'
+            : 'text-red-600 bg-red-50 border border-red-200';
+
+        formBanner.innerHTML = '<div class="mb-6 text-sm ' + styles + ' rounded-lg px-4 py-3">' +
+            messages.map((m) => '<p>' + m + '</p>').join('') +
+            '</div>';
+    }
+
+    consultationForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
         if (!selectedDate || !selectedTime) {
-            e.preventDefault();
             window.showNotice('Please select a date and time for your consultation.');
+            return;
         }
+
+        submitBtn.disabled = true;
+        submitLabel.textContent = 'Booking...';
+        submitBtn.insertAdjacentHTML('afterbegin',
+            '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">' +
+                '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>' +
+                '<path class="opacity-75" fill="currentColor" d="M12 2a10 10 0 0110 10h-4a6 6 0 00-6-6V2z"></path>' +
+            '</svg>');
+
+        fetch(consultationForm.action, {
+            method: 'POST',
+            headers: { 'Accept': 'application/json' },
+            body: new FormData(consultationForm),
+        })
+            .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+            .then(({ ok, data }) => {
+                if (ok) {
+                    setBanner('success', [data.message]);
+                    formGrid.classList.add('hidden');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    const messages = data.errors
+                        ? Object.values(data.errors).flat()
+                        : [data.message || 'Something went wrong. Please try again.'];
+                    setBanner('error', messages);
+                }
+            })
+            .catch(() => {
+                setBanner('error', ['Something went wrong. Please try again.']);
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitLabel.textContent = 'Book Consultation';
+                const spinner = submitBtn.querySelector('svg');
+                if (spinner) spinner.remove();
+            });
     });
 
     renderCalendar();
