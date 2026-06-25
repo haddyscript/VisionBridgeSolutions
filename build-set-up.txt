@@ -2,9 +2,8 @@
 PLEASE RUN INSIDE THE DOCKER
 
 php artisan migrate --force
-
-
 php artisan seed --force
+php artisan migrate:fresh
 
 # Terminal
 docker compose exec app php artisan migrate --force
