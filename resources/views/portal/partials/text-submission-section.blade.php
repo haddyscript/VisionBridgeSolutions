@@ -5,19 +5,19 @@
     $items: collection of uploads already filtered to this category
 --}}
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
         <div>
             <h3 class="font-semibold text-navy dark:text-white mb-1">{{ $label }}</h3>
             <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Submit a new request below. To respond to an existing one, expand it on the right and use Reply.</p>
 
-            <form method="POST" action="{{ route('portal.uploads.store', $project) }}" enctype="multipart/form-data" class="space-y-3">
+            <form method="POST" action="{{ route('portal.uploads.store', $project) }}" enctype="multipart/form-data" class="space-y-2">
                 @csrf
                 <input type="hidden" name="category" value="{{ $category }}">
                 <textarea name="body" rows="3" placeholder="{{ $placeholder }}"
                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
-                <div class="flex items-center justify-between gap-3">
-                    <input type="file" name="file"
-                           class="max-w-[14rem] text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gold/15 file:text-navy dark:text-white file:font-semibold file:text-sm hover:file:bg-gold/25">
+                <input type="file" name="file"
+                       class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gold/15 file:text-navy dark:text-white file:font-semibold file:text-sm hover:file:bg-gold/25">
+                <div class="flex justify-end">
                     <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
                         Submit
                     </button>
@@ -26,15 +26,13 @@
         </div>
 
         <div class="lg:border-l lg:border-gray-200 dark:lg:border-gray-700 lg:pl-8">
-            <div class="flex items-center justify-between gap-2 mb-3">
-                <span class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Revision History</span>
-                <span class="text-xs text-gray-400 dark:text-gray-500">{{ $items->count() }} submission{{ $items->count() === 1 ? '' : 's' }}</span>
-            </div>
+            <h3 class="font-semibold text-navy dark:text-white mb-1">Revision History</h3>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">{{ $items->count() }} submission{{ $items->count() === 1 ? '' : 's' }} so far.</p>
 
             @if ($items->isEmpty())
                 <p class="text-sm text-gray-400 dark:text-gray-500">{{ $why ?? 'Nothing submitted yet.' }}</p>
             @else
-                <div class="space-y-2.5 lg:max-h-[34rem] lg:overflow-y-auto lg:pr-1">
+                <div class="space-y-2.5 lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto lg:pr-1">
             @foreach ($items as $item)
                 @php
                     $borderColor = match ($item->status) {
@@ -71,7 +69,7 @@
                     </summary>
 
                     {{-- Your message bubble --}}
-                    <div class="flex items-start justify-end gap-2 max-w-[90%] ml-auto mt-2">
+                    <div class="flex items-start justify-end gap-2 max-w-[75%] ml-auto mt-2">
                         <div class="rounded-2xl rounded-tr-sm bg-gold/10 px-3.5 py-2">
                             @if ($item->body)
                                 <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line">{{ $item->body }}</p>
@@ -95,7 +93,7 @@
                         @foreach ($item->replies as $reply)
                             @if ($reply->user_id === $item->user_id)
                                 {{-- Your reply bubble --}}
-                                <div class="flex items-start justify-end gap-2 max-w-[90%] ml-auto mt-2">
+                                <div class="flex items-start justify-end gap-2 max-w-[75%] ml-auto mt-2">
                                     <div class="rounded-2xl rounded-tr-sm bg-gold/10 px-3.5 py-2">
                                         <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line">{{ $reply->body }}</p>
                                         <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ $reply->created_at->format('M j, Y \a\t g:ia') }}</p>
@@ -103,7 +101,7 @@
                                 </div>
                             @else
                                 {{-- VisionBridge reply bubble --}}
-                                <div class="flex items-start gap-2 max-w-[90%] mt-2">
+                                <div class="flex items-start gap-2 max-w-[75%] mt-2">
                                     <span class="w-7 h-7 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0">VB</span>
                                     <div class="rounded-2xl rounded-tl-sm bg-navy text-white px-3.5 py-2">
                                         <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>
@@ -174,7 +172,7 @@
                 .then(function (data) {
                     const repliesContainer = document.getElementById('replies-' + uploadId);
                     const bubble = document.createElement('div');
-                    bubble.className = 'flex items-start justify-end gap-2 max-w-[90%] ml-auto mt-2';
+                    bubble.className = 'flex items-start justify-end gap-2 max-w-[75%] ml-auto mt-2';
                     bubble.innerHTML =
                         '<div class="rounded-2xl rounded-tr-sm bg-gold/10 px-3.5 py-2">' +
                             '<p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line"></p>' +
