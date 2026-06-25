@@ -81,11 +81,23 @@
                     <div>
                         <label for="phone_number" class="block text-sm font-semibold text-navy mb-1.5">Phone</label>
                         <div class="flex gap-2">
-                            <select id="phone_country" class="shrink-0 w-28 rounded-lg border border-gray-300 px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold bg-white">
-                                @foreach (config('dial_codes') as $country)
-                                    <option value="{{ $country['dial'] }}" {{ $country['name'] === 'United States' ? 'selected' : '' }}>{{ $country['dial'] }} {{ $country['name'] }}</option>
-                                @endforeach
-                            </select>
+                            <div class="relative shrink-0">
+                                <button type="button" id="phone-country-trigger"
+                                        class="w-[5.5rem] h-full rounded-lg border border-gray-300 px-2 py-2.5 text-sm flex items-center justify-between gap-1 bg-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                    <span id="phone-country-display" class="truncate"></span>
+                                    <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <div id="phone-country-list" class="hidden absolute z-20 mt-1 w-72 max-h-64 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg py-1">
+                                    @foreach (config('dial_codes') as $country)
+                                        <button type="button" class="phone-country-option w-full text-left px-3 py-2 text-sm hover:bg-gold/10 flex items-center gap-2.5"
+                                                data-dial="{{ $country['dial'] }}" data-flag="{{ $country['flag'] }}">
+                                            <span>{{ $country['flag'] }}</span>
+                                            <span class="text-gray-400 w-12 shrink-0">{{ $country['dial'] }}</span>
+                                            <span class="text-navy truncate">{{ $country['name'] }}</span>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
                             <input type="tel" id="phone_number" placeholder="Phone number"
                                    class="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                         </div>
@@ -112,9 +124,41 @@
 @section('scripts')
 <script>
 (function () {
-    const phoneCountry = document.getElementById('phone_country');
-    const phoneNumber  = document.getElementById('phone_number');
-    const phoneHidden  = document.getElementById('phone');
+    const phoneNumber      = document.getElementById('phone_number');
+    const phoneHidden      = document.getElementById('phone');
+    const countryTrigger   = document.getElementById('phone-country-trigger');
+    const countryDisplay   = document.getElementById('phone-country-display');
+    const countryList      = document.getElementById('phone-country-list');
+    const countryOptions   = document.querySelectorAll('.phone-country-option');
+
+    let selectedDial = '+1';
+    let selectedFlag = '🇺🇸';
+
+    function renderCountryDisplay() {
+        countryDisplay.textContent = selectedFlag + ' ' + selectedDial;
+    }
+
+    function selectCountry(dial, flag) {
+        selectedDial = dial;
+        selectedFlag = flag;
+        renderCountryDisplay();
+        countryList.classList.add('hidden');
+        syncPhone();
+    }
+
+    countryOptions.forEach((opt) => {
+        opt.addEventListener('click', () => selectCountry(opt.dataset.dial, opt.dataset.flag));
+    });
+
+    countryTrigger.addEventListener('click', () => {
+        countryList.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!countryTrigger.contains(e.target) && !countryList.contains(e.target)) {
+            countryList.classList.add('hidden');
+        }
+    });
 
     const oldPhone = @js(old('phone'));
     if (oldPhone) {
@@ -123,11 +167,11 @@
 
     function syncPhone() {
         const num = phoneNumber.value.trim();
-        phoneHidden.value = num ? (phoneCountry.value + ' ' + num) : '';
+        phoneHidden.value = num ? (selectedDial + ' ' + num) : '';
     }
 
-    phoneCountry.addEventListener('change', syncPhone);
     phoneNumber.addEventListener('input', syncPhone);
+    renderCountryDisplay();
     syncPhone();
 
     const monthLabel   = document.getElementById('cal-month-label');
