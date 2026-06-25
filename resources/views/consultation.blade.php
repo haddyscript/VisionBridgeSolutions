@@ -127,11 +127,59 @@
     </div>
 </section>
 
+{{-- Notice modal, used instead of the native browser alert() --}}
+<div id="notice-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div id="notice-modal-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
+
+    <div id="notice-modal-panel" class="relative w-full max-w-sm transform scale-95 opacity-0 transition-all duration-200">
+        <div class="bg-white rounded-2xl shadow-2xl p-6">
+            <div class="w-11 h-11 rounded-full bg-gold/15 text-gold-dark flex items-center justify-center mb-4">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14.18A1 1 0 003 19.5h18a1 1 0 00.86-1.46L13.71 3.86a1 1 0 00-1.72 0z"/></svg>
+            </div>
+            <h2 class="font-display text-lg font-bold text-navy mb-2">One more thing</h2>
+            <p id="notice-modal-message" class="text-sm text-gray-500 mb-6"></p>
+            <div class="flex justify-end">
+                <button type="button" id="notice-modal-ok" class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-gold hover:bg-gold-dark text-navy-dark transition-colors">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
 <script>
 (function () {
+    const noticeModal   = document.getElementById('notice-modal');
+    const noticeBackdrop = document.getElementById('notice-modal-backdrop');
+    const noticePanel   = document.getElementById('notice-modal-panel');
+    const noticeMessage = document.getElementById('notice-modal-message');
+    const noticeOk      = document.getElementById('notice-modal-ok');
+
+    window.showNotice = function (message) {
+        noticeMessage.textContent = message;
+        noticeModal.classList.remove('hidden');
+        noticeModal.classList.add('flex');
+        requestAnimationFrame(() => {
+            noticeBackdrop.classList.remove('opacity-0');
+            noticePanel.classList.remove('scale-95', 'opacity-0');
+        });
+    };
+
+    function closeNotice() {
+        noticeBackdrop.classList.add('opacity-0');
+        noticePanel.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            noticeModal.classList.add('hidden');
+            noticeModal.classList.remove('flex');
+        }, 200);
+    }
+
+    noticeOk.addEventListener('click', closeNotice);
+    noticeBackdrop.addEventListener('click', closeNotice);
+
     const phoneNumber      = document.getElementById('phone_number');
     const phoneHidden      = document.getElementById('phone');
     const countryHidden    = document.getElementById('country');
@@ -393,7 +441,7 @@
     document.getElementById('consultation-form').addEventListener('submit', (e) => {
         if (!selectedDate || !selectedTime) {
             e.preventDefault();
-            alert('Please select a date and time for your consultation.');
+            window.showNotice('Please select a date and time for your consultation.');
         }
     });
 
