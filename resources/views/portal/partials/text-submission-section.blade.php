@@ -5,34 +5,36 @@
     $items: collection of uploads already filtered to this category
 --}}
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-    <div class="flex items-center justify-between mb-1">
-        <h3 class="font-semibold text-navy dark:text-white">{{ $label }}</h3>
-        <span class="text-xs text-gray-400 dark:text-gray-500">{{ $items->count() }} submission{{ $items->count() === 1 ? '' : 's' }}</span>
-    </div>
-    <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Submit a new request below. To respond to an existing one, expand it below and use Reply.</p>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+        <div>
+            <h3 class="font-semibold text-navy dark:text-white mb-1">{{ $label }}</h3>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Submit a new request below. To respond to an existing one, expand it on the right and use Reply.</p>
 
-    <form method="POST" action="{{ route('portal.uploads.store', $project) }}" enctype="multipart/form-data" class="space-y-3 mb-6">
-        @csrf
-        <input type="hidden" name="category" value="{{ $category }}">
-        <textarea name="body" rows="3" placeholder="{{ $placeholder }}"
-                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
-        <div class="flex items-center justify-between gap-3">
-            <input type="file" name="file"
-                   class="max-w-[14rem] text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gold/15 file:text-navy dark:text-white file:font-semibold file:text-sm hover:file:bg-gold/25">
-            <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-                Submit
-            </button>
+            <form method="POST" action="{{ route('portal.uploads.store', $project) }}" enctype="multipart/form-data" class="space-y-3">
+                @csrf
+                <input type="hidden" name="category" value="{{ $category }}">
+                <textarea name="body" rows="3" placeholder="{{ $placeholder }}"
+                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
+                <div class="flex items-center justify-between gap-3">
+                    <input type="file" name="file"
+                           class="max-w-[14rem] text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gold/15 file:text-navy dark:text-white file:font-semibold file:text-sm hover:file:bg-gold/25">
+                    <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                        Submit
+                    </button>
+                </div>
+            </form>
         </div>
-    </form>
 
-    @if ($items->isEmpty())
-        <p class="text-sm text-gray-400 dark:text-gray-500">{{ $why ?? 'Nothing submitted yet.' }}</p>
-    @else
-        <div class="flex items-center gap-2 mb-3">
-            <span class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Revision History</span>
-            <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
-        </div>
-        <div class="space-y-2.5">
+        <div class="lg:border-l lg:border-gray-200 dark:lg:border-gray-700 lg:pl-8">
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Revision History</span>
+                <span class="text-xs text-gray-400 dark:text-gray-500">{{ $items->count() }} submission{{ $items->count() === 1 ? '' : 's' }}</span>
+            </div>
+
+            @if ($items->isEmpty())
+                <p class="text-sm text-gray-400 dark:text-gray-500">{{ $why ?? 'Nothing submitted yet.' }}</p>
+            @else
+                <div class="space-y-2.5 lg:max-h-[34rem] lg:overflow-y-auto lg:pr-1">
             @foreach ($items as $item)
                 @php
                     $borderColor = match ($item->status) {
@@ -129,8 +131,10 @@
                     </form>
                 </details>
             @endforeach
+                </div>
+            @endif
         </div>
-    @endif
+    </div>
 </div>
 
 <script>
