@@ -201,7 +201,12 @@
             @if ($consultation->preferred_at)
                 <div class="flex items-center justify-between">
                     <span class="text-gray-400 dark:text-gray-500">Requested Time</span>
-                    <span class="text-navy dark:text-white font-medium">{{ $consultation->preferred_at->format('M j, Y \a\t g:ia') }}</span>
+                    <span class="text-navy dark:text-white font-medium">
+                        {{ $consultation->preferred_at->format('M j, Y \a\t g:ia') }}
+                        @if ($consultation->timezone)
+                            <span class="text-xs text-gray-400 dark:text-gray-500">({{ $consultation->timezone }})</span>
+                        @endif
+                    </span>
                 </div>
             @endif
             <div class="flex items-center justify-between">

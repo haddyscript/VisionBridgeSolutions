@@ -12,7 +12,15 @@ class ConsultationController extends Controller
 {
     public function create()
     {
-        return view('consultation');
+        $bookedSlots = Consultation::where('preferred_at', '>=', now())
+            ->whereIn('status', ['new', 'confirmed', 'rescheduled'])
+            ->pluck('preferred_at')
+            ->map(fn ($dt) => $dt->format('Y-m-d\TH:i'))
+            ->values();
+
+        return view('consultation', [
+            'bookedSlots' => $bookedSlots,
+        ]);
     }
 
     public function store(Request $request)
@@ -22,9 +30,27 @@ class ConsultationController extends Controller
             'email' => ['required', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
             'country' => ['nullable', 'string', 'max:100'],
+            'timezone' => ['nullable', 'string', 'max:100'],
             'preferred_at' => ['nullable', 'date'],
             'message' => ['nullable', 'string', 'max:5000'],
         ]);
+
+        $slotTaken = ! empty($validated['preferred_at']) && Consultation::where('preferred_at', $validated['preferred_at'])
+            ->whereIn('status', ['new', 'confirmed', 'rescheduled'])
+            ->exists();
+
+        if ($slotTaken) {
+            $message = 'That time slot was just booked by someone else. Please pick another.';
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => $message,
+                    'errors' => ['preferred_at' => [$message]],
+                ], 422);
+            }
+
+            return back()->withErrors(['preferred_at' => $message])->withInput();
+        }
 
         $consultation = Consultation::create($validated);
 

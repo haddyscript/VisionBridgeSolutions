@@ -11,6 +11,7 @@ class Consultation extends Model
         'email',
         'phone',
         'country',
+        'timezone',
         'preferred_at',
         'message',
         'status',

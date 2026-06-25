@@ -31,6 +31,7 @@
         <form method="POST" action="{{ route('consultation.store') }}" id="consultation-form">
             @csrf
             <input type="hidden" name="preferred_at" id="preferred_at" value="{{ old('preferred_at') }}">
+            <input type="hidden" name="timezone" id="timezone" value="{{ old('timezone') }}">
 
             <div id="consultation-form-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-0 border-t border-gray-100">
 
@@ -56,7 +57,8 @@
                     <div id="cal-grid" class="grid grid-cols-7 gap-1 mb-6"></div>
 
                     <div id="slots-wrap" class="hidden">
-                        <p id="slots-label" class="text-sm font-semibold text-navy mb-3"></p>
+                        <p id="slots-label" class="text-sm font-semibold text-navy mb-1"></p>
+                        <p id="slots-timezone" class="text-xs text-gray-400 mb-3"></p>
                         <div id="slots-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-56 overflow-y-auto pr-1"></div>
                     </div>
 
@@ -265,16 +267,24 @@
     renderCountryDisplay();
     syncPhone();
 
+    const visitorTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    document.getElementById('timezone').value = visitorTimezone;
+
+    const bookedSlots = new Set(@json($bookedSlots));
+
     const monthLabel   = document.getElementById('cal-month-label');
     const calGrid      = document.getElementById('cal-grid');
     const prevBtn       = document.getElementById('cal-prev');
     const nextBtn       = document.getElementById('cal-next');
     const slotsWrap     = document.getElementById('slots-wrap');
     const slotsLabel    = document.getElementById('slots-label');
+    const slotsTimezone = document.getElementById('slots-timezone');
     const slotsGrid     = document.getElementById('slots-grid');
     const slotsEmpty    = document.getElementById('slots-empty');
     const preferredAt   = document.getElementById('preferred_at');
     const summary       = document.getElementById('selection-summary');
+
+    slotsTimezone.textContent = 'Times shown in your local timezone (' + visitorTimezone + ')';
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -349,6 +359,11 @@
         return displayHour + ':' + String(minute).padStart(2, '0') + ' ' + period;
     }
 
+    function slotKey(date) {
+        const pad = (n) => String(n).padStart(2, '0');
+        return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate()) + 'T' + pad(date.getHours()) + ':' + pad(date.getMinutes());
+    }
+
     function renderSlots() {
         slotsGrid.innerHTML = '';
 
@@ -375,15 +390,22 @@
 
                 hasSlot = true;
                 const value = hour + ':' + String(minute).padStart(2, '0');
+                const isBooked = bookedSlots.has(slotKey(slotDate));
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.textContent = formatTime(hour, minute);
-                btn.className = 'text-sm font-medium rounded-lg border px-3 py-2 transition-colors ' +
-                    (selectedTime === value
-                        ? 'bg-gold border-gold text-navy font-bold'
-                        : 'border-gray-300 text-navy hover:border-gold hover:bg-gold/10');
+                btn.textContent = formatTime(hour, minute) + (isBooked ? ' · Booked' : '');
 
-                btn.addEventListener('click', () => selectTime(value));
+                if (isBooked) {
+                    btn.disabled = true;
+                    btn.className = 'text-sm font-medium rounded-lg border border-gray-200 px-3 py-2 text-gray-300 cursor-not-allowed';
+                } else {
+                    btn.className = 'text-sm font-medium rounded-lg border px-3 py-2 transition-colors ' +
+                        (selectedTime === value
+                            ? 'bg-gold border-gold text-navy font-bold'
+                            : 'border-gray-300 text-navy hover:border-gold hover:bg-gold/10');
+                    btn.addEventListener('click', () => selectTime(value));
+                }
+
                 slotsGrid.appendChild(btn);
             }
         }
