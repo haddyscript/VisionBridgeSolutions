@@ -56,7 +56,9 @@
                             <br>
                             <a href="mailto:{{ $consultation->email }}" class="text-sm text-gold-dark hover:underline">{{ $consultation->email }}</a>
                             @if ($consultation->phone)
-                                <span class="text-sm text-gray-400 dark:text-gray-500"> &middot; {{ $consultation->phone }}</span>
+                                <span class="text-sm text-gray-400 dark:text-gray-500">
+                                    &middot; @if ($consultation->countryFlag()) {{ $consultation->countryFlag() }} @endif {{ $consultation->phone }}
+                                </span>
                             @endif
                         </div>
                     </div>

@@ -21,6 +21,7 @@ class ConsultationController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
+            'country' => ['nullable', 'string', 'max:100'],
             'preferred_at' => ['nullable', 'date'],
             'message' => ['nullable', 'string', 'max:5000'],
         ]);

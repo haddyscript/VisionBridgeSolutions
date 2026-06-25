@@ -10,6 +10,7 @@ class Consultation extends Model
         'name',
         'email',
         'phone',
+        'country',
         'preferred_at',
         'message',
         'status',
@@ -31,5 +32,16 @@ class Consultation extends Model
     public function isRead(): bool
     {
         return $this->read_at !== null;
+    }
+
+    public function countryFlag(): ?string
+    {
+        if (! $this->country) {
+            return null;
+        }
+
+        $match = collect(config('dial_codes'))->firstWhere('name', $this->country);
+
+        return $match['flag'] ?? null;
     }
 }

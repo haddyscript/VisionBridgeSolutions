@@ -95,7 +95,7 @@
                                     <div class="max-h-56 overflow-y-auto py-1">
                                         @foreach (config('dial_codes') as $country)
                                             <button type="button" class="phone-country-option w-full text-left px-3 py-2 text-sm hover:bg-gold/10 flex items-center gap-2.5"
-                                                    data-dial="{{ $country['dial'] }}" data-flag="{{ $country['flag'] }}" data-name="{{ strtolower($country['name']) }}">
+                                                    data-dial="{{ $country['dial'] }}" data-flag="{{ $country['flag'] }}" data-name="{{ strtolower($country['name']) }}" data-full-name="{{ $country['name'] }}">
                                                 <span>{{ $country['flag'] }}</span>
                                                 <span class="text-gray-400 w-12 shrink-0">{{ $country['dial'] }}</span>
                                                 <span class="text-navy truncate">{{ $country['name'] }}</span>
@@ -109,6 +109,7 @@
                                    class="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                         </div>
                         <input type="hidden" name="phone" id="phone" value="{{ old('phone') }}">
+                        <input type="hidden" name="country" id="country" value="{{ old('country') }}">
                     </div>
 
                     <div>
@@ -133,6 +134,7 @@
 (function () {
     const phoneNumber      = document.getElementById('phone_number');
     const phoneHidden      = document.getElementById('phone');
+    const countryHidden    = document.getElementById('country');
     const countryTrigger   = document.getElementById('phone-country-trigger');
     const countryDisplay   = document.getElementById('phone-country-display');
     const countryList      = document.getElementById('phone-country-list');
@@ -142,14 +144,17 @@
 
     let selectedDial = '+1';
     let selectedFlag = '🇺🇸';
+    let selectedName = 'United States';
 
     function renderCountryDisplay() {
         countryDisplay.textContent = selectedFlag + ' ' + selectedDial;
+        countryHidden.value = selectedName;
     }
 
-    function selectCountry(dial, flag) {
+    function selectCountry(dial, flag, name) {
         selectedDial = dial;
         selectedFlag = flag;
+        selectedName = name;
         renderCountryDisplay();
         closeCountryList();
         syncPhone();
@@ -180,7 +185,7 @@
     }
 
     countryOptions.forEach((opt) => {
-        opt.addEventListener('click', () => selectCountry(opt.dataset.dial, opt.dataset.flag));
+        opt.addEventListener('click', () => selectCountry(opt.dataset.dial, opt.dataset.flag, opt.dataset.fullName));
     });
 
     countrySearch.addEventListener('input', filterCountries);
