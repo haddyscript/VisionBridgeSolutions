@@ -79,9 +79,17 @@
                     </div>
 
                     <div>
-                        <label for="phone" class="block text-sm font-semibold text-navy mb-1.5">Phone</label>
-                        <input type="tel" name="phone" id="phone" value="{{ old('phone') }}"
-                               class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                        <label for="phone_number" class="block text-sm font-semibold text-navy mb-1.5">Phone</label>
+                        <div class="flex gap-2">
+                            <select id="phone_country" class="shrink-0 w-28 rounded-lg border border-gray-300 px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold bg-white">
+                                @foreach (config('dial_codes') as $country)
+                                    <option value="{{ $country['dial'] }}" {{ $country['name'] === 'United States' ? 'selected' : '' }}>{{ $country['dial'] }} {{ $country['name'] }}</option>
+                                @endforeach
+                            </select>
+                            <input type="tel" id="phone_number" placeholder="Phone number"
+                                   class="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                        </div>
+                        <input type="hidden" name="phone" id="phone" value="{{ old('phone') }}">
                     </div>
 
                     <div>
@@ -104,6 +112,24 @@
 @section('scripts')
 <script>
 (function () {
+    const phoneCountry = document.getElementById('phone_country');
+    const phoneNumber  = document.getElementById('phone_number');
+    const phoneHidden  = document.getElementById('phone');
+
+    const oldPhone = @js(old('phone'));
+    if (oldPhone) {
+        phoneNumber.value = oldPhone;
+    }
+
+    function syncPhone() {
+        const num = phoneNumber.value.trim();
+        phoneHidden.value = num ? (phoneCountry.value + ' ' + num) : '';
+    }
+
+    phoneCountry.addEventListener('change', syncPhone);
+    phoneNumber.addEventListener('input', syncPhone);
+    syncPhone();
+
     const monthLabel   = document.getElementById('cal-month-label');
     const calGrid      = document.getElementById('cal-grid');
     const prevBtn       = document.getElementById('cal-prev');
