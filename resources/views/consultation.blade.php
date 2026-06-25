@@ -87,15 +87,22 @@
                                     <span id="phone-country-display" class="truncate"></span>
                                     <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
-                                <div id="phone-country-list" class="hidden absolute z-20 mt-1 w-72 max-h-64 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg py-1">
-                                    @foreach (config('dial_codes') as $country)
-                                        <button type="button" class="phone-country-option w-full text-left px-3 py-2 text-sm hover:bg-gold/10 flex items-center gap-2.5"
-                                                data-dial="{{ $country['dial'] }}" data-flag="{{ $country['flag'] }}">
-                                            <span>{{ $country['flag'] }}</span>
-                                            <span class="text-gray-400 w-12 shrink-0">{{ $country['dial'] }}</span>
-                                            <span class="text-navy truncate">{{ $country['name'] }}</span>
-                                        </button>
-                                    @endforeach
+                                <div id="phone-country-list" class="hidden absolute z-20 mt-1 w-72 bg-white border border-gray-200 rounded-lg shadow-lg">
+                                    <div class="p-2 border-b border-gray-100">
+                                        <input type="text" id="phone-country-search" placeholder="Search country..."
+                                               class="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                    </div>
+                                    <div class="max-h-56 overflow-y-auto py-1">
+                                        @foreach (config('dial_codes') as $country)
+                                            <button type="button" class="phone-country-option w-full text-left px-3 py-2 text-sm hover:bg-gold/10 flex items-center gap-2.5"
+                                                    data-dial="{{ $country['dial'] }}" data-flag="{{ $country['flag'] }}" data-name="{{ strtolower($country['name']) }}">
+                                                <span>{{ $country['flag'] }}</span>
+                                                <span class="text-gray-400 w-12 shrink-0">{{ $country['dial'] }}</span>
+                                                <span class="text-navy truncate">{{ $country['name'] }}</span>
+                                            </button>
+                                        @endforeach
+                                        <p id="phone-country-empty" class="hidden text-sm text-gray-400 text-center py-4">No countries found.</p>
+                                    </div>
                                 </div>
                             </div>
                             <input type="tel" id="phone_number" placeholder="Phone number"
@@ -130,6 +137,8 @@
     const countryDisplay   = document.getElementById('phone-country-display');
     const countryList      = document.getElementById('phone-country-list');
     const countryOptions   = document.querySelectorAll('.phone-country-option');
+    const countrySearch    = document.getElementById('phone-country-search');
+    const countryEmpty     = document.getElementById('phone-country-empty');
 
     let selectedDial = '+1';
     let selectedFlag = '🇺🇸';
@@ -142,21 +151,48 @@
         selectedDial = dial;
         selectedFlag = flag;
         renderCountryDisplay();
-        countryList.classList.add('hidden');
+        closeCountryList();
         syncPhone();
+    }
+
+    function filterCountries() {
+        const query = countrySearch.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        countryOptions.forEach((opt) => {
+            const matches = opt.dataset.name.includes(query) || opt.dataset.dial.includes(query);
+            opt.classList.toggle('hidden', !matches);
+            if (matches) visibleCount++;
+        });
+
+        countryEmpty.classList.toggle('hidden', visibleCount > 0);
+    }
+
+    function openCountryList() {
+        countryList.classList.remove('hidden');
+        countrySearch.value = '';
+        filterCountries();
+        countrySearch.focus();
+    }
+
+    function closeCountryList() {
+        countryList.classList.add('hidden');
     }
 
     countryOptions.forEach((opt) => {
         opt.addEventListener('click', () => selectCountry(opt.dataset.dial, opt.dataset.flag));
     });
 
+    countrySearch.addEventListener('input', filterCountries);
+    countrySearch.addEventListener('click', (e) => e.stopPropagation());
+
     countryTrigger.addEventListener('click', () => {
-        countryList.classList.toggle('hidden');
+        countryList.classList.contains('hidden') ? openCountryList() : closeCountryList();
     });
 
     document.addEventListener('click', (e) => {
         if (!countryTrigger.contains(e.target) && !countryList.contains(e.target)) {
-            countryList.classList.add('hidden');
+            closeCountryList();
         }
     });
 
