@@ -69,8 +69,8 @@
                     </summary>
 
                     {{-- Your message bubble --}}
-                    <div class="flex items-start justify-end gap-2.5 max-w-[90%] ml-auto mt-3">
-                        <div class="rounded-2xl rounded-tr-sm bg-gold/10 px-4 py-2.5">
+                    <div class="flex items-start justify-end gap-2 max-w-[90%] ml-auto mt-2">
+                        <div class="rounded-2xl rounded-tr-sm bg-gold/10 px-3.5 py-2">
                             @if ($item->body)
                                 <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line">{{ $item->body }}</p>
                             @endif
@@ -93,17 +93,17 @@
                         @foreach ($item->replies as $reply)
                             @if ($reply->user_id === $item->user_id)
                                 {{-- Your reply bubble --}}
-                                <div class="flex items-start justify-end gap-2.5 max-w-[90%] ml-auto mt-3">
-                                    <div class="rounded-2xl rounded-tr-sm bg-gold/10 px-4 py-2.5">
+                                <div class="flex items-start justify-end gap-2 max-w-[90%] ml-auto mt-2">
+                                    <div class="rounded-2xl rounded-tr-sm bg-gold/10 px-3.5 py-2">
                                         <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line">{{ $reply->body }}</p>
                                         <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ $reply->created_at->format('M j, Y \a\t g:ia') }}</p>
                                     </div>
                                 </div>
                             @else
                                 {{-- VisionBridge reply bubble --}}
-                                <div class="flex items-start gap-2.5 max-w-[90%] mt-3">
+                                <div class="flex items-start gap-2 max-w-[90%] mt-2">
                                     <span class="w-7 h-7 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0">VB</span>
-                                    <div class="rounded-2xl rounded-tl-sm bg-navy text-white px-4 py-2.5">
+                                    <div class="rounded-2xl rounded-tl-sm bg-navy text-white px-3.5 py-2">
                                         <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>
                                         <p class="text-sm whitespace-pre-line">{{ $reply->body }}</p>
                                         <p class="text-xs text-white/40 mt-1">{{ $reply->created_at->format('M j, Y \a\t g:ia') }}</p>
@@ -113,13 +113,13 @@
                         @endforeach
                     </div>
 
-                    <div id="client-reply-toggle-{{ $item->id }}" class="flex justify-end mt-3">
+                    <div id="client-reply-toggle-{{ $item->id }}" class="flex justify-end mt-2">
                         <button type="button" onclick="document.getElementById('client-reply-form-{{ $item->id }}').classList.remove('hidden'); document.getElementById('client-reply-toggle-{{ $item->id }}').classList.add('hidden');" class="text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3 py-1.5 rounded-full transition-colors">
                             Reply
                         </button>
                     </div>
 
-                    <form id="client-reply-form-{{ $item->id }}" data-upload-id="{{ $item->id }}" method="POST" action="{{ route('portal.uploads.reply', $item) }}" class="ajax-client-reply-form hidden mt-3 flex items-start gap-2">
+                    <form id="client-reply-form-{{ $item->id }}" data-upload-id="{{ $item->id }}" method="POST" action="{{ route('portal.uploads.reply', $item) }}" class="ajax-client-reply-form hidden mt-2 flex items-start gap-2">
                         @csrf
                         <textarea name="body" rows="2" placeholder="Write a reply..." required
                                   class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
@@ -170,9 +170,9 @@
                 .then(function (data) {
                     const repliesContainer = document.getElementById('replies-' + uploadId);
                     const bubble = document.createElement('div');
-                    bubble.className = 'flex items-start justify-end gap-2.5 max-w-[90%] ml-auto mt-3';
+                    bubble.className = 'flex items-start justify-end gap-2 max-w-[90%] ml-auto mt-2';
                     bubble.innerHTML =
-                        '<div class="rounded-2xl rounded-tr-sm bg-gold/10 px-4 py-2.5">' +
+                        '<div class="rounded-2xl rounded-tr-sm bg-gold/10 px-3.5 py-2">' +
                             '<p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line"></p>' +
                             '<p class="text-xs text-gray-400 dark:text-gray-500 mt-1"></p>' +
                         '</div>';
