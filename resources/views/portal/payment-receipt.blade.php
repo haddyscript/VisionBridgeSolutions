@@ -42,8 +42,8 @@
 
         <div class="px-8 py-7" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
             <div class="flex items-center gap-2.5 mb-6">
-                <div class="w-8 h-8 bg-gold rounded-md flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5 text-navy" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2L2 7v11h5v-6h6v6h5V7L10 2z"/></svg>
+                <div class="w-8 h-8 rounded-md overflow-hidden shrink-0">
+                    <img src="{{ asset('image/logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
                 </div>
                 <span class="text-white font-bold text-base">VisionBridge <span class="text-gold">Solutions</span></span>
             </div>

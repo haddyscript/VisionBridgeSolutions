@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Client Portal – VisionBridge Solutions')</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><rect width='20' height='20' rx='3' fill='%23C9A84C'/><path d='M10 2L2 7v11h5v-6h6v6h5V7L10 2z' fill='%23111D33'/></svg>">
+    <link rel="icon" type="image/png" href="{{ asset('image/logo-v2.png') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,10 +50,8 @@
         {{-- Sidebar --}}
         <aside id="portal-sidebar" class="fixed inset-y-0 left-0 z-40 w-64 flex flex-col -translate-x-full md:translate-x-0 transition-transform duration-200" style="background:#111D33;">
             <div class="flex items-center gap-2.5 px-6 h-16 border-b border-white/10 shrink-0">
-                <div class="w-8 h-8 bg-gold rounded-md flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5 text-navy" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 2L2 7v11h5v-6h6v6h5V7L10 2z"/>
-                    </svg>
+                <div class="w-8 h-8 rounded-md overflow-hidden shrink-0">
+                    <img src="{{ asset('image/logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
                 </div>
                 <span class="text-white font-bold text-sm leading-tight">VisionBridge <span class="text-gold">Solutions</span></span>
             </div>

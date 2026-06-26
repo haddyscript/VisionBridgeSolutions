@@ -6,8 +6,8 @@
     <title>VisionBridge Solutions</title>
     <meta name="description" content="@yield('description', 'Custom websites designed to strengthen your brand, expand your reach, and protect your online presence.')">
 
-    <!-- Favicon — gold square with navy house icon, matching the navbar logo -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><rect width='20' height='20' rx='3' fill='%23C9A84C'/><path d='M10 2L2 7v11h5v-6h6v6h5V7L10 2z' fill='%232F3A45'/></svg>">
+    <!-- Favicon — VisionBridge logo mark, matching the navbar logo -->
+    <link rel="icon" type="image/png" href="{{ asset('image/logo-v2.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,7 +25,7 @@
                         gold:  { DEFAULT: '#C9A84C', light: '#DFC06A', dark: '#A8872E' },
                         teal:  { DEFAULT: '#2CA6A4', light: '#3FBDBB', dark: '#1F7A78' },
                         sky:   { DEFAULT: '#EAF3F8' },
-                        lightgray: { DEFAULT: '#F8F9FA' },
+                        lightgray: { DEFAULT: '#FFFFFF' },
                     },
                     fontFamily: {
                         sans:    ['Inter', 'sans-serif'],
@@ -1256,10 +1256,8 @@
 
             {{-- Logo --}}
             <a id="nav-logo" href="{{ $homeAnchor }}#hero" class="flex items-center gap-2.5 shrink-0 opacity-0">
-                <div class="w-8 h-8 bg-gold rounded-md flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5 text-navy" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 2L2 7v11h5v-6h6v6h5V7L10 2z"/>
-                    </svg>
+                <div class="w-8 h-8 rounded-md overflow-hidden shrink-0">
+                    <img src="{{ asset('image/logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
                 </div>
                 <span class="text-navy font-bold text-lg leading-tight">VisionBridge<br>
                     <span class="text-gold text-xs font-medium tracking-widest uppercase">Solutions</span>
@@ -1387,7 +1385,7 @@
     <!-- ═══════════════════════════════════════════════════════
          FOOTER — fixed behind page content (unpeel reveal)
          ═══════════════════════════════════════════════════════ -->
-    <footer id="site-footer" class="text-navy" style="background-color:#F8F9FA;">
+    <footer id="site-footer" class="text-navy" style="background:linear-gradient(180deg,#FFFFFF 0%,#FCFDFF 55%,#FFFFFF 100%);">
 
         {{-- ── Flowing organic wave top border ── --}}
         <div class="footer-wave-top" aria-hidden="true">
@@ -1408,7 +1406,7 @@
                        L4320,72 L0,72 Z"/>
                 {{-- Main footer-color wave (front, fills footer bg upward) --}}
                 <path class="wave-main"
-                    fill="#F8F9FA"
+                    fill="#FFFFFF"
                     d="M0,36
                        C200,8  400,60 600,32 C800,5  1000,58 1200,32 C1340,14 1400,46 1440,36
                        C1640,8  1840,60 2040,32 C2240,5  2440,58 2640,32 C2780,14 2840,46 2880,36
@@ -1424,10 +1422,8 @@
                 {{-- Column 1: Brand --}}
                 <div id="footer-col-1" class="footer-col">
                     <div class="flex items-center gap-2 mb-4">
-                        <div class="w-8 h-8 bg-gold rounded-md flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 text-navy" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 2L2 7v11h5v-6h6v6h5V7L10 2z"/>
-                            </svg>
+                        <div class="w-8 h-8 rounded-md overflow-hidden shrink-0">
+                            <img src="{{ asset('image/logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
                         </div>
                         <span class="font-bold text-lg">VisionBridge <span class="text-gold">Solutions</span></span>
                     </div>

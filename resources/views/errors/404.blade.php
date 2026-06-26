@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Not Found — VisionBridge Solutions</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><rect width='20' height='20' rx='3' fill='%23C9A84C'/><path d='M10 2L2 7v11h5v-6h6v6h5V7L10 2z' fill='%23111D33'/></svg>">
+    <link rel="icon" type="image/png" href="{{ asset('image/logo-v2.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
@@ -26,9 +26,9 @@
         .logo {
             display: inline-flex; align-items: center; justify-content: center;
             width: 52px; height: 52px; border-radius: 12px;
-            background: var(--gold); margin-bottom: 28px;
+            overflow: hidden; margin-bottom: 28px;
         }
-        .logo svg { width: 28px; height: 28px; color: var(--navy); }
+        .logo img { width: 100%; height: 100%; object-fit: cover; }
         .code {
             font-family: 'Playfair Display', serif;
             font-size: clamp(3.5rem, 10vw, 5.5rem);
@@ -60,7 +60,7 @@
 <body>
     <div class="card">
         <div class="logo">
-            <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 2L2 7v11h5v-6h6v6h5V7L10 2z"/></svg>
+            <img src="{{ asset('image/logo-v2.png') }}" alt="VisionBridge Solutions">
         </div>
         <p class="code">404</p>
         <h1>This page doesn't exist.</h1>

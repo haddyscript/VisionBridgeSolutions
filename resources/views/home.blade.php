@@ -393,7 +393,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      SERVICES SECTION — normal full-height scroll
      User sees all 10 cards before the wipe zone is reached.
      ============================================================ --}}
-<section id="services" class="pt-20 pb-16" style="background: linear-gradient(180deg, #F8F9FA 0%, #EEF2F7 100%);">
+<section id="services" class="pt-20 pb-16" style="background: linear-gradient(180deg, #FFFFFF 0%, #FBFCFE 100%);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-14">
             <span id="services-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">What We Offer</span>

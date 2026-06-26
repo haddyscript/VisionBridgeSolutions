@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'VisionBridge Solutions')</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><rect width='20' height='20' rx='3' fill='%23C9A84C'/><path d='M10 2L2 7v11h5v-6h6v6h5V7L10 2z' fill='%23111D33'/></svg>">
+    <link rel="icon" type="image/png" href="{{ asset('image/logo-v2.png') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,10 +41,8 @@
 
             <div class="relative max-w-sm pl-4">
                 <div class="flex items-center gap-2.5 mb-10">
-                    <div class="w-9 h-9 bg-gold rounded-md flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-navy" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 2L2 7v11h5v-6h6v6h5V7L10 2z"/>
-                        </svg>
+                    <div class="w-9 h-9 rounded-md overflow-hidden shrink-0">
+                        <img src="{{ asset('image/logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
                     </div>
                     <span class="text-white font-bold text-lg leading-tight">VisionBridge <span class="text-gold">Solutions</span></span>
                 </div>
@@ -71,10 +69,8 @@
         <div class="flex-1 flex items-center justify-center px-4 py-12 lg:ml-[58%]">
             <div class="w-full max-w-md">
                 <div class="flex items-center justify-center gap-2.5 mb-8 lg:hidden">
-                    <div class="w-9 h-9 bg-gold rounded-md flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-navy" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 2L2 7v11h5v-6h6v6h5V7L10 2z"/>
-                        </svg>
+                    <div class="w-9 h-9 rounded-md overflow-hidden shrink-0">
+                        <img src="{{ asset('image/logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
                     </div>
                     <span class="text-navy font-bold text-xl leading-tight">VisionBridge <span class="text-gold-dark">Solutions</span></span>
                 </div>
