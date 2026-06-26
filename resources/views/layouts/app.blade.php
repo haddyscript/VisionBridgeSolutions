@@ -1356,8 +1356,18 @@
                     <line x1="850" y1="20" x2="1110" y2="170" stroke-width="1.5" stroke-linecap="round"/>
                 </svg>
             </div>
-            <div id="flight-plane" style="position:absolute;top:38%;left:0;width:64px;height:64px;color:#C9A84C;">
-                <svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <div id="flight-plane" style="position:absolute;top:38%;left:0;width:64px;height:64px;color:#C9A84C;filter:drop-shadow(0 0 10px rgba(201,168,76,0.75));">
+                {{-- Turbo contrail — three streaks trailing behind the plane, fanning out slightly --}}
+                <div style="position:absolute;right:100%;top:50%;width:260px;height:5px;transform:translateY(-50%);
+                            background:linear-gradient(to left, rgba(201,168,76,0.85), rgba(201,168,76,0.25) 50%, transparent);
+                            border-radius:3px;"></div>
+                <div style="position:absolute;right:100%;top:38%;width:190px;height:3px;transform:translateY(-50%);
+                            background:linear-gradient(to left, rgba(223,192,106,0.65), transparent);
+                            border-radius:3px;"></div>
+                <div style="position:absolute;right:100%;top:62%;width:190px;height:3px;transform:translateY(-50%);
+                            background:linear-gradient(to left, rgba(223,192,106,0.65), transparent);
+                            border-radius:3px;"></div>
+                <svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="position:relative;z-index:1;">
                     <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
                 </svg>
             </div>
