@@ -1684,45 +1684,26 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         // Portfolio hover + modal handled by initPortfolioInteractions() below
 
         // ============================================================
-        //  CORE VALUES — Curtains Clip-Wipe reveal
+        //  CORE VALUES — scroll-scrubbed reveal (replaces the old
+        //  curtain-wipe effect). Each card's fade/rise/scale is tied
+        //  directly to scroll position — no auto-play, responds live
+        //  as you scroll up or down, with a slight stagger per card
+        //  via each one's own start offset.
         // ============================================================
-
-        // Two overlay panels cover each card (left + right half).
-        // On scroll-in they slide outward like theater curtains, one
-        // card at a time. Curtains close again on scroll-back.
-        document.querySelectorAll('.value-card-outer').forEach(card => {
-            card.style.position = 'relative';
-            card.style.overflow = 'hidden';
-            ['l', 'r'].forEach(side => {
-                const el = document.createElement('div');
-                el.className = 'val-curtain val-curtain-' + side;
-                Object.assign(el.style, {
-                    position:      'absolute',
-                    top:           '0',
-                    bottom:        '0',
-                    width:         '51%',
-                    background:    'linear-gradient(145deg,#F4F7FC 0%,#FAFBFD 55%,#EFF4FA 100%)',
-                    zIndex:        '10',
-                    pointerEvents: 'none',
-                    willChange:    'transform',
-                });
-                el.style[side === 'l' ? 'left' : 'right'] = '0';
-                card.appendChild(el);
-            });
+        document.querySelectorAll('.value-card-outer').forEach((card, i) => {
+            gsap.fromTo(card,
+                { opacity: 0, y: 50, scale: 0.94 },
+                {
+                    opacity: 1, y: 0, scale: 1, ease: 'none',
+                    scrollTrigger: {
+                        trigger: card,
+                        start: `top ${98 - (i % 3) * 6}%`,
+                        end:   `top ${30 - (i % 3) * 6}%`,
+                        scrub: 0.6,
+                    },
+                }
+            );
         });
-
-        // One timeline owns the single ScrollTrigger so both curtain
-        // directions animate in lock-step and toggle/reverse cleanly.
-        const curtainTl = gsap.timeline({
-            scrollTrigger: {
-                trigger:       '#values-grid',
-                start:         'top 85%',
-                toggleActions: 'play reverse play reverse',
-            },
-        });
-        curtainTl
-            .to('.val-curtain-l', { x: '-100%', duration: 1.35, ease: 'power3.inOut', stagger: 0.15 }, 0)
-            .to('.val-curtain-r', { x:  '100%', duration: 1.35, ease: 'power3.inOut', stagger: 0.15 }, 0);
 
         // Icon spring micro-hover — GSAP elastic easing for organic feel
         document.querySelectorAll('.value-card-outer').forEach(card => {
