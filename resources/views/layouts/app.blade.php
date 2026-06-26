@@ -1328,6 +1328,40 @@
                 </button>
             @endforeach
         </nav>
+
+        {{-- Flying plane-over-bridge page transition — covers the screen,
+             jumps scroll position invisibly behind it, then reveals. --}}
+        <div id="flight-transition" style="position:fixed;inset:0;z-index:9990;opacity:0;pointer-events:none;background:#EAF3F8;overflow:hidden;">
+            <div style="position:absolute;bottom:8%;left:0;right:0;height:140px;color:#2F3A45;opacity:0.5;">
+                <svg viewBox="0 0 1200 220" preserveAspectRatio="none" width="100%" height="100%" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="60" y1="170" x2="1140" y2="170" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="350" y1="20" x2="320" y2="170" stroke-width="4" stroke-linecap="round"/>
+                    <line x1="350" y1="20" x2="380" y2="170" stroke-width="4" stroke-linecap="round"/>
+                    <line x1="850" y1="20" x2="820" y2="170" stroke-width="4" stroke-linecap="round"/>
+                    <line x1="850" y1="20" x2="880" y2="170" stroke-width="4" stroke-linecap="round"/>
+                    <line x1="350" y1="20" x2="70"  y2="170" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="350" y1="20" x2="150" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="350" y1="20" x2="230" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="350" y1="20" x2="300" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="350" y1="20" x2="400" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="350" y1="20" x2="470" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="350" y1="20" x2="540" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="350" y1="20" x2="610" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="850" y1="20" x2="660" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="850" y1="20" x2="730" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="850" y1="20" x2="800" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="850" y1="20" x2="900" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="850" y1="20" x2="970" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="850" y1="20" x2="1040" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="850" y1="20" x2="1110" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div id="flight-plane" style="position:absolute;top:38%;left:0;width:64px;height:64px;color:#C9A84C;">
+                <svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+            </div>
+        </div>
     @endif
 
     <!-- Page Content -->
@@ -1624,6 +1658,53 @@
     })();
     </script>
 
+    {{-- Flying plane-over-bridge transition — covers the jump between
+         sections instead of a visible fast-scroll. Triggers on every
+         in-page anchor click (nav, mobile menu, footer Quick Links) plus
+         the section-rail dots below. --}}
+    <script defer>
+    (function () {
+        function initFlightTransition() {
+            const overlay = document.getElementById('flight-transition');
+            if (!overlay) return; // not on the homepage
+
+            if (typeof gsap === 'undefined') { setTimeout(initFlightTransition, 80); return; }
+
+            const plane = document.getElementById('flight-plane');
+            let flying = false;
+
+            window.flyTransition = function (targetEl) {
+                if (!targetEl) return;
+                if (!plane || flying) { targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+                flying = true;
+                overlay.style.pointerEvents = 'all';
+
+                gsap.timeline({ onComplete() { overlay.style.pointerEvents = 'none'; flying = false; } })
+                    .to(overlay, { opacity: 1, duration: 0.25, ease: 'power2.out' })
+                    .fromTo(plane, { x: '-20vw', y: 0 }, { x: '120vw', y: -50, duration: 2.2, ease: 'power1.inOut' }, 0.15)
+                    .call(() => targetEl.scrollIntoView({ behavior: 'auto', block: 'start' }), null, 1.3)
+                    .to(overlay, { opacity: 0, duration: 0.4, ease: 'power2.in' }, 2.1);
+            };
+
+            // Intercept every in-page anchor click site-wide (nav, mobile
+            // menu, footer Quick Links) — only acts when the hash target
+            // actually exists on the current page; otherwise the link
+            // proceeds normally (e.g. navigating to the home page first).
+            document.addEventListener('click', (e) => {
+                const link = e.target.closest('a[href*="#"]');
+                if (!link) return;
+                const hash = link.getAttribute('href').split('#')[1];
+                if (!hash) return;
+                const target = document.getElementById(hash);
+                if (!target) return;
+                e.preventDefault();
+                window.flyTransition(target);
+            });
+        }
+        initFlightTransition();
+    })();
+    </script>
+
     {{-- Section progress rail — click to jump, highlights as you scroll --}}
     <script defer>
     (function () {
@@ -1639,7 +1720,10 @@
             dots.forEach(dot => {
                 dot.addEventListener('click', () => {
                     const target = document.getElementById(dot.dataset.railTarget);
-                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (target) {
+                        if (window.flyTransition) window.flyTransition(target);
+                        else target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
                 });
             });
 
