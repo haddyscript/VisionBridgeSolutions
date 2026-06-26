@@ -332,7 +332,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         </div>
 
         {{-- Core Values — light, welcoming panel --}}
-        <div class="mt-20 rounded-3xl relative overflow-hidden py-16 px-6 sm:py-20 sm:px-12 lg:py-24 lg:px-16" style="background:linear-gradient(145deg,#F4F7FC 0%,#FAFBFD 55%,#EFF4FA 100%);">
+        <div id="about-values-panel" class="mt-20 rounded-3xl relative overflow-hidden py-16 px-6 sm:py-20 sm:px-12 lg:py-24 lg:px-16" style="background:linear-gradient(145deg,#F4F7FC 0%,#FAFBFD 55%,#EFF4FA 100%);">
             {{-- Ambient orbs — barely visible, just add warmth --}}
             <div class="hero-orb" style="width:580px;height:580px;top:-160px;right:-140px;background:radial-gradient(circle,rgba(201,168,76,0.07) 0%,transparent 70%);animation:orb-drift 26s ease-in-out infinite;filter:blur(64px);"></div>
             <div class="hero-orb" style="width:420px;height:420px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.06) 0%,transparent 70%);animation:orb-drift 20s ease-in-out infinite reverse 4s;filter:blur(52px);"></div>
@@ -1407,6 +1407,15 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         .to('#about-bg-overlay', { opacity:1, ease:'none' }, 0)
         .to('#about-heading',    { color:'#F5F6F7', ease:'none' }, 0)
         .to('#about-subtitle',   { color:'rgba(255,255,255,0.55)', ease:'none' }, 0);
+
+        // ── Background fades back to normal by the halfway point of the
+        //    Core Values panel — reverses the same overlay/text-color tween. ──
+        gsap.timeline({
+            scrollTrigger: { trigger:'#about-values-panel', start:'top top', end:'center top', scrub:1 }
+        })
+        .to('#about-bg-overlay', { opacity:0, ease:'none' }, 0)
+        .to('#about-heading',    { color:'#2F3A45', ease:'none' }, 0)
+        .to('#about-subtitle',   { color:'rgba(17,29,51,0.42)', ease:'none' }, 0);
 
         // ── Mosaic panels: center-out ripple wave reveal ──
         gsap.set('.mosaic-panel', { opacity:1 });
