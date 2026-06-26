@@ -234,7 +234,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         </h2>
         <p id="welcome-sub" class="text-navy/60 text-lg max-w-2xl mx-auto mb-12 leading-relaxed" style="opacity:0;">We bridge the gap between your vision and a powerful online presence — connecting organizations to the digital opportunities that drive real, lasting growth.</p>
 
-        <div id="welcome-video-wrap" class="relative rounded-3xl overflow-hidden" style="opacity:0;transform:scale(0.93);box-shadow:0 0 0 1px rgba(201,168,76,0.22),0 40px 100px rgba(47,58,69,0.22),0 12px 36px rgba(47,58,69,0.16);">
+        <div id="welcome-video-wrap" class="relative rounded-3xl overflow-hidden" style="opacity:0;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 0 0 1px rgba(201,168,76,0.22),0 40px 100px rgba(47,58,69,0.22),0 12px 36px rgba(47,58,69,0.16);">
             <div class="aspect-video relative">
                 <video id="welcome-video" autoplay muted loop playsinline preload="auto" class="w-full h-full object-cover block">
                     <source src="{{ asset('videos/VisionBridge_Solutions_welcome_v.mp4') }}" type="video/mp4">
@@ -1305,6 +1305,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         //  TOGGLE on the parent ScrollTrigger means the entire timeline
         //  plays forward on entry and reverses cleanly on scroll-back.
         // ============================================================
+        // Video starts small + steeply tilted (~40% toward flat); the pinned zoom below grows and straightens it
+        gsap.set('#welcome-video-wrap', {
+            scale:0.68, rotateX:36, y:60,
+            transformPerspective:1600, transformOrigin:'center top',
+            force3D:true,
+        });
+
         gsap.timeline({
             scrollTrigger: { trigger:'#welcome', start:'top 78%', toggleActions: TOGGLE }
         })
@@ -1315,12 +1322,29 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         .fromTo('#welcome-sub',
             { opacity:0, y:22 }, { opacity:1, y:0, duration:0.60, ease:'power2.out' }, '-=0.28')
         .fromTo('#welcome-video-wrap',
-            { opacity:0, scale:0.93 }, { opacity:1, scale:1, duration:0.95, ease:'power2.out' }, '-=0.32')
+            { opacity:0 }, { opacity:1, duration:0.95, ease:'power2.out' }, '-=0.32')
         .fromTo('#welcome-credit',
             { opacity:0, y:12 }, { opacity:1, y:0, duration:0.55, ease:'power2.out' }, '-=0.50');
 
         // Ambient glow scrub — naturally reverses with scroll direction
         gsap.to('#welcome-glow', { y:-55, ease:'none', scrollTrigger: scrubST('#welcome', 3) });
+
+        // ── Pinned scale-up zoom: video panel grows large and straightens
+        //    out while the section holds in place, text recedes as the
+        //    panel takes over. scrub:1.4 adds a touch of smoothing lag so
+        //    the motion doesn't feel like it's snapping 1:1 to the wheel. ──
+        ScrollTrigger.create({
+            trigger: '#welcome',
+            start: 'top top',
+            end: '+=140%',
+            pin: true,
+            pinSpacing: true,
+            scrub: 1.4,
+            animation: gsap.timeline()
+                .to('#welcome-video-wrap', { scale:1.9, rotateX:0, y:0, ease:'none' }, 0)
+                .to(['#welcome-kicker', '.welcome-word-wrap', '#welcome-sub'], { opacity:0, y:-30, ease:'none' }, 0)
+                .to('#welcome-credit', { opacity:0, ease:'none' }, 0.15),
+        });
 
         // Video: play/pause via IntersectionObserver (independent of GSAP)
         const wVideo = document.getElementById('welcome-video');
