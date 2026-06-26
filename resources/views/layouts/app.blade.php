@@ -1329,46 +1329,34 @@
 
         {{-- Flying plane-over-bridge page transition — covers the screen,
              jumps scroll position invisibly behind it, then reveals. --}}
-        <div id="flight-transition" style="position:fixed;inset:0;z-index:9990;opacity:0;pointer-events:none;background:#EAF3F8;overflow:hidden;">
-            <div style="position:absolute;bottom:8%;left:0;right:0;height:140px;color:#2F3A45;opacity:0.5;">
-                <svg viewBox="0 0 1200 220" preserveAspectRatio="none" width="100%" height="100%" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <line x1="60" y1="170" x2="1140" y2="170" stroke-width="3" stroke-linecap="round"/>
-                    <line x1="350" y1="20" x2="320" y2="170" stroke-width="4" stroke-linecap="round"/>
-                    <line x1="350" y1="20" x2="380" y2="170" stroke-width="4" stroke-linecap="round"/>
-                    <line x1="850" y1="20" x2="820" y2="170" stroke-width="4" stroke-linecap="round"/>
-                    <line x1="850" y1="20" x2="880" y2="170" stroke-width="4" stroke-linecap="round"/>
-                    <line x1="350" y1="20" x2="70"  y2="170" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="350" y1="20" x2="150" y2="170" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="350" y1="20" x2="230" y2="170" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="350" y1="20" x2="300" y2="170" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="350" y1="20" x2="400" y2="170" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="350" y1="20" x2="470" y2="170" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="350" y1="20" x2="540" y2="170" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="350" y1="20" x2="610" y2="170" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="850" y1="20" x2="660" y2="170" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="850" y1="20" x2="730" y2="170" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="850" y1="20" x2="800" y2="170" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="850" y1="20" x2="900" y2="170" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="850" y1="20" x2="970" y2="170" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="850" y1="20" x2="1040" y2="170" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="850" y1="20" x2="1110" y2="170" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
-            </div>
-            <div id="flight-plane" style="position:absolute;top:38%;left:0;width:64px;height:64px;color:#C9A84C;filter:drop-shadow(0 0 10px rgba(201,168,76,0.75));">
-                {{-- Turbo contrail — three streaks trailing behind the plane, fanning out slightly --}}
-                <div style="position:absolute;right:100%;top:50%;width:260px;height:5px;transform:translateY(-50%);
-                            background:linear-gradient(to left, rgba(201,168,76,0.85), rgba(201,168,76,0.25) 50%, transparent);
-                            border-radius:3px;"></div>
-                <div style="position:absolute;right:100%;top:38%;width:190px;height:3px;transform:translateY(-50%);
-                            background:linear-gradient(to left, rgba(223,192,106,0.65), transparent);
-                            border-radius:3px;"></div>
-                <div style="position:absolute;right:100%;top:62%;width:190px;height:3px;transform:translateY(-50%);
-                            background:linear-gradient(to left, rgba(223,192,106,0.65), transparent);
-                            border-radius:3px;"></div>
-                <svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="position:relative;z-index:1;">
-                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                </svg>
-            </div>
+        <div id="flight-transition" style="position:fixed;inset:0;z-index:9990;opacity:0;pointer-events:none;background:#FFFFFF;overflow:hidden;">
+            <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;">
+                {{-- Minimalist rounded-shape bridge --}}
+                <g opacity="0.95">
+                    <rect x="40" y="616" width="1520" height="14" rx="7" fill="#D7DCE2"/>
+                    <rect x="520" y="466" width="26" height="170" rx="13" fill="#B9C1C9"/>
+                    <rect x="1050" y="466" width="26" height="170" rx="13" fill="#B9C1C9"/>
+                    <path d="M533,466 Q300,556 70,622" fill="none" stroke="#C7CDD3" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M533,466 Q700,556 870,622" fill="none" stroke="#C7CDD3" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M1063,466 Q870,556 730,622" fill="none" stroke="#C7CDD3" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M1063,466 Q1300,556 1530,622" fill="none" stroke="#C7CDD3" stroke-width="4" stroke-linecap="round"/>
+                </g>
+                {{-- Plane group — GSAP animates x/y/rotation on this <g> --}}
+                <g id="flight-plane">
+                    {{-- Blue turbo streaks + motion-trail particles, trailing left of the fuselage --}}
+                    <rect x="-90" y="595" width="110" height="6" rx="3" fill="#2D7FF9" opacity="0.75"/>
+                    <rect x="-55" y="606" width="80" height="4" rx="2" fill="#5AA0FF" opacity="0.55"/>
+                    <rect x="-55" y="582" width="80" height="4" rx="2" fill="#5AA0FF" opacity="0.55"/>
+                    <circle cx="-105" cy="600" r="3.5" fill="#2D7FF9" opacity="0.5"/>
+                    <circle cx="-125" cy="591" r="2.5" fill="#5AA0FF" opacity="0.4"/>
+                    <circle cx="-125" cy="609" r="2.5" fill="#5AA0FF" opacity="0.4"/>
+                    {{-- Minimalist rounded airplane (nose to the right) --}}
+                    <path d="M20,592 L5,572 L35,592 Z" fill="#2F3A45"/>
+                    <path d="M65,608 L45,628 L85,608 Z" fill="#2F3A45"/>
+                    <rect x="20" y="592" width="80" height="16" rx="8" fill="#2F3A45"/>
+                    <circle cx="108" cy="600" r="8" fill="#2F3A45"/>
+                </g>
+            </svg>
         </div>
     @endif
 
@@ -1684,12 +1672,16 @@
                 if (!plane || flying) { targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
                 flying = true;
                 overlay.style.pointerEvents = 'all';
+                gsap.set(plane, { x: 0, y: 0, rotation: 0 });
 
                 gsap.timeline({ onComplete() { overlay.style.pointerEvents = 'none'; flying = false; } })
                     .to(overlay, { opacity: 1, duration: 0.25, ease: 'power2.out' })
-                    .fromTo(plane, { x: '-20vw', y: 0 }, { x: '120vw', y: -50, duration: 2.2, ease: 'power1.inOut' }, 0.15)
-                    .call(() => targetEl.scrollIntoView({ behavior: 'auto', block: 'start' }), null, 1.3)
-                    .to(overlay, { opacity: 0, duration: 0.4, ease: 'power2.in' }, 2.1);
+                    // Stage 1: accelerates along the bridge deck
+                    .to(plane, { x: 850, duration: 1.3, ease: 'power2.in' }, 0.1)
+                    // Stage 2: lifts off and climbs up into the sky
+                    .to(plane, { x: 1550, y: -750, rotation: -22, duration: 1.1, ease: 'power2.out' })
+                    .call(() => targetEl.scrollIntoView({ behavior: 'auto', block: 'start' }), null, 0.7)
+                    .to(overlay, { opacity: 0, duration: 0.4, ease: 'power2.in' }, '-=0.2');
             };
 
             // Intercept every in-page anchor click site-wide (nav, mobile
