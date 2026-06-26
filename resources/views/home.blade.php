@@ -255,6 +255,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      ABOUT SECTION
      ============================================================ --}}
 <section id="about" class="py-20 relative overflow-hidden" style="background:linear-gradient(180deg,#F4F7FC 0%,#FFFFFF 45%,#F7FAFB 100%);">
+    {{-- Scroll-scrubbed black overlay — darkens the section background as you
+         scroll into it; white cards/panels sit above this so stay unaffected --}}
+    <div id="about-bg-overlay" class="absolute inset-0 pointer-events-none" style="background:#0B0D10;opacity:0;z-index:0;"></div>
     {{-- Ambient warmth — barely visible, just removes the cold white feel --}}
     <div class="absolute pointer-events-none" style="width:700px;height:700px;top:-180px;right:-180px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.055) 0%,transparent 70%);filter:blur(80px);"></div>
     <div class="absolute pointer-events-none" style="width:500px;height:500px;bottom:-120px;left:-100px;border-radius:50%;background:radial-gradient(circle,rgba(42,157,143,0.045) 0%,transparent 70%);filter:blur(64px);"></div>
@@ -266,7 +269,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         <div class="text-center mb-16">
             <span id="about-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Who We Are</span>
             <h2 id="about-heading" class="section-title mt-1">About VisionBridge Solutions</h2>
-            <p class="text-sm mt-3 max-w-lg mx-auto" style="color:rgba(17,29,51,0.42);line-height:1.7;">A dedicated team building websites that give organizations the digital foundation they deserve.</p>
+            <p id="about-subtitle" class="text-sm mt-3 max-w-lg mx-auto" style="color:rgba(17,29,51,0.42);line-height:1.7;">A dedicated team building websites that give organizations the digital foundation they deserve.</p>
         </div>
 
         <!-- Mosaic image grid + Mission / Vision side-by-side -->
@@ -1393,6 +1396,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         .fromTo('#about .text-center p',
             { opacity:0, y:18 },
             { opacity:1, y:0, duration:0.60, ease:'power2.out' }, '-=0.42');
+
+        // ── Background darkens to black as you scroll ~1/4 into the
+        //    section; heading/subtitle flip to light so they stay legible.
+        //    White Mission/Vision cards + Core Values panel sit above this
+        //    overlay (their own opaque backgrounds), so are unaffected. ──
+        gsap.timeline({
+            scrollTrigger: { trigger:'#about', start:'top 75%', end:'top 25%', scrub:1 }
+        })
+        .to('#about-bg-overlay', { opacity:1, ease:'none' }, 0)
+        .to('#about-heading',    { color:'#F5F6F7', ease:'none' }, 0)
+        .to('#about-subtitle',   { color:'rgba(255,255,255,0.55)', ease:'none' }, 0);
 
         // ── Mosaic panels: center-out ripple wave reveal ──
         gsap.set('.mosaic-panel', { opacity:1 });
