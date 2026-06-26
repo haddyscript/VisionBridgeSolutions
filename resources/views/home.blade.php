@@ -28,6 +28,43 @@ $svgIcons = [
     'mobile'      => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>',
     'bolt'        => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>',
 ];
+
+// Reusable bridge line-art graphics — signature motif used as a hero
+// skyline, a faint section watermark, and a small cable-divider between
+// sections. Color/opacity controlled by the wrapping element (stroke
+// inherits currentColor, same convention as $svgIcons above).
+$bridgeSilhouette = '<svg viewBox="0 0 1200 220" preserveAspectRatio="none" width="100%" height="100%" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <line x1="60" y1="170" x2="1140" y2="170" stroke-width="3" stroke-linecap="round"/>
+    <line x1="350" y1="20" x2="320" y2="170" stroke-width="4" stroke-linecap="round"/>
+    <line x1="350" y1="20" x2="380" y2="170" stroke-width="4" stroke-linecap="round"/>
+    <line x1="850" y1="20" x2="820" y2="170" stroke-width="4" stroke-linecap="round"/>
+    <line x1="850" y1="20" x2="880" y2="170" stroke-width="4" stroke-linecap="round"/>
+    <line x1="350" y1="20" x2="70"  y2="170" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="350" y1="20" x2="150" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="350" y1="20" x2="230" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="350" y1="20" x2="300" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="350" y1="20" x2="400" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="350" y1="20" x2="470" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="350" y1="20" x2="540" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="350" y1="20" x2="610" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="850" y1="20" x2="660" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="850" y1="20" x2="730" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="850" y1="20" x2="800" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="850" y1="20" x2="900" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="850" y1="20" x2="970" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="850" y1="20" x2="1040" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="850" y1="20" x2="1110" y2="170" stroke-width="1.5" stroke-linecap="round"/>
+</svg>';
+
+$bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" width="100%" height="100%" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <line x1="0" y1="6" x2="800" y2="6" stroke-width="2"/>
+    <line x1="80"  y1="6" x2="60"  y2="50" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="220" y1="6" x2="200" y2="50" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="360" y1="6" x2="400" y2="50" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="500" y1="6" x2="460" y2="50" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="640" y1="6" x2="660" y2="50" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="760" y1="6" x2="740" y2="50" stroke-width="1.5" stroke-linecap="round"/>
+</svg>';
 @endphp
 
 {{-- ============================================================
@@ -61,6 +98,11 @@ $svgIcons = [
     {{-- Layer 2 — vignette to push eye to centre --}}
     <div class="absolute inset-0 pointer-events-none" style="z-index:2;
          background:radial-gradient(ellipse at 50% 46%,transparent 28%,rgba(186,206,219,.55) 100%);"></div>
+
+    {{-- Layer 2.5 — faint bridge skyline silhouette, signature brand motif --}}
+    <div class="absolute bottom-0 left-0 right-0 text-navy" style="height:150px;opacity:0.10;z-index:2;pointer-events:none;">
+        {!! $bridgeSilhouette !!}
+    </div>
 
     {{-- Layer 3 — floating glassmorphism cards (desktop only) --}}
     <div class="float-card float-card-1 hidden lg:flex items-center gap-3">
@@ -167,6 +209,14 @@ $svgIcons = [
     </div>
 </section>
 
+{{-- Bridge-arch transition into the Welcome section --}}
+<div style="height:64px;overflow:hidden;position:relative;margin-top:-1px;" aria-hidden="true">
+    <svg viewBox="0 0 1200 64" preserveAspectRatio="none" style="width:100%;height:100%;display:block;">
+        <path d="M0,64 L0,40 C300,-10 900,-10 1200,40 L1200,64 Z" fill="#F4F9FC"/>
+        <path d="M0,40 C300,-10 900,-10 1200,40" fill="none" stroke="#C9A84C" stroke-width="2" opacity="0.5"/>
+    </svg>
+</div>
+
 {{-- ============================================================
      WELCOME VIDEO SECTION
      ============================================================ --}}
@@ -208,6 +258,10 @@ $svgIcons = [
     {{-- Ambient warmth — barely visible, just removes the cold white feel --}}
     <div class="absolute pointer-events-none" style="width:700px;height:700px;top:-180px;right:-180px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.055) 0%,transparent 70%);filter:blur(80px);"></div>
     <div class="absolute pointer-events-none" style="width:500px;height:500px;bottom:-120px;left:-100px;border-radius:50%;background:radial-gradient(circle,rgba(42,157,143,0.045) 0%,transparent 70%);filter:blur(64px);"></div>
+    {{-- Faint bridge watermark — signature brand motif --}}
+    <div class="absolute pointer-events-none text-navy" style="width:900px;max-width:90%;height:220px;bottom:-10px;right:-60px;opacity:0.045;z-index:0;">
+        {!! $bridgeSilhouette !!}
+    </div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative" style="z-index:1;">
         <div class="text-center mb-16">
             <span id="about-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Who We Are</span>
@@ -326,6 +380,11 @@ $svgIcons = [
         </div>
     </div>
 </section>
+
+{{-- Bridge cable divider --}}
+<div class="bg-white py-8" aria-hidden="true">
+    <div class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
+</div>
 
 {{-- ============================================================
      SERVICES SECTION — normal full-height scroll
@@ -488,6 +547,10 @@ $svgIcons = [
     <div class="hero-orb" style="width:480px;height:480px;bottom:-120px;left:-100px;background:radial-gradient(circle,rgba(42,157,143,0.06) 0%,transparent 70%);animation:orb-drift 18s ease-in-out infinite reverse 5s;filter:blur(58px);"></div>
     {{-- Dot texture --}}
     <div class="absolute inset-0 pointer-events-none" style="opacity:0.28;background-image:radial-gradient(circle,rgba(17,29,51,0.045) 1px,transparent 1px);background-size:28px 28px;"></div>
+    {{-- Faint bridge watermark — signature brand motif --}}
+    <div class="absolute pointer-events-none text-navy" style="width:900px;max-width:90%;height:220px;bottom:-10px;left:-60px;opacity:0.045;z-index:0;">
+        {!! $bridgeSilhouette !!}
+    </div>
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
 
@@ -602,6 +665,11 @@ $svgIcons = [
         </div>
     </div>
 </section>
+
+{{-- Bridge cable divider --}}
+<div class="bg-white py-8" aria-hidden="true">
+    <div class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
+</div>
 
 {{-- ============================================================
      PORTFOLIO SECTION
@@ -833,6 +901,11 @@ $svgIcons = [
 
     </div>
 </section>
+
+{{-- Bridge cable divider --}}
+<div class="bg-white py-8" aria-hidden="true">
+    <div class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
+</div>
 
 {{-- ============================================================
      FAITHSTACK PARTNERSHIP SECTION

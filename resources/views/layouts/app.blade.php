@@ -165,6 +165,13 @@
             background:inherit; filter:blur(5px); opacity:.65;
         }
 
+        /* ─── Bridge cable divider — signature motif between sections ─── */
+        .bridge-cable-divider {
+            width:100%; max-width:640px; height:34px;
+            margin:0 auto; color:#C9A84C; opacity:.55;
+            pointer-events:none;
+        }
+
         /* ─── Mouse-scroll indicator ─── */
         @keyframes scroll-dot {
             0%,100% { transform:translateY(0);   opacity:1; }
