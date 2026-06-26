@@ -918,14 +918,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      ============================================================ --}}
 <section id="partnership" class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-14">
+        <div id="partnership-header" class="text-center mb-14">
             <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Our Partnership</span>
             <h2 class="section-title">VisionBridge & FaithStack</h2>
             <p class="section-subtitle">A strategic partnership delivering seamless website solutions from concept to long-term care.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div class="rounded-2xl border border-navy/10 overflow-hidden hover:shadow-xl transition-all duration-300 group">
+            <div class="partnership-zoom-item rounded-2xl border border-navy/10 overflow-hidden hover:shadow-xl transition-all duration-300 group">
                 <div class="w-full overflow-hidden" style="height:200px;flex-shrink:0;">
                     <img src="{{ asset('image/vission-bridge-htumbnail.png') }}"
                          alt="VisionBridge Solutions"
@@ -946,8 +946,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 </div>
             </div>
 
-            <a 
-               class="rounded-2xl border border-teal/20 bg-teal/5 overflow-hidden hover:shadow-xl transition-all duration-300 group block" style="text-decoration:none;">
+            <a
+               class="partnership-zoom-item rounded-2xl border border-teal/20 bg-teal/5 overflow-hidden hover:shadow-xl transition-all duration-300 group block" style="text-decoration:none;">
                 {{-- FaithStack thumbnail --}}
                 <div class="w-full overflow-hidden" style="height:200px;">
                     <img src="{{ asset('image/faithstack-thumbnail.png') }}"
@@ -980,7 +980,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         </div>
 
         <!-- Ownership note -->
-        <div class="mt-10 max-w-3xl mx-auto bg-navy/5 border border-navy/10 rounded-xl p-6 text-center">
+        <div class="partnership-zoom-item mt-10 max-w-3xl mx-auto bg-navy/5 border border-navy/10 rounded-xl p-6 text-center">
             <svg class="w-8 h-8 text-gold mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
             </svg>
@@ -1731,6 +1731,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         ).forEach(el => {
             if (el.closest('.about-cards'))  return; // about-cards use bespoke stagger above
             if (el.closest('#hscroll-strip')) return; // horizontal wipe section handles its own reveals
+            if (el.closest('#partnership'))  return; // partnership uses its own zoom-out entrance below
             if (el.classList.contains('services-card'))   return; // services uses row-wave stagger above
             if (el.classList.contains('portfolio-card')) return; // portfolio uses dealt-card entrance above
             gsap.fromTo(el,
@@ -1739,6 +1740,23 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                   scrollTrigger: { trigger:el, start:'top 92%', toggleActions: TOGGLE } }
             );
         });
+
+        // ============================================================
+        //  PARTNERSHIP — zoom-out entrance: header + both cards + the
+        //  ownership note start oversized and settle down to normal size,
+        //  like gravity pulling them down to rest. power4.out gives a
+        //  strong deceleration with no bounce-back (true "falling" feel).
+        // ============================================================
+        gsap.fromTo('#partnership-header',
+            { opacity:0, scale:1.5 },
+            { opacity:1, scale:1, duration:0.85, ease:'power4.out',
+              scrollTrigger: { trigger:'#partnership', start:'top 78%', toggleActions: TOGGLE } }
+        );
+        gsap.fromTo('.partnership-zoom-item',
+            { opacity:0, scale:1.45 },
+            { opacity:1, scale:1, duration:0.85, stagger:0.18, ease:'power4.out',
+              scrollTrigger: { trigger:'#partnership', start:'top 70%', toggleActions: TOGGLE } }
+        );
 
         // ============================================================
         //  HORIZONTAL WIPE — Services → Why VisionBridge
