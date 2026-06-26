@@ -725,206 +725,44 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             ['num'=>'02','title'=>'Johnny Davis Ministries',     'category'=>'Ministry',   'domain'=>'johnnydavisministries.org',    'icon'=>'book-open','image'=>'image/johnnydavisministries.png',   'url'=>'https://johnnydavisministries.org/',   'live'=>true, 'desc'=>'Daily devotionals, sermons, and ministry resources reaching thousands of believers worldwide through the power of purposeful digital outreach.','tags'=>['Ministry','WordPress']],
             ['num'=>'03','title'=>'Future VisionBridge Projects','category'=>'Coming Soon','domain'=>'visionbridgesolutions.com',     'icon'=>'sparkles', 'soon'=>true,                                                                                              'desc'=>'Exciting new projects are on the horizon. Stay tuned as VisionBridge continues to grow and serve more ministries and organizations.','tags'=>['Future Project']],
         ];
-        $feat = $portfolioProjects[0];
         @endphp
 
-        {{-- Cards grid: featured hero + 3 regular --}}
-        <div id="portfolio-grid" class="flex flex-col gap-7">
-
-            {{-- ── Featured card (01) ── --}}
-            <a href="{{ $feat['url'] }}" target="_blank" rel="noopener"
-               class="portfolio-card portfolio-card-featured group block"
-               style="text-decoration:none;"
-               data-project-num="{{ $feat['num'] }}"
-               data-project-title="{{ $feat['title'] }}"
-               data-project-desc="{{ $feat['desc'] ?? '' }}"
-               data-project-image="{{ asset($feat['image'] ?? '') }}"
-               data-project-url="{{ $feat['url'] ?? '' }}"
-               data-project-tags="{{ implode(',', $feat['tags'] ?? []) }}"
-               data-project-live="{{ !empty($feat['live']) ? 'true' : 'false' }}"
-               data-project-domain="{{ $feat['domain'] }}"
-               data-project-category="{{ $feat['category'] }}">
-                <div class="pf-shimmer"></div>
-                {{-- Browser chrome --}}
-                <div class="pf-chrome">
-                    <div class="pf-dots">
-                        <span style="background:#FF5F57;"></span>
-                        <span style="background:#FFBD2E;"></span>
-                        <span style="background:#28C840;"></span>
-                    </div>
-                    <div class="pf-urlbar">
-                        <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.45)" stroke-width="2.5" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                        <span>{{ $feat['domain'] }}</span>
-                    </div>
-                    <div class="pf-live-dot" title="Live site"></div>
-                </div>
-                {{-- Featured body: image left + details right --}}
-                <div class="pf-featured-body" style="height:300px;">
-                    <div class="pf-featured-img">
-                        <img src="{{ asset($feat['image']) }}" alt="{{ $feat['title'] }}">
-                        <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-white font-semibold" style="font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;background:rgba(17,29,51,0.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.18);">{{ $feat['category'] }}</div>
-                        <div class="pf-featured-overlay">
-                            <span class="pf-cta-btn">
-                                Visit Live Site
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="pf-featured-details">
-                        <div>
-                            <div class="pf-featured-num">{{ $feat['num'] }}</div>
-                            <div class="pf-featured-separator"></div>
-                            <h3 class="pf-featured-title">{{ $feat['title'] }}</h3>
-                            <p class="pf-featured-desc">{{ $feat['desc'] }}</p>
-                            <div class="pf-tags">
-                                @foreach($feat['tags'] as $tag)
-                                <span class="pf-tag">{{ $tag }}</span>
-                                @endforeach
-                            </div>
-                        </div>
-                        <div class="pf-featured-footer">
-                            <div class="flex items-center gap-2">
-                                <div class="pf-live-badge"></div>
-                                <span class="pf-live-text">Live Site</span>
-                            </div>
-                            <div class="pf-visit-hint">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                                <span>Visit Site</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-
-            {{-- ── Two supporting cards ── --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-7">
-                @foreach(array_slice($portfolioProjects, 1) as $project)
-                @php $hasLink = !empty($project['url']); $isLive = !empty($project['live']); @endphp
-
+        {{-- Numbered project switcher — tap a number to preview it, tap
+             again (or its title/arrow) to open the live site --}}
+        <div id="portfolio-switcher" class="flex flex-wrap justify-center gap-6 sm:gap-10">
+            @foreach ($portfolioProjects as $project)
                 @php
-                $projData = 'data-project-num="'.e($project['num']).'" data-project-title="'.e($project['title']).'" data-project-desc="'.e($project['desc'] ?? '').'" data-project-image="'.e(asset($project['image'] ?? '')).'" data-project-url="'.e($project['url'] ?? '').'" data-project-tags="'.e(implode(',', $project['tags'] ?? [])).'" data-project-live="'.(!empty($project['live']) ? 'true' : 'false').'" data-project-domain="'.e($project['domain']).'" data-project-category="'.e($project['category']).'"';
+                    $hasLink = !empty($project['url']);
+                    $isLive  = !empty($project['live']);
+                    $num     = sprintf('%02d', $loop->iteration);
                 @endphp
-                @if($hasLink)
-                <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="portfolio-card group block" style="text-decoration:none;" {!! $projData !!}>
-                @else
-                <div class="portfolio-card group" {!! $projData !!}>
-                @endif
-                    <div class="pf-shimmer"></div>
-                    {{-- Browser chrome --}}
-                    <div class="pf-chrome">
-                        <div class="pf-dots">
-                            <span style="background:#FF5F57;"></span>
-                            <span style="background:#FFBD2E;"></span>
-                            <span style="background:#28C840;"></span>
-                        </div>
-                        <div class="pf-urlbar">
-                            <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.45)" stroke-width="2.5" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                            <span>{{ $project['domain'] }}</span>
-                        </div>
-                        @if($isLive)
-                        <div class="pf-live-dot" title="Live site"></div>
+                <div class="portfolio-number-item {{ $loop->first ? 'is-active' : '' }}" data-portfolio-index="{{ $loop->index }}" style="width:150px;">
+                    <button type="button" class="portfolio-number-box" style="width:100%;height:320px;position:relative;display:flex;align-items:center;justify-content:center;border-radius:14px;overflow:hidden;background:rgba(17,29,51,0.03);cursor:pointer;border:none;padding:0;">
+                        @if (!empty($project['image']))
+                            <div class="portfolio-number-image" style="position:absolute;inset:0;background-image:url('{{ asset($project['image']) }}');background-size:cover;background-position:top;opacity:0;transition:opacity 0.4s ease, transform 0.4s ease;transform:scale(1.05);"></div>
                         @endif
-                    </div>
-                    {{-- Image / gradient area --}}
-                    <div class="relative overflow-hidden" style="height:210px;">
-                        @if(!empty($project['image']))
-                        <img src="{{ asset($project['image']) }}" alt="{{ $project['title'] }}"
-                             class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-110">
-                        @elseif($project['num'] === '03')
-                        <div class="h-full flex items-center justify-center relative" style="background:linear-gradient(135deg,#1F7A78 0%,#2CA6A4 60%,#3FBDBB 100%);">
-                            <div class="absolute inset-0" style="background-image:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(255,255,255,0.05) 28px,rgba(255,255,255,0.05) 29px),repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(255,255,255,0.05) 28px,rgba(255,255,255,0.05) 29px);"></div>
-                            <div class="w-20 h-20 rounded-2xl flex items-center justify-center" style="background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.25);">
-                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
-                            </div>
-                        </div>
-                        @else
-                        <div class="h-full relative overflow-hidden flex items-center justify-center" style="background:linear-gradient(135deg,#A8872E 0%,#C9A84C 50%,#DFC06A 100%);">
-                            <div class="pf-shimmer-sweep"></div>
-                            <div class="absolute inset-0" style="background-image:radial-gradient(circle at 30% 50%, rgba(255,255,255,0.12) 0%, transparent 50%);"></div>
-                            <div class="relative z-10 text-center">
-                                <div class="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-3" style="background:rgba(17,29,51,0.18);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.20);">
-                                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
-                                </div>
-                                <span style="font-size:0.65rem;font-weight:700;letter-spacing:0.20em;text-transform:uppercase;color:rgba(17,29,51,0.55);">Coming Soon</span>
-                            </div>
-                        </div>
-                        @endif
-                        {{-- Hover overlay --}}
-                        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-350 flex items-center justify-center"
-                             style="background:linear-gradient(to top,rgba(17,29,51,0.78) 0%,rgba(17,29,51,0.35) 100%);backdrop-filter:blur(2px);">
-                            @if($hasLink)
-                            <span class="pf-cta-btn">
-                                Visit Live Site
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                            </span>
-                            @else
-                            <span class="pf-cta-btn" style="cursor:default;">
-                                {{ $project['num'] === '04' ? 'Stay Tuned' : 'More Details' }}
-                            </span>
-                            @endif
-                        </div>
-                        {{-- Category badge --}}
-                        <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-white font-semibold" style="font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;background:rgba(17,29,51,0.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.18);">
-                            {{ $project['category'] }}
-                        </div>
-                    </div>
-                    {{-- Card footer --}}
-                    <div class="pf-footer">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="flex-1 min-w-0">
-                                <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.18em;color:rgba(201,168,76,0.70);margin-bottom:4px;">{{ $project['num'] }}</div>
-                                <h4 class="pf-title">{{ $project['title'] }}</h4>
-                                @if(!empty($project['tags']))
-                                <div class="pf-tags" style="margin-top:8px;">
-                                    @foreach($project['tags'] as $tag)
-                                    <span class="pf-tag">{{ $tag }}</span>
-                                    @endforeach
-                                </div>
-                                @endif
-                            </div>
-                            @if($isLive)
-                            <div class="shrink-0 flex items-center gap-1.5 mt-1">
-                                <div class="pf-live-badge"></div>
-                                <span style="font-size:0.60rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(42,157,143,0.80);">Live</span>
-                            </div>
-                            @elseif($project['num'] === '04')
-                            <div class="shrink-0 mt-1">
-                                <span style="font-size:0.60rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(201,168,76,0.65);">Soon</span>
-                            </div>
-                            @endif
-                        </div>
-                    </div>
+                        <span class="portfolio-number-digit" style="position:relative;z-index:1;font-family:'Playfair Display',serif;font-size:3.4rem;font-weight:700;color:rgba(17,29,51,0.25);transition:color 0.3s ease;">{{ $num }}</span>
+                    </button>
 
-                @if($hasLink)
-                </a>
-                @else
+                    @if ($hasLink)
+                        <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="portfolio-number-link" data-portfolio-index="{{ $loop->index }}" style="display:block;margin-top:14px;text-decoration:none;">
+                    @else
+                        <div class="portfolio-number-link" data-portfolio-index="{{ $loop->index }}" style="margin-top:14px;cursor:pointer;">
+                    @endif
+                        <h4 class="font-bold text-navy text-sm">{{ $project['title'] }}</h4>
+                        <div class="flex items-center justify-between mt-1">
+                            <span class="text-xs" style="color:rgba(17,29,51,0.45);">{{ $project['category'] }}</span>
+                            @if ($hasLink)
+                                <svg class="w-3.5 h-3.5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                            @endif
+                        </div>
+                    @if ($hasLink)
+                        </a>
+                    @else
+                        </div>
+                    @endif
                 </div>
-                @endif
-                @endforeach
-            </div>
-        </div>
-
-        {{-- Stats bar --}}
-        <div id="pf-stats-bar" style="margin-top:56px;padding-top:40px;border-top:1px solid rgba(17,29,51,0.07);opacity:0;">
-            <div class="pf-stat-item">
-                <div class="pf-stat-num" data-target="3" data-suffix="">3</div>
-                <div class="pf-stat-label">Projects Built</div>
-            </div>
-            <div class="pf-stats-divider"></div>
-            <div class="pf-stat-item">
-                <div class="pf-stat-num" data-target="2" data-suffix="">2</div>
-                <div class="pf-stat-label">Live Sites</div>
-            </div>
-            <div class="pf-stats-divider"></div>
-            <div class="pf-stat-item">
-                <div class="pf-stat-num" data-target="100" data-suffix="%">100%</div>
-                <div class="pf-stat-label">Custom Built</div>
-            </div>
-            <div class="pf-stats-divider"></div>
-            <div class="pf-stat-item">
-                <div class="pf-stat-num" data-target="1" data-suffix="">1</div>
-                <div class="pf-stat-label">Dedicated Partner</div>
-            </div>
+            @endforeach
         </div>
 
     </div>
@@ -1738,7 +1576,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
             // Set hidden initial state immediately so elements don't flash visible
             gsap.set(['#portfolio-kicker','#portfolio-heading','#portfolio-accent-line','#portfolio-subtitle'], { opacity:0 });
-            gsap.set('.portfolio-card', { opacity:0, scale:0.85, y:44, transformOrigin:'center bottom' });
+            gsap.set('.portfolio-number-item', { opacity:0, scale:0.85, y:44, transformOrigin:'center bottom' });
 
             function runPortfolioAnimation() {
                 if (portfolioAnimated) return;
@@ -1759,23 +1597,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         { opacity:0, y:16 },
                         { opacity:1, y:0, duration:0.50, ease:'power2.out' }, '-=0.28');
 
-                // Cards: scale-up zoom — 85% → 100% with back.out(1.55) overshoot
-                gsap.fromTo('.portfolio-card',
+                // Numbered columns: scale-up zoom — 85% → 100% with back.out(1.55) overshoot
+                gsap.fromTo('.portfolio-number-item',
                     { opacity:0, scale:0.85, y:44 },
                     { opacity:1, scale:1, y:0, duration:0.82, ease:'back.out(1.55)', stagger:0.13, delay:0.22 }
                 );
-
-                // Stats bar fade in + number counters
-                gsap.to('#pf-stats-bar', { opacity:1, duration:0.65, delay:0.80 });
-                document.querySelectorAll('.pf-stat-num').forEach(el => {
-                    const target = parseInt(el.dataset.target, 10);
-                    const suffix = el.dataset.suffix || '';
-                    const obj    = { val: 0 };
-                    gsap.to(obj, {
-                        val: target, duration: 1.40, delay: 0.90, ease: 'power2.out',
-                        onUpdate() { el.textContent = Math.round(obj.val) + suffix; },
-                    });
-                });
             }
 
             const io = new IntersectionObserver((entries) => {
@@ -1786,7 +1612,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             if (portfolioSection) io.observe(portfolioSection);
         })();
 
-        // Portfolio hover + modal handled by initPortfolioInteractions() below
+        // Portfolio numbered switcher: tap-to-activate, handled by
+        // initPortfolioSwitcher() below
 
         // ============================================================
         //  CORE VALUES — scroll-scrubbed reveal (replaces the old
@@ -2135,144 +1962,31 @@ function toggleServices() {
 })();
 </script>
 
-{{-- ── Portfolio Detail Modal ── --}}
-<div id="pf-modal-backdrop">
-    <div id="pf-modal">
-        <button id="pf-modal-close" aria-label="Close">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
-        {{-- Browser chrome --}}
-        <div class="pf-modal-chrome">
-            <div class="pf-dots">
-                <span style="background:#FF5F57;"></span>
-                <span style="background:#FFBD2E;"></span>
-                <span style="background:#28C840;"></span>
-            </div>
-            <div class="pf-urlbar" id="pf-modal-url-bar"></div>
-            <div id="pf-modal-live-dot" class="pf-live-dot" style="display:none;"></div>
-        </div>
-        {{-- Body --}}
-        <div class="pf-modal-body">
-            <div class="pf-modal-img-panel">
-                <img id="pf-modal-img" src="" alt="" style="display:none;">
-                <div id="pf-modal-no-image" class="pf-modal-no-image" style="display:none;">Coming Soon</div>
-            </div>
-            <div class="pf-modal-details">
-                <div class="pf-modal-num" id="pf-modal-num"></div>
-                <div class="pf-modal-category-badge" id="pf-modal-category"></div>
-                <div class="pf-modal-separator"></div>
-                <h2 class="pf-modal-title" id="pf-modal-title"></h2>
-                <p class="pf-modal-desc" id="pf-modal-desc"></p>
-                <div class="pf-tags" id="pf-modal-tags" style="margin-bottom:16px;"></div>
-                <div class="pf-modal-domain" id="pf-modal-domain"></div>
-                <div id="pf-modal-cta-wrap"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
-// ── Portfolio interactions: clean hover + click-to-modal ──
-(function initPortfolioInteractions() {
-    // Smooth hover: lift + spotlight, NO tilt
-    document.querySelectorAll('.portfolio-card').forEach(card => {
-        card.style.cursor = 'pointer';
+// ── Portfolio numbered switcher: tap a number to preview it; tap its
+// title/arrow to open the live site (already-active column's link is
+// left untouched so the native <a> navigates normally) ──
+(function initPortfolioSwitcher() {
+    const items = document.querySelectorAll('.portfolio-number-item');
+    if (!items.length) return;
 
-        card.addEventListener('mouseenter', () => {
-            gsap.to(card, {
-                y: -14, scale: 1.025, transformPerspective: 900,
-                boxShadow: '0 28px 70px rgba(17,29,51,0.14), 0 8px 28px rgba(17,29,51,0.08), 0 0 0 1.5px rgba(201,168,76,0.24)',
-                duration: 0.45, ease: 'back.out(1.5)', overwrite: 'auto',
-            });
-            card.classList.remove('pf-shimmering');
-            void card.offsetWidth;
-            card.classList.add('pf-shimmering');
-        }, { passive: true });
-
-        card.addEventListener('mousemove', e => {
-            const r = card.getBoundingClientRect();
-            card.style.setProperty('--mx', `${e.clientX - r.left}px`);
-            card.style.setProperty('--my', `${e.clientY - r.top}px`);
-        }, { passive: true });
-
-        card.addEventListener('mouseleave', () => {
-            gsap.to(card, {
-                y: 0, scale: 1,
-                boxShadow: '0 4px 20px rgba(17,29,51,0.06), 0 1px 4px rgba(17,29,51,0.04)',
-                duration: 0.55, ease: 'back.out(1.3)', overwrite: 'auto',
-            });
-            card.classList.remove('pf-shimmering');
-        }, { passive: true });
-    });
-
-    // Modal
-    const backdrop = document.getElementById('pf-modal-backdrop');
-    const modal    = document.getElementById('pf-modal');
-    const closeBtn = document.getElementById('pf-modal-close');
-    if (!backdrop || !modal) return;
-
-    function openModal(card) {
-        const d = card.dataset;
-
-        document.getElementById('pf-modal-num').textContent     = d.projectNum      || '';
-        document.getElementById('pf-modal-title').textContent   = d.projectTitle    || '';
-        document.getElementById('pf-modal-desc').textContent    = d.projectDesc     || '';
-        document.getElementById('pf-modal-category').textContent= d.projectCategory || '';
-
-        const urlBar = document.getElementById('pf-modal-url-bar');
-        urlBar.innerHTML = `<svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.45)" stroke-width="2.5" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg><span>${d.projectDomain || ''}</span>`;
-
-        const liveDot = document.getElementById('pf-modal-live-dot');
-        liveDot.style.display = d.projectLive === 'true' ? '' : 'none';
-
-        const imgEl = document.getElementById('pf-modal-img');
-        const noImg = document.getElementById('pf-modal-no-image');
-        if (d.projectImage && !d.projectImage.endsWith('/')) {
-            imgEl.src = d.projectImage; imgEl.alt = d.projectTitle || '';
-            imgEl.style.display = ''; noImg.style.display = 'none';
-        } else {
-            imgEl.style.display = 'none'; noImg.style.display = '';
-        }
-
-        const tagsEl = document.getElementById('pf-modal-tags');
-        tagsEl.innerHTML = (d.projectTags || '').split(',').filter(Boolean)
-            .map(t => `<span class="pf-tag">${t.trim()}</span>`).join('');
-
-        const domainEl = document.getElementById('pf-modal-domain');
-        domainEl.innerHTML = d.projectDomain
-            ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:0.40;"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20"/></svg> ${d.projectDomain}`
-            : '';
-
-        const ctaWrap = document.getElementById('pf-modal-cta-wrap');
-        if (d.projectUrl && d.projectLive === 'true') {
-            ctaWrap.innerHTML = `<a class="pf-modal-cta" href="${d.projectUrl}" target="_blank" rel="noopener">Visit Live Site <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>`;
-        } else {
-            ctaWrap.innerHTML = `<div class="pf-modal-cta-soon">Coming Soon</div>`;
-        }
-
-        backdrop.style.pointerEvents = 'all';
-        document.body.style.overflow = 'hidden';
-        gsap.to(backdrop, { opacity: 1, duration: 0.35, ease: 'power2.out' });
-        gsap.fromTo(modal,
-            { opacity: 0, scale: 0.88, y: 30 },
-            { opacity: 1, scale: 1,    y: 0,  duration: 0.52, ease: 'back.out(1.45)' }
-        );
+    function activate(index) {
+        items.forEach((item, i) => item.classList.toggle('is-active', i === index));
     }
 
-    function closeModal() {
-        gsap.to(modal,    { opacity: 0, scale: 0.92, y: 18, duration: 0.28, ease: 'power3.in' });
-        gsap.to(backdrop, { opacity: 0, duration: 0.30, delay: 0.06, ease: 'power2.in',
-            onComplete() { backdrop.style.pointerEvents = 'none'; document.body.style.overflow = ''; }
-        });
-    }
+    items.forEach((item, i) => {
+        const box = item.querySelector('.portfolio-number-box');
+        if (box) box.addEventListener('click', () => activate(i));
 
-    document.querySelectorAll('.portfolio-card').forEach(card => {
-        card.addEventListener('click', e => { e.preventDefault(); openModal(card); });
+        const link = item.querySelector('.portfolio-number-link');
+        if (link) {
+            link.addEventListener('click', (e) => {
+                if (item.classList.contains('is-active')) return; // let it navigate normally
+                e.preventDefault();
+                activate(i);
+            });
+        }
     });
-
-    closeBtn.addEventListener('click', closeModal);
-    backdrop.addEventListener('click', e => { if (e.target === backdrop) closeModal(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 })();
 </script>
 
