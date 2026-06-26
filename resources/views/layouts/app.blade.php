@@ -791,8 +791,10 @@
         .portfolio-number-box:hover { background: rgba(17,29,51,0.05); }
         .portfolio-number-image  { opacity: 0; transform: scale(1.05); }
         .portfolio-number-digit  { color: rgba(17,29,51,0.25); }
-        .portfolio-number-item.is-active .portfolio-number-image { opacity: 1; transform: scale(1); }
-        .portfolio-number-item.is-active .portfolio-number-digit { color: rgba(255,255,255,0.85); }
+        .portfolio-number-item.is-active .portfolio-number-image,
+        .portfolio-number-item:hover .portfolio-number-image { opacity: 1; transform: scale(1); }
+        .portfolio-number-item.is-active .portfolio-number-digit,
+        .portfolio-number-item:hover .portfolio-number-digit { color: rgba(255,255,255,0.85); }
         .portfolio-number-link:hover h4 { color: #2CA6A4; }
         @media (max-width: 640px) {
             .portfolio-number-item { width: 110px !important; }
