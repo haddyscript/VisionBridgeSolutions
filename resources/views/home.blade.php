@@ -1305,47 +1305,57 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         //  TOGGLE on the parent ScrollTrigger means the entire timeline
         //  plays forward on entry and reverses cleanly on scroll-back.
         // ============================================================
-        // Video starts small + steeply tilted (~40% toward flat); the pinned zoom below grows and straightens it
+        // Video panel scales up + straightens out as it scrolls through the
+        // viewport — tied directly to scroll position, no pinning. The
+        // pinned version of this kept producing an intermittent blank-page
+        // bug (pin-spacer insertion fighting with refresh-on-load timing),
+        // so this trades the "frozen while zooming" cinematic feel for a
+        // version that can't get stuck invisible.
         gsap.set('#welcome-video-wrap', {
-            scale:0.68, rotateX:36, y:60,
-            transformPerspective:1600, transformOrigin:'center top',
-            force3D:true,
+            transformPerspective:1600, transformOrigin:'center center', force3D:true,
         });
+        gsap.fromTo('#welcome-video-wrap',
+            // Starts small/tilted; "start" only fires once the whole panel
+            // (short at this scale) has fully entered the viewport from the
+            // bottom — not as soon as its top edge merely appears.
+            { scale:0.4, rotateX:24, y:40 },
+            { scale:2.3, rotateX:0, y:0, ease:'none',
+              // end:'bottom top' stretches the scrub across the entire time
+              // the panel is passing through the viewport (not just the
+              // first ~25%), so the zoom plays out gradually start to finish.
+              scrollTrigger: { trigger:'#welcome-video-wrap', start:'bottom bottom', end:'bottom top', scrub:1 } }
+        );
 
-        gsap.timeline({
-            scrollTrigger: { trigger:'#welcome', start:'top 78%', toggleActions: TOGGLE }
-        })
-        .fromTo('#welcome-kicker',
-            { opacity:0, y:14 }, { opacity:1, y:0, duration:0.60, ease:'power3.out' })
-        .from('.welcome-word',
-            { y:'105%', opacity:0, duration:0.72, stagger:0.08, ease:'power3.out' }, '-=0.28')
-        .fromTo('#welcome-sub',
-            { opacity:0, y:22 }, { opacity:1, y:0, duration:0.60, ease:'power2.out' }, '-=0.28')
-        .fromTo('#welcome-video-wrap',
-            { opacity:0 }, { opacity:1, duration:0.95, ease:'power2.out' }, '-=0.32')
-        .fromTo('#welcome-credit',
-            { opacity:0, y:12 }, { opacity:1, y:0, duration:0.55, ease:'power2.out' }, '-=0.50');
+        // Plays once via IntersectionObserver (not ScrollTrigger) — same
+        // workaround already used for the Plans/Portfolio sections below,
+        // kept here too since it's simple and reliable either way.
+        (function () {
+            let welcomeAnimated = false;
+            function runWelcomeEntrance() {
+                if (welcomeAnimated) return;
+                welcomeAnimated = true;
+                gsap.timeline()
+                    .fromTo('#welcome-kicker',
+                        { opacity:0, y:14 }, { opacity:1, y:0, duration:0.60, ease:'power3.out' })
+                    .from('.welcome-word',
+                        { y:'105%', opacity:0, duration:0.72, stagger:0.08, ease:'power3.out' }, '-=0.28')
+                    .fromTo('#welcome-sub',
+                        { opacity:0, y:22 }, { opacity:1, y:0, duration:0.60, ease:'power2.out' }, '-=0.28')
+                    .fromTo('#welcome-video-wrap',
+                        { opacity:0 }, { opacity:1, duration:0.95, ease:'power2.out' }, '-=0.32')
+                    .fromTo('#welcome-credit',
+                        { opacity:0, y:12 }, { opacity:1, y:0, duration:0.55, ease:'power2.out' }, '-=0.50');
+            }
+            const welcomeSection = document.getElementById('welcome');
+            if (welcomeSection) {
+                new IntersectionObserver((entries) => {
+                    if (entries[0].isIntersecting) runWelcomeEntrance();
+                }, { threshold: 0.15 }).observe(welcomeSection);
+            }
+        })();
 
         // Ambient glow scrub — naturally reverses with scroll direction
         gsap.to('#welcome-glow', { y:-55, ease:'none', scrollTrigger: scrubST('#welcome', 3) });
-
-        // ── Pinned scale-up zoom: starts only once the video panel itself
-        //    is vertically centered in the viewport (not as soon as the
-        //    section top hits the top), then grows/straightens it while
-        //    pinned. scrub:1.4 adds a touch of smoothing lag so the motion
-        //    doesn't feel like it's snapping 1:1 to the wheel. ──
-        ScrollTrigger.create({
-            trigger: '#welcome-video-wrap',
-            start: 'center center',
-            end: '+=140%',
-            pin: true,
-            pinSpacing: true,
-            scrub: 1.4,
-            animation: gsap.timeline()
-                .to('#welcome-video-wrap', { scale:1.9, rotateX:0, y:0, ease:'none' }, 0)
-                .to(['#welcome-kicker', '.welcome-word-wrap', '#welcome-sub'], { opacity:0, y:-30, ease:'none' }, 0)
-                .to('#welcome-credit', { opacity:0, ease:'none' }, 0.15),
-        });
 
         // Video: play/pause via IntersectionObserver (independent of GSAP)
         const wVideo = document.getElementById('welcome-video');
@@ -1354,6 +1364,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 entries[0].isIntersecting ? wVideo.play().catch(() => {}) : wVideo.pause();
             }, { threshold: 0.25 }).observe(wVideo);
         }
+
+        // Videos load asynchronously and change layout height once their
+        // dimensions are known — re-measure every pinned/scrubbed trigger
+        // once that happens, otherwise the pin's start/end (and the hero
+        // video's height) can be calculated against stale, pre-load layout,
+        // which is exactly what causes the occasional blank gap / oversized
+        // frame after scrolling past a pinned section.
+        document.querySelectorAll('video').forEach(video => {
+            video.addEventListener('loadedmetadata', () => ScrollTrigger.refresh(), { once: true });
+        });
+        window.addEventListener('load', () => ScrollTrigger.refresh());
 
         // ============================================================
         //  ABOUT — cinematic entrance sequence
