@@ -1681,21 +1681,37 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 });
             });
 
-            // Drag / swipe support
+            // Drag / swipe support — dragging only "arms" once the pointer
+            // moves past a small threshold. This is deliberate: calling
+            // setPointerCapture (and otherwise treating every pointerdown as
+            // a drag) on a track that contains real links/buttons can
+            // suppress the native click event on those children. Leaving a
+            // plain click/tap completely untouched by this logic fixes that.
+            let armed = false, pointerId = null;
+            const DRAG_THRESHOLD = 5;
+
             track.style.cursor = 'grab';
             track.addEventListener('pointerdown', (e) => {
-                dragging = true;
+                armed = false;
+                dragging = false;
+                pointerId = e.pointerId;
                 dragStartX = e.clientX;
                 trackStartX = gsap.getProperty(track, 'x');
-                track.style.cursor = 'grabbing';
-                track.setPointerCapture(e.pointerId);
             });
             track.addEventListener('pointermove', (e) => {
-                if (!dragging) return;
-                gsap.set(track, { x: trackStartX + (e.clientX - dragStartX) });
+                if (pointerId === null) return;
+                const delta = e.clientX - dragStartX;
+                if (!armed) {
+                    if (Math.abs(delta) < DRAG_THRESHOLD) return;
+                    armed = dragging = true;
+                    track.style.cursor = 'grabbing';
+                    track.setPointerCapture(pointerId);
+                }
+                gsap.set(track, { x: trackStartX + delta });
             });
             function endDrag(e) {
-                if (!dragging) return;
+                pointerId = null;
+                if (!dragging) return; // was just a click/tap — let it pass through untouched
                 dragging = false;
                 track.style.cursor = 'grab';
                 const delta = e.clientX - dragStartX;
