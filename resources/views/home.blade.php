@@ -1744,10 +1744,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         //  the user scrolls all 10 cards naturally. #hscroll-outer
         //  (right after services) clips #why via overflow:hidden.
         //  On desktop: #why starts at translateX(100vw) off-screen.
-        //  When #hscroll-outer hits the viewport top, ScrollTrigger
-        //  pins it and scrubs #why from x:100vw → x:0 (slides in
-        //  from the right like a page turn). After the wipe, unpin
-        //  and normal scroll continues through the why content.
+        //  Once the user finishes scrolling past Services (#hscroll-outer's
+        //  top reaches the viewport top), the wipe auto-plays on its own —
+        //  no further scrolling required. Scroll is briefly locked for the
+        //  ~1.1s animation, then released. Scrolling back above the trigger
+        //  resets #why off-screen so the wipe can replay on the way down.
         //  On mobile (< 1024px): no transform is applied; both
         //  sections stack vertically as usual.
         // ============================================================
@@ -1764,6 +1765,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             const edgeLabel = document.getElementById('hscroll-edge-label');
             if (!outer || !why) return;
 
+            // No more "scroll to continue" — the wipe plays automatically
+            if (hint) hint.style.display = 'none';
+
             const showBar = () => { if (bar) bar.style.opacity='1'; if (track) track.style.opacity='1'; };
             const hideBar = () => { if (bar) bar.style.opacity='0'; if (track) track.style.opacity='0'; };
 
@@ -1775,7 +1779,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
             // Services section animations are handled in initGSAP (works on all breakpoints)
 
-            // Why section content reveals — fire at 80% wipe progress
+            // Why section content reveals — fire once the wipe tween completes
             const whyRevealTl = gsap.timeline({ paused: true });
             whyRevealTl
                 .fromTo('#why-heading-block',
@@ -1785,67 +1789,60 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 .fromTo('#why-feature-cards > div',
                     { opacity:0, y:36 }, { opacity:1, y:0, duration:0.60, stagger:0.11, ease:'back.out(1.4)' }, '-=0.30');
 
-            // Main wipe: scrub #why from x:100vw → x:0 while outer is pinned
-            gsap.to(why, {
-                x: 0,
-                ease: 'none',
-                scrollTrigger: {
-                    id: 'hscroll-wipe',
-                    trigger: outer,
-                    pin: true,
-                    scrub: 1.2,
-                    start: 'top top',
-                    end: () => '+=' + vw(),
-                    invalidateOnRefresh: true,
-                    onRefresh(self) {
-                        // Only reset #why when wipe hasn't started — prevents
-                        // disrupting a mid-wipe position after a refresh call
-                        if (self.progress <= 0.01) gsap.set(why, { x: vw() });
-                    },
-                    onEnter()   { showBar(); },
-                    onUpdate(self) {
-                        const p = self.progress;
+            let wipePlayed  = false;
+            let wipePlaying = false;
+
+            function playWipe() {
+                if (wipePlayed || wipePlaying) return;
+                wipePlaying = true;
+                document.body.style.overflow = 'hidden';
+                showBar();
+
+                gsap.to(why, {
+                    x: 0,
+                    duration: 1.1,
+                    ease: 'power2.inOut',
+                    onUpdate() {
+                        const p   = this.progress();
                         const pct = Math.round(p * 100);
 
-                        // Gold bottom bar
                         if (bar) bar.style.width = pct + '%';
-
-                        // SVG ring fill (stroke-dashoffset decreases as progress increases)
                         if (ringFill) ringFill.style.strokeDashoffset = CIRCUMFERENCE * (1 - p);
-
-                        // Percentage counter
                         if (pctEl) pctEl.textContent = pct + '%';
-
-                        // Hint arrow fades out immediately
-                        if (hint) hint.style.opacity = 1 - Math.min(p * 8, 1);
-
-                        // Edge label fades in during first 40% then out after 70%
                         if (edgeLabel) {
-                            const edgeOpacity = p < 0.4
-                                ? p / 0.4
-                                : p < 0.7 ? 1 : 1 - ((p - 0.7) / 0.3);
+                            const edgeOpacity = p < 0.5 ? p / 0.5 : 1 - ((p - 0.5) / 0.5);
                             edgeLabel.style.opacity = Math.max(0, Math.min(1, edgeOpacity));
                         }
-
-                        // Trigger why reveals when #why is 80% into view
-                        if (p >= 0.80 && whyRevealTl.progress() === 0) {
-                            whyRevealTl.play();
-                        }
                     },
-                    onLeave() {
-                        // Wipe complete — fade out bar after a short pause
+                    onComplete() {
+                        document.body.style.overflow = '';
+                        wipePlaying = false;
+                        wipePlayed  = true;
+                        whyRevealTl.play();
                         gsap.to([bar, track], { opacity: 0, duration: 0.5, delay: 0.6 });
                     },
-                    onLeaveBack() {
-                        hideBar();
-                        whyRevealTl.pause(0);
-                        gsap.set(why, { x: vw() });
-                        if (ringFill) ringFill.style.strokeDashoffset = CIRCUMFERENCE;
-                        if (pctEl)    pctEl.textContent = '0%';
-                        if (bar)      bar.style.width = '0%';
-                    },
-                    onEnterBack() { showBar(); },
-                }
+                });
+            }
+
+            function resetWipe() {
+                if (wipePlaying) return; // never reset mid-animation
+                wipePlayed = false;
+                whyRevealTl.pause(0);
+                gsap.set(why, { x: vw() });
+                hideBar();
+                if (ringFill) ringFill.style.strokeDashoffset = CIRCUMFERENCE;
+                if (pctEl)    pctEl.textContent = '0%';
+                if (bar)      bar.style.width = '0%';
+            }
+
+            ScrollTrigger.create({
+                id: 'hscroll-wipe',
+                trigger: outer,
+                start: 'top top',
+                invalidateOnRefresh: true,
+                onEnter: playWipe,
+                onEnterBack: playWipe,
+                onLeaveBack: resetWipe,
             });
         }
         initHorizontalWipe();
@@ -1891,10 +1888,10 @@ function toggleServices() {
 
     const safeRefresh = () => {
         if (window.innerWidth < 1024) return; // wipe only exists on desktop
+        // The wipe trigger no longer pins anything (it auto-plays a fixed
+        // tween instead of scrubbing), so refreshing it is always safe now.
         const wipeST = typeof ScrollTrigger !== 'undefined' && ScrollTrigger.getById('hscroll-wipe');
-        // Refresh ONLY the wipe instance (not global — global refresh rebuilds all pin
-        // spacers and corrupts the layout). Only safe when pin hasn't fired yet (progress ≤ 0).
-        if (wipeST && wipeST.progress <= 0.01) wipeST.refresh();
+        if (wipeST) wipeST.refresh();
     };
 
     if (!expanded) {
