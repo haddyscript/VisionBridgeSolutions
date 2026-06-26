@@ -789,6 +789,8 @@
 
         /* ── Portfolio section: numbered project switcher ── */
         .portfolio-number-box:hover { background: rgba(17,29,51,0.05); }
+        .portfolio-number-image  { opacity: 0; transform: scale(1.05); }
+        .portfolio-number-digit  { color: rgba(17,29,51,0.25); }
         .portfolio-number-item.is-active .portfolio-number-image { opacity: 1; transform: scale(1); }
         .portfolio-number-item.is-active .portfolio-number-digit { color: rgba(255,255,255,0.85); }
         .portfolio-number-link:hover h4 { color: #2CA6A4; }
