@@ -194,20 +194,20 @@
             left: 50%;
             top: 4px;
             bottom: 4px;
-            width: 2px;
+            width: 3px;
             transform: translateX(-50%);
             background: rgba(47,58,69,0.12);
-            border-radius: 2px;
+            border-radius: 3px;
         }
         #rail-progress {
             position: absolute;
             left: 50%;
             top: 4px;
-            width: 2px;
+            width: 3px;
             height: 0;
             transform: translateX(-50%);
             background: linear-gradient(180deg, #C9A84C, #DFC06A);
-            border-radius: 2px;
+            border-radius: 3px;
             transition: height 0.35s ease;
         }
         .rail-dot {
@@ -219,7 +219,8 @@
             border: none;
             padding: 0;
             cursor: pointer;
-            transition: background 0.25s ease, transform 0.25s ease, width 0.25s ease, height 0.25s ease;
+            opacity: 1;
+            transition: background 0.25s ease, transform 0.25s ease, width 0.25s ease, height 0.25s ease, opacity 0.3s ease;
         }
         .rail-dot:hover { transform: scale(1.3); background: rgba(201,168,76,0.55); }
         .rail-dot.is-active {
@@ -1872,7 +1873,17 @@
             function setActive(id) {
                 dots.forEach(dot => dot.classList.toggle('is-active', dot.dataset.railTarget === id));
 
-                const activeDot = dots.find(dot => dot.dataset.railTarget === id);
+                const activeIndex = dots.findIndex(dot => dot.dataset.railTarget === id);
+
+                // Fade dots further from the active one — gives a sense of
+                // depth/focus rather than every dot reading at equal weight
+                dots.forEach((dot, i) => {
+                    if (i === activeIndex) { dot.style.opacity = '1'; return; }
+                    const distance = Math.abs(i - activeIndex);
+                    dot.style.opacity = String(Math.max(0.3, 1 - distance * 0.2));
+                });
+
+                const activeDot = dots[activeIndex];
                 if (progress && activeDot) {
                     const dotRect  = activeDot.getBoundingClientRect();
                     const railRect = rail.getBoundingClientRect();
