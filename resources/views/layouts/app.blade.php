@@ -172,6 +172,61 @@
             pointer-events:none;
         }
 
+        /* ─── Section progress rail — jump to any section, see how far's left ─── */
+        #section-rail {
+            position: fixed;
+            right: 22px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+        .rail-dot {
+            position: relative;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: rgba(47,58,69,0.22);
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            transition: background 0.25s ease, transform 0.25s ease;
+        }
+        .rail-dot:hover { transform: scale(1.3); background: rgba(201,168,76,0.55); }
+        .rail-dot.is-active {
+            background: #C9A84C;
+            box-shadow: 0 0 0 4px rgba(201,168,76,0.18);
+        }
+        .rail-dot-label {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%) translateX(6px);
+            white-space: nowrap;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            color: #2F3A45;
+            background: rgba(255,255,255,0.92);
+            padding: 4px 10px;
+            border-radius: 6px;
+            box-shadow: 0 4px 14px rgba(47,58,69,0.12);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .rail-dot:hover .rail-dot-label,
+        .rail-dot.is-active .rail-dot-label {
+            opacity: 1;
+            transform: translateY(-50%) translateX(0);
+        }
+        @media (max-width: 1023px) {
+            #section-rail { display: none; }
+        }
+
         /* ─── Mouse-scroll indicator ─── */
         @keyframes scroll-dot {
             0%,100% { transform:translateY(0);   opacity:1; }
@@ -1223,6 +1278,26 @@
         </div>
     </nav>
 
+    {{-- Section progress rail — homepage only (targets homepage section IDs) --}}
+    @if (request()->routeIs('home'))
+        <nav id="section-rail" aria-label="Page sections">
+            @foreach ([
+                ['id' => 'hero',        'label' => 'Home'],
+                ['id' => 'about',       'label' => 'About'],
+                ['id' => 'services',    'label' => 'Services'],
+                ['id' => 'why',         'label' => 'Why Us'],
+                ['id' => 'plans',       'label' => 'Plans'],
+                ['id' => 'portfolio',   'label' => 'Portfolio'],
+                ['id' => 'partnership', 'label' => 'Partnership'],
+                ['id' => 'contact',     'label' => 'Contact'],
+            ] as $rail)
+                <button type="button" class="rail-dot" data-rail-target="{{ $rail['id'] }}" aria-label="Jump to {{ $rail['label'] }}">
+                    <span class="rail-dot-label">{{ $rail['label'] }}</span>
+                </button>
+            @endforeach
+        </nav>
+    @endif
+
     <!-- Page Content -->
     <div id="page-wrapper">
         @yield('content')
@@ -1512,6 +1587,48 @@
             });
         }
         initScrollSpy();
+    })();
+    </script>
+
+    {{-- Section progress rail — click to jump, highlights as you scroll --}}
+    <script defer>
+    (function () {
+        function initSectionRail() {
+            const rail = document.getElementById('section-rail');
+            if (!rail) return;
+
+            const dots = Array.from(rail.querySelectorAll('.rail-dot'));
+            const sections = dots
+                .map(dot => ({ dot, el: document.getElementById(dot.dataset.railTarget) }))
+                .filter(item => item.el);
+
+            dots.forEach(dot => {
+                dot.addEventListener('click', () => {
+                    const target = document.getElementById(dot.dataset.railTarget);
+                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            });
+
+            function setActive(id) {
+                dots.forEach(dot => dot.classList.toggle('is-active', dot.dataset.railTarget === id));
+            }
+
+            const observer = new IntersectionObserver(entries => {
+                let best = null;
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        if (!best || entry.intersectionRatio > best.intersectionRatio) best = entry;
+                    }
+                });
+                if (best) setActive(best.target.id);
+            }, {
+                rootMargin: '-20% 0px -60% 0px',
+                threshold: [0, 0.1, 0.25, 0.5],
+            });
+
+            sections.forEach(({ el }) => observer.observe(el));
+        }
+        initSectionRail();
     })();
     </script>
 
