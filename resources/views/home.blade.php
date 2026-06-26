@@ -1283,7 +1283,10 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         //  HERO — page-load entrance timeline (no ScrollTrigger needed:
         //  hero is always the first thing visible on load)
         // ============================================================
-        const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.3 });
+        // Starts paused — held until the video intro overlay (app.blade.php)
+        // finishes and dispatches 'intro:complete', so the hero reveal plays
+        // right after the intro clears instead of finishing silently underneath it.
+        const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.3, paused: true });
 
         heroTl
             .fromTo('#hero-badge',      { opacity:0, y:22  }, { opacity:1, y:0, duration:0.65 })
@@ -1304,6 +1307,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 });
             })
             .fromTo('#hero-scroll-cue', { opacity:0 }, { opacity:1, duration:0.70 }, '-=1.90');
+
+        if (document.getElementById('intro-overlay')) {
+            window.addEventListener('intro:complete', () => heroTl.play(), { once: true });
+        } else {
+            heroTl.play(); // no intro overlay present — play immediately as before
+        }
 
         // ============================================================
         //  WELCOME / FOUNDER'S MESSAGE — bi-directional timeline

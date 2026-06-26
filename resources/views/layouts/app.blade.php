@@ -165,6 +165,9 @@
             background:inherit; filter:blur(5px); opacity:.65;
         }
 
+        /* ─── Video intro skip button ─── */
+        #intro-skip:hover { background:rgba(255,255,255,0.16); border-color:rgba(201,168,76,0.75); }
+
         /* ─── Bridge cable divider — signature motif between sections ─── */
         .bridge-cable-divider {
             width:100%; max-width:640px; height:34px;
@@ -1213,6 +1216,28 @@
 </head>
 <body class="font-sans antialiased text-gray-800 bg-white">
 
+    {{-- Full-page video intro — homepage only. Plays once, then shrinks
+         away (gravity-pull) to reveal the site. See #intro-overlay script
+         further down for behavior. --}}
+    @if (request()->routeIs('home'))
+        <div id="intro-overlay" style="position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden;">
+            <video id="intro-video" autoplay muted playsinline preload="auto"
+                   style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+                <source src="{{ asset('videos/Web_development_company_hero_video.mp4') }}" type="video/mp4">
+            </video>
+            <button id="intro-skip" type="button"
+                    style="position:fixed;bottom:24px;right:24px;z-index:10000;display:inline-flex;align-items:center;gap:6px;
+                           background:rgba(255,255,255,0.08);border:1px solid rgba(201,168,76,0.45);color:#DFC06A;
+                           font-size:0.8rem;font-weight:600;letter-spacing:0.04em;padding:10px 18px;border-radius:30px;
+                           backdrop-filter:blur(10px);cursor:pointer;transition:background 0.2s ease,border-color 0.2s ease;">
+                Skip Intro
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+                </svg>
+            </button>
+        </div>
+    @endif
+
     {{-- Section anchors only exist on the homepage; from other pages, link back home first --}}
     @php $homeAnchor = request()->routeIs('home') ? '' : route('home'); @endphp
 
@@ -1629,6 +1654,50 @@
             sections.forEach(({ el }) => observer.observe(el));
         }
         initSectionRail();
+    })();
+    </script>
+
+    {{-- Video intro — plays once, skip button, safety timeout, then
+         shrinks away (gravity-pull) and signals home.blade.php's Hero
+         entrance via a custom event so it animates in right after. --}}
+    <script defer>
+    (function () {
+        function initIntro() {
+            const overlay = document.getElementById('intro-overlay');
+            if (!overlay) return; // not on the homepage
+
+            if (typeof gsap === 'undefined') { setTimeout(initIntro, 80); return; }
+
+            const video = document.getElementById('intro-video');
+            const skip  = document.getElementById('intro-skip');
+            let revealed = false;
+
+            document.body.style.overflow = 'hidden';
+
+            function revealSite() {
+                if (revealed) return;
+                revealed = true;
+                gsap.to(overlay, {
+                    scale: 0.06, opacity: 0, duration: 1, ease: 'power3.in',
+                    onComplete() {
+                        overlay.style.display = 'none';
+                        document.body.style.overflow = '';
+                        window.dispatchEvent(new CustomEvent('intro:complete'));
+                    },
+                });
+            }
+
+            if (video) {
+                video.addEventListener('ended', revealSite);
+                video.addEventListener('error', revealSite);
+                video.play().catch(revealSite); // autoplay blocked → reveal immediately
+            }
+            if (skip) skip.addEventListener('click', revealSite);
+
+            // Safety net: never trap a visitor on the intro
+            setTimeout(revealSite, 12000);
+        }
+        initIntro();
     })();
     </script>
 
