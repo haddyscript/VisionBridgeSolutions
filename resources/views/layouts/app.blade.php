@@ -1364,47 +1364,75 @@
                         <stop offset="100%" stop-color="#3F4C59"/>
                     </linearGradient>
                     <linearGradient id="trailFadeStrong" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stop-color="#2D7FF9" stop-opacity="0"/>
-                        <stop offset="100%" stop-color="#2D7FF9" stop-opacity="0.85"/>
+                        <stop offset="0%" stop-color="#2CA6A4" stop-opacity="0"/>
+                        <stop offset="100%" stop-color="#2CA6A4" stop-opacity="0.85"/>
                     </linearGradient>
                     <linearGradient id="trailFadeLight" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stop-color="#8FC0FF" stop-opacity="0"/>
-                        <stop offset="100%" stop-color="#8FC0FF" stop-opacity="0.7"/>
+                        <stop offset="0%" stop-color="#7FD9D6" stop-opacity="0"/>
+                        <stop offset="100%" stop-color="#7FD9D6" stop-opacity="0.7"/>
                     </linearGradient>
                 </defs>
-                {{-- Minimalist bridge with smooth sagging cable curves --}}
+                {{-- Soft clouds — each one drifts/parts away once the plane
+                     flies past it (synced in the JS timeline below) --}}
+                <g id="cloud-1" fill="#DCE3E9" opacity="0.85">
+                    <ellipse cx="260" cy="400" rx="55" ry="26"/>
+                    <ellipse cx="305" cy="388" rx="38" ry="22"/>
+                    <ellipse cx="215" cy="392" rx="34" ry="20"/>
+                </g>
+                <g id="cloud-2" fill="#DCE3E9" opacity="0.85">
+                    <ellipse cx="660" cy="370" rx="62" ry="28"/>
+                    <ellipse cx="712" cy="358" rx="40" ry="22"/>
+                    <ellipse cx="608" cy="362" rx="36" ry="20"/>
+                </g>
+                <g id="cloud-3" fill="#DCE3E9" opacity="0.85">
+                    <ellipse cx="1080" cy="360" rx="58" ry="26"/>
+                    <ellipse cx="1128" cy="348" rx="38" ry="20"/>
+                    <ellipse cx="1030" cy="352" rx="34" ry="19"/>
+                </g>
+                <g id="cloud-4" fill="#DCE3E9" opacity="0.85">
+                    <ellipse cx="1430" cy="340" rx="60" ry="27"/>
+                    <ellipse cx="1480" cy="328" rx="38" ry="21"/>
+                    <ellipse cx="1378" cy="332" rx="35" ry="19"/>
+                </g>
+                {{-- Minimalist bridge with twin-leg A-frame pylons (matches the
+                     hero/about bridge silhouette motif) and smooth sagging cables --}}
                 <g opacity="0.95">
                     <rect x="40" y="616" width="1520" height="14" rx="7" fill="url(#bridgeMetal)"/>
-                    <rect x="520" y="460" width="26" height="176" rx="13" fill="url(#bridgeMetal)"/>
-                    <circle cx="533" cy="460" r="15" fill="#CCD2D8"/>
-                    <rect x="1050" y="460" width="26" height="176" rx="13" fill="url(#bridgeMetal)"/>
-                    <circle cx="1063" cy="460" r="15" fill="#CCD2D8"/>
-                    {{-- Smooth cubic-bezier cables (true sag, not straight lines), layered for depth --}}
-                    <path d="M533,470 C420,500 180,560 70,622"  fill="none" stroke="#C7CDD3" stroke-width="4"   stroke-linecap="round"/>
-                    <path d="M533,470 C450,494 260,538 160,608" fill="none" stroke="#D2D7DC" stroke-width="3"   stroke-linecap="round" opacity="0.7"/>
-                    <path d="M533,470 C620,495 780,560 870,622" fill="none" stroke="#C7CDD3" stroke-width="4"   stroke-linecap="round"/>
-                    <path d="M533,470 C610,494 720,538 800,608" fill="none" stroke="#D2D7DC" stroke-width="3"   stroke-linecap="round" opacity="0.7"/>
-                    <path d="M1063,470 C950,495 790,560 730,622"  fill="none" stroke="#C7CDD3" stroke-width="4" stroke-linecap="round"/>
-                    <path d="M1063,470 C986,494 876,538 800,608"  fill="none" stroke="#D2D7DC" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
-                    <path d="M1063,470 C1150,495 1320,560 1530,622" fill="none" stroke="#C7CDD3" stroke-width="4" stroke-linecap="round"/>
-                    <path d="M1063,470 C1146,494 1306,538 1450,608" fill="none" stroke="#D2D7DC" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+                    {{-- Tower 1: A-frame twin legs --}}
+                    <path d="M533,452 L505,628" stroke="url(#bridgeMetal)" stroke-width="15" stroke-linecap="round" fill="none"/>
+                    <path d="M533,452 L561,628" stroke="url(#bridgeMetal)" stroke-width="15" stroke-linecap="round" fill="none"/>
+                    <circle cx="533" cy="452" r="14" fill="#CCD2D8"/>
+                    {{-- Tower 2: A-frame twin legs --}}
+                    <path d="M1063,452 L1035,628" stroke="url(#bridgeMetal)" stroke-width="15" stroke-linecap="round" fill="none"/>
+                    <path d="M1063,452 L1091,628" stroke="url(#bridgeMetal)" stroke-width="15" stroke-linecap="round" fill="none"/>
+                    <circle cx="1063" cy="452" r="14" fill="#CCD2D8"/>
+                    {{-- Smooth cubic-bezier cables — each tower only sweeps toward
+                         its own nearer side, so they no longer cross mid-span --}}
+                    <path d="M533,462 C420,496 180,560 70,622"  fill="none" stroke="#C7CDD3" stroke-width="4"   stroke-linecap="round"/>
+                    <path d="M533,462 C450,490 260,538 160,608" fill="none" stroke="#D2D7DC" stroke-width="3"   stroke-linecap="round" opacity="0.7"/>
+                    <path d="M533,462 C580,486 650,548 700,612" fill="none" stroke="#C7CDD3" stroke-width="4"   stroke-linecap="round"/>
+                    <path d="M533,462 C570,484 600,530 620,600" fill="none" stroke="#D2D7DC" stroke-width="3"   stroke-linecap="round" opacity="0.7"/>
+                    <path d="M1063,462 C1016,486 950,548 900,612" fill="none" stroke="#C7CDD3" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M1063,462 C1026,484 996,530 980,600" fill="none" stroke="#D2D7DC" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+                    <path d="M1063,462 C1150,490 1320,560 1530,622" fill="none" stroke="#C7CDD3" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M1063,462 C1146,490 1306,538 1450,608" fill="none" stroke="#D2D7DC" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
                 </g>
                 {{-- Plane group — GSAP animates x/y/rotation on this <g> --}}
                 <g id="flight-plane">
-                    {{-- Blue turbo streaks (smooth gradient fade) + motion particles --}}
+                    {{-- Teal turbo streaks (smooth gradient fade, brand-consistent) + motion particles --}}
                     <rect x="-175" y="591" width="190" height="9" rx="4.5" fill="url(#trailFadeStrong)"/>
                     <rect x="-120" y="605" width="135" height="5" rx="2.5" fill="url(#trailFadeLight)"/>
                     <rect x="-120" y="577" width="135" height="5" rx="2.5" fill="url(#trailFadeLight)"/>
-                    <circle cx="-190" cy="595" r="4" fill="#2D7FF9" opacity="0.5"/>
-                    <circle cx="-212" cy="585" r="3" fill="#8FC0FF" opacity="0.4"/>
-                    <circle cx="-212" cy="605" r="3" fill="#8FC0FF" opacity="0.4"/>
-                    {{-- Bigger, smoother rounded airplane (nose to the right) --}}
-                    <path d="M14,588 L-14,552 L52,588 Z" fill="url(#planeBody)"/>
-                    <path d="M78,614 L42,652 L124,614 Z" fill="url(#planeBody)"/>
+                    <circle cx="-190" cy="595" r="4" fill="#2CA6A4" opacity="0.5"/>
+                    <circle cx="-212" cy="585" r="3" fill="#7FD9D6" opacity="0.4"/>
+                    <circle cx="-212" cy="605" r="3" fill="#7FD9D6" opacity="0.4"/>
+                    {{-- Bigger airplane with softly rounded wing/tail tips (no sharp points) --}}
+                    <path d="M14,588 Q-18,560 -10,548 Q16,562 52,588 Z" fill="url(#planeBody)"/>
+                    <path d="M78,614 Q46,644 42,652 Q70,630 124,614 Z" fill="url(#planeBody)"/>
                     <rect x="10" y="588" width="135" height="24" rx="12" fill="url(#planeBody)"/>
                     <ellipse cx="155" cy="600" rx="15" ry="13" fill="url(#planeBody)"/>
                     <rect x="14" y="598" width="125" height="4" rx="2" fill="#C9A84C" opacity="0.85"/>
-                    <ellipse cx="122" cy="595" rx="8" ry="6" fill="#EAF3F8" opacity="0.9"/>
+                    <ellipse cx="115" cy="596" rx="11" ry="8" fill="#EAF3F8" opacity="0.92"/>
                 </g>
             </svg>
         </div>
@@ -1721,7 +1749,8 @@
 
             if (typeof gsap === 'undefined') { setTimeout(initFlightTransition, 80); return; }
 
-            const plane = document.getElementById('flight-plane');
+            const plane  = document.getElementById('flight-plane');
+            const clouds = ['cloud-1', 'cloud-2', 'cloud-3', 'cloud-4'].map(id => document.getElementById(id));
             let flying = false;
 
             window.flyTransition = function (targetEl) {
@@ -1730,15 +1759,24 @@
                 flying = true;
                 overlay.style.pointerEvents = 'all';
                 gsap.set(plane, { x: 0, y: 0, rotation: 0 });
+                gsap.set(clouds, { x: 0, y: 0, opacity: 0.85 });
 
-                gsap.timeline({ onComplete() { overlay.style.pointerEvents = 'none'; flying = false; } })
-                    .to(overlay, { opacity: 1, duration: 0.25, ease: 'power2.out' })
+                // Cloud reaction times approximate when the plane's x position
+                // (computed from each stage's easing curve) reaches that cloud.
+                const tl = gsap.timeline({ onComplete() { overlay.style.pointerEvents = 'none'; flying = false; } });
+                tl.to(overlay, { opacity: 1, duration: 0.25, ease: 'power2.out' })
                     // Stage 1: accelerates along the bridge deck
                     .to(plane, { x: 850, duration: 1.3, ease: 'power2.in' }, 0.1)
                     // Stage 2: lifts off and climbs up into the sky
                     .to(plane, { x: 1550, y: -750, rotation: -22, duration: 1.1, ease: 'power2.out' })
                     .call(() => targetEl.scrollIntoView({ behavior: 'auto', block: 'start' }), null, 0.7)
                     .to(overlay, { opacity: 0, duration: 0.4, ease: 'power2.in' }, '-=0.2');
+
+                // Each cloud drifts/parts away and fades as the plane flies past it
+                tl.to('#cloud-1', { x: 40,  y: -25, opacity: 0.3, duration: 0.5, ease: 'power2.out' }, 0.80)
+                  .to('#cloud-2', { x: 45,  y: -20, opacity: 0.3, duration: 0.5, ease: 'power2.out' }, 1.24)
+                  .to('#cloud-3', { x: 35,  y: -22, opacity: 0.3, duration: 0.5, ease: 'power2.out' }, 1.59)
+                  .to('#cloud-4', { x: 40,  y: -18, opacity: 0.3, duration: 0.5, ease: 'power2.out' }, 2.03);
             };
 
             // Intercept every in-page anchor click site-wide (nav, mobile
