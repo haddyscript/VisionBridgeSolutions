@@ -343,6 +343,13 @@
             z-index: 2;
             /* No background set here — each page section carries its own solid bg.
                The transparent #footer-spacer at the bottom lets the fixed footer show through. */
+            /* pointer-events:none here + auto on every real child (below) — without
+               this, #page-wrapper's own empty box still intercepts clicks meant for
+               the fixed footer underneath, even with the spacer itself passthrough. */
+            pointer-events: none;
+        }
+        #page-wrapper > *:not(#footer-spacer) {
+            pointer-events: auto;
         }
         #site-footer {
             position: fixed;
