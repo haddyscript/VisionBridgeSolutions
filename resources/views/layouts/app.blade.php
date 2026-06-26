@@ -187,6 +187,29 @@
             align-items: center;
             gap: 14px;
         }
+        /* Connecting track behind the dots, plus a gold fill that grows
+           to the active dot's position — reads as a page progress bar */
+        #rail-track {
+            position: absolute;
+            left: 50%;
+            top: 4px;
+            bottom: 4px;
+            width: 2px;
+            transform: translateX(-50%);
+            background: rgba(47,58,69,0.12);
+            border-radius: 2px;
+        }
+        #rail-progress {
+            position: absolute;
+            left: 50%;
+            top: 4px;
+            width: 2px;
+            height: 0;
+            transform: translateX(-50%);
+            background: linear-gradient(180deg, #C9A84C, #DFC06A);
+            border-radius: 2px;
+            transition: height 0.35s ease;
+        }
         .rail-dot {
             position: relative;
             width: 9px;
@@ -196,10 +219,12 @@
             border: none;
             padding: 0;
             cursor: pointer;
-            transition: background 0.25s ease, transform 0.25s ease;
+            transition: background 0.25s ease, transform 0.25s ease, width 0.25s ease, height 0.25s ease;
         }
         .rail-dot:hover { transform: scale(1.3); background: rgba(201,168,76,0.55); }
         .rail-dot.is-active {
+            width: 13px;
+            height: 13px;
             background: #C9A84C;
             box-shadow: 0 0 0 4px rgba(201,168,76,0.18);
         }
@@ -220,6 +245,16 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        /* Small triangle connecting the label to its dot */
+        .rail-dot-label::after {
+            content: '';
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 5px solid transparent;
+            border-left-color: rgba(255,255,255,0.92);
         }
         .rail-dot:hover .rail-dot-label,
         .rail-dot.is-active .rail-dot-label {
@@ -1344,6 +1379,8 @@
     {{-- Section progress rail — homepage only (targets homepage section IDs) --}}
     @if (request()->routeIs('home'))
         <nav id="section-rail" aria-label="Page sections">
+            <div id="rail-track"></div>
+            <div id="rail-progress"></div>
             @foreach ([
                 ['id' => 'hero',        'label' => 'Home'],
                 ['id' => 'about',       'label' => 'About'],
@@ -1830,8 +1867,17 @@
                 });
             });
 
+            const progress = document.getElementById('rail-progress');
+
             function setActive(id) {
                 dots.forEach(dot => dot.classList.toggle('is-active', dot.dataset.railTarget === id));
+
+                const activeDot = dots.find(dot => dot.dataset.railTarget === id);
+                if (progress && activeDot) {
+                    const dotRect  = activeDot.getBoundingClientRect();
+                    const railRect = rail.getBoundingClientRect();
+                    progress.style.height = (dotRect.top - railRect.top + dotRect.height / 2 - 4) + 'px';
+                }
             }
 
             const observer = new IntersectionObserver(entries => {
