@@ -1329,13 +1329,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         // Ambient glow scrub — naturally reverses with scroll direction
         gsap.to('#welcome-glow', { y:-55, ease:'none', scrollTrigger: scrubST('#welcome', 3) });
 
-        // ── Pinned scale-up zoom: video panel grows large and straightens
-        //    out while the section holds in place, text recedes as the
-        //    panel takes over. scrub:1.4 adds a touch of smoothing lag so
-        //    the motion doesn't feel like it's snapping 1:1 to the wheel. ──
+        // ── Pinned scale-up zoom: starts only once the video panel itself
+        //    is vertically centered in the viewport (not as soon as the
+        //    section top hits the top), then grows/straightens it while
+        //    pinned. scrub:1.4 adds a touch of smoothing lag so the motion
+        //    doesn't feel like it's snapping 1:1 to the wheel. ──
         ScrollTrigger.create({
-            trigger: '#welcome',
-            start: 'top top',
+            trigger: '#welcome-video-wrap',
+            start: 'center center',
             end: '+=140%',
             pin: true,
             pinSpacing: true,
