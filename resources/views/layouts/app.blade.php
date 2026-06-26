@@ -7,7 +7,7 @@
     <meta name="description" content="@yield('description', 'Custom websites designed to strengthen your brand, expand your reach, and protect your online presence.')">
 
     <!-- Favicon — gold square with navy house icon, matching the navbar logo -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><rect width='20' height='20' rx='3' fill='%23C9A84C'/><path d='M10 2L2 7v11h5v-6h6v6h5V7L10 2z' fill='%23111D33'/></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><rect width='20' height='20' rx='3' fill='%23C9A84C'/><path d='M10 2L2 7v11h5v-6h6v6h5V7L10 2z' fill='%232F3A45'/></svg>">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,9 +21,11 @@
             theme: {
                 extend: {
                     colors: {
-                        navy:  { DEFAULT: '#1B2A4A', dark: '#111D33', light: '#243762' },
+                        navy:  { DEFAULT: '#2F3A45', dark: '#1F2730', light: '#465360' },
                         gold:  { DEFAULT: '#C9A84C', light: '#DFC06A', dark: '#A8872E' },
-                        teal:  { DEFAULT: '#2A9D8F', light: '#3DBFB0', dark: '#1E7268' },
+                        teal:  { DEFAULT: '#2CA6A4', light: '#3FBDBB', dark: '#1F7A78' },
+                        sky:   { DEFAULT: '#EAF3F8' },
+                        lightgray: { DEFAULT: '#F8F9FA' },
                     },
                     fontFamily: {
                         sans:    ['Inter', 'sans-serif'],
@@ -40,13 +42,13 @@
 
         /* ─── Nav ─── */
         /* ─── Nav link (base) ─── */
-        .nav-link { @apply text-sm font-medium transition-colors duration-200; color:rgba(255,255,255,0.75); }
+        .nav-link { @apply text-sm font-medium transition-colors duration-200; color:rgba(47,58,69,0.75); }
         .nav-link:hover { color:#C9A84C; }
         .nav-link.is-active { color:#C9A84C !important; }
 
         /* ─── Re-usable buttons (outside hero) ─── */
         .btn-gold    { @apply inline-block bg-gold hover:bg-gold-dark text-navy font-semibold px-7 py-3 rounded-lg transition-all duration-200 shadow hover:shadow-lg; }
-        .btn-outline { @apply inline-block border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-7 py-3 rounded-lg transition-all duration-200; }
+        .btn-outline { @apply inline-block border-2 border-navy text-navy hover:bg-navy hover:text-white font-semibold px-7 py-3 rounded-lg transition-all duration-200; }
 
         /* ─── Typography ─── */
         .section-title    { @apply font-display text-3xl md:text-4xl font-bold text-navy leading-tight; }
@@ -93,7 +95,7 @@
         /* ─── Hero CTA buttons ─── */
         .hero-btn-primary {
             position:relative; display:inline-flex; align-items:center; gap:8px;
-            background:#C9A84C; color:#111D33; font-weight:700;
+            background:#C9A84C; color:#2F3A45; font-weight:700;
             padding:15px 34px; border-radius:10px; font-size:1rem;
             overflow:hidden; letter-spacing:.01em;
             transition: transform .22s, box-shadow .22s, background .22s;
@@ -109,19 +111,20 @@
 
         .hero-btn-secondary {
             display:inline-flex; align-items:center; gap:8px;
-            border:1.5px solid rgba(255,255,255,.32); color:rgba(255,255,255,.88);
+            border:1.5px solid rgba(47,58,69,.28); color:rgba(47,58,69,.85);
             font-weight:600; padding:15px 34px; border-radius:10px; font-size:1rem;
-            background:rgba(255,255,255,.04);
+            background:rgba(255,255,255,.55);
             backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
             transition: transform .22s, box-shadow .22s, border-color .22s, background .22s;
             will-change: transform;
         }
-        .hero-btn-secondary:hover { border-color:rgba(255,255,255,.7); background:rgba(255,255,255,.10); transform:translateY(-3px); box-shadow:0 8px 28px rgba(0,0,0,.3); }
+        .hero-btn-secondary:hover { border-color:rgba(47,58,69,.5); background:rgba(255,255,255,.80); transform:translateY(-3px); box-shadow:0 8px 28px rgba(47,58,69,.14); }
 
         /* ─── Floating glassmorphism cards ─── */
         .float-card {
             position:absolute; pointer-events:none; z-index:3;
-            background:rgba(255,255,255,.065); border:1px solid rgba(255,255,255,.12);
+            background:rgba(255,255,255,.85); border:1px solid rgba(47,58,69,.08);
+            box-shadow:0 8px 28px rgba(47,58,69,.10);
             backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
             border-radius:16px; padding:12px 18px;
             will-change:transform;
@@ -147,7 +150,7 @@
 
         /* ─── Dot-grid texture ─── */
         .hero-grid-dots {
-            background-image: radial-gradient(circle,rgba(255,255,255,.055) 1px,transparent 1px);
+            background-image: radial-gradient(circle,rgba(47,58,69,.06) 1px,transparent 1px);
             background-size: 28px 28px;
         }
 
@@ -222,12 +225,12 @@
             max-width: 100%;
         }
         #nav-inner.nav-pill {
-            background: rgba(8,15,28,0.80);
+            background: rgba(255,255,255,0.85);
             backdrop-filter: blur(22px);
             -webkit-backdrop-filter: blur(22px);
-            border-color: rgba(255,255,255,0.08);
+            border-color: rgba(47,58,69,0.08);
             border-radius: 50px;
-            box-shadow: 0 8px 36px rgba(0,0,0,0.45), 0 0 0 1px rgba(201,168,76,0.07);
+            box-shadow: 0 8px 36px rgba(47,58,69,0.16), 0 0 0 1px rgba(201,168,76,0.10);
             max-width: 940px;
             height: 54px !important;
         }
@@ -240,7 +243,7 @@
             transform: translateY(-50%);
             height: 34px;
             width: 80px;
-            background: rgba(255,255,255,0.07);
+            background: rgba(47,58,69,0.07);
             border-radius: 8px;
             pointer-events: none;
             opacity: 0;
@@ -435,7 +438,7 @@
         .value-title {
             font-weight: 700;
             font-size: 1rem;
-            color: #111D33;
+            color: #2F3A45;
             margin-bottom: 10px;
             line-height: 1.30;
             transition: color 0.26s ease;
@@ -671,7 +674,7 @@
             gap: 7px;
             font-size: 0.78rem;
             font-weight: 700;
-            color: #111D33;
+            color: #2F3A45;
             background: #C9A84C;
             padding: 9px 20px;
             border-radius: 30px;
@@ -694,11 +697,11 @@
         .pf-title {
             font-weight: 700;
             font-size: 0.95rem;
-            color: #111D33;
+            color: #2F3A45;
             line-height: 1.35;
             transition: color 0.22s ease;
         }
-        .portfolio-card:hover .pf-title { color: #2A9D8F; }
+        .portfolio-card:hover .pf-title { color: #2CA6A4; }
         /* Live badge in footer */
         .pf-live-badge {
             width: 6px; height: 6px;
@@ -792,11 +795,11 @@
         }
         .portfolio-card-featured:hover .pf-featured-separator { width: 68px; }
         .pf-featured-title {
-            font-size: 1.40rem; font-weight: 800; color: #111D33;
+            font-size: 1.40rem; font-weight: 800; color: #2F3A45;
             line-height: 1.25; margin-bottom: 10px;
             transition: color 0.22s ease;
         }
-        .portfolio-card-featured:hover .pf-featured-title { color: #2A9D8F; }
+        .portfolio-card-featured:hover .pf-featured-title { color: #2CA6A4; }
         .pf-featured-desc {
             font-size: 0.86rem; color: rgba(17,29,51,0.50);
             line-height: 1.65; margin-bottom: 18px;
@@ -835,7 +838,7 @@
         #pf-stats-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; }
         .pf-stat-item { text-align: center; padding: 0 44px; }
         .pf-stats-divider { width: 1px; height: 38px; background: linear-gradient(180deg, transparent, rgba(17,29,51,0.12), transparent); }
-        .pf-stat-num { font-size: 2.20rem; font-weight: 800; color: #111D33; line-height: 1; margin-bottom: 5px; }
+        .pf-stat-num { font-size: 2.20rem; font-weight: 800; color: #2F3A45; line-height: 1; margin-bottom: 5px; }
         .pf-stat-label { font-size: 0.69rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(17,29,51,0.38); }
         @media (max-width: 767px) {
             .pf-featured-body  { flex-direction: column; }
@@ -908,7 +911,7 @@
             background: linear-gradient(90deg, #C9A84C, rgba(201,168,76,0.15));
             border-radius: 2px; margin-bottom: 14px;
         }
-        .pf-modal-title { font-size: 1.42rem; font-weight: 800; color: #111D33; line-height: 1.22; margin-bottom: 11px; }
+        .pf-modal-title { font-size: 1.42rem; font-weight: 800; color: #2F3A45; line-height: 1.22; margin-bottom: 11px; }
         .pf-modal-desc  { font-size: 0.85rem; color: rgba(17,29,51,0.50); line-height: 1.70; margin-bottom: 16px; }
         .pf-modal-domain {
             font-size: 0.68rem; color: rgba(17,29,51,0.32);
@@ -917,7 +920,7 @@
         }
         .pf-modal-cta {
             display: inline-flex; align-items: center; gap: 8px;
-            font-size: 0.82rem; font-weight: 700; color: #111D33;
+            font-size: 0.82rem; font-weight: 700; color: #2F3A45;
             background: #C9A84C; padding: 11px 24px; border-radius: 30px;
             text-decoration: none; letter-spacing: 0.02em; align-self: flex-start; margin-top: auto;
             transition: background 0.22s ease, transform 0.22s ease;
@@ -1164,7 +1167,7 @@
                         <path d="M10 2L2 7v11h5v-6h6v6h5V7L10 2z"/>
                     </svg>
                 </div>
-                <span class="text-white font-bold text-lg leading-tight">VisionBridge<br>
+                <span class="text-navy font-bold text-lg leading-tight">VisionBridge<br>
                     <span class="text-gold text-xs font-medium tracking-widest uppercase">Solutions</span>
                 </span>
             </a>
@@ -1192,7 +1195,7 @@
             </div>
 
             {{-- Mobile hamburger --}}
-            <button id="menu-btn" class="md:hidden text-white/80 hover:text-white focus:outline-none transition-colors">
+            <button id="menu-btn" class="md:hidden text-navy/70 hover:text-navy focus:outline-none transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
@@ -1201,13 +1204,13 @@
 
         {{-- Mobile dropdown (glassmorphism, outside pill) --}}
         <div id="mobile-menu" class="hidden md:hidden mt-2 mx-2 rounded-2xl overflow-hidden"
-             style="background:rgba(8,15,28,0.92);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);">
+             style="background:rgba(255,255,255,0.96);backdrop-filter:blur(20px);border:1px solid rgba(47,58,69,0.08);box-shadow:0 8px 32px rgba(47,58,69,0.14);">
             <div class="flex flex-col p-4 gap-1">
-                <a href="{{ $homeAnchor }}#about"     class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">About</a>
-                <a href="{{ $homeAnchor }}#services"  class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">Services</a>
-                <a href="{{ $homeAnchor }}#plans"     class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">Plans</a>
-                <a href="{{ $homeAnchor }}#portfolio" class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">Portfolio</a>
-                <a href="{{ route('login') }}" class="text-white/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all duration-200">Client Login</a>
+                <a href="{{ $homeAnchor }}#about"     class="text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">About</a>
+                <a href="{{ $homeAnchor }}#services"  class="text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Services</a>
+                <a href="{{ $homeAnchor }}#plans"     class="text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Plans</a>
+                <a href="{{ $homeAnchor }}#portfolio" class="text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Portfolio</a>
+                <a href="{{ route('login') }}" class="text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Client Login</a>
                 <a href="{{ $homeAnchor }}#contact"   class="mt-2 bg-gold text-navy font-bold text-sm text-center px-4 py-2.5 rounded-xl">Get Started</a>
             </div>
         </div>
@@ -1224,7 +1227,7 @@
     <!-- ═══════════════════════════════════════════════════════
          FOOTER — fixed behind page content (unpeel reveal)
          ═══════════════════════════════════════════════════════ -->
-    <footer id="site-footer" class="text-white" style="background-color:#111D33;">
+    <footer id="site-footer" class="text-navy" style="background-color:#F8F9FA;">
 
         {{-- ── Flowing organic wave top border ── --}}
         <div class="footer-wave-top" aria-hidden="true">
@@ -1237,7 +1240,7 @@
                  preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 {{-- Teal ambient glow layer (behind) --}}
                 <path class="wave-teal"
-                    fill="rgba(42,157,143,0.22)"
+                    fill="rgba(44,166,164,0.22)"
                     d="M0,42
                        C180,14 360,66 540,42 C720,14 900,66 1080,42 C1260,14 1380,56 1440,42
                        C1620,14 1800,66 1980,42 C2160,14 2340,66 2520,42 C2700,14 2820,56 2880,42
@@ -1245,7 +1248,7 @@
                        L4320,72 L0,72 Z"/>
                 {{-- Main footer-color wave (front, fills footer bg upward) --}}
                 <path class="wave-main"
-                    fill="#111D33"
+                    fill="#F8F9FA"
                     d="M0,36
                        C200,8  400,60 600,32 C800,5  1000,58 1200,32 C1340,14 1400,46 1440,36
                        C1640,8  1840,60 2040,32 C2240,5  2440,58 2640,32 C2780,14 2840,46 2880,36
@@ -1268,13 +1271,13 @@
                         </div>
                         <span class="font-bold text-lg">VisionBridge <span class="text-gold">Solutions</span></span>
                     </div>
-                    <p class="text-white/60 text-sm leading-relaxed">Building Websites. Expanding Reach.<br>Helping organizations establish a professional online presence.</p>
+                    <p class="text-navy/60 text-sm leading-relaxed">Building Websites. Expanding Reach.<br>Helping organizations establish a professional online presence.</p>
                 </div>
 
                 {{-- Column 2: Quick Links --}}
                 <div id="footer-col-2" class="footer-col">
                     <h4 class="font-semibold text-gold mb-4">Quick Links</h4>
-                    <ul class="space-y-3 text-sm text-white/60">
+                    <ul class="space-y-3 text-sm text-navy/60">
                         <li><a href="#about"     class="footer-link hover:text-gold">About Us<span class="footer-link-bar"></span></a></li>
                         <li><a href="#services"  class="footer-link hover:text-gold">Services<span class="footer-link-bar"></span></a></li>
                         <li><a href="#plans"     class="footer-link hover:text-gold">Maintenance Plans<span class="footer-link-bar"></span></a></li>
@@ -1286,7 +1289,7 @@
                 {{-- Column 3: Contact --}}
                 <div id="footer-col-3" class="footer-col">
                     <h4 class="font-semibold text-gold mb-4">Contact</h4>
-                    <ul class="space-y-3 text-sm text-white/60">
+                    <ul class="space-y-3 text-sm text-navy/60">
                         <li class="flex items-center gap-2">
                             <svg class="w-4 h-4 text-teal shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -1308,7 +1311,7 @@
             </div>
 
             {{-- Bottom bar --}}
-            <div id="footer-bottom" class="footer-bottom-bar border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/40">
+            <div id="footer-bottom" class="footer-bottom-bar border-t border-navy/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-navy/40">
                 <p>&copy; {{ date('Y') }} VisionBridge Solutions. All rights reserved.</p>
                 <div class="flex gap-6">
                     <a href="#" class="footer-link hover:text-gold">Privacy Policy<span class="footer-link-bar"></span></a>

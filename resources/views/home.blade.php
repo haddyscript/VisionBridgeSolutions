@@ -33,53 +33,53 @@ $svgIcons = [
 {{-- ============================================================
      HERO SECTION
      ============================================================ --}}
-<section id="hero" class="relative min-h-screen flex items-center overflow-hidden" style="background:#080F1C;">
+<section id="hero" class="relative min-h-screen flex items-center overflow-hidden" style="background:#EAF3F8;">
 
     {{-- Layer 0 — Hero background video (autoplay, muted, loop) --}}
     <video autoplay muted loop playsinline
            style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
         <source src="{{ asset('videos/Web_development_company_hero_video.mp4') }}" type="video/mp4">
     </video>
-    {{-- Dark overlay so text stays legible over any video frame --}}
-    <div style="position:absolute;inset:0;background:rgba(6,11,22,0.68);pointer-events:none;"></div>
+    {{-- Light wash so text stays legible over any video frame --}}
+    <div style="position:absolute;inset:0;background:rgba(234,243,248,0.72);pointer-events:none;"></div>
 
     {{-- Layer 1 — dot-grid texture --}}
     <div class="hero-grid-dots absolute inset-0 pointer-events-none" style="z-index:1;"></div>
 
     {{-- Layer 1 — atmospheric CSS orbs (GPU-composed, zero CPU) --}}
     <div class="hero-orb" style="width:580px;height:580px;top:-120px;right:-120px;z-index:1;
-         background:radial-gradient(circle,rgba(42,157,143,.11) 0%,transparent 70%);
+         background:radial-gradient(circle,rgba(44,166,164,.13) 0%,transparent 70%);
          animation:orb-drift 16s ease-in-out infinite;"></div>
     <div class="hero-orb" style="width:420px;height:420px;bottom:-80px;left:-80px;z-index:1;
-         background:radial-gradient(circle,rgba(201,168,76,.08) 0%,transparent 70%);
+         background:radial-gradient(circle,rgba(201,168,76,.10) 0%,transparent 70%);
          animation:orb-drift 20s ease-in-out infinite reverse 3s;"></div>
     <div class="hero-orb" style="width:260px;height:260px;top:55%;left:58%;z-index:1;
-         background:radial-gradient(circle,rgba(42,157,143,.07) 0%,transparent 70%);
+         background:radial-gradient(circle,rgba(44,166,164,.09) 0%,transparent 70%);
          animation:orb-drift 11s ease-in-out infinite 1.5s;"></div>
 
     {{-- Layer 2 — vignette to push eye to centre --}}
     <div class="absolute inset-0 pointer-events-none" style="z-index:2;
-         background:radial-gradient(ellipse at 50% 46%,transparent 28%,rgba(5,10,20,.65) 100%);"></div>
+         background:radial-gradient(ellipse at 50% 46%,transparent 28%,rgba(186,206,219,.55) 100%);"></div>
 
     {{-- Layer 3 — floating glassmorphism cards (desktop only) --}}
     <div class="float-card float-card-1 hidden lg:flex items-center gap-3">
         <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-             style="background:rgba(42,157,143,.25);">
-            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+             style="background:rgba(44,166,164,.18);">
+            <svg class="w-5 h-5 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
         </div>
         <div>
-            <p class="text-white text-xs font-semibold leading-none mb-0.5">Website Launched!</p>
-            <p class="text-white/40 text-xs">Delivered on time</p>
+            <p class="text-navy text-xs font-semibold leading-none mb-0.5">Website Launched!</p>
+            <p class="text-navy/45 text-xs">Delivered on time</p>
         </div>
     </div>
     <div class="float-card float-card-2 hidden lg:flex items-center gap-3">
         <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-             style="background:rgba(201,168,76,.20);">
-            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+             style="background:rgba(201,168,76,.22);">
+            <svg class="w-5 h-5 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
         </div>
         <div>
-            <p class="text-white text-xs font-semibold leading-none mb-0.5">5-Star Support</p>
-            <p class="text-white/40 text-xs">Always available</p>
+            <p class="text-navy text-xs font-semibold leading-none mb-0.5">5-Star Support</p>
+            <p class="text-navy/45 text-xs">Always available</p>
         </div>
     </div>
 
@@ -88,7 +88,7 @@ $svgIcons = [
 
         {{-- Badge --}}
         <div id="hero-badge" class="inline-flex items-center text-xs font-semibold tracking-widest uppercase px-5 py-2 rounded-full mb-8 opacity-0"
-             style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.75);">
+             style="background:rgba(255,255,255,.65);border:1px solid rgba(47,58,69,.10);color:rgba(47,58,69,.72);">
             <span class="live-dot"></span>
             Website Development &amp; Management
         </div>
@@ -96,7 +96,7 @@ $svgIcons = [
         {{-- Heading --}}
         <h1 id="hero-heading" class="font-display font-bold leading-tight mb-3"
             style="font-size:clamp(2.6rem,6vw,4.5rem);">
-            <span class="word-wrap"><span class="hero-word text-white">Building</span></span><span class="word-wrap"><span class="hero-word text-white">Websites.</span></span><br>
+            <span class="word-wrap"><span class="hero-word text-navy">Building</span></span><span class="word-wrap"><span class="hero-word text-navy">Websites.</span></span><br>
             <span class="word-wrap"><span class="hero-word shimmer-gold">Expanding</span></span><span class="word-wrap"><span class="hero-word shimmer-gold">Reach.</span></span>
         </h1>
 
@@ -104,21 +104,21 @@ $svgIcons = [
         <div id="hero-glow-line" class="glow-line opacity-0"></div>
 
         {{-- Subtext --}}
-        <p id="hero-subtext" class="text-white/60 text-lg sm:text-xl max-w-2xl mx-auto mb-8 leading-relaxed opacity-0">
+        <p id="hero-subtext" class="text-navy/70 text-lg sm:text-xl max-w-2xl mx-auto mb-8 leading-relaxed opacity-0">
             Custom websites designed to strengthen your brand, expand your reach,<br class="hidden sm:block"> and protect your online presence.
         </p>
 
         {{-- Social proof row --}}
         <div id="hero-trust" class="flex items-center justify-center gap-3 mb-10 opacity-0">
             <div class="flex -space-x-2">
-                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#2A9D8F;border-color:#080F1C;">J</div>
-                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#243762;border-color:#080F1C;">M</div>
-                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold" style="background:#C9A84C;border-color:#080F1C;color:#111D33;">S</div>
-                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#1E7268;border-color:#080F1C;">A</div>
+                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#2CA6A4;border-color:#EAF3F8;">J</div>
+                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#465360;border-color:#EAF3F8;">M</div>
+                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold" style="background:#C9A84C;border-color:#EAF3F8;color:#2F3A45;">S</div>
+                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#1F7A78;border-color:#EAF3F8;">A</div>
             </div>
-            <div class="h-4 w-px" style="background:rgba(255,255,255,.18);"></div>
-            <p class="text-sm" style="color:rgba(255,255,255,.5);">
-                Trusted by <span style="color:rgba(255,255,255,.85);font-weight:600;">20+ organizations</span>
+            <div class="h-4 w-px" style="background:rgba(47,58,69,.18);"></div>
+            <p class="text-sm" style="color:rgba(47,58,69,.55);">
+                Trusted by <span style="color:rgba(47,58,69,.88);font-weight:600;">20+ organizations</span>
             </p>
         </div>
 
@@ -140,28 +140,28 @@ $svgIcons = [
 
         {{-- Stats --}}
         <div id="hero-stats" class="grid grid-cols-3 gap-6 max-w-xl mx-auto pt-8"
-             style="border-top:1px solid rgba(255,255,255,.10);">
+             style="border-top:1px solid rgba(47,58,69,.12);">
             <div class="stat-item text-center opacity-0">
                 <div id="stat-pct" class="text-3xl font-bold text-gold">0%</div>
-                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(255,255,255,.4);">Client Ownership</div>
+                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(47,58,69,.50);">Client Ownership</div>
             </div>
-            <div class="stat-item text-center opacity-0" style="border-left:1px solid rgba(255,255,255,.10);border-right:1px solid rgba(255,255,255,.10);">
+            <div class="stat-item text-center opacity-0" style="border-left:1px solid rgba(47,58,69,.12);border-right:1px solid rgba(47,58,69,.12);">
                 <div class="text-3xl font-bold text-gold">Custom</div>
-                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(255,255,255,.4);">Every Project</div>
+                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(47,58,69,.50);">Every Project</div>
             </div>
             <div class="stat-item text-center opacity-0">
                 <div class="text-3xl font-bold text-gold">Long-Term</div>
-                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(255,255,255,.4);">Support</div>
+                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(47,58,69,.50);">Support</div>
             </div>
         </div>
     </div>
 
     {{-- Scroll indicator --}}
     <div id="hero-scroll-cue" class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-0" style="z-index:4;">
-        <span class="text-xs tracking-widest uppercase" style="color:rgba(255,255,255,.28);">Scroll</span>
+        <span class="text-xs tracking-widest uppercase" style="color:rgba(47,58,69,.40);">Scroll</span>
         <div class="w-5 h-8 rounded-full flex items-start justify-center pt-1.5"
-             style="border:1.5px solid rgba(255,255,255,.2);">
-            <div class="w-1 h-2 rounded-full" style="background:rgba(201,168,76,.65);animation:scroll-dot 1.9s ease-in-out infinite;"></div>
+             style="border:1.5px solid rgba(47,58,69,.22);">
+            <div class="w-1 h-2 rounded-full" style="background:rgba(201,168,76,.75);animation:scroll-dot 1.9s ease-in-out infinite;"></div>
         </div>
     </div>
 </section>
@@ -169,11 +169,11 @@ $svgIcons = [
 {{-- ============================================================
      WELCOME VIDEO SECTION
      ============================================================ --}}
-<section id="welcome" class="py-28 relative overflow-hidden" style="background:radial-gradient(ellipse 90% 70% at 50% 55%,#132038 0%,#0b1525 48%,#07101c 100%);">
-    <div id="welcome-glow" class="absolute pointer-events-none" style="width:820px;height:820px;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.07) 0%,rgba(42,157,143,.05) 42%,transparent 70%);filter:blur(72px);will-change:transform;"></div>
+<section id="welcome" class="py-28 relative overflow-hidden" style="background:radial-gradient(ellipse 90% 70% at 50% 55%,#F4F9FC 0%,#EAF3F8 48%,#E2EEF5 100%);">
+    <div id="welcome-glow" class="absolute pointer-events-none" style="width:820px;height:820px;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.09) 0%,rgba(44,166,164,.07) 42%,transparent 70%);filter:blur(72px);will-change:transform;"></div>
     <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" style="z-index:2;">
         <span id="welcome-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-5" style="opacity:0;">The VisionBridge Story</span>
-        <h2 class="font-display font-bold text-white leading-tight mb-5" style="font-size:clamp(2rem,4.5vw,3.2rem);">
+        <h2 class="font-display font-bold text-navy leading-tight mb-5" style="font-size:clamp(2rem,4.5vw,3.2rem);">
             <span class="welcome-word-wrap"><span class="welcome-word">Where</span></span>
             <span class="welcome-word-wrap"><span class="welcome-word">Vision</span></span>
             <span class="welcome-word-wrap"><span class="welcome-word">Meets</span></span>
@@ -181,9 +181,9 @@ $svgIcons = [
             <span class="welcome-word-wrap"><span class="welcome-word">Digital</span></span>
             <span class="welcome-word-wrap"><span class="welcome-word">World</span></span>
         </h2>
-        <p id="welcome-sub" class="text-white/50 text-lg max-w-2xl mx-auto mb-12 leading-relaxed" style="opacity:0;">We bridge the gap between your vision and a powerful online presence — connecting organizations to the digital opportunities that drive real, lasting growth.</p>
+        <p id="welcome-sub" class="text-navy/60 text-lg max-w-2xl mx-auto mb-12 leading-relaxed" style="opacity:0;">We bridge the gap between your vision and a powerful online presence — connecting organizations to the digital opportunities that drive real, lasting growth.</p>
 
-        <div id="welcome-video-wrap" class="relative rounded-3xl overflow-hidden" style="opacity:0;transform:scale(0.93);box-shadow:0 0 0 1px rgba(201,168,76,0.18),0 40px 100px rgba(0,0,0,0.75),0 12px 36px rgba(0,0,0,0.55);">
+        <div id="welcome-video-wrap" class="relative rounded-3xl overflow-hidden" style="opacity:0;transform:scale(0.93);box-shadow:0 0 0 1px rgba(201,168,76,0.22),0 40px 100px rgba(47,58,69,0.22),0 12px 36px rgba(47,58,69,0.16);">
             <div class="aspect-video relative">
                 <video id="welcome-video" autoplay muted loop playsinline preload="auto" class="w-full h-full object-cover block">
                     <source src="{{ asset('videos/VisionBridge_Solutions_welcome_v.mp4') }}" type="video/mp4">
@@ -256,7 +256,7 @@ $svgIcons = [
                     <div class="card-icon w-10 h-10 rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(201,168,76,0.18);">
                         <img src="{{ asset('image/Our_Mission.png') }}" alt="Our Mission" style="width:100%;height:100%;object-fit:cover;">
                     </div>
-                    <h3 class="card-title font-bold mb-2" style="font-size:1rem;color:#111D33;">Our Mission</h3>
+                    <h3 class="card-title font-bold mb-2" style="font-size:1rem;color:#2F3A45;">Our Mission</h3>
                     <p class="card-body" style="font-size:0.845rem;line-height:1.68;color:rgba(17,29,51,0.56);">To help ministries, churches, nonprofits, entrepreneurs, and businesses establish a professional online presence through custom website development, ongoing support, and long-term website stability.</p>
                 </div>
 
@@ -266,7 +266,7 @@ $svgIcons = [
                     <div class="card-icon w-10 h-10 rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(42,157,143,0.22);">
                         <img src="{{ asset('image/Our_Vision.png') }}" alt="Our Vision" style="width:100%;height:100%;object-fit:cover;">
                     </div>
-                    <h3 class="card-title font-bold mb-2" style="font-size:1rem;color:#111D33;">Our Vision</h3>
+                    <h3 class="card-title font-bold mb-2" style="font-size:1rem;color:#2F3A45;">Our Vision</h3>
                     <p class="card-body" style="font-size:0.845rem;line-height:1.68;color:rgba(17,29,51,0.56);">To become a trusted website solutions company that bridges the gap between vision and digital presence while helping clients maintain ownership, security, and confidence in their online future.</p>
                 </div>
 
@@ -285,7 +285,7 @@ $svgIcons = [
             <div class="relative" style="z-index:1;">
                 <div class="text-center mb-14">
                     <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">What We Stand For</span>
-                    <h3 class="font-display text-3xl md:text-4xl font-bold" style="color:#111D33;">Our Core Values</h3>
+                    <h3 class="font-display text-3xl md:text-4xl font-bold" style="color:#2F3A45;">Our Core Values</h3>
                     <div class="glow-line" style="width:52px;margin:14px auto 0;"></div>
                 </div>
                 <div id="values-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -343,7 +343,7 @@ $svgIcons = [
         <div class="flex justify-center mb-10">
             <button id="svc-toggle-btn" onclick="toggleServices()"
                     class="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full font-semibold text-sm transition-all duration-300"
-                    style="background:#111D33;color:#C9A84C;border:1.5px solid rgba(201,168,76,0.30);letter-spacing:0.04em;">
+                    style="background:#2F3A45;color:#C9A84C;border:1.5px solid rgba(201,168,76,0.30);letter-spacing:0.04em;">
                 <span id="svc-toggle-label">View All Services</span>
                 <svg id="svc-toggle-icon" class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
@@ -378,7 +378,7 @@ $svgIcons = [
                     <div class="svc-img-overlay">
                         <div class="svc-arrow">
                             <div class="svc-arrow-ring"></div>
-                            <svg width="13" height="13" fill="none" stroke="#111D33" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                            <svg width="13" height="13" fill="none" stroke="#2F3A45" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                         </div>
                     </div>
                 </div>
@@ -496,7 +496,7 @@ $svgIcons = [
             {{-- Left: heading block --}}
             <div id="why-heading-block">
                 <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-5">Why VisionBridge</span>
-                <h2 class="font-display font-bold leading-tight mb-5" style="font-size:clamp(2.2rem,4vw,3.4rem);color:#111D33;">
+                <h2 class="font-display font-bold leading-tight mb-5" style="font-size:clamp(2.2rem,4vw,3.4rem);color:#2F3A45;">
                     Why Choose<br>
                     <span style="color:#C9A84C;">VisionBridge</span><br>Solutions?
                 </h2>
@@ -509,7 +509,7 @@ $svgIcons = [
                 {{-- Giant decorative quote mark --}}
                 <div class="absolute pointer-events-none select-none" style="font-size:12rem;line-height:1;color:rgba(201,168,76,0.08);font-family:'Playfair Display',serif;font-weight:700;top:-36px;left:-16px;z-index:0;">"</div>
                 <div class="relative rounded-3xl" style="z-index:1;background:#FFFFFF;border:1px solid rgba(201,168,76,0.18);box-shadow:0 10px 52px rgba(17,29,51,0.07),0 2px 8px rgba(17,29,51,0.04);padding:36px 40px;">
-                    <p class="font-display font-bold leading-snug mb-7" style="font-size:1.2rem;color:#111D33;line-height:1.55;">
+                    <p class="font-display font-bold leading-snug mb-7" style="font-size:1.2rem;color:#2F3A45;line-height:1.55;">
                         "We don't just build custom websites — we help protect the long-term stability of our clients' online presence."
                     </p>
                     <div class="flex items-center gap-4">
@@ -536,7 +536,7 @@ $svgIcons = [
                     <img src="{{ asset($point['image']) }}" alt="{{ $point['title'] }}" style="width:100%;height:100%;object-fit:cover;">
                 </div>
                 <div class="mb-4 transition-all duration-500 group-hover:w-12" style="width:24px;height:1.5px;background:linear-gradient(90deg,#C9A84C,rgba(201,168,76,0.12));border-radius:2px;"></div>
-                <h4 class="font-bold text-base mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#111D33;">{{ $point['title'] }}</h4>
+                <h4 class="font-bold text-base mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#2F3A45;">{{ $point['title'] }}</h4>
                 <p class="text-sm leading-relaxed" style="color:rgba(17,29,51,0.50);">{{ $point['desc'] }}</p>
             </div>
             @endforeach
@@ -734,7 +734,7 @@ $svgIcons = [
                         <img src="{{ asset($project['image']) }}" alt="{{ $project['title'] }}"
                              class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-110">
                         @elseif($project['num'] === '03')
-                        <div class="h-full flex items-center justify-center relative" style="background:linear-gradient(135deg,#1E7268 0%,#2A9D8F 60%,#3DBFB0 100%);">
+                        <div class="h-full flex items-center justify-center relative" style="background:linear-gradient(135deg,#1F7A78 0%,#2CA6A4 60%,#3FBDBB 100%);">
                             <div class="absolute inset-0" style="background-image:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(255,255,255,0.05) 28px,rgba(255,255,255,0.05) 29px),repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(255,255,255,0.05) 28px,rgba(255,255,255,0.05) 29px);"></div>
                             <div class="w-20 h-20 rounded-2xl flex items-center justify-center" style="background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.25);">
                                 <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
@@ -881,7 +881,7 @@ $svgIcons = [
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
                         </svg>
                     </div>
-                    <span class="text-xs font-semibold tracking-widest uppercase flex items-center gap-1.5" style="color:rgba(42,157,143,0.70);">
+                    <span class="text-xs font-semibold tracking-widest uppercase flex items-center gap-1.5" style="color:rgba(44,166,164,0.70);">
                         Visit Site
                         <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                     </span>
@@ -912,15 +912,15 @@ $svgIcons = [
 {{-- ============================================================
      CONTACT SECTION — dark, cinematic
      ============================================================ --}}
-<section id="contact" class="relative overflow-hidden py-24" style="background:#080F1C;">
+<section id="contact" class="relative overflow-hidden py-24" style="background:#EAF3F8;">
 
     {{-- Ambient orbs --}}
-    <div class="hero-orb" style="width:600px;height:600px;top:-160px;right:-160px;background:radial-gradient(circle,rgba(201,168,76,0.08) 0%,transparent 70%);filter:blur(80px);animation:orb-drift 22s ease-in-out infinite;"></div>
-    <div class="hero-orb" style="width:480px;height:480px;bottom:-140px;left:-100px;background:radial-gradient(circle,rgba(42,157,143,0.07) 0%,transparent 70%);filter:blur(68px);animation:orb-drift 18s ease-in-out infinite reverse 4s;"></div>
+    <div class="hero-orb" style="width:600px;height:600px;top:-160px;right:-160px;background:radial-gradient(circle,rgba(201,168,76,0.10) 0%,transparent 70%);filter:blur(80px);animation:orb-drift 22s ease-in-out infinite;"></div>
+    <div class="hero-orb" style="width:480px;height:480px;bottom:-140px;left:-100px;background:radial-gradient(circle,rgba(44,166,164,0.09) 0%,transparent 70%);filter:blur(68px);animation:orb-drift 18s ease-in-out infinite reverse 4s;"></div>
 
     {{-- Large watermark "CONTACT" text --}}
     <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden" style="z-index:0;">
-        <span class="font-display font-bold uppercase" style="font-size:clamp(6rem,18vw,16rem);color:rgba(255,255,255,0.03);letter-spacing:0.12em;white-space:nowrap;">CONTACT</span>
+        <span class="font-display font-bold uppercase" style="font-size:clamp(6rem,18vw,16rem);color:rgba(47,58,69,0.045);letter-spacing:0.12em;white-space:nowrap;">CONTACT</span>
     </div>
 
     <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
@@ -930,80 +930,80 @@ $svgIcons = [
             <div class="flex flex-col gap-6">
 
                 {{-- Badge --}}
-                <div class="inline-flex items-center gap-2 self-start px-4 py-2 rounded-full" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);">
+                <div class="inline-flex items-center gap-2 self-start px-4 py-2 rounded-full" style="background:rgba(255,255,255,0.70);border:1px solid rgba(47,58,69,0.10);">
                     <div class="w-5 h-5 rounded-full flex items-center justify-center" style="background:rgba(201,168,76,0.20);">
                         <svg class="w-3 h-3 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
                     </div>
-                    <span class="text-xs font-semibold tracking-widest uppercase" style="color:rgba(255,255,255,0.65);">Let's Connect</span>
+                    <span class="text-xs font-semibold tracking-widest uppercase" style="color:rgba(47,58,69,0.68);">Let's Connect</span>
                 </div>
 
                 {{-- Heading --}}
                 <div>
-                    <h2 class="font-display font-bold text-white leading-tight mb-3" style="font-size:clamp(2.2rem,4.5vw,3.4rem);">
+                    <h2 class="font-display font-bold text-navy leading-tight mb-3" style="font-size:clamp(2.2rem,4.5vw,3.4rem);">
                         Get in<br><span style="color:#C9A84C;">Touch</span>
                     </h2>
-                    <p class="text-base leading-relaxed" style="color:rgba(255,255,255,0.45);max-width:380px;">Have questions or ready to start your project? We'll get back to you within 24 hours.</p>
+                    <p class="text-base leading-relaxed" style="color:rgba(47,58,69,0.55);max-width:380px;">Have questions or ready to start your project? We'll get back to you within 24 hours.</p>
                 </div>
 
                 {{-- Contact cards --}}
                 <div class="flex flex-col gap-3 mt-2">
 
                     {{-- Email --}}
-                    <div class="group flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:-translate-y-0.5" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+                    <div class="group flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:-translate-y-0.5" style="background:rgba(255,255,255,0.75);border:1px solid rgba(47,58,69,0.08);box-shadow:0 4px 18px rgba(47,58,69,0.06);">
                         <div class="w-11 h-11 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,0.92);border:1px solid rgba(201,168,76,0.20);">
                             <img src="{{ asset('image/Email_us.png') }}" alt="Email us" style="width:78%;height:78%;object-fit:contain;">
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(255,255,255,0.35);">Email us</p>
-                            <p class="text-sm font-semibold text-white truncate">info@visionbridgesolutions.com</p>
+                            <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(47,58,69,0.45);">Email us</p>
+                            <p class="text-sm font-semibold text-navy truncate">info@visionbridgesolutions.com</p>
                         </div>
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-gold/20" style="background:rgba(255,255,255,0.06);">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="rgba(255,255,255,0.50)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-gold/20" style="background:rgba(47,58,69,0.06);">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="rgba(47,58,69,0.55)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
                         </div>
                     </div>
 
                     {{-- Phone --}}
-                    <div class="group flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:-translate-y-0.5" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
-                        <div class="w-11 h-11 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,0.92);border:1px solid rgba(42,157,143,0.22);">
+                    <div class="group flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:-translate-y-0.5" style="background:rgba(255,255,255,0.75);border:1px solid rgba(47,58,69,0.08);box-shadow:0 4px 18px rgba(47,58,69,0.06);">
+                        <div class="w-11 h-11 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,0.92);border:1px solid rgba(44,166,164,0.25);">
                             <img src="{{ asset('image/Call_us.png') }}" alt="Call us" style="width:78%;height:78%;object-fit:contain;">
                         </div>
                         <div class="flex-1">
-                            <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(255,255,255,0.35);">Call us</p>
-                            <p class="text-sm font-semibold text-white">(555) 000-0000</p>
+                            <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(47,58,69,0.45);">Call us</p>
+                            <p class="text-sm font-semibold text-navy">(555) 000-0000</p>
                         </div>
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-gold/20" style="background:rgba(255,255,255,0.06);">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="rgba(255,255,255,0.50)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-gold/20" style="background:rgba(47,58,69,0.06);">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="rgba(47,58,69,0.55)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
                         </div>
                     </div>
 
                     {{-- Consultation --}}
-                    <div class="group flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:-translate-y-0.5" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+                    <div class="group flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:-translate-y-0.5" style="background:rgba(255,255,255,0.75);border:1px solid rgba(47,58,69,0.08);box-shadow:0 4px 18px rgba(47,58,69,0.06);">
                         <div class="w-11 h-11 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,0.92);border:1px solid rgba(201,168,76,0.20);">
                             <img src="{{ asset('image/Free_Consultation.png') }}" alt="Free Consultation" style="width:78%;height:78%;object-fit:contain;">
                         </div>
                         <div class="flex-1">
-                            <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(255,255,255,0.35);">Free Consultation</p>
-                            <p class="text-sm font-semibold text-white">Book a 30-minute call</p>
+                            <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(47,58,69,0.45);">Free Consultation</p>
+                            <p class="text-sm font-semibold text-navy">Book a 30-minute call</p>
                         </div>
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-gold/20" style="background:rgba(255,255,255,0.06);">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="rgba(255,255,255,0.50)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-gold/20" style="background:rgba(47,58,69,0.06);">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="rgba(47,58,69,0.55)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
                         </div>
                     </div>
                 </div>
             </div>
 
             {{-- ── Right: Form ── --}}
-            <div class="rounded-3xl p-8 sm:p-10" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(12px);">
+            <div class="rounded-3xl p-8 sm:p-10" style="background:rgba(255,255,255,0.78);border:1px solid rgba(47,58,69,0.08);backdrop-filter:blur(12px);box-shadow:0 10px 40px rgba(47,58,69,0.08);">
 
                 <div id="contact-feedback">
                     @if (session('status') === 'contact_sent')
-                        <div class="mb-5 rounded-xl px-4 py-3.5 text-sm" style="background:rgba(42,157,143,0.12);border:1px solid rgba(42,157,143,0.30);color:#7fd9cd;">
+                        <div class="mb-5 rounded-xl px-4 py-3.5 text-sm" style="background:rgba(44,166,164,0.12);border:1px solid rgba(44,166,164,0.30);color:#1F7A78;">
                             Thanks for reaching out! We've received your message and will get back to you within 24 hours.
                         </div>
                     @endif
 
                     @if ($errors->any())
-                        <div class="mb-5 rounded-xl px-4 py-3.5 text-sm" style="background:rgba(220,38,38,0.10);border:1px solid rgba(220,38,38,0.30);color:#fca5a5;">
+                        <div class="mb-5 rounded-xl px-4 py-3.5 text-sm" style="background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.25);color:#b91c1c;">
                             @foreach ($errors->all() as $error)
                                 <p>{{ $error }}</p>
                             @endforeach
@@ -1016,31 +1016,31 @@ $svgIcons = [
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <input type="text" name="first_name" value="{{ old('first_name') }}" required placeholder="First Name"
                                class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
-                               style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:#fff;"
-                               onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
-                               onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">
+                               style="background:rgba(255,255,255,0.9);border:1px solid rgba(47,58,69,0.14);color:#2F3A45;"
+                               onfocus="this.style.borderColor='#C9A84C';this.style.background='#ffffff'"
+                               onblur="this.style.borderColor='rgba(47,58,69,0.14)';this.style.background='rgba(255,255,255,0.9)'">
                         <input type="text" name="last_name" value="{{ old('last_name') }}" required placeholder="Last Name"
                                class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
-                               style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:#fff;"
-                               onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
-                               onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">
+                               style="background:rgba(255,255,255,0.9);border:1px solid rgba(47,58,69,0.14);color:#2F3A45;"
+                               onfocus="this.style.borderColor='#C9A84C';this.style.background='#ffffff'"
+                               onblur="this.style.borderColor='rgba(47,58,69,0.14)';this.style.background='rgba(255,255,255,0.9)'">
                     </div>
                     <input type="email" name="email" value="{{ old('email') }}" required placeholder="Email Address"
                            class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
-                           style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:#fff;"
-                           onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
-                           onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">
+                           style="background:rgba(255,255,255,0.9);border:1px solid rgba(47,58,69,0.14);color:#2F3A45;"
+                           onfocus="this.style.borderColor='#C9A84C';this.style.background='#ffffff'"
+                           onblur="this.style.borderColor='rgba(47,58,69,0.14)';this.style.background='rgba(255,255,255,0.9)'">
                     <input type="text" name="organization" value="{{ old('organization') }}" placeholder="Organization / Business"
                            class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
-                           style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:#fff;"
-                           onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
-                           onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">
+                           style="background:rgba(255,255,255,0.9);border:1px solid rgba(47,58,69,0.14);color:#2F3A45;"
+                           onfocus="this.style.borderColor='#C9A84C';this.style.background='#ffffff'"
+                           onblur="this.style.borderColor='rgba(47,58,69,0.14)';this.style.background='rgba(255,255,255,0.9)'">
                     <select name="service"
                             class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
-                            style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:rgba(255,255,255,0.55);"
-                            onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
-                            onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">
-                        <option value="" style="background:#111D33;">Select a service...</option>
+                            style="background:rgba(255,255,255,0.9);border:1px solid rgba(47,58,69,0.14);color:rgba(47,58,69,0.75);"
+                            onfocus="this.style.borderColor='#C9A84C';this.style.background='#ffffff'"
+                            onblur="this.style.borderColor='rgba(47,58,69,0.14)';this.style.background='rgba(255,255,255,0.9)'">
+                        <option value="" style="background:#ffffff;">Select a service...</option>
                         @foreach ([
                             'Custom Website Development',
                             'Church Website Development',
@@ -1053,19 +1053,19 @@ $svgIcons = [
                             'Hosting Management',
                             'Website Consulting',
                         ] as $option)
-                            <option style="background:#111D33;" {{ old('service') === $option ? 'selected' : '' }}>{{ $option }}</option>
+                            <option style="background:#ffffff;" {{ old('service') === $option ? 'selected' : '' }}>{{ $option }}</option>
                         @endforeach
                     </select>
                     <textarea name="message" rows="5" placeholder="Tell us about your project..."
                               class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200 resize-none"
-                              style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10);color:#fff;"
-                              onfocus="this.style.borderColor='#C9A84C';this.style.background='rgba(255,255,255,0.10)'"
-                              onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.background='rgba(255,255,255,0.07)'">{{ old('message') }}</textarea>
+                              style="background:rgba(255,255,255,0.9);border:1px solid rgba(47,58,69,0.14);color:#2F3A45;"
+                              onfocus="this.style.borderColor='#C9A84C';this.style.background='#ffffff'"
+                              onblur="this.style.borderColor='rgba(47,58,69,0.14)';this.style.background='rgba(255,255,255,0.9)'">{{ old('message') }}</textarea>
                     <button type="submit" id="contact-submit"
                             class="w-full font-bold text-base py-4 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-2xl disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none flex items-center justify-center gap-2"
-                            style="background:#ffffff;color:#111D33;"
+                            style="background:#2F3A45;color:#ffffff;"
                             onmouseover="if(!this.disabled) this.style.background='#C9A84C'"
-                            onmouseout="if(!this.disabled) this.style.background='#ffffff'">
+                            onmouseout="if(!this.disabled) this.style.background='#2F3A45'">
                         <span id="contact-submit-label">Send Message</span>
                     </button>
                 </form>
@@ -1084,8 +1084,8 @@ $svgIcons = [
 
                 function renderBanner(type, lines) {
                     const palette = type === 'success'
-                        ? { bg: 'rgba(42,157,143,0.12)', border: 'rgba(42,157,143,0.30)', color: '#7fd9cd' }
-                        : { bg: 'rgba(220,38,38,0.10)', border: 'rgba(220,38,38,0.30)', color: '#fca5a5' };
+                        ? { bg: 'rgba(44,166,164,0.12)', border: 'rgba(44,166,164,0.30)', color: '#1F7A78' }
+                        : { bg: 'rgba(220,38,38,0.08)', border: 'rgba(220,38,38,0.25)', color: '#b91c1c' };
 
                     const paragraphs = lines.map((line) => `<p>${line}</p>`).join('');
 
