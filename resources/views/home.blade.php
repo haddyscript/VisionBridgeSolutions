@@ -668,6 +668,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                                 </svg>
                             </a>
+                            <p class="text-xs text-gray-400 mt-3">No contracts — cancel anytime</p>
                         @else
                             <button disabled class="w-full bg-gray-100 text-gray-400 font-semibold px-7 py-3 rounded-lg cursor-not-allowed">{{ $plan->cta_label }}</button>
                         @endif
@@ -675,6 +676,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 </div>
             @endforeach
         </div>
+
+        {{-- Path for the undecided — cross-sell into the existing consultation booking flow --}}
+        <p class="text-center text-sm text-gray-500 mt-10">
+            Not sure which plan is right for you?
+            <a href="{{ route('consultation.create') }}" class="text-teal font-semibold hover:underline">Book a free consultation</a>
+        </p>
     </div>
 </section>
 
