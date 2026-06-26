@@ -1666,6 +1666,18 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             if (prevBtn) prevBtn.addEventListener('click', () => goTo(currentIndex - 1));
             if (nextBtn) nextBtn.addEventListener('click', () => goTo(currentIndex + 1));
 
+            // Clicking a non-centered card brings it into focus instead of
+            // following its CTA — the centered card's own CTA/links still
+            // work normally since this only intercepts the side cards.
+            cards.forEach((card, i) => {
+                card.addEventListener('click', (e) => {
+                    if (i === currentIndex) return; // let the centered card's own CTA work
+                    e.preventDefault();
+                    e.stopPropagation();
+                    goTo(i);
+                });
+            });
+
             // Drag / swipe support
             track.style.cursor = 'grab';
             track.addEventListener('pointerdown', (e) => {

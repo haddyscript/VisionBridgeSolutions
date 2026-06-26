@@ -581,11 +581,13 @@
         .plans-card {
             transform: scale(0.85);
             opacity: 0.55;
+            cursor: pointer;
             transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1), opacity 0.45s ease;
         }
         .plans-card.is-center {
             transform: scale(1);
             opacity: 1;
+            cursor: default;
         }
         .plans-arrow {
             position: absolute;
