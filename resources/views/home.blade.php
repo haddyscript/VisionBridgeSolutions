@@ -75,11 +75,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     {{-- Layer 0 — Hero background video (autoplay, muted, loop) --}}
     {{-- Video has baked-in UI-mockup text/graphics; washed out + muted so it reads as soft motion, not legible content --}}
     <video autoplay muted loop playsinline
-           style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;opacity:0.32;filter:saturate(0.45) brightness(1.3) blur(1px);">
+           style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;opacity:0.32;filter:saturate(0.4) brightness(1.3) blur(6px);">
         <source src="{{ asset('videos/Web_development_company_hero_video.mp4') }}" type="video/mp4">
     </video>
-    {{-- Light wash so text stays legible over any video frame --}}
-    <div style="position:absolute;inset:0;background:rgba(234,243,248,0.78);pointer-events:none;"></div>
+    {{-- Wash is strongest behind the heading (keeps "Building Websites.
+         Expanding Reach." legible) and fades out toward the edges so the
+         background video shows through more elsewhere. --}}
+    <div style="position:absolute;inset:0;pointer-events:none;
+         background:radial-gradient(ellipse 900px 480px at 50% 42%,
+             rgba(234,243,248,0.94) 0%,
+             rgba(234,243,248,0.55) 55%,
+             rgba(234,243,248,0.15) 100%);"></div>
 
     {{-- Layer 1 — dot-grid texture --}}
     <div class="hero-grid-dots absolute inset-0 pointer-events-none" style="z-index:1;"></div>
