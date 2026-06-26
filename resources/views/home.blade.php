@@ -363,6 +363,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     ] as $value)
                     <div class="value-card-outer">
                         <div class="value-card">
+                            <span class="value-number">{{ sprintf('%02d', $loop->iteration) }}</span>
                             <div class="value-card-header">
                                 @if(!empty($value['image']))
                                 <div class="value-icon-wrap" style="overflow:hidden;padding:0;">
@@ -376,7 +377,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                                     <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$value['icon']] !!}</svg>
                                 </div>
                                 @endif
-                                <span class="value-number">{{ sprintf('%02d', $loop->iteration) }}</span>
                             </div>
                             <div class="value-card-divider"></div>
                             <h4 class="value-title">{{ $value['title'] }}</h4>

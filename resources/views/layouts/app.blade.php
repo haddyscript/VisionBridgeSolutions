@@ -454,7 +454,7 @@
 
         .value-card {
             border-radius: 20px;
-            background: #FFFFFF;
+            background: linear-gradient(160deg, #FFFFFF 0%, #FCFBF7 100%);
             padding: 28px;
             height: 100%;
             position: relative;
@@ -464,8 +464,8 @@
             transition: box-shadow 0.32s ease, border-color 0.32s ease;
         }
         .value-card-outer:hover .value-card {
-            box-shadow: 0 20px 52px rgba(17,29,51,0.09), 0 6px 18px rgba(17,29,51,0.05);
-            border-color: rgba(201,168,76,0.24);
+            box-shadow: 0 20px 52px rgba(201,168,76,0.14), 0 6px 18px rgba(17,29,51,0.06);
+            border-color: rgba(201,168,76,0.32);
         }
 
         .value-card::before {
@@ -512,23 +512,33 @@
             border-color: rgba(201,168,76,0.30);
         }
 
-        .value-number {
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.16em;
-            color: rgba(17,29,51,0.13);
+        /* Big background watermark number — sits behind the icon/title,
+           not a small corner label anymore */
+        .value-card > .value-number {
+            position: absolute;
+            top: -8px;
+            right: 14px;
+            font-family: 'Playfair Display', serif;
+            font-size: 4.2rem;
+            font-weight: 800;
+            letter-spacing: 0;
+            line-height: 1;
+            color: rgba(17,29,51,0.045);
             user-select: none;
-            padding-top: 5px;
-            transition: color 0.30s ease;
+            pointer-events: none;
+            z-index: 0;
+            transition: color 0.35s ease;
         }
-        .value-card-outer:hover .value-number { color: rgba(201,168,76,0.65); }
+        .value-card-outer:hover .value-card > .value-number { color: rgba(201,168,76,0.16); }
 
         .value-card-divider {
             width: 28px;
             height: 1px;
+            transition: width 0.40s cubic-bezier(0.34,1.56,0.64,1);
             background: linear-gradient(90deg, rgba(201,168,76,0.38), transparent);
             margin-bottom: 14px;
         }
+        .value-card-outer:hover .value-card-divider { width: 48px; }
 
         .value-title {
             font-weight: 700;
