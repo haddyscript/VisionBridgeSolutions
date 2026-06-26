@@ -386,6 +386,29 @@
             0%   { transform: translateX(0); }
             100% { transform: translateX(-33.333%); }
         }
+
+        /* ─── Footer: peeking mascot ─── */
+        #footer-mascot {
+            position: absolute;
+            /* Relative to #footer-col-3 (Contact column) now, not the whole
+               footer — sits just above the "Contact" heading. Stays within
+               that column's own box (not poking above the footer entirely)
+               to avoid being clipped by the previous section's content,
+               which sits at a higher stacking order. */
+            top: -52px;
+            left: 0;
+            width: 60px;
+            z-index: 2;
+            pointer-events: none;
+        }
+        #footer-mascot img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: auto;
+            transform: rotate(180deg);
+        }
+        #footer-mascot .mascot-smile { opacity: 0; }
         @keyframes wave-glide-teal {
             0%   { transform: translateX(-8%); }
             100% { transform: translateX(-41.333%); }
@@ -1431,7 +1454,14 @@
                 </div>
 
                 {{-- Column 3: Contact --}}
-                <div id="footer-col-3" class="footer-col">
+                <div id="footer-col-3" class="footer-col" style="position:relative;">
+                    {{-- ── Peeking mascot — hides shyly until the footer is
+                         scrolled into view, then smiles. Source images are
+                         authored upside-down, hence rotate(180deg). ── --}}
+                    <div id="footer-mascot" aria-hidden="true">
+                        <img src="{{ asset('image/mascut-hide.png') }}" alt="" class="mascot-hide">
+                        <img src="{{ asset('image/mascut-smile.png') }}" alt="" class="mascot-smile">
+                    </div>
                     <h4 class="font-semibold text-gold mb-4">Contact</h4>
                     <ul class="space-y-3 text-sm text-navy/60">
                         <li class="flex items-center gap-2">
@@ -1834,6 +1864,9 @@
                     start:   'top 88%',
                     once:    true,
                     onEnter: () => {
+                        const mascotSmile = document.querySelector('#footer-mascot .mascot-smile');
+                        const mascotHide  = document.querySelector('#footer-mascot .mascot-hide');
+
                         gsap.timeline({ defaults: { ease: 'power3.out' } })
                             .to(cols, {
                                 opacity:  1,
@@ -1844,7 +1877,10 @@
                             .to(bottom, {
                                 opacity:  1,
                                 duration: 0.55,
-                            }, '-=0.20');
+                            }, '-=0.20')
+                            // Mascot stops hiding and smiles once the footer is revealed
+                            .to(mascotSmile, { opacity: 1, duration: 0.45 }, '-=0.65')
+                            .to(mascotHide,  { opacity: 0, duration: 0.45 }, '<');
                     },
                 });
             }
