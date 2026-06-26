@@ -36,12 +36,13 @@ $svgIcons = [
 <section id="hero" class="relative min-h-screen flex items-center overflow-hidden" style="background:#EAF3F8;">
 
     {{-- Layer 0 — Hero background video (autoplay, muted, loop) --}}
+    {{-- Video has baked-in UI-mockup text/graphics; washed out + muted so it reads as soft motion, not legible content --}}
     <video autoplay muted loop playsinline
-           style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
+           style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;opacity:0.32;filter:saturate(0.45) brightness(1.3) blur(1px);">
         <source src="{{ asset('videos/Web_development_company_hero_video.mp4') }}" type="video/mp4">
     </video>
     {{-- Light wash so text stays legible over any video frame --}}
-    <div style="position:absolute;inset:0;background:rgba(234,243,248,0.72);pointer-events:none;"></div>
+    <div style="position:absolute;inset:0;background:rgba(234,243,248,0.78);pointer-events:none;"></div>
 
     {{-- Layer 1 — dot-grid texture --}}
     <div class="hero-grid-dots absolute inset-0 pointer-events-none" style="z-index:1;"></div>
