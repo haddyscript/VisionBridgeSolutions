@@ -475,7 +475,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 <div id="hscroll-track"></div>
 <div id="hscroll-progress"></div>
 
-<div id="hscroll-outer" style="overflow:hidden;position:relative;background:linear-gradient(160deg,#F7F9FC 0%,#FFFFFF 50%,#F3F7FB 100%);">
+<div id="hscroll-outer" style="overflow:hidden;position:relative;background:linear-gradient(160deg,#E3EBF1 0%,#ECF1F5 50%,#E0E8EE 100%);">
 
 
     {{-- Wipe backdrop — visible behind #why while it slides in.
@@ -544,7 +544,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- ============================================================
      WHY CHOOSE US SECTION
      ============================================================ --}}
-<section id="why" class="py-24 relative overflow-hidden" style="background:linear-gradient(160deg,#F7F9FC 0%,#FFFFFF 50%,#F3F7FB 100%);">
+<section id="why" class="py-24 relative overflow-hidden" style="background:linear-gradient(160deg,#E3EBF1 0%,#ECF1F5 50%,#E0E8EE 100%);">
     {{-- Ambient orbs --}}
     <div class="hero-orb" style="width:640px;height:640px;top:-180px;right:-160px;background:radial-gradient(circle,rgba(201,168,76,0.07) 0%,transparent 70%);animation:orb-drift 22s ease-in-out infinite;filter:blur(72px);"></div>
     <div class="hero-orb" style="width:480px;height:480px;bottom:-120px;left:-100px;background:radial-gradient(circle,rgba(42,157,143,0.06) 0%,transparent 70%);animation:orb-drift 18s ease-in-out infinite reverse 5s;filter:blur(58px);"></div>
@@ -611,6 +611,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
     </div>
 </section>
+{{-- Tint that briefly darkens as the wipe plays, then settles back —
+     makes the transition read as more weighty/noticeable --}}
+<div id="hscroll-bg-tint" style="position:absolute;inset:0;z-index:5;background:#C9D8E2;opacity:0;pointer-events:none;"></div>
 </div>{{-- /hscroll-outer --}}
 
 {{-- ============================================================
@@ -1789,6 +1792,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 .fromTo('#why-feature-cards > div',
                     { opacity:0, y:36 }, { opacity:1, y:0, duration:0.60, stagger:0.11, ease:'back.out(1.4)' }, '-=0.30');
 
+            const bgTint = document.getElementById('hscroll-bg-tint');
             let wipePlayed  = false;
             let wipePlaying = false;
 
@@ -1809,6 +1813,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         if (bar) bar.style.width = pct + '%';
                         if (ringFill) ringFill.style.strokeDashoffset = CIRCUMFERENCE * (1 - p);
                         if (pctEl) pctEl.textContent = pct + '%';
+                        // Background briefly tints darker as the wipe plays,
+                        // peaking mid-way through, for a more weighty feel
+                        if (bgTint) bgTint.style.opacity = Math.sin(p * Math.PI) * 0.38;
                         if (edgeLabel) {
                             const edgeOpacity = p < 0.5 ? p / 0.5 : 1 - ((p - 0.5) / 0.5);
                             edgeLabel.style.opacity = Math.max(0, Math.min(1, edgeOpacity));
@@ -1833,6 +1840,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 if (ringFill) ringFill.style.strokeDashoffset = CIRCUMFERENCE;
                 if (pctEl)    pctEl.textContent = '0%';
                 if (bar)      bar.style.width = '0%';
+                if (bgTint)   bgTint.style.opacity = 0;
             }
 
             ScrollTrigger.create({
