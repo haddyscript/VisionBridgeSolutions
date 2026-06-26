@@ -1671,7 +1671,10 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             // work normally since this only intercepts the side cards.
             cards.forEach((card, i) => {
                 card.addEventListener('click', (e) => {
-                    if (i === currentIndex) return; // let the centered card's own CTA work
+                    // Check the actual DOM state, not the tracked index — avoids
+                    // ever blocking the centered card's own CTA if currentIndex
+                    // and the .is-center class were ever to desync.
+                    if (card.classList.contains('is-center')) return;
                     e.preventDefault();
                     e.stopPropagation();
                     goTo(i);
