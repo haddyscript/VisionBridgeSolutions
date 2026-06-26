@@ -916,7 +916,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- ============================================================
      FAITHSTACK PARTNERSHIP SECTION
      ============================================================ --}}
-<section id="partnership" class="py-20 bg-white">
+<section id="partnership" class="py-20 bg-white relative overflow-hidden">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div id="partnership-header" class="text-center mb-14">
             <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Our Partnership</span>
@@ -1748,13 +1748,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         //  strong deceleration with no bounce-back (true "falling" feel).
         // ============================================================
         gsap.fromTo('#partnership-header',
-            { opacity:0, scale:1.5 },
-            { opacity:1, scale:1, duration:0.85, ease:'power4.out',
+            { opacity:0, scale:2.6 },
+            { opacity:1, scale:1, duration:1.0, ease:'power4.out',
               scrollTrigger: { trigger:'#partnership', start:'top 78%', toggleActions: TOGGLE } }
         );
         gsap.fromTo('.partnership-zoom-item',
-            { opacity:0, scale:1.45 },
-            { opacity:1, scale:1, duration:0.85, stagger:0.18, ease:'power4.out',
+            { opacity:0, scale:2.2 },
+            { opacity:1, scale:1, duration:1.0, stagger:0.18, ease:'power4.out',
               scrollTrigger: { trigger:'#partnership', start:'top 70%', toggleActions: TOGGLE } }
         );
 
