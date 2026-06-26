@@ -38,7 +38,8 @@
 
     {{-- type="text/tailwindcss" lets the Play CDN process @apply directives --}}
     <style type="text/tailwindcss">
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        body { overflow-x: hidden; }
 
         /* ─── Nav ─── */
         /* ─── Nav link (base) ─── */

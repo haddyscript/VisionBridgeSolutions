@@ -1846,6 +1846,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         wipePlayed  = true;
                         whyRevealTl.play();
                         gsap.to([bar, track], { opacity: 0, duration: 0.5, delay: 0.6 });
+                        // Defensive: #why briefly extends past the viewport
+                        // width while translated off-screen pre-wipe — if
+                        // that ever nudges the page's horizontal scroll
+                        // position, snap it back so content isn't left
+                        // clipped on the left edge.
+                        if (window.scrollX !== 0) window.scrollTo({ left: 0 });
                     },
                 });
             }
