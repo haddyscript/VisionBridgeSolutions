@@ -700,8 +700,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         $portfolioProjects = [
             ['num'=>'01','title'=>'Johnny Davis Global Missions','category'=>'Ministry',   'domain'=>'johnnydavisglobalmissions.org','icon'=>'globe',    'image'=>'image/johnnydavisglobalmission.png','url'=>'https://johnnydavisglobalmissions.org/','live'=>true, 'desc'=>'Empowering global ministry with a professional online presence that connects communities worldwide through faith, outreach, and digital innovation.','tags'=>['Ministry','Custom Design','WordPress']],
             ['num'=>'02','title'=>'Johnny Davis Ministries',     'category'=>'Ministry',   'domain'=>'johnnydavisministries.org',    'icon'=>'book-open','image'=>'image/johnnydavisministries.png',   'url'=>'https://johnnydavisministries.org/',   'live'=>true, 'desc'=>'Daily devotionals, sermons, and ministry resources reaching thousands of believers worldwide through the power of purposeful digital outreach.','tags'=>['Ministry','WordPress']],
-            ['num'=>'03','title'=>'Mercy City Eleven 22 Church', 'category'=>'Church',     'domain'=>'mercycityeleven22.org',         'icon'=>'home',     'soon'=>true,                                                                                              'desc'=>'A vibrant church community website in development — designed to unite members, share the Gospel, and serve the congregation online.','tags'=>['Church','Custom Design']],
-            ['num'=>'04','title'=>'Future VisionBridge Projects','category'=>'Coming Soon','domain'=>'visionbridgesolutions.com',     'icon'=>'sparkles', 'soon'=>true,                                                                                              'desc'=>'Exciting new projects are on the horizon. Stay tuned as VisionBridge continues to grow and serve more ministries and organizations.','tags'=>['Future Project']],
+            ['num'=>'03','title'=>'Future VisionBridge Projects','category'=>'Coming Soon','domain'=>'visionbridgesolutions.com',     'icon'=>'sparkles', 'soon'=>true,                                                                                              'desc'=>'Exciting new projects are on the horizon. Stay tuned as VisionBridge continues to grow and serve more ministries and organizations.','tags'=>['Future Project']],
         ];
         $feat = $portfolioProjects[0];
         @endphp
@@ -774,8 +773,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 </div>
             </a>
 
-            {{-- ── Three supporting cards ── --}}
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-7">
+            {{-- ── Two supporting cards ── --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-7">
                 @foreach(array_slice($portfolioProjects, 1) as $project)
                 @php $hasLink = !empty($project['url']); $isLive = !empty($project['live']); @endphp
 
@@ -885,7 +884,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         {{-- Stats bar --}}
         <div id="pf-stats-bar" style="margin-top:56px;padding-top:40px;border-top:1px solid rgba(17,29,51,0.07);opacity:0;">
             <div class="pf-stat-item">
-                <div class="pf-stat-num" data-target="4" data-suffix="">4</div>
+                <div class="pf-stat-num" data-target="3" data-suffix="">3</div>
                 <div class="pf-stat-label">Projects Built</div>
             </div>
             <div class="pf-stats-divider"></div>
