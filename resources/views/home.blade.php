@@ -633,9 +633,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <p id="plans-subtitle" class="section-subtitle" style="opacity:0;transform:translateY(20px)">Keep your website secure, updated, and performing — month after month.</p>
         </div>
 
-        <div id="plans-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div id="plans-carousel" class="relative max-w-5xl mx-auto" style="opacity:0;transform:translateY(40px);">
+            <button type="button" id="plans-prev" aria-label="Previous plan" class="plans-arrow" style="left:-8px;">
+                <svg width="16" height="16" fill="none" stroke="#111D33" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            </button>
+            <button type="button" id="plans-next" aria-label="Next plan" class="plans-arrow" style="right:-8px;">
+                <svg width="16" height="16" fill="none" stroke="#111D33" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <div id="plans-viewport" style="overflow:hidden;">
+            <div id="plans-track" class="flex items-center">
             @foreach ($carePlans as $plan)
-                <div class="plans-card group {{ $plan->is_available ? 'relative border-2 border-gold shadow-xl hover:-translate-y-2 hover:shadow-2xl hover:border-gold-dark' : 'plans-card-dim border-2 border-gray-100 hover:border-gray-300' }} rounded-2xl overflow-hidden transition-all duration-300" style="opacity:0;transform:translateY(60px) scale(0.92)">
+                <div class="plans-card group shrink-0 {{ $plan->is_available ? 'relative border-2 border-gold shadow-xl hover:border-gold-dark' : 'plans-card-dim border-2 border-gray-100 hover:border-gray-300' }} rounded-2xl overflow-hidden transition-all duration-300" style="width:320px;margin:0 16px;">
                     @if ($plan->badge)
                         <div class="{{ $plan->is_available ? 'bg-gold text-navy group-hover:bg-gold-light' : 'bg-gray-100 text-gray-500' }} px-6 py-4 text-center transition-colors duration-300">
                             <span class="text-xs font-bold tracking-widest uppercase">{{ $plan->badge }}</span>
@@ -675,6 +683,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     </div>
                 </div>
             @endforeach
+            </div>
+            </div>
         </div>
 
         {{-- Path for the undecided — cross-sell into the existing consultation booking flow --}}
@@ -1581,7 +1591,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         });
 
         // ============================================================
-        //  ONGOING CARE / MAINTENANCE PLANS
+        //  ONGOING CARE / MAINTENANCE PLANS — center-featured carousel
         //  Uses IntersectionObserver (bypasses GSAP pin interference from
         //  the horizontal wipe section which skews ScrollTrigger positions)
         // ============================================================
@@ -1596,28 +1606,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 gsap.timeline()
                     .to('#plans-kicker',   { opacity:1, x:0, letterSpacing:'0.16em', duration:0.60, ease:'power3.out' })
                     .to('#plans-heading',  { opacity:1, y:0, duration:0.80, ease:'power3.out' }, '-=0.30')
-                    .to('#plans-subtitle', { opacity:1, y:0, duration:0.52, ease:'power2.out' }, '-=0.34');
-
-                // Available cards
-                gsap.to('.plans-card:not(.plans-card-dim)', {
-                    opacity:1, y:0, scale:1,
-                    duration:0.85, ease:'back.out(1.5)', stagger:0.16, delay:0.25,
-                });
-                // Coming Soon cards land at 0.70
-                gsap.to('.plans-card-dim', {
-                    opacity:0.70, y:0, scale:1,
-                    duration:0.85, ease:'back.out(1.5)', stagger:0.16, delay:0.41,
-                });
-
-                // Price count-up
-                const priceEl = document.querySelector('#plans-grid .plans-card:not(.plans-card-dim) .text-5xl');
-                const priceTarget = priceEl ? parseFloat(priceEl.dataset.target) : null;
-                if (priceEl && priceTarget) {
-                    gsap.fromTo({ val:0 }, { val:priceTarget }, {
-                        duration:1.10, ease:'power2.out', delay:0.70,
-                        onUpdate() { priceEl.textContent = '$' + Math.round(this.targets()[0].val); },
-                    });
-                }
+                    .to('#plans-subtitle', { opacity:1, y:0, duration:0.52, ease:'power2.out' }, '-=0.34')
+                    .to('#plans-carousel', { opacity:1, y:0, duration:0.70, ease:'power3.out' }, '-=0.30');
             }
 
             const io = new IntersectionObserver((entries) => {
@@ -1629,6 +1619,83 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
             const plansSection = document.getElementById('plans');
             if (plansSection) io.observe(plansSection);
+        })();
+
+        // ── Plans carousel: center-featured, looping, arrows + drag/swipe ──
+        (function initPlansCarousel() {
+            const viewport = document.getElementById('plans-viewport');
+            const track    = document.getElementById('plans-track');
+            const prevBtn  = document.getElementById('plans-prev');
+            const nextBtn  = document.getElementById('plans-next');
+            if (!viewport || !track) return;
+
+            const cards = Array.from(track.children);
+            if (!cards.length) return;
+
+            // Default to the first available plan if one exists, else index 0
+            let currentIndex = Math.max(0, cards.findIndex(c => !c.classList.contains('plans-card-dim')));
+            let dragging = false, dragStartX = 0, trackStartX = 0;
+
+            function cardOffset(index) {
+                const card = cards[index];
+                // Center of the card relative to the track's own start
+                return card.offsetLeft + card.offsetWidth / 2;
+            }
+
+            function goTo(index) {
+                currentIndex = (index + cards.length) % cards.length;
+                cards.forEach((card, i) => card.classList.toggle('is-center', i === currentIndex));
+
+                const targetX = viewport.offsetWidth / 2 - cardOffset(currentIndex);
+                gsap.to(track, { x: targetX, duration: 0.5, ease: 'power3.out' });
+
+                // Price count-up for the newly centered card (only if available)
+                const activeCard = cards[currentIndex];
+                if (!activeCard.classList.contains('plans-card-dim')) {
+                    const priceEl = activeCard.querySelector('.text-5xl');
+                    const priceTarget = priceEl ? parseFloat(priceEl.dataset.target) : null;
+                    if (priceEl && priceTarget) {
+                        gsap.fromTo({ val: 0 }, { val: priceTarget }, {
+                            duration: 0.8, ease: 'power2.out',
+                            onUpdate() { priceEl.textContent = '$' + Math.round(this.targets()[0].val); },
+                        });
+                    }
+                }
+            }
+
+            if (prevBtn) prevBtn.addEventListener('click', () => goTo(currentIndex - 1));
+            if (nextBtn) nextBtn.addEventListener('click', () => goTo(currentIndex + 1));
+
+            // Drag / swipe support
+            track.style.cursor = 'grab';
+            track.addEventListener('pointerdown', (e) => {
+                dragging = true;
+                dragStartX = e.clientX;
+                trackStartX = gsap.getProperty(track, 'x');
+                track.style.cursor = 'grabbing';
+                track.setPointerCapture(e.pointerId);
+            });
+            track.addEventListener('pointermove', (e) => {
+                if (!dragging) return;
+                gsap.set(track, { x: trackStartX + (e.clientX - dragStartX) });
+            });
+            function endDrag(e) {
+                if (!dragging) return;
+                dragging = false;
+                track.style.cursor = 'grab';
+                const delta = e.clientX - dragStartX;
+                const threshold = 60;
+                if (delta > threshold) goTo(currentIndex - 1);
+                else if (delta < -threshold) goTo(currentIndex + 1);
+                else goTo(currentIndex); // snap back
+            }
+            track.addEventListener('pointerup', endDrag);
+            track.addEventListener('pointercancel', endDrag);
+
+            window.addEventListener('resize', () => goTo(currentIndex), { passive: true });
+
+            // Initial position once layout has settled
+            requestAnimationFrame(() => goTo(currentIndex));
         })();
 
         // ============================================================

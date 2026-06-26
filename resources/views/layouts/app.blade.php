@@ -577,6 +577,35 @@
         }
         .value-card-outer:hover .value-card-divider { width: 48px; }
 
+        /* ─── Plans carousel ─── */
+        .plans-card {
+            transform: scale(0.85);
+            opacity: 0.55;
+            transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1), opacity 0.45s ease;
+        }
+        .plans-card.is-center {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .plans-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 5;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #C9A84C;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(201,168,76,0.35);
+            transition: background 0.25s ease, transform 0.25s ease;
+        }
+        .plans-arrow:hover { background: #DFC06A; transform: translateY(-50%) scale(1.08); }
+
         .value-title {
             font-weight: 700;
             font-size: 1rem;
