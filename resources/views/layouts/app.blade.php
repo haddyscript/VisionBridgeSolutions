@@ -1372,24 +1372,6 @@
                 },
             });
 
-            // ── Smart hide/reveal on scroll direction ────────────────────
-            let lastY = 0, ticking = false;
-            window.addEventListener('scroll', () => {
-                if (ticking) return;
-                ticking = true;
-                requestAnimationFrame(() => {
-                    const y = window.scrollY;
-                    if (y < 80) {
-                        gsap.to(navbar, { y:0, duration:0.35, ease:'power3.out', overwrite:true });
-                    } else if (y > lastY + 6) {
-                        gsap.to(navbar, { y:-110, duration:0.40, ease:'power2.in', overwrite:true });
-                    } else if (y < lastY - 4) {
-                        gsap.to(navbar, { y:0, duration:0.40, ease:'power3.out', overwrite:true });
-                    }
-                    lastY   = y;
-                    ticking = false;
-                });
-            }, { passive: true });
 
             // ── Sliding capsule across desktop links ─────────────────────
             if (navLinks && cursor) {
