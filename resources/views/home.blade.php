@@ -613,7 +613,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 </section>
 {{-- Tint that briefly darkens as the wipe plays, then settles back —
      makes the transition read as more weighty/noticeable --}}
-<div id="hscroll-bg-tint" style="position:absolute;inset:0;z-index:5;background:#C9D8E2;opacity:0;pointer-events:none;"></div>
+<div id="hscroll-bg-tint" style="position:absolute;inset:0;z-index:5;background:#11161C;opacity:0;pointer-events:none;"></div>
 </div>{{-- /hscroll-outer --}}
 
 {{-- ============================================================
@@ -1815,7 +1815,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         if (pctEl) pctEl.textContent = pct + '%';
                         // Background briefly tints darker as the wipe plays,
                         // peaking mid-way through, for a more weighty feel
-                        if (bgTint) bgTint.style.opacity = Math.sin(p * Math.PI) * 0.38;
+                        if (bgTint) bgTint.style.opacity = Math.sin(p * Math.PI) * 0.92;
                         if (edgeLabel) {
                             const edgeOpacity = p < 0.5 ? p / 0.5 : 1 - ((p - 0.5) / 0.5);
                             edgeLabel.style.opacity = Math.max(0, Math.min(1, edgeOpacity));
