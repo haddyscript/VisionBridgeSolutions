@@ -1327,8 +1327,10 @@
     <div id="page-wrapper">
         @yield('content')
         {{-- Spacer so fixed footer doesn't overlap last section content.
-             Height is set dynamically by footer-reveal.js once footer renders. --}}
-        <div id="footer-spacer"></div>
+             Height is set dynamically by footer-reveal.js once footer renders.
+             pointer-events:none so clicks pass through to the fixed footer
+             underneath it instead of being swallowed by this invisible div. --}}
+        <div id="footer-spacer" style="pointer-events:none;"></div>
     </div>
 
     <!-- ═══════════════════════════════════════════════════════
