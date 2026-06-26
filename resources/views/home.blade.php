@@ -635,24 +635,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
         <div id="plans-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             @foreach ($carePlans as $plan)
-                @php
-                    // Badge text overrides the is_available flag for display purposes —
-                    // a plan marked available but badged "Coming Soon" should still
-                    // look (and act) unavailable, not show a real price + active CTA.
-                    $isComingSoonBadge = $plan->badge && str_contains(strtolower($plan->badge), 'coming soon');
-                    $displayAvailable  = $plan->is_available && !$isComingSoonBadge;
-                @endphp
-                <div class="plans-card group {{ $displayAvailable ? 'relative border-2 border-gold shadow-xl hover:-translate-y-2 hover:shadow-2xl hover:border-gold-dark' : 'plans-card-dim border-2 border-gray-100 hover:border-gray-300' }} rounded-2xl overflow-hidden transition-all duration-300" style="opacity:0;transform:translateY(60px) scale(0.92)">
+                <div class="plans-card group {{ $plan->is_available ? 'relative border-2 border-gold shadow-xl hover:-translate-y-2 hover:shadow-2xl hover:border-gold-dark' : 'plans-card-dim border-2 border-gray-100 hover:border-gray-300' }} rounded-2xl overflow-hidden transition-all duration-300" style="opacity:0;transform:translateY(60px) scale(0.92)">
                     @if ($plan->badge)
-                        <div class="{{ $displayAvailable ? 'bg-gold text-navy group-hover:bg-gold-light' : 'bg-gray-100 text-gray-500' }} px-6 py-4 text-center transition-colors duration-300">
+                        <div class="{{ $plan->is_available ? 'bg-gold text-navy group-hover:bg-gold-light' : 'bg-gray-100 text-gray-500' }} px-6 py-4 text-center transition-colors duration-300">
                             <span class="text-xs font-bold tracking-widest uppercase">{{ $plan->badge }}</span>
                         </div>
                     @endif
                     <div class="bg-white p-8 text-center">
                         <h3 class="font-bold text-navy text-xl mb-1">{{ $plan->name }}</h3>
                         <div class="my-6">
-                            @if ($plan->formattedPrice() && $displayAvailable)
-                                <span class="inline-block text-5xl font-bold text-navy transition-transform duration-300 group-hover:scale-110" data-target="{{ $plan->price / 100 }}">{{ $plan->formattedPrice() }}</span>
+                            @if ($plan->formattedPrice())
+                                <span class="inline-block text-5xl font-bold text-navy transition-transform duration-300 {{ $plan->is_available ? 'group-hover:scale-110' : '' }}" data-target="{{ $plan->price / 100 }}">{{ $plan->formattedPrice() }}</span>
                                 <span class="text-gray-400 text-sm">/{{ $plan->interval }}</span>
                             @else
                                 <span class="text-3xl font-bold text-gray-300">Coming Soon</span>
@@ -660,15 +653,15 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         </div>
                         <ul class="text-left space-y-1 mb-8">
                             @foreach ($plan->features as $item)
-                            <li class="flex items-center gap-3 text-sm rounded-lg px-2 py-1.5 -mx-2 {{ $displayAvailable ? 'text-gray-600 hover:bg-gold/5' : 'text-gray-400' }} transition-colors duration-150">
-                                <svg class="w-5 h-5 {{ $displayAvailable ? 'text-teal' : 'text-gray-300' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <li class="flex items-center gap-3 text-sm rounded-lg px-2 py-1.5 -mx-2 {{ $plan->is_available ? 'text-gray-600 hover:bg-gold/5' : 'text-gray-400' }} transition-colors duration-150">
+                                <svg class="w-5 h-5 {{ $plan->is_available ? 'text-teal' : 'text-gray-300' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                 </svg>
                                 {{ $item }}
                             </li>
                             @endforeach
                         </ul>
-                        @if ($displayAvailable)
+                        @if ($plan->is_available)
                             <a href="{{ $plan->cta_url }}" class="btn-gold w-full text-center flex items-center justify-center gap-2">
                                 {{ $plan->cta_label }}
                                 <svg class="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -676,7 +669,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                                 </svg>
                             </a>
                         @else
-                            <button disabled class="w-full bg-gray-100 text-gray-400 font-semibold px-7 py-3 rounded-lg cursor-not-allowed">Coming Soon</button>
+                            <button disabled class="w-full bg-gray-100 text-gray-400 font-semibold px-7 py-3 rounded-lg cursor-not-allowed">{{ $plan->cta_label }}</button>
                         @endif
                     </div>
                 </div>
