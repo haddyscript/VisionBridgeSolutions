@@ -1354,30 +1354,57 @@
              jumps scroll position invisibly behind it, then reveals. --}}
         <div id="flight-transition" style="position:fixed;inset:0;z-index:9990;opacity:0;pointer-events:none;background:#FFFFFF;overflow:hidden;">
             <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;">
-                {{-- Minimalist rounded-shape bridge --}}
+                <defs>
+                    <linearGradient id="bridgeMetal" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#E6E9ED"/>
+                        <stop offset="100%" stop-color="#B9C1C9"/>
+                    </linearGradient>
+                    <linearGradient id="planeBody" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#1F2730"/>
+                        <stop offset="100%" stop-color="#3F4C59"/>
+                    </linearGradient>
+                    <linearGradient id="trailFadeStrong" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#2D7FF9" stop-opacity="0"/>
+                        <stop offset="100%" stop-color="#2D7FF9" stop-opacity="0.85"/>
+                    </linearGradient>
+                    <linearGradient id="trailFadeLight" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#8FC0FF" stop-opacity="0"/>
+                        <stop offset="100%" stop-color="#8FC0FF" stop-opacity="0.7"/>
+                    </linearGradient>
+                </defs>
+                {{-- Minimalist bridge with smooth sagging cable curves --}}
                 <g opacity="0.95">
-                    <rect x="40" y="616" width="1520" height="14" rx="7" fill="#D7DCE2"/>
-                    <rect x="520" y="466" width="26" height="170" rx="13" fill="#B9C1C9"/>
-                    <rect x="1050" y="466" width="26" height="170" rx="13" fill="#B9C1C9"/>
-                    <path d="M533,466 Q300,556 70,622" fill="none" stroke="#C7CDD3" stroke-width="4" stroke-linecap="round"/>
-                    <path d="M533,466 Q700,556 870,622" fill="none" stroke="#C7CDD3" stroke-width="4" stroke-linecap="round"/>
-                    <path d="M1063,466 Q870,556 730,622" fill="none" stroke="#C7CDD3" stroke-width="4" stroke-linecap="round"/>
-                    <path d="M1063,466 Q1300,556 1530,622" fill="none" stroke="#C7CDD3" stroke-width="4" stroke-linecap="round"/>
+                    <rect x="40" y="616" width="1520" height="14" rx="7" fill="url(#bridgeMetal)"/>
+                    <rect x="520" y="460" width="26" height="176" rx="13" fill="url(#bridgeMetal)"/>
+                    <circle cx="533" cy="460" r="15" fill="#CCD2D8"/>
+                    <rect x="1050" y="460" width="26" height="176" rx="13" fill="url(#bridgeMetal)"/>
+                    <circle cx="1063" cy="460" r="15" fill="#CCD2D8"/>
+                    {{-- Smooth cubic-bezier cables (true sag, not straight lines), layered for depth --}}
+                    <path d="M533,470 C420,500 180,560 70,622"  fill="none" stroke="#C7CDD3" stroke-width="4"   stroke-linecap="round"/>
+                    <path d="M533,470 C450,494 260,538 160,608" fill="none" stroke="#D2D7DC" stroke-width="3"   stroke-linecap="round" opacity="0.7"/>
+                    <path d="M533,470 C620,495 780,560 870,622" fill="none" stroke="#C7CDD3" stroke-width="4"   stroke-linecap="round"/>
+                    <path d="M533,470 C610,494 720,538 800,608" fill="none" stroke="#D2D7DC" stroke-width="3"   stroke-linecap="round" opacity="0.7"/>
+                    <path d="M1063,470 C950,495 790,560 730,622"  fill="none" stroke="#C7CDD3" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M1063,470 C986,494 876,538 800,608"  fill="none" stroke="#D2D7DC" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+                    <path d="M1063,470 C1150,495 1320,560 1530,622" fill="none" stroke="#C7CDD3" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M1063,470 C1146,494 1306,538 1450,608" fill="none" stroke="#D2D7DC" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
                 </g>
                 {{-- Plane group — GSAP animates x/y/rotation on this <g> --}}
                 <g id="flight-plane">
-                    {{-- Blue turbo streaks + motion-trail particles, trailing left of the fuselage --}}
-                    <rect x="-90" y="595" width="110" height="6" rx="3" fill="#2D7FF9" opacity="0.75"/>
-                    <rect x="-55" y="606" width="80" height="4" rx="2" fill="#5AA0FF" opacity="0.55"/>
-                    <rect x="-55" y="582" width="80" height="4" rx="2" fill="#5AA0FF" opacity="0.55"/>
-                    <circle cx="-105" cy="600" r="3.5" fill="#2D7FF9" opacity="0.5"/>
-                    <circle cx="-125" cy="591" r="2.5" fill="#5AA0FF" opacity="0.4"/>
-                    <circle cx="-125" cy="609" r="2.5" fill="#5AA0FF" opacity="0.4"/>
-                    {{-- Minimalist rounded airplane (nose to the right) --}}
-                    <path d="M20,592 L5,572 L35,592 Z" fill="#2F3A45"/>
-                    <path d="M65,608 L45,628 L85,608 Z" fill="#2F3A45"/>
-                    <rect x="20" y="592" width="80" height="16" rx="8" fill="#2F3A45"/>
-                    <circle cx="108" cy="600" r="8" fill="#2F3A45"/>
+                    {{-- Blue turbo streaks (smooth gradient fade) + motion particles --}}
+                    <rect x="-175" y="591" width="190" height="9" rx="4.5" fill="url(#trailFadeStrong)"/>
+                    <rect x="-120" y="605" width="135" height="5" rx="2.5" fill="url(#trailFadeLight)"/>
+                    <rect x="-120" y="577" width="135" height="5" rx="2.5" fill="url(#trailFadeLight)"/>
+                    <circle cx="-190" cy="595" r="4" fill="#2D7FF9" opacity="0.5"/>
+                    <circle cx="-212" cy="585" r="3" fill="#8FC0FF" opacity="0.4"/>
+                    <circle cx="-212" cy="605" r="3" fill="#8FC0FF" opacity="0.4"/>
+                    {{-- Bigger, smoother rounded airplane (nose to the right) --}}
+                    <path d="M14,588 L-14,552 L52,588 Z" fill="url(#planeBody)"/>
+                    <path d="M78,614 L42,652 L124,614 Z" fill="url(#planeBody)"/>
+                    <rect x="10" y="588" width="135" height="24" rx="12" fill="url(#planeBody)"/>
+                    <ellipse cx="155" cy="600" rx="15" ry="13" fill="url(#planeBody)"/>
+                    <rect x="14" y="598" width="125" height="4" rx="2" fill="#C9A84C" opacity="0.85"/>
+                    <ellipse cx="122" cy="595" rx="8" ry="6" fill="#EAF3F8" opacity="0.9"/>
                 </g>
             </svg>
         </div>
