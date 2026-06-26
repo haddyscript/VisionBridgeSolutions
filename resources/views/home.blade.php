@@ -100,7 +100,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
          background:radial-gradient(ellipse at 50% 46%,transparent 28%,rgba(186,206,219,.55) 100%);"></div>
 
     {{-- Layer 2.5 — faint bridge skyline silhouette, signature brand motif --}}
-    <div class="absolute bottom-0 left-0 right-0 text-navy" style="height:150px;opacity:0.10;z-index:2;pointer-events:none;">
+    <div class="absolute bottom-0 left-0 right-0 overflow-hidden text-navy" style="height:90px;max-height:90px;opacity:0.06;z-index:2;pointer-events:none;">
         {!! $bridgeSilhouette !!}
     </div>
 
