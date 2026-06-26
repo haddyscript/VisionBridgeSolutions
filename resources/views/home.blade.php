@@ -1072,7 +1072,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             </div>
 
             {{-- ── Right: Form ── --}}
-            <div class="rounded-3xl p-8 sm:p-10" style="background:rgba(255,255,255,0.78);border:1px solid rgba(47,58,69,0.08);backdrop-filter:blur(12px);box-shadow:0 10px 40px rgba(47,58,69,0.08);">
+            <div class="rounded-3xl p-8 sm:p-10 relative" style="background:rgba(255,255,255,0.78);border:1px solid rgba(47,58,69,0.08);backdrop-filter:blur(12px);box-shadow:0 10px 40px rgba(47,58,69,0.08);">
+
+                {{-- Waving mascot — peeks from the right edge of the form, desktop only --}}
+                <img src="{{ asset('image/mascot-hi.png') }}" alt=""
+                     class="hidden lg:block"
+                     style="position:absolute;right:-30px;bottom:60px;width:105px;z-index:2;pointer-events:none;"
+                     aria-hidden="true">
 
                 <div id="contact-feedback">
                     @if (session('status') === 'contact_sent')
