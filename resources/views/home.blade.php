@@ -1750,12 +1750,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         gsap.fromTo('#partnership-header',
             { opacity:0, scale:2.6 },
             { opacity:1, scale:1, duration:1.0, ease:'power4.out',
-              scrollTrigger: { trigger:'#partnership', start:'top 78%', toggleActions: TOGGLE } }
+              scrollTrigger: { trigger:'#partnership', start:'top 78%', toggleActions: 'play none restart reverse' } }
         );
         gsap.fromTo('.partnership-zoom-item',
             { opacity:0, scale:2.2 },
             { opacity:1, scale:1, duration:1.0, stagger:0.18, ease:'power4.out',
-              scrollTrigger: { trigger:'#partnership', start:'top 70%', toggleActions: TOGGLE } }
+              scrollTrigger: { trigger:'#partnership', start:'top 70%', toggleActions: 'play none restart reverse' } }
         );
 
         // ============================================================
