@@ -35,6 +35,27 @@ class Project extends Model
         return $this->hasMany(Payment::class)->latest();
     }
 
+    public function agreementSignatures()
+    {
+        return $this->hasMany(ServiceAgreementSignature::class)->latest();
+    }
+
+    public function agreementSignature()
+    {
+        return $this->hasOne(ServiceAgreementSignature::class)->latestOfMany();
+    }
+
+    public function hasSignedCurrentAgreement(): bool
+    {
+        $active = ServiceAgreementTemplate::currentActive();
+
+        if (! $active) {
+            return true; // nothing to sign yet — don't block onboarding on a missing template
+        }
+
+        return $this->agreementSignatures()->where('service_agreement_template_id', $active->id)->exists();
+    }
+
     public function subscriptions()
     {
         return $this->hasMany(Subscription::class)->latest();

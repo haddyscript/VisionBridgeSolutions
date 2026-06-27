@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\MilestoneController as AdminMilestoneController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
+use App\Http\Controllers\Admin\ServiceAgreementController as AdminServiceAgreementController;
 use App\Http\Controllers\Admin\SubscriptionPayoutController as AdminSubscriptionPayoutController;
 use App\Http\Controllers\Admin\TeamController as AdminTeamController;
 use App\Http\Controllers\Admin\UploadApprovalController;
@@ -31,6 +32,7 @@ use App\Http\Controllers\Portal\CategoryController;
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\FaqFeedbackController;
 use App\Http\Controllers\Portal\PaymentController as PortalPaymentController;
+use App\Http\Controllers\Portal\ServiceAgreementController as PortalServiceAgreementController;
 use App\Http\Controllers\Portal\SubscriptionController as PortalSubscriptionController;
 use App\Http\Controllers\Portal\UploadController;
 use App\Http\Controllers\StripeWebhookController;
@@ -85,6 +87,14 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    // Reachable even if the client hasn't signed yet — otherwise the
+    // agreement.signed middleware below would redirect here in a loop.
+    Route::get('/portal/agreement', [PortalServiceAgreementController::class, 'show'])->name('portal.agreement.show');
+    Route::post('/portal/agreement', [PortalServiceAgreementController::class, 'store'])->name('portal.agreement.store');
+    Route::get('/portal/agreement/{signature}/download', [PortalServiceAgreementController::class, 'download'])->name('portal.agreement.download');
+});
+
+Route::middleware(['auth', 'verified', 'agreement.signed'])->group(function () {
     Route::get('/portal', DashboardController::class)->name('portal.dashboard');
     Route::get('/portal/files/{category}', [CategoryController::class, 'show'])->name('portal.category');
     Route::get('/portal/files/{category}/download', [CategoryController::class, 'downloadAll'])->name('portal.category.download');
@@ -152,6 +162,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/subscription-payouts', [AdminSubscriptionPayoutController::class, 'index'])->name('subscription-payouts.index');
     Route::patch('/subscription-payouts/{subscriptionPayout}', [AdminSubscriptionPayoutController::class, 'update'])->name('subscription-payouts.update');
+
+    Route::get('/service-agreement', [AdminServiceAgreementController::class, 'index'])->name('service-agreement.index');
+    Route::post('/service-agreement', [AdminServiceAgreementController::class, 'store'])->name('service-agreement.store');
 
     Route::patch('/uploads/{upload}/approve', [UploadApprovalController::class, 'toggle'])->name('uploads.approve');
     Route::patch('/uploads/{upload}/status', [UploadApprovalController::class, 'updateStatus'])->name('uploads.status');

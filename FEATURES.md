@@ -12,6 +12,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Contact form | A simple "Get in Touch" form that emails us directly |
 | Book a Consultation | A calendar booking tool — visitors pick a day and an open time slot (weekdays, 9am–5pm) to request a consultation |
 | Create an account | Visitors can also sign up for a client account directly, without going through the intake form; they must verify their email before they can use the portal |
+| Digital Service Agreement | New clients must review and digitally sign (typed name + drawn signature) the Service Agreement before any other portal feature unlocks; they get an emailed PDF copy and we get notified |
 | Client sign in | Standard login, with "remember me" and a "forgot password" recovery option; already-logged-in users get sent straight to their portal or admin dashboard instead of the homepage |
 
 ## 2. Client Portal (for logged-in clients)
@@ -48,6 +49,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Maintenance Plans | Set up or cancel a client's recurring care plan |
 | Care Plan Pricing | Control the pricing tiers shown on the public website — name, tagline, description, price, header icon, badge, response time, and a list of features (each with its own short description) — each plan collapses to a quick summary and expands to edit, with a live preview showing exactly how the card will look on the homepage as you type |
 | FaithStack Payouts | A running list of every Website Care Plan billing cycle that's been paid by a client, showing what VisionBridge owes FaithStack for it; "Mark Paid to FaithStack" records once we've sent it manually (intentionally manual for now, not an automatic transfer — see partnership agreement) |
+| Service Agreement | Edit the agreement text clients must sign — saving publishes a new version rather than editing what's already been signed, so past signatures stay tied to the wording the client actually agreed to; also lists every signed agreement with a PDF download |
 | Team Management | Add/manage other admin team members |
 
 ## 4. Payments & Billing, in Plain Terms
@@ -78,6 +80,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Someone books a consultation | The client (confirmation) and our team |
 | We confirm, reschedule, or cancel a consultation | The client |
 | A client account is created or a welcome email is resent | The client |
+| A client digitally signs the Service Agreement | The client (PDF copy) and our team |
 | Someone creates their own account | Our team |
 | A new Website Care Plan client subscribes and pays | The client (receipt + portal password-setup link), our team, and FaithStack |
 | A client changes their account email | Their old email address (as a security check) |
