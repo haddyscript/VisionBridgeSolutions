@@ -114,8 +114,15 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     <div class="absolute inset-0 pointer-events-none" style="z-index:2;
          background:radial-gradient(ellipse at 50% 46%,transparent 28%,rgba(186,206,219,.55) 100%);"></div>
 
-    {{-- Layer 2.5 — faint bridge skyline silhouette, signature brand motif --}}
-    <div class="absolute bottom-0 left-0 right-0 overflow-hidden text-navy" style="height:90px;max-height:90px;opacity:0.06;z-index:2;pointer-events:none;">
+    {{-- Layer 2.5 — bottom darken, boosts contrast for the stats row + scroll
+         cue, which sit outside the central wash's coverage and were reading
+         as washed-out against the hazy video background --}}
+    <div class="absolute inset-0 pointer-events-none" style="z-index:2;
+         background:linear-gradient(to bottom, transparent 0%, transparent 52%, rgba(11,15,23,0.50) 78%, rgba(11,15,23,0.80) 100%);"></div>
+
+    {{-- Layer 2.5 — faint bridge skyline silhouette, signature brand motif.
+         Light-colored now that this bottom strip sits on the darkened layer above. --}}
+    <div class="absolute bottom-0 left-0 right-0 overflow-hidden text-white" style="height:90px;max-height:90px;opacity:0.14;z-index:2;pointer-events:none;">
         {!! $bridgeSilhouette !!}
     </div>
 
@@ -198,28 +205,28 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
         {{-- Stats --}}
         <div id="hero-stats" class="grid grid-cols-3 gap-6 max-w-xl mx-auto pt-8"
-             style="border-top:1px solid rgba(47,58,69,.12);">
+             style="border-top:1px solid rgba(255,255,255,.22);">
             <div class="stat-item text-center opacity-0">
                 <div id="stat-pct" class="text-3xl font-bold text-gold">0%</div>
-                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(47,58,69,.50);">Client Ownership</div>
+                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(255,255,255,.80);">Client Ownership</div>
             </div>
-            <div class="stat-item text-center opacity-0" style="border-left:1px solid rgba(47,58,69,.12);border-right:1px solid rgba(47,58,69,.12);">
+            <div class="stat-item text-center opacity-0" style="border-left:1px solid rgba(255,255,255,.22);border-right:1px solid rgba(255,255,255,.22);">
                 <div class="text-3xl font-bold text-gold">Custom</div>
-                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(47,58,69,.50);">Every Project</div>
+                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(255,255,255,.80);">Every Project</div>
             </div>
             <div class="stat-item text-center opacity-0">
                 <div class="text-3xl font-bold text-gold">Long-Term</div>
-                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(47,58,69,.50);">Support</div>
+                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(255,255,255,.80);">Support</div>
             </div>
         </div>
     </div>
 
     {{-- Scroll indicator --}}
     <div id="hero-scroll-cue" class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-0" style="z-index:4;">
-        <span class="text-xs tracking-widest uppercase" style="color:rgba(47,58,69,.40);">Scroll</span>
+        <span class="text-xs tracking-widest uppercase" style="color:rgba(255,255,255,.70);">Scroll</span>
         <div class="w-5 h-8 rounded-full flex items-start justify-center pt-1.5"
-             style="border:1.5px solid rgba(47,58,69,.22);">
-            <div class="w-1 h-2 rounded-full" style="background:rgba(201,168,76,.75);animation:scroll-dot 1.9s ease-in-out infinite;"></div>
+             style="border:1.5px solid rgba(255,255,255,.40);">
+            <div class="w-1 h-2 rounded-full" style="background:rgba(201,168,76,.9);animation:scroll-dot 1.9s ease-in-out infinite;"></div>
         </div>
     </div>
 </section>
