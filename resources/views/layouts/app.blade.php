@@ -48,12 +48,12 @@
         .nav-link.is-active { color:#C9A84C !important; }
 
         /* ─── Re-usable buttons (outside hero) ─── */
-        .btn-gold    { @apply inline-block bg-gold hover:bg-gold-dark text-navy font-semibold px-7 py-3 rounded-lg transition-all duration-200 shadow hover:shadow-lg; }
-        .btn-outline { @apply inline-block border-2 border-navy text-navy hover:bg-navy hover:text-white font-semibold px-7 py-3 rounded-lg transition-all duration-200; }
+        .btn-gold    { @apply inline-block bg-gold hover:bg-gold-dark text-navy font-bold text-base px-8 py-3.5 rounded-lg transition-all duration-200 shadow hover:shadow-lg; }
+        .btn-outline { @apply inline-block border-2 border-navy text-navy hover:bg-navy hover:text-white font-bold text-base px-8 py-3.5 rounded-lg transition-all duration-200; }
 
         /* ─── Typography ─── */
-        .section-title    { @apply font-display text-3xl md:text-4xl font-bold text-navy leading-tight; }
-        .section-subtitle { @apply text-gray-500 text-lg mt-3 max-w-2xl mx-auto; }
+        .section-title    { @apply font-display text-3xl md:text-4xl lg:text-5xl font-extrabold text-navy leading-tight; }
+        .section-subtitle { @apply text-gray-600 text-lg mt-3 max-w-2xl mx-auto; }
 
         /* ─── Hero canvas ─── */
         #hero-canvas { position:absolute; inset:0; width:100%; height:100%; display:block; }
@@ -627,9 +627,9 @@
         .value-card-outer:hover .value-card-photo { transform: scale(1.07); }
 
         .value-desc {
-            font-size: 0.875rem;
+            font-size: 0.92rem;
             line-height: 1.72;
-            color: rgba(17,29,51,0.50);
+            color: rgba(17,29,51,0.66);
         }
 
         /* ── Horizontal Wipe: Services → Why VisionBridge ── */
@@ -1070,7 +1070,7 @@
             <div class="hidden md:flex items-center gap-4">
                 <a id="nav-login" href="{{ route('login') }}" class="nav-link relative z-10 opacity-0">Client Login</a>
                 <a id="nav-cta" href="{{ $homeAnchor }}#contact"
-                   class="nav-cta-btn inline-flex items-center gap-2 bg-gold hover:bg-gold-light text-navy font-bold text-sm px-5 py-2.5 rounded-lg opacity-0 transition-colors duration-200">
+                   class="nav-cta-btn inline-flex items-center gap-2 bg-gold hover:bg-gold-light text-navy font-bold text-base px-6 py-2.5 rounded-lg opacity-0 transition-colors duration-200">
                     Get Started
                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
@@ -1095,7 +1095,7 @@
                 <a href="{{ $homeAnchor }}#plans"     class="text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Plans</a>
                 <a href="{{ $homeAnchor }}#portfolio" class="text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Portfolio</a>
                 <a href="{{ route('login') }}" class="text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Client Login</a>
-                <a href="{{ $homeAnchor }}#contact"   class="mt-2 bg-gold text-navy font-bold text-sm text-center px-4 py-2.5 rounded-xl">Get Started</a>
+                <a href="{{ $homeAnchor }}#contact"   class="mt-2 bg-gold text-navy font-bold text-base text-center px-4 py-3 rounded-xl">Get Started</a>
             </div>
         </div>
     </nav>
