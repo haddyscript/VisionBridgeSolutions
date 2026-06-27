@@ -33,3 +33,10 @@ docker compose exec app php artisan view:cache 2>&1 | grep -v "^time="; docker c
 
 # Docker 
 php artisan view:cache 2>&1 | grep -v "^time="; php artisan view:clear 2>&1 | grep -v "^time="; php artisan route:list --path=care-plans 2>&1 | grep -v "^time="
+
+
+SSH TO DO ;
+
+php artisan migrate:fresh
+php artisan db:seed --class=MaintenancePlanSeeder
+php artisan db:seed --class=ServiceAgreementTemplateSeeder
