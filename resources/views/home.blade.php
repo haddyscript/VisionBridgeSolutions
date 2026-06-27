@@ -636,10 +636,21 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      ============================================================ --}}
 <section id="plans" class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-14">
-            <span id="plans-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3" style="opacity:0;transform:translateX(-20px)">Protect Your Investment</span>
-            <h2 id="plans-heading" class="section-title" style="opacity:0;transform:translateY(40px)">Website Care Plans</h2>
-            <p id="plans-subtitle" class="section-subtitle" style="opacity:0;transform:translateY(20px)">Protect your investment with professional website care designed to keep your website secure, updated, optimized, and performing month after month.</p>
+        <div class="relative mb-14 overflow-hidden" style="min-height:230px;">
+            {{-- Decorative bridge photo — faded into the white background, echoes the
+                 care-plan one-pager's header art without breaking the site's centered
+                 section-header convention. Sized by height (not width) so it fills
+                 this box cleanly instead of being cropped top/bottom. --}}
+            <div class="hidden md:flex absolute inset-y-0 right-0 items-center justify-end pointer-events-none" aria-hidden="true"
+                 style="-webkit-mask-image:linear-gradient(to left, black 45%, transparent 100%);mask-image:linear-gradient(to left, black 45%, transparent 100%);opacity:0.85;">
+                <img src="{{ asset('image/bridge-effects.png') }}" alt="" class="h-full w-auto object-contain" style="max-width:640px;">
+            </div>
+
+            <div class="relative flex flex-col items-center justify-center text-center" style="min-height:230px;">
+                <span id="plans-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3" style="opacity:0;transform:translateX(-20px)">Protect Your Investment</span>
+                <h2 id="plans-heading" class="section-title" style="opacity:0;transform:translateY(40px)">Website Care Plans</h2>
+                <p id="plans-subtitle" class="section-subtitle" style="opacity:0;transform:translateY(20px)">Protect your investment with professional website care designed to keep your website secure, updated, optimized, and performing month after month.</p>
+            </div>
         </div>
 
         <div id="plans-carousel" class="relative max-w-5xl mx-auto" style="opacity:0;transform:translateY(40px);">
