@@ -833,11 +833,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     $num     = sprintf('%02d', $loop->iteration);
                 @endphp
                 <div class="portfolio-number-item {{ $loop->first ? 'is-active' : '' }}" data-portfolio-index="{{ $loop->index }}" style="width:150px;">
-                    <button type="button" class="portfolio-number-box" style="width:100%;height:320px;position:relative;display:flex;align-items:center;justify-content:center;border-radius:14px;overflow:hidden;background:rgba(17,29,51,0.03);cursor:pointer;border:none;padding:0;">
+                    <button type="button" class="portfolio-number-box" style="width:100%;height:220px;position:relative;border-radius:14px;overflow:hidden;background:rgba(17,29,51,0.03);cursor:pointer;border:none;padding:0;">
                         @if (!empty($project['image']))
-                            <div class="portfolio-number-image" style="position:absolute;inset:0;background-image:url('@assetv($project['image'])');background-size:cover;background-position:top;transition:opacity 0.4s ease, transform 0.4s ease;"></div>
+                            {{-- contain (not cover) — these are wide desktop screenshots; cover into
+                                 this narrow box was zooming in ~6x and cropping the headline text --}}
+                            <div class="portfolio-number-image" style="position:absolute;inset:0;background-image:url('@assetv($project['image'])');background-size:contain;background-position:center;background-repeat:no-repeat;transition:opacity 0.4s ease, transform 0.4s ease;"></div>
                         @endif
-                        <span class="portfolio-number-digit" style="position:relative;z-index:1;font-family:'Playfair Display',serif;font-size:3.4rem;font-weight:700;transition:color 0.3s ease;">{{ $num }}</span>
+                        <span class="portfolio-number-digit" style="position:absolute;bottom:10px;left:14px;z-index:1;font-family:'Playfair Display',serif;font-size:2.6rem;font-weight:700;transition:color 0.3s ease;">{{ $num }}</span>
                     </button>
 
                     @if ($hasLink)
