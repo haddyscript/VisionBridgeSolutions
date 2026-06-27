@@ -4,7 +4,7 @@
 
 @section('content')
 
-<section class="bg-gray-50 min-h-screen pt-36 pb-24 px-4">
+<section class="bg-white min-h-screen pt-36 pb-28 px-4">
     <div class="max-w-xl mx-auto">
 
         <div class="text-center mb-8">

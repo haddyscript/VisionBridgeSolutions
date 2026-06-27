@@ -491,8 +491,8 @@
 
         .value-card {
             border-radius: 20px;
-            background: linear-gradient(160deg, #FFFFFF 0%, #FCFBF7 100%);
-            padding: 28px;
+            background: #FFFFFF;
+            padding: 32px;
             height: 100%;
             position: relative;
             overflow: hidden;
@@ -1224,7 +1224,7 @@
     <!-- ═══════════════════════════════════════════════════════
          FOOTER — fixed behind page content (unpeel reveal)
          ═══════════════════════════════════════════════════════ -->
-    <footer id="site-footer" class="text-navy" style="background:linear-gradient(180deg,#FFFFFF 0%,#FCFDFF 55%,#FFFFFF 100%);">
+    <footer id="site-footer" class="text-navy" style="background:#FFFFFF;">
 
         {{-- ── Flowing organic wave top border ── --}}
         <div class="footer-wave-top" aria-hidden="true">

@@ -29,7 +29,7 @@
         }
     </script>
 </head>
-<body class="font-sans antialiased min-h-screen bg-gray-50">
+<body class="font-sans antialiased min-h-screen bg-white">
 
     <div class="min-h-screen flex flex-col lg:flex-row lg:relative">
 

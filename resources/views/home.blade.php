@@ -235,7 +235,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- ============================================================
      WELCOME VIDEO SECTION
      ============================================================ --}}
-<section id="welcome" class="py-28 relative overflow-hidden" style="background:radial-gradient(ellipse 90% 70% at 50% 55%,#F4F9FC 0%,#EAF3F8 48%,#E2EEF5 100%);">
+<section id="welcome" class="py-32 relative overflow-hidden" style="background:radial-gradient(ellipse 90% 70% at 50% 55%,#F4F9FC 0%,#EAF3F8 48%,#E2EEF5 100%);">
     <div id="welcome-glow" class="absolute pointer-events-none" style="width:820px;height:820px;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.09) 0%,rgba(44,166,164,.07) 42%,transparent 70%);filter:blur(72px);will-change:transform;"></div>
     <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" style="z-index:2;">
         <span id="welcome-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-5" style="opacity:0;">The VisionBridge Story</span>
@@ -269,7 +269,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- ============================================================
      ABOUT SECTION
      ============================================================ --}}
-<section id="about" class="py-20 relative overflow-hidden" style="background:linear-gradient(180deg,#F4F7FC 0%,#FFFFFF 45%,#F7FAFB 100%);">
+<section id="about" class="py-24 relative overflow-hidden" style="background:#FFFFFF;">
     {{-- Scroll-scrubbed black overlay — darkens the section background as you
          scroll into it; white cards/panels sit above this so stay unaffected --}}
     <div id="about-bg-overlay" class="absolute inset-0 pointer-events-none" style="background:#0B0D10;opacity:0;z-index:0;"></div>
@@ -281,7 +281,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         {!! $bridgeSilhouette !!}
     </div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative" style="z-index:1;">
-        <div class="text-center mb-16">
+        <div class="text-center mb-20">
             <span id="about-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Who We Are</span>
             <h2 id="about-heading" class="section-title mt-1">About VisionBridge Solutions</h2>
             <p id="about-subtitle" class="text-base mt-3 max-w-lg mx-auto font-medium" style="color:rgba(17,29,51,0.68);line-height:1.7;">A dedicated team building websites that give organizations the digital foundation they deserve.</p>
@@ -321,7 +321,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             </div>
 
             {{-- Right: Mission & Vision --}}
-            <div class="about-cards flex flex-col gap-5">
+            <div class="about-cards flex flex-col gap-6">
 
                 {{-- Mission card — light, airy, gold-accented --}}
                 <div class="about-card rounded-2xl flex-1 relative overflow-hidden" style="padding:22px 24px;background:#FFFFFF;border:1px solid rgba(201,168,76,0.14);box-shadow:0 4px 28px rgba(17,29,51,0.07),0 1px 4px rgba(17,29,51,0.04);">
@@ -347,7 +347,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         </div>
 
         {{-- Core Values — light, welcoming panel --}}
-        <div id="about-values-panel" class="mt-20 rounded-3xl relative overflow-hidden py-16 px-6 sm:py-20 sm:px-12 lg:py-24 lg:px-16" style="background:linear-gradient(145deg,#F4F7FC 0%,#FAFBFD 55%,#EFF4FA 100%);">
+        <div id="about-values-panel" class="mt-24 rounded-3xl relative overflow-hidden py-20 px-6 sm:py-24 sm:px-12 lg:py-28 lg:px-16" style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.06);">
             {{-- Ambient orbs — barely visible, just add warmth --}}
             <div class="hero-orb" style="width:580px;height:580px;top:-160px;right:-140px;background:radial-gradient(circle,rgba(201,168,76,0.07) 0%,transparent 70%);animation:orb-drift 26s ease-in-out infinite;filter:blur(64px);"></div>
             <div class="hero-orb" style="width:420px;height:420px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.06) 0%,transparent 70%);animation:orb-drift 20s ease-in-out infinite reverse 4s;filter:blur(52px);"></div>
@@ -362,12 +362,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             {{-- Thin gold accent line across top --}}
             <div class="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" style="width:240px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.32),transparent);"></div>
             <div class="relative" style="z-index:1;">
-                <div class="text-center mb-14">
+                <div class="text-center mb-16">
                     <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">What We Stand For</span>
                     <h3 class="font-display text-3xl md:text-4xl font-bold" style="color:#2F3A45;">Our Core Values</h3>
                     <div class="glow-line" style="width:52px;margin:14px auto 0;"></div>
                 </div>
-                <div id="values-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div id="values-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     @foreach([
                         ['icon'=>'users',       'image'=>'image/Client_Ownership.png',    'title'=>'Client Ownership',    'desc'=>'Your website, your brand, your data — always. We ensure you retain full ownership of every digital asset we create for you.'],
                         ['icon'=>'shield',      'image'=>'image/Long_Term_Stability.png', 'title'=>'Long-Term Stability',  'desc'=>'We don\'t just build and disappear. We provide ongoing support to keep your website secure, updated, and performing.'],
@@ -407,7 +407,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 </section>
 
 {{-- Bridge cable divider --}}
-<div class="bg-white py-8" aria-hidden="true">
+<div class="bg-white py-12" aria-hidden="true">
     <div class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
 </div>
 
@@ -415,9 +415,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      SERVICES SECTION — normal full-height scroll
      User sees all 10 cards before the wipe zone is reached.
      ============================================================ --}}
-<section id="services" class="pt-20 pb-16" style="background: linear-gradient(180deg, #FFFFFF 0%, #FBFCFE 100%);">
+<section id="services" class="pt-24 pb-20" style="background:#FFFFFF;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-14">
+        <div class="text-center mb-20">
             <span id="services-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">What We Offer</span>
             <h2 id="services-heading" class="section-title">Our Services</h2>
             <div id="services-accent-line"></div>
@@ -436,7 +436,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             </button>
         </div>
 
-        <div id="services-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div id="services-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach([
                 ['icon'=>'desktop', 'image'=>'image/Custom_Website_Development.jpeg',  'title'=>'Custom Website Development',       'desc'=>'Fully custom websites built to reflect your unique brand identity and business goals.'],
                 ['icon'=>'document','image'=>'image/Landing_Page_Development.jpeg',     'title'=>'Landing Page Development',          'desc'=>'High-converting landing pages designed to capture leads and drive specific actions.'],
@@ -567,7 +567,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- ============================================================
      WHY CHOOSE US SECTION
      ============================================================ --}}
-<section id="why" class="py-24 relative overflow-hidden" style="background:linear-gradient(160deg,#E3EBF1 0%,#ECF1F5 50%,#E0E8EE 100%);">
+<section id="why" class="py-28 relative overflow-hidden" style="background:linear-gradient(160deg,#E3EBF1 0%,#ECF1F5 50%,#E0E8EE 100%);">
     {{-- Ambient orbs --}}
     <div class="hero-orb" style="width:640px;height:640px;top:-180px;right:-160px;background:radial-gradient(circle,rgba(201,168,76,0.07) 0%,transparent 70%);animation:orb-drift 22s ease-in-out infinite;filter:blur(72px);"></div>
     <div class="hero-orb" style="width:480px;height:480px;bottom:-120px;left:-100px;background:radial-gradient(circle,rgba(42,157,143,0.06) 0%,transparent 70%);animation:orb-drift 18s ease-in-out infinite reverse 5s;filter:blur(58px);"></div>
@@ -611,7 +611,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         </div>
 
         {{-- 4 premium feature cards --}}
-        <div id="why-feature-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div id="why-feature-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             @foreach([
                 ['image'=>'image/Ownership_First.png',       'title'=>'Ownership First',     'desc'=>'You own everything — domain, content, hosting, data. Always.'],
                 ['image'=>'image/Mobile_First_Design.png',   'title'=>'Mobile-First Design',  'desc'=>'Every site is built to perform beautifully on any device.'],
@@ -642,9 +642,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- ============================================================
      MAINTENANCE PLANS SECTION
      ============================================================ --}}
-<section id="plans" class="py-20 bg-white">
+<section id="plans" class="py-24 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="relative mb-14 overflow-hidden" style="min-height:230px;">
+        <div class="relative mb-20 overflow-hidden" style="min-height:230px;">
             {{-- Decorative bridge photo — faded into the white background, echoes the
                  care-plan one-pager's header art without breaking the site's centered
                  section-header convention. Sized by height (not width) so it fills
@@ -761,7 +761,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         </p>
 
         {{-- Trust strip: four reassurance points matching the care-plan one-pager --}}
-        <div class="mt-16 max-w-5xl mx-auto rounded-2xl border border-gray-100 shadow-sm bg-white px-6 py-6 grid grid-cols-2 sm:grid-cols-4 gap-6">
+        <div class="mt-20 max-w-5xl mx-auto rounded-2xl border border-gray-100 shadow-sm bg-white px-6 py-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
             @foreach ([
                 ['icon' => 'shield',   'title' => 'Secure & Protected',  'desc' => '24/7 monitoring and protection'],
                 ['icon' => 'cloud-up', 'title' => 'Backed Up & Safe',    'desc' => 'Daily backups for peace of mind'],
@@ -792,14 +792,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 </section>
 
 {{-- Bridge cable divider --}}
-<div class="bg-white py-8" aria-hidden="true">
+<div class="bg-white py-12" aria-hidden="true">
     <div class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
 </div>
 
 {{-- ============================================================
      PORTFOLIO SECTION
      ============================================================ --}}
-<section id="portfolio" class="py-24 relative overflow-hidden" style="background:linear-gradient(160deg,#F4F7FC 0%,#FFFFFF 50%,#F0F5FB 100%);">
+<section id="portfolio" class="py-28 relative overflow-hidden" style="background:#FFFFFF;">
     {{-- Ambient orbs --}}
     <div class="hero-orb" style="width:580px;height:580px;top:-160px;left:-140px;background:radial-gradient(circle,rgba(42,157,143,0.07) 0%,transparent 70%);filter:blur(70px);animation:orb-drift 20s ease-in-out infinite;"></div>
     <div class="hero-orb" style="width:480px;height:480px;bottom:-120px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,0.08) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 16s ease-in-out infinite reverse 4s;"></div>
@@ -808,7 +808,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
 
         {{-- Section header --}}
-        <div class="text-center mb-16">
+        <div class="text-center mb-20">
             <span id="portfolio-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Our Work</span>
             <h2 id="portfolio-heading" class="section-title">Featured Projects</h2>
             <div id="portfolio-accent-line" style="width:56px;height:2px;background:linear-gradient(90deg,#C9A84C,rgba(201,168,76,0.18));border-radius:2px;margin:16px auto 20px;transform-origin:left center;"></div>
@@ -867,16 +867,16 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 </section>
 
 {{-- Bridge cable divider --}}
-<div class="bg-white py-8" aria-hidden="true">
+<div class="bg-white py-12" aria-hidden="true">
     <div class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
 </div>
 
 {{-- ============================================================
      FAITHSTACK PARTNERSHIP SECTION
      ============================================================ --}}
-<section id="partnership" class="py-20 bg-white relative overflow-hidden">
+<section id="partnership" class="py-24 bg-white relative overflow-hidden">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div id="partnership-header" class="text-center mb-14">
+        <div id="partnership-header" class="text-center mb-20">
             <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Our Partnership</span>
             <h2 class="section-title">VisionBridge & FaithStack</h2>
             <p class="section-subtitle">A strategic partnership delivering seamless website solutions from concept to long-term care.</p>
@@ -952,7 +952,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- ============================================================
      CONTACT SECTION — dark, cinematic
      ============================================================ --}}
-<section id="contact" class="relative overflow-hidden py-24" style="background:#EAF3F8;">
+<section id="contact" class="relative overflow-hidden py-28" style="background:#EAF3F8;">
 
     {{-- Ambient orbs --}}
     <div class="hero-orb" style="width:600px;height:600px;top:-160px;right:-160px;background:radial-gradient(circle,rgba(201,168,76,0.10) 0%,transparent 70%);filter:blur(80px);animation:orb-drift 22s ease-in-out infinite;"></div>

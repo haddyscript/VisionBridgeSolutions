@@ -4,7 +4,7 @@
 
 @section('content')
 
-<section class="bg-gray-50 min-h-screen flex items-center pt-20 pb-24 px-4">
+<section class="bg-white min-h-screen flex items-center pt-20 pb-28 px-4">
     <div class="max-w-lg mx-auto bg-white rounded-2xl border border-gray-200 shadow-sm p-10 text-center">
         <div class="w-16 h-16 rounded-full bg-teal/10 flex items-center justify-center mx-auto mb-6">
             <svg class="w-8 h-8 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
