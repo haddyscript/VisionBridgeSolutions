@@ -8,11 +8,16 @@ class Subscription extends Model
 {
     protected $fillable = [
         'project_id',
+        'maintenance_plan_id',
         'description',
         'amount',
         'currency',
         'interval',
         'status',
+        'client_phone',
+        'domain',
+        'hosting_provider',
+        'notes',
         'stripe_checkout_session_id',
         'stripe_subscription_id',
         'current_period_end',
@@ -32,6 +37,16 @@ class Subscription extends Model
     public function project()
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function maintenancePlan()
+    {
+        return $this->belongsTo(MaintenancePlan::class);
+    }
+
+    public function payouts()
+    {
+        return $this->hasMany(SubscriptionPayout::class)->latest();
     }
 
     public function isPending(): bool

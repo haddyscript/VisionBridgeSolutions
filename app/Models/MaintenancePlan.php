@@ -11,6 +11,7 @@ class MaintenancePlan extends Model
         'tagline',
         'description',
         'price',
+        'faithstack_compensation',
         'interval',
         'badge',
         'icon',
@@ -30,6 +31,11 @@ class MaintenancePlan extends Model
         ];
     }
 
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
     public function formattedPrice(): ?string
     {
         if ($this->price === null) {
@@ -37,5 +43,14 @@ class MaintenancePlan extends Model
         }
 
         return '$'.number_format($this->price / 100, $this->price % 100 === 0 ? 0 : 2);
+    }
+
+    public function formattedFaithstackCompensation(): ?string
+    {
+        if ($this->faithstack_compensation === null) {
+            return null;
+        }
+
+        return '$'.number_format($this->faithstack_compensation / 100, $this->faithstack_compensation % 100 === 0 ? 0 : 2);
     }
 }

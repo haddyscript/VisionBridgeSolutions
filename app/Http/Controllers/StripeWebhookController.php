@@ -3,17 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Mail\AdminPaymentNotificationMail;
+use App\Mail\FaithStackNewClientMail;
 use App\Mail\PaymentReceiptMail;
 use App\Mail\SubscriptionReceiptMail;
 use App\Mail\SubscriptionStatusAlertMail;
 use App\Mail\SystemAlertMail;
+use App\Mail\WelcomeClientMail;
 use App\Models\Payment;
 use App\Models\Subscription;
+use App\Models\SubscriptionPayout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Stripe\Checkout\Session;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Exception\SignatureVerificationException;
@@ -59,13 +63,21 @@ class StripeWebhookController extends Controller
     private function handleCheckoutCompleted($session): void
     {
         if ($session->mode === 'subscription') {
-            $subscription = Subscription::where('stripe_checkout_session_id', $session->id)->first();
+            $subscription = Subscription::with('project.user', 'maintenancePlan')
+                ->where('stripe_checkout_session_id', $session->id)->first();
 
             if ($subscription && $subscription->isPending()) {
                 $subscription->update([
                     'status' => 'active',
                     'stripe_subscription_id' => $session->subscription,
                 ]);
+
+                // Only the new public Website Care Plan self-checkout flow links a
+                // maintenance_plan_id — admin-created plans for already-onboarded
+                // clients don't, and that client already has portal access.
+                if ($subscription->maintenance_plan_id) {
+                    $this->welcomeNewCarePlanClient($subscription);
+                }
             }
 
             return;
@@ -119,6 +131,24 @@ class StripeWebhookController extends Controller
         );
 
         $this->notifyAdminOfPayment($payment);
+    }
+
+    /**
+     * First-time onboarding for a client who self-subscribed to a Website
+     * Care Plan from the public pricing page — sends them a password-setup
+     * link for the Client Portal and notifies FaithStack of the new client
+     * (separate from the VisionBridge admin payment notification, which
+     * handleInvoicePaymentSucceeded already sends for every billing cycle).
+     */
+    private function welcomeNewCarePlanClient(Subscription $subscription): void
+    {
+        $user = $subscription->project->user;
+
+        $resetToken = Password::createToken($user);
+        $resetUrl = route('password.reset', ['token' => $resetToken, 'email' => $user->email]);
+
+        Mail::to($user->email)->send(new WelcomeClientMail($user, $resetUrl));
+        Mail::to(config('mail.faithstack_address'))->send(new FaithStackNewClientMail($subscription));
     }
 
     private function notifyAdminOfPayment(Payment $payment): void
@@ -234,7 +264,7 @@ class StripeWebhookController extends Controller
 
         Stripe::setApiKey(config('services.stripe.secret'));
 
-        $subscription = Subscription::with('project.user')->where('stripe_subscription_id', $stripeSubscriptionId)->first();
+        $subscription = Subscription::with('project.user', 'maintenancePlan')->where('stripe_subscription_id', $stripeSubscriptionId)->first();
         $stripeSubscription = null;
 
         if (! $subscription) {
@@ -242,7 +272,7 @@ class StripeWebhookController extends Controller
             $localId = $stripeSubscription->metadata->subscription_id ?? null;
 
             if ($localId) {
-                $subscription = Subscription::with('project.user')->where('id', $localId)->first();
+                $subscription = Subscription::with('project.user', 'maintenancePlan')->where('id', $localId)->first();
             }
         }
 
@@ -280,5 +310,20 @@ class StripeWebhookController extends Controller
             '$'.number_format($invoice->amount_paid / 100, 2),
             $paidAt,
         ));
+
+        // Track what VisionBridge owes FaithStack for this billing cycle so it can
+        // be reviewed and paid manually (see partnership agreement — payouts are
+        // intentionally manual, not automated). stripe_invoice_id is unique, so a
+        // duplicate webhook delivery for the same invoice is a no-op here.
+        if ($subscription->maintenance_plan_id && $subscription->maintenancePlan?->faithstack_compensation) {
+            SubscriptionPayout::firstOrCreate(
+                ['stripe_invoice_id' => $invoice->id],
+                [
+                    'subscription_id' => $subscription->id,
+                    'client_amount' => $invoice->amount_paid,
+                    'faithstack_amount' => $subscription->maintenancePlan->faithstack_compensation,
+                ]
+            );
+        }
     }
 }

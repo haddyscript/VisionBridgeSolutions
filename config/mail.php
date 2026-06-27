@@ -127,6 +127,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | FaithStack Partner Notification Address
+    |--------------------------------------------------------------------------
+    |
+    | Where FaithStack is notified when a new Website Care Plan client signs
+    | up (see the partnership agreement for the recurring compensation tied
+    | to each plan tier). Falls back to the admin address if unset.
+    |
+    */
+
+    'faithstack_address' => env('MAIL_FAITHSTACK_ADDRESS', env('MAIL_ADMIN_ADDRESS', env('MAIL_FROM_ADDRESS', 'hello@example.com'))),
+
+    /*
+    |--------------------------------------------------------------------------
     | Contact Form Notification Address
     |--------------------------------------------------------------------------
     |

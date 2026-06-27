@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\MilestoneController as AdminMilestoneController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
+use App\Http\Controllers\Admin\SubscriptionPayoutController as AdminSubscriptionPayoutController;
 use App\Http\Controllers\Admin\TeamController as AdminTeamController;
 use App\Http\Controllers\Admin\UploadApprovalController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\CarePlanSignupController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\DeployerController;
@@ -48,6 +50,10 @@ Route::post('/contact', [ContactMessageController::class, 'store'])->name('conta
 
 Route::get('/book-consultation', [ConsultationController::class, 'create'])->name('consultation.create');
 Route::post('/book-consultation', [ConsultationController::class, 'store'])->name('consultation.store');
+
+Route::get('/care-plans/get-started/confirmation', [CarePlanSignupController::class, 'confirmation'])->name('care-plan-signup.confirmation');
+Route::get('/care-plans/{maintenancePlan}/get-started', [CarePlanSignupController::class, 'create'])->name('care-plan-signup.create');
+Route::post('/care-plans/{maintenancePlan}/get-started', [CarePlanSignupController::class, 'store'])->name('care-plan-signup.store');
 
 Route::match(['get', 'post'], '/deployer', [DeployerController::class, 'deploy'])->name('deployer');
 Route::get('/migrate', [DeployerController::class, 'migrate'])->name('deployer.migrate');
@@ -143,6 +149,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/subscriptions', [AdminSubscriptionController::class, 'index'])->name('subscriptions.index');
     Route::post('/projects/{project}/subscriptions', [AdminSubscriptionController::class, 'store'])->name('subscriptions.store');
     Route::delete('/subscriptions/{subscription}', [AdminSubscriptionController::class, 'destroy'])->name('subscriptions.destroy');
+
+    Route::get('/subscription-payouts', [AdminSubscriptionPayoutController::class, 'index'])->name('subscription-payouts.index');
+    Route::patch('/subscription-payouts/{subscriptionPayout}', [AdminSubscriptionPayoutController::class, 'update'])->name('subscription-payouts.update');
 
     Route::patch('/uploads/{upload}/approve', [UploadApprovalController::class, 'toggle'])->name('uploads.approve');
     Route::patch('/uploads/{upload}/status', [UploadApprovalController::class, 'updateStatus'])->name('uploads.status');

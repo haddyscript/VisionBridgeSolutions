@@ -8,6 +8,7 @@ A plain-language summary of everything the site and client portal offer today.
 |---|---|
 | Home page | The marketing site — about us, services, care plans, portfolio, and a contact section |
 | "Get Started" form | New prospects fill out a detailed form about their project; we review it and turn it into a client account |
+| Website Care Plan signup | Clicking "Get Started" on a pricing card takes visitors to a short plan-specific form (org info, domain, hosting), then straight to secure Stripe checkout to subscribe — no account needed upfront. On successful payment they're auto-onboarded: account + project created, a portal password-setup email sent, a confirmation page shown, and both VisionBridge and FaithStack are notified |
 | Contact form | A simple "Get in Touch" form that emails us directly |
 | Book a Consultation | A calendar booking tool — visitors pick a day and an open time slot (weekdays, 9am–5pm) to request a consultation |
 | Create an account | Visitors can also sign up for a client account directly, without going through the intake form; they must verify their email before they can use the portal |
@@ -46,6 +47,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Payment Requests | Create one-time payment requests for a project, remove unpaid ones, and re-check a payment's status if something looks stuck |
 | Maintenance Plans | Set up or cancel a client's recurring care plan |
 | Care Plan Pricing | Control the pricing tiers shown on the public website — name, tagline, description, price, header icon, badge, response time, and a list of features (each with its own short description) — each plan collapses to a quick summary and expands to edit, with a live preview showing exactly how the card will look on the homepage as you type |
+| FaithStack Payouts | A running list of every Website Care Plan billing cycle that's been paid by a client, showing what VisionBridge owes FaithStack for it; "Mark Paid to FaithStack" records once we've sent it manually (intentionally manual for now, not an automatic transfer — see partnership agreement) |
 | Team Management | Add/manage other admin team members |
 
 ## 4. Payments & Billing, in Plain Terms
@@ -77,6 +79,7 @@ A plain-language summary of everything the site and client portal offer today.
 | We confirm, reschedule, or cancel a consultation | The client |
 | A client account is created or a welcome email is resent | The client |
 | Someone creates their own account | Our team |
+| A new Website Care Plan client subscribes and pays | The client (receipt + portal password-setup link), our team, and FaithStack |
 | A client changes their account email | Their old email address (as a security check) |
 | A client changes their password | The client (as a security check) |
 | A client uploads a file or submits content/revisions | Our team |
