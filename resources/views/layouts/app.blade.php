@@ -608,6 +608,12 @@
         }
         .plans-arrow:hover { background: #DFC06A; transform: translateY(-50%) scale(1.08); }
 
+        /* Care plan card header cap — gentle scoop at the bottom edge */
+        .plan-header-cap {
+            border-bottom-left-radius: 50% 18px;
+            border-bottom-right-radius: 50% 18px;
+        }
+
         .value-title {
             font-weight: 700;
             font-size: 1rem;

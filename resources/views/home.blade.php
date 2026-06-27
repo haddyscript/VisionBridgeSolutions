@@ -27,6 +27,15 @@ $svgIcons = [
     'lock'        => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>',
     'mobile'      => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>',
     'bolt'        => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>',
+    'crown'       => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 17h18M4 17l-1-9 5 4 4-7 4 7 5-4-1 9"/>',
+    'cloud-up'    => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 18a4 4 0 01-1-7.874A5 5 0 0115.9 8.1 4.5 4.5 0 0117.5 17H7z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12v6m0-6l-2.5 2.5M12 12l2.5 2.5"/>',
+];
+
+// Website Care Plans — per-icon color theme (Essential=teal, Growth=gold, Elite=navy)
+$planThemes = [
+    'shield'      => ['cap' => 'bg-teal', 'name' => 'text-teal', 'divider' => 'bg-teal', 'check' => 'text-teal', 'border' => 'border-teal', 'btn' => 'bg-teal hover:bg-teal-dark text-white'],
+    'trending-up' => ['cap' => 'bg-gold', 'name' => 'text-gold-dark', 'divider' => 'bg-gold', 'check' => 'text-gold-dark', 'border' => 'border-gold', 'btn' => 'bg-gold hover:bg-gold-dark text-navy'],
+    'crown'       => ['cap' => 'bg-navy', 'name' => 'text-navy', 'divider' => 'bg-navy', 'check' => 'text-navy', 'border' => 'border-navy', 'btn' => 'bg-navy hover:bg-navy-light text-white'],
 ];
 
 // Reusable bridge line-art graphics — signature motif used as a hero
@@ -628,9 +637,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 <section id="plans" class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-14">
-            <span id="plans-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3" style="opacity:0;transform:translateX(-20px)">Ongoing Care</span>
-            <h2 id="plans-heading" class="section-title" style="opacity:0;transform:translateY(40px)">Website Maintenance Plans</h2>
-            <p id="plans-subtitle" class="section-subtitle" style="opacity:0;transform:translateY(20px)">Keep your website secure, updated, and performing — month after month.</p>
+            <span id="plans-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3" style="opacity:0;transform:translateX(-20px)">Protect Your Investment</span>
+            <h2 id="plans-heading" class="section-title" style="opacity:0;transform:translateY(40px)">Website Care Plans</h2>
+            <p id="plans-subtitle" class="section-subtitle" style="opacity:0;transform:translateY(20px)">Protect your investment with professional website care designed to keep your website secure, updated, optimized, and performing month after month.</p>
         </div>
 
         <div id="plans-carousel" class="relative max-w-5xl mx-auto" style="opacity:0;transform:translateY(40px);">
@@ -641,45 +650,84 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <svg width="16" height="16" fill="none" stroke="#111D33" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
             </button>
             <div id="plans-viewport" style="overflow:hidden;">
-            <div id="plans-track" class="flex items-center">
+            <div id="plans-track" class="flex items-start">
             @foreach ($carePlans as $plan)
-                <div class="plans-card group shrink-0 {{ $plan->is_available ? 'relative border-2 border-gold shadow-xl hover:border-gold-dark' : 'plans-card-dim border-2 border-gray-100 hover:border-gray-300' }} rounded-2xl overflow-hidden transition-all duration-300" style="width:320px;margin:0 16px;">
-                    @if ($plan->badge)
-                        <div class="{{ $plan->is_available ? 'bg-gold text-navy group-hover:bg-gold-light' : 'bg-gray-100 text-gray-500' }} px-6 py-4 text-center transition-colors duration-300">
-                            <span class="text-xs font-bold tracking-widest uppercase">{{ $plan->badge }}</span>
-                        </div>
-                    @endif
-                    <div class="bg-white p-8 text-center">
-                        <h3 class="font-bold text-navy text-xl mb-1">{{ $plan->name }}</h3>
-                        <div class="my-6">
-                            @if ($plan->formattedPrice())
-                                <span class="inline-block text-5xl font-bold text-navy transition-transform duration-300 {{ $plan->is_available ? 'group-hover:scale-110' : '' }}" data-target="{{ $plan->price / 100 }}">{{ $plan->formattedPrice() }}</span>
-                                <span class="text-gray-400 text-sm">/{{ $plan->interval }}</span>
-                            @else
-                                <span class="text-3xl font-bold text-gray-300">Coming Soon</span>
-                            @endif
-                        </div>
-                        <ul class="text-left space-y-1 mb-8">
-                            @foreach ($plan->features as $item)
-                            <li class="flex items-center gap-3 text-sm rounded-lg px-2 py-1.5 -mx-2 {{ $plan->is_available ? 'text-gray-600 hover:bg-gold/5' : 'text-gray-400' }} transition-colors duration-150">
-                                <svg class="w-5 h-5 {{ $plan->is_available ? 'text-teal' : 'text-gray-300' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                </svg>
-                                {{ $item }}
-                            </li>
-                            @endforeach
-                        </ul>
-                        @if ($plan->is_available)
-                            <a href="{{ $plan->cta_url }}" class="btn-gold w-full text-center flex items-center justify-center gap-2">
-                                {{ $plan->cta_label }}
-                                <svg class="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                                </svg>
-                            </a>
-                            <p class="text-xs text-gray-400 mt-3">No contracts — cancel anytime</p>
-                        @else
-                            <button disabled class="w-full bg-gray-100 text-gray-400 font-semibold px-7 py-3 rounded-lg cursor-not-allowed">{{ $plan->cta_label }}</button>
+                @php $theme = $planThemes[$plan->icon] ?? $planThemes['shield']; @endphp
+                <div class="plans-card group shrink-0 flex flex-col items-center {{ $plan->is_available ? '' : 'plans-card-dim' }}" style="width:340px;margin:0 18px;padding-top:26px;">
+                    <div class="relative w-full">
+                        @if ($plan->badge)
+                            <div class="absolute left-1/2 -translate-x-1/2 -top-3 z-10 inline-flex items-center gap-1.5 bg-gold text-navy text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full shadow-lg whitespace-nowrap">
+                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['star'] !!}</svg>
+                                {{ $plan->badge }}
+                            </div>
                         @endif
+
+                        <div class="relative rounded-2xl overflow-hidden bg-white border-2 transition-all duration-300 {{ $plan->is_available ? $theme['border'].' shadow-xl' : 'border-gray-100' }}">
+                            <div class="plan-header-cap {{ $plan->is_available ? $theme['cap'] : 'bg-gray-200' }} h-14"></div>
+
+                            <div class="flex justify-center" style="margin-top:-32px;">
+                                <div class="w-16 h-16 rounded-full border-4 border-white shadow-md flex items-center justify-center text-white {{ $plan->is_available ? $theme['cap'] : 'bg-gray-300' }}">
+                                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$plan->icon] ?? $svgIcons['shield'] !!}</svg>
+                                </div>
+                            </div>
+
+                            <div class="px-8 pt-3 pb-8 text-center">
+                                <h3 class="font-bold text-lg uppercase tracking-wide {{ $plan->is_available ? $theme['name'] : 'text-gray-400' }}">{{ $plan->name }}</h3>
+                                <p class="text-gray-400 text-xs font-semibold uppercase tracking-wide mt-1">{{ $plan->tagline }}</p>
+                                <div class="w-10 h-0.5 mx-auto my-4 {{ $plan->is_available ? $theme['divider'] : 'bg-gray-200' }}"></div>
+
+                                <div class="mb-3">
+                                    @if ($plan->formattedPrice())
+                                        <span class="inline-block text-5xl font-extrabold text-navy transition-transform duration-300 {{ $plan->is_available ? 'group-hover:scale-110' : '' }}" data-target="{{ $plan->price / 100 }}">{{ $plan->formattedPrice() }}</span>
+                                        <span class="text-gray-400 text-sm">/{{ $plan->interval }}</span>
+                                    @else
+                                        <span class="text-3xl font-bold text-gray-300">Coming Soon</span>
+                                    @endif
+                                </div>
+
+                                <p class="text-sm text-gray-500 mb-6">{{ $plan->description }}</p>
+
+                                <ul class="text-left space-y-3 mb-8">
+                                    @foreach ($plan->features as $item)
+                                    <li class="flex items-start gap-3 text-sm {{ $plan->is_available ? 'text-gray-600' : 'text-gray-400' }}">
+                                        <svg class="w-5 h-5 shrink-0 mt-0.5 {{ $plan->is_available ? $theme['check'] : 'text-gray-300' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        <span>
+                                            <span class="font-bold {{ $plan->is_available ? 'text-navy' : 'text-gray-400' }} block">{{ $item['title'] ?? $item }}</span>
+                                            @if (!empty($item['description']))
+                                                <span class="text-xs text-gray-400 block">{{ $item['description'] }}</span>
+                                            @endif
+                                        </span>
+                                    </li>
+                                    @endforeach
+                                </ul>
+
+                                @if ($plan->is_available)
+                                    <a href="{{ $plan->cta_url }}" class="{{ $theme['btn'] }} w-full text-center flex items-center justify-center gap-2 font-semibold px-7 py-3 rounded-lg shadow hover:shadow-lg transition-all duration-200">
+                                        {{ $plan->cta_label }}
+                                        <svg class="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                        </svg>
+                                    </a>
+                                    <p class="text-xs text-gray-400 mt-3 flex items-center justify-center gap-1.5">
+                                        <svg class="w-3.5 h-3.5 {{ $theme['check'] }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        No Long-Term Contracts — Cancel Anytime
+                                    </p>
+                                @else
+                                    <button disabled class="w-full bg-gray-100 text-gray-400 font-semibold px-7 py-3 rounded-lg cursor-not-allowed">{{ $plan->cta_label }}</button>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-center gap-2 text-sm text-gray-500 mt-5">
+                        <svg class="w-4 h-4 shrink-0 {{ $plan->is_available ? $theme['check'] : 'text-gray-300' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span><strong class="text-navy">Response Time:</strong> {{ $plan->response_time }}</span>
                     </div>
                 </div>
             @endforeach
@@ -692,6 +740,35 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             Not sure which plan is right for you?
             <a href="{{ route('consultation.create') }}" class="text-teal font-semibold hover:underline">Book a free consultation</a>
         </p>
+
+        {{-- Trust strip: four reassurance points matching the care-plan one-pager --}}
+        <div class="mt-16 max-w-5xl mx-auto rounded-2xl border border-gray-100 shadow-sm bg-white px-6 py-6 grid grid-cols-2 sm:grid-cols-4 gap-6">
+            @foreach ([
+                ['icon' => 'shield',   'title' => 'Secure & Protected',  'desc' => '24/7 monitoring and protection'],
+                ['icon' => 'cloud-up', 'title' => 'Backed Up & Safe',    'desc' => 'Daily backups for peace of mind'],
+                ['icon' => 'bolt',     'title' => 'Optimized & Fast',    'desc' => 'Speed, SEO, and performance focus'],
+                ['icon' => 'chat',     'title' => 'Supported & Cared For', 'desc' => 'Real people. Real support.'],
+            ] as $trust)
+                <div class="flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-full bg-teal/10 text-teal flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$trust['icon']] !!}</svg>
+                    </div>
+                    <div>
+                        <p class="font-bold text-navy text-sm">{{ $trust['title'] }}</p>
+                        <p class="text-xs text-gray-500">{{ $trust['desc'] }}</p>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        {{-- Bottom info bar --}}
+        <div class="mt-6 max-w-5xl mx-auto rounded-full bg-navy text-white text-center text-xs sm:text-sm font-semibold px-6 py-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+            <span>Hosted &amp; Managed by VisionBridge Solutions</span>
+            <span class="text-gold/60">|</span>
+            <span>Long-Term Website Stability</span>
+            <span class="text-gold/60">|</span>
+            <span>Secure Client Portal Access</span>
+        </div>
     </div>
 </section>
 

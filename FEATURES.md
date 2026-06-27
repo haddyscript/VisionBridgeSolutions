@@ -45,7 +45,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Revision & Content Threads | Move a client's change request through Open → In Progress → Addressed, and go back and forth with them in a live chat-style thread — every status change and reply sends instantly with no page reload and emails the other side |
 | Payment Requests | Create one-time payment requests for a project, remove unpaid ones, and re-check a payment's status if something looks stuck |
 | Maintenance Plans | Set up or cancel a client's recurring care plan |
-| Care Plan Pricing | Control the pricing tiers shown on the public website — each plan collapses to a quick summary and expands to edit, with a live preview showing exactly how the card will look on the homepage as you type |
+| Care Plan Pricing | Control the pricing tiers shown on the public website — name, tagline, description, price, header icon, badge, response time, and a list of features (each with its own short description) — each plan collapses to a quick summary and expands to edit, with a live preview showing exactly how the card will look on the homepage as you type |
 | Team Management | Add/manage other admin team members |
 
 ## 4. Payments & Billing, in Plain Terms
