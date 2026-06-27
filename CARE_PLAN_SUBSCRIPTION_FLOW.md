@@ -75,6 +75,18 @@ flowchart TD
 payments, avoids extra Stripe transfer fees, and gives financial oversight while
 the client base is still small. Can be revisited once billing volume is stable.
 
+**Update:** the verification step itself is now automated. Each payout starts
+`pending`, and a daily scheduled command (`payouts:verify`) promotes it to
+`ready` once 7 clean days have passed. If Stripe reports a refund
+(`charge.refunded`) or chargeback (`charge.dispute.created`) on that invoice
+before then, the payout is automatically flipped to `flagged` instead and
+VisionBridge gets an alert email — no payout is released without a human
+clicking "Mark Paid to FaithStack" (or, for a flagged one, an explicit
+"Send Anyway" override). The actual money movement to FaithStack is still
+manual either way, since **Stripe can't pay out to the Philippines** (see
+below) — automating that part requires a separate provider like Wise, Xendit,
+or PayMongo, which hasn't been decided on yet.
+
 ## 3. Where things live
 
 | Step | Code |
@@ -85,6 +97,8 @@ the client base is still small. Can be revisited once billing volume is stable.
 | Plan tiers + FaithStack compensation per tier | `app/Models/MaintenancePlan.php` (`faithstack_compensation`) |
 | Per-client subscription + signup details | `app/Models/Subscription.php` (`domain`, `hosting_provider`, `client_phone`, `notes`) |
 | Per-cycle payout tracking | `app/Models/SubscriptionPayout.php` |
+| Daily 7-day auto-verification | `app/Console/Commands/VerifyCarePlanPayouts.php` (scheduled in `routes/console.php`) |
+| Dispute/refund holds | `StripeWebhookController::flagPayoutForInvoice()` / `flagPayoutForDispute()` |
 | Admin "mark paid" UI | `resources/views/admin/subscription-payouts/index.blade.php` |
 | Client welcome email | `app/Mail/WelcomeClientMail.php` |
 | FaithStack new-client email | `app/Mail/FaithStackNewClientMail.php` |

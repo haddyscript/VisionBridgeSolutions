@@ -16,12 +16,17 @@ class SubscriptionPayoutController extends Controller
 
         return view('admin.subscription-payouts.index', [
             'payouts' => $payouts,
-            'totalPending' => $payouts->where('status', 'pending')->sum('faithstack_amount'),
+            'totalVerifying' => $payouts->where('status', 'pending')->sum('faithstack_amount'),
+            'totalReady' => $payouts->where('status', 'ready')->sum('faithstack_amount'),
         ]);
     }
 
     public function update(Request $request, SubscriptionPayout $subscriptionPayout)
     {
+        // Still inside its 7-day verification window — block release even if
+        // someone forges the request, not just hide the button in the view.
+        abort_if($subscriptionPayout->isPending(), 422, 'This payout is still in its 7-day verification window.');
+
         $validated = $request->validate([
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
