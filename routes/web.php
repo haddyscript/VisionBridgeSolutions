@@ -11,7 +11,7 @@ use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
 use App\Http\Controllers\Admin\ServiceAgreementController as AdminServiceAgreementController;
-use App\Http\Controllers\Admin\SubscriptionPayoutController as AdminSubscriptionPayoutController;
+use App\Http\Controllers\Admin\PartnerPayoutController as AdminPartnerPayoutController;
 use App\Http\Controllers\Admin\TeamController as AdminTeamController;
 use App\Http\Controllers\Admin\UploadApprovalController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -166,8 +166,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/projects/{project}/subscriptions', [AdminSubscriptionController::class, 'store'])->name('subscriptions.store');
     Route::delete('/subscriptions/{subscription}', [AdminSubscriptionController::class, 'destroy'])->name('subscriptions.destroy');
 
-    Route::get('/subscription-payouts', [AdminSubscriptionPayoutController::class, 'index'])->name('subscription-payouts.index');
-    Route::patch('/subscription-payouts/{subscriptionPayout}', [AdminSubscriptionPayoutController::class, 'update'])->name('subscription-payouts.update');
+    Route::get('/partner-payouts', [AdminPartnerPayoutController::class, 'index'])->name('partner-payouts.index');
+    Route::patch('/partner-payouts/{partnerPayout}', [AdminPartnerPayoutController::class, 'update'])->name('partner-payouts.update');
 
     Route::get('/service-agreement', [AdminServiceAgreementController::class, 'index'])->name('service-agreement.index');
     Route::post('/service-agreement', [AdminServiceAgreementController::class, 'store'])->name('service-agreement.store');

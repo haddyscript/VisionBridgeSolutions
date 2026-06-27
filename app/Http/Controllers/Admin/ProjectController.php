@@ -25,9 +25,30 @@ class ProjectController extends Controller
             'status' => ['sometimes', 'required', 'in:onboarding,in_progress,review,launched,maintenance'],
             'preview_url' => ['sometimes', 'nullable', 'url', 'max:255'],
             'progress_override' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:100'],
+            'total_price' => ['sometimes', 'nullable', 'numeric', 'min:1'],
         ]);
 
+        $settingPriceForFirstTime = array_key_exists('total_price', $validated)
+            && $validated['total_price'] !== null
+            && $project->total_price === null;
+
+        if (array_key_exists('total_price', $validated)) {
+            $validated['total_price'] = $validated['total_price'] !== null
+                ? (int) round($validated['total_price'] * 100)
+                : null;
+        }
+
         $project->update($validated);
+
+        // Quoting a price for the first time auto-creates the initial 50%
+        // deposit request — the client pays it from their existing Payments tab.
+        if ($settingPriceForFirstTime && ! $project->depositPayment()) {
+            $project->payments()->create([
+                'description' => 'Initial 50% Project Deposit',
+                'kind' => 'deposit',
+                'amount' => (int) round($project->total_price / 2),
+            ]);
+        }
 
         return back()->with('status', 'Project updated.');
     }

@@ -4,14 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SubscriptionPayout extends Model
+class PartnerPayout extends Model
 {
     /** Days a payout must sit clean (no dispute/refund) before it can be released. */
     public const VERIFICATION_DAYS = 7;
 
     protected $fillable = [
-        'subscription_id',
+        'payable_type',
+        'payable_id',
         'stripe_invoice_id',
+        'stripe_payment_intent_id',
         'client_amount',
         'faithstack_amount',
         'status',
@@ -31,9 +33,33 @@ class SubscriptionPayout extends Model
         ];
     }
 
-    public function subscription()
+    public function payable()
     {
-        return $this->belongsTo(Subscription::class);
+        return $this->morphTo();
+    }
+
+    /** Convenience accessor: the client + project this payout traces back to, regardless of type. */
+    public function project(): ?Project
+    {
+        return match (true) {
+            $this->payable instanceof Subscription => $this->payable->project,
+            $this->payable instanceof Payment => $this->payable->project,
+            default => null,
+        };
+    }
+
+    /** A short label for what this payout is for — a recurring Care Plan cycle or a one-time project payment. */
+    public function sourceLabel(): string
+    {
+        if ($this->payable instanceof Subscription) {
+            return $this->payable->maintenancePlan?->name ?? $this->payable->description;
+        }
+
+        if ($this->payable instanceof Payment) {
+            return $this->payable->kind ? ucfirst($this->payable->kind).' Payment' : $this->payable->description;
+        }
+
+        return 'Unknown';
     }
 
     public function isPending(): bool
@@ -56,6 +82,11 @@ class SubscriptionPayout extends Model
         return $this->status === 'paid';
     }
 
+    public function hasFaithstackAmount(): bool
+    {
+        return $this->faithstack_amount !== null;
+    }
+
     public function verifiesAt(): \Illuminate\Support\Carbon
     {
         return $this->created_at->copy()->addDays(self::VERIFICATION_DAYS);
@@ -68,7 +99,9 @@ class SubscriptionPayout extends Model
 
     public function formattedFaithstackAmount(): string
     {
-        return '$'.number_format($this->faithstack_amount / 100, 2);
+        return $this->hasFaithstackAmount()
+            ? '$'.number_format($this->faithstack_amount / 100, 2)
+            : 'TBD';
     }
 
     public function formattedClientAmount(): string

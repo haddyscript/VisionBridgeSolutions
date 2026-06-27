@@ -9,6 +9,7 @@ class Payment extends Model
     protected $fillable = [
         'project_id',
         'description',
+        'kind',
         'amount',
         'currency',
         'status',
@@ -28,6 +29,21 @@ class Payment extends Model
     public function project()
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function payouts()
+    {
+        return $this->morphMany(PartnerPayout::class, 'payable')->latest();
+    }
+
+    public function isDeposit(): bool
+    {
+        return $this->kind === 'deposit';
+    }
+
+    public function isFinal(): bool
+    {
+        return $this->kind === 'final';
     }
 
     public function isPending(): bool

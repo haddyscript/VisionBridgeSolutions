@@ -46,7 +46,7 @@ class Subscription extends Model
 
     public function payouts()
     {
-        return $this->hasMany(SubscriptionPayout::class)->latest();
+        return $this->morphMany(PartnerPayout::class, 'payable')->latest();
     }
 
     public function isPending(): bool

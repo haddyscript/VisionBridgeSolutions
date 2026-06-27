@@ -9,9 +9,9 @@ use App\Mail\SubscriptionReceiptMail;
 use App\Mail\SubscriptionStatusAlertMail;
 use App\Mail\SystemAlertMail;
 use App\Mail\WelcomeClientMail;
+use App\Models\PartnerPayout;
 use App\Models\Payment;
 use App\Models\Subscription;
-use App\Models\SubscriptionPayout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -54,7 +54,7 @@ class StripeWebhookController extends Controller
             'customer.subscription.deleted' => $this->handleSubscriptionDeleted($event->data->object),
             'invoice.payment_succeeded' => $this->handleInvoicePaymentSucceeded($event->data->object),
             'payment_intent.succeeded' => $this->handlePaymentIntentSucceeded($event->data->object),
-            'charge.refunded' => $this->flagPayoutForInvoice($event->data->object->invoice ?? null, 'Refunded'),
+            'charge.refunded' => $this->flagPayoutForCharge($event->data->object, 'Refunded'),
             'charge.dispute.created' => $this->flagPayoutForDispute($event->data->object),
             default => null,
         };
@@ -102,6 +102,7 @@ class StripeWebhookController extends Controller
             );
 
             $this->notifyAdminOfPayment($payment);
+            $this->logPartnerPayoutForPayment($payment);
         }
     }
 
@@ -133,6 +134,28 @@ class StripeWebhookController extends Controller
         );
 
         $this->notifyAdminOfPayment($payment);
+        $this->logPartnerPayoutForPayment($payment);
+    }
+
+    /**
+     * Logs every one-time client payment (the 50/50 project deposit/final
+     * payments, or any other one-off request) as a FaithStack payout row —
+     * same 7-day verification + dispute/refund holding as recurring Care Plan
+     * cycles. The compensation amount on one-time payments isn't decided yet,
+     * so faithstack_amount stays null/"TBD" until that's agreed and someone
+     * fills it in manually; nothing blocks on that number being missing.
+     */
+    private function logPartnerPayoutForPayment(Payment $payment): void
+    {
+        PartnerPayout::firstOrCreate(
+            ['stripe_payment_intent_id' => $payment->stripe_payment_intent_id],
+            [
+                'payable_type' => Payment::class,
+                'payable_id' => $payment->id,
+                'client_amount' => $payment->amount,
+                'faithstack_amount' => null,
+            ]
+        );
     }
 
     /**
@@ -314,17 +337,18 @@ class StripeWebhookController extends Controller
         ));
 
         // Track what VisionBridge owes FaithStack for this billing cycle. Starts
-        // 'pending' — VerifyCarePlanPayouts promotes it to 'ready' after 7 clean
-        // days (see SubscriptionPayout::VERIFICATION_DAYS), or flagPayoutForInvoice
+        // 'pending' — VerifyPartnerPayouts promotes it to 'ready' after 7 clean
+        // days (see PartnerPayout::VERIFICATION_DAYS), or flagPayoutForCharge
         // below holds it if a dispute/refund comes in first. The actual transfer
         // to FaithStack is still a manual step (see partnership agreement — Stripe
         // can't pay out to the Philippines, so full automation isn't possible yet).
         // stripe_invoice_id is unique, so a duplicate webhook delivery is a no-op.
         if ($subscription->maintenance_plan_id && $subscription->maintenancePlan?->faithstack_compensation) {
-            SubscriptionPayout::firstOrCreate(
+            PartnerPayout::firstOrCreate(
                 ['stripe_invoice_id' => $invoice->id],
                 [
-                    'subscription_id' => $subscription->id,
+                    'payable_type' => Subscription::class,
+                    'payable_id' => $subscription->id,
                     'client_amount' => $invoice->amount_paid,
                     'faithstack_amount' => $subscription->maintenancePlan->faithstack_compensation,
                 ]
@@ -333,8 +357,9 @@ class StripeWebhookController extends Controller
     }
 
     /**
-     * A dispute means Stripe needs us to retrieve the underlying charge first
-     * to find which invoice (and therefore which SubscriptionPayout) it belongs to.
+     * A dispute object only carries the charge ID — retrieve the charge first
+     * so flagPayoutForCharge can read its invoice/payment_intent the same way
+     * the charge.refunded handler does.
      */
     private function flagPayoutForDispute($dispute): void
     {
@@ -348,27 +373,30 @@ class StripeWebhookController extends Controller
             return;
         }
 
-        $this->flagPayoutForInvoice($charge->invoice ?? null, 'Disputed / chargeback');
+        $this->flagPayoutForCharge($charge, 'Disputed / chargeback');
     }
 
     /**
      * Holds (or flags, if already paid) the FaithStack payout tied to this
-     * invoice and alerts VisionBridge — the actual money movement to FaithStack
-     * stays a manual decision either way.
+     * charge — a recurring Care Plan cycle is matched by invoice ID, a
+     * one-time project payment by payment_intent ID. Either way, the actual
+     * money movement to FaithStack stays a manual decision.
      */
-    private function flagPayoutForInvoice(?string $invoiceId, string $reason): void
+    private function flagPayoutForCharge($charge, string $reason): void
     {
-        if (! $invoiceId) {
-            return;
-        }
+        $payout = null;
 
-        $payout = SubscriptionPayout::with('subscription.project.user', 'subscription.maintenancePlan')
-            ->where('stripe_invoice_id', $invoiceId)
-            ->first();
+        if (! empty($charge->invoice)) {
+            $payout = PartnerPayout::where('stripe_invoice_id', $charge->invoice)->first();
+        } elseif (! empty($charge->payment_intent)) {
+            $payout = PartnerPayout::where('stripe_payment_intent_id', $charge->payment_intent)->first();
+        }
 
         if (! $payout) {
             return;
         }
+
+        $payout->load('payable');
 
         $wasAlreadyPaid = $payout->isPaid();
 
@@ -378,16 +406,18 @@ class StripeWebhookController extends Controller
             'flag_reason' => $reason,
         ]);
 
+        $project = $payout->project();
+
         Mail::to(config('mail.admin_address'))->send(new SystemAlertMail(
             $wasAlreadyPaid
-                ? "Care Plan Payment {$reason} After FaithStack Was Already Paid"
-                : "Care Plan Payment {$reason} — FaithStack Payout Held",
+                ? "Client Payment {$reason} After FaithStack Was Already Paid"
+                : "Client Payment {$reason} — FaithStack Payout Held",
             $wasAlreadyPaid
                 ? "A client payment that FaithStack has already been paid for was just marked '{$reason}'. This needs manual review."
                 : "A client payment was marked '{$reason}' during its 7-day verification window. The FaithStack payout for this cycle has been held and needs manual review before release.",
             [
-                'Client' => $payout->subscription->project->user->name,
-                'Plan' => $payout->subscription->maintenancePlan?->name ?? $payout->subscription->description,
+                'Client' => $project?->user->name ?? 'Unknown',
+                'For' => $payout->sourceLabel(),
                 'FaithStack Amount' => $payout->formattedFaithstackAmount(),
                 'Payout Status' => $payout->status,
             ],

@@ -13,6 +13,7 @@ class Project extends Model
         'preview_url',
         'status',
         'progress_override',
+        'total_price',
     ];
 
     public function user()
@@ -64,6 +65,21 @@ class Project extends Model
     public function hasCompletedQuestionnaire(): bool
     {
         return $this->questionnaire?->isCompleted() ?? false;
+    }
+
+    public function depositPayment(): ?Payment
+    {
+        return $this->payments->firstWhere('kind', 'deposit');
+    }
+
+    public function finalPayment(): ?Payment
+    {
+        return $this->payments->firstWhere('kind', 'final');
+    }
+
+    public function formattedTotalPrice(): ?string
+    {
+        return $this->total_price !== null ? '$'.number_format($this->total_price / 100, 2) : null;
     }
 
     public function subscriptions()

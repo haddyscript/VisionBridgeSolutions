@@ -61,6 +61,23 @@
         </button>
     </form>
 
+    <form method="POST" action="{{ route('admin.projects.update', $project) }}" class="flex items-center gap-2 mt-3" data-ajax-target="header-card">
+        @csrf
+        @method('PATCH')
+        <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 shrink-0">Total Project Price</label>
+        <input type="number" name="total_price" step="0.01" min="1" placeholder="e.g. 2500.00"
+               value="{{ old('total_price', $project->total_price !== null ? $project->total_price / 100 : '') }}"
+               class="w-36 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+        <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+            Save
+        </button>
+        @if ($project->total_price === null)
+            <span class="text-xs text-gray-400 dark:text-gray-500">Setting this creates the initial 50% deposit request.</span>
+        @elseif ($project->depositPayment())
+            <span class="text-xs text-gray-400 dark:text-gray-500">Deposit: {{ $project->depositPayment()->formattedAmount() }} ({{ $project->depositPayment()->isPaid() ? 'paid' : 'pending' }})</span>
+        @endif
+    </form>
+
     <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">
         <span>
             Project Progress

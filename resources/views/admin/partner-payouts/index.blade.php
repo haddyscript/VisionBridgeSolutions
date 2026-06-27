@@ -6,13 +6,13 @@
 @section('content')
 
 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
-    One row per Website Care Plan billing cycle. Each payout sits in a 7-day verification window after the client's
-    payment clears — if a refund or dispute comes in during that window, it's automatically held for review.
-    Once it's "Ready to Send," the transfer to FaithStack is still sent manually (Stripe can't pay out to the
-    Philippines yet) — mark it paid once you've sent it.
+    One row per client payment — recurring Website Care Plan cycles and one-time project payments alike. Each sits
+    in a 7-day verification window after it clears; a refund or dispute during that window automatically holds it
+    for review. The transfer to FaithStack is still sent manually (Stripe can't pay out to the Philippines yet) —
+    mark a row paid once you've sent it.
 </p>
 
-<div class="grid sm:grid-cols-2 gap-4 mb-6">
+<div class="grid sm:grid-cols-3 gap-4 mb-6">
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
         <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Still Verifying</p>
         <p class="font-display text-2xl font-bold text-navy dark:text-white">${{ number_format($totalVerifying / 100, 2) }}</p>
@@ -21,11 +21,15 @@
         <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Ready to Send</p>
         <p class="font-display text-2xl font-bold text-teal-dark">${{ number_format($totalReady / 100, 2) }}</p>
     </div>
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+        <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Amount Not Yet Decided</p>
+        <p class="font-display text-2xl font-bold text-gold-dark">{{ $totalUndecided }}</p>
+    </div>
 </div>
 
 @if ($payouts->isEmpty())
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
-        <p class="text-gray-500 dark:text-gray-400">No billing cycles recorded yet.</p>
+        <p class="text-gray-500 dark:text-gray-400">No payments recorded yet.</p>
     </div>
 @else
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -33,7 +37,7 @@
             <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
                 <tr>
                     <th class="px-5 py-3">Client</th>
-                    <th class="px-5 py-3">Plan</th>
+                    <th class="px-5 py-3">For</th>
                     <th class="px-5 py-3">Client Paid</th>
                     <th class="px-5 py-3">FaithStack Owed</th>
                     <th class="px-5 py-3">Status</th>
@@ -42,14 +46,17 @@
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                 @foreach ($payouts as $payout)
+                    @php $project = $payout->project(); @endphp
                     <tr class="hover:bg-gray-50/60">
                         <td class="px-5 py-3.5">
-                            <p class="font-medium text-navy dark:text-white">{{ $payout->subscription->project->user->name }}</p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $payout->subscription->project->name }}</p>
+                            <p class="font-medium text-navy dark:text-white">{{ $project?->user->name ?? '—' }}</p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $project?->name ?? '—' }}</p>
                         </td>
-                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $payout->subscription->maintenancePlan?->name ?? $payout->subscription->description }}</td>
+                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $payout->sourceLabel() }}</td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $payout->formattedClientAmount() }}</td>
-                        <td class="px-5 py-3.5 font-semibold text-navy dark:text-white">{{ $payout->formattedFaithstackAmount() }}</td>
+                        <td class="px-5 py-3.5 font-semibold {{ $payout->hasFaithstackAmount() ? 'text-navy dark:text-white' : 'text-gold-dark' }}">
+                            {{ $payout->formattedFaithstackAmount() }}
+                        </td>
                         <td class="px-5 py-3.5">
                             @if ($payout->isPaid())
                                 <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-teal/15 text-teal-dark">
@@ -70,17 +77,18 @@
                             @endif
                         </td>
                         <td class="px-5 py-3.5 text-right">
-                            @if ($payout->isFlagged())
-                                <form method="POST" action="{{ route('admin.subscription-payouts.update', $payout) }}" onsubmit="return confirm('This payout was flagged ({{ $payout->flag_reason }}). Send FaithStack {{ $payout->formattedFaithstackAmount() }} anyway?')">
+                            @if ($payout->isReady() || $payout->isFlagged())
+                                <form method="POST" action="{{ route('admin.partner-payouts.update', $payout) }}" class="flex items-center justify-end gap-2"
+                                      onsubmit="return confirm('{{ $payout->isFlagged() ? 'This payout was flagged ('.$payout->flag_reason.'). Send FaithStack anyway?' : 'Confirm you have sent FaithStack this amount?' }}')">
                                     @csrf
                                     @method('PATCH')
-                                    <button type="submit" class="text-red-500 font-semibold hover:underline">Send Anyway</button>
-                                </form>
-                            @elseif ($payout->isReady())
-                                <form method="POST" action="{{ route('admin.subscription-payouts.update', $payout) }}" onsubmit="return confirm('Confirm you have sent FaithStack {{ $payout->formattedFaithstackAmount() }} for this billing cycle?')">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" class="text-gold-dark font-semibold hover:underline">Mark Paid to FaithStack</button>
+                                    @unless ($payout->hasFaithstackAmount())
+                                        <input type="number" name="faithstack_amount" step="0.01" min="0" placeholder="Amount" required
+                                               class="w-24 rounded-lg border border-gray-300 dark:border-gray-600 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                                    @endunless
+                                    <button type="submit" class="{{ $payout->isFlagged() ? 'text-red-500' : 'text-gold-dark' }} font-semibold hover:underline whitespace-nowrap">
+                                        {{ $payout->isFlagged() ? 'Send Anyway' : 'Mark Paid' }}
+                                    </button>
                                 </form>
                             @endif
                         </td>
