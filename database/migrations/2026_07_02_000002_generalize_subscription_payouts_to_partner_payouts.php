@@ -30,7 +30,10 @@ return new class extends Migration
         ]);
 
         Schema::table('partner_payouts', function (Blueprint $table) {
-            $table->dropForeign(['subscription_id']);
+            // MySQL doesn't rename constraints when the table itself is renamed,
+            // so this is still named after the OLD table — dropForeign(['subscription_id'])
+            // would instead guess 'partner_payouts_subscription_id_foreign' and fail.
+            $table->dropForeign('subscription_payouts_subscription_id_foreign');
             $table->dropColumn('subscription_id');
             $table->index(['payable_type', 'payable_id']);
         });
