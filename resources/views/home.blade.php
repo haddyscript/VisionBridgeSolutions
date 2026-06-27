@@ -85,7 +85,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     {{-- Video has baked-in UI-mockup text/graphics; washed out + muted so it reads as soft motion, not legible content --}}
     <video autoplay muted loop playsinline
            style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;opacity:0.32;filter:saturate(0.4) brightness(1.3) blur(6px);">
-        <source src="{{ asset('videos/Web_development_company_hero_video.mp4') }}" type="video/mp4">
+        <source src="@assetv('videos/Web_development_company_hero_video.mp4')" type="video/mp4">
     </video>
     {{-- Wash is strongest behind the heading (keeps "Building Websites.
          Expanding Reach." legible) and fades out toward the edges so the
@@ -252,7 +252,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         <div id="welcome-video-wrap" class="relative rounded-3xl overflow-hidden" style="opacity:0;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 0 0 1px rgba(201,168,76,0.22),0 40px 100px rgba(47,58,69,0.22),0 12px 36px rgba(47,58,69,0.16);">
             <div class="aspect-video relative">
                 <video id="welcome-video" autoplay muted loop playsinline preload="auto" class="w-full h-full object-cover block">
-                    <source src="{{ asset('videos/VisionBridge_Solutions_welcome_v.mp4') }}" type="video/mp4">
+                    <source src="@assetv('videos/VisionBridge_Solutions_welcome_v.mp4')" type="video/mp4">
                 </video>
 
             </div>
@@ -293,7 +293,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             {{-- Left: 3×2 mosaic — align-self:stretch forces grid to give full row height --}}
             <div id="about-mosaic-wrap" style="display:flex;flex-direction:column;align-self:stretch;">
                 <div id="about-mosaic" class="relative rounded-2xl overflow-hidden shadow-2xl"
-                     style="flex:1 1 0%;min-height:380px; --img:url('{{ asset('image/VisionBridge_Solutions_1.jpeg') }}');">
+                     style="flex:1 1 0%;min-height:380px; --img:url('@assetv('image/VisionBridge_Solutions_1.jpeg')');">
 
                     {{-- 3 columns × 2 rows — each cell reveals a slice of the image --}}
                     <div class="absolute inset-0 grid grid-cols-3 grid-rows-2" style="gap:3px;background:#08101e;">
@@ -327,7 +327,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <div class="about-card rounded-2xl flex-1 relative overflow-hidden" style="padding:22px 24px;background:#FFFFFF;border:1px solid rgba(201,168,76,0.14);box-shadow:0 4px 28px rgba(17,29,51,0.07),0 1px 4px rgba(17,29,51,0.04);">
                     <div class="absolute left-0 top-6 bottom-6 w-0.5 rounded-r-full" style="background:linear-gradient(180deg,#C9A84C 0%,rgba(201,168,76,0.15) 100%);"></div>
                     <div class="card-icon w-10 h-10 rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(201,168,76,0.18);">
-                        <img src="{{ asset('image/Our_Mission.png') }}" alt="Our Mission" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
+                        <img src="@assetv('image/Our_Mission.png')" alt="Our Mission" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
                     </div>
                     <h3 class="card-title font-bold mb-2" style="font-size:1rem;color:#2F3A45;">Our Mission</h3>
                     <p class="card-body" style="font-size:0.92rem;line-height:1.68;color:rgba(17,29,51,0.68);">To help ministries, churches, nonprofits, entrepreneurs, and businesses establish a professional online presence through custom website development, ongoing support, and long-term website stability.</p>
@@ -337,7 +337,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <div class="about-card rounded-2xl flex-1 relative overflow-hidden" style="padding:22px 24px;background:linear-gradient(135deg,#F0FAF9 0%,#EDFAF8 100%);border:1px solid rgba(42,157,143,0.18);box-shadow:0 4px 28px rgba(42,157,143,0.08),0 1px 4px rgba(42,157,143,0.04);">
                     <div class="absolute left-0 top-6 bottom-6 w-0.5 rounded-r-full" style="background:linear-gradient(180deg,#2A9D8F 0%,rgba(42,157,143,0.15) 100%);"></div>
                     <div class="card-icon w-10 h-10 rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(42,157,143,0.22);">
-                        <img src="{{ asset('image/Our_Vision.png') }}" alt="Our Vision" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
+                        <img src="@assetv('image/Our_Vision.png')" alt="Our Vision" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
                     </div>
                     <h3 class="card-title font-bold mb-2" style="font-size:1rem;color:#2F3A45;">Our Vision</h3>
                     <p class="card-body" style="font-size:0.92rem;line-height:1.68;color:rgba(17,29,51,0.68);">To become a trusted website solutions company that bridges the gap between vision and digital presence while helping clients maintain ownership, security, and confidence in their online future.</p>
@@ -357,7 +357,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                  the "Our Core Values" heading, echoing the brand's bridge motif --}}
             <div class="hidden md:block absolute top-6 right-6 pointer-events-none" aria-hidden="true"
                  style="width:420px;height:240px;opacity:0.8;-webkit-mask-image:radial-gradient(ellipse 75% 75% at 65% 40%, black 35%, transparent 80%);mask-image:radial-gradient(ellipse 75% 75% at 65% 40%, black 35%, transparent 80%);">
-                <img src="{{ asset('image/bridge-effects.png') }}" alt="" loading="lazy" decoding="async" class="w-full h-full object-contain">
+                <img src="@assetv('image/bridge-effects.png')" alt="" loading="lazy" decoding="async" class="w-full h-full object-contain">
             </div>
             {{-- Thin gold accent line across top --}}
             <div class="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" style="width:240px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.32),transparent);"></div>
@@ -382,7 +382,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                             <div class="value-card-header">
                                 @if(!empty($value['image']))
                                 <div class="value-icon-wrap" style="overflow:hidden;padding:0;">
-                                    <img src="{{ asset($value['image']) }}"
+                                    <img src="@assetv($value['image'])"
                                          alt="{{ $value['title'] }}"
                                          class="value-card-photo"
                                          loading="lazy" decoding="async"
@@ -455,7 +455,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <div class="svc-shimmer"></div>
                 @if(isset($service['image']))
                 <div class="w-full overflow-hidden relative" style="height:188px;flex-shrink:0;">
-                    <img src="{{ asset($service['image']) }}"
+                    <img src="@assetv($service['image'])"
                          alt="{{ $service['title'] }}"
                          class="w-full h-full object-cover"
                          loading="lazy" decoding="async"
@@ -623,7 +623,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <div class="text-xs font-bold tracking-widest mb-5 select-none" style="color:rgba(17,29,51,0.11);">{{ sprintf('%02d', $loop->iteration) }}</div>
                 <div class="w-12 h-12 rounded-xl overflow-hidden mb-5 transition-all duration-300 group-hover:scale-110"
                      style="border:1px solid rgba(201,168,76,0.16);">
-                    <img src="{{ asset($point['image']) }}" alt="{{ $point['title'] }}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
+                    <img src="@assetv($point['image'])" alt="{{ $point['title'] }}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
                 </div>
                 <div class="mb-4 transition-all duration-500 group-hover:w-12" style="width:24px;height:1.5px;background:linear-gradient(90deg,#C9A84C,rgba(201,168,76,0.12));border-radius:2px;"></div>
                 <h4 class="font-bold text-base mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#2F3A45;">{{ $point['title'] }}</h4>
@@ -651,7 +651,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                  this box cleanly instead of being cropped top/bottom. --}}
             <div class="hidden md:flex absolute inset-y-0 right-0 items-center justify-end pointer-events-none" aria-hidden="true"
                  style="-webkit-mask-image:linear-gradient(to left, black 45%, transparent 100%);mask-image:linear-gradient(to left, black 45%, transparent 100%);opacity:0.85;">
-                <img src="{{ asset('image/bridge-effects.png') }}" alt="" loading="lazy" decoding="async" class="h-full w-auto object-contain" style="max-width:640px;">
+                <img src="@assetv('image/bridge-effects.png')" alt="" loading="lazy" decoding="async" class="h-full w-auto object-contain" style="max-width:640px;">
             </div>
 
             <div class="relative flex flex-col items-center justify-center text-center" style="min-height:230px;">
@@ -835,7 +835,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <div class="portfolio-number-item {{ $loop->first ? 'is-active' : '' }}" data-portfolio-index="{{ $loop->index }}" style="width:150px;">
                     <button type="button" class="portfolio-number-box" style="width:100%;height:320px;position:relative;display:flex;align-items:center;justify-content:center;border-radius:14px;overflow:hidden;background:rgba(17,29,51,0.03);cursor:pointer;border:none;padding:0;">
                         @if (!empty($project['image']))
-                            <div class="portfolio-number-image" style="position:absolute;inset:0;background-image:url('{{ asset($project['image']) }}');background-size:cover;background-position:top;transition:opacity 0.4s ease, transform 0.4s ease;"></div>
+                            <div class="portfolio-number-image" style="position:absolute;inset:0;background-image:url('@assetv($project['image'])');background-size:cover;background-position:top;transition:opacity 0.4s ease, transform 0.4s ease;"></div>
                         @endif
                         <span class="portfolio-number-digit" style="position:relative;z-index:1;font-family:'Playfair Display',serif;font-size:3.4rem;font-weight:700;transition:color 0.3s ease;">{{ $num }}</span>
                     </button>
@@ -883,7 +883,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <div class="partnership-zoom-item rounded-2xl border border-navy/10 overflow-hidden hover:shadow-xl transition-all duration-300 group">
                 <div class="w-full overflow-hidden" style="height:200px;flex-shrink:0;">
-                    <img src="{{ asset('image/vission-bridge-htumbnail.png') }}"
+                    <img src="@assetv('image/vission-bridge-htumbnail.png')"
                          alt="VisionBridge Solutions"
                          loading="lazy" decoding="async"
                          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
@@ -907,7 +907,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                class="partnership-zoom-item rounded-2xl border border-teal/20 bg-teal/5 overflow-hidden hover:shadow-xl transition-all duration-300 group block" style="text-decoration:none;">
                 {{-- FaithStack thumbnail --}}
                 <div class="w-full overflow-hidden" style="height:200px;">
-                    <img src="{{ asset('image/faithstack-thumbnail.png') }}"
+                    <img src="@assetv('image/faithstack-thumbnail.png')"
                          alt="FaithStack"
                          loading="lazy" decoding="async"
                          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
@@ -989,7 +989,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     {{-- Email --}}
                     <div class="group flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:-translate-y-0.5" style="background:rgba(255,255,255,0.75);border:1px solid rgba(47,58,69,0.08);box-shadow:0 4px 18px rgba(47,58,69,0.06);">
                         <div class="w-11 h-11 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,0.92);border:1px solid rgba(201,168,76,0.20);">
-                            <img src="{{ asset('image/Email_us.png') }}" alt="Email us" loading="lazy" decoding="async" style="width:78%;height:78%;object-fit:contain;">
+                            <img src="@assetv('image/Email_us.png')" alt="Email us" loading="lazy" decoding="async" style="width:78%;height:78%;object-fit:contain;">
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(47,58,69,0.45);">Email us</p>
@@ -1003,7 +1003,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     {{-- Phone --}}
                     <div class="group flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:-translate-y-0.5" style="background:rgba(255,255,255,0.75);border:1px solid rgba(47,58,69,0.08);box-shadow:0 4px 18px rgba(47,58,69,0.06);">
                         <div class="w-11 h-11 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,0.92);border:1px solid rgba(44,166,164,0.25);">
-                            <img src="{{ asset('image/Call_us.png') }}" alt="Call us" loading="lazy" decoding="async" style="width:78%;height:78%;object-fit:contain;">
+                            <img src="@assetv('image/Call_us.png')" alt="Call us" loading="lazy" decoding="async" style="width:78%;height:78%;object-fit:contain;">
                         </div>
                         <div class="flex-1">
                             <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(47,58,69,0.45);">Call us</p>
@@ -1017,7 +1017,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     {{-- Consultation --}}
                     <div class="group flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:-translate-y-0.5" style="background:rgba(255,255,255,0.75);border:1px solid rgba(47,58,69,0.08);box-shadow:0 4px 18px rgba(47,58,69,0.06);">
                         <div class="w-11 h-11 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,0.92);border:1px solid rgba(201,168,76,0.20);">
-                            <img src="{{ asset('image/Free_Consultation.png') }}" alt="Free Consultation" loading="lazy" decoding="async" style="width:78%;height:78%;object-fit:contain;">
+                            <img src="@assetv('image/Free_Consultation.png')" alt="Free Consultation" loading="lazy" decoding="async" style="width:78%;height:78%;object-fit:contain;">
                         </div>
                         <div class="flex-1">
                             <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(47,58,69,0.45);">Free Consultation</p>
@@ -1034,7 +1034,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <div class="rounded-3xl p-8 sm:p-10 relative" style="background:rgba(255,255,255,0.78);border:1px solid rgba(47,58,69,0.08);backdrop-filter:blur(12px);box-shadow:0 10px 40px rgba(47,58,69,0.08);">
 
                 {{-- Waving mascot — peeks from the right edge of the form, desktop only --}}
-                <img src="{{ asset('image/mascot-hi.png') }}" alt=""
+                <img src="@assetv('image/mascot-hi.png')" alt=""
                      class="hidden lg:block"
                      loading="lazy" decoding="async"
                      style="position:absolute;right:-30px;bottom:60px;width:105px;z-index:2;pointer-events:none;"

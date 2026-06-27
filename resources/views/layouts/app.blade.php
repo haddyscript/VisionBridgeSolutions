@@ -7,7 +7,7 @@
     <meta name="description" content="@yield('description', 'Custom websites designed to strengthen your brand, expand your reach, and protect your online presence.')">
 
     <!-- Favicon — VisionBridge logo mark, matching the navbar logo -->
-    <link rel="icon" type="image/png" href="{{ asset('image/vbs-logo-v2.png') }}">
+    <link rel="icon" type="image/png" href="@assetv('image/vbs-logo-v2.png')">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1027,7 +1027,7 @@
         <div id="intro-overlay" style="position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden;">
             <video id="intro-video" autoplay muted playsinline preload="auto"
                    style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
-                <source src="{{ asset('videos/Web_development_company_hero_video.mp4') }}" type="video/mp4">
+                <source src="@assetv('videos/Web_development_company_hero_video.mp4')" type="video/mp4">
             </video>
             <button id="intro-skip" type="button"
                     style="position:fixed;bottom:24px;right:24px;z-index:10000;display:inline-flex;align-items:center;gap:6px;
@@ -1053,7 +1053,7 @@
 
             {{-- Logo --}}
             <a id="nav-logo" href="{{ $homeAnchor }}#hero" class="flex items-center shrink-0 opacity-0">
-                <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
+                <img src="@assetv('image/vbs-logo-v2.png')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
             </a>
 
             {{-- Desktop links with sliding capsule --}}
@@ -1259,7 +1259,7 @@
                 {{-- Column 1: Brand --}}
                 <div id="footer-col-1" class="footer-col">
                     <div class="flex items-center mb-4">
-                        <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
+                        <img src="@assetv('image/vbs-logo-v2.png')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
                     </div>
                     <p class="text-navy/60 text-sm leading-relaxed">Building Websites. Expanding Reach.<br>Helping organizations establish a professional online presence.</p>
                 </div>
@@ -1282,8 +1282,8 @@
                          scrolled into view, then smiles. Source images are
                          authored upside-down, hence rotate(180deg). ── --}}
                     <div id="footer-mascot" aria-hidden="true">
-                        <img src="{{ asset('image/mascut-hide.png') }}" alt="" class="mascot-hide">
-                        <img src="{{ asset('image/mascut-smile.png') }}" alt="" class="mascot-smile">
+                        <img src="@assetv('image/mascut-hide.png')" alt="" class="mascot-hide">
+                        <img src="@assetv('image/mascut-smile.png')" alt="" class="mascot-smile">
                     </div>
                     <h4 class="font-semibold text-gold mb-4">Contact</h4>
                     <ul class="space-y-3 text-sm text-navy/60">

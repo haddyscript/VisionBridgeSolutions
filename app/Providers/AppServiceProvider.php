@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -30,6 +31,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // @assetv('image/logo.png') — same as asset() but appends the file's
+        // last-modified time as a cache-busting query string, so updated
+        // images/videos show up on a normal reload without a hard refresh.
+        Blade::directive('assetv', function ($expression) {
+            return "<?php echo \App\Support\AssetVersion::url({$expression}); ?>";
+        });
+
         RedirectIfAuthenticated::redirectUsing(function ($request) {
             return $request->user()->isAdmin() ? route('admin.dashboard') : route('portal.dashboard');
         });
