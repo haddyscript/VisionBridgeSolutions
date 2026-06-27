@@ -40,18 +40,18 @@
             background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        h1 { font-size: 1.4rem; font-weight: 700; margin: 0 0 14px; }
-        p.sub { color: rgba(255,255,255,0.55); font-size: 0.95rem; line-height: 1.7; margin: 0 0 32px; }
+        h1 { font-size: 1.8rem; font-weight: 800; margin: 0 0 14px; }
+        p.sub { color: rgba(255,255,255,0.82); font-weight: 500; font-size: 1.05rem; line-height: 1.7; margin: 0 0 32px; }
         .actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
         .btn-gold {
-            background: var(--gold); color: var(--navy); font-weight: 700; font-size: 0.92rem;
-            padding: 12px 26px; border-radius: 10px; text-decoration: none;
+            background: var(--gold); color: var(--navy); font-weight: 800; font-size: 1rem;
+            padding: 14px 28px; border-radius: 10px; text-decoration: none;
             transition: background 0.2s, transform 0.2s;
         }
         .btn-gold:hover { background: #DFC06A; transform: translateY(-2px); }
         .btn-outline {
-            border: 1.5px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.85); font-weight: 600; font-size: 0.92rem;
-            padding: 12px 26px; border-radius: 10px; text-decoration: none;
+            border: 1.5px solid rgba(255,255,255,0.35); color: rgba(255,255,255,0.95); font-weight: 700; font-size: 1rem;
+            padding: 14px 28px; border-radius: 10px; text-decoration: none;
             transition: border-color 0.2s, background 0.2s;
         }
         .btn-outline:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.06); }

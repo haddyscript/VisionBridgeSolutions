@@ -8,8 +8,8 @@
     <div class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden">
 
         <div class="px-8 sm:px-10 pt-8 sm:pt-10">
-            <h1 class="font-display text-2xl sm:text-3xl font-bold text-navy mb-2">Book A Consultation</h1>
-            <p class="text-gray-500 text-sm mb-6">Pick a date and time that works for you, and we'll confirm your consultation within 24 hours.</p>
+            <h1 class="font-display text-3xl sm:text-4xl font-extrabold text-navy mb-2">Book A Consultation</h1>
+            <p class="text-gray-700 text-base font-medium mb-6">Pick a date and time that works for you, and we'll confirm your consultation within 24 hours.</p>
 
             <div id="form-banner">
                 @if (session('status') === 'consultation_sent')
@@ -62,7 +62,7 @@
                         <div id="slots-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-56 overflow-y-auto pr-1"></div>
                     </div>
 
-                    <p id="slots-empty" class="hidden text-sm text-gray-400 text-center py-6">Select a date to see available times.</p>
+                    <p id="slots-empty" class="hidden text-sm text-gray-500 text-center py-6">Select a date to see available times.</p>
                 </div>
 
                 {{-- Contact details --}}
@@ -71,19 +71,19 @@
                     <div id="selection-summary" class="hidden bg-gold/10 border border-gold/30 rounded-lg px-4 py-3 text-sm font-semibold text-gold-dark"></div>
 
                     <div>
-                        <label for="name" class="block text-sm font-semibold text-navy mb-1.5">Name</label>
+                        <label for="name" class="block text-base font-bold text-navy mb-1.5">Name</label>
                         <input type="text" name="name" id="name" value="{{ old('name') }}" required
                                class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                     </div>
 
                     <div>
-                        <label for="email" class="block text-sm font-semibold text-navy mb-1.5">Email</label>
+                        <label for="email" class="block text-base font-bold text-navy mb-1.5">Email</label>
                         <input type="email" name="email" id="email" value="{{ old('email') }}" required
                                class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                     </div>
 
                     <div>
-                        <label for="phone_number" class="block text-sm font-semibold text-navy mb-1.5">Phone</label>
+                        <label for="phone_number" class="block text-base font-bold text-navy mb-1.5">Phone</label>
                         <div class="flex gap-2">
                             <div class="relative shrink-0">
                                 <button type="button" id="phone-country-trigger"
@@ -117,7 +117,7 @@
                     </div>
 
                     <div>
-                        <label for="message" class="block text-sm font-semibold text-navy mb-1.5">Message</label>
+                        <label for="message" class="block text-base font-bold text-navy mb-1.5">Message</label>
                         <textarea name="message" id="message" rows="3"
                                   class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('message') }}</textarea>
                     </div>
@@ -141,7 +141,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14.18A1 1 0 003 19.5h18a1 1 0 00.86-1.46L13.71 3.86a1 1 0 00-1.72 0z"/></svg>
             </div>
             <h2 class="font-display text-lg font-bold text-navy mb-2">One more thing</h2>
-            <p id="notice-modal-message" class="text-sm text-gray-500 mb-6"></p>
+            <p id="notice-modal-message" class="text-base font-medium text-gray-700 mb-6"></p>
             <div class="flex justify-end">
                 <button type="button" id="notice-modal-ok" class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-gold hover:bg-gold-dark text-navy-dark transition-colors">
                     OK

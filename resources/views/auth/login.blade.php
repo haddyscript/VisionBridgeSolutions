@@ -3,8 +3,8 @@
 @section('title', 'Sign In – VisionBridge Solutions')
 
 @section('content')
-    <h1 class="font-display text-2xl font-bold text-navy mb-1">Client Portal</h1>
-    <p class="text-gray-500 text-sm mb-6">Sign in to manage your project.</p>
+    <h1 class="font-display text-3xl font-extrabold text-navy mb-1">Client Portal</h1>
+    <p class="text-gray-700 text-base font-medium mb-6">Sign in to manage your project.</p>
 
     @if (session('status'))
         <div class="mb-4 text-sm text-teal-dark bg-teal/10 border border-teal/30 rounded-lg px-4 py-3">
@@ -24,31 +24,31 @@
         @csrf
 
         <div>
-            <label class="block text-sm font-medium text-navy mb-1">Email</label>
+            <label class="block text-base font-bold text-navy mb-1">Email</label>
             <input type="email" name="email" value="{{ old('email') }}" required autofocus
-                   class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                   class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-navy mb-1">Password</label>
+            <label class="block text-base font-bold text-navy mb-1">Password</label>
             <input type="password" name="password" required
-                   class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                   class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
         </div>
 
         <div class="flex items-center justify-between">
-            <label class="flex items-center gap-2 text-sm text-gray-600">
+            <label class="flex items-center gap-2 text-base font-medium text-gray-700">
                 <input type="checkbox" name="remember" class="rounded border-gray-300 text-gold focus:ring-gold">
                 Remember me
             </label>
-            <a href="{{ route('password.request') }}" class="text-sm text-gold-dark font-medium hover:underline">Forgot password?</a>
+            <a href="{{ route('password.request') }}" class="text-base text-gold-dark font-bold hover:underline">Forgot password?</a>
         </div>
 
-        <button type="submit" class="w-full btn-gold-static bg-gold hover:bg-gold-dark text-navy font-semibold py-3 rounded-lg transition-colors">
+        <button type="submit" class="w-full btn-gold-static bg-gold hover:bg-gold-dark text-navy font-bold text-lg py-3.5 rounded-lg transition-colors">
             Sign In
         </button>
     </form>
 
-    <p class="text-center text-sm text-gray-500 mt-6">
-        Don't have an account? <a href="{{ route('register') }}" class="text-gold-dark font-medium hover:underline">Create one</a>
+    <p class="text-center text-base font-medium text-gray-700 mt-6">
+        Don't have an account? <a href="{{ route('register') }}" class="text-gold-dark font-bold hover:underline">Create one</a>
     </p>
 @endsection

@@ -48,12 +48,12 @@
         .nav-link.is-active { color:#C9A84C !important; }
 
         /* ─── Re-usable buttons (outside hero) ─── */
-        .btn-gold    { @apply inline-block bg-gold hover:bg-gold-dark text-navy font-bold text-base px-8 py-3.5 rounded-lg transition-all duration-200 shadow hover:shadow-lg; }
-        .btn-outline { @apply inline-block border-2 border-navy text-navy hover:bg-navy hover:text-white font-bold text-base px-8 py-3.5 rounded-lg transition-all duration-200; }
+        .btn-gold    { @apply inline-block bg-gold hover:bg-gold-dark text-navy font-bold text-lg px-9 py-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg; }
+        .btn-outline { @apply inline-block border-2 border-navy text-navy hover:bg-navy hover:text-white font-bold text-lg px-9 py-4 rounded-lg transition-all duration-200; }
 
         /* ─── Typography ─── */
-        .section-title    { @apply font-display text-3xl md:text-4xl lg:text-5xl font-extrabold text-navy leading-tight; }
-        .section-subtitle { @apply text-gray-600 text-lg mt-3 max-w-2xl mx-auto; }
+        .section-title    { @apply font-display text-4xl md:text-5xl lg:text-6xl font-extrabold text-navy leading-tight; }
+        .section-subtitle { @apply text-gray-700 text-xl mt-3 max-w-2xl mx-auto leading-relaxed; }
 
         /* ─── Hero canvas ─── */
         #hero-canvas { position:absolute; inset:0; width:100%; height:100%; display:block; }
@@ -615,21 +615,22 @@
         }
 
         .value-title {
-            font-weight: 700;
-            font-size: 1rem;
-            color: #2F3A45;
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: #15202C;
             margin-bottom: 10px;
             line-height: 1.30;
             transition: color 0.26s ease;
         }
-        .value-card-outer:hover .value-title { color: #C9A84C; }
+        .value-card-outer:hover .value-title { color: #A8872E; }
 
         .value-card-outer:hover .value-card-photo { transform: scale(1.07); }
 
         .value-desc {
-            font-size: 0.92rem;
-            line-height: 1.72;
-            color: rgba(17,29,51,0.66);
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.7;
+            color: rgba(17,29,51,0.82);
         }
 
         /* ── Horizontal Wipe: Services → Why VisionBridge ── */
@@ -1262,13 +1263,13 @@
                     <div class="flex items-center mb-4">
                         <img src="@assetv('image/vbs-logo-v2.png')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
                     </div>
-                    <p class="text-navy/60 text-sm leading-relaxed">Building Websites. Expanding Reach.<br>Helping organizations establish a professional online presence.</p>
+                    <p class="text-navy/80 text-base font-medium leading-relaxed">Building Websites. Expanding Reach.<br>Helping organizations establish a professional online presence.</p>
                 </div>
 
                 {{-- Column 2: Quick Links --}}
                 <div id="footer-col-2" class="footer-col">
                     <h4 class="font-semibold text-gold mb-4">Quick Links</h4>
-                    <ul class="space-y-3 text-sm text-navy/60">
+                    <ul class="space-y-3 text-base font-medium text-navy/80">
                         <li><a href="{{ $homeAnchor }}#about"     class="footer-link hover:text-gold">About Us<span class="footer-link-bar"></span></a></li>
                         <li><a href="{{ $homeAnchor }}#services"  class="footer-link hover:text-gold">Services<span class="footer-link-bar"></span></a></li>
                         <li><a href="{{ $homeAnchor }}#plans"     class="footer-link hover:text-gold">Maintenance Plans<span class="footer-link-bar"></span></a></li>
@@ -1287,7 +1288,7 @@
                         <img src="@assetv('image/mascut-smile.png')" alt="" class="mascot-smile">
                     </div>
                     <h4 class="font-semibold text-gold mb-4">Contact</h4>
-                    <ul class="space-y-3 text-sm text-navy/60">
+                    <ul class="space-y-3 text-base font-medium text-navy/80">
                         <li class="flex items-center gap-2">
                             <svg class="w-4 h-4 text-teal shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -1309,7 +1310,7 @@
             </div>
 
             {{-- Bottom bar --}}
-            <div id="footer-bottom" class="footer-bottom-bar border-t border-navy/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-navy/40">
+            <div id="footer-bottom" class="footer-bottom-bar border-t border-navy/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-medium text-navy/60">
                 <p>&copy; {{ date('Y') }} VisionBridge Solutions. All rights reserved.</p>
                 <div class="flex gap-6">
                     <a href="#" class="footer-link hover:text-gold">Privacy Policy<span class="footer-link-bar"></span></a>

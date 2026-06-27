@@ -284,7 +284,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         <div class="text-center mb-16">
             <span id="about-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Who We Are</span>
             <h2 id="about-heading" class="section-title mt-1">About VisionBridge Solutions</h2>
-            <p id="about-subtitle" class="text-sm mt-3 max-w-lg mx-auto" style="color:rgba(17,29,51,0.42);line-height:1.7;">A dedicated team building websites that give organizations the digital foundation they deserve.</p>
+            <p id="about-subtitle" class="text-base mt-3 max-w-lg mx-auto font-medium" style="color:rgba(17,29,51,0.68);line-height:1.7;">A dedicated team building websites that give organizations the digital foundation they deserve.</p>
         </div>
 
         <!-- Mosaic image grid + Mission / Vision side-by-side -->
@@ -311,11 +311,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
                     {{-- Caption --}}
                     <div class="absolute bottom-0 left-0 right-0 p-6" style="z-index:3;">
-                        <p id="about-mosaic-quote" class="font-display font-bold text-base leading-snug mb-1.5"
-                           style="color:#C9A84C;">
+                        <p id="about-mosaic-quote" class="font-display font-bold text-lg leading-snug mb-1.5"
+                           style="color:#DFC06A;">
                             "We don't just build websites — we bridge the gap between vision and digital presence."
                         </p>
-                        <p class="text-white/50 text-xs tracking-wide">— VisionBridge Solutions</p>
+                        <p class="text-white/75 text-sm font-medium tracking-wide">— VisionBridge Solutions</p>
                     </div>
                 </div>
             </div>
@@ -329,8 +329,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     <div class="card-icon w-10 h-10 rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(201,168,76,0.18);">
                         <img src="@assetv('image/Our_Mission.png')" alt="Our Mission" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
                     </div>
-                    <h3 class="card-title font-bold mb-2" style="font-size:1rem;color:#2F3A45;">Our Mission</h3>
-                    <p class="card-body" style="font-size:0.92rem;line-height:1.68;color:rgba(17,29,51,0.68);">To help ministries, churches, nonprofits, entrepreneurs, and businesses establish a professional online presence through custom website development, ongoing support, and long-term website stability.</p>
+                    <h3 class="card-title font-extrabold mb-2" style="font-size:1.15rem;color:#15202C;">Our Mission</h3>
+                    <p class="card-body" style="font-size:1rem;font-weight:500;line-height:1.7;color:rgba(17,29,51,0.84);">To help ministries, churches, nonprofits, entrepreneurs, and businesses establish a professional online presence through custom website development, ongoing support, and long-term website stability.</p>
                 </div>
 
                 {{-- Vision card — soft teal tint, welcoming --}}
@@ -339,8 +339,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     <div class="card-icon w-10 h-10 rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(42,157,143,0.22);">
                         <img src="@assetv('image/Our_Vision.png')" alt="Our Vision" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
                     </div>
-                    <h3 class="card-title font-bold mb-2" style="font-size:1rem;color:#2F3A45;">Our Vision</h3>
-                    <p class="card-body" style="font-size:0.92rem;line-height:1.68;color:rgba(17,29,51,0.68);">To become a trusted website solutions company that bridges the gap between vision and digital presence while helping clients maintain ownership, security, and confidence in their online future.</p>
+                    <h3 class="card-title font-extrabold mb-2" style="font-size:1.15rem;color:#15202C;">Our Vision</h3>
+                    <p class="card-body" style="font-size:1rem;font-weight:500;line-height:1.7;color:rgba(17,29,51,0.84);">To become a trusted website solutions company that bridges the gap between vision and digital presence while helping clients maintain ownership, security, and confidence in their online future.</p>
                 </div>
 
             </div>
@@ -475,9 +475,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         <svg class="w-6 h-6 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$service['icon']] !!}</svg>
                     </div>
                     @endif
-                    <h4 class="svc-title font-bold text-navy text-base transition-colors duration-250 group-hover:text-teal">{{ $service['title'] }}</h4>
+                    <h4 class="svc-title font-extrabold text-navy text-lg transition-colors duration-250 group-hover:text-teal">{{ $service['title'] }}</h4>
                     <span class="svc-title-line"></span>
-                    <p class="svc-desc text-gray-500 text-sm leading-relaxed mt-2">{{ $service['desc'] }}</p>
+                    <p class="svc-desc text-gray-700 text-base font-medium leading-relaxed mt-2">{{ $service['desc'] }}</p>
                 </div>
             </div>
             @endforeach
@@ -591,7 +591,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     <span style="color:#C9A84C;">VisionBridge</span><br>Solutions?
                 </h2>
                 <div style="width:48px;height:2px;background:linear-gradient(90deg,#C9A84C,rgba(201,168,76,0.15));border-radius:2px;margin-bottom:22px;"></div>
-                <p class="text-lg leading-relaxed" style="color:rgba(17,29,51,0.50);max-width:390px;">We're not just a website agency — we're your long-term digital partner committed to your growth and lasting online stability.</p>
+                <p class="text-lg font-medium leading-relaxed" style="color:rgba(17,29,51,0.72);max-width:390px;">We're not just a website agency — we're your long-term digital partner committed to your growth and lasting online stability.</p>
             </div>
 
             {{-- Right: premium quote card --}}
@@ -626,8 +626,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     <img src="@assetv($point['image'])" alt="{{ $point['title'] }}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
                 </div>
                 <div class="mb-4 transition-all duration-500 group-hover:w-12" style="width:24px;height:1.5px;background:linear-gradient(90deg,#C9A84C,rgba(201,168,76,0.12));border-radius:2px;"></div>
-                <h4 class="font-bold text-base mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#2F3A45;">{{ $point['title'] }}</h4>
-                <p class="text-sm leading-relaxed" style="color:rgba(17,29,51,0.50);">{{ $point['desc'] }}</p>
+                <h4 class="font-extrabold text-lg mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#15202C;">{{ $point['title'] }}</h4>
+                <p class="text-base font-medium leading-relaxed" style="color:rgba(17,29,51,0.74);">{{ $point['desc'] }}</p>
             </div>
             @endforeach
         </div>
@@ -691,31 +691,31 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                             </div>
 
                             <div class="px-8 pt-3 pb-8 text-center flex-1 flex flex-col">
-                                <h3 class="font-bold text-lg uppercase tracking-wide {{ $plan->is_available ? $theme['name'] : 'text-gray-400' }}">{{ $plan->name }}</h3>
-                                <p class="text-gray-400 text-xs font-semibold uppercase tracking-wide mt-1">{{ $plan->tagline }}</p>
+                                <h3 class="font-extrabold text-xl uppercase tracking-wide {{ $plan->is_available ? $theme['name'] : 'text-gray-400' }}">{{ $plan->name }}</h3>
+                                <p class="{{ $plan->is_available ? 'text-gray-600' : 'text-gray-400' }} text-sm font-bold uppercase tracking-wide mt-1">{{ $plan->tagline }}</p>
                                 <div class="w-10 h-0.5 mx-auto my-4 {{ $plan->is_available ? $theme['divider'] : 'bg-gray-200' }}"></div>
 
                                 <div class="mb-3">
                                     @if ($plan->formattedPrice())
-                                        <span class="inline-block text-5xl font-extrabold text-navy transition-transform duration-300 {{ $plan->is_available ? 'group-hover:scale-110' : '' }}" data-target="{{ $plan->price / 100 }}">{{ $plan->formattedPrice() }}</span>
-                                        <span class="text-gray-400 text-sm">/{{ $plan->interval }}</span>
+                                        <span class="inline-block text-6xl font-extrabold text-navy transition-transform duration-300 {{ $plan->is_available ? 'group-hover:scale-110' : '' }}" data-target="{{ $plan->price / 100 }}">{{ $plan->formattedPrice() }}</span>
+                                        <span class="text-gray-600 text-base font-semibold">/{{ $plan->interval }}</span>
                                     @else
                                         <span class="text-3xl font-bold text-gray-300">Coming Soon</span>
                                     @endif
                                 </div>
 
-                                <p class="text-sm text-gray-500 mb-6">{{ $plan->description }}</p>
+                                <p class="text-base font-medium text-gray-700 mb-6">{{ $plan->description }}</p>
 
                                 <ul class="text-left space-y-3 mb-8 flex-1">
                                     @foreach ($plan->features as $item)
-                                    <li class="flex items-start gap-3 text-sm {{ $plan->is_available ? 'text-gray-600' : 'text-gray-400' }}">
+                                    <li class="flex items-start gap-3 text-base {{ $plan->is_available ? 'text-gray-700' : 'text-gray-400' }}">
                                         <svg class="w-5 h-5 shrink-0 mt-0.5 {{ $plan->is_available ? $theme['check'] : 'text-gray-300' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                         </svg>
                                         <span>
-                                            <span class="font-bold {{ $plan->is_available ? 'text-navy' : 'text-gray-400' }} block">{{ $item['title'] ?? $item }}</span>
+                                            <span class="font-extrabold {{ $plan->is_available ? 'text-navy' : 'text-gray-400' }} block">{{ $item['title'] ?? $item }}</span>
                                             @if (!empty($item['description']))
-                                                <span class="text-xs text-gray-400 block">{{ $item['description'] }}</span>
+                                                <span class="text-sm {{ $plan->is_available ? 'text-gray-600' : 'text-gray-400' }} block">{{ $item['description'] }}</span>
                                             @endif
                                         </span>
                                     </li>
@@ -723,26 +723,26 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                                 </ul>
 
                                 @if ($plan->is_available)
-                                    <a href="{{ $plan->cta_url }}" class="{{ $theme['btn'] }} w-full text-center flex items-center justify-center gap-2 font-semibold px-7 py-3 rounded-lg shadow hover:shadow-lg transition-all duration-200">
+                                    <a href="{{ $plan->cta_url }}" class="{{ $theme['btn'] }} w-full text-center flex items-center justify-center gap-2 font-bold text-lg px-7 py-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
                                         {{ $plan->cta_label }}
-                                        <svg class="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                                         </svg>
                                     </a>
-                                    <p class="text-xs text-gray-400 mt-3 flex items-center justify-center gap-1.5">
+                                    <p class="text-sm font-semibold text-gray-600 mt-3 flex items-center justify-center gap-1.5">
                                         <svg class="w-3.5 h-3.5 {{ $theme['check'] }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                         </svg>
                                         No Long-Term Contracts — Cancel Anytime
                                     </p>
                                 @else
-                                    <button disabled class="w-full bg-gray-100 text-gray-400 font-semibold px-7 py-3 rounded-lg cursor-not-allowed">{{ $plan->cta_label }}</button>
+                                    <button disabled class="w-full bg-gray-100 text-gray-400 font-bold text-lg px-7 py-4 rounded-lg cursor-not-allowed">{{ $plan->cta_label }}</button>
                                 @endif
                             </div>
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-center gap-2 text-sm text-gray-500 mt-5">
+                    <div class="flex items-center justify-center gap-2 text-base font-semibold text-gray-600 mt-5">
                         <svg class="w-4 h-4 shrink-0 {{ $plan->is_available ? $theme['check'] : 'text-gray-300' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
@@ -755,9 +755,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         </div>
 
         {{-- Path for the undecided — cross-sell into the existing consultation booking flow --}}
-        <p class="text-center text-sm text-gray-500 mt-10">
+        <p class="text-center text-base font-medium text-gray-700 mt-10">
             Not sure which plan is right for you?
-            <a href="{{ route('consultation.create') }}" class="text-teal font-semibold hover:underline">Book a free consultation</a>
+            <a href="{{ route('consultation.create') }}" class="text-teal-dark font-bold hover:underline">Book a free consultation</a>
         </p>
 
         {{-- Trust strip: four reassurance points matching the care-plan one-pager --}}
@@ -773,8 +773,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$trust['icon']] !!}</svg>
                     </div>
                     <div>
-                        <p class="font-bold text-navy text-sm">{{ $trust['title'] }}</p>
-                        <p class="text-xs text-gray-500">{{ $trust['desc'] }}</p>
+                        <p class="font-extrabold text-navy text-base">{{ $trust['title'] }}</p>
+                        <p class="text-sm font-medium text-gray-600">{{ $trust['desc'] }}</p>
                     </div>
                 </div>
             @endforeach
@@ -847,9 +847,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     @else
                         <div class="portfolio-number-link" data-portfolio-index="{{ $loop->index }}" style="margin-top:14px;cursor:pointer;">
                     @endif
-                        <h4 class="font-bold text-navy text-sm">{{ $project['title'] }}</h4>
+                        <h4 class="font-extrabold text-navy text-base">{{ $project['title'] }}</h4>
                         <div class="flex items-center justify-between mt-1">
-                            <span class="text-xs" style="color:rgba(17,29,51,0.45);">{{ $project['category'] }}</span>
+                            <span class="text-sm font-semibold" style="color:rgba(17,29,51,0.62);">{{ $project['category'] }}</span>
                             @if ($hasLink)
                                 <svg class="w-3.5 h-3.5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
                             @endif
@@ -894,10 +894,10 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     <div class="w-12 h-12 bg-navy rounded-xl flex items-center justify-center mb-5">
                         <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                     </div>
-                    <h3 class="font-bold text-navy text-xl mb-4">VisionBridge Solutions</h3>
+                    <h3 class="font-extrabold text-navy text-2xl mb-4">VisionBridge Solutions</h3>
                     <ul class="space-y-3">
                         @foreach(['Client Acquisition','Marketing','Billing & Project Management','Customer Support','Hosting Ownership'] as $item)
-                        <li class="flex items-center gap-3 text-sm text-gray-600">
+                        <li class="flex items-center gap-3 text-base font-medium text-gray-700">
                             <div class="w-2 h-2 rounded-full bg-gold shrink-0"></div>{{ $item }}
                         </li>
                         @endforeach
@@ -926,10 +926,10 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                     </span>
                 </div>
-                <h3 class="font-bold text-teal text-xl mb-4">FaithStack</h3>
+                <h3 class="font-extrabold text-teal-dark text-2xl mb-4">FaithStack</h3>
                 <ul class="space-y-3">
                     @foreach(['Website Development','Technical Support','Website Updates','Website Maintenance'] as $item)
-                    <li class="flex items-center gap-3 text-sm text-gray-600">
+                    <li class="flex items-center gap-3 text-base font-medium text-gray-700">
                         <div class="w-2 h-2 rounded-full bg-teal shrink-0"></div>
                         {{ $item }}
                     </li>
@@ -982,7 +982,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     <h2 class="font-display font-bold text-navy leading-tight mb-3" style="font-size:clamp(2.2rem,4.5vw,3.4rem);">
                         Get in<br><span style="color:#C9A84C;">Touch</span>
                     </h2>
-                    <p class="text-base leading-relaxed" style="color:rgba(47,58,69,0.55);max-width:380px;">Have questions or ready to start your project? We'll get back to you within 24 hours.</p>
+                    <p class="text-base font-medium leading-relaxed" style="color:rgba(47,58,69,0.76);max-width:380px;">Have questions or ready to start your project? We'll get back to you within 24 hours.</p>
                 </div>
 
                 {{-- Contact cards --}}
@@ -994,8 +994,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                             <img src="@assetv('image/Email_us.png')" alt="Email us" loading="lazy" decoding="async" style="width:78%;height:78%;object-fit:contain;">
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(47,58,69,0.45);">Email us</p>
-                            <p class="text-sm font-semibold text-navy truncate">support@visionbridgesolutions.com</p>
+                            <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(47,58,69,0.65);">Email us</p>
+                            <p class="text-base font-bold text-navy truncate">support@visionbridgesolutions.com</p>
                         </div>
                         <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-gold/20" style="background:rgba(47,58,69,0.06);">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="rgba(47,58,69,0.55)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
@@ -1008,8 +1008,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                             <img src="@assetv('image/Call_us.png')" alt="Call us" loading="lazy" decoding="async" style="width:78%;height:78%;object-fit:contain;">
                         </div>
                         <div class="flex-1">
-                            <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(47,58,69,0.45);">Call us</p>
-                            <p class="text-sm font-semibold text-navy">(555) 000-0000</p>
+                            <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(47,58,69,0.65);">Call us</p>
+                            <p class="text-base font-bold text-navy">(555) 000-0000</p>
                         </div>
                         <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-gold/20" style="background:rgba(47,58,69,0.06);">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="rgba(47,58,69,0.55)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
@@ -1022,8 +1022,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                             <img src="@assetv('image/Free_Consultation.png')" alt="Free Consultation" loading="lazy" decoding="async" style="width:78%;height:78%;object-fit:contain;">
                         </div>
                         <div class="flex-1">
-                            <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(47,58,69,0.45);">Free Consultation</p>
-                            <p class="text-sm font-semibold text-navy">Book a 30-minute call</p>
+                            <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(47,58,69,0.65);">Free Consultation</p>
+                            <p class="text-base font-bold text-navy">Book a 30-minute call</p>
                         </div>
                         <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-gold/20" style="background:rgba(47,58,69,0.06);">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="rgba(47,58,69,0.55)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
@@ -1385,7 +1385,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         })
         .to('#about-bg-overlay', { opacity:1, ease:'none' }, 0)
         .to('#about-heading',    { color:'#F5F6F7', ease:'none' }, 0)
-        .to('#about-subtitle',   { color:'rgba(255,255,255,0.55)', ease:'none' }, 0);
+        .to('#about-subtitle',   { color:'rgba(255,255,255,0.78)', ease:'none' }, 0);
 
         // ── Background fades back to normal by the halfway point of the
         //    Core Values panel — reverses the same overlay/text-color tween. ──
@@ -1394,7 +1394,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         })
         .to('#about-bg-overlay', { opacity:0, ease:'none' }, 0)
         .to('#about-heading',    { color:'#2F3A45', ease:'none' }, 0)
-        .to('#about-subtitle',   { color:'rgba(17,29,51,0.42)', ease:'none' }, 0);
+        .to('#about-subtitle',   { color:'rgba(17,29,51,0.68)', ease:'none' }, 0);
 
         // ── Mosaic panels: center-out ripple wave reveal ──
         gsap.set('.mosaic-panel', { opacity:1 });
@@ -1591,7 +1591,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 // Price count-up for the newly centered card (only if available)
                 const activeCard = cards[currentIndex];
                 if (!activeCard.classList.contains('plans-card-dim')) {
-                    const priceEl = activeCard.querySelector('.text-5xl');
+                    const priceEl = activeCard.querySelector('.text-6xl');
                     const priceTarget = priceEl ? parseFloat(priceEl.dataset.target) : null;
                     if (priceEl && priceTarget) {
                         gsap.fromTo({ val: 0 }, { val: priceTarget }, {

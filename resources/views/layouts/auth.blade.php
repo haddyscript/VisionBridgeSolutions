@@ -46,14 +46,14 @@
                     </div>
                 </div>
 
-                <h2 class="font-display text-2xl font-bold text-white mb-3">Your project, all in one place</h2>
-                <p class="text-white/55 text-sm leading-relaxed mb-6">
+                <h2 class="font-display text-3xl font-extrabold text-white mb-3">Your project, all in one place</h2>
+                <p class="text-white/88 text-base font-medium leading-relaxed mb-6">
                     Upload files, track progress, and manage billing for your website project &mdash; every step of the way, from onboarding to launch.
                 </p>
 
                 <ul class="space-y-2.5">
                     @foreach (['Track milestones in real time', 'Secure file uploads & approvals', 'Pay invoices straight from your portal'] as $point)
-                        <li class="flex items-center gap-2.5 text-sm text-white/70">
+                        <li class="flex items-center gap-2.5 text-base font-medium text-white/90">
                             <span class="w-4 h-4 rounded-full bg-white/10 flex items-center justify-center shrink-0">
                                 <svg class="w-2.5 h-2.5 text-teal-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                             </span>
@@ -75,7 +75,7 @@
                     @yield('content')
                 </div>
 
-                <p class="text-center text-gray-400 text-xs mt-6">&copy; {{ date('Y') }} VisionBridge Solutions. All rights reserved.</p>
+                <p class="text-center text-gray-600 text-sm font-medium mt-6">&copy; {{ date('Y') }} VisionBridge Solutions. All rights reserved.</p>
             </div>
         </div>
     </div>
