@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\MaintenancePlan;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -50,37 +49,6 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        MaintenancePlan::updateOrCreate(
-            ['name' => 'Essential Care Plan'],
-            [
-                'price' => 5900,
-                'badge' => 'Most Popular',
-                'features' => ['Website Updates', 'Security Monitoring', 'Monthly Backups', 'Content Changes', 'Email Support', 'Basic Website Maintenance'],
-                'is_available' => true,
-                'sort_order' => 1,
-            ]
-        );
-
-        MaintenancePlan::updateOrCreate(
-            ['name' => 'Growth Care Plan'],
-            [
-                'price' => null,
-                'badge' => 'Coming Soon',
-                'features' => ['Everything in Essential', 'Priority Support', 'SEO Monitoring', 'Performance Reports', 'Additional Content Changes'],
-                'is_available' => false,
-                'sort_order' => 2,
-            ]
-        );
-
-        MaintenancePlan::updateOrCreate(
-            ['name' => 'Premium Care Plan'],
-            [
-                'price' => null,
-                'badge' => 'Coming Soon',
-                'features' => ['Everything in Growth', 'Dedicated Account Manager', 'Monthly Strategy Call', 'Advanced Analytics', 'Custom Integrations'],
-                'is_available' => false,
-                'sort_order' => 3,
-            ]
-        );
+        $this->call(MaintenancePlanSeeder::class);
     }
 }
