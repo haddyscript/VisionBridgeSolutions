@@ -56,6 +56,16 @@ class Project extends Model
         return $this->agreementSignatures()->where('service_agreement_template_id', $active->id)->exists();
     }
 
+    public function questionnaire()
+    {
+        return $this->hasOne(ProjectQuestionnaire::class);
+    }
+
+    public function hasCompletedQuestionnaire(): bool
+    {
+        return $this->questionnaire?->isCompleted() ?? false;
+    }
+
     public function subscriptions()
     {
         return $this->hasMany(Subscription::class)->latest();

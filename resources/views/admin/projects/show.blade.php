@@ -117,6 +117,13 @@
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">{{ $pendingPaymentCount }}</span>
         @endif
     </button>
+    <button type="button" data-tab-button="onboarding" onclick="showProjectTab('onboarding')"
+            class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
+        Onboarding
+        @if (! $project->hasSignedCurrentAgreement() || ! $project->hasCompletedQuestionnaire())
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">Pending</span>
+        @endif
+    </button>
     <button type="button" data-tab-button="files" onclick="showProjectTab('files')"
             class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
         Files
@@ -305,6 +312,78 @@
         </form>
     @endif
 </div>
+
+</div>
+
+<div id="panel-onboarding" data-tab-panel="onboarding" class="hidden">
+
+    {{-- Service Agreement --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <h3 class="font-semibold text-navy dark:text-white mb-4">Service Agreement</h3>
+        @if ($project->agreementSignature)
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">
+                Signed by <strong class="text-navy dark:text-white">{{ $project->agreementSignature->signer_name }}</strong>
+                on {{ $project->agreementSignature->signed_at->format('M j, Y \a\t g:i A') }}
+                (v{{ $project->agreementSignature->template->version }})
+            </p>
+            <a href="{{ route('portal.agreement.download', $project->agreementSignature) }}" class="text-sm text-gold-dark font-semibold hover:underline">Download signed PDF</a>
+        @else
+            <p class="text-sm text-gray-400 dark:text-gray-500">Not signed yet.</p>
+        @endif
+    </div>
+
+    {{-- Onboarding Questionnaire --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <h3 class="font-semibold text-navy dark:text-white mb-4">Onboarding Questionnaire</h3>
+        @if ($project->questionnaire?->isCompleted())
+            @php $q = $project->questionnaire; @endphp
+            <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Submitted {{ $q->completed_at->format('M j, Y \a\t g:i A') }}</p>
+            <dl class="space-y-4 text-sm">
+                <div>
+                    <dt class="font-semibold text-navy dark:text-white">Organization Type</dt>
+                    <dd class="text-gray-600 dark:text-gray-300">{{ $q->organization_type ?: '—' }}</dd>
+                </div>
+                <div>
+                    <dt class="font-semibold text-navy dark:text-white">Brand Colors</dt>
+                    <dd class="text-gray-600 dark:text-gray-300">{{ $q->brand_colors ?: '—' }}</dd>
+                </div>
+                <div>
+                    <dt class="font-semibold text-navy dark:text-white">Mission Statement</dt>
+                    <dd class="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{{ $q->mission_statement ?: '—' }}</dd>
+                </div>
+                <div>
+                    <dt class="font-semibold text-navy dark:text-white">Vision Statement</dt>
+                    <dd class="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{{ $q->vision_statement ?: '—' }}</dd>
+                </div>
+                <div>
+                    <dt class="font-semibold text-navy dark:text-white">Services Interested In</dt>
+                    <dd class="text-gray-600 dark:text-gray-300">{{ !empty($q->services) ? implode(', ', $q->services) : '—' }}</dd>
+                </div>
+                <div>
+                    <dt class="font-semibold text-navy dark:text-white">Requested Pages / Requirements</dt>
+                    <dd class="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{{ $q->requested_pages ?: '—' }}</dd>
+                </div>
+                <div>
+                    <dt class="font-semibold text-navy dark:text-white">Social Links</dt>
+                    <dd class="text-gray-600 dark:text-gray-300">
+                        @if (!empty($q->social_links))
+                            @foreach ($q->social_links as $platform => $url)
+                                <span class="block">{{ ucfirst($platform) }}: {{ $url }}</span>
+                            @endforeach
+                        @else
+                            —
+                        @endif
+                    </dd>
+                </div>
+                <div>
+                    <dt class="font-semibold text-navy dark:text-white">Additional Notes</dt>
+                    <dd class="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{{ $q->additional_notes ?: '—' }}</dd>
+                </div>
+            </dl>
+        @else
+            <p class="text-sm text-gray-400 dark:text-gray-500">Not submitted yet.</p>
+        @endif
+    </div>
 
 </div>
 

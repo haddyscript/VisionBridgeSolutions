@@ -189,7 +189,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
         {{-- CTA buttons --}}
         <div id="hero-ctas" class="flex flex-col sm:flex-row gap-4 justify-center mb-20">
-            <a href="{{ route('intake.create') }}" class="hero-btn-primary opacity-0">
+            <a href="{{ route('register') }}" class="hero-btn-primary opacity-0">
                 Start Your Project
                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>

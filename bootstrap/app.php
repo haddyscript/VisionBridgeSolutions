@@ -13,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
-            'agreement.signed' => \App\Http\Middleware\EnsureServiceAgreementSigned::class,
+            'onboarding.complete' => \App\Http\Middleware\EnsureOnboardingComplete::class,
         ]);
 
         $middleware->web(append: [

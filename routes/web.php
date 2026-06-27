@@ -32,6 +32,7 @@ use App\Http\Controllers\Portal\CategoryController;
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\FaqFeedbackController;
 use App\Http\Controllers\Portal\PaymentController as PortalPaymentController;
+use App\Http\Controllers\Portal\ProjectQuestionnaireController as PortalProjectQuestionnaireController;
 use App\Http\Controllers\Portal\ServiceAgreementController as PortalServiceAgreementController;
 use App\Http\Controllers\Portal\SubscriptionController as PortalSubscriptionController;
 use App\Http\Controllers\Portal\UploadController;
@@ -87,14 +88,19 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Reachable even if the client hasn't signed yet — otherwise the
-    // agreement.signed middleware below would redirect here in a loop.
+    // Reachable regardless of onboarding progress — otherwise the
+    // onboarding.complete middleware below would redirect here in a loop.
+    // Each controller enforces its own step's prerequisite (e.g. the
+    // questionnaire redirects back to the agreement if it isn't signed yet).
     Route::get('/portal/agreement', [PortalServiceAgreementController::class, 'show'])->name('portal.agreement.show');
     Route::post('/portal/agreement', [PortalServiceAgreementController::class, 'store'])->name('portal.agreement.store');
     Route::get('/portal/agreement/{signature}/download', [PortalServiceAgreementController::class, 'download'])->name('portal.agreement.download');
+
+    Route::get('/portal/questionnaire', [PortalProjectQuestionnaireController::class, 'show'])->name('portal.questionnaire.show');
+    Route::post('/portal/questionnaire', [PortalProjectQuestionnaireController::class, 'store'])->name('portal.questionnaire.store');
 });
 
-Route::middleware(['auth', 'verified', 'agreement.signed'])->group(function () {
+Route::middleware(['auth', 'verified', 'onboarding.complete'])->group(function () {
     Route::get('/portal', DashboardController::class)->name('portal.dashboard');
     Route::get('/portal/files/{category}', [CategoryController::class, 'show'])->name('portal.category');
     Route::get('/portal/files/{category}/download', [CategoryController::class, 'downloadAll'])->name('portal.category.download');

@@ -7,12 +7,13 @@ A plain-language summary of everything the site and client portal offer today.
 | Feature | What it does |
 |---|---|
 | Home page | The marketing site — about us, services, care plans, portfolio, and a contact section |
-| "Get Started" form | New prospects fill out a detailed form about their project; we review it and turn it into a client account |
+| "Get Started" form | A longer-form public intake page still exists at `/get-started` for review-and-convert by our team, but the homepage's main "Start Your Project" button now leads to account registration instead (see the new onboarding steps below) |
 | Website Care Plan signup | Clicking "Get Started" on a pricing card takes visitors to a short plan-specific form (org info, domain, hosting), then straight to secure Stripe checkout to subscribe — no account needed upfront. On successful payment they're auto-onboarded: account + project created, a portal password-setup email sent, a confirmation page shown, and both VisionBridge and FaithStack are notified |
 | Contact form | A simple "Get in Touch" form that emails us directly |
 | Book a Consultation | A calendar booking tool — visitors pick a day and an open time slot (weekdays, 9am–5pm) to request a consultation |
 | Create an account | Visitors can also sign up for a client account directly, without going through the intake form; they must verify their email before they can use the portal |
 | Digital Service Agreement | New clients must review and digitally sign (typed name + drawn signature) the Service Agreement before any other portal feature unlocks; they get an emailed PDF copy and we get notified |
+| Onboarding Questionnaire | After signing, clients fill out one in-portal form covering organization info, mission/vision, brand colors, requested pages, services, and social links — required before the rest of the portal unlocks; logo/image/content uploads happen separately in Project Files |
 | Client sign in | Standard login, with "remember me" and a "forgot password" recovery option; already-logged-in users get sent straight to their portal or admin dashboard instead of the homepage |
 
 ## 2. Client Portal (for logged-in clients)
@@ -42,7 +43,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Contact Messages | An inbox of everyone who used the Contact form, sortable and searchable by page |
 | Consultations | An inbox of every consultation request — confirm, reschedule, or cancel with one click, which automatically emails the client |
 | Get Started Submissions | An inbox of every intake form — review details, then approve a project to instantly create the client's account and send their welcome email |
-| Project Management | Per-project page to reset a client's password, update project status, set a live preview link, manually override the progress percentage (or let it auto-calculate from milestones/status), manage milestones (with due dates), and review their files, website content, and revisions in separate tabs — every save, update, or delete happens instantly with no page reload, and deletions ask for confirmation with a clean popup instead of the browser's plain alert |
+| Project Management | Per-project page to reset a client's password, update project status, set a live preview link, manually override the progress percentage (or let it auto-calculate from milestones/status), manage milestones (with due dates), and review their onboarding (signed agreement + questionnaire answers), files, website content, and revisions in separate tabs — every save, update, or delete happens instantly with no page reload, and deletions ask for confirmation with a clean popup instead of the browser's plain alert |
 | File Approval | Mark a client's uploaded file as approved, which they'll see reflected in their portal |
 | Revision & Content Threads | Move a client's change request through Open → In Progress → Addressed, and go back and forth with them in a live chat-style thread — every status change and reply sends instantly with no page reload and emails the other side |
 | Payment Requests | Create one-time payment requests for a project, remove unpaid ones, and re-check a payment's status if something looks stuck |
@@ -81,6 +82,7 @@ A plain-language summary of everything the site and client portal offer today.
 | We confirm, reschedule, or cancel a consultation | The client |
 | A client account is created or a welcome email is resent | The client |
 | A client digitally signs the Service Agreement | The client (PDF copy) and our team |
+| A client completes the onboarding questionnaire | Our team |
 | Someone creates their own account | Our team |
 | A new Website Care Plan client subscribes and pays | The client (receipt + portal password-setup link), our team, and FaithStack |
 | A client changes their account email | Their old email address (as a security check) |
