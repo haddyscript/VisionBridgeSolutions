@@ -46,8 +46,12 @@ class MaintenancePlanController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'tagline' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:255'],
             'price' => ['nullable', 'numeric', 'min:0'],
             'badge' => ['nullable', 'string', 'max:255'],
+            'icon' => ['nullable', 'string', 'max:255'],
+            'response_time' => ['nullable', 'string', 'max:255'],
             'features' => ['nullable', 'string'],
             'cta_label' => ['required', 'string', 'max:255'],
             'cta_url' => ['required', 'string', 'max:255'],
@@ -59,9 +63,18 @@ class MaintenancePlanController extends Controller
             ? (int) round($validated['price'] * 100)
             : null;
 
+        // Each line is "Feature Title | Short description" — the description half is optional.
         $validated['features'] = collect(explode("\n", $validated['features'] ?? ''))
             ->map(fn ($line) => trim($line))
             ->filter()
+            ->map(function ($line) {
+                [$title, $description] = array_pad(explode('|', $line, 2), 2, null);
+
+                return [
+                    'title' => trim($title),
+                    'description' => $description !== null ? trim($description) : null,
+                ];
+            })
             ->values()
             ->all();
 

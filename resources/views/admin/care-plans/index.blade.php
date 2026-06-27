@@ -44,13 +44,37 @@
                                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
                         </div>
                         <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Tagline (shown under the plan name)</label>
+                            <input type="text" name="tagline" value="{{ $plan->tagline }}" placeholder="e.g. Perfect for Getting Started"
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                        </div>
+                        <div>
                             <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Price / month (USD, blank = no price shown)</label>
                             <input type="number" name="price" step="0.01" min="0" value="{{ $plan->price !== null ? $plan->price / 100 : '' }}"
                                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Badge (e.g. "Most Popular", "Coming Soon")</label>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Badge (e.g. "Most Popular")</label>
                             <input type="text" name="badge" value="{{ $plan->badge }}"
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Description (short paragraph under the price)</label>
+                            <input type="text" name="description" value="{{ $plan->description }}"
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Header Icon</label>
+                            <select name="icon"
+                                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                                @foreach (['shield' => 'Shield (Security)', 'trending-up' => 'Trending Up (Growth)', 'crown' => 'Crown (Elite)'] as $value => $label)
+                                    <option value="{{ $value }}" {{ $plan->icon === $value ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Response Time</label>
+                            <input type="text" name="response_time" value="{{ $plan->response_time }}" placeholder="e.g. Within 2 Business Days"
                                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
                         </div>
                         <div>
@@ -71,9 +95,9 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Features (one per line)</label>
-                        <textarea name="features" rows="5"
-                                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">{{ implode("\n", $plan->features ?? []) }}</textarea>
+                        <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Features — one per line, as "Title | Short description"</label>
+                        <textarea name="features" rows="6"
+                                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">{{ collect($plan->features ?? [])->map(fn ($item) => trim(($item['title'] ?? '').(isset($item['description']) && $item['description'] !== null ? ' | '.$item['description'] : '')))->implode("\n") }}</textarea>
                     </div>
 
                     <div class="flex items-center justify-between">
@@ -111,7 +135,12 @@
             <div class="grid sm:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Plan Name</label>
-                    <input type="text" name="name" placeholder="e.g. Growth Care Plan" required
+                    <input type="text" name="name" placeholder="e.g. Growth Care" required
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Tagline (shown under the plan name)</label>
+                    <input type="text" name="tagline" placeholder="e.g. For Businesses Ready to Grow"
                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
                 </div>
                 <div>
@@ -122,6 +151,25 @@
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Badge</label>
                     <input type="text" name="badge" placeholder="e.g. Most Popular"
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Description (short paragraph under the price)</label>
+                    <input type="text" name="description"
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Header Icon</label>
+                    <select name="icon"
+                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                        <option value="shield">Shield (Security)</option>
+                        <option value="trending-up">Trending Up (Growth)</option>
+                        <option value="crown">Crown (Elite)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Response Time</label>
+                    <input type="text" name="response_time" placeholder="e.g. Within 2 Business Days"
                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
                 </div>
                 <div>
@@ -142,8 +190,8 @@
             </div>
 
             <div class="mb-4">
-                <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Features (one per line)</label>
-                <textarea name="features" rows="5" placeholder="Website Updates&#10;Security Monitoring"
+                <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Features — one per line, as "Title | Short description"</label>
+                <textarea name="features" rows="6" placeholder="Website Updates | Keep your website, plugins & themes up to date.&#10;Security Monitoring | We monitor your website 24/7 for threats."
                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
             </div>
 
@@ -172,14 +220,23 @@
         if (!preview) return;
 
         const name = form.querySelector('[name="name"]').value || 'Plan Name';
+        const tagline = form.querySelector('[name="tagline"]').value;
+        const description = form.querySelector('[name="description"]').value;
         const priceRaw = form.querySelector('[name="price"]').value;
         const badge = form.querySelector('[name="badge"]').value;
         const ctaLabel = form.querySelector('[name="cta_label"]').value || 'Get Started';
+        const responseTime = form.querySelector('[name="response_time"]').value;
         const features = form.querySelector('[name="features"]').value
-            .split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+            .split('\n').map(function (s) { return s.trim(); }).filter(Boolean)
+            .map(function (line) {
+                const parts = line.split('|');
+                return { title: (parts[0] || '').trim(), description: (parts[1] || '').trim() };
+            });
         const isAvailable = form.querySelector('[name="is_available"]').checked;
 
         preview.querySelector('[data-preview="name"]').textContent = name;
+        preview.querySelector('[data-preview="tagline"]').textContent = tagline;
+        preview.querySelector('[data-preview="description"]').textContent = description;
 
         const priceWrap = preview.querySelector('[data-preview="price-wrap"]');
         const comingSoon = preview.querySelector('[data-preview="coming-soon"]');
@@ -204,11 +261,16 @@
         list.innerHTML = '';
         features.forEach(function (item) {
             const li = document.createElement('li');
-            li.className = 'flex items-center gap-2 text-sm text-gray-600';
-            li.innerHTML = '<svg class="w-4 h-4 text-teal shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span></span>';
-            li.querySelector('span').textContent = item;
+            li.className = 'flex items-start gap-2 text-sm text-gray-600';
+            li.innerHTML = '<svg class="w-4 h-4 text-teal shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>'
+                + '<span><span class="font-semibold text-navy block"></span><span class="text-xs text-gray-400 block"></span></span>';
+            li.querySelector('.font-semibold').textContent = item.title;
+            li.querySelector('.text-xs').textContent = item.description;
             list.appendChild(li);
         });
+
+        const responseTimeEl = preview.querySelector('[data-preview="response-time"]');
+        if (responseTimeEl) responseTimeEl.textContent = responseTime;
 
         const ctaEl = preview.querySelector('[data-preview="cta"]');
         ctaEl.textContent = ctaLabel;

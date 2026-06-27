@@ -8,9 +8,13 @@ class MaintenancePlan extends Model
 {
     protected $fillable = [
         'name',
+        'tagline',
+        'description',
         'price',
         'interval',
         'badge',
+        'icon',
+        'response_time',
         'features',
         'cta_label',
         'cta_url',
