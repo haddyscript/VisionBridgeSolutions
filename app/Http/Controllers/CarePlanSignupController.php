@@ -58,6 +58,7 @@ class CarePlanSignupController extends Controller
                 'maintenance_plan_id' => $maintenancePlan->id,
                 'description' => $maintenancePlan->name,
                 'amount' => $maintenancePlan->price,
+                'currency' => 'usd',
                 'interval' => $maintenancePlan->interval,
                 'client_phone' => $validated['phone'] ?? null,
                 'domain' => $validated['domain'] ?? null,
