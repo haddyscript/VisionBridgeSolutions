@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Client Portal – VisionBridge Solutions')</title>
-    <link rel="icon" type="image/png" href="{{ asset('image/logo-v2.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('image/vbs-logo-v2.png') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,7 +51,7 @@
         <aside id="portal-sidebar" class="fixed inset-y-0 left-0 z-40 w-64 flex flex-col -translate-x-full md:translate-x-0 transition-transform duration-200" style="background:#111D33;">
             <div class="flex items-center gap-2.5 px-6 h-16 border-b border-white/10 shrink-0">
                 <div class="w-8 h-8 rounded-md overflow-hidden shrink-0">
-                    <img src="{{ asset('image/logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
+                    <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
                 </div>
                 <span class="text-white font-bold text-sm leading-tight">VisionBridge <span class="text-gold">Solutions</span></span>
             </div>

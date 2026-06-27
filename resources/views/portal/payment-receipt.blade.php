@@ -43,7 +43,7 @@
         <div class="px-8 py-7" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
             <div class="flex items-center gap-2.5 mb-6">
                 <div class="w-8 h-8 rounded-md overflow-hidden shrink-0">
-                    <img src="{{ asset('image/logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
+                    <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
                 </div>
                 <span class="text-white font-bold text-base">VisionBridge <span class="text-gold">Solutions</span></span>
             </div>

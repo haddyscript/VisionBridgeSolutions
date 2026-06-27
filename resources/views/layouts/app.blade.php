@@ -7,7 +7,7 @@
     <meta name="description" content="@yield('description', 'Custom websites designed to strengthen your brand, expand your reach, and protect your online presence.')">
 
     <!-- Favicon — VisionBridge logo mark, matching the navbar logo -->
-    <link rel="icon" type="image/png" href="{{ asset('image/logo-v2.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('image/vbs-logo-v2.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1054,7 +1054,7 @@
             {{-- Logo --}}
             <a id="nav-logo" href="{{ $homeAnchor }}#hero" class="flex items-center gap-2.5 shrink-0 opacity-0">
                 <div class="w-8 h-8 rounded-md overflow-hidden shrink-0">
-                    <img src="{{ asset('image/logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
+                    <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
                 </div>
                 <span class="text-navy font-bold text-lg leading-tight">VisionBridge<br>
                     <span class="text-gold text-xs font-medium tracking-widest uppercase">Solutions</span>
@@ -1265,7 +1265,7 @@
                 <div id="footer-col-1" class="footer-col">
                     <div class="flex items-center gap-2 mb-4">
                         <div class="w-8 h-8 rounded-md overflow-hidden shrink-0">
-                            <img src="{{ asset('image/logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
+                            <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
                         </div>
                         <span class="font-bold text-lg">VisionBridge <span class="text-gold">Solutions</span></span>
                     </div>
