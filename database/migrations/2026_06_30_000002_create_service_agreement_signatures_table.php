@@ -17,7 +17,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('service_agreement_template_id')->constrained();
+            // Named explicitly — the auto-generated constraint name (table + column
+            // + "_foreign") is 68 characters, over MySQL's 64-character identifier limit.
+            $table->foreignId('service_agreement_template_id')
+                ->constrained(indexName: 'sa_signatures_template_id_fk');
             $table->string('signer_name');
             $table->string('signature_image_path');
             $table->string('agreement_hash', 64);
