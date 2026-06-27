@@ -33,6 +33,7 @@ use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\FaqFeedbackController;
 use App\Http\Controllers\Portal\PaymentController as PortalPaymentController;
 use App\Http\Controllers\Portal\ProjectQuestionnaireController as PortalProjectQuestionnaireController;
+use App\Http\Controllers\Portal\ProjectReviewController as PortalProjectReviewController;
 use App\Http\Controllers\Portal\ServiceAgreementController as PortalServiceAgreementController;
 use App\Http\Controllers\Portal\SubscriptionController as PortalSubscriptionController;
 use App\Http\Controllers\Portal\UploadController;
@@ -124,6 +125,9 @@ Route::middleware(['auth', 'verified', 'onboarding.complete'])->group(function (
 
     Route::view('/portal/faq', 'portal.faq')->name('portal.faq');
     Route::post('/portal/faq/feedback', [FaqFeedbackController::class, 'store'])->name('portal.faq.feedback');
+
+    Route::post('/portal/review/approve', [PortalProjectReviewController::class, 'approve'])->name('portal.review.approve');
+    Route::post('/portal/review/cancel', [PortalProjectReviewController::class, 'cancel'])->name('portal.review.cancel');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {

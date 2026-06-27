@@ -150,6 +150,58 @@
         </a>
     @endif
 
+    @if ($project->status === 'review')
+        <div class="rounded-xl p-6 mb-8 border border-teal/20 dark:border-teal/10" style="background:linear-gradient(135deg,rgba(42,157,143,0.10),rgba(201,168,76,0.08));">
+            @if ($errors->has('cancel'))
+                <p class="text-sm font-medium text-red-600 mb-4">{{ $errors->first('cancel') }}</p>
+            @endif
+
+            @if ($project->client_approved_at)
+                <p class="text-xs font-semibold uppercase tracking-widest text-teal-dark mb-2">Approved — Final Payment Ready</p>
+                <h2 class="font-display text-xl font-bold text-navy dark:text-white mb-2">Thanks for approving your website!</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 max-w-2xl">
+                    Your final payment request is ready whenever you're set to complete it.
+                </p>
+                <a href="{{ route('portal.payments.index') }}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-gold/15 hover:bg-gold/25 px-4 py-2.5 rounded-lg transition-colors">
+                    View Final Payment
+                </a>
+            @else
+                <p class="text-xs font-semibold uppercase tracking-widest text-teal-dark mb-2">Your Website Is Ready for Review</p>
+                <h2 class="font-display text-xl font-bold text-navy dark:text-white mb-2">Take a look and let us know what you think</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 max-w-2xl">
+                    @if ($project->isReviewWindowOpen())
+                        You have <strong>{{ $project->daysLeftInReview() }} day{{ $project->daysLeftInReview() === 1 ? '' : 's' }}</strong>
+                        left to review your site and either approve it or request revisions within scope.
+                    @else
+                        Your review window has closed, but you can still approve below or reach out if you need revisions.
+                    @endif
+                </p>
+
+                <div class="flex flex-wrap items-center gap-3">
+                    <form method="POST" action="{{ route('portal.review.approve') }}" onsubmit="return confirm('Approve the final website? This will create your final 50% payment request.')">
+                        @csrf
+                        <button type="submit" class="bg-gold hover:bg-gold-dark text-navy font-bold text-sm px-5 py-2.5 rounded-lg transition-colors shadow">
+                            Approve Final Website
+                        </button>
+                    </form>
+
+                    <a href="{{ route('portal.category', 'revision') }}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-white/70 dark:bg-gray-800 hover:bg-white px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors">
+                        Request Revisions
+                    </a>
+
+                    @if ($project->isReviewWindowOpen())
+                        <form method="POST" action="{{ route('portal.review.cancel') }}" onsubmit="return confirm('This cancels your project and refunds your deposit, minus Stripe\'s processing fee. This cannot be undone — continue?')">
+                            @csrf
+                            <button type="submit" class="text-sm font-semibold text-red-500 hover:underline px-2 py-2.5">
+                                Not moving forward — cancel &amp; refund me
+                            </button>
+                        </form>
+                    @endif
+                </div>
+            @endif
+        </div>
+    @endif
+
     {{-- Project header --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">

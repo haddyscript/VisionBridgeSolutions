@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
+    /** Days a client has to approve or request a refund once a project enters 'review'. */
+    public const REVIEW_WINDOW_DAYS = 7;
+
     protected $fillable = [
         'user_id',
         'name',
@@ -14,7 +17,17 @@ class Project extends Model
         'status',
         'progress_override',
         'total_price',
+        'review_started_at',
+        'client_approved_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'review_started_at' => 'datetime',
+            'client_approved_at' => 'datetime',
+        ];
+    }
 
     public function user()
     {
@@ -80,6 +93,27 @@ class Project extends Model
     public function formattedTotalPrice(): ?string
     {
         return $this->total_price !== null ? '$'.number_format($this->total_price / 100, 2) : null;
+    }
+
+    public function reviewDeadline(): ?\Illuminate\Support\Carbon
+    {
+        return $this->review_started_at?->copy()->addDays(self::REVIEW_WINDOW_DAYS);
+    }
+
+    public function isReviewWindowOpen(): bool
+    {
+        return $this->status === 'review'
+            && $this->review_started_at !== null
+            && now()->lt($this->reviewDeadline());
+    }
+
+    public function daysLeftInReview(): int
+    {
+        if (! $this->review_started_at) {
+            return 0;
+        }
+
+        return max(0, self::REVIEW_WINDOW_DAYS - $this->review_started_at->diffInDays(now()));
     }
 
     public function subscriptions()

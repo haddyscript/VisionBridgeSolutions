@@ -27,6 +27,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Download everything | One click to download all the files in a category as a single zip |
 | Website Content & Revisions | Clients submit website copy or change requests as a chat-style thread; each one shows its status (Open → In Progress → Addressed), and both we and the client can reply back and forth as many times as needed — replies are emailed instantly |
 | Payments | Clients see what's owed and paid, pay securely online, search/filter their payment history, and download/print a receipt or their full statement |
+| Website Review & Approval | Once a project's status is set to "In Review," clients get a 7-day window on their Overview page to approve the finished website (which auto-creates the final 50% payment) or request revisions; canceling within the window automatically refunds the deposit (minus Stripe's processing fee) and ends the project |
 | Maintenance Plans | Clients can start a recurring care plan and manage their billing (update card, cancel, etc.) themselves; a "Refresh Status" button instantly re-checks their plan with our payment provider if it ever looks out of date |
 | Account Settings | Clients update their name, email, or password — changing the password or email sends a security alert email |
 | Help & FAQ | A searchable list of common questions and answers, with expand/collapse all and a quick "Was this helpful?" rating on each answer |
@@ -43,7 +44,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Contact Messages | An inbox of everyone who used the Contact form, sortable and searchable by page |
 | Consultations | An inbox of every consultation request — confirm, reschedule, or cancel with one click, which automatically emails the client |
 | Get Started Submissions | An inbox of every intake form — review details, then approve a project to instantly create the client's account and send their welcome email |
-| Project Management | Per-project page to reset a client's password, update project status, set a live preview link and total project price (which auto-creates the initial 50% deposit request the first time it's set), manually override the progress percentage (or let it auto-calculate from milestones/status), manage milestones (with due dates), and review their onboarding (signed agreement + questionnaire answers), files, website content, and revisions in separate tabs — every save, update, or delete happens instantly with no page reload, and deletions ask for confirmation with a clean popup instead of the browser's plain alert |
+| Project Management | Per-project page to reset a client's password, update project status (setting it to "In Review" starts the client's 7-day review window), set a live preview link and total project price (which auto-creates the initial 50% deposit request the first time it's set), manually override the progress percentage (or let it auto-calculate from milestones/status), manage milestones (with due dates), and review their onboarding (signed agreement + questionnaire answers), files, website content, and revisions in separate tabs — every save, update, or delete happens instantly with no page reload, and deletions ask for confirmation with a clean popup instead of the browser's plain alert |
 | File Approval | Mark a client's uploaded file as approved, which they'll see reflected in their portal |
 | Revision & Content Threads | Move a client's change request through Open → In Progress → Addressed, and go back and forth with them in a live chat-style thread — every status change and reply sends instantly with no page reload and emails the other side |
 | Payment Requests | Create one-time payment requests for a project, remove unpaid ones, and re-check a payment's status if something looks stuck |
@@ -83,6 +84,8 @@ A plain-language summary of everything the site and client portal offer today.
 | A client account is created or a welcome email is resent | The client |
 | A client digitally signs the Service Agreement | The client (PDF copy) and our team |
 | A client completes the onboarding questionnaire | Our team |
+| A client approves their finished website | Our team (the final 50% payment request is created automatically) |
+| A client cancels during their review window | The client (refund confirmation) and our team |
 | Someone creates their own account | Our team |
 | A new Website Care Plan client subscribes and pays | The client (receipt + portal password-setup link), our team, and FaithStack |
 | A client changes their account email | Their old email address (as a security check) |

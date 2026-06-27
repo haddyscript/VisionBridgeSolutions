@@ -17,12 +17,16 @@ class Payment extends Model
         'stripe_payment_intent_id',
         'stripe_receipt_url',
         'paid_at',
+        'refunded_amount',
+        'refunded_at',
+        'stripe_refund_id',
     ];
 
     protected function casts(): array
     {
         return [
             'paid_at' => 'datetime',
+            'refunded_at' => 'datetime',
         ];
     }
 
@@ -56,8 +60,18 @@ class Payment extends Model
         return $this->status === 'paid';
     }
 
+    public function isRefunded(): bool
+    {
+        return $this->status === 'refunded';
+    }
+
     public function formattedAmount(): string
     {
         return '$'.number_format($this->amount / 100, 2);
+    }
+
+    public function formattedRefundedAmount(): ?string
+    {
+        return $this->refunded_amount !== null ? '$'.number_format($this->refunded_amount / 100, 2) : null;
     }
 }

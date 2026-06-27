@@ -22,7 +22,7 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
         $validated = $request->validate([
-            'status' => ['sometimes', 'required', 'in:onboarding,in_progress,review,launched,maintenance'],
+            'status' => ['sometimes', 'required', 'in:onboarding,in_progress,review,launched,maintenance,canceled'],
             'preview_url' => ['sometimes', 'nullable', 'url', 'max:255'],
             'progress_override' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:100'],
             'total_price' => ['sometimes', 'nullable', 'numeric', 'min:1'],
@@ -32,10 +32,18 @@ class ProjectController extends Controller
             && $validated['total_price'] !== null
             && $project->total_price === null;
 
+        $startingReview = ($validated['status'] ?? null) === 'review' && $project->status !== 'review';
+
         if (array_key_exists('total_price', $validated)) {
             $validated['total_price'] = $validated['total_price'] !== null
                 ? (int) round($validated['total_price'] * 100)
                 : null;
+        }
+
+        if ($startingReview) {
+            // A fresh review cycle — any prior approval no longer applies.
+            $validated['review_started_at'] = now();
+            $validated['client_approved_at'] = null;
         }
 
         $project->update($validated);
