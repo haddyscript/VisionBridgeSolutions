@@ -353,6 +353,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <div class="hero-orb" style="width:420px;height:420px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.06) 0%,transparent 70%);animation:orb-drift 20s ease-in-out infinite reverse 4s;filter:blur(52px);"></div>
             {{-- Dot texture — very light on light bg --}}
             <div class="absolute inset-0 pointer-events-none" style="opacity:0.35;background-image:radial-gradient(circle,rgba(17,29,51,0.045) 1px,transparent 1px);background-size:28px 28px;"></div>
+            {{-- Decorative bridge photo — faded into the panel's background behind
+                 the "Our Core Values" heading, echoing the brand's bridge motif --}}
+            <div class="hidden md:block absolute top-6 right-6 pointer-events-none" aria-hidden="true"
+                 style="width:420px;height:240px;opacity:0.8;-webkit-mask-image:radial-gradient(ellipse 75% 75% at 65% 40%, black 35%, transparent 80%);mask-image:radial-gradient(ellipse 75% 75% at 65% 40%, black 35%, transparent 80%);">
+                <img src="{{ asset('image/bridge-effects.png') }}" alt="" class="w-full h-full object-contain">
+            </div>
             {{-- Thin gold accent line across top --}}
             <div class="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" style="width:240px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.32),transparent);"></div>
             <div class="relative" style="z-index:1;">
