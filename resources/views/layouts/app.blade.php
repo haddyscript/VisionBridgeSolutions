@@ -1052,13 +1052,8 @@
         <div id="nav-inner" class="mx-auto flex items-center justify-between px-5 sm:px-7" style="height:60px;">
 
             {{-- Logo --}}
-            <a id="nav-logo" href="{{ $homeAnchor }}#hero" class="flex items-center gap-2.5 shrink-0 opacity-0">
-                <div class="w-8 h-8 rounded-md overflow-hidden shrink-0">
-                    <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
-                </div>
-                <span class="text-navy font-bold text-lg leading-tight">VisionBridge<br>
-                    <span class="text-gold text-xs font-medium tracking-widest uppercase">Solutions</span>
-                </span>
+            <a id="nav-logo" href="{{ $homeAnchor }}#hero" class="flex items-center shrink-0 opacity-0">
+                <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
             </a>
 
             {{-- Desktop links with sliding capsule --}}
@@ -1263,11 +1258,8 @@
 
                 {{-- Column 1: Brand --}}
                 <div id="footer-col-1" class="footer-col">
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="w-8 h-8 rounded-md overflow-hidden shrink-0">
-                            <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
-                        </div>
-                        <span class="font-bold text-lg">VisionBridge <span class="text-gold">Solutions</span></span>
+                    <div class="flex items-center mb-4">
+                        <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
                     </div>
                     <p class="text-navy/60 text-sm leading-relaxed">Building Websites. Expanding Reach.<br>Helping organizations establish a professional online presence.</p>
                 </div>

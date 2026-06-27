@@ -37,11 +37,10 @@
 
         {{-- Sidebar --}}
         <aside id="admin-sidebar" class="fixed inset-y-0 left-0 z-40 w-64 flex flex-col -translate-x-full md:translate-x-0 transition-transform duration-200" style="background:#111D33;">
-            <div class="flex items-center gap-2.5 px-6 h-16 border-b border-white/10 shrink-0">
-                <div class="w-8 h-8 rounded-md overflow-hidden shrink-0">
-                    <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
+            <div class="flex items-center px-6 h-16 border-b border-white/10 shrink-0">
+                <div class="bg-white rounded-lg px-3 py-1.5 inline-flex items-center">
+                    <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="h-6 w-auto object-contain">
                 </div>
-                <span class="text-white font-bold text-sm leading-tight">VisionBridge <span class="text-gold">Solutions</span></span>
             </div>
 
             <nav class="flex-1 overflow-y-auto py-5 px-3 space-y-0.5">

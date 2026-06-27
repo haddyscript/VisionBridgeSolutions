@@ -40,11 +40,10 @@
             <div class="absolute bottom-0 left-1/4 w-3/4 h-28" style="background-image:radial-gradient(circle,rgba(255,255,255,0.5) 1.5px,transparent 1.5px);background-size:14px 14px;"></div>
 
             <div class="relative max-w-sm pl-4">
-                <div class="flex items-center gap-2.5 mb-10">
-                    <div class="w-9 h-9 rounded-md overflow-hidden shrink-0">
-                        <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
+                <div class="flex items-center mb-10">
+                    <div class="bg-white rounded-lg px-3 py-1.5 inline-flex items-center">
+                        <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="h-7 w-auto object-contain">
                     </div>
-                    <span class="text-white font-bold text-lg leading-tight">VisionBridge <span class="text-gold">Solutions</span></span>
                 </div>
 
                 <h2 class="font-display text-2xl font-bold text-white mb-3">Your project, all in one place</h2>
@@ -68,11 +67,8 @@
         {{-- Form panel --}}
         <div class="flex-1 flex items-center justify-center px-4 py-12 lg:ml-[58%]">
             <div class="w-full max-w-md">
-                <div class="flex items-center justify-center gap-2.5 mb-8 lg:hidden">
-                    <div class="w-9 h-9 rounded-md overflow-hidden shrink-0">
-                        <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
-                    </div>
-                    <span class="text-navy font-bold text-xl leading-tight">VisionBridge <span class="text-gold-dark">Solutions</span></span>
+                <div class="flex items-center justify-center mb-8 lg:hidden">
+                    <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
                 </div>
 
                 <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">

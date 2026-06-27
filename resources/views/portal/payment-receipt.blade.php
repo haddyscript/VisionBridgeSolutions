@@ -41,11 +41,10 @@
     <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
 
         <div class="px-8 py-7" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
-            <div class="flex items-center gap-2.5 mb-6">
-                <div class="w-8 h-8 rounded-md overflow-hidden shrink-0">
-                    <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="w-full h-full object-cover">
+            <div class="flex items-center mb-6">
+                <div class="bg-white rounded-lg px-3 py-1.5 inline-flex items-center">
+                    <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="h-6 w-auto object-contain">
                 </div>
-                <span class="text-white font-bold text-base">VisionBridge <span class="text-gold">Solutions</span></span>
             </div>
             <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Payment Receipt</p>
             <h1 class="font-display text-2xl font-bold text-white">{{ $payment->description }}</h1>

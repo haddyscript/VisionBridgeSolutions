@@ -25,10 +25,10 @@
         .card { max-width: 480px; text-align: center; }
         .logo {
             display: inline-flex; align-items: center; justify-content: center;
-            width: 52px; height: 52px; border-radius: 12px;
-            overflow: hidden; margin-bottom: 28px;
+            background: #fff; border-radius: 12px;
+            padding: 10px 16px; margin-bottom: 28px;
         }
-        .logo img { width: 100%; height: 100%; object-fit: cover; }
+        .logo img { height: 36px; width: auto; object-fit: contain; }
         .code {
             font-family: 'Playfair Display', serif;
             font-size: clamp(3.5rem, 10vw, 5.5rem);
