@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Project;
+use App\Models\Subscription;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -11,7 +12,7 @@ class ProjectLaunchedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public Project $project)
+    public function __construct(public Project $project, public ?Subscription $pendingCarePlan = null)
     {
     }
 

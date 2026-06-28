@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
             'onboarding.complete' => \App\Http\Middleware\EnsureOnboardingComplete::class,
+            'project.not-suspended' => \App\Http\Middleware\EnsureProjectNotSuspended::class,
         ]);
 
         $middleware->web(append: [

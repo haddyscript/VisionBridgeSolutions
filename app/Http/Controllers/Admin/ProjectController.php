@@ -11,7 +11,7 @@ class ProjectController extends Controller
 {
     public function show(Project $project)
     {
-        $project->load('user', 'milestones', 'uploads.user', 'uploads.replies', 'payments', 'subscription', 'questionnaire', 'agreementSignature.template');
+        $project->load('user', 'milestones', 'uploads.user', 'uploads.replies', 'payments', 'subscription', 'questionnaire', 'agreementSignature.template', 'carePlanAgreement.maintenancePlan');
 
         return view('admin.projects.show', [
             'project' => $project,
@@ -68,5 +68,20 @@ class ProjectController extends Controller
         ]);
 
         return back()->with('status', "Password reset to \"admin123\" for {$project->user->name}.");
+    }
+
+    /**
+     * Manual override for support cases — e.g. a client paid by some method
+     * Stripe never sees, or the automated grace-period check needs overriding.
+     * The normal path is fully automatic (StripeWebhookController restores
+     * access the moment Stripe confirms the subscription is active again).
+     */
+    public function restoreAccess(Project $project)
+    {
+        abort_unless($project->isSuspended(), 422, 'This project is not suspended.');
+
+        $project->update(['suspended_at' => null]);
+
+        return back()->with('status', 'Access restored for '.$project->user->name.'.');
     }
 }

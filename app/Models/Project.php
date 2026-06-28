@@ -19,6 +19,7 @@ class Project extends Model
         'total_price',
         'review_started_at',
         'client_approved_at',
+        'suspended_at',
     ];
 
     protected function casts(): array
@@ -26,12 +27,28 @@ class Project extends Model
         return [
             'review_started_at' => 'datetime',
             'client_approved_at' => 'datetime',
+            'suspended_at' => 'datetime',
         ];
     }
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function carePlanAgreement()
+    {
+        return $this->hasOne(CarePlanAgreement::class);
+    }
+
+    public function hasAgreedToCarePlan(): bool
+    {
+        return $this->carePlanAgreement !== null;
+    }
+
+    public function isSuspended(): bool
+    {
+        return $this->suspended_at !== null;
     }
 
     public function milestones()

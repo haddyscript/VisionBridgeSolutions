@@ -14,6 +14,7 @@
         'review'      => 'In Review',
         'launched'    => 'Launched',
         'maintenance' => 'Maintenance',
+        'canceled'    => 'Canceled',
     ];
     $milestoneStatuses = ['pending' => 'Pending', 'in_progress' => 'In Progress', 'completed' => 'Completed'];
     $empty = collect();
@@ -26,6 +27,21 @@
 
 {{-- Client + project header --}}
 <div id="header-card" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+    @if ($project->isSuspended())
+        <div class="flex items-center justify-between gap-3 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 px-4 py-3 mb-5">
+            <p class="text-sm text-red-600">
+                <strong>Suspended for non-payment</strong> — portal access has been blocked since
+                {{ $project->suspended_at->format('M j, Y \a\t g:i A') }}.
+            </p>
+            <form method="POST" action="{{ route('admin.projects.restore-access', $project) }}" data-ajax-target="header-card">
+                @csrf
+                <button type="submit" class="shrink-0 bg-white dark:bg-gray-800 border border-red-300 text-red-600 text-xs font-semibold px-3 py-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors">
+                    Restore Access Manually
+                </button>
+            </form>
+        </div>
+    @endif
+
     <div class="flex flex-wrap items-start justify-between gap-4 mb-5">
         <div>
             <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">Client</p>
@@ -137,7 +153,7 @@
     <button type="button" data-tab-button="onboarding" onclick="showProjectTab('onboarding')"
             class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
         Onboarding
-        @if (! $project->hasSignedCurrentAgreement() || ! $project->hasCompletedQuestionnaire())
+        @if (! $project->hasAgreedToCarePlan() || ! $project->hasSignedCurrentAgreement() || ! $project->hasCompletedQuestionnaire())
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">Pending</span>
         @endif
     </button>
@@ -340,6 +356,20 @@
 </div>
 
 <div id="panel-onboarding" data-tab-panel="onboarding" class="hidden">
+
+    {{-- Care Plan Agreement --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <h3 class="font-semibold text-navy dark:text-white mb-4">Care Plan Agreement</h3>
+        @if ($project->carePlanAgreement)
+            <p class="text-sm text-gray-600 dark:text-gray-300">
+                Agreed to <strong class="text-navy dark:text-white">{{ $project->carePlanAgreement->maintenancePlan->name }}</strong>
+                ({{ $project->carePlanAgreement->maintenancePlan->formattedPrice() }}/{{ $project->carePlanAgreement->maintenancePlan->interval }})
+                on {{ $project->carePlanAgreement->agreed_at->format('M j, Y \a\t g:i A') }}
+            </p>
+        @else
+            <p class="text-sm text-gray-400 dark:text-gray-500">Not selected yet.</p>
+        @endif
+    </div>
 
     {{-- Service Agreement --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">

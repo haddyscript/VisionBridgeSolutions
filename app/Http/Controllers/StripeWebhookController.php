@@ -6,6 +6,7 @@ use App\Mail\AdminPaymentNotificationMail;
 use App\Mail\FaithStackNewClientMail;
 use App\Mail\PaymentReceiptMail;
 use App\Mail\ProjectLaunchedMail;
+use App\Mail\ProjectRestoredMail;
 use App\Mail\SubscriptionReceiptMail;
 use App\Mail\SubscriptionStatusAlertMail;
 use App\Mail\SystemAlertMail;
@@ -167,7 +168,9 @@ class StripeWebhookController extends Controller
 
         $project->update(['status' => 'launched']);
 
-        Mail::to($project->user->email)->send(new ProjectLaunchedMail($project));
+        $pendingCarePlan = $project->subscription?->isPending() ? $project->subscription : null;
+
+        Mail::to($project->user->email)->send(new ProjectLaunchedMail($project, $pendingCarePlan));
         Mail::to(config('mail.admin_address'))->send(new SystemAlertMail(
             'Project Launched — '.$project->name,
             "{$project->user->name}'s project was automatically marked as launched — paid in full, approved, and funds cleared.",
@@ -291,8 +294,20 @@ class StripeWebhookController extends Controller
         $cancelAtPeriodEnd = (bool) ($stripeSubscription->cancel_at_period_end ?? false)
             || ! empty($stripeSubscription->cancel_at);
 
+        // Only stamp past_due_at the moment it *first* goes past_due, so repeat
+        // webhook deliveries while it's still past_due don't keep resetting the
+        // grace-period clock. Clear it the moment it leaves past_due for any reason.
+        $pastDueAt = $subscription->past_due_at;
+
+        if ($newStatus === 'past_due' && $previousStatus !== 'past_due') {
+            $pastDueAt = now();
+        } elseif ($newStatus !== 'past_due') {
+            $pastDueAt = null;
+        }
+
         $subscription->update([
             'status' => $newStatus,
+            'past_due_at' => $pastDueAt,
             'current_period_end' => $periodEnd ? Carbon::createFromTimestamp($periodEnd) : null,
             'cancel_at_period_end' => $cancelAtPeriodEnd,
         ]);
@@ -300,6 +315,37 @@ class StripeWebhookController extends Controller
         if ($newStatus !== $previousStatus && in_array($newStatus, ['past_due', 'canceled'], true)) {
             Mail::to(config('mail.admin_address'))->send(new SubscriptionStatusAlertMail($subscription));
         }
+
+        if ($newStatus === 'active' && $previousStatus !== 'active') {
+            $this->maybeRestoreProject($subscription);
+        }
+    }
+
+    /**
+     * A suspended project is automatically restored the moment its Care Plan
+     * subscription reports active again — Stripe only reports 'active' once a
+     * payment has actually succeeded, so this is the "verified" signal the
+     * boss asked for, no extra polling needed.
+     */
+    private function maybeRestoreProject(Subscription $subscription): void
+    {
+        $project = $subscription->project;
+
+        if (! $project || ! $project->isSuspended()) {
+            return;
+        }
+
+        $project->update(['suspended_at' => null]);
+
+        Mail::to($project->user->email)->send(new ProjectRestoredMail($project));
+        Mail::to(config('mail.admin_address'))->send(new SystemAlertMail(
+            'Project Restored — '.$project->name,
+            "{$project->user->name}'s overdue Care Plan payment was received and verified — their website access has been automatically restored.",
+            [
+                'Client' => $project->user->name,
+                'Project' => $project->name,
+            ],
+        ));
     }
 
     private function handleSubscriptionDeleted($stripeSubscription): void

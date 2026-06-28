@@ -12,7 +12,8 @@ A plain-language summary of everything the site and client portal offer today.
 | Contact form | A simple "Get in Touch" form that emails us directly |
 | Book a Consultation | A calendar booking tool — visitors pick a day and an open time slot (weekdays, 9am–5pm) to request a consultation |
 | Create an account | Visitors can also sign up for a client account directly, without going through the intake form; they must verify their email before they can use the portal |
-| Digital Service Agreement | New clients must review and digitally sign (typed name + drawn signature) the Service Agreement before any other portal feature unlocks; they get an emailed PDF copy and we get notified |
+| Required Care Plan Agreement | The very first onboarding step: new clients must pick one of our Website Care Plans and agree to its terms before they can even see the Service Agreement — a Care Plan is required for every website we build. Billing doesn't start yet; it's set up automatically once the website launches |
+| Digital Service Agreement | After agreeing to a Care Plan, clients must review and digitally sign (typed name + drawn signature) the Service Agreement before any other portal feature unlocks; they get an emailed PDF copy and we get notified |
 | Onboarding Questionnaire | After signing, clients fill out one in-portal form covering organization info, mission/vision, brand colors, requested pages, services, and social links — required before the rest of the portal unlocks; logo/image/content uploads happen separately in Project Files |
 | Client sign in | Standard login, with "remember me" and a "forgot password" recovery option; already-logged-in users get sent straight to their portal or admin dashboard instead of the homepage |
 
@@ -30,6 +31,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Website Review & Approval | Once a project's status is set to "In Review," clients get a 7-day window on their Overview page to approve the finished website (which auto-creates the final 50% payment) or request revisions; canceling within the window automatically refunds the deposit (minus Stripe's processing fee) and ends the project |
 | Automatic Launch | Once a client has paid the final 50% payment in full, approved the website, and the deposit had already cleared, the project is automatically marked "Launched" — no admin step needed |
 | Maintenance Plans | Clients can start a recurring care plan and manage their billing (update card, cancel, etc.) themselves; a "Refresh Status" button instantly re-checks their plan with our payment provider if it ever looks out of date |
+| Automatic Payment Monitoring | If a Care Plan payment goes unpaid past a grace period, portal access is automatically suspended until the balance is paid — access is restored automatically too, the moment payment is confirmed, no action needed from us |
 | Account Settings | Clients update their name, email, or password — changing the password or email sends a security alert email |
 | Help & FAQ | A searchable list of common questions and answers, with expand/collapse all and a quick "Was this helpful?" rating on each answer |
 | Need Help? | Our support email and phone number, always visible in the sidebar |
@@ -49,7 +51,7 @@ A plain-language summary of everything the site and client portal offer today.
 | File Approval | Mark a client's uploaded file as approved, which they'll see reflected in their portal |
 | Revision & Content Threads | Move a client's change request through Open → In Progress → Addressed, and go back and forth with them in a live chat-style thread — every status change and reply sends instantly with no page reload and emails the other side |
 | Payment Requests | Create one-time payment requests for a project, remove unpaid ones, and re-check a payment's status if something looks stuck |
-| Maintenance Plans | Set up or cancel a client's recurring care plan — can only be started once a project's status is "Launched" or "Maintenance," since billing isn't meant to begin during development |
+| Maintenance Plans | Set up or cancel a client's recurring care plan — can only be started once a project's status is "Launched" or "Maintenance," since billing isn't meant to begin during development. If access was suspended for non-payment, a banner shows on the project page with a manual "Restore Access" override in case it ever needs a human override |
 | Care Plan Pricing | Control the pricing tiers shown on the public website — name, tagline, description, price, header icon, badge, response time, and a list of features (each with its own short description) — each plan collapses to a quick summary and expands to edit, with a live preview showing exactly how the card will look on the homepage as you type |
 | FaithStack Payouts | A running list of every client payment — recurring Website Care Plan cycles *and* one-time project payments alike — showing what VisionBridge owes FaithStack for it; the one-time-payment compensation amount can be entered right when marking a row paid if it isn't set yet. "Mark Paid to FaithStack" records once we've sent it manually (intentionally manual for now, not an automatic transfer — see partnership agreement) |
 | Service Agreement | Edit the agreement text clients must sign — saving publishes a new version rather than editing what's already been signed, so past signatures stay tied to the wording the client actually agreed to; also lists every signed agreement with a PDF download |
@@ -73,6 +75,8 @@ A plain-language summary of everything the site and client portal offer today.
 | Client gets a payment reminder | Client | A friendly pop-up appears if something is still owed |
 | Payments stay in sync automatically | Behind the scenes | Our payment provider notifies the system the moment a payment or plan changes status, so records are always accurate without manual work |
 | We get alerted if something's wrong | Our team | If a recurring plan fails or falls behind, we're emailed right away |
+| A Care Plan payment goes overdue | Behind the scenes | Once it's stayed unpaid past the grace period, the client's portal access is automatically suspended until they pay |
+| Suspended access is restored | Behind the scenes | The moment our payment provider confirms the overdue payment went through, portal access is automatically restored — no manual step |
 
 ## 5. Automatic Emails
 
@@ -83,11 +87,14 @@ A plain-language summary of everything the site and client portal offer today.
 | Someone books a consultation | The client (confirmation) and our team |
 | We confirm, reschedule, or cancel a consultation | The client |
 | A client account is created or a welcome email is resent | The client |
+| A client selects and agrees to a Website Care Plan | (internal record only — billing starts at launch) |
 | A client digitally signs the Service Agreement | The client (PDF copy) and our team |
 | A client completes the onboarding questionnaire | Our team |
 | A client approves their finished website | Our team (the final 50% payment request is created automatically) |
 | A client cancels during their review window | The client (refund confirmation) and our team |
-| A project is automatically launched | The client (congratulations email) and our team |
+| A project is automatically launched | The client (congratulations email + a link to set up their Care Plan billing) and our team |
+| A Care Plan payment becomes overdue past the grace period | The client (how to pay) and our team |
+| A suspended client's payment clears | The client (access restored) and our team |
 | Someone creates their own account | Our team |
 | A new Website Care Plan client subscribes and pays | The client (receipt + portal password-setup link), our team, and FaithStack |
 | A client changes their account email | Their old email address (as a security check) |

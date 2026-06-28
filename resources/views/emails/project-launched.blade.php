@@ -38,11 +38,28 @@
                                     View Your Live Site
                                 </a>
                             @endif
-                            <p style="font-size:14px; line-height:1.7; color:#6b7280; margin:0;">
-                                If you've discussed an ongoing Website Care Plan with our team, that's the next step
-                                to keep your site secure, updated, and performing well. Reach out anytime — we're
-                                here for the long run.
-                            </p>
+                            @if ($pendingCarePlan)
+                                <div style="background-color:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; padding:20px; margin-bottom:18px;">
+                                    <p style="font-size:14px; font-weight:700; color:#111D33; margin:0 0 8px;">
+                                        One last step: set up your Care Plan billing
+                                    </p>
+                                    <p style="font-size:14px; line-height:1.7; color:#6b7280; margin:0 0 14px;">
+                                        You selected the <strong>{{ $pendingCarePlan->description }}</strong>
+                                        ({{ $pendingCarePlan->formattedAmount() }}) when you agreed to your Care Plan —
+                                        now that your site is live, please complete checkout to start your coverage.
+                                    </p>
+                                    <a href="{{ route('portal.subscriptions.checkout', $pendingCarePlan) }}"
+                                       style="display:inline-block; background-color:#111D33; color:#ffffff; font-weight:700; font-size:14px; padding:12px 22px; border-radius:8px; text-decoration:none;">
+                                        Set Up Care Plan Billing
+                                    </a>
+                                </div>
+                            @else
+                                <p style="font-size:14px; line-height:1.7; color:#6b7280; margin:0;">
+                                    If you've discussed an ongoing Website Care Plan with our team, that's the next
+                                    step to keep your site secure, updated, and performing well. Reach out anytime —
+                                    we're here for the long run.
+                                </p>
+                            @endif
                         </td>
                     </tr>
 

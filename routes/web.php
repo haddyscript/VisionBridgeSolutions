@@ -28,6 +28,7 @@ use App\Http\Controllers\DeployerController;
 use App\Http\Controllers\IntakeController;
 use App\Models\MaintenancePlan;
 use App\Http\Controllers\Portal\AccountController as PortalAccountController;
+use App\Http\Controllers\Portal\CarePlanAgreementController as PortalCarePlanAgreementController;
 use App\Http\Controllers\Portal\CategoryController;
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\FaqFeedbackController;
@@ -36,6 +37,7 @@ use App\Http\Controllers\Portal\ProjectQuestionnaireController as PortalProjectQ
 use App\Http\Controllers\Portal\ProjectReviewController as PortalProjectReviewController;
 use App\Http\Controllers\Portal\ServiceAgreementController as PortalServiceAgreementController;
 use App\Http\Controllers\Portal\SubscriptionController as PortalSubscriptionController;
+use App\Http\Controllers\Portal\SuspendedController as PortalSuspendedController;
 use App\Http\Controllers\Portal\UploadController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\ThemeController;
@@ -93,6 +95,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // onboarding.complete middleware below would redirect here in a loop.
     // Each controller enforces its own step's prerequisite (e.g. the
     // questionnaire redirects back to the agreement if it isn't signed yet).
+    Route::get('/portal/care-plan-agreement', [PortalCarePlanAgreementController::class, 'show'])->name('portal.care-plan-agreement.show');
+    Route::post('/portal/care-plan-agreement', [PortalCarePlanAgreementController::class, 'store'])->name('portal.care-plan-agreement.store');
+
     Route::get('/portal/agreement', [PortalServiceAgreementController::class, 'show'])->name('portal.agreement.show');
     Route::post('/portal/agreement', [PortalServiceAgreementController::class, 'store'])->name('portal.agreement.store');
     Route::get('/portal/agreement/{signature}/download', [PortalServiceAgreementController::class, 'download'])->name('portal.agreement.download');
@@ -101,7 +106,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/portal/questionnaire', [PortalProjectQuestionnaireController::class, 'store'])->name('portal.questionnaire.store');
 });
 
-Route::middleware(['auth', 'verified', 'onboarding.complete'])->group(function () {
+Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.complete'])->group(function () {
+    Route::get('/portal/suspended', [PortalSuspendedController::class, 'show'])->name('portal.suspended');
+
     Route::get('/portal', DashboardController::class)->name('portal.dashboard');
     Route::get('/portal/files/{category}', [CategoryController::class, 'show'])->name('portal.category');
     Route::get('/portal/files/{category}/download', [CategoryController::class, 'downloadAll'])->name('portal.category.download');
@@ -114,7 +121,9 @@ Route::middleware(['auth', 'verified', 'onboarding.complete'])->group(function (
     Route::get('/portal/payments/{payment}/receipt', [PortalPaymentController::class, 'receipt'])->name('portal.payments.receipt');
     Route::get('/portal/payments-statement', [PortalPaymentController::class, 'statement'])->name('portal.payments.statement');
 
-    Route::post('/portal/subscriptions/{subscription}/checkout', [PortalSubscriptionController::class, 'checkout'])->name('portal.subscriptions.checkout');
+    // GET allowed too so the "set up your billing" link in emails can take the
+    // client straight to Stripe Checkout without an intermediate confirm page.
+    Route::match(['get', 'post'], '/portal/subscriptions/{subscription}/checkout', [PortalSubscriptionController::class, 'checkout'])->name('portal.subscriptions.checkout');
     Route::post('/portal/subscriptions/{subscription}/refresh', [PortalSubscriptionController::class, 'refresh'])->name('portal.subscriptions.refresh');
     Route::get('/portal/billing-portal', [PortalSubscriptionController::class, 'billingPortal'])->name('portal.billing-portal');
 
@@ -156,6 +165,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/projects/{project}', [AdminProjectController::class, 'show'])->name('projects.show');
     Route::patch('/projects/{project}', [AdminProjectController::class, 'update'])->name('projects.update');
     Route::post('/projects/{project}/reset-client-password', [AdminProjectController::class, 'resetClientPassword'])->name('projects.reset-client-password');
+    Route::post('/projects/{project}/restore-access', [AdminProjectController::class, 'restoreAccess'])->name('projects.restore-access');
 
     Route::post('/projects/{project}/milestones', [AdminMilestoneController::class, 'store'])->name('milestones.store');
     Route::patch('/milestones/{milestone}', [AdminMilestoneController::class, 'update'])->name('milestones.update');

@@ -16,6 +16,13 @@ class ServiceAgreementController extends Controller
     public function show(Request $request)
     {
         $project = $request->user()->projects()->first();
+
+        // A Care Plan must be selected and agreed to before the Service
+        // Agreement can even be shown — it's now the first onboarding step.
+        if ($project && ! $project->hasAgreedToCarePlan()) {
+            return redirect()->route('portal.care-plan-agreement.show');
+        }
+
         $template = ServiceAgreementTemplate::currentActive();
 
         // Nothing to sign, or already signed — don't show the form again.
@@ -44,6 +51,7 @@ class ServiceAgreementController extends Controller
         $project = $user->projects()->first();
 
         abort_unless($project, 422, 'No project found for this account.');
+        abort_unless($project->hasAgreedToCarePlan(), 422, 'Please select a Care Plan before signing the Service Agreement.');
 
         if ($project->hasSignedCurrentAgreement()) {
             return redirect()->route('portal.dashboard');
