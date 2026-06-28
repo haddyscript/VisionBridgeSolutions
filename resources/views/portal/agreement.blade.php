@@ -9,9 +9,38 @@
     Please review and sign your Client Service Agreement below. No project work can begin until this is signed.
 </p>
 
+@php
+    // The body is authored as blank-line-separated paragraphs, optionally
+    // starting with a "N. Heading" line — split it here so each section gets
+    // a real heading instead of one unstyled wall of text.
+    $agreementParagraphs = preg_split('/\n\s*\n/', trim($template->body));
+@endphp
+
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
     <h3 class="font-display text-lg font-bold text-navy dark:text-white mb-3">{{ $template->title }}</h3>
-    <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap max-h-96 overflow-y-auto border border-gray-100 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900">{{ $template->body }}</div>
+    <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed max-h-96 overflow-y-auto border border-gray-100 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
+        @foreach ($agreementParagraphs as $index => $paragraph)
+            @php
+                $lines = array_values(array_filter(explode("\n", $paragraph), fn ($line) => trim($line) !== ''));
+                $firstLine = trim($lines[0] ?? '');
+                $isHeading = (bool) preg_match('/^\d+\.\s+/', $firstLine);
+                $isPlaceholderNotice = $index === 0 && str_starts_with($firstLine, '[PLACEHOLDER');
+            @endphp
+
+            @if ($isPlaceholderNotice)
+                <p class="text-xs font-semibold text-gold-dark bg-gold/10 border border-gold/30 rounded px-3 py-2 mb-4">{{ $firstLine }}</p>
+            @elseif ($isHeading)
+                <div class="mb-4">
+                    <p class="font-semibold text-navy dark:text-white mb-1">{{ $firstLine }}</p>
+                    @if (count($lines) > 1)
+                        <p>{{ implode(' ', array_map('trim', array_slice($lines, 1))) }}</p>
+                    @endif
+                </div>
+            @else
+                <p class="mb-4">{{ implode(' ', array_map('trim', $lines)) }}</p>
+            @endif
+        @endforeach
+    </div>
 </div>
 
 <form method="POST" action="{{ route('portal.agreement.store') }}" id="agreement-form" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
