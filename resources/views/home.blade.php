@@ -873,89 +873,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     </div>
 </section>
 
-{{-- Bridge cable divider --}}
-<div class="bg-white py-12" aria-hidden="true">
-    <div class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
-</div>
-
-{{-- ============================================================
-     FAITHSTACK PARTNERSHIP SECTION
-     ============================================================ --}}
-<section id="partnership" class="py-24 bg-white relative overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div id="partnership-header" class="text-center mb-20">
-            <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Our Partnership</span>
-            <h2 class="section-title">VisionBridge & FaithStack</h2>
-            <p class="section-subtitle">A strategic partnership delivering seamless website solutions from concept to long-term care.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div class="partnership-zoom-item rounded-2xl border border-navy/10 overflow-hidden hover:shadow-xl transition-all duration-300 group">
-                <div class="w-full overflow-hidden" style="height:200px;flex-shrink:0;">
-                    <img src="@assetv('image/vission-bridge-htumbnail.png')"
-                         alt="VisionBridge Solutions"
-                         loading="lazy" decoding="async"
-                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                </div>
-                <div class="p-8">
-                    <div class="w-12 h-12 bg-navy rounded-xl flex items-center justify-center mb-5">
-                        <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                    </div>
-                    <h3 class="font-extrabold text-navy text-2xl mb-4">VisionBridge Solutions</h3>
-                    <ul class="space-y-3">
-                        @foreach(['Client Acquisition','Marketing','Billing & Project Management','Customer Support','Hosting Ownership'] as $item)
-                        <li class="flex items-center gap-3 text-base font-medium text-gray-700">
-                            <div class="w-2 h-2 rounded-full bg-gold shrink-0"></div>{{ $item }}
-                        </li>
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
-
-            <a
-               class="partnership-zoom-item rounded-2xl border border-teal/20 bg-teal/5 overflow-hidden hover:shadow-xl transition-all duration-300 group block" style="text-decoration:none;">
-                {{-- FaithStack thumbnail --}}
-                <div class="w-full overflow-hidden" style="height:200px;">
-                    <img src="@assetv('image/faithstack-thumbnail.png')"
-                         alt="FaithStack"
-                         loading="lazy" decoding="async"
-                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                </div>
-                <div class="p-8">
-                <div class="flex items-center justify-between mb-5">
-                    <div class="w-12 h-12 bg-teal rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
-                        </svg>
-                    </div>
-                    <span class="text-xs font-semibold tracking-widest uppercase flex items-center gap-1.5" style="color:rgba(44,166,164,0.70);">
-                        Visit Site
-                        <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                    </span>
-                </div>
-                <h3 class="font-extrabold text-teal-dark text-2xl mb-4">FaithStack</h3>
-                <ul class="space-y-3">
-                    @foreach(['Website Development','Technical Support','Website Updates','Website Maintenance'] as $item)
-                    <li class="flex items-center gap-3 text-base font-medium text-gray-700">
-                        <div class="w-2 h-2 rounded-full bg-teal shrink-0"></div>
-                        {{ $item }}
-                    </li>
-                    @endforeach
-                </ul>
-                </div>{{-- /p-8 --}}
-            </a>
-        </div>
-
-        <!-- Ownership note -->
-        <div class="partnership-zoom-item mt-10 max-w-3xl mx-auto bg-navy/5 border border-navy/10 rounded-xl p-6 text-center">
-            <svg class="w-8 h-8 text-gold mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-            </svg>
-            <p class="text-navy font-semibold text-sm">VisionBridge Solutions retains full ownership of all client websites, branding, hosting accounts, and associated assets.</p>
-        </div>
-    </div>
-</section>
-
 {{-- ============================================================
      CONTACT SECTION — dark, cinematic
      ============================================================ --}}
@@ -1182,6 +1099,80 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 });
             })();
         </script>
+    </div>
+</section>
+
+{{-- Bridge cable divider --}}
+<div class="bg-white py-12" aria-hidden="true">
+    <div class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
+</div>
+
+{{-- ============================================================
+     FAITHSTACK PARTNERSHIP SECTION — moved to the bottom of the
+     page so visitors stay focused on VisionBridge through Services,
+     Portfolio, Care Plans, and Contact before this confidence-builder.
+     No outbound link — the whole partnership is explained right here.
+     ============================================================ --}}
+<section id="partnership" class="py-24 bg-white relative overflow-hidden">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div id="partnership-header" class="text-center mb-16">
+            <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Our Trusted Development Partner</span>
+            <h2 class="section-title">FaithStack</h2>
+        </div>
+
+        <div class="partnership-zoom-item space-y-5 text-center max-w-3xl mx-auto mb-14">
+            <p class="text-lg text-gray-700 leading-relaxed">
+                At VisionBridge Solutions, we believe exceptional websites are built through strong partnerships.
+            </p>
+            <p class="text-base text-gray-600 leading-relaxed">
+                To deliver the highest level of quality, reliability, and long-term support, VisionBridge Solutions
+                proudly partners with <strong class="text-teal-dark font-semibold">FaithStack</strong>, our trusted
+                website development partner.
+            </p>
+            <p class="text-base text-gray-600 leading-relaxed">
+                While VisionBridge Solutions serves as your primary point of contact for consultation, project
+                planning, customer support, project management, billing, hosting management, and long-term website
+                care, FaithStack provides the technical expertise that helps bring each custom website to life.
+            </p>
+        </div>
+
+        <div class="partnership-zoom-item bg-teal/5 border border-teal/20 rounded-2xl p-10 mb-14">
+            <h3 class="font-extrabold text-teal-dark text-xl text-center mb-7">FaithStack&rsquo;s Areas of Expertise</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                @foreach ([
+                    'Professional Website Development',
+                    'Technical Engineering & Implementation',
+                    'Website Updates',
+                    'Website Maintenance & Support',
+                    'Quality Assurance & Testing',
+                    'Performance Optimization',
+                ] as $item)
+                    <div class="flex items-center gap-3 text-base font-medium text-gray-700">
+                        <span class="w-6 h-6 rounded-full bg-teal/15 text-teal-dark flex items-center justify-center shrink-0">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                        </span>
+                        {{ $item }}
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <p class="partnership-zoom-item text-base text-gray-600 leading-relaxed text-center max-w-3xl mx-auto mb-14">
+            Together, VisionBridge Solutions and FaithStack combine strategic planning, outstanding customer
+            service, and professional technical expertise to create custom websites that are secure, scalable,
+            and built for long-term success.
+        </p>
+
+        <div class="partnership-zoom-item max-w-3xl mx-auto bg-navy/5 border border-navy/10 rounded-xl p-8 text-center mb-10">
+            <p class="text-sm font-semibold uppercase tracking-widest text-gold mb-3">Our Shared Commitment Is Simple</p>
+            <p class="font-display text-navy text-xl sm:text-2xl font-bold italic leading-snug">
+                &ldquo;We don&rsquo;t just build custom websites&mdash;we help protect the long-term stability of our clients&rsquo; online presence.&rdquo;
+            </p>
+        </div>
+
+        <p class="partnership-zoom-item text-center font-extrabold text-navy text-lg tracking-wide">
+            One Team. One Vision. One Commitment to Excellence.
+        </p>
     </div>
 </section>
 
