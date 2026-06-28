@@ -37,7 +37,10 @@ php artisan view:cache 2>&1 | grep -v "^time="; php artisan view:clear 2>&1 | gr
 
 SSH TO DO ;
 
-composer update barryvdh/laravel-dompdf
-php artisan migrate
+php artisan migrate:fresh
 php artisan db:seed --class=MaintenancePlanSeeder
 php artisan db:seed --class=ServiceAgreementTemplateSeeder
+
+
+PDF Composer to run;
+composer update barryvdh/laravel-dompdf
