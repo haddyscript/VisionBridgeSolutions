@@ -317,16 +317,23 @@
         </div>
     @else
         <p class="text-sm text-gray-400 dark:text-gray-500 mb-4">No active maintenance plan.</p>
-        <form method="POST" action="{{ route('admin.subscriptions.store', $project) }}" class="flex items-center gap-3" data-ajax-target="panel-billing">
-            @csrf
-            <input type="text" name="description" placeholder="e.g. Monthly Website Maintenance" required
-                   class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-            <input type="number" name="amount" step="0.01" min="1" placeholder="Amount / month (USD)" required
-                   class="w-48 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-            <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-                Request
-            </button>
-        </form>
+        @if (! in_array($project->status, ['launched', 'maintenance'], true))
+            <p class="text-sm text-gold-dark bg-gold/10 border border-gold/30 rounded-lg px-4 py-3">
+                Maintenance billing doesn't start until this project is launched — set status to "Launched" on the
+                Overview tab first (or it'll happen automatically once the final payment clears and the client has approved).
+            </p>
+        @else
+            <form method="POST" action="{{ route('admin.subscriptions.store', $project) }}" class="flex items-center gap-3" data-ajax-target="panel-billing">
+                @csrf
+                <input type="text" name="description" placeholder="e.g. Monthly Website Maintenance" required
+                       class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                <input type="number" name="amount" step="0.01" min="1" placeholder="Amount / month (USD)" required
+                       class="w-48 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                    Request
+                </button>
+            </form>
+        @endif
     @endif
 </div>
 

@@ -28,6 +28,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Website Content & Revisions | Clients submit website copy or change requests as a chat-style thread; each one shows its status (Open → In Progress → Addressed), and both we and the client can reply back and forth as many times as needed — replies are emailed instantly |
 | Payments | Clients see what's owed and paid, pay securely online, search/filter their payment history, and download/print a receipt or their full statement |
 | Website Review & Approval | Once a project's status is set to "In Review," clients get a 7-day window on their Overview page to approve the finished website (which auto-creates the final 50% payment) or request revisions; canceling within the window automatically refunds the deposit (minus Stripe's processing fee) and ends the project |
+| Automatic Launch | Once a client has paid the final 50% payment in full, approved the website, and the deposit had already cleared, the project is automatically marked "Launched" — no admin step needed |
 | Maintenance Plans | Clients can start a recurring care plan and manage their billing (update card, cancel, etc.) themselves; a "Refresh Status" button instantly re-checks their plan with our payment provider if it ever looks out of date |
 | Account Settings | Clients update their name, email, or password — changing the password or email sends a security alert email |
 | Help & FAQ | A searchable list of common questions and answers, with expand/collapse all and a quick "Was this helpful?" rating on each answer |
@@ -48,7 +49,7 @@ A plain-language summary of everything the site and client portal offer today.
 | File Approval | Mark a client's uploaded file as approved, which they'll see reflected in their portal |
 | Revision & Content Threads | Move a client's change request through Open → In Progress → Addressed, and go back and forth with them in a live chat-style thread — every status change and reply sends instantly with no page reload and emails the other side |
 | Payment Requests | Create one-time payment requests for a project, remove unpaid ones, and re-check a payment's status if something looks stuck |
-| Maintenance Plans | Set up or cancel a client's recurring care plan |
+| Maintenance Plans | Set up or cancel a client's recurring care plan — can only be started once a project's status is "Launched" or "Maintenance," since billing isn't meant to begin during development |
 | Care Plan Pricing | Control the pricing tiers shown on the public website — name, tagline, description, price, header icon, badge, response time, and a list of features (each with its own short description) — each plan collapses to a quick summary and expands to edit, with a live preview showing exactly how the card will look on the homepage as you type |
 | FaithStack Payouts | A running list of every client payment — recurring Website Care Plan cycles *and* one-time project payments alike — showing what VisionBridge owes FaithStack for it; the one-time-payment compensation amount can be entered right when marking a row paid if it isn't set yet. "Mark Paid to FaithStack" records once we've sent it manually (intentionally manual for now, not an automatic transfer — see partnership agreement) |
 | Service Agreement | Edit the agreement text clients must sign — saving publishes a new version rather than editing what's already been signed, so past signatures stay tied to the wording the client actually agreed to; also lists every signed agreement with a PDF download |
@@ -86,6 +87,7 @@ A plain-language summary of everything the site and client portal offer today.
 | A client completes the onboarding questionnaire | Our team |
 | A client approves their finished website | Our team (the final 50% payment request is created automatically) |
 | A client cancels during their review window | The client (refund confirmation) and our team |
+| A project is automatically launched | The client (congratulations email) and our team |
 | Someone creates their own account | Our team |
 | A new Website Care Plan client subscribes and pays | The client (receipt + portal password-setup link), our team, and FaithStack |
 | A client changes their account email | Their old email address (as a security check) |

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\AdminPaymentNotificationMail;
 use App\Mail\FaithStackNewClientMail;
 use App\Mail\PaymentReceiptMail;
+use App\Mail\ProjectLaunchedMail;
 use App\Mail\SubscriptionReceiptMail;
 use App\Mail\SubscriptionStatusAlertMail;
 use App\Mail\SystemAlertMail;
@@ -103,6 +104,7 @@ class StripeWebhookController extends Controller
 
             $this->notifyAdminOfPayment($payment);
             $this->logPartnerPayoutForPayment($payment);
+            $this->maybeAutoLaunchProject($payment);
         }
     }
 
@@ -135,6 +137,45 @@ class StripeWebhookController extends Controller
 
         $this->notifyAdminOfPayment($payment);
         $this->logPartnerPayoutForPayment($payment);
+        $this->maybeAutoLaunchProject($payment);
+    }
+
+    /**
+     * Once a project's final payment clears, it's launched automatically —
+     * but only if the deposit is also paid and the client actually approved
+     * (matches the boss's "paid in full + approved + funds cleared" criteria
+     * exactly; this only ever fires for the new 50/50 split workflow, since
+     * a 'final'-kind payment only exists there).
+     */
+    private function maybeAutoLaunchProject(Payment $payment): void
+    {
+        if (! $payment->isFinal() || ! $payment->isPaid()) {
+            return;
+        }
+
+        $project = $payment->project;
+
+        if (! $project || in_array($project->status, ['launched', 'maintenance'], true)) {
+            return;
+        }
+
+        $depositPaid = $project->depositPayment()?->isPaid() ?? false;
+
+        if (! $depositPaid || ! $project->client_approved_at) {
+            return;
+        }
+
+        $project->update(['status' => 'launched']);
+
+        Mail::to($project->user->email)->send(new ProjectLaunchedMail($project));
+        Mail::to(config('mail.admin_address'))->send(new SystemAlertMail(
+            'Project Launched — '.$project->name,
+            "{$project->user->name}'s project was automatically marked as launched — paid in full, approved, and funds cleared.",
+            [
+                'Client' => $project->user->name,
+                'Project' => $project->name,
+            ],
+        ));
     }
 
     /**

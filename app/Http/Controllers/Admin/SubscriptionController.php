@@ -25,6 +25,14 @@ class SubscriptionController extends Controller
     {
         abort_if($project->subscription && ! $project->subscription->isCanceled(), 422, 'This project already has a maintenance plan.');
 
+        // Maintenance billing doesn't start during development — only once the
+        // website has actually launched (per the client onboarding workflow).
+        abort_unless(
+            in_array($project->status, ['launched', 'maintenance'], true),
+            422,
+            'This project must be launched before starting a recurring maintenance plan.'
+        );
+
         $validated = $request->validate([
             'description' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'min:1'],
