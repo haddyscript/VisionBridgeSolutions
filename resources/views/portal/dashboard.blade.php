@@ -104,7 +104,22 @@
         ];
     @endphp
 
-    @if ($project->status === 'onboarding')
+    @if ($project->status === 'onboarding' && $project->total_price === null)
+        <div class="rounded-xl p-6 mb-8 border border-gold/20 dark:border-gold/10" style="background:linear-gradient(135deg,rgba(201,168,76,0.10),rgba(42,157,143,0.08));">
+            <p class="text-xs font-semibold uppercase tracking-widest text-gold-dark mb-2">Hey {{ explode(' ', auth()->user()->name)[0] }} 👋</p>
+            <h2 class="font-display text-xl font-bold text-navy dark:text-white mb-2">We're preparing your project quote</h2>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 max-w-2xl">
+                Thanks for completing your agreement and questionnaire — our team is now putting together your
+                custom project quote. You'll get an email the moment it's ready, and can pay your initial 50%
+                deposit here to kick off development. In the meantime, feel free to start uploading your logo,
+                photos, and content below — no need to wait.
+            </p>
+            <a href="{{ route('portal.faq') }}#file-formats" class="inline-flex items-center gap-1.5 text-sm text-gold-dark hover:underline">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                What file formats should I upload?
+            </a>
+        </div>
+    @elseif ($project->status === 'onboarding')
         <div class="rounded-xl p-6 mb-8 border border-gold/20 dark:border-gold/10" style="background:linear-gradient(135deg,rgba(201,168,76,0.10),rgba(42,157,143,0.08));">
             <p class="text-xs font-semibold uppercase tracking-widest text-gold-dark mb-2">Hey {{ explode(' ', auth()->user()->name)[0] }} 👋</p>
             <h2 class="font-display text-xl font-bold text-navy dark:text-white mb-2">Glad to have you here — let's get started</h2>

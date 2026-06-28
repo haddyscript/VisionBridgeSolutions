@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ProjectQuoteReadyMail;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class ProjectController extends Controller
 {
@@ -49,13 +51,16 @@ class ProjectController extends Controller
         $project->update($validated);
 
         // Quoting a price for the first time auto-creates the initial 50%
-        // deposit request — the client pays it from their existing Payments tab.
+        // deposit request and emails the client — they're shown a "preparing
+        // your quote" waiting state on their dashboard until this happens.
         if ($settingPriceForFirstTime && ! $project->depositPayment()) {
-            $project->payments()->create([
+            $depositPayment = $project->payments()->create([
                 'description' => 'Initial 50% Project Deposit',
                 'kind' => 'deposit',
                 'amount' => (int) round($project->total_price / 2),
             ]);
+
+            Mail::to($project->user->email)->send(new ProjectQuoteReadyMail($project, $depositPayment));
         }
 
         return back()->with('status', 'Project updated.');

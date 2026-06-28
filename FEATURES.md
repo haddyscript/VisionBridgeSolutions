@@ -21,7 +21,7 @@ A plain-language summary of everything the site and client portal offer today.
 
 | Feature | What it does |
 |---|---|
-| Project Overview | Shows project status, a progress bar (with milestone count shown alongside it), and a timeline of milestones with due/completed dates |
+| Project Overview | Shows project status, a progress bar (with milestone count shown alongside it), and a timeline of milestones with due/completed dates. Once onboarding (Care Plan, agreement, questionnaire) is done but before we've quoted a price, the Overview shows a "we're preparing your quote" message instead — the client is emailed automatically the moment a price is set |
 | Live Preview | A "View Live Preview" button on the Overview page that links straight to the in-progress staging site, once we've set one up |
 | Recent Activity feed | A single, up-to-date list on the Overview page showing milestones completed, files approved, replies from our team, and payments received — all in one place, newest first |
 | Project Files | Clients upload photos, videos, logos, documents, and marketing materials, organized into tabs under one menu item; shows upload progress and whether we've approved each file |
@@ -47,7 +47,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Contact Messages | An inbox of everyone who used the Contact form, sortable and searchable by page |
 | Consultations | An inbox of every consultation request — confirm, reschedule, or cancel with one click, which automatically emails the client |
 | Get Started Submissions | An inbox of every intake form — review details, then approve a project to instantly create the client's account and send their welcome email |
-| Project Management | Per-project page to reset a client's password, update project status (setting it to "In Review" starts the client's 7-day review window), set a live preview link and total project price (which auto-creates the initial 50% deposit request the first time it's set), manually override the progress percentage (or let it auto-calculate from milestones/status), manage milestones (with due dates), and review their onboarding (signed agreement + questionnaire answers), files, website content, and revisions in separate tabs — every save, update, or delete happens instantly with no page reload, and deletions ask for confirmation with a clean popup instead of the browser's plain alert |
+| Project Management | Per-project page to reset a client's password, update project status (setting it to "In Review" starts the client's 7-day review window), set a live preview link and total project price (which auto-creates the initial 50% deposit request the first time it's set and emails the client their quote), manually override the progress percentage (or let it auto-calculate from milestones/status), manage milestones (with due dates), and review their onboarding (care plan, signed agreement, questionnaire answers), files, website content, and revisions in separate tabs — every save, update, or delete happens instantly with no page reload, and deletions ask for confirmation with a clean popup instead of the browser's plain alert |
 | File Approval | Mark a client's uploaded file as approved, which they'll see reflected in their portal |
 | Revision & Content Threads | Move a client's change request through Open → In Progress → Addressed, and go back and forth with them in a live chat-style thread — every status change and reply sends instantly with no page reload and emails the other side |
 | Payment Requests | Create one-time payment requests for a project, remove unpaid ones, and re-check a payment's status if something looks stuck |
@@ -90,6 +90,7 @@ A plain-language summary of everything the site and client portal offer today.
 | A client selects and agrees to a Website Care Plan | (internal record only — billing starts at launch) |
 | A client digitally signs the Service Agreement | The client (PDF copy) and our team |
 | A client completes the onboarding questionnaire | Our team |
+| We set a client's project price for the first time | The client (their quote + a link to pay the initial deposit) |
 | A client approves their finished website | Our team (the final 50% payment request is created automatically) |
 | A client cancels during their review window | The client (refund confirmation) and our team |
 | A project is automatically launched | The client (congratulations email + a link to set up their Care Plan billing) and our team |
