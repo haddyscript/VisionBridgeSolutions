@@ -11,8 +11,7 @@
     <style>
         body { font-family: Helvetica, Arial, sans-serif; color: #111D33; font-size: 11px; line-height: 1.65; }
         .header { border-bottom: 3px solid #C9A84C; padding-bottom: 12px; margin-bottom: 24px; }
-        .brand { font-size: 12px; font-weight: bold; color: #1B2A4A; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 10px; }
-        .brand span { color: #C9A84C; }
+        .logo { height: 32px; margin-bottom: 10px; }
         h1 { font-size: 17px; margin: 0 0 4px; color: #1B2A4A; }
         .meta { color: #6b7280; font-size: 10px; margin: 0; }
         .placeholder-notice { background: #FBF4E3; border: 1px solid #C9A84C; color: #8a6d1f; font-size: 9.5px; padding: 8px 10px; border-radius: 4px; margin-bottom: 18px; }
@@ -29,7 +28,7 @@
 </head>
 <body>
     <div class="header">
-        <p class="brand">VisionBridge <span>Solutions</span></p>
+        <img class="logo" src="{{ public_path('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions">
         <h1>{{ $template->title }}</h1>
         <p class="meta">Version {{ $template->version }}</p>
     </div>

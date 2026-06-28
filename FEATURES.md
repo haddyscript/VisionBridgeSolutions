@@ -13,7 +13,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Book a Consultation | A calendar booking tool — visitors pick a day and an open time slot (weekdays, 9am–5pm) to request a consultation |
 | Create an account | Visitors can also sign up for a client account directly, without going through the intake form; they must verify their email before they can use the portal |
 | Required Care Plan Agreement | The very first onboarding step: new clients must pick one of our Website Care Plans and agree to its terms before they can even see the Service Agreement — a Care Plan is required for every website we build. Billing doesn't start yet; it's set up automatically once the website launches |
-| Digital Service Agreement | After agreeing to a Care Plan, clients must review and digitally sign (typed name + drawn signature) the Service Agreement before any other portal feature unlocks; they get an emailed PDF copy and we get notified |
+| Digital Service Agreement | After agreeing to a Care Plan, clients must review and digitally sign (typed name + drawn signature) the Service Agreement before any other portal feature unlocks; they get an emailed PDF copy and we get notified. The PDF carries our actual logo and brand styling throughout |
 | Onboarding Questionnaire | After signing, clients fill out one in-portal form covering organization info, mission/vision, brand colors, requested pages, services, and social links — required before the rest of the portal unlocks; logo/image/content uploads happen separately in Project Files |
 | Client sign in | Standard login, with "remember me" and a "forgot password" recovery option; already-logged-in users get sent straight to their portal or admin dashboard instead of the homepage |
 
@@ -24,6 +24,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Project Overview | Shows project status, a progress bar (with milestone count shown alongside it), and a timeline of milestones with due/completed dates. Once onboarding (Care Plan, agreement, questionnaire) is done but before we've quoted a price, the Overview shows a "we're preparing your quote" message instead — the client is emailed automatically the moment a price is set |
 | Live Preview | A "View Live Preview" button on the Overview page that links straight to the in-progress staging site, once we've set one up |
 | Recent Activity feed | A single, up-to-date list on the Overview page showing milestones completed, files approved, replies from our team, and payments received — all in one place, newest first |
+| Documents | A permanent "Documents" section in the sidebar where clients can re-download a PDF of every Service Agreement they've signed, anytime |
 | Project Files | Clients upload photos, videos, logos, documents, and marketing materials, organized into tabs under one menu item; shows upload progress and whether we've approved each file |
 | Download everything | One click to download all the files in a category as a single zip |
 | Website Content & Revisions | Clients submit website copy or change requests as a chat-style thread; each one shows its status (Open → In Progress → Addressed), and both we and the client can reply back and forth as many times as needed — replies are emailed instantly |
