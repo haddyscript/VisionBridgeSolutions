@@ -794,21 +794,9 @@
             #hscroll-hint, #hscroll-track, #hscroll-progress { display: none; }
         }
 
-        /* ── Portfolio section: numbered project switcher ── */
-        .portfolio-number-box:hover { background: rgba(17,29,51,0.05); }
-        /* Inactive cards still show a dimmed preview instead of a blank box */
-        .portfolio-number-image  { opacity: 0.22; transform: scale(1.05); }
-        .portfolio-number-digit  { color: rgba(17,29,51,0.30); text-shadow: none; }
-        .portfolio-number-item.is-active .portfolio-number-image,
-        .portfolio-number-item:hover .portfolio-number-image { opacity: 1; transform: scale(1); }
-        .portfolio-number-item.is-active .portfolio-number-digit,
-        .portfolio-number-item:hover .portfolio-number-digit { color: rgba(255,255,255,0.95); text-shadow: 0 1px 6px rgba(0,0,0,0.35); }
-        .portfolio-number-link:hover h4 { color: #2CA6A4; }
-        @media (max-width: 640px) {
-            .portfolio-number-item { width: 110px !important; }
-            .portfolio-number-box  { height: 220px !important; }
-            .portfolio-number-digit { font-size: 2.4rem !important; }
-        }
+        /* ── Portfolio section: featured project cards ── */
+        .portfolio-card { transition: transform 0.32s ease; }
+        .portfolio-card:hover { transform: translateY(-4px); }
 
         /* ── Services section ── */
         /* Gold accent line drawn by GSAP on scroll-in */

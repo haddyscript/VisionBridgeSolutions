@@ -842,14 +842,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
 
-        {{-- Section header --}}
-        <div class="text-center mb-20">
-            <span id="portfolio-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Our Work</span>
-            <h2 id="portfolio-heading" class="section-title">Featured Projects</h2>
-            <div id="portfolio-accent-line" style="width:56px;height:2px;background:linear-gradient(90deg,#C9A84C,rgba(201,168,76,0.18));border-radius:2px;margin:16px auto 20px;transform-origin:left center;"></div>
-            <p id="portfolio-subtitle" class="section-subtitle">A selection of websites we've built for ministries, churches, and organizations.</p>
-        </div>
-
         @php
         $portfolioProjects = [
             ['num'=>'01','title'=>'Johnny Davis Global Missions','category'=>'Ministry',   'domain'=>'johnnydavisglobalmissions.org','icon'=>'globe',    'image'=>'image/johnnydavisglobalmission.png','url'=>'https://johnnydavisglobalmissions.org/','live'=>true, 'desc'=>'Empowering global ministry with a professional online presence that connects communities worldwide through faith, outreach, and digital innovation.','tags'=>['Ministry','Custom Design','WordPress']],
@@ -858,43 +850,52 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         ];
         @endphp
 
-        {{-- Numbered project switcher — tap a number to preview it, tap
-             again (or its title/arrow) to open the live site --}}
-        <div id="portfolio-switcher" class="flex flex-wrap justify-center gap-6 sm:gap-10">
-            @foreach ($portfolioProjects as $project)
-                @php
-                    $hasLink = !empty($project['url']);
-                    $isLive  = !empty($project['live']);
-                    $num     = sprintf('%02d', $loop->iteration);
-                @endphp
-                <div class="portfolio-number-item {{ $loop->first ? 'is-active' : '' }}" data-portfolio-index="{{ $loop->index }}" style="width:150px;">
-                    <button type="button" class="portfolio-number-box" style="width:100%;height:220px;position:relative;border-radius:14px;overflow:hidden;background:rgba(17,29,51,0.03);cursor:pointer;border:none;padding:0;">
-                        @if (!empty($project['image']))
-                            {{-- contain (not cover) — these are wide desktop screenshots; cover into
-                                 this narrow box was zooming in ~6x and cropping the headline text --}}
-                            <div class="portfolio-number-image" style="position:absolute;inset:0;background-image:url('@assetv($project['image'])');background-size:contain;background-position:center;background-repeat:no-repeat;transition:opacity 0.4s ease, transform 0.4s ease;"></div>
-                        @endif
-                        <span class="portfolio-number-digit" style="position:absolute;bottom:10px;left:14px;z-index:1;font-family:'Playfair Display',serif;font-size:2.6rem;font-weight:700;transition:color 0.3s ease;">{{ $num }}</span>
-                    </button>
+        {{-- Blue/navy panel — heading sits inside it, project cards float
+             over its bottom edge (overlap via negative margin on the card
+             grid below, rather than absolute positioning). --}}
+        <div id="portfolio-panel" class="rounded-3xl relative text-center overflow-hidden px-6 sm:px-12 pt-16 pb-28" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
+            <div class="hero-orb" style="width:420px;height:420px;top:-120px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,0.14) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 20s ease-in-out infinite;"></div>
+            <div class="hero-orb" style="width:360px;height:360px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.12) 0%,transparent 70%);filter:blur(54px);animation:orb-drift 18s ease-in-out infinite reverse 3s;"></div>
 
+            <div class="relative" style="z-index:1;">
+                <span id="portfolio-kicker" class="inline-block text-gold text-sm font-semibold tracking-widest uppercase mb-3">Our Work</span>
+                <h2 id="portfolio-heading" class="font-display text-3xl md:text-4xl font-bold text-white">Featured Projects</h2>
+                <p id="portfolio-subtitle" class="text-white/60 text-base mt-3 max-w-xl mx-auto">A selection of websites we've built for ministries, churches, and organizations.</p>
+            </div>
+        </div>
+
+        <div id="portfolio-cards" class="relative grid grid-cols-1 sm:grid-cols-3 gap-6 px-2 sm:px-6" style="margin-top:-72px;z-index:2;">
+            @foreach ($portfolioProjects as $project)
+                @php $hasLink = !empty($project['url']); @endphp
+                <div class="portfolio-card bg-white rounded-2xl overflow-hidden" style="box-shadow:0 20px 45px rgba(17,29,51,0.18);">
                     @if ($hasLink)
-                        <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="portfolio-number-link" data-portfolio-index="{{ $loop->index }}" style="display:block;margin-top:14px;text-decoration:none;">
-                    @else
-                        <div class="portfolio-number-link" data-portfolio-index="{{ $loop->index }}" style="margin-top:14px;cursor:pointer;">
+                        <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="block">
                     @endif
-                        <h4 class="font-extrabold text-navy text-base">{{ $project['title'] }}</h4>
-                        <div class="flex items-center justify-between mt-1">
-                            <span class="text-sm font-semibold" style="color:rgba(17,29,51,0.62);">{{ $project['category'] }}</span>
-                            @if ($hasLink)
-                                <svg class="w-3.5 h-3.5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                        <div class="bg-gray-50 flex items-center justify-center" style="height:170px;">
+                            @if (!empty($project['image']))
+                                {{-- contain (not cover) — these are wide desktop screenshots;
+                                     cover here was zooming in ~6x and cropping the headline text --}}
+                                <img src="@assetv($project['image'])" alt="{{ $project['title'] }}" class="w-full h-full object-contain" loading="lazy" decoding="async">
+                            @else
+                                <svg class="w-10 h-10 text-gold/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 3l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
                             @endif
+                        </div>
+                        <div class="px-5 py-4 text-left">
+                            <h4 class="font-bold text-navy text-base">{{ $project['title'] }}</h4>
+                            <p class="text-sm text-gray-500 mt-0.5">{{ $project['category'] }}</p>
                         </div>
                     @if ($hasLink)
                         </a>
-                    @else
-                        </div>
                     @endif
                 </div>
+            @endforeach
+        </div>
+
+        {{-- Decorative pagination dots — all 3 projects already show at
+             once, so this is purely visual, not a functioning carousel. --}}
+        <div class="flex items-center justify-center gap-2 mt-10">
+            @foreach ($portfolioProjects as $project)
+                <span class="rounded-full transition-all duration-300" style="height:8px;width:{{ $loop->index === 1 ? '22px' : '8px' }};background:{{ $loop->index === 1 ? '#C9A84C' : 'rgba(17,29,51,0.18)' }};"></span>
             @endforeach
         </div>
 
@@ -1670,14 +1671,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             let portfolioAnimated = false;
 
             // Set hidden initial state immediately so elements don't flash visible
-            gsap.set(['#portfolio-kicker','#portfolio-heading','#portfolio-accent-line','#portfolio-subtitle'], { opacity:0 });
-            gsap.set('.portfolio-number-item', { opacity:0, scale:0.85, y:44, transformOrigin:'center bottom' });
+            gsap.set(['#portfolio-kicker','#portfolio-heading','#portfolio-subtitle'], { opacity:0 });
+            gsap.set('.portfolio-card', { opacity:0, scale:0.85, y:44, transformOrigin:'center bottom' });
 
             function runPortfolioAnimation() {
                 if (portfolioAnimated) return;
                 portfolioAnimated = true;
 
-                // Header cascade: kicker sweeps left → heading rises → accent draws → subtitle fades
+                // Header cascade: kicker sweeps left → heading rises → subtitle fades
                 gsap.timeline()
                     .fromTo('#portfolio-kicker',
                         { opacity:0, x:-22, letterSpacing:'0.32em' },
@@ -1685,15 +1686,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     .fromTo('#portfolio-heading',
                         { opacity:0, y:44, skewY:2 },
                         { opacity:1, y:0,  skewY:0, duration:0.80, ease:'power3.out' }, '-=0.28')
-                    .fromTo('#portfolio-accent-line',
-                        { opacity:0, scaleX:0 },
-                        { opacity:1, scaleX:1, duration:0.50, ease:'power2.out', transformOrigin:'left center' }, '-=0.38')
                     .fromTo('#portfolio-subtitle',
                         { opacity:0, y:16 },
                         { opacity:1, y:0, duration:0.50, ease:'power2.out' }, '-=0.28');
 
-                // Numbered columns: scale-up zoom — 85% → 100% with back.out(1.55) overshoot
-                gsap.fromTo('.portfolio-number-item',
+                // Cards: scale-up zoom — 85% → 100% with back.out(1.55) overshoot
+                gsap.fromTo('.portfolio-card',
                     { opacity:0, scale:0.85, y:44 },
                     { opacity:1, scale:1, y:0, duration:0.82, ease:'back.out(1.55)', stagger:0.13, delay:0.22 }
                 );
@@ -2053,34 +2051,6 @@ function toggleServices() {
             if (img) gsap.to(img, { scale: 1, duration: 0.55, ease: 'power2.out' });
             card.classList.remove('svc-shimmering');
         }, { passive: true });
-    });
-})();
-</script>
-
-<script>
-// ── Portfolio numbered switcher: tap a number to preview it; tap its
-// title/arrow to open the live site (already-active column's link is
-// left untouched so the native <a> navigates normally) ──
-(function initPortfolioSwitcher() {
-    const items = document.querySelectorAll('.portfolio-number-item');
-    if (!items.length) return;
-
-    function activate(index) {
-        items.forEach((item, i) => item.classList.toggle('is-active', i === index));
-    }
-
-    items.forEach((item, i) => {
-        const box = item.querySelector('.portfolio-number-box');
-        if (box) box.addEventListener('click', () => activate(i));
-
-        const link = item.querySelector('.portfolio-number-link');
-        if (link) {
-            link.addEventListener('click', (e) => {
-                if (item.classList.contains('is-active')) return; // let it navigate normally
-                e.preventDefault();
-                activate(i);
-            });
-        }
     });
 })();
 </script>
