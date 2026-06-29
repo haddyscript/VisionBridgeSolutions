@@ -104,31 +104,57 @@ class AppServiceProvider extends ServiceProvider
         ];
     }
 
+    /**
+     * Mirrors the real onboarding pipeline (EnsureOnboardingComplete: Care
+     * Plan -> Agreement -> Questionnaire) plus the steps after it, rather
+     * than a generic fixed list — each item reflects this specific client's
+     * actual progress and links straight to where they'd act on it.
+     */
     private function clientGettingStartedTasks(): array
     {
-        $project = Auth::user()?->projects()->with('uploads', 'payments', 'milestones')->first();
+        $project = Auth::user()?->projects()->with('uploads', 'payments', 'milestones', 'questionnaire')->first();
 
         $uploads = $project?->uploads ?? collect();
-        $payments = $project?->payments ?? collect();
 
         $tasks = [
+            [
+                'label' => 'Select a Website Care Plan',
+                'description' => 'Choose the maintenance plan that fits your project.',
+                'done' => (bool) $project?->hasAgreedToCarePlan(),
+                'url' => route('portal.care-plan-agreement.show'),
+            ],
+            [
+                'label' => 'Sign your Service Agreement',
+                'description' => 'Review and digitally sign before any work begins.',
+                'done' => (bool) $project?->hasSignedCurrentAgreement(),
+                'url' => route('portal.agreement.show'),
+            ],
+            [
+                'label' => 'Complete the project questionnaire',
+                'description' => 'Tell us about your organization, brand, and goals.',
+                'done' => (bool) $project?->hasCompletedQuestionnaire(),
+                'url' => route('portal.questionnaire.show'),
+            ],
             [
                 'label' => 'Upload your logo, photos, or documents',
                 'description' => 'Share your branding and files in the Project Files section.',
                 'done' => $uploads->whereIn('category', ['image', 'logo', 'document'])->isNotEmpty(),
+                'url' => route('portal.category', 'image'),
             ],
             [
                 'label' => 'Submit your website content',
                 'description' => 'Tell us what you want the site to say in Website Content.',
                 'done' => $uploads->where('category', 'content')->isNotEmpty(),
+                'url' => route('portal.category', 'content'),
             ],
         ];
 
-        if ($payments->isNotEmpty()) {
+        if ($project?->total_price !== null) {
             $tasks[] = [
-                'label' => 'Make your first payment',
-                'description' => 'Complete an outstanding invoice in the Payments tab.',
-                'done' => $payments->contains('status', 'paid'),
+                'label' => 'Pay your initial deposit',
+                'description' => 'Complete the 50% deposit to keep your project moving.',
+                'done' => (bool) $project->depositPayment()?->isPaid(),
+                'url' => route('portal.payments.index'),
             ];
         }
 
@@ -136,6 +162,7 @@ class AppServiceProvider extends ServiceProvider
             'label' => 'Track your project\'s progress',
             'description' => 'Check back here anytime to see how things are coming along.',
             'done' => $project && $project->status !== 'onboarding',
+            'url' => route('portal.dashboard'),
         ];
 
         return $tasks;

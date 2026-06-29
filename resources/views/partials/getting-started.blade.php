@@ -31,7 +31,12 @@
 
     <div id="getting-started-panel" class="hidden absolute bottom-full left-3 right-3 mb-2 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-2 max-h-96 overflow-y-auto z-50">
         @foreach ($gettingStartedTasks as $task)
-            <div class="flex items-start gap-3 px-3 py-2.5 rounded-lg">
+            @php $taskLinkable = ! empty($task['url']) && ! $task['done']; @endphp
+            @if ($taskLinkable)
+                <a href="{{ $task['url'] }}" class="flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/60 transition-colors">
+            @else
+                <div class="flex items-start gap-3 px-3 py-2.5 rounded-lg">
+            @endif
                 <span class="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 {{ $task['done'] ? 'bg-teal text-white' : 'border-2 border-gray-300 dark:border-gray-600' }}">
                     @if ($task['done'])
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
@@ -41,7 +46,11 @@
                     <span class="block text-sm font-medium {{ $task['done'] ? 'text-gray-400 dark:text-gray-500 line-through' : 'text-navy dark:text-white' }}">{{ $task['label'] }}</span>
                     <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $task['description'] }}</span>
                 </span>
-            </div>
+            @if ($taskLinkable)
+                </a>
+            @else
+                </div>
+            @endif
         @endforeach
     </div>
 </div>

@@ -38,7 +38,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Account Settings | Clients update their name, email, or password — changing the password or email sends a security alert email |
 | Help & FAQ | A searchable list of common questions and answers, with expand/collapse all and a quick "Was this helpful?" rating on each answer |
 | Need Help? | Our support email and phone number, always visible in the sidebar |
-| Getting Started checklist | A simple progress tracker showing new clients what to do first |
+| Getting Started checklist | Tracks this specific client's real onboarding progress (Care Plan, Service Agreement, Questionnaire, file uploads, content, deposit, project progress) instead of a generic fixed list — each unfinished item links straight to where they'd complete it |
 | Light / dark mode | Clients can switch the portal's appearance to their preference |
 
 ## 3. Admin Dashboard (for our team)
