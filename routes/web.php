@@ -135,7 +135,9 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
     Route::post('/portal/subscriptions/{subscription}/confirm', [PortalSubscriptionController::class, 'confirm'])->name('portal.subscriptions.confirm');
     Route::post('/portal/subscriptions/{subscription}/refresh', [PortalSubscriptionController::class, 'refresh'])->name('portal.subscriptions.refresh');
     Route::get('/portal/subscription-payments/{subscriptionPayment}/receipt', [PortalSubscriptionController::class, 'receipt'])->name('portal.subscription-payments.receipt');
-    Route::get('/portal/billing-portal', [PortalSubscriptionController::class, 'billingPortal'])->name('portal.billing-portal');
+    Route::get('/portal/billing', [PortalSubscriptionController::class, 'manageBilling'])->name('portal.billing.show');
+    Route::post('/portal/subscriptions/{subscription}/payment-method', [PortalSubscriptionController::class, 'updatePaymentMethod'])->name('portal.subscriptions.update-payment-method');
+    Route::post('/portal/subscriptions/{subscription}/cancel', [PortalSubscriptionController::class, 'cancelPlan'])->name('portal.subscriptions.cancel');
 
     Route::get('/portal/account', [PortalAccountController::class, 'index'])->name('portal.account.index');
     Route::patch('/portal/account/profile', [PortalAccountController::class, 'updateProfile'])->name('portal.account.profile.update');

@@ -91,7 +91,7 @@
              data-period-end="{{ $subscription->current_period_end?->format('M j, Y') }}"
              data-cancel-at-period-end="{{ $subscription->cancel_at_period_end ? '1' : '0' }}"
              data-checkout-url="{{ $subscription->isPending() ? route('portal.subscriptions.checkout', $subscription) : '' }}"
-             data-billing-portal-url="{{ ! $subscription->isPending() ? route('portal.billing-portal') : '' }}">
+             data-billing-portal-url="{{ ! $subscription->isPending() ? route('portal.billing.show') : '' }}">
             <div class="flex flex-wrap items-center justify-between gap-5">
                 <div class="flex items-center gap-4">
                     <span class="w-12 h-12 rounded-xl bg-teal/10 flex items-center justify-center shrink-0">
@@ -146,9 +146,8 @@
                                 Refresh Status
                             </button>
                         </form>
-                        <a href="{{ route('portal.billing-portal') }}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 px-4 py-2.5 rounded-lg transition-colors">
+                        <a href="{{ route('portal.billing.show') }}" onclick="event.stopPropagation()" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 px-4 py-2.5 rounded-lg transition-colors">
                             Manage Billing
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                         </a>
                     @endif
                 </div>
@@ -368,7 +367,7 @@
                     </div>
 
                     <div id="sub-modal-billing-action" class="hidden pt-2">
-                        <a id="sub-modal-billing-link" href="#" target="_blank" rel="noopener" class="block w-full text-center bg-navy hover:bg-navy-light text-white text-sm font-semibold px-5 py-3 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                        <a id="sub-modal-billing-link" href="#" class="block w-full text-center bg-navy hover:bg-navy-light text-white text-sm font-semibold px-5 py-3 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
                             Manage Billing
                         </a>
                     </div>

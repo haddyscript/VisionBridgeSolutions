@@ -25,7 +25,7 @@
         though we're happy to help if you have questions.
     </p>
 
-    <a href="{{ route('portal.billing-portal') }}" class="inline-flex items-center gap-1.5 bg-gold hover:bg-gold-dark text-navy font-bold text-sm px-5 py-2.5 rounded-lg transition-colors shadow">
+    <a href="{{ route('portal.billing.show') }}" class="inline-flex items-center gap-1.5 bg-gold hover:bg-gold-dark text-navy font-bold text-sm px-5 py-2.5 rounded-lg transition-colors shadow">
         Pay Now to Restore Access
     </a>
 </div>

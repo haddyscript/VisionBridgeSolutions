@@ -23,7 +23,8 @@ class EnsureProjectNotSuspended
 
         $exemptRoutes = [
             'portal.suspended',
-            'portal.billing-portal',
+            'portal.billing.show',
+            'portal.subscriptions.update-payment-method',
             'portal.subscriptions.checkout',
             'portal.subscriptions.confirm',
             'portal.subscriptions.refresh',

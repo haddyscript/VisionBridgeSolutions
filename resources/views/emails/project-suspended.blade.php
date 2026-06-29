@@ -32,7 +32,7 @@
                                 grace period has passed without payment. Your portal access has been suspended until
                                 the outstanding balance is paid in full.
                             </p>
-                            <a href="{{ route('portal.billing-portal') }}"
+                            <a href="{{ route('portal.billing.show') }}"
                                style="display:inline-block; background-color:#C9A84C; color:#111D33; font-weight:700; font-size:14px; padding:12px 22px; border-radius:8px; text-decoration:none; margin-bottom:18px;">
                                 Pay Now to Restore Access
                             </a>

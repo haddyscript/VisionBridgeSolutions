@@ -8,7 +8,6 @@ use App\Models\SubscriptionPayment;
 use App\Services\SubscriptionReconciler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Stripe\BillingPortal\Session as BillingPortalSession;
 use Stripe\Exception\ApiErrorException;
 use Stripe\HttpClient\CurlClient;
 use Stripe\Stripe;
@@ -204,19 +203,123 @@ class SubscriptionController extends Controller
         ]);
     }
 
-    public function billingPortal(Request $request)
+    /**
+     * Branded billing-management page (update card / cancel) instead of
+     * redirecting to Stripe's hosted Billing Portal. Card updates reuse the
+     * same SetupIntent + Stripe Elements pattern as checkout().
+     */
+    public function manageBilling(Request $request)
     {
-        $user = $request->user();
+        $project = $request->user()->projects()->first();
+        $subscription = $project?->subscription;
 
-        abort_unless($user->stripe_customer_id, 404, 'No billing account found yet.');
+        abort_unless($subscription && ! $subscription->isPending(), 404, 'No active maintenance plan found.');
 
-        Stripe::setApiKey(config('services.stripe.secret'));
+        $this->configureStripe();
 
-        $session = BillingPortalSession::create([
-            'customer' => $user->stripe_customer_id,
-            'return_url' => route('portal.payments.index'),
+        $card = null;
+
+        try {
+            if ($subscription->stripe_subscription_id) {
+                $stripeSubscription = \Stripe\Subscription::retrieve([
+                    'id' => $subscription->stripe_subscription_id,
+                    'expand' => ['default_payment_method'],
+                ]);
+
+                $paymentMethod = $stripeSubscription->default_payment_method;
+                $card = $paymentMethod?->card;
+            }
+
+            $setupIntent = \Stripe\SetupIntent::create([
+                'customer' => $request->user()->getOrCreateStripeCustomerId(),
+                'payment_method_types' => ['card'],
+                'usage' => 'off_session',
+            ]);
+        } catch (ApiErrorException $e) {
+            Log::error('Stripe error loading billing management page.', [
+                'subscription_id' => $subscription->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            abort(500, 'Could not reach Stripe to load your billing details. Please try again shortly.');
+        }
+
+        return view('portal.subscription-billing', [
+            'subscription' => $subscription,
+            'card' => $card,
+            'clientSecret' => $setupIntent->client_secret,
+            'stripeKey' => config('services.stripe.key'),
+        ]);
+    }
+
+    public function updatePaymentMethod(Request $request, Subscription $subscription)
+    {
+        $project = $request->user()->projects()->first();
+
+        abort_unless($project && $subscription->project_id === $project->id, 403);
+        abort_unless($subscription->stripe_subscription_id, 422, 'No active maintenance plan found.');
+
+        $validated = $request->validate([
+            'setup_intent' => ['required', 'string'],
         ]);
 
-        return redirect()->away($session->url);
+        $this->configureStripe();
+
+        try {
+            $setupIntent = \Stripe\SetupIntent::retrieve($validated['setup_intent']);
+
+            if ($setupIntent->status !== 'succeeded' || ! $setupIntent->payment_method) {
+                return response()->json(['error' => 'Card setup was not completed. Please try again.'], 422);
+            }
+
+            $stripeSubscription = \Stripe\Subscription::update($subscription->stripe_subscription_id, [
+                'default_payment_method' => $setupIntent->payment_method,
+            ]);
+
+            // Past due means there's an unpaid open invoice — Stripe will
+            // retry it on its own schedule, but a client updating their card
+            // because access was suspended expects "Pay Now" to actually pay
+            // immediately rather than wait for that retry.
+            if ($subscription->isPastDue() && $stripeSubscription->latest_invoice) {
+                \Stripe\Invoice::pay($stripeSubscription->latest_invoice, [
+                    'payment_method' => $setupIntent->payment_method,
+                ]);
+            }
+        } catch (ApiErrorException $e) {
+            Log::error('Stripe error updating maintenance plan payment method.', [
+                'subscription_id' => $subscription->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json(['error' => 'Could not reach Stripe to update your card. Please try again shortly.'], 500);
+        }
+
+        return response()->json(['redirect' => route('portal.billing.show')]);
+    }
+
+    public function cancelPlan(Request $request, Subscription $subscription)
+    {
+        $project = $request->user()->projects()->first();
+
+        abort_unless($project && $subscription->project_id === $project->id, 403);
+
+        if ($subscription->stripe_subscription_id) {
+            $this->configureStripe();
+
+            try {
+                \Stripe\Subscription::retrieve($subscription->stripe_subscription_id)->cancel();
+            } catch (ApiErrorException $e) {
+                Log::error('Stripe error canceling maintenance plan.', [
+                    'subscription_id' => $subscription->id,
+                    'error' => $e->getMessage(),
+                ]);
+
+                return back()->withErrors(['subscription' => 'Could not reach Stripe to cancel this plan. Please try again or contact support.']);
+            }
+        }
+
+        $subscription->update(['status' => 'canceled', 'canceled_at' => now()]);
+
+        return redirect()->route('portal.payments.index')->with('status', 'Maintenance plan canceled.');
     }
 }

@@ -76,7 +76,7 @@ A plain-language summary of everything the site and client portal offer today.
 | We set up a recurring plan | Our team | A monthly maintenance/care plan tied to a project |
 | Client starts the plan | Client | Pays on our own branded "Start Plan" page (Stripe Elements card form embedded directly in the portal) instead of being sent to a Stripe-hosted checkout page — card details still go straight to Stripe, never through our servers |
 | Client gets a maintenance plan receipt | Client | Each month's payment email links to our own branded receipt page (matching the one-time payment receipt design) instead of Stripe's hosted invoice page; the official Stripe invoice is still linked as a secondary option on that page |
-| Client manages their own billing | Client | Update their card or cancel, without needing to ask us; can also click "Refresh Status" to instantly re-sync their plan if it ever looks out of date |
+| Client manages their own billing | Client | Our own branded "Manage Billing" page (not Stripe's hosted billing portal) — update card (re-using the same embedded Stripe Elements form as starting a plan), or cancel outright; updating the card while past due also retries the unpaid invoice immediately instead of waiting for Stripe's automatic retry schedule. Can also click "Refresh Status" to instantly re-sync their plan if it ever looks out of date |
 | We cancel a plan | Our team | Ends a client's active recurring plan |
 | Client gets a payment reminder | Client | A friendly pop-up appears if something is still owed |
 | Payments stay in sync automatically | Behind the scenes | Our payment provider notifies the system the moment a payment or plan changes status, so records are always accurate without manual work |
