@@ -861,9 +861,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     </div>
 </section>
 
-{{-- Bridge cable divider --}}
+{{-- Bridge cable divider — sits right at the Plans/Featured Projects seam,
+     so this is the one element actually visible during that transition;
+     it's the parallax target that matters most for that handoff. --}}
 <div class="bg-white py-12" aria-hidden="true">
-    <div class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
+    <div id="plans-portfolio-divider" class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
 </div>
 
 {{-- ============================================================
@@ -2259,9 +2261,10 @@ else setTimeout(initServiceCardHover, 1);
 (function () {
     function initBackgroundParallax() {
         const targets = [
-            { el: document.getElementById('plans-bridge-photo'),    factor: 0.18 },
-            { el: document.getElementById('portfolio-orb-1-wrap'),  factor: 0.16 },
-            { el: document.getElementById('portfolio-orb-2-wrap'),  factor: -0.14 },
+            { el: document.getElementById('plans-bridge-photo'),       factor: 0.18 },
+            { el: document.getElementById('portfolio-orb-1-wrap'),     factor: 0.16 },
+            { el: document.getElementById('portfolio-orb-2-wrap'),     factor: -0.14 },
+            { el: document.getElementById('plans-portfolio-divider'),  factor: 0.45 },
         ].filter(t => t.el);
         if (!targets.length) return;
 
