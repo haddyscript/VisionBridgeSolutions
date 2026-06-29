@@ -468,9 +468,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     </div>
 </section>
 
-{{-- Bridge cable divider --}}
-<div class="bg-white py-12" aria-hidden="true">
-    <div class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
+{{-- Bridge cable divider — sits right at the Our Team/Services seam.
+     Same fixed-background parallax technique as the Plans/Portfolio
+     divider: the photo stays pinned to the viewport (background-attachment:
+     fixed, like the site's own footer) while the page content scrolls
+     past it. Reuses the bridge photo already used in the Our Team panel
+     just above, for visual continuity. --}}
+<div class="relative" style="height:380px;overflow:hidden;background-image:url('@assetv('image/bridge-background-image-v2.png')');background-attachment:fixed;background-size:cover;background-position:center 35%;" aria-hidden="true">
+    <div class="absolute inset-0" style="background:linear-gradient(to bottom, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.55) 100%);"></div>
+    <div class="relative h-full flex items-center justify-center">
+        <div class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
+    </div>
 </div>
 
 {{-- ============================================================
