@@ -109,3 +109,17 @@ A plain-language summary of everything the site and client portal offer today.
 | Any payment is completed | Our team |
 | A maintenance plan falls past due or is canceled | Our team |
 | Something technical breaks behind the scenes | Our team (so we can fix it fast) |
+
+## 6. Known Gaps & Technical Limitations (Dev Notes)
+
+Audit findings from comparing the onboarding workflow against actual code (2026-06-29). For engineers picking this up — not client-facing copy.
+
+| Area | Current behavior | File(s) | Gap |
+|---|---|---|---|
+| Care Plan selection vs. summary | `CarePlanAgreementController::store` validates `maintenance_plan_id` + `agree` in a single POST | `app/Http/Controllers/Portal/CarePlanAgreementController.php:30-72` | No intermediate "review your selected plan" confirmation screen between picking a plan and committing to it — selection and acknowledgment are one step, not two |
+| Initial 50% deposit | A deposit `PaymentRequest` is only created the first time an admin manually sets `total_price` on the project | `app/Http/Controllers/Admin/ProjectController.php:33-63` | Not automatic — requires a human to quote a price first. If the business wants deposit collection to fire automatically right after onboarding/file upload (no admin step), this needs a pre-set/fixed pricing model or a new trigger independent of manual quoting |
+| Onboarding step enforcement | `EnsureOnboardingComplete` middleware gates exactly: Care Plan agreement → Service Agreement signature → Questionnaire, then releases the user into the dashboard | `app/Http/Middleware/EnsureOnboardingComplete.php:24-34` | File uploads and deposit payment are **not** gated/sequenced steps — they're just available features post-onboarding, not enforced in order |
+| "Welcome Dashboard" | `portal.dashboard` (`DashboardController`) is the single dashboard shown both immediately after onboarding and on every later visit | `routes/web.php:113`, all onboarding controllers redirect here | No distinct first-time "welcome" variant exists — "welcome" elsewhere only refers to the account-creation welcome *email*, not a dashboard screen |
+| Agreement audit trail | Already solid — no gap, noting for context | `app/Http/Controllers/Portal/ServiceAgreementController.php:64-74`, `CarePlanAgreementController.php:49-67` | Both Care Plan agreement and Service Agreement signatures capture `ip_address`, `user_agent`, and a timestamp; the Service Agreement additionally binds the signature to a specific template via `service_agreement_template_id` + a SHA-256 `agreement_hash` of the signed wording, so edits to the template later never alter what a past signature legally represents |
+
+**Likely next work once the Master Agreement arrives:** it will probably replace the current two-step Care Plan Agreement + Service Agreement flow with one consolidated document/model — plan accordingly rather than just adding a third agreement step.
