@@ -1165,10 +1165,26 @@
                         <stop offset="0%" stop-color="#7FD9D6" stop-opacity="0"/>
                         <stop offset="100%" stop-color="#7FD9D6" stop-opacity="0.7"/>
                     </linearGradient>
+                    <linearGradient id="skyGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#EAF3F8"/>
+                        <stop offset="55%" stop-color="#F7FAFC"/>
+                        <stop offset="100%" stop-color="#FFFFFF"/>
+                    </linearGradient>
+                    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#FFE9B0" stop-opacity="0.55"/>
+                        <stop offset="55%" stop-color="#C9A84C" stop-opacity="0.18"/>
+                        <stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/>
+                    </radialGradient>
                 </defs>
+                {{-- Soft sky backdrop + a warm gold glow the plane climbs
+                     toward — echoes the golden-hour bridge photo used
+                     elsewhere on the site, instead of a flat white void --}}
+                <rect width="1600" height="900" fill="url(#skyGradient)"/>
+                <circle cx="1320" cy="200" r="280" fill="url(#sunGlow)"/>
                 {{-- Soft clouds — each one drifts/parts away once the plane
-                     flies past it (synced in the JS timeline below) --}}
-                <g id="cloud-1" fill="#DCE3E9" opacity="0.85">
+                     flies past it (synced in the JS timeline below). Varied
+                     opacity reads as atmospheric depth (farther = fainter). --}}
+                <g id="cloud-1" fill="#DCE3E9" opacity="0.65">
                     <ellipse cx="260" cy="400" rx="55" ry="26"/>
                     <ellipse cx="305" cy="388" rx="38" ry="22"/>
                     <ellipse cx="215" cy="392" rx="34" ry="20"/>
@@ -1178,12 +1194,12 @@
                     <ellipse cx="712" cy="358" rx="40" ry="22"/>
                     <ellipse cx="608" cy="362" rx="36" ry="20"/>
                 </g>
-                <g id="cloud-3" fill="#DCE3E9" opacity="0.85">
+                <g id="cloud-3" fill="#DCE3E9" opacity="0.72">
                     <ellipse cx="1080" cy="360" rx="58" ry="26"/>
                     <ellipse cx="1128" cy="348" rx="38" ry="20"/>
                     <ellipse cx="1030" cy="352" rx="34" ry="19"/>
                 </g>
-                <g id="cloud-4" fill="#DCE3E9" opacity="0.85">
+                <g id="cloud-4" fill="#DCE3E9" opacity="0.92">
                     <ellipse cx="1430" cy="340" rx="60" ry="27"/>
                     <ellipse cx="1480" cy="328" rx="38" ry="21"/>
                     <ellipse cx="1378" cy="332" rx="35" ry="19"/>
@@ -1223,10 +1239,18 @@
                     {{-- Bigger airplane with softly rounded wing/tail tips (no sharp points) --}}
                     <path d="M14,588 Q-18,560 -10,548 Q16,562 52,588 Z" fill="url(#planeBody)"/>
                     <path d="M78,614 Q46,644 42,652 Q70,630 124,614 Z" fill="url(#planeBody)"/>
+                    {{-- Tail fin + horizontal stabilizer — gives the silhouette
+                         a recognizable nose/tail instead of reading as a
+                         plain capsule from a distance --}}
+                    <path d="M16,589 L4,565 L26,586 Z" fill="url(#planeBody)" opacity="0.95"/>
+                    <path d="M10,597 Q-12,593 -22,598 Q-12,603 10,601 Z" fill="url(#planeBody)" opacity="0.9"/>
                     <rect x="10" y="588" width="135" height="24" rx="12" fill="url(#planeBody)"/>
+                    {{-- Top-edge highlight — reads as cylindrical shading on the fuselage --}}
+                    <rect x="14" y="590" width="120" height="2.5" rx="1.2" fill="#6B7986" opacity="0.45"/>
                     <ellipse cx="155" cy="600" rx="15" ry="13" fill="url(#planeBody)"/>
                     <rect x="14" y="598" width="125" height="4" rx="2" fill="#C9A84C" opacity="0.85"/>
                     <ellipse cx="115" cy="596" rx="11" ry="8" fill="#EAF3F8" opacity="0.92"/>
+                    <ellipse cx="119" cy="593" rx="4" ry="2.4" fill="#FFFFFF" opacity="0.6"/>
                 </g>
             </svg>
         </div>
