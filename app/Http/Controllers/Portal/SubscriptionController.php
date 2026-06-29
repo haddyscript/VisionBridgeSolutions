@@ -88,14 +88,12 @@ class SubscriptionController extends Controller
             return redirect()->route('portal.payments.index')->with('status', 'This maintenance plan is already active.');
         }
 
-        $clientSecret = $stripeSubscription->latest_invoice->payment_intent?->client_secret;
-
-        if ($clientSecret === null) {
-            // Fall back to a direct fetch in case the nested expand above
-            // didn't come through — logged either way so this is never silent.
-            $invoice = \Stripe\Invoice::retrieve($stripeSubscription->latest_invoice, ['expand' => ['payment_intent']]);
-            $clientSecret = $invoice->payment_intent?->client_secret;
-        }
+        // This Stripe account's API version no longer exposes `payment_intent`
+        // on invoices — it's been replaced by `confirmation_secret`. Checking
+        // both keeps this working regardless of which the account is on.
+        $latestInvoice = $stripeSubscription->latest_invoice;
+        $clientSecret = $latestInvoice->confirmation_secret?->client_secret
+            ?? $latestInvoice->payment_intent?->client_secret;
 
         if ($clientSecret === null) {
             Log::error('No PaymentIntent client secret available for maintenance plan checkout.', [
