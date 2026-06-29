@@ -36,6 +36,10 @@ class SubscriptionController extends Controller
                 'expand' => ['latest_invoice.payment_intent'],
             ]);
         } else {
+            // Unlike Checkout Sessions, the Subscriptions API doesn't accept
+            // inline product_data on price_data — it needs a real Product id.
+            $product = \Stripe\Product::create(['name' => $subscription->description]);
+
             $stripeSubscription = \Stripe\Subscription::create([
                 'customer' => $request->user()->getOrCreateStripeCustomerId(),
                 'items' => [[
@@ -43,9 +47,7 @@ class SubscriptionController extends Controller
                         'currency' => $subscription->currency,
                         'unit_amount' => $subscription->amount,
                         'recurring' => ['interval' => $subscription->interval],
-                        'product_data' => [
-                            'name' => $subscription->description,
-                        ],
+                        'product' => $product->id,
                     ],
                 ]],
                 'payment_behavior' => 'default_incomplete',
