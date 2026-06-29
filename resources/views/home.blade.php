@@ -1560,8 +1560,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             const cards = Array.from(track.children);
             if (!cards.length) return;
 
-            // Default to the first available plan if one exists, else index 0
-            let currentIndex = Math.max(0, cards.findIndex(c => !c.classList.contains('plans-card-dim')));
+            // Default to the 2nd plan (our recommended/"Most Popular" tier)
+            // if it exists and is available, else fall back to the first
+            // available plan.
+            const preferredIndex = 1;
+            let currentIndex = (cards[preferredIndex] && !cards[preferredIndex].classList.contains('plans-card-dim'))
+                ? preferredIndex
+                : Math.max(0, cards.findIndex(c => !c.classList.contains('plans-card-dim')));
             let dragging = false, dragStartX = 0, trackStartX = 0;
 
             function cardOffset(index) {
