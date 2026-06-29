@@ -68,7 +68,11 @@ class SubscriptionReconciler
             'trialing' => 'active',
             'past_due' => 'past_due',
             'unpaid' => 'past_due',
-            'incomplete' => 'past_due',
+            // 'incomplete' means the very first invoice has never been paid —
+            // that's not the same as an active plan falling behind, so it
+            // maps back to 'pending' (which is also what keeps the "Start
+            // Plan" button showing so the client can retry).
+            'incomplete' => 'pending',
             'incomplete_expired' => 'canceled',
             'canceled' => 'canceled',
             'paused' => 'canceled',
