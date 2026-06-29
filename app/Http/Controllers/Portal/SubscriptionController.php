@@ -117,7 +117,22 @@ class SubscriptionController extends Controller
         }
 
         if (! in_array($stripeSubscription->status, ['active', 'trialing'], true)) {
-            return response()->json(['error' => 'Your card was declined. Please try a different card.'], 422);
+            // Charge objects keep a clean, human-readable failure_message
+            // regardless of Stripe API version — more reliable than digging
+            // through the invoice/payment-intent shape for the same reason.
+            $charges = \Stripe\Charge::all(['customer' => $setupIntent->customer, 'limit' => 1]);
+            $declineReason = $charges->data[0]->failure_message ?? null;
+
+            Log::warning('Maintenance plan subscription created but not active after first charge attempt.', [
+                'subscription_id' => $subscription->id,
+                'stripe_subscription_id' => $stripeSubscription->id,
+                'stripe_status' => $stripeSubscription->status,
+                'decline_reason' => $declineReason,
+            ]);
+
+            return response()->json([
+                'error' => $declineReason ?? 'Your card could not be charged. Please try a different card.',
+            ], 422);
         }
 
         return response()->json(['redirect' => route('portal.payments.index').'?checkout=success']);
