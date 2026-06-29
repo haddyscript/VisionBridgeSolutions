@@ -2259,9 +2259,9 @@ else setTimeout(initServiceCardHover, 1);
 (function () {
     function initBackgroundParallax() {
         const targets = [
-            { el: document.getElementById('plans-bridge-photo'),    factor: 0.12 },
-            { el: document.getElementById('portfolio-orb-1-wrap'),  factor: 0.10 },
-            { el: document.getElementById('portfolio-orb-2-wrap'),  factor: -0.08 },
+            { el: document.getElementById('plans-bridge-photo'),    factor: 0.18 },
+            { el: document.getElementById('portfolio-orb-1-wrap'),  factor: 0.16 },
+            { el: document.getElementById('portfolio-orb-2-wrap'),  factor: -0.14 },
         ].filter(t => t.el);
         if (!targets.length) return;
 
@@ -2269,13 +2269,18 @@ else setTimeout(initServiceCardHover, 1);
 
         function update() {
             const vh = window.innerHeight;
-            targets.forEach(({ el, factor }) => {
-                const rect = el.getBoundingClientRect();
-                // Distance of the element's center from the viewport's
-                // center, scaled down — background drifts at a fraction of
-                // scroll speed instead of 1:1 with the content around it.
-                const distanceFromCenter = (rect.top + rect.height / 2) - vh / 2;
-                el.style.transform = `translateY(${distanceFromCenter * factor}px)`;
+            targets.forEach(t => {
+                const rect = t.el.getBoundingClientRect();
+                // getBoundingClientRect() already includes whatever translateY
+                // we applied last frame, so undo it first to get the element's
+                // true (untransformed) position — otherwise each frame measures
+                // a position that already includes the previous drift, and the
+                // effect quickly collapses toward zero instead of tracking scroll.
+                const naturalCenter = (rect.top - (t.lastDrift || 0)) + rect.height / 2;
+                const distanceFromCenter = naturalCenter - vh / 2;
+                const drift = distanceFromCenter * t.factor;
+                t.el.style.transform = `translateY(${drift}px)`;
+                t.lastDrift = drift;
             });
             ticking = false;
         }
