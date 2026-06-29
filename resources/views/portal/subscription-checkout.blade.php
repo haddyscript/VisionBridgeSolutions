@@ -1,38 +1,49 @@
 @extends('layouts.portal')
 
 @section('title', 'Start Maintenance Plan – Client Portal')
-@section('page-title', 'Start Maintenance Plan')
+@section('page-title', 'Checkout')
 
 @section('content')
 
-<a href="{{ route('portal.payments.index') }}" class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white mb-5">
-    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-    Back to Payments
-</a>
+<div class="max-w-5xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-<div class="max-w-lg mx-auto">
-    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div class="px-7 py-6" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
-            <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Maintenance Plan</p>
-            <h2 class="font-display text-xl font-bold text-white">{{ $subscription->description }}</h2>
-            <p class="text-white/60 text-sm mt-1">{{ $subscription->formattedAmount() }}, billed automatically until canceled</p>
-        </div>
+        <div class="lg:col-span-2 lg:border-r lg:border-gray-200 dark:lg:border-gray-700 lg:pr-10">
+            <h3 class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-4">Payment Method</h3>
 
-        <div class="p-7">
             <div id="checkout-error" class="hidden mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3"></div>
 
             <form id="payment-form">
-                <div id="payment-element" class="mb-5"></div>
+                <div id="payment-element" class="mb-6"></div>
 
-                <button id="submit-button" type="submit" class="w-full bg-gold hover:bg-gold-dark text-navy-dark font-bold text-base py-3.5 rounded-lg transition-colors shadow disabled:opacity-60 disabled:cursor-not-allowed">
-                    <span id="submit-button-text">Start Plan — {{ $subscription->formattedAmount() }}</span>
-                </button>
+                <div class="flex items-center justify-end gap-3">
+                    <a href="{{ route('portal.payments.index') }}" class="text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white px-5 py-2.5 rounded-lg transition-colors">
+                        Back
+                    </a>
+                    <button id="submit-button" type="submit" class="bg-gold hover:bg-gold-dark text-navy-dark font-bold text-sm px-7 py-2.5 rounded-lg transition-colors shadow disabled:opacity-60 disabled:cursor-not-allowed">
+                        <span id="submit-button-text">Start Plan — {{ $subscription->formattedAmount() }}</span>
+                    </button>
+                </div>
             </form>
 
-            <p class="text-xs text-gray-400 dark:text-gray-500 text-center mt-4">
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-6">
                 Payments are processed securely by Stripe. Your card details never touch our servers.
             </p>
         </div>
+
+        <div class="lg:col-span-1">
+            <h3 class="font-display text-xl font-bold text-navy dark:text-white mb-5">Summary</h3>
+            <div class="flex items-center justify-between gap-4 py-3 border-b border-gray-100 dark:border-gray-700 text-sm">
+                <span class="text-gray-500 dark:text-gray-400">{{ $subscription->description }}</span>
+                <span class="font-semibold text-navy dark:text-white shrink-0">{{ $subscription->formattedAmount() }}</span>
+            </div>
+            <div class="flex items-center justify-between gap-4 pt-4">
+                <span class="font-display font-bold text-navy dark:text-white">Total Today</span>
+                <span class="font-display text-lg font-bold text-navy dark:text-white">{{ $subscription->formattedAmount() }}</span>
+            </div>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-3">Billed automatically every {{ $subscription->interval }} until canceled.</p>
+        </div>
+
     </div>
 </div>
 
@@ -40,7 +51,37 @@
 <script>
 (function () {
     const stripe = Stripe('{{ $stripeKey }}');
-    const elements = stripe.elements({ clientSecret: '{{ $clientSecret }}' });
+    const elements = stripe.elements({
+        clientSecret: '{{ $clientSecret }}',
+        appearance: {
+            theme: 'stripe',
+            variables: {
+                colorPrimary: '#C9A84C',
+                colorBackground: '#ffffff',
+                colorText: '#1B2A4A',
+                colorDanger: '#dc2626',
+                fontFamily: 'Inter, sans-serif',
+                borderRadius: '8px',
+                spacingUnit: '4px',
+            },
+            rules: {
+                '.Input': {
+                    border: '1px solid #d1d5db',
+                    boxShadow: 'none',
+                    padding: '10px 12px',
+                },
+                '.Input:focus': {
+                    border: '1px solid #C9A84C',
+                    boxShadow: '0 0 0 1px #C9A84C',
+                },
+                '.Label': {
+                    fontWeight: '500',
+                    color: '#374151',
+                    marginBottom: '6px',
+                },
+            },
+        },
+    });
     const paymentElement = elements.create('payment');
     paymentElement.mount('#payment-element');
 
@@ -48,13 +89,14 @@
     const submitButton = document.getElementById('submit-button');
     const submitButtonText = document.getElementById('submit-button-text');
     const errorBox = document.getElementById('checkout-error');
+    const originalButtonText = submitButtonText.textContent;
     const setupIntentId = '{{ $clientSecret }}'.split('_secret_')[0];
     let submitting = false;
 
     function resetButton() {
         submitting = false;
         submitButton.disabled = false;
-        submitButtonText.textContent = 'Start Plan — {{ $subscription->formattedAmount() }}';
+        submitButtonText.textContent = originalButtonText;
     }
 
     function showError(message) {
