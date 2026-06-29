@@ -7,7 +7,10 @@ use App\Models\Subscription;
 use App\Models\SubscriptionPayment;
 use App\Services\SubscriptionReconciler;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Stripe\BillingPortal\Session as BillingPortalSession;
+use Stripe\Exception\ApiErrorException;
+use Stripe\HttpClient\CurlClient;
 use Stripe\Stripe;
 
 class SubscriptionController extends Controller
@@ -28,33 +31,55 @@ class SubscriptionController extends Controller
 
         Stripe::setApiKey(config('services.stripe.secret'));
 
-        if ($subscription->stripe_subscription_id) {
-            // Client returned after an earlier failed/abandoned attempt — reuse
-            // the existing incomplete subscription instead of creating another.
-            $stripeSubscription = \Stripe\Subscription::retrieve($subscription->stripe_subscription_id);
-        } else {
-            // Unlike Checkout Sessions, the Subscriptions API doesn't accept
-            // inline product_data on price_data — it needs a real Product id.
-            $product = \Stripe\Product::create(['name' => $subscription->description]);
+        // Fail fast and loudly instead of hanging until PHP's hard execution
+        // timeout silently kills the request (which produces a generic host
+        // error page with nothing logged — exactly what happened before).
+        $curl = new CurlClient();
+        $curl->setTimeout(20);
+        $curl->setConnectTimeout(10);
+        \Stripe\ApiRequestor::setHttpClient($curl);
 
-            $stripeSubscription = \Stripe\Subscription::create([
-                'customer' => $request->user()->getOrCreateStripeCustomerId(),
-                'items' => [[
-                    'price_data' => [
-                        'currency' => $subscription->currency,
-                        'unit_amount' => $subscription->amount,
-                        'recurring' => ['interval' => $subscription->interval],
-                        'product' => $product->id,
+        try {
+            if ($subscription->stripe_subscription_id) {
+                // Client returned after an earlier failed/abandoned attempt —
+                // reuse the existing incomplete subscription instead of
+                // creating another.
+                $stripeSubscription = \Stripe\Subscription::retrieve([
+                    'id' => $subscription->stripe_subscription_id,
+                    'expand' => ['latest_invoice.payment_intent'],
+                ]);
+            } else {
+                // Unlike Checkout Sessions, the Subscriptions API doesn't accept
+                // inline product_data on price_data — it needs a real Product id.
+                $product = \Stripe\Product::create(['name' => $subscription->description]);
+
+                $stripeSubscription = \Stripe\Subscription::create([
+                    'customer' => $request->user()->getOrCreateStripeCustomerId(),
+                    'items' => [[
+                        'price_data' => [
+                            'currency' => $subscription->currency,
+                            'unit_amount' => $subscription->amount,
+                            'recurring' => ['interval' => $subscription->interval],
+                            'product' => $product->id,
+                        ],
+                    ]],
+                    'payment_behavior' => 'default_incomplete',
+                    'payment_settings' => ['save_default_payment_method' => 'on_subscription'],
+                    'expand' => ['latest_invoice.payment_intent'],
+                    'metadata' => [
+                        'subscription_id' => $subscription->id,
                     ],
-                ]],
-                'payment_behavior' => 'default_incomplete',
-                'payment_settings' => ['save_default_payment_method' => 'on_subscription'],
-                'metadata' => [
-                    'subscription_id' => $subscription->id,
-                ],
+                ]);
+
+                $subscription->update(['stripe_subscription_id' => $stripeSubscription->id]);
+            }
+        } catch (ApiErrorException $e) {
+            Log::error('Stripe error starting maintenance plan checkout.', [
+                'subscription_id' => $subscription->id,
+                'error' => $e->getMessage(),
             ]);
 
-            $subscription->update(['stripe_subscription_id' => $stripeSubscription->id]);
+            abort(500, 'Could not reach Stripe to start this plan. Please try again shortly.');
         }
 
         // Already paid (e.g. the client double-clicked, or the webhook beat us
@@ -63,17 +88,23 @@ class SubscriptionController extends Controller
             return redirect()->route('portal.payments.index')->with('status', 'This maintenance plan is already active.');
         }
 
-        // Fetched separately (rather than via a nested `expand` on the
-        // subscription call above) because Stripe doesn't reliably expand
-        // two levels deep (latest_invoice.payment_intent) on Subscription
-        // create/retrieve calls.
-        $invoice = \Stripe\Invoice::retrieve($stripeSubscription->latest_invoice, [
-            'expand' => ['payment_intent'],
-        ]);
+        $clientSecret = $stripeSubscription->latest_invoice->payment_intent?->client_secret;
 
-        $clientSecret = $invoice->payment_intent?->client_secret;
+        if ($clientSecret === null) {
+            // Fall back to a direct fetch in case the nested expand above
+            // didn't come through — logged either way so this is never silent.
+            $invoice = \Stripe\Invoice::retrieve($stripeSubscription->latest_invoice, ['expand' => ['payment_intent']]);
+            $clientSecret = $invoice->payment_intent?->client_secret;
+        }
 
-        abort_if($clientSecret === null, 500, 'Could not start a payment for this plan — please try again or contact support.');
+        if ($clientSecret === null) {
+            Log::error('No PaymentIntent client secret available for maintenance plan checkout.', [
+                'subscription_id' => $subscription->id,
+                'stripe_subscription_id' => $stripeSubscription->id,
+            ]);
+
+            abort(500, 'Could not start a payment for this plan — please try again or contact support.');
+        }
 
         return view('portal.subscription-checkout', [
             'subscription' => $subscription,
