@@ -35,6 +35,11 @@ class SubscriptionController extends Controller
         try {
             $setupIntent = \Stripe\SetupIntent::create([
                 'customer' => $request->user()->getOrCreateStripeCustomerId(),
+                // Plain card only — Stripe's automatic_payment_methods default
+                // also offers Link/Bancontact/etc., and Link's own "fast
+                // checkout" auto-confirm raced with our form's submit handler,
+                // confirming the same SetupIntent twice.
+                'payment_method_types' => ['card'],
                 'usage' => 'off_session',
                 'metadata' => ['subscription_id' => $subscription->id],
             ]);

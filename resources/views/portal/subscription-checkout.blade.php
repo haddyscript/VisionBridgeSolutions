@@ -48,8 +48,11 @@
     const submitButton = document.getElementById('submit-button');
     const submitButtonText = document.getElementById('submit-button-text');
     const errorBox = document.getElementById('checkout-error');
+    const setupIntentId = '{{ $clientSecret }}'.split('_secret_')[0];
+    let submitting = false;
 
     function resetButton() {
+        submitting = false;
         submitButton.disabled = false;
         submitButtonText.textContent = 'Start Plan — {{ $subscription->formattedAmount() }}';
     }
@@ -60,26 +63,7 @@
         resetButton();
     }
 
-    form.addEventListener('submit', async function (e) {
-        e.preventDefault();
-
-        submitButton.disabled = true;
-        submitButtonText.textContent = 'Saving card…';
-        errorBox.classList.add('hidden');
-
-        const { error, setupIntent } = await stripe.confirmSetup({
-            elements,
-            confirmParams: {
-                return_url: window.location.href,
-            },
-            redirect: 'if_required',
-        });
-
-        if (error) {
-            showError(error.message);
-            return;
-        }
-
+    async function finishSetup() {
         submitButtonText.textContent = 'Starting plan…';
 
         try {
@@ -90,7 +74,7 @@
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
                 },
-                body: JSON.stringify({ setup_intent: setupIntent.id }),
+                body: JSON.stringify({ setup_intent: setupIntentId }),
             });
 
             const data = await response.json();
@@ -104,6 +88,39 @@
         } catch (err) {
             showError('Could not finish setting up this plan. Please try again.');
         }
+    }
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        if (submitting) return;
+        submitting = true;
+
+        submitButton.disabled = true;
+        submitButtonText.textContent = 'Saving card…';
+        errorBox.classList.add('hidden');
+
+        const { error } = await stripe.confirmSetup({
+            elements,
+            confirmParams: {
+                return_url: window.location.href,
+            },
+            redirect: 'if_required',
+        });
+
+        if (error) {
+            // Something else (e.g. Stripe Link) already confirmed this same
+            // SetupIntent successfully — that's a success for us too.
+            if (error.code === 'setup_intent_unexpected_state' && error.setup_intent?.status === 'succeeded') {
+                await finishSetup();
+                return;
+            }
+
+            showError(error.message);
+            return;
+        }
+
+        await finishSetup();
     });
 })();
 </script>
