@@ -410,6 +410,34 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 </div>
             </div>
         </div>
+
+        {{-- Our Team — collaborative team messaging, single point of contact --}}
+        <div id="about-team-panel" class="mt-10 rounded-3xl relative overflow-hidden py-16 px-6 sm:py-20 sm:px-12 lg:py-24 lg:px-16" style="background:linear-gradient(145deg,#1F2730 0%,#2F3A45 100%);">
+            <div class="hero-orb" style="width:480px;height:480px;top:-140px;left:-120px;background:radial-gradient(circle,rgba(201,168,76,0.10) 0%,transparent 70%);animation:orb-drift 24s ease-in-out infinite;filter:blur(58px);"></div>
+            <div class="hero-orb" style="width:380px;height:380px;bottom:-100px;right:-80px;background:radial-gradient(circle,rgba(42,157,143,0.08) 0%,transparent 70%);animation:orb-drift 28s ease-in-out infinite reverse 3s;filter:blur(50px);"></div>
+            <div class="relative max-w-3xl mx-auto text-center" style="z-index:1;">
+                <span class="inline-block text-gold text-sm font-semibold tracking-widest uppercase mb-3">Our Team</span>
+                <p class="text-white/85 mb-5" style="font-size:1rem;line-height:1.8;">
+                    At VisionBridge Solutions, we believe every successful website is the result of collaboration.
+                </p>
+                <p class="text-white/70 mb-5" style="font-size:0.95rem;line-height:1.8;">
+                    Our experienced team of website designers, developers, technical specialists, and support professionals work together to deliver reliable, high-quality digital solutions for every client we serve.
+                </p>
+                <p class="text-white/70 mb-5" style="font-size:0.95rem;line-height:1.8;">
+                    From your initial consultation through website launch and ongoing maintenance, our team is committed to providing professional service, dependable support, and long-term website stability.
+                </p>
+                <p class="text-white/70 mb-8" style="font-size:0.95rem;line-height:1.8;">
+                    Every project is managed through VisionBridge Solutions, giving our clients a single point of contact and a seamless experience from beginning to end.
+                </p>
+                <div class="glow-line" style="width:52px;margin:0 auto 22px;"></div>
+                <p class="font-display text-gold font-bold mb-1" style="font-size:1.1rem;">Our mission is simple:</p>
+                <p class="text-white/85 mb-8" style="font-size:0.95rem;line-height:1.8;">
+                    To build professional websites that help churches, ministries, nonprofits, and businesses expand their reach while providing dependable long-term support.
+                </p>
+                <p class="font-display font-bold text-white" style="font-size:1.05rem;">VisionBridge Solutions</p>
+                <p class="text-gold text-xs tracking-widest uppercase mt-1">Building Websites. Expanding Reach.</p>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -870,6 +898,43 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             @endforeach
         </div>
 
+    </div>
+</section>
+
+{{-- Bridge cable divider --}}
+<div class="bg-white py-8" aria-hidden="true">
+    <div class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
+</div>
+
+{{-- ============================================================
+     OUR TEAM SECTION (shorter version, above Contact)
+     ============================================================ --}}
+<section id="partnership" class="py-20 bg-white relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div id="partnership-header" class="text-center mb-10 max-w-2xl mx-auto">
+            <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Our Team</span>
+            <h2 class="section-title">A Single Team, A Seamless Experience</h2>
+            <p class="section-subtitle">Every project is managed through VisionBridge Solutions, giving our clients one point of contact from beginning to end.</p>
+        </div>
+
+        <div class="partnership-zoom-item max-w-3xl mx-auto rounded-2xl border border-navy/10 overflow-hidden" style="background:linear-gradient(160deg,#FFFFFF 0%,#FAFBFD 100%);">
+            <div class="p-8 sm:p-10 text-center">
+                <div class="w-12 h-12 bg-navy rounded-xl flex items-center justify-center mb-5 mx-auto">
+                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 100-8 4 4 0 000 8zm6 0a4 4 0 100-8"/></svg>
+                </div>
+                <p class="text-sm text-gray-600" style="line-height:1.8;">
+                    Our experienced team of designers, developers, technical specialists, and support professionals works together behind the scenes to deliver reliable, high-quality digital solutions for every client we serve.
+                </p>
+            </div>
+        </div>
+
+        <!-- Ownership note -->
+        <div class="partnership-zoom-item mt-10 max-w-3xl mx-auto bg-navy/5 border border-navy/10 rounded-xl p-6 text-center">
+            <svg class="w-8 h-8 text-gold mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+            <p class="text-navy font-semibold text-sm">VisionBridge Solutions retains full ownership of all client websites, branding, hosting accounts, and associated assets.</p>
+        </div>
     </div>
 </section>
 
