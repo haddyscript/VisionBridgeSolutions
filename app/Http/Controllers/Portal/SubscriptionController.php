@@ -115,7 +115,16 @@ class SubscriptionController extends Controller
                 'metadata' => ['subscription_id' => $subscription->id],
             ]);
 
-            $subscription->update(['stripe_subscription_id' => $stripeSubscription->id]);
+            // Set status here too (not just stripe_subscription_id) — canceling
+            // the stale old subscription above can trigger its webhook to land
+            // *during* this request (matching by the old id, which is still
+            // what's saved locally at that point) and overwrite status to
+            // 'canceled' before we get here. Writing the real status now wins
+            // the race regardless of timing.
+            $subscription->update([
+                'stripe_subscription_id' => $stripeSubscription->id,
+                'status' => in_array($stripeSubscription->status, ['active', 'trialing'], true) ? 'active' : 'pending',
+            ]);
         } catch (ApiErrorException $e) {
             Log::error('Stripe error confirming maintenance plan subscription.', [
                 'subscription_id' => $subscription->id,
