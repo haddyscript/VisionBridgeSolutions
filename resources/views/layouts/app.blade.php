@@ -14,6 +14,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 
+    {{-- Start fetching GSAP early — these load via a deferred script tag
+         near the bottom of body, so without a preload hint the browser
+         doesn't even discover the URLs until the parser reaches that far
+         down, delaying every animation init function's first successful
+         retry. --}}
+    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js">
+    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js">
+
     <!-- Tailwind CDN with custom config -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -148,6 +156,14 @@
             33%      { transform:translate(28px,-22px) scale(1.05); }
             66%      { transform:translate(-18px,14px) scale(.96); }
         }
+
+        /* ─── Off-screen animation pause (perf) ───
+           Toggled by JS via IntersectionObserver on the always-running
+           "infinite" CSS animations scattered around the page (orb drift,
+           shimmer, pulse, wave glide) so they stop burning CPU/GPU cycles
+           while their section isn't visible. */
+        .anim-paused { animation-play-state: paused !important; }
+        .live-dot.anim-paused::after { animation-play-state: paused !important; }
 
         /* ─── Dot-grid texture ─── */
         .hero-grid-dots {
@@ -1015,7 +1031,7 @@
          further down for behavior. --}}
     @if (request()->routeIs('home'))
         <div id="intro-overlay" style="position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden;">
-            <video id="intro-video" autoplay muted playsinline preload="auto"
+            <video id="intro-video" autoplay muted playsinline preload="metadata"
                    style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
                 <source src="@assetv('videos/Web_development_company_hero_video.mp4')" type="video/mp4">
             </video>
@@ -1635,6 +1651,15 @@
             const skip  = document.getElementById('intro-skip');
             let revealed = false;
 
+            // Skip the video entirely for visitors who've asked for less
+            // motion — avoids the decode/playback cost altogether instead
+            // of just not animating it.
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                overlay.style.display = 'none';
+                window.dispatchEvent(new CustomEvent('intro:complete'));
+                return;
+            }
+
             document.body.style.overflow = 'hidden';
 
             function revealSite() {
@@ -1661,6 +1686,32 @@
             setTimeout(revealSite, 12000);
         }
         initIntro();
+    })();
+    </script>
+
+    {{-- Pause always-running "infinite" CSS animations (orb drift, shimmer,
+         pulse, wave glide) while their element is off-screen — pure CSS
+         animations, no GSAP dependency, so this can run immediately. --}}
+    <script defer>
+    (function () {
+        function initOffscreenAnimPause() {
+            const selectors = [
+                '.hero-orb', '#svc-toggle-btn', '.wave-teal', '.wave-main',
+                '.shimmer-gold', '.live-dot', '.float-card-1', '.float-card-2',
+                '#hscroll-edge-arrow',
+            ];
+            const els = document.querySelectorAll(selectors.join(','));
+            if (!els.length) return;
+
+            const io = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    entry.target.classList.toggle('anim-paused', !entry.isIntersecting);
+                });
+            }, { rootMargin: '150px 0px' });
+
+            els.forEach(el => io.observe(el));
+        }
+        initOffscreenAnimPause();
     })();
     </script>
 
