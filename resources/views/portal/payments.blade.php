@@ -70,8 +70,8 @@
                 </div>
                 <div class="rounded-xl px-5 py-4" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);">
                     <p class="text-xs font-medium uppercase tracking-wide text-white/40 mb-1.5">Maintenance Plan</p>
-                    @if ($subscription && ! $subscription->isCanceled())
-                        <p class="font-display text-2xl font-bold text-white">{{ $subscription->isActive() ? 'Active' : ucfirst($subscription->status) }}</p>
+                    @if ($subscription)
+                        <p class="font-display text-2xl font-bold {{ $subscription->isCanceled() ? 'text-white/40' : 'text-white' }}">{{ $subscription->status === 'past_due' ? 'Past Due' : ucfirst($subscription->status) }}</p>
                     @else
                         <p class="font-display text-2xl font-bold text-white/40">None</p>
                     @endif
@@ -81,7 +81,7 @@
     </div>
 
     {{-- Maintenance Plan --}}
-    @if ($subscription && ! $subscription->isCanceled())
+    @if ($subscription)
         <div id="maintenance-plan-card" class="subscription-card cursor-pointer bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 mb-6 hover:shadow-md hover:border-gold/40 transition-all"
              data-description="{{ $subscription->description }}"
              data-amount="{{ $subscription->formattedAmount() }}"
@@ -91,7 +91,7 @@
              data-period-end="{{ $subscription->current_period_end?->format('M j, Y') }}"
              data-cancel-at-period-end="{{ $subscription->cancel_at_period_end ? '1' : '0' }}"
              data-checkout-url="{{ $subscription->isPending() ? route('portal.subscriptions.checkout', $subscription) : '' }}"
-             data-billing-portal-url="{{ ! $subscription->isPending() ? route('portal.billing.show') : '' }}">
+             data-billing-portal-url="{{ ! $subscription->isPending() && ! $subscription->isCanceled() ? route('portal.billing.show') : '' }}">
             <div class="flex flex-wrap items-center justify-between gap-5">
                 <div class="flex items-center gap-4">
                     <span class="w-12 h-12 rounded-xl bg-teal/10 flex items-center justify-center shrink-0">
@@ -102,7 +102,9 @@
                         <p class="font-display text-lg font-bold text-navy dark:text-white">{{ $subscription->description }}</p>
                         <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
                             {{ $subscription->formattedAmount() }}
-                            @if ($subscription->cancel_at_period_end && $subscription->current_period_end)
+                            @if ($subscription->isCanceled() && $subscription->canceled_at)
+                                &middot; canceled {{ $subscription->canceled_at->format('M j, Y') }}
+                            @elseif ($subscription->cancel_at_period_end && $subscription->current_period_end)
                                 &middot; cancels {{ $subscription->current_period_end->format('M j, Y') }}
                             @elseif ($subscription->current_period_end)
                                 &middot; renews {{ $subscription->current_period_end->format('M j, Y') }}
@@ -122,7 +124,11 @@
                             {{ $subscription->status === 'past_due' ? 'Past Due' : ucfirst($subscription->status) }}
                         </span>
                     @endif
-                    @if ($subscription->isPending())
+                    @if ($subscription->isCanceled())
+                        <a href="mailto:{{ config('mail.admin_address') }}" onclick="event.stopPropagation()" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 px-4 py-2.5 rounded-lg transition-colors">
+                            Contact Us to Start a New Plan
+                        </a>
+                    @elseif ($subscription->isPending())
                         @if ($subscription->stripe_checkout_session_id)
                             <form method="POST" action="{{ route('portal.subscriptions.refresh', $subscription) }}" onclick="event.stopPropagation()" data-ajax-target="maintenance-plan-card">
                                 @csrf
