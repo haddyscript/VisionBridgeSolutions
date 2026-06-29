@@ -411,11 +411,21 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             </div>
         </div>
 
-        {{-- Our Team — collaborative team messaging, single point of contact --}}
-        <div id="about-team-panel" class="mt-10 rounded-3xl relative overflow-hidden py-16 px-6 sm:py-20 sm:px-12 lg:py-24 lg:px-16" style="background:linear-gradient(145deg,#1F2730 0%,#2F3A45 100%);">
+        {{-- Our Team — styled like a glossy "award plaque" (YouTube Play
+             Button aesthetic): dark acrylic gradient, gold bevelled frame,
+             diagonal glass sheen, and a medallion play-button emblem. --}}
+        <div id="about-team-panel" class="mt-10 rounded-3xl relative overflow-hidden py-16 px-6 sm:py-20 sm:px-12 lg:py-24 lg:px-16" style="background:linear-gradient(155deg,#0A0D11 0%,#171B21 35%,#0A0D11 70%,#15191F 100%);border:1px solid rgba(201,168,76,0.28);box-shadow:0 0 0 1px rgba(201,168,76,0.10) inset, 0 30px 80px rgba(0,0,0,0.45);">
+            {{-- Diagonal glossy sheen — light catching an acrylic plaque --}}
+            <div class="absolute inset-0 pointer-events-none" style="z-index:1;background:linear-gradient(115deg,transparent 28%,rgba(255,255,255,0.07) 47%,rgba(255,255,255,0.02) 53%,transparent 68%);"></div>
             <div class="hero-orb" style="width:480px;height:480px;top:-140px;left:-120px;background:radial-gradient(circle,rgba(201,168,76,0.10) 0%,transparent 70%);animation:orb-drift 24s ease-in-out infinite;filter:blur(58px);"></div>
             <div class="hero-orb" style="width:380px;height:380px;bottom:-100px;right:-80px;background:radial-gradient(circle,rgba(42,157,143,0.08) 0%,transparent 70%);animation:orb-drift 28s ease-in-out infinite reverse 3s;filter:blur(50px);"></div>
-            <div class="relative max-w-3xl mx-auto text-center" style="z-index:1;">
+            <div class="relative max-w-3xl mx-auto text-center" style="z-index:2;">
+                {{-- Medallion play-button emblem — glass disc + gold bevel rings --}}
+                <div class="mx-auto mb-7 flex items-center justify-center" style="width:84px;height:84px;border-radius:50%;background:radial-gradient(circle at 34% 28%, #3A3F45 0%, #181B20 58%, #0A0C0E 100%);box-shadow:0 0 0 3px rgba(201,168,76,0.55), 0 0 0 6px rgba(201,168,76,0.14), 0 14px 34px rgba(0,0,0,0.55), inset 0 2px 6px rgba(255,255,255,0.12);">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                        <path d="M8 5v14l11-7-11-7z" fill="#DFC06A" stroke="#C9A84C" stroke-width="0.5"/>
+                    </svg>
+                </div>
                 <span class="inline-block text-gold text-sm font-semibold tracking-widest uppercase mb-3">Our Team</span>
                 <p class="text-white/85 mb-5" style="font-size:1rem;line-height:1.8;">
                     At VisionBridge Solutions, we believe every successful website is the result of collaboration.
