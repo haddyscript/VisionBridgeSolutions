@@ -1451,6 +1451,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         });
 
         // ── 3D tilt + cursor-glow (hover; no ScrollTrigger) ──
+        // Skipped on touch — a tap can fire a synthetic mousemove with no
+        // matching mouseleave, leaving the card stuck mid-tilt with no way
+        // to reset it. The card's content is already fully visible without
+        // this effect, so touch devices just keep the resting state.
+        if (!window.matchMedia('(hover: none), (pointer: coarse)').matches)
         document.querySelectorAll('.about-card').forEach(card => {
             card.addEventListener('mousemove', e => {
                 const r  = card.getBoundingClientRect();
@@ -2016,7 +2021,12 @@ function toggleServices() {
 }
 
 // ── Services card hover: 3D tilt + spotlight + shimmer ──
+// Skipped entirely on touch — same reasoning as the About cards: a tap can
+// fire mouseenter/mousemove with no mouseleave to reset the tilt/lift,
+// leaving cards stuck mid-effect. Card content is fully visible without it.
 function initServiceCardHover() {
+    if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
+
     const TILT      = 7;   // max degrees
     const LIFT      = -12; // px rise on hover
 

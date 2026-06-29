@@ -1390,7 +1390,9 @@
             }
 
             // ── Magnetic pull on CTA ─────────────────────────────────────
-            if (cta) {
+            // Skipped on touch — a tap fires mousemove with no mouseleave,
+            // which can leave the button stuck nudged off its resting spot.
+            if (cta && !window.matchMedia('(hover: none), (pointer: coarse)').matches) {
                 cta.addEventListener('mousemove', e => {
                     const r  = cta.getBoundingClientRect();
                     const cx = (e.clientX - r.left  - r.width  / 2) * 0.24;
@@ -1529,7 +1531,14 @@
 
             window.flyTransition = function (targetEl) {
                 if (!targetEl) return;
-                if (!plane || flying) { targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+                // Below the same breakpoint the horizontal-wipe and section-rail
+                // already use as "desktop-only flourish" — on mobile this ~2.4s
+                // full-screen takeover just reads as the page freezing, so fall
+                // back to a plain smooth scroll instead.
+                if (!plane || flying || window.innerWidth < 1024) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    return;
+                }
                 flying = true;
                 overlay.style.pointerEvents = 'all';
                 gsap.set(plane, { x: 0, y: 0, rotation: 0 });
