@@ -419,7 +419,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <div class="absolute inset-0 pointer-events-none" style="z-index:1;background:linear-gradient(115deg,transparent 28%,rgba(255,255,255,0.07) 47%,rgba(255,255,255,0.02) 53%,transparent 68%);"></div>
             {{-- One-time light-sweep that plays as the panel reveals itself —
                  GSAP slides this from off-left to off-right once, on entry. --}}
-            <div id="about-team-shine" class="absolute inset-0 pointer-events-none" style="z-index:3;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,0.20) 48%,rgba(255,255,255,0.05) 54%,transparent 65%);transform:translateX(-130%) skewX(-12deg);"></div>
+            <div id="about-team-shine" class="absolute inset-0 pointer-events-none" style="z-index:1;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,0.20) 48%,rgba(255,255,255,0.05) 54%,transparent 65%);transform:translateX(-130%) skewX(-12deg);"></div>
             <div class="hero-orb" style="width:480px;height:480px;top:-140px;left:-120px;background:radial-gradient(circle,rgba(201,168,76,0.10) 0%,transparent 70%);animation:orb-drift 24s ease-in-out infinite;filter:blur(58px);"></div>
             <div class="hero-orb" style="width:380px;height:380px;bottom:-100px;right:-80px;background:radial-gradient(circle,rgba(42,157,143,0.08) 0%,transparent 70%);animation:orb-drift 28s ease-in-out infinite reverse 3s;filter:blur(50px);"></div>
             <div class="relative max-w-3xl mx-auto text-center" style="z-index:2;">
@@ -442,13 +442,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <p class="team-panel-line text-white/85 mb-5" style="font-size:1rem;line-height:1.8;">
                     At VisionBridge Solutions, we believe every successful website is the result of collaboration.
                 </p>
-                <p class="team-panel-line text-white/70 mb-5" style="font-size:0.95rem;line-height:1.8;">
+                <p class="team-panel-line text-white/85 mb-5" style="font-size:0.95rem;line-height:1.8;">
                     Our experienced team of website designers, developers, technical specialists, and support professionals work together to deliver reliable, high-quality digital solutions for every client we serve.
                 </p>
-                <p class="team-panel-line text-white/70 mb-5" style="font-size:0.95rem;line-height:1.8;">
+                <p class="team-panel-line text-white/85 mb-5" style="font-size:0.95rem;line-height:1.8;">
                     From your initial consultation through website launch and ongoing maintenance, our team is committed to providing professional service, dependable support, and long-term website stability.
                 </p>
-                <p class="team-panel-line text-white/70 mb-8" style="font-size:0.95rem;line-height:1.8;">
+                <p class="team-panel-line text-white/85 mb-8" style="font-size:0.95rem;line-height:1.8;">
                     Every project is managed through VisionBridge Solutions, giving our clients a single point of contact and a seamless experience from beginning to end.
                 </p>
                 <div class="team-panel-line glow-line" style="width:52px;margin:0 auto 22px;"></div>
