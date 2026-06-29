@@ -75,6 +75,7 @@ A plain-language summary of everything the site and client portal offer today.
 | We double-check a stuck payment | Our team | One click re-checks the payment's real status with our payment provider |
 | We set up a recurring plan | Our team | A monthly maintenance/care plan tied to a project |
 | Client starts the plan | Client | Pays securely to activate it |
+| Client gets a maintenance plan receipt | Client | Each month's payment email links to our own branded receipt page (matching the one-time payment receipt design) instead of Stripe's hosted invoice page; the official Stripe invoice is still linked as a secondary option on that page |
 | Client manages their own billing | Client | Update their card or cancel, without needing to ask us; can also click "Refresh Status" to instantly re-sync their plan if it ever looks out of date |
 | We cancel a plan | Our team | Ends a client's active recurring plan |
 | Client gets a payment reminder | Client | A friendly pop-up appears if something is still owed |
@@ -148,4 +149,9 @@ The remaining gaps from the FaithStack workflow audit (items 3–7 — no second
 | Dev instructions before work begins | Nullable `dev_instructions` text column on `uploads`, editable only from the admin thread view, never rendered client-side | `database/migrations/2026_06_29_000002_add_dev_instructions_to_uploads_table.php`, `resources/views/admin/projects/_text-thread.blade.php` |
 | Monthly Review / Recommendation pipeline | New `recommendations` table/model. Admin submits ideas per-project; a cross-project "Recommendations" admin inbox shows everything `pending_review`; only `approved_for_client`/`presented` items surface to the client as a read-only "Growth Opportunities" card | `app/Models/Recommendation.php`, `Admin\RecommendationController`, `resources/views/portal/dashboard.blade.php` |
 | 24-hour revision SLA | No schema change — `Upload::isOverdue()` computes it from `created_at` + `SLA_HOURS` (24) at render time. Surfaced as an "Overdue" badge in the admin thread view and an overdue count on the admin projects table | `app/Models/Upload.php` |
+
+## 9. Branded Maintenance Plan Receipt (2026-06-29)
+
+Recurring maintenance plan invoices weren't persisted locally at all before this — only the live Stripe `Invoice` object existed at webhook time, which is why the payment email linked straight to Stripe's hosted invoice page. Added a `subscription_payments` table to record each paid invoice (`stripe_invoice_id`, `amount_paid`, `paid_at`, `hosted_invoice_url`), created via `firstOrCreate` in `StripeWebhookController::handleInvoicePaymentSucceeded` so webhook retries don't duplicate rows. `SubscriptionReceiptMail` now takes a `SubscriptionPayment` instead of loose subscription/amount/url args, and its email button points to our own `portal.subscription-payments.receipt` page (modeled on the existing one-time payment receipt) — Stripe's hosted invoice is still linked as a secondary option on that page. Note: the one-time payment receipt email (`PaymentReceiptMail`) still links straight to Stripe's `receipt_url` as its primary button — same pattern, not changed in this pass since it wasn't in scope.
+
 

@@ -406,13 +406,18 @@ class StripeWebhookController extends Controller
 
         $paidAt = Carbon::createFromTimestamp($invoice->status_transitions->paid_at ?? $invoice->created);
 
+        $subscriptionPayment = $subscription->payments()->firstOrCreate(
+            ['stripe_invoice_id' => $invoice->id],
+            [
+                'amount_paid' => $invoice->amount_paid,
+                'currency' => $invoice->currency,
+                'paid_at' => $paidAt,
+                'hosted_invoice_url' => $invoice->hosted_invoice_url,
+            ]
+        );
+
         Mail::to($subscription->project->user->email)->send(
-            new SubscriptionReceiptMail(
-                $subscription,
-                $invoice->amount_paid,
-                $paidAt,
-                $invoice->hosted_invoice_url,
-            )
+            new SubscriptionReceiptMail($subscriptionPayment)
         );
 
         Mail::to(config('mail.admin_address'))->send(new AdminPaymentNotificationMail(

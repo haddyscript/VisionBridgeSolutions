@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
+use App\Models\SubscriptionPayment;
 use App\Services\SubscriptionReconciler;
 use Illuminate\Http\Request;
 use Stripe\BillingPortal\Session as BillingPortalSession;
@@ -60,6 +61,18 @@ class SubscriptionController extends Controller
         abort_unless($project && $subscription->project_id === $project->id, 403);
 
         return back()->with('status', $reconciler->reconcile($subscription));
+    }
+
+    public function receipt(Request $request, SubscriptionPayment $subscriptionPayment)
+    {
+        $project = $request->user()->projects()->first();
+
+        abort_unless($project && $subscriptionPayment->subscription->project_id === $project->id, 403);
+
+        return view('portal.subscription-receipt', [
+            'subscriptionPayment' => $subscriptionPayment,
+            'project' => $project,
+        ]);
     }
 
     public function billingPortal(Request $request)

@@ -2,33 +2,30 @@
 
 namespace App\Mail;
 
-use App\Models\Subscription;
+use App\Models\SubscriptionPayment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Carbon;
 
 class SubscriptionReceiptMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(
-        public Subscription $subscription,
-        public int $amountPaid,
-        public Carbon $paidAt,
-        public ?string $hostedInvoiceUrl = null,
-    ) {
-    }
-
-    public function formattedAmountPaid(): string
+    public function __construct(public SubscriptionPayment $subscriptionPayment)
     {
-        return '$'.number_format($this->amountPaid / 100, 2);
     }
 
     public function build()
     {
-        return $this->subject('Payment Receipt — '.$this->formattedAmountPaid().' — VisionBridge Solutions')
+        $subscription = $this->subscriptionPayment->subscription;
+
+        return $this->subject('Payment Receipt — '.$this->subscriptionPayment->formattedAmountPaid().' — VisionBridge Solutions')
             ->view('emails.subscription-receipt')
-            ->with(['formattedAmountPaid' => $this->formattedAmountPaid()]);
+            ->with([
+                'subscription' => $subscription,
+                'paidAt' => $this->subscriptionPayment->paid_at,
+                'formattedAmountPaid' => $this->subscriptionPayment->formattedAmountPaid(),
+                'receiptUrl' => route('portal.subscription-payments.receipt', $this->subscriptionPayment),
+            ]);
     }
 }

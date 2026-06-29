@@ -81,18 +81,16 @@
                                 </tr>
                             </table>
 
-                            @if ($hostedInvoiceUrl)
-                                <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 8px;">
-                                    <tr>
-                                        <td style="background-color:#C9A84C; border-radius:10px;">
-                                            <a href="{{ $hostedInvoiceUrl }}"
-                                               style="display:inline-block; padding:14px 32px; font-size:15px; font-weight:700; color:#111D33; text-decoration:none;">
-                                                View Official Invoice
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </table>
-                            @endif
+                            <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 8px;">
+                                <tr>
+                                    <td style="background-color:#C9A84C; border-radius:10px;">
+                                        <a href="{{ $receiptUrl }}"
+                                           style="display:inline-block; padding:14px 32px; font-size:15px; font-weight:700; color:#111D33; text-decoration:none;">
+                                            View Receipt
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
 
                             <p style="font-size:13px; line-height:1.6; color:#9ca3af; margin:24px 0 0; text-align:center;">
                                 Want to update your card or cancel anytime? Manage your plan from the Client Portal.
