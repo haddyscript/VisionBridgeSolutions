@@ -850,17 +850,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         ];
         @endphp
 
-        {{-- Blue/navy panel — heading sits inside it, project cards float
-             over its bottom edge (overlap via negative margin on the card
-             grid below, rather than absolute positioning). --}}
-        <div id="portfolio-panel" class="rounded-3xl relative text-center overflow-hidden px-6 sm:px-12 pt-16 pb-28" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
-            <div class="hero-orb" style="width:420px;height:420px;top:-120px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,0.14) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 20s ease-in-out infinite;"></div>
-            <div class="hero-orb" style="width:360px;height:360px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.12) 0%,transparent 70%);filter:blur(54px);animation:orb-drift 18s ease-in-out infinite reverse 3s;"></div>
+        {{-- Light, welcoming panel — heading sits inside it, project cards
+             float over its bottom edge (overlap via negative margin on the
+             card grid below, rather than absolute positioning). --}}
+        <div id="portfolio-panel" class="rounded-3xl relative text-center overflow-hidden px-6 sm:px-12 pt-16 pb-28" style="background:linear-gradient(135deg,#EAF3F8,#FFFFFF);">
+            <div class="hero-orb" style="width:420px;height:420px;top:-120px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,0.16) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 20s ease-in-out infinite;"></div>
+            <div class="hero-orb" style="width:360px;height:360px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.14) 0%,transparent 70%);filter:blur(54px);animation:orb-drift 18s ease-in-out infinite reverse 3s;"></div>
 
             <div class="relative" style="z-index:1;">
-                <span id="portfolio-kicker" class="inline-block text-gold text-sm font-semibold tracking-widest uppercase mb-3">Our Work</span>
-                <h2 id="portfolio-heading" class="font-display text-3xl md:text-4xl font-bold text-white">Featured Projects</h2>
-                <p id="portfolio-subtitle" class="text-white/60 text-base mt-3 max-w-xl mx-auto">A selection of websites we've built for ministries, churches, and organizations.</p>
+                <span id="portfolio-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Our Work</span>
+                <h2 id="portfolio-heading" class="font-display text-3xl md:text-4xl font-bold text-navy">Featured Projects</h2>
+                <p id="portfolio-subtitle" class="text-gray-600 text-base mt-3 max-w-xl mx-auto">A selection of websites we've built for ministries, churches, and organizations.</p>
             </div>
         </div>
 
