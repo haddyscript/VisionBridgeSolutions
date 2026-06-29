@@ -56,7 +56,7 @@
                     <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">Bill From</p>
                     <p class="text-sm font-semibold text-navy">VisionBridge Solutions</p>
                     <p class="text-sm text-gray-500">{{ config('mail.admin_address') }}</p>
-                    <p class="text-sm text-gray-500">(555) 000-0000</p>
+                    <p class="text-sm text-gray-500">(404) 426-2856</p>
                 </div>
                 <div class="text-right">
                     <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">Amount Paid</p>

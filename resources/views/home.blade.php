@@ -998,7 +998,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         </div>
                         <div class="flex-1">
                             <p class="text-xs font-semibold tracking-widest uppercase mb-0.5" style="color:rgba(47,58,69,0.65);">Call us</p>
-                            <p class="text-base font-bold text-navy">(555) 000-0000</p>
+                            <p class="text-base font-bold text-navy">(404) 426-2856</p>
                         </div>
                         <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-gold/20" style="background:rgba(47,58,69,0.06);">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="rgba(47,58,69,0.55)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"/></svg>

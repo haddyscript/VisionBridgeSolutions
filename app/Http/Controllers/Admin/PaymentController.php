@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Models\Project;
+use App\Models\Subscription;
 use App\Services\PaymentReconciler;
 use Illuminate\Http\Request;
 
@@ -13,9 +14,11 @@ class PaymentController extends Controller
     public function index()
     {
         $payments = Payment::with('project.user')->latest()->get();
+        $subscriptions = Subscription::with('project.user')->latest()->get();
 
         return view('admin.payments.index', [
             'payments' => $payments,
+            'subscriptions' => $subscriptions,
         ]);
     }
 

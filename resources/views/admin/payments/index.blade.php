@@ -20,6 +20,20 @@
     ];
     $totalPaid = $payments->where('status', 'paid')->sum('amount');
     $totalPending = $payments->where('status', 'pending')->sum('amount');
+
+    $subscriptionStatusColors = [
+        'pending' => 'bg-gold/15 text-gold-dark',
+        'active' => 'bg-teal/15 text-teal-dark',
+        'past_due' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
+        'canceled' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400',
+    ];
+    $subscriptionStatusLabels = [
+        'pending' => 'Pending',
+        'active' => 'Active',
+        'past_due' => 'Past Due',
+        'canceled' => 'Canceled',
+    ];
+    $pendingSubscriptionCount = $subscriptions->where('status', 'pending')->count();
 @endphp
 
 {{-- Summary hero --}}
@@ -31,7 +45,7 @@
         <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-2">Payments Overview</p>
         <h2 class="font-display text-2xl font-bold text-white mb-6">All client payment activity</h2>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div class="rounded-xl px-5 py-4" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);">
                 <p class="text-xs font-medium uppercase tracking-wide text-white/40 mb-1.5">Total Collected</p>
                 <p class="font-display text-2xl font-bold text-white">${{ number_format($totalPaid / 100, 2) }}</p>
@@ -40,6 +54,10 @@
                 <p class="text-xs font-medium uppercase tracking-wide text-white/40 mb-1.5">Outstanding</p>
                 <p class="font-display text-2xl font-bold text-white">${{ number_format($totalPending / 100, 2) }}</p>
             </div>
+            <div class="rounded-xl px-5 py-4 cursor-pointer" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);" onclick="showPaymentsTab('maintenance')">
+                <p class="text-xs font-medium uppercase tracking-wide text-white/40 mb-1.5">Pending Maintenance Plans</p>
+                <p class="font-display text-2xl font-bold text-white">{{ $pendingSubscriptionCount }}</p>
+            </div>
             <div class="rounded-xl px-5 py-4" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);">
                 <p class="text-xs font-medium uppercase tracking-wide text-white/40 mb-1.5">Total Requests</p>
                 <p class="font-display text-2xl font-bold text-white">{{ $payments->count() }}</p>
@@ -47,6 +65,23 @@
         </div>
     </div>
 </div>
+
+{{-- Tabs --}}
+<div class="flex items-center gap-1 border-b border-gray-200 dark:border-gray-700 mb-6">
+    <button type="button" data-tab-button="one-time" onclick="showPaymentsTab('one-time')"
+            class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-gold text-navy dark:text-white">
+        One-Time Payments
+    </button>
+    <button type="button" data-tab-button="maintenance" onclick="showPaymentsTab('maintenance')"
+            class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
+        Maintenance Plans
+        @if ($pendingSubscriptionCount > 0)
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">{{ $pendingSubscriptionCount }} pending</span>
+        @endif
+    </button>
+</div>
+
+<div id="panel-one-time" data-tab-panel="one-time">
 
 @if ($payments->isEmpty())
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
@@ -115,6 +150,77 @@
         </table>
     </div>
 @endif
+
+</div>
+
+<div id="panel-maintenance" data-tab-panel="maintenance" class="hidden">
+
+@if ($subscriptions->isEmpty())
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+        <p class="text-gray-500 dark:text-gray-400">No maintenance plans yet.</p>
+    </div>
+@else
+    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                <tr>
+                    <th class="px-5 py-3">Client</th>
+                    <th class="px-5 py-3">Description</th>
+                    <th class="px-5 py-3">Amount</th>
+                    <th class="px-5 py-3">Status</th>
+                    <th class="px-5 py-3">Renews</th>
+                    <th class="px-5 py-3"></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                @foreach ($subscriptions as $subscription)
+                    <tr class="hover:bg-gray-50/60">
+                        <td class="px-5 py-3.5">
+                            <p class="font-medium text-navy dark:text-white">{{ $subscription->project->user->name }}</p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $subscription->project->name }}</p>
+                        </td>
+                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $subscription->description }}</td>
+                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $subscription->formattedAmount() }}</td>
+                        <td class="px-5 py-3.5">
+                            @if ($subscription->cancel_at_period_end && $subscription->isActive())
+                                <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">
+                                    Cancels {{ $subscription->current_period_end?->format('M j') }}
+                                </span>
+                            @else
+                                <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $subscriptionStatusColors[$subscription->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
+                                    {{ $subscriptionStatusLabels[$subscription->status] ?? $subscription->status }}
+                                </span>
+                            @endif
+                        </td>
+                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $subscription->current_period_end?->format('M j, Y') ?? '—' }}</td>
+                        <td class="px-5 py-3.5 text-right">
+                            <a href="{{ route('admin.projects.show', $subscription->project) }}" class="text-gold-dark font-semibold hover:underline">View Project</a>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+@endif
+
+</div>
+
+<script>
+    function showPaymentsTab(tab) {
+        document.querySelectorAll('[data-tab-panel]').forEach((el) => {
+            el.classList.toggle('hidden', el.dataset.tabPanel !== tab);
+        });
+        document.querySelectorAll('[data-tab-button]').forEach((btn) => {
+            const active = btn.dataset.tabButton === tab;
+            btn.classList.toggle('border-gold', active);
+            btn.classList.toggle('text-navy', active);
+            btn.classList.toggle('dark:text-white', active);
+            btn.classList.toggle('border-transparent', !active);
+            btn.classList.toggle('text-gray-400', !active);
+            btn.classList.toggle('dark:text-gray-500', !active);
+        });
+    }
+</script>
 
 {{-- Transaction Detail Modal --}}
 <div id="payment-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
