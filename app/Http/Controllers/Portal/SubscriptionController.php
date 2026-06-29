@@ -86,11 +86,23 @@ class SubscriptionController extends Controller
                 return response()->json(['error' => 'Card setup was not completed. Please try again.'], 422);
             }
 
-            // Any existing stripe_subscription_id here is stale — left over
-            // from an earlier attempt under the old Subscription-first flow,
-            // never paid, with no payment method attached. Cancel it rather
-            // than reuse it, since reusing it skipped attaching the card the
-            // client just confirmed and never attempted a fresh charge.
+            // Re-check against the database (not the route-bound instance,
+            // which reflects the state at the *start* of this request) right
+            // before doing anything destructive. A double-submit can have two
+            // requests both pass the isPending() check above before either
+            // finishes — without this, the second request would treat the
+            // first request's brand-new, already-paid subscription as
+            // "stale" and cancel it.
+            if ($subscription->refresh()->isActive()) {
+                return response()->json(['redirect' => route('portal.payments.index').'?checkout=success']);
+            }
+
+            // Any existing stripe_subscription_id here is genuinely stale —
+            // left over from an earlier attempt under the old
+            // Subscription-first flow, never paid, with no payment method
+            // attached. Cancel it rather than reuse it, since reusing it
+            // skipped attaching the card the client just confirmed and never
+            // attempted a fresh charge.
             if ($subscription->stripe_subscription_id) {
                 try {
                     \Stripe\Subscription::retrieve($subscription->stripe_subscription_id)->cancel();
