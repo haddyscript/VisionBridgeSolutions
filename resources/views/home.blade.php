@@ -715,6 +715,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                  style="-webkit-mask-image:linear-gradient(to left, black 45%, transparent 100%);mask-image:linear-gradient(to left, black 45%, transparent 100%);opacity:0.85;">
                 <img src="@assetv('image/bridge-effects.png')" alt="" loading="lazy" decoding="async" class="h-full w-auto object-contain" style="max-width:640px;">
             </div>
+            {{-- The source photo itself has a hard rectangular edge on its
+                 right and bottom (no built-in fade like the left side has)
+                 — these two overlays blend those edges into the white
+                 section background so the photo doesn't look "cut off". --}}
+            <div class="hidden md:block absolute inset-0 pointer-events-none" aria-hidden="true"
+                 style="background:linear-gradient(to bottom, transparent 65%, #FFFFFF 100%);"></div>
+            <div class="hidden md:block absolute inset-y-0 right-0 pointer-events-none" aria-hidden="true"
+                 style="width:140px;background:linear-gradient(to right, transparent 0%, #FFFFFF 100%);"></div>
 
             <div class="relative flex flex-col items-center justify-center text-center" style="min-height:230px;">
                 <span id="plans-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3" style="opacity:0;transform:translateX(-20px)">Protect Your Investment</span>
