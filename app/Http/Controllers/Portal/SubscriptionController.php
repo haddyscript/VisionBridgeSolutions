@@ -96,9 +96,12 @@ class SubscriptionController extends Controller
             ?? $latestInvoice->payment_intent?->client_secret;
 
         if ($clientSecret === null) {
+            // Diagnostic dump — once we see the real shape of this invoice in
+            // the log, replace this whole block with the correct field access.
             Log::error('No PaymentIntent client secret available for maintenance plan checkout.', [
                 'subscription_id' => $subscription->id,
                 'stripe_subscription_id' => $stripeSubscription->id,
+                'latest_invoice_dump' => $latestInvoice->toArray(),
             ]);
 
             abort(500, 'Could not start a payment for this plan — please try again or contact support.');
