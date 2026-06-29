@@ -711,7 +711,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                  care-plan one-pager's header art without breaking the site's centered
                  section-header convention. Sized by height (not width) so it fills
                  this box cleanly instead of being cropped top/bottom. --}}
-            <div class="hidden md:flex absolute inset-y-0 right-0 items-center justify-end pointer-events-none" aria-hidden="true"
+            <div id="plans-bridge-photo" class="hidden md:flex absolute inset-y-0 right-0 items-center justify-end pointer-events-none" aria-hidden="true"
                  style="-webkit-mask-image:linear-gradient(to left, black 45%, transparent 100%);mask-image:linear-gradient(to left, black 45%, transparent 100%);opacity:0.85;">
                 <img src="@assetv('image/bridge-effects.png')" alt="" loading="lazy" decoding="async" class="h-full w-auto object-contain" style="max-width:640px;">
             </div>
@@ -889,8 +889,15 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
              float over its bottom edge (overlap via negative margin on the
              card grid below, rather than absolute positioning). --}}
         <div id="portfolio-panel" class="rounded-3xl relative text-center overflow-hidden px-6 sm:px-12 pt-16 pb-28" style="background:linear-gradient(135deg,#EAF3F8,#FFFFFF);">
-            <div class="hero-orb" style="width:420px;height:420px;top:-120px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,0.16) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 20s ease-in-out infinite;"></div>
-            <div class="hero-orb" style="width:360px;height:360px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.14) 0%,transparent 70%);filter:blur(54px);animation:orb-drift 18s ease-in-out infinite reverse 3s;"></div>
+            {{-- Each orb is wrapped so the parallax script can translate the
+                 wrapper without fighting the orb's own orb-drift animation
+                 (both would otherwise be writing to the same transform). --}}
+            <div id="portfolio-orb-1-wrap" class="absolute inset-0" style="pointer-events:none;">
+                <div id="portfolio-orb-1" class="hero-orb" style="width:420px;height:420px;top:-120px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,0.16) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 20s ease-in-out infinite;"></div>
+            </div>
+            <div id="portfolio-orb-2-wrap" class="absolute inset-0" style="pointer-events:none;">
+                <div id="portfolio-orb-2" class="hero-orb" style="width:360px;height:360px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.14) 0%,transparent 70%);filter:blur(54px);animation:orb-drift 18s ease-in-out infinite reverse 3s;"></div>
+            </div>
 
             <div class="relative" style="z-index:1;">
                 <span id="portfolio-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Our Work</span>
@@ -2240,6 +2247,50 @@ function initServiceCardHover() {
 // Deferred — just attaches listeners, no reason to compete with initial paint
 if ('requestIdleCallback' in window) requestIdleCallback(initServiceCardHover, { timeout: 1500 });
 else setTimeout(initServiceCardHover, 1);
+</script>
+
+{{-- Parallax between Plans and Featured Projects — plain scroll-listener
+     (no ScrollTrigger/GSAP) on purpose: the horizontal-wipe section's GSAP
+     pin skews ScrollTrigger's position math for everything below it on the
+     page, which is exactly why Plans/Portfolio's own reveal animations
+     already use IntersectionObserver instead of ScrollTrigger (see the
+     comments above). A bare scroll listener has no such dependency. --}}
+<script defer>
+(function () {
+    function initBackgroundParallax() {
+        const targets = [
+            { el: document.getElementById('plans-bridge-photo'),    factor: 0.12 },
+            { el: document.getElementById('portfolio-orb-1-wrap'),  factor: 0.10 },
+            { el: document.getElementById('portfolio-orb-2-wrap'),  factor: -0.08 },
+        ].filter(t => t.el);
+        if (!targets.length) return;
+
+        let ticking = false;
+
+        function update() {
+            const vh = window.innerHeight;
+            targets.forEach(({ el, factor }) => {
+                const rect = el.getBoundingClientRect();
+                // Distance of the element's center from the viewport's
+                // center, scaled down — background drifts at a fraction of
+                // scroll speed instead of 1:1 with the content around it.
+                const distanceFromCenter = (rect.top + rect.height / 2) - vh / 2;
+                el.style.transform = `translateY(${distanceFromCenter * factor}px)`;
+            });
+            ticking = false;
+        }
+
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                ticking = true;
+                requestAnimationFrame(update);
+            }
+        }, { passive: true });
+
+        update();
+    }
+    initBackgroundParallax();
+})();
 </script>
 
 @endsection
