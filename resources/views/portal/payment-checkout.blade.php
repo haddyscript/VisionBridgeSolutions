@@ -10,15 +10,22 @@
     Back to Payments
 </a>
 
-<div class="max-w-lg mx-auto">
-    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div class="px-7 py-6" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
-            <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Payment</p>
-            <h2 class="font-display text-xl font-bold text-white">{{ $payment->description }}</h2>
-            <p class="text-white/60 text-sm mt-1">{{ $payment->formattedAmount() }} {{ strtoupper($payment->currency) }}</p>
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+        <div class="px-8 py-10 lg:py-12 flex flex-col" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
+            <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-2">Payment</p>
+            <h2 class="font-display text-2xl font-bold text-white mb-3">{{ $payment->description }}</h2>
+            <p class="font-display text-3xl font-bold text-white">{{ $payment->formattedAmount() }}</p>
+            <p class="text-white/50 text-sm mt-1">{{ strtoupper($payment->currency) }}</p>
+
+            <div class="mt-auto pt-10 hidden lg:block">
+                <p class="text-white/40 text-xs leading-relaxed">
+                    Payments are processed securely by Stripe. Your card details never touch our servers.
+                </p>
+            </div>
         </div>
 
-        <div class="p-7">
+        <div class="p-8 lg:py-12">
             <div id="checkout-error" class="hidden mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3"></div>
 
             <form id="payment-form">
@@ -29,7 +36,7 @@
                 </button>
             </form>
 
-            <p class="text-xs text-gray-400 dark:text-gray-500 text-center mt-4">
+            <p class="text-xs text-gray-400 dark:text-gray-500 text-center mt-4 lg:hidden">
                 Payments are processed securely by Stripe. Your card details never touch our servers.
             </p>
         </div>
