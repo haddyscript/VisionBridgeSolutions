@@ -872,7 +872,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      "fixed background" parallax: it stays pinned to the viewport (same
      technique the site's own footer uses) while the divider/page content
      scrolls past it, instead of moving with the page like a normal image. --}}
-<div class="relative" style="height:380px;overflow:hidden;background-image:url('@assetv('image/parallax-bg2.jpeg')');background-attachment:fixed;background-size:cover;background-position:center 45%;" aria-hidden="true">
+<div class="relative" style="height:380px;overflow:hidden;background-image:url('@assetv('image/parallax-bg2-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 45%;" aria-hidden="true">
     <div class="relative h-full flex items-center justify-center">
         <div class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
     </div>
