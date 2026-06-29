@@ -171,6 +171,13 @@
             background-size: 28px 28px;
         }
 
+        /* ─── Our Team medallion: rotating gloss sweep ─── */
+        .medallion-sweep { animation: medallion-spin 6s linear infinite; }
+        @keyframes medallion-spin {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         /* ─── Glowing gold divider ─── */
         .glow-line {
             width:72px; height:2px; margin:18px auto;
@@ -1707,7 +1714,7 @@
             const selectors = [
                 '.hero-orb', '#svc-toggle-btn', '.wave-teal', '.wave-main',
                 '.shimmer-gold', '.live-dot', '.float-card-1', '.float-card-2',
-                '#hscroll-edge-arrow',
+                '#hscroll-edge-arrow', '.medallion-sweep',
             ];
             const els = document.querySelectorAll(selectors.join(','));
             if (!els.length) return;

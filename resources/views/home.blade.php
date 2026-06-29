@@ -420,11 +420,20 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <div class="hero-orb" style="width:480px;height:480px;top:-140px;left:-120px;background:radial-gradient(circle,rgba(201,168,76,0.10) 0%,transparent 70%);animation:orb-drift 24s ease-in-out infinite;filter:blur(58px);"></div>
             <div class="hero-orb" style="width:380px;height:380px;bottom:-100px;right:-80px;background:radial-gradient(circle,rgba(42,157,143,0.08) 0%,transparent 70%);animation:orb-drift 28s ease-in-out infinite reverse 3s;filter:blur(50px);"></div>
             <div class="relative max-w-3xl mx-auto text-center" style="z-index:2;">
-                {{-- Medallion play-button emblem — glass disc + gold bevel rings --}}
-                <div class="mx-auto mb-7 flex items-center justify-center" style="width:84px;height:84px;border-radius:50%;background:radial-gradient(circle at 34% 28%, #3A3F45 0%, #181B20 58%, #0A0C0E 100%);box-shadow:0 0 0 3px rgba(201,168,76,0.55), 0 0 0 6px rgba(201,168,76,0.14), 0 14px 34px rgba(0,0,0,0.55), inset 0 2px 6px rgba(255,255,255,0.12);">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-                        <path d="M8 5v14l11-7-11-7z" fill="#DFC06A" stroke="#C9A84C" stroke-width="0.5"/>
-                    </svg>
+                {{-- Medallion play-button emblem — glow halo + gold metal
+                     bezel + glass disc with a specular highlight, plus a
+                     slow rotating gloss sweep for that "catching light"
+                     trophy feel. --}}
+                <div class="mx-auto mb-7 relative" style="width:96px;height:96px;">
+                    <div class="absolute inset-0 rounded-full medallion-glow" style="background:radial-gradient(circle, rgba(201,168,76,0.40) 0%, transparent 72%);filter:blur(14px);transform:scale(1.4);"></div>
+                    <div class="absolute inset-0 rounded-full medallion-sweep" style="background:conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.55) 6%, transparent 14%, transparent 100%);"></div>
+                    <div class="absolute rounded-full" style="inset:5px;background:linear-gradient(145deg,#F0E2B2 0%,#C9A84C 40%,#8C6F26 75%,#5E4A18 100%);box-shadow:0 6px 14px rgba(0,0,0,0.45);"></div>
+                    <div class="absolute rounded-full flex items-center justify-center overflow-hidden" style="inset:10px;background:radial-gradient(circle at 32% 26%, #4A4F56 0%, #181B20 55%, #07090B 100%);box-shadow:inset 0 2px 6px rgba(255,255,255,0.15), inset 0 -4px 10px rgba(0,0,0,0.65);">
+                        <div class="absolute rounded-full" style="top:8%;left:14%;width:48%;height:30%;background:linear-gradient(135deg,rgba(255,255,255,0.45),transparent 72%);filter:blur(1px);transform:rotate(-18deg);"></div>
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style="position:relative;z-index:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,0.5));">
+                            <path d="M8 5v14l11-7-11-7z" fill="#DFC06A" stroke="#C9A84C" stroke-width="0.5"/>
+                        </svg>
+                    </div>
                 </div>
                 <span class="inline-block text-gold text-sm font-semibold tracking-widest uppercase mb-3">Our Team</span>
                 <p class="text-white/85 mb-5" style="font-size:1rem;line-height:1.8;">
