@@ -168,9 +168,16 @@
     <button id="tabbtn-revision" type="button" data-tab-button="revision" onclick="showProjectTab('revision')"
             class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
         Revisions
-        @php $openRevisionCount = $uploadsByCategory->get('revision', $empty)->where('status', '!=', 'addressed')->count(); @endphp
+        @php $openRevisionCount = $uploadsByCategory->get('revision', $empty)->where('status', '!=', 'completed')->count(); @endphp
         @if ($openRevisionCount > 0)
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">{{ $openRevisionCount }}</span>
+        @endif
+    </button>
+    <button type="button" data-tab-button="recommendations" onclick="showProjectTab('recommendations')"
+            class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
+        Recommendations
+        @if ($project->recommendations->where('status', 'pending_review')->isNotEmpty())
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">{{ $project->recommendations->where('status', 'pending_review')->count() }}</span>
         @endif
     </button>
 </div>
@@ -506,6 +513,56 @@
 
 <div id="panel-revision" data-tab-panel="revision" class="hidden">
     @include('admin.projects._text-thread', ['cat' => 'revision', 'meta' => $categories['revision'], 'panelId' => 'panel-revision'])
+</div>
+
+<div id="panel-recommendations" data-tab-panel="recommendations" class="hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <h3 class="font-semibold text-navy dark:text-white mb-4">Submit a Recommendation</h3>
+        <form method="POST" action="{{ route('admin.recommendations.store', $project) }}" class="space-y-3" data-ajax-target="panel-recommendations">
+            @csrf
+            <input type="text" name="title" required placeholder="e.g. Add a sticky donate button"
+                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+            <select name="category" required
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                <option value="" disabled selected>Choose a category...</option>
+                @foreach (\App\Models\Recommendation::CATEGORIES as $value => $label)
+                    <option value="{{ $value }}">{{ $label }}</option>
+                @endforeach
+            </select>
+            <textarea name="description" rows="3" required placeholder="What's the improvement and why would it help?"
+                      class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
+            <div class="flex justify-end">
+                <button type="submit" class="bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+        @forelse ($project->recommendations as $item)
+            <div class="px-6 py-4">
+                <div class="flex items-center justify-between gap-4 mb-1">
+                    <p class="text-sm font-semibold text-navy dark:text-white">{{ $item->title }}</p>
+                    <span class="text-xs text-gray-400 dark:text-gray-500">by {{ $item->submittedBy->name }} &middot; {{ $item->created_at->format('M j, Y') }}</span>
+                </div>
+                <p class="text-xs font-semibold uppercase tracking-wide text-gold-dark mb-2">{{ \App\Models\Recommendation::CATEGORIES[$item->category] ?? $item->category }}</p>
+                <p class="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-line mb-3">{{ $item->description }}</p>
+                <form method="POST" action="{{ route('admin.recommendations.update', $item) }}" data-ajax-target="panel-recommendations">
+                    @csrf
+                    @method('PATCH')
+                    <select name="status" onchange="this.form.requestSubmit()"
+                            class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                        @foreach (\App\Models\Recommendation::STATUSES as $value => $label)
+                            <option value="{{ $value }}" {{ $item->status === $value ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </form>
+            </div>
+        @empty
+            <p class="text-sm text-gray-400 dark:text-gray-500 px-6 py-8 text-center">No recommendations submitted for this project yet.</p>
+        @endforelse
+    </div>
 </div>
 
 <script>

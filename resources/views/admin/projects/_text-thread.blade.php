@@ -6,9 +6,12 @@
 @php
     $items = $uploadsByCategory->get($cat, $empty);
     $statusColors = [
-        'open' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
+        'request_received' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
+        'under_review' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-500',
         'in_progress' => 'bg-gold/15 text-gold-dark',
-        'addressed' => 'bg-teal/10 text-teal-dark',
+        'waiting_on_client' => 'bg-purple-50 dark:bg-purple-500/10 text-purple-500',
+        'needs_approval' => 'bg-orange-50 dark:bg-orange-500/10 text-orange-500',
+        'completed' => 'bg-teal/10 text-teal-dark',
     ];
 @endphp
 
@@ -16,8 +19,8 @@
     <div class="flex items-center justify-between mb-4">
         <h3 class="font-semibold text-navy dark:text-white">
             {{ $meta['label'] }}
-            @if ($cat === 'revision' && $items->where('status', '!=', 'addressed')->isNotEmpty())
-                <span class="ml-2 inline-block text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">{{ $items->where('status', '!=', 'addressed')->count() }} open</span>
+            @if ($cat === 'revision' && $items->where('status', '!=', 'completed')->isNotEmpty())
+                <span class="ml-2 inline-block text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">{{ $items->where('status', '!=', 'completed')->count() }} open</span>
             @endif
         </h3>
         <span class="text-xs text-gray-400 dark:text-gray-500">{{ $items->count() }} item{{ $items->count() === 1 ? '' : 's' }}</span>
@@ -30,7 +33,12 @@
             @foreach ($items as $item)
                 <div class="rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3.5">
                     <div class="flex items-start justify-between gap-4 mb-1.5">
-                        <p class="text-xs text-gray-400 dark:text-gray-500">{{ $item->created_at->format('M j, Y \a\t g:ia') }} &middot; from {{ $item->user->name }}</p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500">
+                            {{ $item->created_at->format('M j, Y \a\t g:ia') }} &middot; from {{ $item->user->name }}
+                            @if ($cat === 'revision' && $item->isOverdue())
+                                <span class="ml-2 inline-block text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400">Overdue</span>
+                            @endif
+                        </p>
                         <form method="POST" action="{{ route('admin.uploads.status', $item) }}" class="shrink-0" data-ajax-target="{{ $panelId ?? '' }} {{ $cat === 'revision' ? 'tabbtn-revision' : '' }}">
                             @csrf
                             @method('PATCH')
@@ -58,6 +66,21 @@
                             @endif
                         </div>
                     </div>
+
+                    @if ($cat === 'revision')
+                        {{-- Internal only — never shown to the client. Lets an admin/dev
+                             clarify or rewrite the client's raw request before work begins. --}}
+                        <form method="POST" action="{{ route('admin.uploads.dev-instructions', $item) }}" class="mt-3">
+                            @csrf
+                            @method('PATCH')
+                            <label class="block text-[0.65rem] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">Dev Instructions (internal only)</label>
+                            <textarea name="dev_instructions" rows="2" placeholder="Clarify or rewrite this request for the dev team..."
+                                      class="w-full rounded-lg border border-dashed border-gray-300 dark:border-gray-600 px-3 py-2 text-sm bg-yellow-50/40 dark:bg-yellow-500/5 focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:text-white dark:placeholder-gray-500">{{ $item->dev_instructions }}</textarea>
+                            <button type="submit" class="mt-1.5 text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3 py-1 rounded-full transition-colors">
+                                Save Instructions
+                            </button>
+                        </form>
+                    @endif
 
                     <div id="replies-{{ $item->id }}">
                         @foreach ($item->replies as $reply)

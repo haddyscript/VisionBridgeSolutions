@@ -305,6 +305,25 @@
         @endif
     </div>
 
+    {{-- Growth Opportunities — improvement ideas the team has approved to share --}}
+    @if ($recommendations->isNotEmpty())
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
+            <h3 class="font-display text-base font-bold text-navy dark:text-white mb-1">Growth Opportunities</h3>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Improvements our team thinks could help your website perform even better.</p>
+            <div class="space-y-3">
+                @foreach ($recommendations as $rec)
+                    <div class="rounded-lg border border-gold/20 bg-gold/5 px-4 py-3.5">
+                        <div class="flex items-center justify-between gap-3 mb-1">
+                            <p class="text-sm font-semibold text-navy dark:text-white">{{ $rec->title }}</p>
+                            <span class="text-xs font-semibold uppercase tracking-wide text-gold-dark shrink-0">{{ \App\Models\Recommendation::CATEGORIES[$rec->category] ?? $rec->category }}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">{{ $rec->description }}</p>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     {{-- Recent Activity --}}
     @if ($activity->isNotEmpty())
         @php

@@ -22,12 +22,27 @@ class UploadApprovalController extends Controller
     public function updateStatus(Request $request, Upload $upload)
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:open,in_progress,addressed'],
+            'status' => ['required', 'in:'.implode(',', array_keys(Upload::STATUSES))],
         ]);
 
         $upload->update($validated);
 
         return back()->with('status', 'Status updated.');
+    }
+
+    public function updateDevInstructions(Request $request, Upload $upload)
+    {
+        $validated = $request->validate([
+            'dev_instructions' => ['nullable', 'string', 'max:5000'],
+        ]);
+
+        $upload->update($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Dev instructions saved.']);
+        }
+
+        return back()->with('status', 'Dev instructions saved.');
     }
 
     public function reply(Request $request, Upload $upload)

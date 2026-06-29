@@ -72,6 +72,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(CalendarEvent::class);
     }
 
+    public function projectRequests()
+    {
+        return $this->hasMany(ProjectRequest::class);
+    }
+
     public function hasPendingPayment(): bool
     {
         return Payment::whereIn('project_id', $this->projects()->pluck('id'))

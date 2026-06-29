@@ -36,25 +36,31 @@
             @foreach ($items as $item)
                 @php
                     $borderColor = match ($item->status) {
-                        'addressed' => 'border-l-teal',
+                        'completed' => 'border-l-teal',
                         'in_progress' => 'border-l-gold',
+                        'waiting_on_client' => 'border-l-purple-400',
+                        'needs_approval' => 'border-l-orange-400',
+                        'under_review' => 'border-l-blue-400',
                         default => 'border-l-red-400',
                     };
+                    $statusBadgeColor = [
+                        'completed' => 'bg-teal/10 text-teal-dark',
+                        'in_progress' => 'bg-gold/15 text-gold-dark',
+                        'waiting_on_client' => 'bg-purple-50 dark:bg-purple-500/10 text-purple-500',
+                        'needs_approval' => 'bg-orange-50 dark:bg-orange-500/10 text-orange-500',
+                        'under_review' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-500',
+                    ][$item->status] ?? 'bg-red-50 dark:bg-red-500/10 text-red-500';
                 @endphp
-                <details class="group rounded-lg border border-gray-200 dark:border-gray-700 border-l-4 {{ $borderColor }} px-4 py-3 {{ $item->status === 'addressed' ? 'opacity-60' : '' }}" {{ $item->status !== 'addressed' ? 'open' : '' }}>
+                <details class="group rounded-lg border border-gray-200 dark:border-gray-700 border-l-4 {{ $borderColor }} px-4 py-3 {{ $item->isCompleted() ? 'opacity-60' : '' }}" {{ ! $item->isCompleted() ? 'open' : '' }}>
                     <summary class="flex items-center justify-between gap-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                         <div class="flex items-center gap-2">
                             <span class="text-xs text-gray-400 dark:text-gray-500">{{ $item->created_at->format('M j, Y \a\t g:ia') }}</span>
-                            @if ($item->status === 'addressed')
-                                <span class="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-teal/10 text-teal-dark">
+                            <span class="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $statusBadgeColor }}">
+                                @if ($item->isCompleted())
                                     <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                                    Addressed
-                                </span>
-                            @elseif ($item->status === 'in_progress')
-                                <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">In Progress</span>
-                            @else
-                                <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">Open</span>
-                            @endif
+                                @endif
+                                {{ \App\Models\Upload::STATUSES[$item->status] ?? $item->status }}
+                            </span>
                         </div>
                         <div class="flex items-center gap-1 shrink-0">
                             <form method="POST" action="{{ route('portal.uploads.destroy', $item) }}" data-confirm="Remove this submission?" onclick="event.stopPropagation()">

@@ -74,6 +74,13 @@
                     </svg>
                     Documents
                 </a>
+                <a href="{{ route('portal.project-requests.show') }}"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.project-requests.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Request a New Project
+                </a>
 
                 @php
                     $fileCategories = ['image', 'video', 'logo', 'document', 'marketing'];

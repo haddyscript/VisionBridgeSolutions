@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\MaintenancePlanController as AdminMaintenancePlan
 use App\Http\Controllers\Admin\MilestoneController as AdminMilestoneController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
+use App\Http\Controllers\Admin\ProjectRequestController as AdminProjectRequestController;
+use App\Http\Controllers\Admin\RecommendationController as AdminRecommendationController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
 use App\Http\Controllers\Admin\ServiceAgreementController as AdminServiceAgreementController;
 use App\Http\Controllers\Admin\PartnerPayoutController as AdminPartnerPayoutController;
@@ -35,6 +37,7 @@ use App\Http\Controllers\Portal\DocumentController as PortalDocumentController;
 use App\Http\Controllers\Portal\FaqFeedbackController;
 use App\Http\Controllers\Portal\PaymentController as PortalPaymentController;
 use App\Http\Controllers\Portal\ProjectQuestionnaireController as PortalProjectQuestionnaireController;
+use App\Http\Controllers\Portal\ProjectRequestController as PortalProjectRequestController;
 use App\Http\Controllers\Portal\ProjectReviewController as PortalProjectReviewController;
 use App\Http\Controllers\Portal\ServiceAgreementController as PortalServiceAgreementController;
 use App\Http\Controllers\Portal\SubscriptionController as PortalSubscriptionController;
@@ -112,6 +115,8 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
 
     Route::get('/portal', DashboardController::class)->name('portal.dashboard');
     Route::get('/portal/documents', [PortalDocumentController::class, 'index'])->name('portal.documents.index');
+    Route::get('/portal/project-requests', [PortalProjectRequestController::class, 'show'])->name('portal.project-requests.show');
+    Route::post('/portal/project-requests', [PortalProjectRequestController::class, 'store'])->name('portal.project-requests.store');
     Route::get('/portal/files/{category}', [CategoryController::class, 'show'])->name('portal.category');
     Route::get('/portal/files/{category}/download', [CategoryController::class, 'downloadAll'])->name('portal.category.download');
     Route::post('/portal/projects/{project}/uploads', [UploadController::class, 'store'])->name('portal.uploads.store');
@@ -164,6 +169,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/intake-submissions/{intakeSubmission}/convert', [AdminIntakeSubmissionController::class, 'convert'])->name('intake-submissions.convert');
     Route::post('/intake-submissions/{intakeSubmission}/resend-welcome-email', [AdminIntakeSubmissionController::class, 'resendWelcomeEmail'])->name('intake-submissions.resend-welcome-email');
 
+    Route::get('/project-requests', [AdminProjectRequestController::class, 'index'])->name('project-requests.index');
+    Route::get('/project-requests/{projectRequest}', [AdminProjectRequestController::class, 'show'])->name('project-requests.show');
+    Route::patch('/project-requests/{projectRequest}', [AdminProjectRequestController::class, 'update'])->name('project-requests.update');
+
     Route::get('/projects/{project}', [AdminProjectController::class, 'show'])->name('projects.show');
     Route::patch('/projects/{project}', [AdminProjectController::class, 'update'])->name('projects.update');
     Route::post('/projects/{project}/reset-client-password', [AdminProjectController::class, 'resetClientPassword'])->name('projects.reset-client-password');
@@ -172,6 +181,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/projects/{project}/milestones', [AdminMilestoneController::class, 'store'])->name('milestones.store');
     Route::patch('/milestones/{milestone}', [AdminMilestoneController::class, 'update'])->name('milestones.update');
     Route::delete('/milestones/{milestone}', [AdminMilestoneController::class, 'destroy'])->name('milestones.destroy');
+
+    Route::get('/recommendations', [AdminRecommendationController::class, 'index'])->name('recommendations.index');
+    Route::post('/projects/{project}/recommendations', [AdminRecommendationController::class, 'store'])->name('recommendations.store');
+    Route::patch('/recommendations/{recommendation}', [AdminRecommendationController::class, 'update'])->name('recommendations.update');
 
     Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments.index');
     Route::post('/projects/{project}/payments', [AdminPaymentController::class, 'store'])->name('payments.store');
@@ -191,6 +204,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/uploads/{upload}/approve', [UploadApprovalController::class, 'toggle'])->name('uploads.approve');
     Route::patch('/uploads/{upload}/status', [UploadApprovalController::class, 'updateStatus'])->name('uploads.status');
     Route::patch('/uploads/{upload}/reply', [UploadApprovalController::class, 'reply'])->name('uploads.reply');
+    Route::patch('/uploads/{upload}/dev-instructions', [UploadApprovalController::class, 'updateDevInstructions'])->name('uploads.dev-instructions');
 
     Route::get('/care-plans', [AdminMaintenancePlanController::class, 'index'])->name('care-plans.index');
     Route::post('/care-plans', [AdminMaintenancePlanController::class, 'store'])->name('care-plans.store');

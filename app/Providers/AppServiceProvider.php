@@ -8,6 +8,8 @@ use App\Models\IntakeSubmission;
 use App\Models\MaintenancePlan;
 use App\Models\Milestone;
 use App\Models\Project;
+use App\Models\ProjectRequest;
+use App\Models\Recommendation;
 use App\Models\User;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Carbon;
@@ -44,6 +46,8 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('layouts.admin', function ($view) {
             $view->with('newIntakeCount', IntakeSubmission::where('status', 'new')->count());
+            $view->with('pendingProjectRequestCount', ProjectRequest::where('status', 'pending')->count());
+            $view->with('pendingRecommendationCount', Recommendation::where('status', 'pending_review')->count());
             $view->with('unreadContactCount', ContactMessage::whereNull('read_at')->count());
             $view->with('unreadConsultationCount', Consultation::whereNull('read_at')->count());
             $view->with('gettingStartedTasks', $this->adminGettingStartedTasks());

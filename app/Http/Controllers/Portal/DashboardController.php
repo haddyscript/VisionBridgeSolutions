@@ -10,7 +10,9 @@ class DashboardController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $project = $request->user()->projects()->with('milestones', 'uploads.replies', 'payments')->first();
+        $project = $request->user()->projects()->with('milestones', 'uploads.replies', 'payments', 'recommendations')->first();
+
+        $recommendations = $project?->recommendations->filter(fn ($r) => $r->isVisibleToClient()) ?? collect();
 
         $counts = collect(CategoryController::CATEGORIES)
             ->map(fn ($meta, $category) => [
@@ -35,6 +37,7 @@ class DashboardController extends Controller
             'showPaymentReminder' => $showPaymentReminder,
             'pendingPayment' => $pendingPayment,
             'activity' => $project ? $project->recentActivity()->take(8) : collect(),
+            'recommendations' => $recommendations,
         ]);
     }
 }

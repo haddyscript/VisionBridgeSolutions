@@ -64,10 +64,17 @@
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $project->progressPercent() }}%</td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $project->uploads->whereNotIn('category', ['content', 'revision'])->count() }}</td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">
-                            @php $openRevisions = $project->uploads->where('category', 'revision')->where('status', '!=', 'addressed')->count(); @endphp
-                            {{ $project->uploads->where('category', 'revision')->count() }}
+                            @php
+                                $revisions = $project->uploads->where('category', 'revision');
+                                $openRevisions = $revisions->where('status', '!=', 'completed')->count();
+                                $overdueRevisions = $revisions->filter(fn ($upload) => $upload->isOverdue())->count();
+                            @endphp
+                            {{ $revisions->count() }}
                             @if ($openRevisions > 0)
                                 <span class="ml-1 inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">{{ $openRevisions }} open</span>
+                            @endif
+                            @if ($overdueRevisions > 0)
+                                <span class="ml-1 inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400">{{ $overdueRevisions }} overdue</span>
                             @endif
                         </td>
                         <td class="px-5 py-3.5 text-right">

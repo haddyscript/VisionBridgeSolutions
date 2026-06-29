@@ -61,6 +61,11 @@ class Project extends Model
         return $this->hasMany(Upload::class)->latest();
     }
 
+    public function recommendations()
+    {
+        return $this->hasMany(Recommendation::class)->latest();
+    }
+
     public function payments()
     {
         return $this->hasMany(Payment::class)->latest();

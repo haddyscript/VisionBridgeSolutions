@@ -6,10 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Upload extends Model
 {
+    /** Hours a revision/content request has to be addressed before it's flagged overdue. */
+    public const SLA_HOURS = 24;
+
     public const STATUSES = [
-        'open' => 'Open',
+        'request_received' => 'Request Received',
+        'under_review' => 'Under Review',
         'in_progress' => 'In Progress',
-        'addressed' => 'Addressed',
+        'waiting_on_client' => 'Waiting on Client',
+        'needs_approval' => 'Needs VisionBridge Approval',
+        'completed' => 'Completed',
     ];
 
     protected $fillable = [
@@ -22,6 +28,7 @@ class Upload extends Model
         'body',
         'approved_at',
         'status',
+        'dev_instructions',
     ];
 
     protected function casts(): array
@@ -31,14 +38,28 @@ class Upload extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::creating(function (Upload $upload) {
+            $upload->status ??= 'request_received';
+        });
+    }
+
     public function isApproved(): bool
     {
         return $this->approved_at !== null;
     }
 
-    public function isAddressed(): bool
+    public function isCompleted(): bool
     {
-        return $this->status === 'addressed';
+        return $this->status === 'completed';
+    }
+
+    public function isOverdue(): bool
+    {
+        return $this->category === 'revision'
+            && ! $this->isCompleted()
+            && $this->created_at->lt(now()->subHours(self::SLA_HOURS));
     }
 
     public function project()
