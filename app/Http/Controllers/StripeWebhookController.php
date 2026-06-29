@@ -113,17 +113,21 @@ class StripeWebhookController extends Controller
     {
         $sessionId = $paymentIntent->payment_details->order_reference ?? null;
 
-        if (! $sessionId) {
-            return;
-        }
-
-        $payment = Payment::with('project.user')->where('stripe_checkout_session_id', $sessionId)->first();
+        // The embedded checkout page (Stripe Elements) creates a PaymentIntent
+        // directly, with no Checkout Session at all — fall back to matching
+        // by the PaymentIntent id itself, set on the Payment the moment it's
+        // created (see Portal\PaymentController::checkout).
+        $payment = $sessionId
+            ? Payment::with('project.user')->where('stripe_checkout_session_id', $sessionId)->first()
+            : Payment::with('project.user')->where('stripe_payment_intent_id', $paymentIntent->id)->first();
 
         if (! $payment || ! $payment->isPending()) {
             return;
         }
 
-        $receiptUrl = $this->fetchReceiptUrl($sessionId);
+        $receiptUrl = $sessionId
+            ? $this->fetchReceiptUrl($sessionId)
+            : $this->fetchReceiptUrlFromPaymentIntent($paymentIntent->id);
 
         $payment->update([
             'status' => 'paid',
@@ -249,6 +253,29 @@ class StripeWebhookController extends Controller
             }
 
             $latestCharge = $paymentIntent?->latest_charge;
+
+            if (is_string($latestCharge)) {
+                $latestCharge = \Stripe\Charge::retrieve($latestCharge);
+            }
+
+            return $latestCharge?->receipt_url;
+        } catch (ApiErrorException $e) {
+            Log::warning('Could not fetch Stripe receipt URL.', ['error' => $e->getMessage()]);
+
+            return null;
+        }
+    }
+
+    private function fetchReceiptUrlFromPaymentIntent(string $paymentIntentId): ?string
+    {
+        try {
+            Stripe::setApiKey(config('services.stripe.secret'));
+
+            $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId, [
+                'expand' => ['latest_charge'],
+            ]);
+
+            $latestCharge = $paymentIntent->latest_charge;
 
             if (is_string($latestCharge)) {
                 $latestCharge = \Stripe\Charge::retrieve($latestCharge);

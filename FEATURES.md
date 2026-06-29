@@ -67,7 +67,7 @@ A plain-language summary of everything the site and client portal offer today.
 | What happens | Who does it | Details |
 |---|---|---|
 | We ask for a payment | Our team | We create a payment request with a description and amount |
-| Client pays | Client | They click "Pay Now" and pay securely by card |
+| Client pays | Client | They click "Pay Now" and pay on our own branded in-portal page (Stripe Elements embedded directly) instead of being sent to Stripe's hosted checkout — same approach used for maintenance plans |
 | Client reviews a payment | Client | Click any payment to see its status, date, and a receipt-ready transaction ID |
 | Client gets a receipt | Client | A clean, printable receipt page showing our business info, with a link to the official Stripe receipt |
 | Client downloads a full statement | Client | One click downloads their entire payment history as a spreadsheet file for their own records/bookkeeping |
@@ -174,3 +174,9 @@ The boss authored an 80-page Service Agreement and wanted to upload it directly 
 3. `confirm()` only *then* creates the actual Stripe `Subscription`, passing `default_payment_method` from the confirmed SetupIntent — so the subscription is never created until we know the card works. The webhook still does the authoritative activation, as before.
 
 `portal.subscriptions.confirm` was added to `EnsureProjectNotSuspended`'s exempt-route list alongside `checkout`/`refresh`, since a suspended client still needs to be able to start a plan. `stripe_checkout_session_id` is no longer set by new attempts (only `stripe_subscription_id`) — `SubscriptionReconciler` still checks `stripe_subscription_id` first, so "Refresh Status" is unaffected. Its status map also now treats Stripe's `incomplete` subscription status as local `pending` (not `past_due`) — `incomplete` means the first invoice was never paid at all, which isn't the same as an active plan falling behind, and mislabeling it `past_due` was hiding the "Start Plan" button from the client.
+
+## 12. Embedded One-Time Payment Checkout (2026-06-29)
+
+`Portal\PaymentController::checkout` no longer redirects to Stripe's hosted Checkout page either — it creates a `PaymentIntent` directly (saved to `Payment::stripe_payment_intent_id` immediately, before confirmation) and renders `resources/views/portal/payment-checkout.blade.php` with Stripe Elements. Unlike the maintenance plan flow, a one-time `PaymentIntent` always has its own stable `client_secret`, so no SetupIntent-first workaround was needed — `stripe.confirmPayment` is called directly.
+
+Because there's no Checkout Session anymore, both `StripeWebhookController::handlePaymentIntentSucceeded` and `PaymentReconciler::reconcile` were updated to match a `Payment` by `stripe_payment_intent_id` directly when no session id is present, falling back to the old `stripe_checkout_session_id` lookup for anything still pending from before this change. A parallel `fetchReceiptUrlFromPaymentIntent()` was added alongside the existing session-based `fetchReceiptUrl()` since there's no Session object to expand through in this path.

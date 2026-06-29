@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use Illuminate\Http\Request;
-use Stripe\Checkout\Session;
 use Stripe\Stripe;
 
 class PaymentController extends Controller
@@ -21,6 +20,12 @@ class PaymentController extends Controller
         ]);
     }
 
+    /**
+     * Branded in-page checkout (Stripe Elements) instead of redirecting to
+     * Stripe's hosted Checkout page. A one-time PaymentIntent always exposes
+     * its own client_secret directly, so — unlike the maintenance plan
+     * Subscription flow — no SetupIntent-first workaround is needed here.
+     */
     public function checkout(Request $request, Payment $payment)
     {
         $project = $request->user()->projects()->first();
@@ -30,30 +35,30 @@ class PaymentController extends Controller
 
         Stripe::setApiKey(config('services.stripe.secret'));
 
-        $session = Session::create([
-            'mode' => 'payment',
-            'payment_method_types' => ['card'],
-            'line_items' => [[
-                'quantity' => 1,
-                'price_data' => [
-                    'currency' => $payment->currency,
-                    'unit_amount' => $payment->amount,
-                    'product_data' => [
-                        'name' => $payment->description,
-                    ],
-                ],
-            ]],
-            'customer_email' => $request->user()->email,
-            'success_url' => route('portal.payments.index').'?checkout=success',
-            'cancel_url' => route('portal.payments.index').'?checkout=cancel',
-            'metadata' => [
-                'payment_id' => $payment->id,
-            ],
+        if ($payment->stripe_payment_intent_id) {
+            $paymentIntent = \Stripe\PaymentIntent::retrieve($payment->stripe_payment_intent_id);
+        } else {
+            $paymentIntent = \Stripe\PaymentIntent::create([
+                'amount' => $payment->amount,
+                'currency' => $payment->currency,
+                'description' => $payment->description,
+                'payment_method_types' => ['card'],
+                'receipt_email' => $request->user()->email,
+                'metadata' => ['payment_id' => $payment->id],
+            ]);
+
+            $payment->update(['stripe_payment_intent_id' => $paymentIntent->id]);
+        }
+
+        if ($paymentIntent->status === 'succeeded') {
+            return redirect()->route('portal.payments.index')->with('status', 'This payment has already been processed.');
+        }
+
+        return view('portal.payment-checkout', [
+            'payment' => $payment,
+            'clientSecret' => $paymentIntent->client_secret,
+            'stripeKey' => config('services.stripe.key'),
         ]);
-
-        $payment->update(['stripe_checkout_session_id' => $session->id]);
-
-        return redirect()->away($session->url);
     }
 
     public function receipt(Request $request, Payment $payment)

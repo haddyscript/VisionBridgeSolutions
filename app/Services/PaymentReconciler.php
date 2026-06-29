@@ -21,12 +21,49 @@ class PaymentReconciler
             return 'This payment is already marked as paid.';
         }
 
-        if (! $payment->stripe_checkout_session_id) {
-            return 'No Stripe checkout session is on record for this payment yet — the client hasn\'t started checkout.';
-        }
-
         Stripe::setApiKey(config('services.stripe.secret'));
 
+        // The embedded checkout page creates a PaymentIntent directly (no
+        // Checkout Session) — check that first since it's set immediately,
+        // before the client even confirms their card.
+        if ($payment->stripe_payment_intent_id) {
+            return $this->reconcileFromPaymentIntent($payment);
+        }
+
+        if (! $payment->stripe_checkout_session_id) {
+            return 'No payment attempt is on record for this payment yet — the client hasn\'t started checkout.';
+        }
+
+        return $this->reconcileFromCheckoutSession($payment);
+    }
+
+    private function reconcileFromPaymentIntent(Payment $payment): string
+    {
+        try {
+            $paymentIntent = PaymentIntent::retrieve($payment->stripe_payment_intent_id, [
+                'expand' => ['latest_charge'],
+            ]);
+        } catch (ApiErrorException $e) {
+            Log::warning('Could not retrieve Stripe PaymentIntent during manual payment sync.', ['error' => $e->getMessage()]);
+
+            return 'Could not reach Stripe to check this payment. Try again shortly.';
+        }
+
+        if ($paymentIntent->status !== 'succeeded') {
+            return 'Checked with Stripe — this payment has not been completed yet.';
+        }
+
+        $latestCharge = $paymentIntent->latest_charge;
+
+        if (is_string($latestCharge)) {
+            $latestCharge = Charge::retrieve($latestCharge);
+        }
+
+        return $this->markPaidAndNotify($payment, $latestCharge?->receipt_url);
+    }
+
+    private function reconcileFromCheckoutSession(Payment $payment): string
+    {
         try {
             $session = Session::retrieve($payment->stripe_checkout_session_id, [
                 'expand' => ['payment_intent.latest_charge'],
@@ -53,14 +90,19 @@ class PaymentReconciler
             $latestCharge = Charge::retrieve($latestCharge);
         }
 
-        $payment->update([
-            'status' => 'paid',
-            'stripe_payment_intent_id' => is_object($paymentIntent) ? $paymentIntent->id : $paymentIntent,
-            'paid_at' => now(),
-        ]);
+        $payment->stripe_payment_intent_id = is_object($paymentIntent) ? $paymentIntent->id : $paymentIntent;
+
+        return $this->markPaidAndNotify($payment, $latestCharge?->receipt_url);
+    }
+
+    private function markPaidAndNotify(Payment $payment, ?string $receiptUrl): string
+    {
+        $payment->status = 'paid';
+        $payment->paid_at = now();
+        $payment->save();
 
         Mail::to($payment->project->user->email)->send(
-            new PaymentReceiptMail($payment, $latestCharge?->receipt_url)
+            new PaymentReceiptMail($payment, $receiptUrl)
         );
 
         Mail::to(config('mail.admin_address'))->send(new AdminPaymentNotificationMail(
