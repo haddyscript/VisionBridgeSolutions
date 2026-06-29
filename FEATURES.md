@@ -74,7 +74,7 @@ A plain-language summary of everything the site and client portal offer today.
 | We cancel an unpaid request | Our team | Only possible if the client hasn't started paying yet |
 | We double-check a stuck payment | Our team | One click re-checks the payment's real status with our payment provider |
 | We set up a recurring plan | Our team | A monthly maintenance/care plan tied to a project |
-| Client starts the plan | Client | Pays securely to activate it |
+| Client starts the plan | Client | Pays on our own branded "Start Plan" page (Stripe Elements card form embedded directly in the portal) instead of being sent to a Stripe-hosted checkout page — card details still go straight to Stripe, never through our servers |
 | Client gets a maintenance plan receipt | Client | Each month's payment email links to our own branded receipt page (matching the one-time payment receipt design) instead of Stripe's hosted invoice page; the official Stripe invoice is still linked as a secondary option on that page |
 | Client manages their own billing | Client | Update their card or cancel, without needing to ask us; can also click "Refresh Status" to instantly re-sync their plan if it ever looks out of date |
 | We cancel a plan | Our team | Ends a client's active recurring plan |
@@ -163,3 +163,10 @@ The boss authored an 80-page Service Agreement and wanted to upload it directly 
 - Clients review a PDF-based agreement in an embedded `<iframe>` (`resources/views/portal/agreement.blade.php`) before signing, same typed-name + drawn-signature flow as before. The signed email now attaches **two** PDFs for PDF-based agreements — the original document and the certificate — versus one combined PDF for text-based ones (`ServiceAgreementSignedMail::build`). The portal Documents page and admin index both link to the original PDF separately from the per-signature download.
 - `body` stays a `NOT NULL longText` column (no `doctrine/dbal` to alter it) — PDF-based versions store an empty string there rather than null.
 
+## 11. Embedded Maintenance Plan Checkout (2026-06-29)
+
+`Portal\SubscriptionController::checkout` no longer redirects to Stripe's hosted Checkout page — it now renders `resources/views/portal/subscription-checkout.blade.php`, a branded page using Stripe Elements (`PaymentElement`) so the client never leaves the portal. Route name/signature (`portal.subscriptions.checkout`, accepts GET and POST) is unchanged, so this required no changes to the existing "set up your billing" email link (`emails/project-launched.blade.php`) or the suspension-middleware exemption list (`EnsureProjectNotSuspended.php`).
+
+How it works: the Stripe `Subscription` is created up front with `payment_behavior: default_incomplete` (nothing is charged yet), and `stripe_subscription_id` is saved locally immediately — unlike the old Checkout flow, which only learned the Stripe subscription ID after the client paid. The page confirms the subscription's first invoice `PaymentIntent` client-side via `stripe.confirmPayment` with `redirect: 'if_required'` (only redirects off-domain if the card actually needs 3D Secure); on success it sends the client to `portal.payments.index?checkout=success`, reusing the existing success banner. The webhook (`StripeWebhookController::handleInvoicePaymentSucceeded`) does the actual activation exactly as before — this change only replaces how the card gets collected, not how payment confirmation is recorded.
+
+`stripe_checkout_session_id` on `Subscription` is no longer set by new attempts (only `stripe_subscription_id` now) — `SubscriptionReconciler` still checks `stripe_subscription_id` first, so "Refresh Status" works unchanged. Any subscriptions still pending from before this change (which only have `stripe_checkout_session_id`, no `stripe_subscription_id` yet) keep working too — the reconciler's older checkout-session lookup path is left in place for them.
