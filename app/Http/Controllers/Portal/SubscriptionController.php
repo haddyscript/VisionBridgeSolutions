@@ -322,4 +322,28 @@ class SubscriptionController extends Controller
 
         return redirect()->route('portal.payments.index')->with('status', 'Maintenance plan canceled.');
     }
+
+    /**
+     * Self-service restart for a canceled plan — recreates the same plan
+     * (same description/amount/maintenance_plan_id) as a fresh pending
+     * Subscription and sends the client straight into the existing embedded
+     * checkout flow, rather than requiring an admin to manually set it up.
+     */
+    public function restartPlan(Request $request, Subscription $subscription)
+    {
+        $project = $request->user()->projects()->first();
+
+        abort_unless($project && $subscription->project_id === $project->id, 403);
+        abort_unless($subscription->isCanceled(), 422, 'Only a canceled plan can be restarted.');
+
+        $newSubscription = $project->subscriptions()->create([
+            'maintenance_plan_id' => $subscription->maintenance_plan_id,
+            'description' => $subscription->description,
+            'amount' => $subscription->amount,
+            'currency' => $subscription->currency,
+            'interval' => $subscription->interval,
+        ]);
+
+        return redirect()->route('portal.subscriptions.checkout', $newSubscription);
+    }
 }

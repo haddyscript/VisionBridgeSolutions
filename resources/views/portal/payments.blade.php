@@ -125,9 +125,12 @@
                         </span>
                     @endif
                     @if ($subscription->isCanceled())
-                        <a href="mailto:{{ config('mail.admin_address') }}" onclick="event.stopPropagation()" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 px-4 py-2.5 rounded-lg transition-colors">
-                            Contact Us to Start a New Plan
-                        </a>
+                        <form method="POST" action="{{ route('portal.subscriptions.restart', $subscription) }}" onclick="event.stopPropagation()">
+                            @csrf
+                            <button type="submit" class="bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                                Start This Plan Again
+                            </button>
+                        </form>
                     @elseif ($subscription->isPending())
                         @if ($subscription->stripe_checkout_session_id)
                             <form method="POST" action="{{ route('portal.subscriptions.refresh', $subscription) }}" onclick="event.stopPropagation()" data-ajax-target="maintenance-plan-card">

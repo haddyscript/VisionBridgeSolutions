@@ -139,6 +139,7 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
     Route::get('/portal/billing', [PortalSubscriptionController::class, 'manageBilling'])->name('portal.billing.show');
     Route::post('/portal/subscriptions/{subscription}/payment-method', [PortalSubscriptionController::class, 'updatePaymentMethod'])->name('portal.subscriptions.update-payment-method');
     Route::post('/portal/subscriptions/{subscription}/cancel', [PortalSubscriptionController::class, 'cancelPlan'])->name('portal.subscriptions.cancel');
+    Route::post('/portal/subscriptions/{subscription}/restart', [PortalSubscriptionController::class, 'restartPlan'])->name('portal.subscriptions.restart');
 
     Route::get('/portal/account', [PortalAccountController::class, 'index'])->name('portal.account.index');
     Route::patch('/portal/account/profile', [PortalAccountController::class, 'updateProfile'])->name('portal.account.profile.update');
