@@ -861,11 +861,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     </div>
 </section>
 
-{{-- Bridge cable divider — sits right at the Plans/Featured Projects seam,
-     so this is the one element actually visible during that transition;
-     it's the parallax target that matters most for that handoff. --}}
-<div class="bg-white py-12" aria-hidden="true">
-    <div id="plans-portfolio-divider" class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
+{{-- Bridge cable divider — sits right at the Plans/Featured Projects seam.
+     The divider line itself stays at normal scroll speed (foreground); a
+     large soft glow behind it is the actual parallax layer, drifting
+     slower — that contrast is what makes the motion read as parallax
+     instead of the line just floating around on its own. --}}
+<div class="relative bg-white py-12 overflow-hidden" aria-hidden="true">
+    <div id="plans-portfolio-glow" class="absolute" style="left:50%;top:50%;width:760px;height:340px;margin-left:-380px;margin-top:-170px;background:radial-gradient(circle,rgba(201,168,76,0.16) 0%,rgba(42,157,143,0.08) 55%,transparent 75%);filter:blur(40px);pointer-events:none;"></div>
+    <div class="bridge-cable-divider relative">{!! $bridgeCableDivider !!}</div>
 </div>
 
 {{-- ============================================================
@@ -2261,10 +2264,10 @@ else setTimeout(initServiceCardHover, 1);
 (function () {
     function initBackgroundParallax() {
         const targets = [
-            { el: document.getElementById('plans-bridge-photo'),       factor: 0.18 },
-            { el: document.getElementById('portfolio-orb-1-wrap'),     factor: 0.16 },
-            { el: document.getElementById('portfolio-orb-2-wrap'),     factor: -0.14 },
-            { el: document.getElementById('plans-portfolio-divider'),  factor: 0.45 },
+            { el: document.getElementById('plans-bridge-photo'),    factor: 0.18 },
+            { el: document.getElementById('portfolio-orb-1-wrap'),  factor: 0.16 },
+            { el: document.getElementById('portfolio-orb-2-wrap'),  factor: -0.14 },
+            { el: document.getElementById('plans-portfolio-glow'),  factor: 0.30 },
         ].filter(t => t.el);
         if (!targets.length) return;
 
