@@ -1230,6 +1230,16 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
     function initGSAP() {
         if (typeof gsap === 'undefined') { setTimeout(initGSAP, 80); return; }
+
+        // Everything below registers dozens of ScrollTrigger instances and
+        // walks the DOM for every animated section on the page. Running all
+        // of that synchronously the instant GSAP finishes loading competes
+        // with the browser's own initial paint/layout work, which is what
+        // causes jank on lower-spec devices. Deferring it to an idle slot
+        // (or a 1-tick timeout where requestIdleCallback isn't available,
+        // e.g. Safari) lets first paint happen first without changing any
+        // of the animation logic or ordering below.
+        const runSetup = () => {
         gsap.registerPlugin(ScrollTrigger);
 
         // Run the generic reveal system first so section-specific tweens
@@ -1904,6 +1914,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             });
         }
         initHorizontalWipe();
+        };
+
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(runSetup, { timeout: 1500 });
+        } else {
+            setTimeout(runSetup, 1);
+        }
     }
 
     initGSAP();
@@ -1911,7 +1928,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     // ── Mouse-position tracking for gradient border + interior spotlight ──
     // Runs without GSAP — purely sets CSS custom properties so the
     // radial-gradient in CSS repositions in real-time (no reflow, no layout).
-    (function initValueCardGlow() {
+    function initValueCardGlow() {
         document.querySelectorAll('.value-card-outer').forEach(card => {
             card.addEventListener('mousemove', e => {
                 const r = card.getBoundingClientRect();
@@ -1928,7 +1945,10 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 card.style.setProperty('--cy', '-9999px');
             }, { passive: true });
         });
-    })();
+    }
+    // Deferred — just attaches listeners, no reason to compete with initial paint
+    if ('requestIdleCallback' in window) requestIdleCallback(initValueCardGlow, { timeout: 1500 });
+    else setTimeout(initValueCardGlow, 1);
 
 })();
 
@@ -1996,7 +2016,7 @@ function toggleServices() {
 }
 
 // ── Services card hover: 3D tilt + spotlight + shimmer ──
-(function initServiceCardHover() {
+function initServiceCardHover() {
     const TILT      = 7;   // max degrees
     const LIFT      = -12; // px rise on hover
 
@@ -2052,7 +2072,10 @@ function toggleServices() {
             card.classList.remove('svc-shimmering');
         }, { passive: true });
     });
-})();
+}
+// Deferred — just attaches listeners, no reason to compete with initial paint
+if ('requestIdleCallback' in window) requestIdleCallback(initServiceCardHover, { timeout: 1500 });
+else setTimeout(initServiceCardHover, 1);
 </script>
 
 @endsection
