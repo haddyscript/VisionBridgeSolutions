@@ -20,7 +20,20 @@ class ServiceAgreementSignedMail extends Mailable
         $mail = $this->subject('Signed Service Agreement — '.$this->signature->project->name)
             ->view('emails.service-agreement-signed');
 
-        if ($this->signature->pdf_path) {
+        $template = $this->signature->template;
+
+        if ($template->isPdfBased()) {
+            // Two files when the agreement is an uploaded PDF: the signed
+            // certificate (proof of signature) and the actual agreement
+            // document it refers to.
+            if ($this->signature->pdf_path) {
+                $mail->attachFromStorageDisk('local', $this->signature->pdf_path, 'VisionBridge-Signature-Certificate.pdf');
+            }
+
+            if ($template->pdf_path) {
+                $mail->attachFromStorageDisk('local', $template->pdf_path, 'VisionBridge-Service-Agreement.pdf');
+            }
+        } elseif ($this->signature->pdf_path) {
             $mail->attachFromStorageDisk('local', $this->signature->pdf_path, 'VisionBridge-Service-Agreement.pdf');
         }
 

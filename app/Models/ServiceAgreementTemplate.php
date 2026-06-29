@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class ServiceAgreementTemplate extends Model
 {
@@ -10,6 +11,7 @@ class ServiceAgreementTemplate extends Model
         'version',
         'title',
         'body',
+        'pdf_path',
         'is_active',
     ];
 
@@ -28,5 +30,17 @@ class ServiceAgreementTemplate extends Model
     public static function currentActive(): ?self
     {
         return static::where('is_active', true)->latest('version')->first();
+    }
+
+    public function isPdfBased(): bool
+    {
+        return $this->pdf_path !== null;
+    }
+
+    public function pdfHash(): ?string
+    {
+        return $this->isPdfBased() && Storage::disk('local')->exists($this->pdf_path)
+            ? hash('sha256', Storage::disk('local')->get($this->pdf_path))
+            : null;
     }
 }

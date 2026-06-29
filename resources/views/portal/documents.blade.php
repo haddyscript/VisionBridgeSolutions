@@ -23,10 +23,17 @@
                     </p>
                 </div>
             </div>
-            <a href="{{ route('portal.agreement.download', $signature) }}" class="shrink-0 inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3.5 py-2 rounded-lg transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                Download PDF
-            </a>
+            <div class="shrink-0 flex items-center gap-2">
+                @if ($signature->template->isPdfBased())
+                    <a href="{{ route('portal.agreement.view-template', $signature->template) }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3.5 py-2 rounded-lg transition-colors">
+                        View Agreement
+                    </a>
+                @endif
+                <a href="{{ route('portal.agreement.download', $signature) }}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3.5 py-2 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    {{ $signature->template->isPdfBased() ? 'Download Certificate' : 'Download PDF' }}
+                </a>
+            </div>
         </div>
     @empty
         <p class="text-sm text-gray-400 dark:text-gray-500 px-6 py-8 text-center">No documents yet — they'll show up here once you've signed your Service Agreement.</p>

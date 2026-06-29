@@ -67,7 +67,7 @@ class ServiceAgreementController extends Controller
             'service_agreement_template_id' => $template->id,
             'signer_name' => $validated['signer_name'],
             'signature_image_path' => $signaturePath,
-            'agreement_hash' => hash('sha256', $template->body),
+            'agreement_hash' => $template->isPdfBased() ? $template->pdfHash() : hash('sha256', $template->body),
             'ip_address' => $request->ip(),
             'user_agent' => (string) $request->userAgent(),
             'signed_at' => now(),
@@ -75,11 +75,23 @@ class ServiceAgreementController extends Controller
 
         $pdfPath = "agreements/{$project->id}/agreement-{$signature->id}.pdf";
 
-        $pdf = Pdf::loadView('pdfs.service-agreement', [
-            'template' => $template,
-            'signature' => $signature,
-            'signatureImageBase64' => $validated['signature_image'],
-        ]);
+        // PDF-based templates can't be re-rendered from text, and merging a
+        // signature page into an uploaded multi-page PDF needs a library we
+        // don't have installed — so we generate a one-page certificate that
+        // references the uploaded agreement (by title/version/hash) instead.
+        // The uploaded agreement itself stays downloadable from the Documents
+        // page and this same signing screen.
+        $pdf = $template->isPdfBased()
+            ? Pdf::loadView('pdfs.service-agreement-certificate', [
+                'template' => $template,
+                'signature' => $signature,
+                'signatureImageBase64' => $validated['signature_image'],
+            ])
+            : Pdf::loadView('pdfs.service-agreement', [
+                'template' => $template,
+                'signature' => $signature,
+                'signatureImageBase64' => $validated['signature_image'],
+            ]);
 
         Storage::disk('local')->put($pdfPath, $pdf->output());
 
@@ -99,5 +111,22 @@ class ServiceAgreementController extends Controller
         abort_unless($signature->pdf_path && Storage::disk('local')->exists($signature->pdf_path), 404);
 
         return Storage::disk('local')->download($signature->pdf_path, 'VisionBridge-Service-Agreement.pdf');
+    }
+
+    public function viewTemplate(Request $request, ServiceAgreementTemplate $serviceAgreementTemplate)
+    {
+        $project = $request->user()->projects()->first();
+
+        // Admins reviewing it (e.g. before publishing) and clients who still
+        // need to sign the current version, or who already signed this exact
+        // version, may view it. Clients can't view an inactive older version.
+        $allowed = $request->user()->isAdmin()
+            || $serviceAgreementTemplate->is_active
+            || ($project && $project->agreementSignature?->service_agreement_template_id === $serviceAgreementTemplate->id);
+
+        abort_unless($allowed, 403);
+        abort_unless($serviceAgreementTemplate->isPdfBased(), 404);
+
+        return Storage::disk('local')->response($serviceAgreementTemplate->pdf_path, $serviceAgreementTemplate->title.'.pdf');
     }
 }

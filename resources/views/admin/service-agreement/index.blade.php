@@ -22,24 +22,72 @@
     </summary>
 
     <div class="border-t border-gray-200 dark:border-gray-700 p-6">
-        <form method="POST" action="{{ route('admin.service-agreement.store') }}">
+        @if ($activeTemplate?->isPdfBased())
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                The current version is an uploaded PDF —
+                <a href="{{ route('admin.service-agreement.templates.download', $activeTemplate) }}" class="text-gold-dark font-semibold hover:underline">download it</a>
+                to review. Publishing below replaces it with a new version (text or PDF).
+            </p>
+        @endif
+
+        @php $source = old('source', $activeTemplate?->isPdfBased() ? 'pdf' : 'text'); @endphp
+
+        <div class="flex items-center gap-1 mb-5 border-b border-gray-200 dark:border-gray-700" id="agreement-source-tabs">
+            <button type="button" data-source-tab="text" onclick="setAgreementSource('text')"
+                    class="px-4 py-2 text-sm font-semibold border-b-2 transition-colors {{ $source === 'text' ? 'border-gold text-navy dark:text-white' : 'border-transparent text-gray-400 dark:text-gray-500 hover:text-navy' }}">
+                Paste Text
+            </button>
+            <button type="button" data-source-tab="pdf" onclick="setAgreementSource('pdf')"
+                    class="px-4 py-2 text-sm font-semibold border-b-2 transition-colors {{ $source === 'pdf' ? 'border-gold text-navy dark:text-white' : 'border-transparent text-gray-400 dark:text-gray-500 hover:text-navy' }}">
+                Upload PDF
+            </button>
+        </div>
+
+        <form method="POST" action="{{ route('admin.service-agreement.store') }}" enctype="multipart/form-data">
             @csrf
+            <input type="hidden" name="source" id="agreement-source-input" value="{{ $source }}">
             <div class="mb-4">
                 <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Title</label>
                 <input type="text" name="title" value="{{ old('title', $activeTemplate?->title) }}" required
                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
             </div>
-            <div class="mb-4">
+
+            <div id="agreement-source-panel-text" class="mb-4" style="{{ $source === 'text' ? '' : 'display:none;' }}">
                 <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Agreement Text</label>
                 <textarea name="body" rows="18"
-                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">{{ old('body', $activeTemplate?->body) }}</textarea>
+                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">{{ old('body', $activeTemplate?->isPdfBased() ? '' : $activeTemplate?->body) }}</textarea>
             </div>
+
+            <div id="agreement-source-panel-pdf" class="mb-4" style="{{ $source === 'pdf' ? '' : 'display:none;' }}">
+                <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Agreement PDF</label>
+                <input type="file" name="pdf" accept="application/pdf"
+                       class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gold/15 file:text-navy dark:text-white file:font-semibold file:text-sm hover:file:bg-gold/25">
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5">PDF only, up to 25 MB. Clients will review/download this exact file, then sign with their typed name and drawn signature as usual.</p>
+            </div>
+
             <button type="submit" class="bg-navy hover:bg-navy-light text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
                 Publish New Version
             </button>
         </form>
     </div>
 </details>
+
+<script>
+    function setAgreementSource(value) {
+        document.getElementById('agreement-source-input').value = value;
+        document.getElementById('agreement-source-panel-text').style.display = value === 'text' ? '' : 'none';
+        document.getElementById('agreement-source-panel-pdf').style.display = value === 'pdf' ? '' : 'none';
+        document.querySelectorAll('#agreement-source-tabs [data-source-tab]').forEach((btn) => {
+            const active = btn.dataset.sourceTab === value;
+            btn.classList.toggle('border-gold', active);
+            btn.classList.toggle('text-navy', active);
+            btn.classList.toggle('dark:text-white', active);
+            btn.classList.toggle('border-transparent', !active);
+            btn.classList.toggle('text-gray-400', !active);
+            btn.classList.toggle('dark:text-gray-500', !active);
+        });
+    }
+</script>
 
 <h3 class="font-semibold text-navy dark:text-white mb-3">Signed Agreements</h3>
 

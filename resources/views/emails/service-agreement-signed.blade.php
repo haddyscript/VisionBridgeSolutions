@@ -26,8 +26,12 @@
                         <td style="padding:32px;">
                             <p style="font-size:14px; color:#4b5563; margin:0 0 20px;">
                                 {{ $signature->signer_name }} digitally signed the VisionBridge Client Service
-                                Agreement for <strong>{{ $signature->project->name }}</strong>. A copy is attached
-                                as a PDF for your records.
+                                Agreement for <strong>{{ $signature->project->name }}</strong>.
+                                @if ($signature->template->isPdfBased())
+                                    Both the signed agreement document and a signature certificate are attached as PDFs for your records.
+                                @else
+                                    A copy is attached as a PDF for your records.
+                                @endif
                             </p>
 
                             <h2 style="font-size:15px; color:#111D33; margin:0 0 6px;">Signed by</h2>
