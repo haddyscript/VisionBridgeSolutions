@@ -113,6 +113,16 @@ class ServiceAgreementController extends Controller
         return Storage::disk('local')->download($signature->pdf_path, 'VisionBridge-Service-Agreement.pdf');
     }
 
+    public function preview(Request $request, ServiceAgreementSignature $signature)
+    {
+        $user = $request->user();
+
+        abort_unless($user->isAdmin() || $signature->user_id === $user->id, 403);
+        abort_unless($signature->pdf_path && Storage::disk('local')->exists($signature->pdf_path), 404);
+
+        return Storage::disk('local')->response($signature->pdf_path, 'VisionBridge-Service-Agreement.pdf');
+    }
+
     public function viewTemplate(Request $request, ServiceAgreementTemplate $serviceAgreementTemplate)
     {
         $project = $request->user()->projects()->first();

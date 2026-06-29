@@ -12,17 +12,17 @@
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
     @forelse ($agreementSignatures as $signature)
         <div class="flex items-center justify-between gap-4 px-6 py-4">
-            <div class="flex items-center gap-3 min-w-0">
+            <a href="{{ route('portal.agreement.preview', $signature) }}" target="_blank" class="flex items-center gap-3 min-w-0 group">
                 <span class="w-10 h-10 rounded-lg bg-gold/15 text-gold-dark flex items-center justify-center shrink-0">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 </span>
                 <div class="min-w-0">
-                    <p class="text-sm font-semibold text-navy dark:text-white truncate">{{ $signature->template->title }}</p>
+                    <p class="text-sm font-semibold text-navy dark:text-white truncate group-hover:text-gold-dark transition-colors">{{ $signature->template->title }}</p>
                     <p class="text-xs text-gray-400 dark:text-gray-500">
                         Version {{ $signature->template->version }} &middot; Signed {{ $signature->signed_at->format('M j, Y') }}
                     </p>
                 </div>
-            </div>
+            </a>
             <div class="shrink-0 flex items-center gap-2">
                 @if ($signature->template->isPdfBased())
                     <a href="{{ route('portal.agreement.view-template', $signature->template) }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3.5 py-2 rounded-lg transition-colors">

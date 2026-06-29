@@ -105,6 +105,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/portal/agreement', [PortalServiceAgreementController::class, 'show'])->name('portal.agreement.show');
     Route::post('/portal/agreement', [PortalServiceAgreementController::class, 'store'])->name('portal.agreement.store');
     Route::get('/portal/agreement/{signature}/download', [PortalServiceAgreementController::class, 'download'])->name('portal.agreement.download');
+    Route::get('/portal/agreement/{signature}/preview', [PortalServiceAgreementController::class, 'preview'])->name('portal.agreement.preview');
     Route::get('/portal/agreement/templates/{serviceAgreementTemplate}/view', [PortalServiceAgreementController::class, 'viewTemplate'])->name('portal.agreement.view-template');
 
     Route::get('/portal/questionnaire', [PortalProjectQuestionnaireController::class, 'show'])->name('portal.questionnaire.show');
