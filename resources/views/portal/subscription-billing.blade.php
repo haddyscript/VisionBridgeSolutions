@@ -51,12 +51,19 @@
         </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-7">
-        <h3 class="font-semibold text-navy dark:text-white mb-1.5">Cancel Plan</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">This stops future billing immediately. You can start a new plan anytime from the Payments page.</p>
+    <div class="bg-red-50/60 dark:bg-red-500/5 rounded-2xl border-2 border-red-200 dark:border-red-500/30 p-7">
+        <div class="flex items-start gap-3 mb-4">
+            <span class="w-9 h-9 rounded-full bg-red-100 dark:bg-red-500/15 flex items-center justify-center shrink-0">
+                <svg class="w-4.5 h-4.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            </span>
+            <div>
+                <h3 class="font-bold text-red-700 dark:text-red-400">Cancel Plan</h3>
+                <p class="text-sm text-red-600/80 dark:text-red-400/70 mt-0.5">This stops future billing immediately. You can start a new plan anytime from the Payments page.</p>
+            </div>
+        </div>
         <form id="cancel-form" method="POST" action="{{ route('portal.subscriptions.cancel', $subscription) }}" data-confirm="Cancel this maintenance plan? This stops future billing immediately.">
             @csrf
-            <button type="submit" class="text-sm font-semibold text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 px-4 py-2.5 rounded-lg transition-colors">
+            <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold text-sm py-3 rounded-lg transition-colors shadow">
                 Cancel Maintenance Plan
             </button>
         </form>
