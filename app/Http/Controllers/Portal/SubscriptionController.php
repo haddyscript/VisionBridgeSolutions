@@ -86,27 +86,36 @@ class SubscriptionController extends Controller
                 return response()->json(['error' => 'Card setup was not completed. Please try again.'], 422);
             }
 
+            // Any existing stripe_subscription_id here is stale — left over
+            // from an earlier attempt under the old Subscription-first flow,
+            // never paid, with no payment method attached. Cancel it rather
+            // than reuse it, since reusing it skipped attaching the card the
+            // client just confirmed and never attempted a fresh charge.
             if ($subscription->stripe_subscription_id) {
-                $stripeSubscription = \Stripe\Subscription::retrieve($subscription->stripe_subscription_id);
-            } else {
-                $product = \Stripe\Product::create(['name' => $subscription->description]);
-
-                $stripeSubscription = \Stripe\Subscription::create([
-                    'customer' => $setupIntent->customer,
-                    'default_payment_method' => $setupIntent->payment_method,
-                    'items' => [[
-                        'price_data' => [
-                            'currency' => $subscription->currency,
-                            'unit_amount' => $subscription->amount,
-                            'recurring' => ['interval' => $subscription->interval],
-                            'product' => $product->id,
-                        ],
-                    ]],
-                    'metadata' => ['subscription_id' => $subscription->id],
-                ]);
-
-                $subscription->update(['stripe_subscription_id' => $stripeSubscription->id]);
+                try {
+                    \Stripe\Subscription::retrieve($subscription->stripe_subscription_id)->cancel();
+                } catch (ApiErrorException) {
+                    // Already canceled/gone — fine, we're replacing it anyway.
+                }
             }
+
+            $product = \Stripe\Product::create(['name' => $subscription->description]);
+
+            $stripeSubscription = \Stripe\Subscription::create([
+                'customer' => $setupIntent->customer,
+                'default_payment_method' => $setupIntent->payment_method,
+                'items' => [[
+                    'price_data' => [
+                        'currency' => $subscription->currency,
+                        'unit_amount' => $subscription->amount,
+                        'recurring' => ['interval' => $subscription->interval],
+                        'product' => $product->id,
+                    ],
+                ]],
+                'metadata' => ['subscription_id' => $subscription->id],
+            ]);
+
+            $subscription->update(['stripe_subscription_id' => $stripeSubscription->id]);
         } catch (ApiErrorException $e) {
             Log::error('Stripe error confirming maintenance plan subscription.', [
                 'subscription_id' => $subscription->id,
