@@ -415,6 +415,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
              Button aesthetic): dark acrylic gradient, gold bevelled frame,
              diagonal glass sheen, and a medallion play-button emblem. --}}
         <div id="about-team-panel" class="mt-10 rounded-3xl relative overflow-hidden py-16 px-6 sm:py-20 sm:px-12 lg:py-24 lg:px-16" style="background:linear-gradient(155deg,#0A0D11 0%,#171B21 35%,#0A0D11 70%,#15191F 100%);border:1px solid rgba(201,168,76,0.28);box-shadow:0 0 0 1px rgba(201,168,76,0.10) inset, 0 30px 80px rgba(0,0,0,0.45);">
+            {{-- Bridge photo backdrop — ties the literal "VisionBridge" name
+                 + gold light flare into the panel, dimmed enough to keep the
+                 gold sheen/medallion/text in front fully legible. --}}
+            <div class="absolute inset-0 pointer-events-none" style="background-image:url('@assetv('image/bridge-background-image-v2.png')');background-size:cover;background-position:center 35%;opacity:0.30;"></div>
+            <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(155deg,rgba(10,13,17,0.88) 0%,rgba(23,27,33,0.80) 35%,rgba(10,13,17,0.92) 70%,rgba(21,25,31,0.90) 100%);"></div>
             {{-- Diagonal glossy sheen — light catching an acrylic plaque --}}
             <div class="absolute inset-0 pointer-events-none" style="z-index:1;background:linear-gradient(115deg,transparent 28%,rgba(255,255,255,0.07) 47%,rgba(255,255,255,0.02) 53%,transparent 68%);"></div>
             {{-- One-time light-sweep that plays as the panel reveals itself —
