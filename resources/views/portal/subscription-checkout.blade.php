@@ -49,32 +49,61 @@
     const submitButtonText = document.getElementById('submit-button-text');
     const errorBox = document.getElementById('checkout-error');
 
+    function resetButton() {
+        submitButton.disabled = false;
+        submitButtonText.textContent = 'Start Plan — {{ $subscription->formattedAmount() }}';
+    }
+
+    function showError(message) {
+        errorBox.textContent = message || 'Something went wrong. Please try again.';
+        errorBox.classList.remove('hidden');
+        resetButton();
+    }
+
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
 
         submitButton.disabled = true;
-        submitButtonText.textContent = 'Processing…';
+        submitButtonText.textContent = 'Saving card…';
         errorBox.classList.add('hidden');
 
-        const { error } = await stripe.confirmPayment({
+        const { error, setupIntent } = await stripe.confirmSetup({
             elements,
             confirmParams: {
-                return_url: '{{ route('portal.payments.index') }}?checkout=success',
+                return_url: window.location.href,
             },
             redirect: 'if_required',
         });
 
         if (error) {
-            errorBox.textContent = error.message || 'Something went wrong confirming your card. Please try again.';
-            errorBox.classList.remove('hidden');
-            submitButton.disabled = false;
-            submitButtonText.textContent = 'Start Plan — {{ $subscription->formattedAmount() }}';
+            showError(error.message);
             return;
         }
 
-        // No redirect-based authentication was needed — payment already
-        // confirmed, so send the client on to the success page ourselves.
-        window.location.href = '{{ route('portal.payments.index') }}?checkout=success';
+        submitButtonText.textContent = 'Starting plan…';
+
+        try {
+            const response = await fetch('{{ route('portal.subscriptions.confirm', $subscription) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({ setup_intent: setupIntent.id }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                showError(data.error);
+                return;
+            }
+
+            window.location.href = data.redirect;
+        } catch (err) {
+            showError('Could not finish setting up this plan. Please try again.');
+        }
     });
 })();
 </script>

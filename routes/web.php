@@ -132,6 +132,7 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
     // GET allowed too so the "set up your billing" link in emails can take the
     // client straight to Stripe Checkout without an intermediate confirm page.
     Route::match(['get', 'post'], '/portal/subscriptions/{subscription}/checkout', [PortalSubscriptionController::class, 'checkout'])->name('portal.subscriptions.checkout');
+    Route::post('/portal/subscriptions/{subscription}/confirm', [PortalSubscriptionController::class, 'confirm'])->name('portal.subscriptions.confirm');
     Route::post('/portal/subscriptions/{subscription}/refresh', [PortalSubscriptionController::class, 'refresh'])->name('portal.subscriptions.refresh');
     Route::get('/portal/subscription-payments/{subscriptionPayment}/receipt', [PortalSubscriptionController::class, 'receipt'])->name('portal.subscription-payments.receipt');
     Route::get('/portal/billing-portal', [PortalSubscriptionController::class, 'billingPortal'])->name('portal.billing-portal');

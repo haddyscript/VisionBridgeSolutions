@@ -17,10 +17,11 @@ class SubscriptionController extends Controller
 {
     /**
      * Branded in-page checkout (Stripe Elements) instead of redirecting to
-     * Stripe's hosted Checkout page. The Stripe Subscription is created
-     * up front in 'default_incomplete' status — nothing is charged until
-     * the client confirms their card on this page; the webhook flips our
-     * local status to 'active' once the first invoice actually pays.
+     * Stripe's hosted Checkout page. Uses the SetupIntent-first pattern —
+     * the card is collected/confirmed here, and the actual Subscription
+     * is only created in confirm() once we know the card works. This
+     * avoids depending on a Subscription's first-invoice PaymentIntent,
+     * whose field name/shape varies across Stripe API versions.
      */
     public function checkout(Request $request, Subscription $subscription)
     {
@@ -29,50 +30,14 @@ class SubscriptionController extends Controller
         abort_unless($project && $subscription->project_id === $project->id, 403);
         abort_unless($subscription->isPending(), 422, 'This maintenance plan has already been processed.');
 
-        Stripe::setApiKey(config('services.stripe.secret'));
-
-        // Fail fast and loudly instead of hanging until PHP's hard execution
-        // timeout silently kills the request (which produces a generic host
-        // error page with nothing logged — exactly what happened before).
-        $curl = new CurlClient();
-        $curl->setTimeout(20);
-        $curl->setConnectTimeout(10);
-        \Stripe\ApiRequestor::setHttpClient($curl);
+        $this->configureStripe();
 
         try {
-            if ($subscription->stripe_subscription_id) {
-                // Client returned after an earlier failed/abandoned attempt —
-                // reuse the existing incomplete subscription instead of
-                // creating another.
-                $stripeSubscription = \Stripe\Subscription::retrieve([
-                    'id' => $subscription->stripe_subscription_id,
-                    'expand' => ['latest_invoice.payment_intent'],
-                ]);
-            } else {
-                // Unlike Checkout Sessions, the Subscriptions API doesn't accept
-                // inline product_data on price_data — it needs a real Product id.
-                $product = \Stripe\Product::create(['name' => $subscription->description]);
-
-                $stripeSubscription = \Stripe\Subscription::create([
-                    'customer' => $request->user()->getOrCreateStripeCustomerId(),
-                    'items' => [[
-                        'price_data' => [
-                            'currency' => $subscription->currency,
-                            'unit_amount' => $subscription->amount,
-                            'recurring' => ['interval' => $subscription->interval],
-                            'product' => $product->id,
-                        ],
-                    ]],
-                    'payment_behavior' => 'default_incomplete',
-                    'payment_settings' => ['save_default_payment_method' => 'on_subscription'],
-                    'expand' => ['latest_invoice.payment_intent'],
-                    'metadata' => [
-                        'subscription_id' => $subscription->id,
-                    ],
-                ]);
-
-                $subscription->update(['stripe_subscription_id' => $stripeSubscription->id]);
-            }
+            $setupIntent = \Stripe\SetupIntent::create([
+                'customer' => $request->user()->getOrCreateStripeCustomerId(),
+                'usage' => 'off_session',
+                'metadata' => ['subscription_id' => $subscription->id],
+            ]);
         } catch (ApiErrorException $e) {
             Log::error('Stripe error starting maintenance plan checkout.', [
                 'subscription_id' => $subscription->id,
@@ -82,36 +47,90 @@ class SubscriptionController extends Controller
             abort(500, 'Could not reach Stripe to start this plan. Please try again shortly.');
         }
 
-        // Already paid (e.g. the client double-clicked, or the webhook beat us
-        // here) — nothing left to confirm, send them straight back.
-        if ($stripeSubscription->status === 'active') {
-            return redirect()->route('portal.payments.index')->with('status', 'This maintenance plan is already active.');
-        }
-
-        // This Stripe account's API version no longer exposes `payment_intent`
-        // on invoices — it's been replaced by `confirmation_secret`. Checking
-        // both keeps this working regardless of which the account is on.
-        $latestInvoice = $stripeSubscription->latest_invoice;
-        $clientSecret = $latestInvoice->confirmation_secret?->client_secret
-            ?? $latestInvoice->payment_intent?->client_secret;
-
-        if ($clientSecret === null) {
-            // Diagnostic dump — once we see the real shape of this invoice in
-            // the log, replace this whole block with the correct field access.
-            Log::error('No PaymentIntent client secret available for maintenance plan checkout.', [
-                'subscription_id' => $subscription->id,
-                'stripe_subscription_id' => $stripeSubscription->id,
-                'latest_invoice_dump' => $latestInvoice->toArray(),
-            ]);
-
-            abort(500, 'Could not start a payment for this plan — please try again or contact support.');
-        }
-
         return view('portal.subscription-checkout', [
             'subscription' => $subscription,
-            'clientSecret' => $clientSecret,
+            'clientSecret' => $setupIntent->client_secret,
             'stripeKey' => config('services.stripe.key'),
         ]);
+    }
+
+    /**
+     * Called by the checkout page's JS once Stripe Elements has confirmed the
+     * SetupIntent (card saved). Creates the actual Subscription now, using
+     * that confirmed card as the default payment method, and attempts the
+     * first charge immediately. The webhook remains the source of truth for
+     * flipping local status to 'active' once Stripe confirms payment.
+     */
+    public function confirm(Request $request, Subscription $subscription)
+    {
+        $project = $request->user()->projects()->first();
+
+        abort_unless($project && $subscription->project_id === $project->id, 403);
+        abort_unless($subscription->isPending(), 422, 'This maintenance plan has already been processed.');
+
+        $validated = $request->validate([
+            'setup_intent' => ['required', 'string'],
+        ]);
+
+        $this->configureStripe();
+
+        try {
+            $setupIntent = \Stripe\SetupIntent::retrieve($validated['setup_intent']);
+
+            if ($setupIntent->status !== 'succeeded' || ! $setupIntent->payment_method) {
+                return response()->json(['error' => 'Card setup was not completed. Please try again.'], 422);
+            }
+
+            if ($subscription->stripe_subscription_id) {
+                $stripeSubscription = \Stripe\Subscription::retrieve($subscription->stripe_subscription_id);
+            } else {
+                $product = \Stripe\Product::create(['name' => $subscription->description]);
+
+                $stripeSubscription = \Stripe\Subscription::create([
+                    'customer' => $setupIntent->customer,
+                    'default_payment_method' => $setupIntent->payment_method,
+                    'items' => [[
+                        'price_data' => [
+                            'currency' => $subscription->currency,
+                            'unit_amount' => $subscription->amount,
+                            'recurring' => ['interval' => $subscription->interval],
+                            'product' => $product->id,
+                        ],
+                    ]],
+                    'metadata' => ['subscription_id' => $subscription->id],
+                ]);
+
+                $subscription->update(['stripe_subscription_id' => $stripeSubscription->id]);
+            }
+        } catch (ApiErrorException $e) {
+            Log::error('Stripe error confirming maintenance plan subscription.', [
+                'subscription_id' => $subscription->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json(['error' => 'Could not reach Stripe to finish setting up this plan. Please try again shortly.'], 500);
+        }
+
+        if (! in_array($stripeSubscription->status, ['active', 'trialing'], true)) {
+            return response()->json(['error' => 'Your card was declined. Please try a different card.'], 422);
+        }
+
+        return response()->json(['redirect' => route('portal.payments.index').'?checkout=success']);
+    }
+
+    /**
+     * Fail fast and loudly instead of hanging until PHP's hard execution
+     * timeout silently kills the request (which produces a generic host
+     * error page with nothing logged).
+     */
+    private function configureStripe(): void
+    {
+        Stripe::setApiKey(config('services.stripe.secret'));
+
+        $curl = new CurlClient();
+        $curl->setTimeout(20);
+        $curl->setConnectTimeout(10);
+        \Stripe\ApiRequestor::setHttpClient($curl);
     }
 
     public function refresh(Request $request, Subscription $subscription, SubscriptionReconciler $reconciler)

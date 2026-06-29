@@ -25,6 +25,7 @@ class EnsureProjectNotSuspended
             'portal.suspended',
             'portal.billing-portal',
             'portal.subscriptions.checkout',
+            'portal.subscriptions.confirm',
             'portal.subscriptions.refresh',
         ];
 
