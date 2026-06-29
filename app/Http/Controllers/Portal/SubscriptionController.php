@@ -31,10 +31,7 @@ class SubscriptionController extends Controller
         if ($subscription->stripe_subscription_id) {
             // Client returned after an earlier failed/abandoned attempt — reuse
             // the existing incomplete subscription instead of creating another.
-            $stripeSubscription = \Stripe\Subscription::retrieve([
-                'id' => $subscription->stripe_subscription_id,
-                'expand' => ['latest_invoice.payment_intent'],
-            ]);
+            $stripeSubscription = \Stripe\Subscription::retrieve($subscription->stripe_subscription_id);
         } else {
             // Unlike Checkout Sessions, the Subscriptions API doesn't accept
             // inline product_data on price_data — it needs a real Product id.
@@ -52,7 +49,6 @@ class SubscriptionController extends Controller
                 ]],
                 'payment_behavior' => 'default_incomplete',
                 'payment_settings' => ['save_default_payment_method' => 'on_subscription'],
-                'expand' => ['latest_invoice.payment_intent'],
                 'metadata' => [
                     'subscription_id' => $subscription->id,
                 ],
@@ -61,17 +57,27 @@ class SubscriptionController extends Controller
             $subscription->update(['stripe_subscription_id' => $stripeSubscription->id]);
         }
 
-        $paymentIntent = $stripeSubscription->latest_invoice->payment_intent;
-
         // Already paid (e.g. the client double-clicked, or the webhook beat us
         // here) — nothing left to confirm, send them straight back.
-        if ($paymentIntent->status === 'succeeded') {
+        if ($stripeSubscription->status === 'active') {
             return redirect()->route('portal.payments.index')->with('status', 'This maintenance plan is already active.');
         }
 
+        // Fetched separately (rather than via a nested `expand` on the
+        // subscription call above) because Stripe doesn't reliably expand
+        // two levels deep (latest_invoice.payment_intent) on Subscription
+        // create/retrieve calls.
+        $invoice = \Stripe\Invoice::retrieve($stripeSubscription->latest_invoice, [
+            'expand' => ['payment_intent'],
+        ]);
+
+        $clientSecret = $invoice->payment_intent?->client_secret;
+
+        abort_if($clientSecret === null, 500, 'Could not start a payment for this plan — please try again or contact support.');
+
         return view('portal.subscription-checkout', [
             'subscription' => $subscription,
-            'clientSecret' => $paymentIntent->client_secret,
+            'clientSecret' => $clientSecret,
             'stripeKey' => config('services.stripe.key'),
         ]);
     }
