@@ -1094,27 +1094,55 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                            style="background:rgba(255,255,255,0.9);border:1px solid rgba(47,58,69,0.14);color:#2F3A45;"
                            onfocus="this.style.borderColor='#C9A84C';this.style.background='#ffffff'"
                            onblur="this.style.borderColor='rgba(47,58,69,0.14)';this.style.background='rgba(255,255,255,0.9)'">
-                    <select name="service"
-                            class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
-                            style="background:rgba(255,255,255,0.9);border:1px solid rgba(47,58,69,0.14);color:rgba(47,58,69,0.75);"
-                            onfocus="this.style.borderColor='#C9A84C';this.style.background='#ffffff'"
-                            onblur="this.style.borderColor='rgba(47,58,69,0.14)';this.style.background='rgba(255,255,255,0.9)'">
-                        <option value="" style="background:#ffffff;">Select a service...</option>
-                        @foreach ([
-                            'Custom Website Development',
-                            'Church Website Development',
-                            'Ministry Website Development',
-                            'Nonprofit Website Development',
-                            'Small Business Website Development',
-                            'Landing Page Development',
-                            'Website Redesign',
-                            'Website Maintenance',
-                            'Hosting Management',
-                            'Website Consulting',
-                        ] as $option)
-                            <option style="background:#ffffff;" {{ old('service') === $option ? 'selected' : '' }}>{{ $option }}</option>
-                        @endforeach
-                    </select>
+                    @php $serviceOptions = [
+                        'Custom Website Development',
+                        'Church Website Development',
+                        'Ministry Website Development',
+                        'Nonprofit Website Development',
+                        'Small Business Website Development',
+                        'Landing Page Development',
+                        'Website Redesign',
+                        'Website Maintenance',
+                        'Hosting Management',
+                        'Website Consulting',
+                    ]; @endphp
+                    {{-- Custom dropdown — a real <select> stays hidden underneath
+                         so the form still submits "service" normally; the
+                         visible trigger/panel are pure presentation. --}}
+                    <div id="service-select-wrap" class="relative">
+                        <select name="service" id="service-select-native" class="sr-only" tabindex="-1" aria-hidden="true">
+                            <option value="">Select a service...</option>
+                            @foreach ($serviceOptions as $option)
+                                <option {{ old('service') === $option ? 'selected' : '' }}>{{ $option }}</option>
+                            @endforeach
+                        </select>
+
+                        <button type="button" id="service-select-trigger" aria-haspopup="listbox" aria-expanded="false"
+                                class="w-full rounded-xl px-4 py-3.5 text-sm text-left flex items-center justify-between gap-3 focus:outline-none transition-all duration-200"
+                                style="background:rgba(255,255,255,0.9);border:1px solid rgba(47,58,69,0.14);color:rgba(47,58,69,0.75);">
+                            <span id="service-select-label">{{ old('service') ?: 'Select a service...' }}</span>
+                            <svg id="service-select-chevron" class="w-4 h-4 shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+
+                        <div id="service-select-panel" class="absolute left-0 right-0 mt-2 rounded-xl overflow-hidden origin-top"
+                             style="background:#ffffff;border:1px solid rgba(201,168,76,0.30);box-shadow:0 24px 60px rgba(17,29,51,0.22);z-index:30;opacity:0;transform:scaleY(0.92) translateY(-4px);visibility:hidden;transition:opacity 0.22s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1);">
+                            <ul id="service-select-list" role="listbox" class="max-h-64 overflow-y-auto py-2" style="scrollbar-width:thin;scrollbar-color:#C9A84C transparent;">
+                                <li data-value="" role="option" class="service-option px-4 py-2.5 text-sm cursor-pointer flex items-center justify-between transition-colors duration-150" style="color:rgba(47,58,69,0.55);">
+                                    Select a service...
+                                </li>
+                                @foreach ($serviceOptions as $option)
+                                    <li data-value="{{ $option }}" role="option" class="service-option px-4 py-2.5 text-sm cursor-pointer flex items-center justify-between transition-colors duration-150" style="color:#2F3A45;">
+                                        <span>{{ $option }}</span>
+                                        <svg class="service-option-check w-3.5 h-3.5 shrink-0" style="color:#C9A84C;opacity:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
                     <textarea name="message" rows="5" placeholder="Tell us about your project..."
                               class="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200 resize-none"
                               style="background:rgba(255,255,255,0.9);border:1px solid rgba(47,58,69,0.14);color:#2F3A45;"
@@ -1184,6 +1212,57 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                             submitBtn.disabled = false;
                             submitLabel.textContent = 'Send Message';
                         });
+                });
+            })();
+
+            // ── Custom "service" dropdown — visual layer over a hidden
+            // real <select>, which is what actually submits with the form. ──
+            (function () {
+                const wrap     = document.getElementById('service-select-wrap');
+                if (!wrap) return;
+                const native   = document.getElementById('service-select-native');
+                const trigger  = document.getElementById('service-select-trigger');
+                const label    = document.getElementById('service-select-label');
+                const chevron  = document.getElementById('service-select-chevron');
+                const panel    = document.getElementById('service-select-panel');
+                const options  = Array.from(panel.querySelectorAll('.service-option'));
+
+                function syncSelected() {
+                    options.forEach(opt => opt.classList.toggle('is-selected', opt.dataset.value === native.value));
+                }
+                syncSelected();
+
+                function open() {
+                    panel.classList.add('is-open');
+                    trigger.classList.add('is-open');
+                    chevron.classList.add('is-open');
+                    trigger.setAttribute('aria-expanded', 'true');
+                }
+                function close() {
+                    panel.classList.remove('is-open');
+                    trigger.classList.remove('is-open');
+                    chevron.classList.remove('is-open');
+                    trigger.setAttribute('aria-expanded', 'false');
+                }
+
+                trigger.addEventListener('click', () => {
+                    panel.classList.contains('is-open') ? close() : open();
+                });
+
+                options.forEach(opt => {
+                    opt.addEventListener('click', () => {
+                        native.value = opt.dataset.value;
+                        label.textContent = opt.dataset.value || 'Select a service...';
+                        syncSelected();
+                        close();
+                    });
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!wrap.contains(e.target)) close();
+                });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') close();
                 });
             })();
         </script>

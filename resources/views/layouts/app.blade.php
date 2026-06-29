@@ -171,6 +171,16 @@
             background-size: 28px 28px;
         }
 
+        /* ─── Contact form: custom service dropdown ─── */
+        .service-option:hover { background: rgba(201,168,76,0.10); }
+        .service-option.is-selected { background: rgba(201,168,76,0.07); font-weight: 600; }
+        .service-option.is-selected .service-option-check { opacity: 1 !important; }
+        #service-select-trigger.is-open { border-color: #C9A84C !important; background: #ffffff !important; }
+        #service-select-panel.is-open { opacity: 1 !important; transform: scaleY(1) translateY(0) !important; visibility: visible !important; }
+        #service-select-chevron.is-open { transform: rotate(180deg); }
+        #service-select-list::-webkit-scrollbar { width: 6px; }
+        #service-select-list::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.45); border-radius: 3px; }
+
         /* ─── Our Team medallion: rotating gloss sweep ─── */
         .medallion-sweep { animation: medallion-spin 6s linear infinite; }
         @keyframes medallion-spin {
