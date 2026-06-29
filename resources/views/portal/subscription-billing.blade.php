@@ -9,6 +9,24 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
         <div class="lg:col-span-2 lg:border-r lg:border-gray-200 dark:lg:border-gray-700 lg:pr-10">
+            <div class="bg-red-50/60 dark:bg-red-500/5 rounded-2xl border-2 border-red-200 dark:border-red-500/30 p-6 mb-8">
+                <div class="flex items-start gap-3 mb-4">
+                    <span class="w-9 h-9 rounded-full bg-red-100 dark:bg-red-500/15 flex items-center justify-center shrink-0">
+                        <svg class="w-4.5 h-4.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    </span>
+                    <div>
+                        <h3 class="font-bold text-red-700 dark:text-red-400">Cancel Plan</h3>
+                        <p class="text-sm text-red-600/80 dark:text-red-400/70 mt-0.5">This stops future billing immediately. You can start a new plan anytime from the Payments page.</p>
+                    </div>
+                </div>
+                <form id="cancel-form" method="POST" action="{{ route('portal.subscriptions.cancel', $subscription) }}" data-confirm="Cancel this maintenance plan? This stops future billing immediately.">
+                    @csrf
+                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold text-sm px-5 py-2.5 rounded-lg transition-colors shadow">
+                        Cancel Maintenance Plan
+                    </button>
+                </form>
+            </div>
+
             @if ($card)
                 <h3 class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Card on File</h3>
                 <div class="flex items-center gap-3 mb-6 pb-6 border-b border-gray-100 dark:border-gray-700">
@@ -37,24 +55,6 @@
             <p class="text-xs text-gray-400 dark:text-gray-500 mt-6">
                 Payments are processed securely by Stripe. Your card details never touch our servers.
             </p>
-
-            <div class="mt-10 pt-8 border-t border-gray-100 dark:border-gray-700">
-                <div class="flex items-start gap-3 mb-4">
-                    <span class="w-9 h-9 rounded-full bg-red-100 dark:bg-red-500/15 flex items-center justify-center shrink-0">
-                        <svg class="w-4.5 h-4.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                    </span>
-                    <div>
-                        <h3 class="font-bold text-red-700 dark:text-red-400">Cancel Plan</h3>
-                        <p class="text-sm text-red-600/80 dark:text-red-400/70 mt-0.5">This stops future billing immediately. You can start a new plan anytime from the Payments page.</p>
-                    </div>
-                </div>
-                <form id="cancel-form" method="POST" action="{{ route('portal.subscriptions.cancel', $subscription) }}" data-confirm="Cancel this maintenance plan? This stops future billing immediately.">
-                    @csrf
-                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold text-sm px-5 py-2.5 rounded-lg transition-colors shadow">
-                        Cancel Maintenance Plan
-                    </button>
-                </form>
-            </div>
         </div>
 
         <div class="lg:col-span-1">
