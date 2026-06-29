@@ -123,3 +123,12 @@ Audit findings from comparing the onboarding workflow against actual code (2026-
 | Agreement audit trail | Already solid — no gap, noting for context | `app/Http/Controllers/Portal/ServiceAgreementController.php:64-74`, `CarePlanAgreementController.php:49-67` | Both Care Plan agreement and Service Agreement signatures capture `ip_address`, `user_agent`, and a timestamp; the Service Agreement additionally binds the signature to a specific template via `service_agreement_template_id` + a SHA-256 `agreement_hash` of the signed wording, so edits to the template later never alter what a past signature legally represents |
 
 **Likely next work once the Master Agreement arrives:** it will probably replace the current two-step Care Plan Agreement + Service Agreement flow with one consolidated document/model — plan accordingly rather than just adding a third agreement step.
+
+## 7. Roadmap Decisions (Business Calls)
+
+Decisions made on 2026-06-29 regarding gaps found in the FaithStack workflow audit — for dev reference, not client-facing.
+
+| Gap | Decision | Why |
+|---|---|---|
+| No Developer Portal / Developer role (`User.php:82-84` only checks `role === 'admin'`; `Admin/TeamController.php:31` hardcodes every new team member as `'role' => 'admin'`) | **Will not build a separate Developer Portal or role.** The existing Admin Portal will be used by both VisionBridge staff and the developer team going forward | Avoids building and maintaining a second portal/permissions layer for a need the current admin portal already covers well enough |
+| No SMS/text notifications (no Twilio/Nexmo/Vonage integration anywhere in the codebase) | **Not implementing SMS for now.** Email-only notifications stay as-is | Requires subscribing to a third-party SMS provider — added recurring cost not approved at this time. Revisit if the business decides the cost is worth it later |
