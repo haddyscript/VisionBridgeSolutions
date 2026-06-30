@@ -446,6 +446,35 @@
             box-shadow: none;
         }
 
+        /* ─── Plan card CTAs: lift + white slide-fill ─── */
+        .plan-cta-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        .plan-cta-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: #ffffff;
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+            z-index: 0;
+        }
+        .plan-cta-btn:hover::after {
+            transform: translateX(0);
+        }
+        .plan-cta-btn:hover {
+            color: #15202C !important;
+        }
+        .plan-cta-btn .plan-cta-content {
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
         /* ─── Footer: unpeel / reveal ─── */
         #page-wrapper {
             position: relative;

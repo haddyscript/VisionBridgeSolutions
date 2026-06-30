@@ -760,11 +760,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                                 </ul>
 
                                 @if ($plan->is_available)
-                                    <a href="{{ $plan->price !== null ? route('care-plan-signup.create', $plan) : $plan->cta_url }}" class="{{ $theme['btn'] }} w-full text-center flex items-center justify-center gap-2 font-bold text-lg px-7 py-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
-                                        {{ $plan->cta_label }}
-                                        <svg class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                                        </svg>
+                                    <a href="{{ $plan->price !== null ? route('care-plan-signup.create', $plan) : $plan->cta_url }}" class="plan-cta-btn {{ $theme['btn'] }} w-full text-center font-bold text-lg px-7 py-4 rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+                                        <span class="plan-cta-content">
+                                            {{ $plan->cta_label }}
+                                            <svg class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                            </svg>
+                                        </span>
                                     </a>
                                     <p class="text-sm font-semibold text-gray-600 mt-3 flex items-center justify-center gap-1.5">
                                         <svg class="w-3.5 h-3.5 {{ $theme['check'] }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
