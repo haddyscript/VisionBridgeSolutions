@@ -992,7 +992,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
          centered max-w container) and spans the full section height, the
          way the reference "Meet Our CEO" slide's photo fills its frame. --}}
     <div class="hidden lg:flex absolute inset-y-0 left-0 items-end justify-center pointer-events-none" style="width:48%;" aria-hidden="true">
-        <img src="@assetv('image/founder-enhance-removebg.png')" alt="" style="height:100%;width:auto;max-width:none;object-fit:contain;filter:drop-shadow(0 30px 50px rgba(17,29,51,0.20));">
+        <img src="@assetv('image/founder-enhance-removebg.png')" alt="" style="height:96%;width:auto;max-width:none;object-fit:contain;filter:drop-shadow(0 30px 50px rgba(17,29,51,0.20));">
     </div>
 
     {{-- Mobile/tablet: photo sits inline above the text instead of full-bleed --}}
@@ -1046,25 +1046,26 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
                 <p class="font-display font-bold italic mb-8" style="font-size:1.1rem;color:#C9A84C;">Building Websites. Expanding Reach.</p>
 
-                {{-- Placeholder for the founder's future "Watch Johnny's Story"
-                     welcome video — swap this block for a video embed once
-                     the recording is delivered. --}}
-                <div class="inline-flex items-center gap-4 rounded-2xl px-6 py-4" style="background:rgba(255,255,255,0.6);border:1.5px dashed rgba(201,168,76,0.35);">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style="background:rgba(201,168,76,0.14);">
-                        <svg class="w-5 h-5" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                <div class="flex flex-wrap items-center justify-between gap-8">
+                    {{-- Placeholder for the founder's future "Watch Johnny's Story"
+                         welcome video — swap this block for a video embed once
+                         the recording is delivered. --}}
+                    <div class="inline-flex items-center gap-4 rounded-2xl px-6 py-4" style="background:rgba(255,255,255,0.6);border:1.5px dashed rgba(201,168,76,0.35);">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style="background:rgba(201,168,76,0.14);">
+                            <svg class="w-5 h-5" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-sm" style="color:#2F3A45;">Watch Johnny's Story</p>
+                            <p class="text-xs" style="color:rgba(17,29,51,0.55);">Video coming soon</p>
+                        </div>
                     </div>
-                    <div class="text-left">
-                        <p class="font-semibold text-sm" style="color:#2F3A45;">Watch Johnny's Story</p>
-                        <p class="text-xs" style="color:rgba(17,29,51,0.55);">Video coming soon</p>
-                    </div>
-                </div>
 
-                {{-- Decorative ring badges, styled after the reference template's
-                     "Leadership"/"Traction" circles — purely visual, no real metric. --}}
-                <div class="flex items-center justify-end gap-8 mt-8 ml-auto">
+                    {{-- Decorative ring badges, styled after the reference template's
+                         "Leadership"/"Traction" circles — purely visual, no real metric. --}}
+                    <div class="flex items-center gap-8">
                     <div class="relative w-28 h-28 shrink-0">
                         <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
                             <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(17,29,51,0.10)" stroke-width="7"/>
@@ -1084,6 +1085,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         <div class="absolute inset-0 flex items-center justify-center text-center px-2">
                             <span class="font-extrabold text-sm leading-tight" style="color:#15202C;">Community<br>Impact</span>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>
