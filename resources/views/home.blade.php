@@ -983,7 +983,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- ============================================================
      MEET THE FOUNDER SECTION
      ============================================================ --}}
-<section id="founder" class="py-16 lg:py-0 relative overflow-hidden" style="background:linear-gradient(160deg,#EEEFF1 0%,#E4E5E8 50%,#EEEFF1 100%);min-height:640px;">
+<section id="founder" class="py-16 lg:py-0 relative overflow-hidden" style="background:linear-gradient(160deg,#EEEFF1 0%,#E4E5E8 50%,#EEEFF1 100%);min-height:560px;">
     {{-- Ambient orbs --}}
     <div class="hero-orb" style="width:560px;height:560px;top:-160px;left:-140px;background:radial-gradient(circle,rgba(201,168,76,0.10) 0%,transparent 70%);filter:blur(70px);animation:orb-drift 20s ease-in-out infinite;"></div>
     <div class="hero-orb" style="width:460px;height:460px;bottom:-120px;right:-100px;background:radial-gradient(circle,rgba(42,157,143,0.08) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 17s ease-in-out infinite reverse 3s;"></div>
