@@ -407,6 +407,32 @@
             58%, 100%{ left: 155%; opacity: 0; }
         }
 
+        /* ─── Contact form submit: gold gradient + shimmer + glow ─── */
+        .contact-submit-btn {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #C9A84C 0%, #E6C878 50%, #C9A84C 100%);
+            color: #15202C;
+            box-shadow: 0 10px 28px rgba(201,168,76,0.28);
+            will-change: transform;
+        }
+        .contact-submit-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -80%;
+            width: 48%; height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            transform: skewX(-18deg);
+            pointer-events: none;
+            animation: btn-shine 3s ease-in-out infinite 1s;
+        }
+        .contact-submit-btn:hover {
+            box-shadow: 0 16px 38px rgba(201,168,76,0.5);
+        }
+        .contact-submit-btn:disabled {
+            box-shadow: none;
+        }
+
         /* ─── Footer: unpeel / reveal ─── */
         #page-wrapper {
             position: relative;

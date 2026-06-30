@@ -1147,11 +1147,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                               onfocus="this.style.borderColor='#C9A84C';this.style.background='#ffffff'"
                               onblur="this.style.borderColor='rgba(47,58,69,0.14)';this.style.background='rgba(255,255,255,0.9)'">{{ old('message') }}</textarea>
                     <button type="submit" id="contact-submit"
-                            class="w-full font-bold text-base py-4 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-2xl disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none flex items-center justify-center gap-2"
-                            style="background:#2F3A45;color:#ffffff;"
-                            onmouseover="if(!this.disabled) this.style.background='#C9A84C'"
-                            onmouseout="if(!this.disabled) this.style.background='#2F3A45'">
-                        <span id="contact-submit-label">Send Message</span>
+                            class="contact-submit-btn w-full font-bold text-base py-4 rounded-xl transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2">
+                        <span id="contact-submit-label" class="relative" style="z-index:1;">Send Message</span>
                     </button>
                 </form>
             </div>
