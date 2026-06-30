@@ -125,7 +125,7 @@
             position:relative; display:inline-flex; align-items:center; gap:8px;
             border:1.5px solid rgba(47,58,69,.28); color:rgba(47,58,69,.85);
             font-weight:600; padding:15px 34px; border-radius:10px; font-size:1rem;
-            background:rgba(255,255,255,.55);
+            background:rgba(255,255,255,.92);
             backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
             overflow:hidden;
             transition: transform .22s, box-shadow .22s, border-color .22s, background .22s;
