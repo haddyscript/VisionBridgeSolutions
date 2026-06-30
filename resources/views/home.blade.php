@@ -1108,7 +1108,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- Founder parallax divider — sits between Meet the Founder and Contact.
      Same fixed-background parallax technique as the other section
      dividers, text only (no CTA button). --}}
-<div class="relative parallax-divider" style="height:520px;overflow:hidden;background-image:url('@assetv('image/parallax-bg6-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 40%;">
+<div class="relative parallax-divider" style="height:520px;overflow:hidden;background-image:url('@assetv('image/parallax-bg7-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 40%;">
     <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
         <span class="text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">From Vision To Reality</span>
