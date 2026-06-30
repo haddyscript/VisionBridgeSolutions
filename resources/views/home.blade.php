@@ -952,23 +952,30 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <p class="section-subtitle">Every project is managed through VisionBridge Solutions, giving our clients one point of contact from beginning to end.</p>
         </div>
 
-        <div class="partnership-zoom-item max-w-3xl mx-auto rounded-2xl border border-navy/10 overflow-hidden" style="background:linear-gradient(160deg,#FFFFFF 0%,#FAFBFD 100%);">
-            <div class="p-8 sm:p-10 text-center">
-                <div class="w-12 h-12 bg-navy rounded-xl flex items-center justify-center mb-5 mx-auto">
-                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 100-8 4 4 0 000 8zm6 0a4 4 0 100-8"/></svg>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            <div class="why-feature-card partnership-zoom-item group flex items-start gap-5 rounded-2xl p-7 hover:-translate-y-1.5 transition-all duration-300 cursor-default"
+                 style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.07);box-shadow:0 2px 12px rgba(17,29,51,0.05),0 1px 3px rgba(17,29,51,0.03);">
+                <div class="why-feature-icon w-14 h-14 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110"
+                     style="background:linear-gradient(135deg,rgba(201,168,76,0.14),rgba(42,157,143,0.12));border:1px solid rgba(201,168,76,0.18);">
+                    <svg class="w-6 h-6" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 100-8 4 4 0 000 8zm6 0a4 4 0 100-8"/></svg>
                 </div>
-                <p class="text-sm text-gray-600" style="line-height:1.8;">
-                    Our experienced team of designers, developers, technical specialists, and support professionals works together behind the scenes to deliver reliable, high-quality digital solutions for every client we serve.
-                </p>
+                <div>
+                    <h4 class="font-extrabold text-lg mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#15202C;">Unified Team</h4>
+                    <p class="text-base font-medium leading-relaxed" style="color:rgba(17,29,51,0.74);">Our experienced team of designers, developers, technical specialists, and support professionals works together behind the scenes to deliver reliable, high-quality digital solutions for every client we serve.</p>
+                </div>
             </div>
-        </div>
 
-        <!-- Ownership note -->
-        <div class="partnership-zoom-item mt-10 max-w-3xl mx-auto bg-navy/5 border border-navy/10 rounded-xl p-6 text-center">
-            <svg class="w-8 h-8 text-gold mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-            </svg>
-            <p class="text-navy font-semibold text-sm">VisionBridge Solutions retains full ownership of all client websites, branding, hosting accounts, and associated assets.</p>
+            <div class="why-feature-card partnership-zoom-item group flex items-start gap-5 rounded-2xl p-7 hover:-translate-y-1.5 transition-all duration-300 cursor-default"
+                 style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.07);box-shadow:0 2px 12px rgba(17,29,51,0.05),0 1px 3px rgba(17,29,51,0.03);">
+                <div class="why-feature-icon w-14 h-14 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110"
+                     style="background:linear-gradient(135deg,rgba(201,168,76,0.14),rgba(42,157,143,0.12));border:1px solid rgba(201,168,76,0.18);">
+                    <svg class="w-6 h-6" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                </div>
+                <div>
+                    <h4 class="font-extrabold text-lg mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#15202C;">Full Ownership</h4>
+                    <p class="text-base font-medium leading-relaxed" style="color:rgba(17,29,51,0.74);">VisionBridge Solutions retains full ownership of all client websites, branding, hosting accounts, and associated assets.</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
