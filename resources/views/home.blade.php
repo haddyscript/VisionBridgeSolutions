@@ -1064,7 +1064,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
                 {{-- Decorative ring badges, styled after the reference template's
                      "Leadership"/"Traction" circles — purely visual, no real metric. --}}
-                <div class="flex items-center gap-8 mt-8">
+                <div class="flex items-center justify-end gap-8 mt-8 ml-auto">
                     <div class="relative w-28 h-28 shrink-0">
                         <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
                             <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(17,29,51,0.10)" stroke-width="7"/>
