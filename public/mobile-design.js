@@ -24,7 +24,7 @@
             var rect = item.el.getBoundingClientRect();
             if (rect.bottom < -200 || rect.top > vh + 200) return;
             var progress = (vh - rect.top) / (vh + rect.height); // 0 entering → 1 leaving
-            var shift = (progress - 0.5) * 24; // ±12% vertical drift
+            var shift = (progress - 0.5) * 70; // ±35% vertical drift, closer to the desktop fixed-bg depth
             item.el.style.backgroundPosition = 'center ' + (item.basePercent + shift) + '%';
         });
         ticking = false;

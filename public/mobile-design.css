@@ -82,6 +82,7 @@
        instead; this just switches attachment to scroll so that works. */
     .parallax-divider {
         background-attachment: scroll !important;
+        background-size: 145% !important;
         will-change: background-position;
     }
 
