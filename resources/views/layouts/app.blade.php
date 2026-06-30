@@ -122,15 +122,39 @@
         .hero-btn-primary:hover::after { opacity:1; }
 
         .hero-btn-secondary {
-            display:inline-flex; align-items:center; gap:8px;
+            position:relative; display:inline-flex; align-items:center; gap:8px;
             border:1.5px solid rgba(47,58,69,.28); color:rgba(47,58,69,.85);
             font-weight:600; padding:15px 34px; border-radius:10px; font-size:1rem;
             background:rgba(255,255,255,.55);
             backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+            overflow:hidden;
             transition: transform .22s, box-shadow .22s, border-color .22s, background .22s;
             will-change: transform;
         }
-        .hero-btn-secondary:hover { border-color:rgba(47,58,69,.5); background:rgba(255,255,255,.80); transform:translateY(-3px); box-shadow:0 8px 28px rgba(47,58,69,.14); }
+        .hero-btn-secondary:hover { border-color:rgba(47,58,69,.5); transform:translateY(-3px); box-shadow:0 8px 28px rgba(47,58,69,.14); }
+
+        /* Hover fill sweep — desktop/laptop only (devices with real hover),
+           so it never gets stuck mid-sweep on a touch tap. .hero-btn-content
+           sits above the sweep layer so text/icon never get covered. */
+        @media (hover: hover) and (pointer: fine) {
+            .hero-btn-content { position:relative; z-index:2; display:inline-flex; align-items:center; gap:8px; }
+            .hero-btn-fill {
+                position:absolute; inset:0; z-index:1;
+                transform:scaleX(0); transition:transform .4s cubic-bezier(.65,0,.35,1);
+            }
+            .hero-btn-primary .hero-btn-fill {
+                background:#fff; transform-origin:left;
+            }
+            .hero-btn-primary:hover .hero-btn-fill { transform:scaleX(1); }
+            .hero-btn-primary:hover { color:#15202C; }
+
+            .hero-btn-secondary .hero-btn-fill {
+                background:linear-gradient(135deg,#C9A84C 0%,#E6C878 50%,#C9A84C 100%);
+                transform-origin:right;
+            }
+            .hero-btn-secondary:hover .hero-btn-fill { transform:scaleX(1); }
+            .hero-btn-secondary:hover { color:#15202C; border-color:transparent; }
+        }
 
         /* ─── Floating glassmorphism cards ─── */
         .float-card {
