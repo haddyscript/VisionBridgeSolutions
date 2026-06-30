@@ -39,4 +39,24 @@
     #about-mosaic-grid {
         gap: 2.5rem !important;
     }
+
+    /* Tighten the gap between the subtitle and the mosaic image */
+    #about-intro {
+        margin-bottom: 2rem !important;
+    }
+
+    /* Mission/Vision icon circles — bigger with a colored ring accent so
+       they read as intentional rather than small/flat against the cards */
+    #mission-icon {
+        width: 56px !important;
+        height: 56px !important;
+        border: 2px solid rgba(201,168,76,0.35) !important;
+        box-shadow: 0 0 0 4px rgba(201,168,76,0.08) !important;
+    }
+    #vision-icon {
+        width: 56px !important;
+        height: 56px !important;
+        border: 2px solid rgba(42,157,143,0.35) !important;
+        box-shadow: 0 0 0 4px rgba(42,157,143,0.08) !important;
+    }
 }
