@@ -402,4 +402,20 @@
         -webkit-backdrop-filter: blur(14px) saturate(150%);
         border-radius: 16px !important;
     }
+
+    /* "Who We Are" Mission/Vision cards — same frosted treatment as the
+       other card families above. Vision keeps a teal tint (instead of
+       plain white) so it doesn't lose its color distinction from Mission. */
+    .about-card {
+        backdrop-filter: blur(18px) saturate(160%);
+        -webkit-backdrop-filter: blur(18px) saturate(160%);
+        border: 1px solid rgba(255,255,255,0.55) !important;
+        border-radius: 24px !important;
+    }
+    .about-cards .about-card:nth-child(1) {
+        background: rgba(255,255,255,0.55) !important;
+    }
+    .about-cards .about-card:nth-child(2) {
+        background: linear-gradient(135deg, rgba(240,250,249,0.6) 0%, rgba(237,250,248,0.55) 100%) !important;
+    }
 }
