@@ -718,7 +718,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                             </div>
                         @endif
 
-                        <div class="relative rounded-2xl overflow-hidden bg-white border-2 transition-all duration-300 flex-1 flex flex-col {{ $plan->is_available ? $theme['border'].' shadow-xl' : 'border-gray-100' }}">
+                        <div class="plan-card-panel relative rounded-2xl overflow-hidden bg-white border-2 transition-all duration-300 flex-1 flex flex-col {{ $plan->is_available ? $theme['border'].' shadow-xl' : 'border-gray-100' }}">
                             <div class="plan-header-cap {{ $plan->is_available ? $theme['cap'] : 'bg-gray-200' }} h-14"></div>
 
                             <div class="flex justify-center" style="margin-top:-32px;">
