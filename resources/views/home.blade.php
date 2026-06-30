@@ -636,6 +636,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     </div>
 </section>
 
+{{-- Bridge cable divider — sits right at the Why VisionBridge/Plans seam.
+     Same fixed-background parallax technique as the other section
+     dividers: the photo stays pinned to the viewport (background-attachment:
+     fixed, like the site's own footer) while the page content scrolls
+     past it. --}}
+<div class="relative" style="height:380px;overflow:hidden;background-image:url('@assetv('image/parallax-bg5-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 40%;" aria-hidden="true">
+    <div class="relative h-full flex items-center justify-center">
+        <div class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
+    </div>
+</div>
+
 {{-- ============================================================
      MAINTENANCE PLANS SECTION
      ============================================================ --}}
