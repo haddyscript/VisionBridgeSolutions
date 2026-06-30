@@ -166,7 +166,8 @@
 // Reuses #mobile-menu-cta's already-resolved href (set by Blade — correct
 // route/anchor logic lives there, not duplicated here) so the pill always
 // points wherever "Get Started" points. Visible while scrolling through
-// content, hidden over the hero (own CTA already on screen) and over
+// content, hidden over the hero (own CTA already on screen), over #founder
+// (its story text/Read More toggle sit where the pill would land), and over
 // #contact (the real form is the better target there).
 (function () {
     if (!window.matchMedia('(max-width: 768px)').matches) return;
@@ -174,6 +175,7 @@
 
     var sourceCta = document.getElementById('mobile-menu-cta');
     var hero = document.getElementById('hero');
+    var founder = document.getElementById('founder');
     var contact = document.getElementById('contact');
     if (!sourceCta || !hero) return;
 
@@ -184,16 +186,24 @@
     document.body.appendChild(pill);
 
     var hiddenByHero = true;
+    var hiddenByFounder = false;
     var hiddenByContact = false;
 
     function updateVisibility() {
-        pill.classList.toggle('is-visible', !hiddenByHero && !hiddenByContact);
+        pill.classList.toggle('is-visible', !hiddenByHero && !hiddenByFounder && !hiddenByContact);
     }
 
     new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) { hiddenByHero = entry.isIntersecting; });
         updateVisibility();
     }, { threshold: 0.15 }).observe(hero);
+
+    if (founder) {
+        new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) { hiddenByFounder = entry.isIntersecting; });
+            updateVisibility();
+        }, { threshold: 0.1 }).observe(founder);
+    }
 
     if (contact) {
         new IntersectionObserver(function (entries) {

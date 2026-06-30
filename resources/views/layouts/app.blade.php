@@ -419,6 +419,15 @@
             height: 54px !important;
         }
 
+        /* Once scrolled, blur (no solid fill) the outer #navbar wrapper too —
+           otherwise content scrolled up behind the 12px gap around the pill
+           peeks through and visually collides with it. Blur-only keeps the
+           floating/glassy look instead of reading as a hard white box. */
+        #navbar:has(#nav-inner.nav-pill) {
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
         /* ─── Sliding hover capsule ─── */
         #nav-cursor {
             position: absolute;
