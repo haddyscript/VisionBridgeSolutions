@@ -324,12 +324,12 @@
     .services-card,
     .portfolio-card,
     .plan-card-panel {
-        background: rgba(255,255,255,0.62) !important;
-        backdrop-filter: blur(18px) saturate(160%);
-        -webkit-backdrop-filter: blur(18px) saturate(160%);
-        border: 1px solid rgba(255,255,255,0.55) !important;
+        background: rgba(255,255,255,0.82) !important;
+        backdrop-filter: blur(14px) saturate(120%);
+        -webkit-backdrop-filter: blur(14px) saturate(120%);
+        border: 1px solid rgba(255,255,255,0.7) !important;
         border-radius: 24px !important;
-        box-shadow: 0 8px 32px rgba(21,32,44,0.10), inset 0 1px 0 rgba(255,255,255,0.65) !important;
+        box-shadow: 0 8px 32px rgba(21,32,44,0.10), inset 0 1px 0 rgba(255,255,255,0.8) !important;
     }
     .value-card-photo,
     .services-card img {
@@ -371,35 +371,35 @@
        already in place above. */
 
     #portfolio-panel {
-        background: rgba(255,255,255,0.55) !important;
-        backdrop-filter: blur(20px) saturate(160%);
-        -webkit-backdrop-filter: blur(20px) saturate(160%);
-        border: 1px solid rgba(255,255,255,0.55) !important;
+        background: rgba(255,255,255,0.8) !important;
+        backdrop-filter: blur(16px) saturate(120%);
+        -webkit-backdrop-filter: blur(16px) saturate(120%);
+        border: 1px solid rgba(255,255,255,0.7) !important;
     }
     #why-quote-card .rounded-3xl {
-        background: rgba(255,255,255,0.6) !important;
-        backdrop-filter: blur(16px) saturate(150%);
-        -webkit-backdrop-filter: blur(16px) saturate(150%);
-        border: 1px solid rgba(255,255,255,0.5) !important;
+        background: rgba(255,255,255,0.82) !important;
+        backdrop-filter: blur(14px) saturate(120%);
+        -webkit-backdrop-filter: blur(14px) saturate(120%);
+        border: 1px solid rgba(255,255,255,0.7) !important;
     }
     #why-feature-cards > div {
-        background: rgba(255,255,255,0.6) !important;
-        backdrop-filter: blur(16px) saturate(150%);
-        -webkit-backdrop-filter: blur(16px) saturate(150%);
-        border: 1px solid rgba(255,255,255,0.5) !important;
+        background: rgba(255,255,255,0.82) !important;
+        backdrop-filter: blur(14px) saturate(120%);
+        -webkit-backdrop-filter: blur(14px) saturate(120%);
+        border: 1px solid rgba(255,255,255,0.7) !important;
         border-radius: 20px !important;
     }
 
     #nav-inner.nav-pill {
-        background: rgba(255,255,255,0.62) !important;
+        background: rgba(255,255,255,0.8) !important;
     }
 
     #contact-form input,
     #contact-form textarea,
     #service-select-trigger {
-        background: rgba(255,255,255,0.55) !important;
-        backdrop-filter: blur(14px) saturate(150%);
-        -webkit-backdrop-filter: blur(14px) saturate(150%);
+        background: rgba(255,255,255,0.8) !important;
+        backdrop-filter: blur(12px) saturate(120%);
+        -webkit-backdrop-filter: blur(12px) saturate(120%);
         border-radius: 16px !important;
     }
 
@@ -407,15 +407,16 @@
        other card families above. Vision keeps a teal tint (instead of
        plain white) so it doesn't lose its color distinction from Mission. */
     .about-card {
-        backdrop-filter: blur(18px) saturate(160%);
-        -webkit-backdrop-filter: blur(18px) saturate(160%);
-        border: 1px solid rgba(255,255,255,0.55) !important;
+        backdrop-filter: blur(14px) saturate(120%);
+        -webkit-backdrop-filter: blur(14px) saturate(120%);
+        border: 1px solid rgba(255,255,255,0.7) !important;
         border-radius: 24px !important;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.8) !important;
     }
     .about-cards .about-card:nth-child(1) {
-        background: rgba(255,255,255,0.55) !important;
+        background: rgba(255,255,255,0.82) !important;
     }
     .about-cards .about-card:nth-child(2) {
-        background: linear-gradient(135deg, rgba(240,250,249,0.6) 0%, rgba(237,250,248,0.55) 100%) !important;
+        background: linear-gradient(135deg, rgba(240,250,249,0.85) 0%, rgba(237,250,248,0.8) 100%) !important;
     }
 }
