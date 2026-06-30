@@ -1,12 +1,19 @@
-// Mobile-only parallax fallback.
+// iOS-only parallax fallback.
 //
-// The site's parallax dividers use background-attachment:fixed, which iOS
-// Safari either ignores or renders glitchy — so on phones they show as a
-// flat, static image instead of the depth effect seen on desktop. This
-// swaps in a scroll-linked background-position shift (see mobile-design.css
-// for the background-attachment:scroll override that pairs with it).
+// The site's parallax dividers use background-attachment:fixed, which works
+// natively everywhere else (desktop, Android Chrome, Chrome DevTools mobile
+// emulation — same as the footer) but iOS Safari ignores or glitches it, so
+// on real iPhones/iPads they'd show as a flat, static image instead of the
+// depth effect seen elsewhere. This only kicks in on actual iOS: it flags
+// `ios-fixed-broken` on <html> (mobile-design.css scopes its scroll-position
+// fallback to that class) and drives a scroll-linked background-position
+// shift in its place. Everywhere else, fixed attachment is left untouched.
 (function () {
-    if (!window.matchMedia('(max-width: 768px)').matches) return;
+    var isIOS = /iP(hone|od|ad)/.test(navigator.platform)
+        || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (!isIOS) return;
+
+    document.documentElement.classList.add('ios-fixed-broken');
 
     var dividers = Array.prototype.slice.call(document.querySelectorAll('.parallax-divider'));
     if (!dividers.length) return;

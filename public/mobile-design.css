@@ -77,10 +77,12 @@
     }
 
     /* Parallax dividers — background-attachment:fixed is broken/ignored on
-       iOS Safari, so the dramatic bridge-photo dividers render flat on
-       phones. mobile-design.js drives background-position on scroll
-       instead; this just switches attachment to scroll so that works. */
-    .parallax-divider {
+       iOS Safari specifically, so the dramatic bridge-photo dividers render
+       flat there. Chrome (desktop, Android, and DevTools mobile emulation)
+       supports fixed attachment fine, so this fallback is scoped to the
+       `ios-fixed-broken` class mobile-design.js adds only on real iOS —
+       everywhere else keeps the native fixed background, same as the footer. */
+    html.ios-fixed-broken .parallax-divider {
         background-attachment: scroll !important;
         will-change: background-position;
     }
