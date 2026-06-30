@@ -6,7 +6,7 @@ A plain-language summary of everything the site and client portal offer today.
 
 | Feature | What it does |
 |---|---|
-| Home page | The marketing site — about us, services, care plans, portfolio, contact, and (at the very bottom, after Contact) a section explaining our FaithStack development partnership — entirely on-page, with no outbound link, so visitors stay focused on VisionBridge |
+| Home page | The marketing site — about us, services, care plans, portfolio, a "Meet the Founder" section (photo, story, and a placeholder for a future welcome video), contact, and (at the very bottom, after Contact) a section explaining our FaithStack development partnership — entirely on-page, with no outbound link, so visitors stay focused on VisionBridge |
 | "Get Started" form | A longer-form public intake page still exists at `/get-started` for review-and-convert by our team, but the homepage's main "Start Your Project" button now leads to account registration instead (see the new onboarding steps below) |
 | Website Care Plan signup | Clicking "Get Started" on a pricing card takes visitors to a short plan-specific form (org info, domain, hosting), then straight to secure Stripe checkout to subscribe — no account needed upfront. On successful payment they're auto-onboarded: account + project created, a portal password-setup email sent, a confirmation page shown, and both VisionBridge and FaithStack are notified |
 | Contact form | A simple "Get in Touch" form that emails us directly |
