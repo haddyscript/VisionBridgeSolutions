@@ -1061,6 +1061,31 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         <p class="text-xs" style="color:rgba(17,29,51,0.55);">Video coming soon</p>
                     </div>
                 </div>
+
+                {{-- Decorative ring badges, styled after the reference template's
+                     "Leadership"/"Traction" circles — purely visual, no real metric. --}}
+                <div class="flex items-center gap-8 mt-8">
+                    <div class="relative w-28 h-28 shrink-0">
+                        <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                            <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(17,29,51,0.10)" stroke-width="7"/>
+                            <circle cx="50" cy="50" r="42" fill="none" stroke="#15202C" stroke-width="7"
+                                    stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="66"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center text-center px-2">
+                            <span class="font-extrabold text-sm leading-tight" style="color:#15202C;">Vision-Led</span>
+                        </div>
+                    </div>
+                    <div class="relative w-28 h-28 shrink-0">
+                        <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                            <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(17,29,51,0.10)" stroke-width="7"/>
+                            <circle cx="50" cy="50" r="42" fill="none" stroke="#C9A84C" stroke-width="7"
+                                    stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="66"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center text-center px-2">
+                            <span class="font-extrabold text-sm leading-tight" style="color:#15202C;">Community<br>Impact</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
