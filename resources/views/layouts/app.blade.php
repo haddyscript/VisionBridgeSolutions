@@ -154,6 +154,16 @@
             }
             .hero-btn-secondary:hover .hero-btn-fill { transform:scaleX(1); }
             .hero-btn-secondary:hover { color:#15202C; border-color:transparent; }
+
+            /* Same lift + white fill-sweep treatment on the gold CTA buttons
+               inside the parallax dividers ("See Why VisionBridge", "View Plans"). */
+            .parallax-cta-btn { position:relative; overflow:hidden; }
+            .parallax-cta-btn .hero-btn-fill { background:#fff; transform-origin:left; }
+            .parallax-cta-btn:hover .hero-btn-fill { transform:scaleX(1); }
+            .parallax-cta-btn:hover {
+                color:#15202C; transform:translateY(-3px);
+                box-shadow:0 0 38px rgba(201,168,76,.48),0 8px 28px rgba(0,0,0,.35);
+            }
         }
 
         /* ─── Floating glassmorphism cards ─── */

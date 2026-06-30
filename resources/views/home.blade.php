@@ -577,9 +577,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         <div class="bridge-cable-divider mb-8" aria-hidden="true">{!! $bridgeCableDivider !!}</div>
         <span class="text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">Engineered For Growth</span>
         <h3 class="font-extrabold mb-8" style="font-family:'Playfair Display',serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">Crafted With Purpose, Built To Perform</h3>
-        <a href="#why" class="group inline-flex items-center gap-2.5 px-8 py-4 rounded-full font-semibold text-sm transition-all duration-300" style="background:#C9A84C;color:#15202C;letter-spacing:0.04em;">
-            See Why VisionBridge
-            <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        <a href="#why" class="parallax-cta-btn group inline-flex items-center gap-2.5 px-8 py-4 rounded-full font-semibold text-sm transition-all duration-300" style="background:#C9A84C;color:#15202C;letter-spacing:0.04em;">
+            <span class="hero-btn-fill" aria-hidden="true"></span>
+            <span class="hero-btn-content">
+                See Why VisionBridge
+                <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </span>
         </a>
     </div>
 </div>
@@ -667,9 +670,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         <div class="bridge-cable-divider mb-8" aria-hidden="true">{!! $bridgeCableDivider !!}</div>
         <span class="text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">Built To Last</span>
         <h3 class="font-extrabold mb-8" style="font-family:'Playfair Display',serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">Your Bridge to Lasting Growth</h3>
-        <a href="#plans" class="group inline-flex items-center gap-2.5 px-8 py-4 rounded-full font-semibold text-sm transition-all duration-300" style="background:#C9A84C;color:#15202C;letter-spacing:0.04em;">
-            View Plans
-            <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        <a href="#plans" class="parallax-cta-btn group inline-flex items-center gap-2.5 px-8 py-4 rounded-full font-semibold text-sm transition-all duration-300" style="background:#C9A84C;color:#15202C;letter-spacing:0.04em;">
+            <span class="hero-btn-fill" aria-hidden="true"></span>
+            <span class="hero-btn-content">
+                View Plans
+                <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </span>
         </a>
     </div>
 </div>
