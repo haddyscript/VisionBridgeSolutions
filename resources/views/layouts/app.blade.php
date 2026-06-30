@@ -9,6 +9,9 @@
     <!-- Favicon — VisionBridge logo mark, matching the navbar logo -->
     <link rel="icon" type="image/png" href="@assetv('image/vbs-logo-v2.png')">
 
+    <!-- Mobile-only design enhancements — loaded after the inline styles below so its rules can override them on small screens -->
+    <link rel="stylesheet" href="@assetv('mobile-design.css')">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

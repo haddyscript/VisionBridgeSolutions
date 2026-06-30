@@ -295,7 +295,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         </div>
 
         <!-- Mosaic image grid + Mission / Vision side-by-side -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-20" style="align-items:stretch;">
+        <div id="about-mosaic-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-20" style="align-items:stretch;">
 
             {{-- Left: 3×2 mosaic — align-self:stretch forces grid to give full row height --}}
             <div id="about-mosaic-wrap" style="display:flex;flex-direction:column;align-self:stretch;">
@@ -313,11 +313,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     </div>
 
                     {{-- Bottom gradient overlay --}}
-                    <div class="absolute inset-0 pointer-events-none" style="z-index:2;
+                    <div id="about-mosaic-fade" class="absolute inset-0 pointer-events-none" style="z-index:2;
                          background:linear-gradient(to top, rgba(17,29,51,0.94) 0%, rgba(17,29,51,0.22) 52%, transparent 100%);"></div>
 
                     {{-- Caption --}}
-                    <div class="absolute bottom-0 left-0 right-0 p-6" style="z-index:3;">
+                    <div id="about-mosaic-caption" class="absolute bottom-0 left-0 right-0 p-6" style="z-index:3;">
                         <p id="about-mosaic-quote" class="font-display font-bold text-lg leading-snug mb-1.5"
                            style="color:#DFC06A;">
                             "We don't just build websites — we bridge the gap between vision and digital presence."

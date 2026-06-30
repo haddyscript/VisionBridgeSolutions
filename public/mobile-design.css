@@ -1,0 +1,42 @@
+/* ==========================================================
+   Mobile-only design enhancements.
+   Every rule here is scoped under @media (max-width: 768px) so
+   desktop layouts are never touched.
+   ========================================================== */
+
+@media (max-width: 768px) {
+
+    /* "Who We Are" mosaic — taller box + larger background scale so the
+       "Building Websites. Expanding Reach." text baked into the source
+       photo doesn't get cropped/overlapping across the sliced cells. */
+    #about-mosaic {
+        min-height: 480px !important;
+    }
+    #about-mosaic .mosaic-panel {
+        background-size: 340% 230% !important;
+    }
+
+    /* Caption backdrop — push the gradient higher and darker so the quote
+       always sits on a solid dark area instead of a busy image cell. */
+    #about-mosaic-fade {
+        background: linear-gradient(to top, rgba(17,29,51,0.97) 0%, rgba(17,29,51,0.85) 38%, rgba(17,29,51,0.25) 70%, transparent 100%) !important;
+    }
+    #about-mosaic-quote {
+        font-size: 1rem !important;
+        line-height: 1.55 !important;
+    }
+    #about-mosaic-caption {
+        padding: 22px 18px 26px !important;
+    }
+
+    /* Breathing room between the subtitle, mosaic, and Mission/Vision cards */
+    #about-subtitle {
+        margin-bottom: 0.5rem !important;
+    }
+    #about-mosaic-wrap {
+        margin-bottom: 4px !important;
+    }
+    #about-mosaic-grid {
+        gap: 2.5rem !important;
+    }
+}
