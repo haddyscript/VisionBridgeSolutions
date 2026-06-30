@@ -1012,17 +1012,29 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <p class="text-sm font-semibold tracking-wide mb-7" style="color:rgba(17,29,51,0.6);">Founder &amp; President, VisionBridge Solutions</p>
 
                 <h4 class="font-display font-bold mb-4" style="font-size:1.2rem;color:#2F3A45;">Why I Started VisionBridge Solutions</h4>
-                <div class="space-y-4 text-base font-medium leading-relaxed mb-7" style="color:rgba(17,29,51,0.78);">
+                <div class="space-y-4 text-base font-medium leading-relaxed" style="color:rgba(17,29,51,0.78);">
                     <p>When I chose the name VisionBridge Solutions, I wasn't simply looking for a business name—I was defining a mission.</p>
                     <p>Throughout my years in ministry, nonprofit leadership, and business, I've had the privilege of meeting countless organizations with incredible visions to serve their communities. They had passion, purpose, and a desire to make a difference, but many lacked the digital tools needed to reach more people.</p>
                     <p>I realized that a website is much more than an online presence—it is a bridge.</p>
-                    <p>A bridge connects people to opportunities. It connects ministries to those seeking hope, nonprofits to generous supporters, and businesses to the customers they were created to serve.</p>
+                </div>
+
+                <div id="founder-story-more" class="space-y-4 text-base font-medium leading-relaxed overflow-hidden transition-all duration-500" style="color:rgba(17,29,51,0.78);max-height:0;">
+                    <p class="pt-4">A bridge connects people to opportunities. It connects ministries to those seeking hope, nonprofits to generous supporters, and businesses to the customers they were created to serve.</p>
                     <p>That realization became the foundation of VisionBridge Solutions.</p>
                     <p>Our mission is to bridge the gap between vision and reality by creating professional, dependable websites that help organizations grow, build trust, and expand their impact.</p>
                     <p>We don't just build custom websites—we build lasting partnerships through ongoing support, proactive maintenance, and a commitment to helping our clients succeed long after their website launches.</p>
                     <p>Every project we take on is about more than technology. It's about helping organizations fulfill their purpose, strengthen their communities, and create a lasting impact.</p>
                     <p>Because when your vision reaches more people, together we help make the world a better place.</p>
                 </div>
+
+                <button id="founder-story-toggle" type="button" onclick="toggleFounderStory()" data-expanded="false"
+                        class="inline-flex items-center gap-1.5 mt-4 mb-7 font-semibold text-sm transition-colors duration-200" style="color:#C9A84C;">
+                    <span id="founder-story-toggle-label">Read More</span>
+                    <svg id="founder-story-toggle-icon" class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+
                 <p class="font-display font-bold italic mb-8" style="font-size:1.1rem;color:#C9A84C;">Building Websites. Expanding Reach.</p>
 
                 {{-- Placeholder for the founder's future "Watch Johnny's Story"
@@ -2054,6 +2066,20 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     else setTimeout(initValueCardGlow, 1);
 
 })();
+
+// ── Founder story "Read More" toggle (global so inline onclick can reach it) ──
+function toggleFounderStory() {
+    const more = document.getElementById('founder-story-more');
+    const btn  = document.getElementById('founder-story-toggle');
+    const label = document.getElementById('founder-story-toggle-label');
+    const icon  = document.getElementById('founder-story-toggle-icon');
+    const expanded = btn.dataset.expanded === 'true';
+
+    btn.dataset.expanded = String(!expanded);
+    more.style.maxHeight = expanded ? '0' : more.scrollHeight + 'px';
+    label.textContent = expanded ? 'Read More' : 'Read Less';
+    icon.style.transform = expanded ? 'rotate(0deg)' : 'rotate(180deg)';
+}
 
 // ── Services toggle (global so inline onclick can reach it) ──
 // Uses display:none to eliminate the gap in collapsed state.
