@@ -992,7 +992,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
          centered max-w container) and spans the full section height, the
          way the reference "Meet Our CEO" slide's photo fills its frame. --}}
     <div class="hidden lg:flex absolute inset-y-0 left-0 items-end justify-center pointer-events-none" style="width:44%;" aria-hidden="true">
-        <img src="@assetv('image/founder-enhance-removebg.png')" alt="" style="height:106%;width:auto;max-width:none;object-fit:contain;filter:drop-shadow(0 30px 50px rgba(17,29,51,0.20));">
+        <img src="@assetv('image/founder-enhance-removebg.png')" alt="" style="height:62%;width:auto;max-width:90%;object-fit:contain;filter:drop-shadow(0 30px 50px rgba(17,29,51,0.20));">
     </div>
 
     {{-- Mobile/tablet: photo sits inline above the text instead of full-bleed --}}
