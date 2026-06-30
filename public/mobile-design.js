@@ -125,6 +125,42 @@
     });
 })();
 
+// Mobile-only top scroll-progress bar — desktop has the #section-rail dot
+// nav for scroll feedback; mobile has no equivalent, so this fills a glowing
+// gradient bar across the very top edge of the viewport as the page scrolls.
+(function () {
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+
+    var bar = document.createElement('div');
+    bar.id = 'mobile-scroll-progress';
+    var fill = document.createElement('div');
+    fill.id = 'mobile-scroll-progress-fill';
+    bar.appendChild(fill);
+    document.body.appendChild(bar);
+
+    var ticking = false;
+
+    function update() {
+        var doc = document.documentElement;
+        var scrollTop = window.scrollY || doc.scrollTop;
+        var max = doc.scrollHeight - doc.clientHeight;
+        var pct = max > 0 ? Math.min(100, (scrollTop / max) * 100) : 0;
+        fill.style.width = pct + '%';
+        ticking = false;
+    }
+
+    function onScroll() {
+        if (!ticking) {
+            window.requestAnimationFrame(update);
+            ticking = true;
+        }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
+})();
+
 // Mobile-only sticky floating CTA.
 //
 // Reuses #mobile-menu-cta's already-resolved href (set by Blade — correct

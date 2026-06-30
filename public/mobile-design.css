@@ -266,6 +266,25 @@
         animation: none !important;
     }
 
+    /* Top scroll-progress bar — mobile has no equivalent of the desktop
+       #section-rail dot nav, so this gives scroll feedback in its place.
+       Sits above the nav (z-index higher than #navbar) with a glow so it
+       reads clearly against both light and dark section backgrounds. */
+    #mobile-scroll-progress {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: rgba(47,58,69,0.10);
+        z-index: 70;
+    }
+    #mobile-scroll-progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #2A9D8F, #C9A84C);
+        box-shadow: 0 0 10px rgba(201,168,76,0.85), 0 0 4px rgba(42,157,143,0.7);
+        transition: width 0.12s linear;
+    }
+
     /* Core Values / Services / Portfolio cards — their hover effects (image
        scale, shimmer sweep, arrow reveal) are :hover/group-hover driven and
        never fire on touch, so tapping a card currently gives zero feedback.

@@ -419,17 +419,6 @@
             height: 54px !important;
         }
 
-        /* Once scrolled, also backdrop the outer #navbar wrapper (the 12px
-           padding strip around the pill) — otherwise content behind it
-           (e.g. a fixed-attachment hero background) shows through that gap
-           and visually collides with the pill. Stays transparent at the
-           very top of the page, matching the pill's own un-scrolled state. */
-        #navbar:has(#nav-inner.nav-pill) {
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(22px);
-            -webkit-backdrop-filter: blur(22px);
-        }
-
         /* ─── Sliding hover capsule ─── */
         #nav-cursor {
             position: absolute;
