@@ -989,17 +989,19 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     <div class="hero-orb" style="width:460px;height:460px;bottom:-120px;right:-100px;background:radial-gradient(circle,rgba(42,157,143,0.08) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 17s ease-in-out infinite reverse 3s;"></div>
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-0 items-center">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-0 items-start">
 
-            {{-- Left: cutout photo, bleeds toward the edge like a portrait cutout --}}
-            <div class="lg:col-span-5 flex justify-center lg:justify-start">
+            {{-- Left: cutout photo, bleeds toward the edge like a portrait cutout.
+                 Sticky on desktop so it stays aligned with the heading instead of
+                 floating mid-page next to the long story text below it. --}}
+            <div class="lg:col-span-5 flex justify-center lg:justify-start lg:sticky" style="top:120px;">
                 <img src="@assetv('image/founder-removebg.png')" alt="Johnny Davis, Founder &amp; President of VisionBridge Solutions" loading="lazy" decoding="async"
-                     style="width:100%;max-width:420px;height:auto;display:block;filter:drop-shadow(0 24px 40px rgba(17,29,51,0.18));">
+                     style="width:100%;max-width:480px;height:auto;display:block;filter:drop-shadow(0 24px 40px rgba(17,29,51,0.18));">
             </div>
 
             {{-- Accent divider --}}
-            <div class="hidden lg:flex lg:col-span-1 justify-center">
-                <div style="width:4px;height:300px;background:linear-gradient(180deg,#C9A84C,rgba(201,168,76,0.12));border-radius:2px;"></div>
+            <div class="hidden lg:flex lg:col-span-1 justify-center lg:sticky" style="top:140px;">
+                <div style="width:4px;height:260px;background:linear-gradient(180deg,#C9A84C,rgba(201,168,76,0.12));border-radius:2px;"></div>
             </div>
 
             {{-- Right: heading + story --}}
