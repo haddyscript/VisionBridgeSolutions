@@ -91,7 +91,7 @@
        transformed layer can move at its own rate. */
     .ios-parallax-layer {
         position: absolute;
-        inset: -38% 0;
+        inset: -48% 0;
         background-size: cover;
         background-repeat: no-repeat;
         will-change: transform;

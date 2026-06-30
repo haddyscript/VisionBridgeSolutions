@@ -47,7 +47,7 @@
             var rect = item.el.getBoundingClientRect();
             if (rect.bottom < -200 || rect.top > vh + 200) return;
             var progress = (vh - rect.top) / (vh + rect.height); // 0 entering → 1 leaving
-            var translate = (progress - 0.5) * rect.height * 0.7; // up to ~35% of the divider's own height
+            var translate = (progress - 0.5) * rect.height * 0.9; // up to ~45% of the divider's own height
             item.layer.style.transform = 'translateY(' + translate.toFixed(1) + 'px)';
         });
         ticking = false;
