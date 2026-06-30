@@ -297,3 +297,45 @@
         if (el) io.observe(el);
     });
 })();
+
+// Mobile-only inner-card staggered reveal — cards inside Core Values,
+// Services, Portfolio, and Plans fade/slide in individually as each one
+// scrolls into view, staggered per parent so siblings cascade in rather
+// than the whole row appearing at once like the section-level bounce above.
+(function () {
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+    if (!('IntersectionObserver' in window)) return;
+
+    var cards = Array.prototype.slice.call(document.querySelectorAll(
+        '#about .value-card, #services .services-card, #portfolio .portfolio-card, #plans .plan-card-panel'
+    ));
+    if (!cards.length) return;
+
+    var byParent = [];
+    cards.forEach(function (el) {
+        var group = byParent.filter(function (g) { return g.parent === el.parentElement; })[0];
+        if (!group) {
+            group = { parent: el.parentElement, items: [] };
+            byParent.push(group);
+        }
+        group.items.push(el);
+    });
+    byParent.forEach(function (group) {
+        group.items.forEach(function (el, i) {
+            el.classList.add('mobile-reveal-pending');
+            el.style.animationDelay = (i * 90) + 'ms';
+        });
+    });
+
+    var io = new IntersectionObserver(function (entries, obs) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.remove('mobile-reveal-pending');
+                entry.target.classList.add('mobile-reveal-in');
+                obs.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+
+    cards.forEach(function (el) { io.observe(el); });
+})();

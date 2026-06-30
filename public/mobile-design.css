@@ -331,6 +331,22 @@
         animation: mobile-section-bounce-in 0.7s cubic-bezier(.22,1,.36,1) both;
     }
 
+    /* Inner-card staggered reveal — pairs with the inner-card reveal JS.
+       .mobile-reveal-pending is only ever added by JS right before the
+       IntersectionObserver starts watching, so if JS fails to run the
+       cards simply stay visible (no permanently-hidden content). */
+    .mobile-reveal-pending {
+        opacity: 0;
+        transform: translateY(28px);
+    }
+    .mobile-reveal-in {
+        animation: mobile-card-reveal-in 0.6s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes mobile-card-reveal-in {
+        0%   { opacity: 0; transform: translateY(28px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
     /* ── iOS "Liquid Glass" pass — targeted accents ──
        Frosted, translucent panels with larger continuous corner radii and a
        soft inner highlight border, applied to cards/buttons/nav only.
