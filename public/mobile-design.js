@@ -94,6 +94,8 @@
     function closeMenu() {
         menu.classList.add('hidden');
         menu.classList.remove('menu-opening');
+        menuBtn.classList.remove('is-open');
+        document.body.classList.remove('mobile-menu-is-open');
         backdrop.classList.remove('is-visible');
         if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
     }
@@ -105,6 +107,8 @@
             document.body.appendChild(backdrop);
             requestAnimationFrame(function () { backdrop.classList.add('is-visible'); });
             menu.classList.add('menu-opening');
+            menuBtn.classList.add('is-open');
+            document.body.classList.add('mobile-menu-is-open');
             backdrop.addEventListener('click', closeMenu);
         }
     });
@@ -112,4 +116,82 @@
     menu.querySelectorAll('a').forEach(function (link) {
         link.addEventListener('click', closeMenu);
     });
+})();
+
+// Mobile-only sticky floating CTA.
+//
+// Reuses #mobile-menu-cta's already-resolved href (set by Blade — correct
+// route/anchor logic lives there, not duplicated here) so the pill always
+// points wherever "Get Started" points. Visible while scrolling through
+// content, hidden over the hero (own CTA already on screen) and over
+// #contact (the real form is the better target there).
+(function () {
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+    if (!('IntersectionObserver' in window)) return;
+
+    var sourceCta = document.getElementById('mobile-menu-cta');
+    var hero = document.getElementById('hero');
+    var contact = document.getElementById('contact');
+    if (!sourceCta || !hero) return;
+
+    var pill = document.createElement('a');
+    pill.id = 'mobile-sticky-cta';
+    pill.href = sourceCta.getAttribute('href');
+    pill.textContent = 'Get Started';
+    document.body.appendChild(pill);
+
+    var hiddenByHero = true;
+    var hiddenByContact = false;
+
+    function updateVisibility() {
+        pill.classList.toggle('is-visible', !hiddenByHero && !hiddenByContact);
+    }
+
+    new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) { hiddenByHero = entry.isIntersecting; });
+        updateVisibility();
+    }, { threshold: 0.15 }).observe(hero);
+
+    if (contact) {
+        new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) { hiddenByContact = entry.isIntersecting; });
+            updateVisibility();
+        }, { threshold: 0.1 }).observe(contact);
+    }
+})();
+
+// Mobile-only top scroll-progress bar — desktop has the #section-rail dot
+// nav for scroll feedback; mobile has no equivalent, so this fills a slim
+// bar under the very top edge of the viewport as the page scrolls.
+(function () {
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+
+    var bar = document.createElement('div');
+    bar.id = 'mobile-scroll-progress';
+    var fill = document.createElement('div');
+    fill.id = 'mobile-scroll-progress-fill';
+    bar.appendChild(fill);
+    document.body.appendChild(bar);
+
+    var ticking = false;
+
+    function update() {
+        var doc = document.documentElement;
+        var scrollTop = window.scrollY || doc.scrollTop;
+        var max = doc.scrollHeight - doc.clientHeight;
+        var pct = max > 0 ? Math.min(100, (scrollTop / max) * 100) : 0;
+        fill.style.width = pct + '%';
+        ticking = false;
+    }
+
+    function onScroll() {
+        if (!ticking) {
+            window.requestAnimationFrame(update);
+            ticking = true;
+        }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
 })();
