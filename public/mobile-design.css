@@ -365,4 +365,41 @@
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
     }
+
+    /* ── Liquid Glass pass 2 — extend to section panels, the floating
+       navbar, and the Contact form, on top of the card/button accents
+       already in place above. */
+
+    #portfolio-panel {
+        background: rgba(255,255,255,0.55) !important;
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border: 1px solid rgba(255,255,255,0.55) !important;
+    }
+    #why-quote-card .rounded-3xl {
+        background: rgba(255,255,255,0.6) !important;
+        backdrop-filter: blur(16px) saturate(150%);
+        -webkit-backdrop-filter: blur(16px) saturate(150%);
+        border: 1px solid rgba(255,255,255,0.5) !important;
+    }
+    #why-feature-cards > div {
+        background: rgba(255,255,255,0.6) !important;
+        backdrop-filter: blur(16px) saturate(150%);
+        -webkit-backdrop-filter: blur(16px) saturate(150%);
+        border: 1px solid rgba(255,255,255,0.5) !important;
+        border-radius: 20px !important;
+    }
+
+    #nav-inner.nav-pill {
+        background: rgba(255,255,255,0.62) !important;
+    }
+
+    #contact-form input,
+    #contact-form textarea,
+    #service-select-trigger {
+        background: rgba(255,255,255,0.55) !important;
+        backdrop-filter: blur(14px) saturate(150%);
+        -webkit-backdrop-filter: blur(14px) saturate(150%);
+        border-radius: 16px !important;
+    }
 }
