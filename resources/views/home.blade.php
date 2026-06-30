@@ -555,84 +555,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 </section>
 
 {{-- ============================================================
-     HORIZONTAL WIPE ZONE
-     #hscroll-outer clips #why horizontally (overflow:hidden).
-     On desktop: #why starts translateX(100vw) and is pushed into
-     view by ScrollTrigger's scrub pin. The outer's background
-     matches #why so the brief "entry" moment looks seamless.
-     On mobile: #why sits in normal flow with no translateX.
-     ============================================================ --}}
-{{-- Track + bar are fixed to viewport (outside hscroll-outer so overflow:hidden doesn't clip them) --}}
-<div id="hscroll-track"></div>
-<div id="hscroll-progress"></div>
-
-<div id="hscroll-outer" style="overflow:hidden;position:relative;background:linear-gradient(160deg,#E3EBF1 0%,#ECF1F5 50%,#E0E8EE 100%);">
-
-
-    {{-- Wipe backdrop — visible behind #why while it slides in.
-         Ambient orbs + centered progress ring give the "blank" area
-         a designed feel so the user understands something is happening. --}}
-    <div id="hscroll-backdrop" aria-hidden="true">
-        {{-- Ambient orbs matching the why section --}}
-        <div style="position:absolute;width:540px;height:540px;top:-160px;right:-120px;background:radial-gradient(circle,rgba(201,168,76,0.09) 0%,transparent 70%);filter:blur(64px);pointer-events:none;"></div>
-        <div style="position:absolute;width:400px;height:400px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.07) 0%,transparent 70%);filter:blur(52px);pointer-events:none;"></div>
-        {{-- Dot texture --}}
-        <div style="position:absolute;inset:0;opacity:0.22;background-image:radial-gradient(circle,rgba(17,29,51,0.045) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;"></div>
-
-        {{-- Centered indicator: progress ring + arrow + label --}}
-        <div id="hscroll-indicator">
-            {{-- Circular SVG progress ring --}}
-            <div id="hscroll-ring-wrap">
-                <svg id="hscroll-ring-svg" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    {{-- Track --}}
-                    <circle cx="44" cy="44" r="36" stroke="rgba(201,168,76,0.14)" stroke-width="3"/>
-                    {{-- Animated fill (stroke-dashoffset driven by JS) --}}
-                    <circle id="hscroll-ring-fill" cx="44" cy="44" r="36"
-                            stroke="#C9A84C" stroke-width="3"
-                            stroke-linecap="round"
-                            stroke-dasharray="226"
-                            stroke-dashoffset="226"
-                            style="transform:rotate(-90deg);transform-origin:44px 44px;"/>
-                </svg>
-                {{-- Right-pointing arrow inside ring --}}
-                <div id="hscroll-ring-icon">
-                    <svg width="22" height="22" fill="none" stroke="#C9A84C" stroke-width="2.2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                    </svg>
-                </div>
-            </div>
-            {{-- Percentage counter --}}
-            <div id="hscroll-pct" style="font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:#C9A84C;letter-spacing:0.04em;">0%</div>
-            {{-- Label --}}
-            <div id="hscroll-label">
-                <span>Loading</span>
-                <span style="color:#C9A84C;font-weight:700;">Why VisionBridge</span>
-            </div>
-            {{-- Decorative separator --}}
-            <div style="width:32px;height:1.5px;background:linear-gradient(90deg,rgba(201,168,76,0.60),transparent);border-radius:2px;margin-top:4px;"></div>
-        </div>
-
-        {{-- Left-edge peek label (anchored to left side, fades in from 0%) --}}
-        <div id="hscroll-edge-label">
-            <div style="width:1.5px;height:40px;background:linear-gradient(180deg,transparent,#C9A84C,transparent);"></div>
-            <span>WHY VISIONBRIDGE</span>
-            {{-- Gliding arrow pointing right --}}
-            <div id="hscroll-edge-arrow" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M5 12h14M13 6l6 6-6 6"/>
-                </svg>
-            </div>
-        </div>
-    </div>
-
-    {{-- "Scroll to continue" hint (desktop, fades out as wipe starts) --}}
-    <div id="hscroll-hint">
-        <div id="hscroll-hint-arrow">
-            <svg width="14" height="14" fill="none" stroke="#C9A84C" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-        </div>
-        <span>scroll</span>
-    </div>
-{{-- ============================================================
      WHY CHOOSE US SECTION
      ============================================================ --}}
 <section id="why" class="py-28 relative overflow-hidden" style="background:linear-gradient(160deg,#E3EBF1 0%,#ECF1F5 50%,#E0E8EE 100%);">
@@ -702,10 +624,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
     </div>
 </section>
-{{-- Tint that briefly darkens as the wipe plays, then settles back —
-     makes the transition read as more weighty/noticeable --}}
-<div id="hscroll-bg-tint" style="position:absolute;inset:0;z-index:5;background:#11161C;opacity:0;pointer-events:none;"></div>
-</div>{{-- /hscroll-outer --}}
 
 {{-- ============================================================
      MAINTENANCE PLANS SECTION
@@ -1666,9 +1584,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             { opacity:1, y:0, duration:0.55, ease:'power2.out' }, '-=0.30');
 
         // ── Cards: row-by-row wave (axis:'y') with spring scale ──
-        // gsap.set prevents the generic card-reveal system from animating
-        // these cards first (it's excluded via the #hscroll-strip guard, but
-        // we also set here so initial state is clean on all breakpoints).
         gsap.set('.services-card', { opacity:0, y:52, scale:0.91 });
         gsap.to('.services-card', {
             opacity:1, y:0, scale:1,
@@ -1937,7 +1852,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             '.bg-white.rounded-xl, .bg-white.rounded-2xl, .rounded-2xl.border, .bg-gray-50.rounded-xl'
         ).forEach(el => {
             if (el.closest('.about-cards'))  return; // about-cards use bespoke stagger above
-            if (el.closest('#hscroll-strip')) return; // horizontal wipe section handles its own reveals
             if (el.closest('#partnership'))  return; // partnership uses its own zoom-out entrance below
             if (el.classList.contains('services-card'))   return; // services uses row-wave stagger above
             if (el.classList.contains('portfolio-card')) return; // portfolio uses dealt-card entrance above
@@ -1965,126 +1879,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
               scrollTrigger: { trigger:'#partnership', start:'top 70%', toggleActions: 'play none restart reverse' } }
         );
 
-        // ============================================================
-        //  HORIZONTAL WIPE — Services → Why VisionBridge
-        //
-        //  Architecture: #services is a normal full-height section so
-        //  the user scrolls all 10 cards naturally. #hscroll-outer
-        //  (right after services) clips #why via overflow:hidden.
-        //  On desktop: #why starts at translateX(100vw) off-screen.
-        //  Once the user finishes scrolling past Services (#hscroll-outer's
-        //  top reaches the viewport top), the wipe auto-plays on its own —
-        //  no further scrolling required. Scroll is briefly locked for the
-        //  ~1.1s animation, then released. Scrolling back above the trigger
-        //  resets #why off-screen so the wipe can replay on the way down.
-        //  On mobile (< 1024px): no transform is applied; both
-        //  sections stack vertically as usual.
-        // ============================================================
-        function initHorizontalWipe() {
-            if (window.innerWidth < 1024) return;
-
-            const outer     = document.getElementById('hscroll-outer');
-            const why       = document.getElementById('why');
-            const bar       = document.getElementById('hscroll-progress');
-            const track     = document.getElementById('hscroll-track');
-            const hint      = document.getElementById('hscroll-hint');
-            const ringFill  = document.getElementById('hscroll-ring-fill');
-            const pctEl     = document.getElementById('hscroll-pct');
-            const edgeLabel = document.getElementById('hscroll-edge-label');
-            if (!outer || !why) return;
-
-            // No more "scroll to continue" — the wipe plays automatically
-            if (hint) hint.style.display = 'none';
-
-            const showBar = () => { if (bar) bar.style.opacity='1'; if (track) track.style.opacity='1'; };
-            const hideBar = () => { if (bar) bar.style.opacity='0'; if (track) track.style.opacity='0'; };
-
-            const vw = () => window.innerWidth;
-            const CIRCUMFERENCE = 226; // 2π × r(36) ≈ 226
-
-            // Push #why off-screen to the right so it's invisible at rest
-            gsap.set(why, { x: vw(), willChange: 'transform', zIndex: 1, position: 'relative' });
-
-            // Services section animations are handled in initGSAP (works on all breakpoints)
-
-            // Why section content reveals — fire once the wipe tween completes
-            const whyRevealTl = gsap.timeline({ paused: true });
-            whyRevealTl
-                .fromTo('#why-heading-block',
-                    { opacity:0, x:-40 }, { opacity:1, x:0, duration:0.75, ease:'power3.out' })
-                .fromTo('#why-quote-card',
-                    { opacity:0, x:40 },  { opacity:1, x:0, duration:0.75, ease:'power3.out' }, '-=0.50')
-                .fromTo('#why-feature-cards > div',
-                    { opacity:0, y:36 }, { opacity:1, y:0, duration:0.60, stagger:0.11, ease:'back.out(1.4)' }, '-=0.30');
-
-            const bgTint = document.getElementById('hscroll-bg-tint');
-            let wipePlayed  = false;
-            let wipePlaying = false;
-
-            function playWipe() {
-                if (wipePlayed || wipePlaying) return;
-                wipePlaying = true;
-                document.body.style.overflow = 'hidden';
-                showBar();
-
-                gsap.to(why, {
-                    x: 0,
-                    duration: 1.1,
-                    ease: 'power2.inOut',
-                    onUpdate() {
-                        const p   = this.progress();
-                        const pct = Math.round(p * 100);
-
-                        if (bar) bar.style.width = pct + '%';
-                        if (ringFill) ringFill.style.strokeDashoffset = CIRCUMFERENCE * (1 - p);
-                        if (pctEl) pctEl.textContent = pct + '%';
-                        // Background briefly tints darker as the wipe plays,
-                        // peaking mid-way through, for a more weighty feel
-                        if (bgTint) bgTint.style.opacity = Math.sin(p * Math.PI) * 0.92;
-                        if (edgeLabel) {
-                            const edgeOpacity = p < 0.5 ? p / 0.5 : 1 - ((p - 0.5) / 0.5);
-                            edgeLabel.style.opacity = Math.max(0, Math.min(1, edgeOpacity));
-                        }
-                    },
-                    onComplete() {
-                        document.body.style.overflow = '';
-                        wipePlaying = false;
-                        wipePlayed  = true;
-                        whyRevealTl.play();
-                        gsap.to([bar, track], { opacity: 0, duration: 0.5, delay: 0.6 });
-                        // Defensive: #why briefly extends past the viewport
-                        // width while translated off-screen pre-wipe — if
-                        // that ever nudges the page's horizontal scroll
-                        // position, snap it back so content isn't left
-                        // clipped on the left edge.
-                        if (window.scrollX !== 0) window.scrollTo({ left: 0 });
-                    },
-                });
-            }
-
-            function resetWipe() {
-                if (wipePlaying) return; // never reset mid-animation
-                wipePlayed = false;
-                whyRevealTl.pause(0);
-                gsap.set(why, { x: vw() });
-                hideBar();
-                if (ringFill) ringFill.style.strokeDashoffset = CIRCUMFERENCE;
-                if (pctEl)    pctEl.textContent = '0%';
-                if (bar)      bar.style.width = '0%';
-                if (bgTint)   bgTint.style.opacity = 0;
-            }
-
-            ScrollTrigger.create({
-                id: 'hscroll-wipe',
-                trigger: outer,
-                start: 'top top',
-                invalidateOnRefresh: true,
-                onEnter: playWipe,
-                onEnterBack: playWipe,
-                onLeaveBack: resetWipe,
-            });
-        }
-        initHorizontalWipe();
         };
 
         if ('requestIdleCallback' in window) {
@@ -2125,9 +1919,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
 // ── Services toggle (global so inline onclick can reach it) ──
 // Uses display:none to eliminate the gap in collapsed state.
-// After each toggle, calls ScrollTrigger.refresh() safely — the improved
-// onRefresh only resets #why when progress ≤ 1%, so mid-wipe refreshes
-// don't jump the wipe back to the start.
 function toggleServices() {
     const extras   = document.querySelectorAll('[data-svc-extra]');
     const label    = document.getElementById('svc-toggle-label');
@@ -2135,18 +1926,9 @@ function toggleServices() {
     const btn      = document.getElementById('svc-toggle-btn');
     const expanded = btn.dataset.expanded === 'true';
 
-    const safeRefresh = () => {
-        if (window.innerWidth < 1024) return; // wipe only exists on desktop
-        // The wipe trigger no longer pins anything (it auto-plays a fixed
-        // tween instead of scrubbing), so refreshing it is always safe now.
-        const wipeST = typeof ScrollTrigger !== 'undefined' && ScrollTrigger.getById('hscroll-wipe');
-        if (wipeST) wipeST.refresh();
-    };
-
     if (!expanded) {
         // Show cards before animating
         extras.forEach(el => { el.style.display = ''; });
-        safeRefresh();
 
         // Cinematic cascade — blur focus-in + spring scale + rise
         gsap.fromTo([...extras],
@@ -2173,7 +1955,6 @@ function toggleServices() {
             stagger: { amount: 0.25, from: 'end' },
             onComplete: () => {
                 extras.forEach(el => { el.style.display = 'none'; });
-                safeRefresh();
             }
         });
 
