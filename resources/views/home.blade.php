@@ -991,8 +991,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     {{-- Full-bleed photo — anchored to the actual viewport edge (not the
          centered max-w container) and spans the full section height, the
          way the reference "Meet Our CEO" slide's photo fills its frame. --}}
-    <div class="hidden lg:flex absolute inset-y-0 left-0 items-end justify-center pointer-events-none" style="width:44%;" aria-hidden="true">
-        <img src="@assetv('image/founder-enhance-removebg.png')" alt="" style="height:88%;width:auto;max-width:95%;object-fit:contain;filter:drop-shadow(0 30px 50px rgba(17,29,51,0.20));">
+    <div class="hidden lg:flex absolute inset-y-0 left-0 items-end justify-center pointer-events-none" style="width:48%;" aria-hidden="true">
+        <img src="@assetv('image/founder-enhance-removebg.png')" alt="" style="height:108%;width:auto;max-width:none;object-fit:contain;filter:drop-shadow(0 30px 50px rgba(17,29,51,0.20));">
     </div>
 
     {{-- Mobile/tablet: photo sits inline above the text instead of full-bleed --}}
