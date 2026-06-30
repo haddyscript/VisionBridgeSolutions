@@ -77,14 +77,25 @@
     }
 
     /* Parallax dividers — background-attachment:fixed is broken/ignored on
-       iOS Safari specifically, so the dramatic bridge-photo dividers render
-       flat there. Chrome (desktop, Android, and DevTools mobile emulation)
-       supports fixed attachment fine, so this fallback is scoped to the
-       `ios-fixed-broken` class mobile-design.js adds only on real iOS —
-       everywhere else keeps the native fixed background, same as the footer. */
-    html.ios-fixed-broken .parallax-divider {
-        background-attachment: scroll !important;
-        will-change: background-position;
+       iOS (Safari and any other iOS browser, since they all run WebKit), so
+       the dramatic bridge-photo dividers render flat there. Chrome on
+       desktop/Android and DevTools mobile emulation handle fixed attachment
+       fine, so this fallback is scoped to real iOS only via the
+       `ios-fixed-broken` class mobile-design.js adds — everywhere else keeps
+       the native fixed background, same as the footer.
+
+       On iOS, mobile-design.js replaces the CSS background with a separate
+       oversized `.ios-parallax-layer` div behind the text, translated via
+       scroll-linked JS — a background-position pan can't decouple the photo
+       from the text since both live in the same scrolling box, but a
+       transformed layer can move at its own rate. */
+    .ios-parallax-layer {
+        position: absolute;
+        inset: -18% 0;
+        background-size: cover;
+        background-repeat: no-repeat;
+        will-change: transform;
+        z-index: 0;
     }
 
     /* Hero ambient orbs — the radial gradients are tuned for large desktop

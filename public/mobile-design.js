@@ -2,12 +2,16 @@
 //
 // The site's parallax dividers use background-attachment:fixed, which works
 // natively everywhere else (desktop, Android Chrome, Chrome DevTools mobile
-// emulation — same as the footer) but iOS Safari ignores or glitches it, so
-// on real iPhones/iPads they'd show as a flat, static image instead of the
-// depth effect seen elsewhere. This only kicks in on actual iOS: it flags
-// `ios-fixed-broken` on <html> (mobile-design.css scopes its scroll-position
-// fallback to that class) and drives a scroll-linked background-position
-// shift in its place. Everywhere else, fixed attachment is left untouched.
+// emulation — same as the footer) but iOS Safari (and any iOS browser, since
+// they're all WebKit under the hood) ignores it, so the photo just scrolls
+// in lockstep with the text instead of staying optically anchored.
+//
+// A background-position shift alone can't fix that — the image is still
+// glued to the same scrolling box as the text, so it moves with it no
+// matter how much the crop is panned. The actual fix: pull the photo out
+// into its own oversized layer, behind the text, and translate that layer
+// at a different rate than the page scrolls — so it visibly decouples from
+// the text/button above it, the way a real fixed background would.
 (function () {
     var isIOS = /iP(hone|od|ad)/.test(navigator.platform || '')
         || /iP(hone|od|ad)/.test(navigator.userAgent || '')
@@ -20,8 +24,19 @@
     if (!dividers.length) return;
 
     var items = dividers.map(function (el) {
-        var match = /center\s+(\d+(?:\.\d+)?)%/.exec(el.getAttribute('style') || '');
-        return { el: el, basePercent: match ? parseFloat(match[1]) : 50 };
+        var computed = getComputedStyle(el);
+        var bgImage = computed.backgroundImage;
+        var bgPosition = computed.backgroundPosition;
+
+        var layer = document.createElement('div');
+        layer.className = 'ios-parallax-layer';
+        layer.style.backgroundImage = bgImage;
+        layer.style.backgroundPosition = bgPosition;
+        el.insertBefore(layer, el.firstChild);
+
+        el.style.backgroundImage = 'none';
+
+        return { el: el, layer: layer };
     });
 
     var ticking = false;
@@ -32,8 +47,8 @@
             var rect = item.el.getBoundingClientRect();
             if (rect.bottom < -200 || rect.top > vh + 200) return;
             var progress = (vh - rect.top) / (vh + rect.height); // 0 entering → 1 leaving
-            var shift = (progress - 0.5) * 70; // ±35% vertical drift, closer to the desktop fixed-bg depth
-            item.el.style.backgroundPosition = 'center ' + (item.basePercent + shift) + '%';
+            var translate = (progress - 0.5) * rect.height * 0.32; // up to ~16% of the divider's own height
+            item.layer.style.transform = 'translateY(' + translate.toFixed(1) + 'px)';
         });
         ticking = false;
     }
