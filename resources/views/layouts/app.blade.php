@@ -1184,13 +1184,13 @@
         {{-- Mobile dropdown (glassmorphism, outside pill) --}}
         <div id="mobile-menu" class="hidden md:hidden mt-2 mx-2 rounded-2xl overflow-hidden"
              style="background:rgba(255,255,255,0.96);backdrop-filter:blur(20px);border:1px solid rgba(47,58,69,0.08);box-shadow:0 8px 32px rgba(47,58,69,0.14);">
-            <div class="flex flex-col p-4 gap-1">
-                <a href="{{ $homeAnchor }}#about"     class="text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">About</a>
-                <a href="{{ $homeAnchor }}#services"  class="text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Services</a>
-                <a href="{{ $homeAnchor }}#plans"     class="text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Plans</a>
-                <a href="{{ $homeAnchor }}#portfolio" class="text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Portfolio</a>
-                <a href="{{ route('login') }}" class="text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Client Login</a>
-                <a href="{{ $homeAnchor }}#contact"   class="mt-2 bg-gold text-navy font-bold text-base text-center px-4 py-3 rounded-xl">Get Started</a>
+            <div id="mobile-menu-links" class="flex flex-col p-4 gap-1">
+                <a href="{{ $homeAnchor }}#about"     class="mobile-menu-link text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">About</a>
+                <a href="{{ $homeAnchor }}#services"  class="mobile-menu-link text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Services</a>
+                <a href="{{ $homeAnchor }}#plans"     class="mobile-menu-link text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Plans</a>
+                <a href="{{ $homeAnchor }}#portfolio" class="mobile-menu-link text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Portfolio</a>
+                <a href="{{ route('login') }}" class="mobile-menu-link text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Client Login</a>
+                <a id="mobile-menu-cta" href="{{ $homeAnchor }}#contact"   class="mt-2 bg-gold text-navy font-bold text-base text-center px-4 py-3 rounded-xl">Get Started</a>
             </div>
         </div>
     </nav>

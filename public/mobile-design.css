@@ -59,4 +59,20 @@
         border: 2px solid rgba(42,157,143,0.35) !important;
         box-shadow: 0 0 0 4px rgba(42,157,143,0.08) !important;
     }
+
+    /* Mobile nav dropdown — thin dividers between links so each item reads
+       as a distinct row instead of loosely stacked text. */
+    #mobile-menu-links .mobile-menu-link:not(:last-of-type) {
+        border-bottom: 1px solid rgba(47,58,69,0.07) !important;
+    }
+
+    /* Get Started CTA — clearer separation from the links above it, and a
+       stronger shadow so it doesn't look like it's clipping the panel edge. */
+    #mobile-menu-cta {
+        margin-top: 14px !important;
+        box-shadow: 0 10px 24px rgba(201,168,76,0.4) !important;
+    }
+    #mobile-menu-links {
+        padding-bottom: 16px !important;
+    }
 }
