@@ -847,7 +847,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- ============================================================
      PORTFOLIO SECTION
      ============================================================ --}}
-<section id="portfolio" class="py-28 relative overflow-hidden" style="background:linear-gradient(160deg,#0B121C 0%,#141F2C 55%,#0B121C 100%);">
+<section id="portfolio" class="py-28 relative overflow-hidden" style="background:linear-gradient(160deg,#1B2A3D 0%,#26384F 55%,#1B2A3D 100%);">
     {{-- Ambient orbs — brighter than the light-section versions so the glow still reads against the dark backdrop --}}
     <div class="hero-orb" style="width:580px;height:580px;top:-160px;left:-140px;background:radial-gradient(circle,rgba(42,157,143,0.16) 0%,transparent 70%);filter:blur(70px);animation:orb-drift 20s ease-in-out infinite;"></div>
     <div class="hero-orb" style="width:480px;height:480px;bottom:-120px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,0.14) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 16s ease-in-out infinite reverse 4s;"></div>
@@ -880,11 +880,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         <div id="portfolio-cards" class="relative grid grid-cols-1 sm:grid-cols-3 gap-6 px-2 sm:px-6" style="margin-top:-72px;z-index:2;">
             @foreach ($portfolioProjects as $project)
                 @php $hasLink = !empty($project['url']); @endphp
-                <div class="portfolio-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1.5" style="background:linear-gradient(160deg,#1A2533,#11181F);border:1px solid rgba(201,168,76,0.16);box-shadow:0 25px 60px rgba(0,0,0,0.45);">
+                <div class="portfolio-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1.5" style="background:linear-gradient(160deg,#324B66,#263B52);border:1px solid rgba(201,168,76,0.18);box-shadow:0 25px 60px rgba(0,0,0,0.32);">
                     @if ($hasLink)
                         <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="block">
                     @endif
-                        <div class="relative overflow-hidden flex items-center justify-center" style="height:200px;background:#0D1420;">
+                        <div class="relative overflow-hidden flex items-center justify-center" style="height:200px;background:#1F3043;">
                             @if (!empty($project['image']))
                                 {{-- contain (not cover) — these are wide desktop screenshots;
                                      cover here was zooming in ~6x and cropping the headline text --}}
