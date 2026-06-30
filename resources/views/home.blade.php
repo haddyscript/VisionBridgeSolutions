@@ -983,25 +983,34 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- ============================================================
      MEET THE FOUNDER SECTION
      ============================================================ --}}
-<section id="founder" class="py-28 relative overflow-hidden" style="background:linear-gradient(160deg,#FBFAF6 0%,#F7F3EA 50%,#FBFAF6 100%);">
+<section id="founder" class="py-16 lg:py-0 relative overflow-hidden" style="background:linear-gradient(160deg,#FBFAF6 0%,#F7F3EA 50%,#FBFAF6 100%);min-height:760px;">
     {{-- Ambient orbs --}}
     <div class="hero-orb" style="width:560px;height:560px;top:-160px;left:-140px;background:radial-gradient(circle,rgba(201,168,76,0.10) 0%,transparent 70%);filter:blur(70px);animation:orb-drift 20s ease-in-out infinite;"></div>
     <div class="hero-orb" style="width:460px;height:460px;bottom:-120px;right:-100px;background:radial-gradient(circle,rgba(42,157,143,0.08) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 17s ease-in-out infinite reverse 3s;"></div>
 
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-0 items-start">
+    {{-- Full-bleed photo — anchored to the actual viewport edge (not the
+         centered max-w container) and spans the full section height, the
+         way the reference "Meet Our CEO" slide's photo fills its frame. --}}
+    <div class="hidden lg:flex absolute inset-y-0 left-0 items-end justify-center pointer-events-none" style="width:44%;" aria-hidden="true">
+        <img src="@assetv('image/founder-removebg.png')" alt="" style="height:106%;width:auto;max-width:none;object-fit:contain;filter:drop-shadow(0 30px 50px rgba(17,29,51,0.20));">
+    </div>
 
-            {{-- Left: cutout photo, bleeds toward the edge like a portrait cutout.
-                 Sticky on desktop so it stays aligned with the heading instead of
-                 floating mid-page next to the long story text below it. --}}
-            <div class="lg:col-span-5 flex justify-center lg:justify-start lg:sticky" style="top:120px;">
-                <img src="@assetv('image/founder-removebg.png')" alt="Johnny Davis, Founder &amp; President of VisionBridge Solutions" loading="lazy" decoding="async"
-                     style="width:100%;max-width:480px;height:auto;display:block;filter:drop-shadow(0 24px 40px rgba(17,29,51,0.18));">
-            </div>
+    {{-- Mobile/tablet: photo sits inline above the text instead of full-bleed --}}
+    <div class="lg:hidden flex justify-center pt-2 pb-8">
+        <img src="@assetv('image/founder-removebg.png')" alt="Johnny Davis, Founder &amp; President of VisionBridge Solutions" loading="lazy" decoding="async"
+             style="width:100%;max-width:340px;height:auto;display:block;filter:drop-shadow(0 24px 40px rgba(17,29,51,0.18));">
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
+        <div class="grid grid-cols-1 lg:grid-cols-12 lg:py-24">
+
+            {{-- Spacer matching the full-bleed photo's width so the text
+                 column starts clear of it. --}}
+            <div class="hidden lg:block lg:col-span-5"></div>
 
             {{-- Accent divider --}}
-            <div class="hidden lg:flex lg:col-span-1 justify-center lg:sticky" style="top:140px;">
-                <div style="width:4px;height:260px;background:linear-gradient(180deg,#C9A84C,rgba(201,168,76,0.12));border-radius:2px;"></div>
+            <div class="hidden lg:flex lg:col-span-1 justify-center">
+                <div style="width:4px;align-self:stretch;background:linear-gradient(180deg,#C9A84C,rgba(201,168,76,0.12));border-radius:2px;"></div>
             </div>
 
             {{-- Right: heading + story --}}
