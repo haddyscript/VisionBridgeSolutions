@@ -989,43 +989,28 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     <div class="hero-orb" style="width:460px;height:460px;bottom:-120px;right:-100px;background:radial-gradient(circle,rgba(42,157,143,0.08) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 17s ease-in-out infinite reverse 3s;"></div>
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
-        <div class="text-center mb-16 max-w-2xl mx-auto">
-            <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Meet The Founder</span>
-            <h2 class="section-title">Meet the Founder</h2>
-        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-0 items-center">
 
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 items-start">
-
-            {{-- Left: photo + identity + future video placeholder --}}
-            <div class="lg:col-span-2">
-                <div class="rounded-3xl overflow-hidden mb-6" style="border:1px solid rgba(201,168,76,0.20);box-shadow:0 20px 56px rgba(17,29,51,0.10);">
-                    <img src="@assetv('image/founder.jpeg')" alt="Johnny Davis, Founder &amp; President of VisionBridge Solutions" loading="lazy" decoding="async" style="width:100%;height:auto;object-fit:cover;display:block;">
-                </div>
-                <div class="text-center lg:text-left">
-                    <h3 class="font-extrabold text-xl mb-1" style="color:#15202C;">Johnny Davis</h3>
-                    <p class="text-sm font-semibold tracking-wide" style="color:#C9A84C;">Founder &amp; President</p>
-                    <p class="text-sm" style="color:rgba(17,29,51,0.6);">VisionBridge Solutions</p>
-                </div>
-
-                {{-- Placeholder for the founder's future "Watch Johnny's Story"
-                     welcome video — swap this block for a video embed once
-                     the recording is delivered. --}}
-                <div class="mt-8 rounded-2xl flex flex-col items-center justify-center text-center p-8" style="background:rgba(255,255,255,0.6);border:1.5px dashed rgba(201,168,76,0.35);min-height:180px;">
-                    <div class="w-14 h-14 rounded-full flex items-center justify-center mb-4" style="background:rgba(201,168,76,0.14);">
-                        <svg class="w-6 h-6" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <p class="font-semibold text-sm mb-1" style="color:#2F3A45;">Watch Johnny's Story</p>
-                    <p class="text-xs" style="color:rgba(17,29,51,0.55);">Video coming soon</p>
-                </div>
+            {{-- Left: cutout photo, bleeds toward the edge like a portrait cutout --}}
+            <div class="lg:col-span-5 flex justify-center lg:justify-start">
+                <img src="@assetv('image/founder-removebg.png')" alt="Johnny Davis, Founder &amp; President of VisionBridge Solutions" loading="lazy" decoding="async"
+                     style="width:100%;max-width:420px;height:auto;display:block;filter:drop-shadow(0 24px 40px rgba(17,29,51,0.18));">
             </div>
 
-            {{-- Right: story --}}
-            <div class="lg:col-span-3">
-                <h3 class="font-display font-bold leading-tight mb-6" style="font-size:clamp(1.5rem,2.6vw,2.1rem);color:#2F3A45;">Why I Started VisionBridge Solutions</h3>
-                <div class="space-y-5 text-base font-medium leading-relaxed" style="color:rgba(17,29,51,0.78);">
+            {{-- Accent divider --}}
+            <div class="hidden lg:flex lg:col-span-1 justify-center">
+                <div style="width:4px;height:300px;background:linear-gradient(180deg,#C9A84C,rgba(201,168,76,0.12));border-radius:2px;"></div>
+            </div>
+
+            {{-- Right: heading + story --}}
+            <div class="lg:col-span-6">
+                <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Meet The Founder</span>
+                <h2 class="font-display font-bold leading-tight mb-2" style="font-size:clamp(2.2rem,4vw,3.2rem);color:#2F3A45;">Meet the Founder</h2>
+                <h3 class="font-extrabold text-lg mb-1" style="color:#C9A84C;">Johnny Davis</h3>
+                <p class="text-sm font-semibold tracking-wide mb-7" style="color:rgba(17,29,51,0.6);">Founder &amp; President, VisionBridge Solutions</p>
+
+                <h4 class="font-display font-bold mb-4" style="font-size:1.2rem;color:#2F3A45;">Why I Started VisionBridge Solutions</h4>
+                <div class="space-y-4 text-base font-medium leading-relaxed mb-7" style="color:rgba(17,29,51,0.78);">
                     <p>When I chose the name VisionBridge Solutions, I wasn't simply looking for a business name—I was defining a mission.</p>
                     <p>Throughout my years in ministry, nonprofit leadership, and business, I've had the privilege of meeting countless organizations with incredible visions to serve their communities. They had passion, purpose, and a desire to make a difference, but many lacked the digital tools needed to reach more people.</p>
                     <p>I realized that a website is much more than an online presence—it is a bridge.</p>
@@ -1036,7 +1021,23 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     <p>Every project we take on is about more than technology. It's about helping organizations fulfill their purpose, strengthen their communities, and create a lasting impact.</p>
                     <p>Because when your vision reaches more people, together we help make the world a better place.</p>
                 </div>
-                <p class="mt-7 font-display font-bold italic" style="font-size:1.15rem;color:#C9A84C;">Building Websites. Expanding Reach.</p>
+                <p class="font-display font-bold italic mb-8" style="font-size:1.1rem;color:#C9A84C;">Building Websites. Expanding Reach.</p>
+
+                {{-- Placeholder for the founder's future "Watch Johnny's Story"
+                     welcome video — swap this block for a video embed once
+                     the recording is delivered. --}}
+                <div class="inline-flex items-center gap-4 rounded-2xl px-6 py-4" style="background:rgba(255,255,255,0.6);border:1.5px dashed rgba(201,168,76,0.35);">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style="background:rgba(201,168,76,0.14);">
+                        <svg class="w-5 h-5" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <p class="font-semibold text-sm" style="color:#2F3A45;">Watch Johnny's Story</p>
+                        <p class="text-xs" style="color:rgba(17,29,51,0.55);">Video coming soon</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
