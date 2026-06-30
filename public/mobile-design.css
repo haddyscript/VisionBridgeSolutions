@@ -84,4 +84,49 @@
         background-attachment: scroll !important;
         will-change: background-position;
     }
+
+    /* Hero ambient orbs — the radial gradients are tuned for large desktop
+       canvases and read as almost invisible on small, bright phone screens.
+       Boost intensity rather than position (repositioning risks clipping
+       differently across phone sizes). */
+    .hero-orb {
+        filter: brightness(1.45) saturate(1.3);
+        transform: scale(1.3);
+    }
+
+    /* Hero trust avatars — fade in as one flat block on every breakpoint via
+       the existing GSAP heroTl; on mobile give them an individual pop-in
+       stagger instead so the row feels alive. Triggered by mobile-design.js
+       once heroTl reveals #hero-trust. */
+    @keyframes hero-avatar-pop {
+        0%   { transform: scale(0.3); opacity: 0; }
+        60%  { transform: scale(1.15); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    #hero-avatars.avatars-pop > div {
+        animation: hero-avatar-pop 0.45s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    #hero-avatars.avatars-pop > div:nth-child(1) { animation-delay: 0s; }
+    #hero-avatars.avatars-pop > div:nth-child(2) { animation-delay: 0.1s; }
+    #hero-avatars.avatars-pop > div:nth-child(3) { animation-delay: 0.2s; }
+    #hero-avatars.avatars-pop > div:nth-child(4) { animation-delay: 0.3s; }
+
+    /* Hero primary CTA — its shimmer/glow only fires on :hover, which never
+       triggers on touch, so on mobile the button just sits flat. Give it a
+       passive autoplay shimmer (reusing the sitewide btn-shine keyframe) and
+       a tap/active press-down on both hero buttons for touch feedback. */
+    .hero-btn-primary::before {
+        content: '';
+        position: absolute;
+        top: -50%; left: -80%;
+        width: 48%; height: 200%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.65), transparent);
+        transform: skewX(-18deg);
+        pointer-events: none;
+        animation: btn-shine 3.2s ease-in-out infinite 1.2s;
+    }
+    .hero-btn-primary:active,
+    .hero-btn-secondary:active {
+        transform: scale(0.96);
+    }
 }

@@ -41,3 +41,34 @@
     window.addEventListener('resize', onScroll);
     update();
 })();
+
+// Mobile-only Hero avatar pop trigger.
+//
+// The existing GSAP heroTl (home.blade.php) fades #hero-trust in as one flat
+// block by setting its inline opacity from 0 to 1. mobile-design.css adds a
+// staggered per-avatar pop-in animation gated behind an .avatars-pop class —
+// this watches #hero-trust's style attribute and adds that class the moment
+// heroTl reveals it, so the pop is timed with the rest of the intro.
+(function () {
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+
+    var trust = document.getElementById('hero-trust');
+    var avatars = document.getElementById('hero-avatars');
+    if (!trust || !avatars) return;
+
+    var triggered = false;
+    var observer;
+
+    function maybeTrigger() {
+        if (triggered) return;
+        if (parseFloat(getComputedStyle(trust).opacity) > 0.5) {
+            triggered = true;
+            avatars.classList.add('avatars-pop');
+            observer.disconnect();
+        }
+    }
+
+    observer = new MutationObserver(maybeTrigger);
+    observer.observe(trust, { attributes: true, attributeFilter: ['style'] });
+    maybeTrigger();
+})();

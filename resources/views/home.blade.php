@@ -175,7 +175,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
         {{-- Social proof row --}}
         <div id="hero-trust" class="flex items-center justify-center gap-3 mb-10 opacity-0">
-            <div class="flex -space-x-2">
+            <div id="hero-avatars" class="flex -space-x-2">
                 <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#2CA6A4;border-color:#EAF3F8;">J</div>
                 <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#465360;border-color:#EAF3F8;">M</div>
                 <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold" style="background:#C9A84C;border-color:#EAF3F8;color:#2F3A45;">S</div>
