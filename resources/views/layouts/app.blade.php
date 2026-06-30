@@ -425,9 +425,22 @@
             transform: skewX(-18deg);
             pointer-events: none;
             animation: btn-shine 3s ease-in-out infinite 1s;
+            z-index: 1;
+        }
+        .contact-submit-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: #ffffff;
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+            z-index: 0;
         }
         .contact-submit-btn:hover {
             box-shadow: 0 16px 38px rgba(201,168,76,0.5);
+        }
+        .contact-submit-btn:hover::after {
+            transform: translateX(0);
         }
         .contact-submit-btn:disabled {
             box-shadow: none;
