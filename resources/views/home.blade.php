@@ -621,7 +621,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <div id="why-quote-card" class="relative">
                 {{-- Giant decorative quote mark --}}
                 <div class="absolute pointer-events-none select-none" style="font-size:12rem;line-height:1;color:rgba(201,168,76,0.08);font-family:'Playfair Display',serif;font-weight:700;top:-36px;left:-16px;z-index:0;">"</div>
-                <div class="relative rounded-3xl" style="z-index:1;background:#FFFFFF;border:1px solid rgba(201,168,76,0.18);box-shadow:0 10px 52px rgba(17,29,51,0.07),0 2px 8px rgba(17,29,51,0.04);padding:36px 40px;">
+                <div class="relative rounded-3xl" style="z-index:1;background:#FFFFFF;border:1px solid rgba(201,168,76,0.18);border-left:4px solid #C9A84C;box-shadow:0 10px 52px rgba(201,168,76,0.10),0 2px 8px rgba(17,29,51,0.04);padding:36px 40px;">
                     <p class="font-display font-bold leading-snug mb-7" style="font-size:1.2rem;color:#2F3A45;line-height:1.55;">
                         "We don't just build custom websites — we help protect the long-term stability of our clients' online presence."
                     </p>
@@ -641,11 +641,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 ['image'=>'image/Partnership_Approach.png',  'title'=>'Partnership Approach', 'desc'=>'We work with you, not just for you, through every stage.'],
                 ['image'=>'image/Fast_Reliable.png',         'title'=>'Fast & Reliable',      'desc'=>'Optimized for speed, uptime, and a seamless user experience.'],
             ] as $point)
-            <div class="group rounded-2xl p-7 hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 cursor-default"
+            <div class="why-feature-card group rounded-2xl p-7 hover:-translate-y-1.5 transition-all duration-300 cursor-default"
                  style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.07);box-shadow:0 2px 12px rgba(17,29,51,0.05),0 1px 3px rgba(17,29,51,0.03);">
                 <div class="text-xs font-bold tracking-widest mb-5 select-none" style="color:rgba(17,29,51,0.11);">{{ sprintf('%02d', $loop->iteration) }}</div>
-                <div class="w-12 h-12 rounded-xl overflow-hidden mb-5 transition-all duration-300 group-hover:scale-110"
-                     style="border:1px solid rgba(201,168,76,0.16);">
+                <div class="why-feature-icon w-14 h-14 rounded-full overflow-hidden mb-5 transition-all duration-300 group-hover:scale-110"
+                     style="background:linear-gradient(135deg,rgba(201,168,76,0.12),rgba(42,157,143,0.10));border:1px solid rgba(201,168,76,0.18);">
                     <img src="@assetv($point['image'])" alt="{{ $point['title'] }}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
                 </div>
                 <div class="mb-4 transition-all duration-500 group-hover:w-12" style="width:24px;height:1.5px;background:linear-gradient(90deg,#C9A84C,rgba(201,168,76,0.12));border-radius:2px;"></div>

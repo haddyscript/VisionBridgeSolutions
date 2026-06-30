@@ -166,6 +166,18 @@
             }
         }
 
+        /* ─── "Why VisionBridge" feature cards — hover polish ───
+           Circular icon badges already get a gradient tint + scale-up via
+           Tailwind utilities in the markup; this adds the gold glow ring
+           and stronger card shadow/border on hover. */
+        .why-feature-card:hover {
+            border-color: rgba(201,168,76,0.35) !important;
+            box-shadow: 0 18px 40px rgba(201,168,76,0.16), 0 4px 14px rgba(17,29,51,0.06) !important;
+        }
+        .why-feature-card:hover .why-feature-icon {
+            box-shadow: 0 0 0 5px rgba(201,168,76,0.14), 0 6px 18px rgba(201,168,76,0.28);
+        }
+
         /* ─── Floating glassmorphism cards ─── */
         .float-card {
             position:absolute; pointer-events:none; z-index:3;
