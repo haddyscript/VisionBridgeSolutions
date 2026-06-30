@@ -196,6 +196,47 @@
     update();
 })();
 
+// Mobile-only navbar glow — the pill grows more glassy (heavier blur) and
+// gains a soft gold ambient glow the deeper the page is scrolled, instead of
+// the flat single blur value it had before. Reuses the same scroll-percent
+// math as the top progress bar.
+(function () {
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+
+    var nav = document.getElementById('nav-inner');
+    if (!nav) return;
+
+    var ticking = false;
+
+    function update() {
+        var doc = document.documentElement;
+        var max = doc.scrollHeight - doc.clientHeight;
+        var pct = max > 0 ? Math.min(1, (window.scrollY || doc.scrollTop) / max) : 0;
+
+        var blur = 16 + pct * 16;          // 16px at top -> 32px at bottom
+        var glowAlpha = 0.12 + pct * 0.38; // 0.12 -> 0.50
+        var glowSpread = 16 + pct * 26;    // 16px -> 42px
+
+        nav.style.setProperty('--nav-blur', blur.toFixed(1) + 'px');
+        nav.style.setProperty('--nav-glow',
+            '0 0 ' + glowSpread.toFixed(0) + 'px ' + (glowSpread * 0.35).toFixed(0) +
+            'px rgba(201,168,76,' + glowAlpha.toFixed(2) + ')');
+
+        ticking = false;
+    }
+
+    function onScroll() {
+        if (!ticking) {
+            window.requestAnimationFrame(update);
+            ticking = true;
+        }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
+})();
+
 // Mobile-only: iOS Safari only triggers :active on non-link elements once a
 // touchstart listener exists somewhere in the document. This unlocks the
 // card tap-feedback (:active rings) defined in mobile-design.css.

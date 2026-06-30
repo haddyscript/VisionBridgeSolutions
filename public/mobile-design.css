@@ -390,8 +390,19 @@
         border-radius: 20px !important;
     }
 
+    /* Navbar grows more glassy + glowy the deeper you scroll. --nav-blur and
+       --nav-glow are set continuously in mobile-design.js as a function of
+       scroll progress (0 at top, 1 at bottom of page). Box-shadow is left
+       out of the inherited transition list so it tracks scroll instantly
+       instead of lagging half a second behind the live updates. */
     #nav-inner.nav-pill {
         background: rgba(255,255,255,0.8) !important;
+        backdrop-filter: blur(var(--nav-blur, 22px)) saturate(125%) !important;
+        -webkit-backdrop-filter: blur(var(--nav-blur, 22px)) saturate(125%) !important;
+        box-shadow: 0 8px 36px rgba(47,58,69,0.16), 0 0 0 1px rgba(201,168,76,0.10), var(--nav-glow, 0 0 0 0 transparent) !important;
+        transition: background 0.5s ease, border-radius 0.5s ease,
+                    max-width 0.55s ease, border-color 0.5s ease,
+                    height 0.4s ease, padding 0.4s ease !important;
     }
 
     #contact-form input,
