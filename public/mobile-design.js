@@ -72,3 +72,44 @@
     observer.observe(trust, { attributes: true, attributeFilter: ['style'] });
     maybeTrigger();
 })();
+
+// Mobile-only nav dropdown wow-factor: dim backdrop + staggered link entrance.
+//
+// app.blade.php's own click handler on #menu-btn toggles the `hidden` class
+// on #mobile-menu and runs first (it's registered earlier in the document,
+// and listeners on the same element fire in registration order). This just
+// reacts after that toggle to add/remove a backdrop behind the panel and a
+// `menu-opening` class that drives the staggered slide-in in mobile-design.css.
+(function () {
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+
+    var menuBtn = document.getElementById('menu-btn');
+    var menu = document.getElementById('mobile-menu');
+    if (!menuBtn || !menu) return;
+
+    var backdrop = document.createElement('div');
+    backdrop.id = 'mobile-menu-backdrop';
+    backdrop.setAttribute('aria-hidden', 'true');
+
+    function closeMenu() {
+        menu.classList.add('hidden');
+        menu.classList.remove('menu-opening');
+        backdrop.classList.remove('is-visible');
+        if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+    }
+
+    menuBtn.addEventListener('click', function () {
+        if (menu.classList.contains('hidden')) {
+            closeMenu();
+        } else {
+            document.body.appendChild(backdrop);
+            requestAnimationFrame(function () { backdrop.classList.add('is-visible'); });
+            menu.classList.add('menu-opening');
+            backdrop.addEventListener('click', closeMenu);
+        }
+    });
+
+    menu.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', closeMenu);
+    });
+})();
