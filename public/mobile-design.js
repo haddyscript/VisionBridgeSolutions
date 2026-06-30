@@ -167,42 +167,6 @@
     }
 })();
 
-// Mobile-only top scroll-progress bar — desktop has the #section-rail dot
-// nav for scroll feedback; mobile has no equivalent, so this fills a slim
-// bar under the very top edge of the viewport as the page scrolls.
-(function () {
-    if (!window.matchMedia('(max-width: 768px)').matches) return;
-
-    var bar = document.createElement('div');
-    bar.id = 'mobile-scroll-progress';
-    var fill = document.createElement('div');
-    fill.id = 'mobile-scroll-progress-fill';
-    bar.appendChild(fill);
-    document.body.appendChild(bar);
-
-    var ticking = false;
-
-    function update() {
-        var doc = document.documentElement;
-        var scrollTop = window.scrollY || doc.scrollTop;
-        var max = doc.scrollHeight - doc.clientHeight;
-        var pct = max > 0 ? Math.min(100, (scrollTop / max) * 100) : 0;
-        fill.style.width = pct + '%';
-        ticking = false;
-    }
-
-    function onScroll() {
-        if (!ticking) {
-            window.requestAnimationFrame(update);
-            ticking = true;
-        }
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    update();
-})();
-
 // Mobile-only navbar glow — the pill grows more glassy (heavier blur) and
 // gains a soft gold ambient glow the deeper the page is scrolled, instead of
 // the flat single blur value it had before. Reuses the same scroll-percent
