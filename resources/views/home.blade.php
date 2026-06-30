@@ -993,7 +993,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- ============================================================
      MEET THE FOUNDER SECTION
      ============================================================ --}}
-<section id="founder" class="py-16 lg:py-0 relative overflow-hidden" style="background:#FFFFFF;min-height:340px;">
+<section id="founder" class="py-8 lg:py-0 lg:h-[75vh] relative overflow-hidden" style="background:#FFFFFF;">
     {{-- Ambient orbs --}}
     <div class="hero-orb" style="width:560px;height:560px;top:-160px;left:-140px;background:radial-gradient(circle,rgba(201,168,76,0.10) 0%,transparent 70%);filter:blur(70px);animation:orb-drift 20s ease-in-out infinite;"></div>
     <div class="hero-orb" style="width:460px;height:460px;bottom:-120px;right:-100px;background:radial-gradient(circle,rgba(42,157,143,0.08) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 17s ease-in-out infinite reverse 3s;"></div>
@@ -1011,8 +1011,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
              style="width:100%;max-width:340px;height:auto;display:block;filter:drop-shadow(0 24px 40px rgba(17,29,51,0.18));">
     </div>
 
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
-        <div class="grid grid-cols-1 lg:grid-cols-12 lg:py-24">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 lg:h-full" style="z-index:1;">
+        <div class="grid grid-cols-1 lg:grid-cols-12 lg:h-full lg:py-10">
 
             {{-- Spacer matching the full-bleed photo's width so the text
                  column starts clear of it. --}}
@@ -1023,8 +1023,10 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <div style="width:8px;align-self:stretch;background:linear-gradient(180deg,#C9A84C,rgba(201,168,76,0.12));border-radius:4px;"></div>
             </div>
 
-            {{-- Right: heading + story --}}
-            <div class="lg:col-span-6">
+            {{-- Right: heading + story. Constrained to the section's fixed
+                 height on desktop and scrollable internally so the section
+                 never grows past 75vh of the viewport. --}}
+            <div class="lg:col-span-6 lg:h-full lg:overflow-y-auto lg:pr-2">
                 <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Meet The Founder</span>
                 <h2 class="font-display font-bold leading-tight mb-2" style="font-size:clamp(2.2rem,4vw,3.2rem);color:#2F3A45;">Meet the Founder</h2>
                 <h3 class="font-extrabold text-lg mb-1" style="color:#C9A84C;">Johnny Davis</h3>
