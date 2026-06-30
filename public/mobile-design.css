@@ -268,4 +268,50 @@
         background: linear-gradient(90deg, #2A9D8F, #C9A84C);
         transition: width 0.12s linear;
     }
+
+    /* Core Values / Services / Portfolio cards — their hover effects (image
+       scale, shimmer sweep, arrow reveal) are :hover/group-hover driven and
+       never fire on touch, so tapping a card currently gives zero feedback.
+       Gold ring + press-down on :active gives touch users a response.
+       Requires the touchstart-unlock listener in mobile-design.js for iOS
+       Safari to actually trigger :active on non-link elements. */
+    .value-card-outer:active .value-card,
+    .services-card:active,
+    .portfolio-card:active {
+        transform: scale(0.97);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        box-shadow: 0 0 0 2px rgba(201,168,76,0.45), 0 8px 20px rgba(21,32,44,0.12) !important;
+    }
+
+    /* Services card photos — blur-up placeholder while the lazy-loaded
+       image fetches, instead of popping in abruptly on slower connections.
+       .is-loaded is added by mobile-design.js once the image fires `load`. */
+    .services-card img {
+        opacity: 0;
+        filter: blur(8px);
+        transition: opacity 0.45s ease, filter 0.45s ease;
+    }
+    .services-card img.is-loaded {
+        opacity: 1;
+        filter: blur(0);
+    }
+
+    /* Section entrance bounce — a soft overshoot settle on each major
+       section as it first scrolls into view, layered underneath the
+       existing per-card GSAP reveals (which target the cards inside, not
+       the section wrapper itself), giving scrolling a more tactile feel. */
+    @keyframes mobile-section-bounce-in {
+        0%   { opacity: 0; transform: translateY(36px) scale(0.98); }
+        60%  { opacity: 1; transform: translateY(-5px) scale(1.004); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    #about.mobile-section-bounce-in,
+    #services.mobile-section-bounce-in,
+    #why.mobile-section-bounce-in,
+    #plans.mobile-section-bounce-in,
+    #portfolio.mobile-section-bounce-in,
+    #partnership.mobile-section-bounce-in,
+    #contact.mobile-section-bounce-in {
+        animation: mobile-section-bounce-in 0.7s cubic-bezier(.22,1,.36,1) both;
+    }
 }

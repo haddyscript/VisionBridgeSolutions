@@ -195,3 +195,47 @@
     window.addEventListener('resize', onScroll);
     update();
 })();
+
+// Mobile-only: iOS Safari only triggers :active on non-link elements once a
+// touchstart listener exists somewhere in the document. This unlocks the
+// card tap-feedback (:active rings) defined in mobile-design.css.
+(function () {
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+    document.addEventListener('touchstart', function () {}, { passive: true });
+})();
+
+// Mobile-only Services card blur-up: removes the blur/opacity placeholder
+// once each lazy-loaded photo actually finishes fetching.
+(function () {
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+
+    document.querySelectorAll('.services-card img').forEach(function (img) {
+        if (img.complete && img.naturalWidth > 0) {
+            img.classList.add('is-loaded');
+        } else {
+            img.addEventListener('load', function () { img.classList.add('is-loaded'); }, { once: true });
+        }
+    });
+})();
+
+// Mobile-only section-entrance bounce — adds a one-time overshoot-settle
+// class to each major section the first time it scrolls into view.
+(function () {
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+    if (!('IntersectionObserver' in window)) return;
+
+    var ids = ['about', 'services', 'why', 'plans', 'portfolio', 'partnership', 'contact'];
+    var io = new IntersectionObserver(function (entries, obs) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('mobile-section-bounce-in');
+                obs.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0, rootMargin: '0px 0px -10% 0px' });
+
+    ids.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) io.observe(el);
+    });
+})();
