@@ -9,7 +9,8 @@
 // fallback to that class) and drives a scroll-linked background-position
 // shift in its place. Everywhere else, fixed attachment is left untouched.
 (function () {
-    var isIOS = /iP(hone|od|ad)/.test(navigator.platform)
+    var isIOS = /iP(hone|od|ad)/.test(navigator.platform || '')
+        || /iP(hone|od|ad)/.test(navigator.userAgent || '')
         || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     if (!isIOS) return;
 
