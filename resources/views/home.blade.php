@@ -847,11 +847,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- ============================================================
      PORTFOLIO SECTION
      ============================================================ --}}
-<section id="portfolio" class="py-28 relative overflow-hidden" style="background:linear-gradient(160deg,#241F1A 0%,#332A21 55%,#241F1A 100%);">
-    {{-- Ambient orbs — brighter than the light-section versions so the glow still reads against the dark backdrop --}}
-    <div class="hero-orb" style="width:580px;height:580px;top:-160px;left:-140px;background:radial-gradient(circle,rgba(201,168,76,0.18) 0%,transparent 70%);filter:blur(70px);animation:orb-drift 20s ease-in-out infinite;"></div>
+<section id="portfolio" class="py-28 relative overflow-hidden" style="background:linear-gradient(160deg,#FFFFFF 0%,#F7F3EA 55%,#FFFFFF 100%);">
+    {{-- Ambient orbs — softened for the light backdrop --}}
+    <div class="hero-orb" style="width:580px;height:580px;top:-160px;left:-140px;background:radial-gradient(circle,rgba(201,168,76,0.14) 0%,transparent 70%);filter:blur(70px);animation:orb-drift 20s ease-in-out infinite;"></div>
     <div class="hero-orb" style="width:480px;height:480px;bottom:-120px;right:-100px;background:radial-gradient(circle,rgba(42,157,143,0.10) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 16s ease-in-out infinite reverse 4s;"></div>
-    <div class="absolute inset-0 pointer-events-none" style="opacity:0.5;background-image:radial-gradient(circle,rgba(255,255,255,0.045) 1px,transparent 1px);background-size:28px 28px;"></div>
+    <div class="absolute inset-0 pointer-events-none" style="opacity:0.5;background-image:radial-gradient(circle,rgba(21,32,44,0.045) 1px,transparent 1px);background-size:28px 28px;"></div>
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
 
@@ -866,31 +866,31 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         {{-- Dark glass panel — heading sits inside it, project cards
              float over its bottom edge (overlap via negative margin on the
              card grid below, rather than absolute positioning). --}}
-        <div id="portfolio-panel" class="rounded-3xl relative text-center overflow-hidden px-6 sm:px-12 pt-16 pb-28" style="background:linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.015));border:1px solid rgba(201,168,76,0.16);">
-            <div class="hero-orb" style="width:420px;height:420px;top:-120px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,0.20) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 20s ease-in-out infinite;"></div>
-            <div class="hero-orb" style="width:360px;height:360px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.18) 0%,transparent 70%);filter:blur(54px);animation:orb-drift 18s ease-in-out infinite reverse 3s;"></div>
+        <div id="portfolio-panel" class="rounded-3xl relative text-center overflow-hidden px-6 sm:px-12 pt-16 pb-28" style="background:linear-gradient(135deg,#FFFFFF,#FBF8F1);border:1px solid rgba(201,168,76,0.25);box-shadow:0 20px 50px rgba(21,32,44,0.08);">
+            <div class="hero-orb" style="width:420px;height:420px;top:-120px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,0.18) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 20s ease-in-out infinite;"></div>
+            <div class="hero-orb" style="width:360px;height:360px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.14) 0%,transparent 70%);filter:blur(54px);animation:orb-drift 18s ease-in-out infinite reverse 3s;"></div>
 
             <div class="relative" style="z-index:1;">
-                <span id="portfolio-kicker" class="inline-block text-sm font-semibold tracking-widest uppercase mb-3" style="color:#5EC9BB;">Our Work</span>
-                <h2 id="portfolio-heading" class="font-display font-bold" style="color:#FFFFFF;font-size:clamp(1.875rem,4vw,2.75rem);">Featured Projects</h2>
-                <p id="portfolio-subtitle" class="text-base mt-3 max-w-xl mx-auto" style="color:rgba(255,255,255,0.62);">A selection of websites we've built for ministries, churches, and organizations.</p>
+                <span id="portfolio-kicker" class="inline-block text-sm font-semibold tracking-widest uppercase mb-3" style="color:#2A9D8F;">Our Work</span>
+                <h2 id="portfolio-heading" class="font-display font-bold" style="color:#15202C;font-size:clamp(1.875rem,4vw,2.75rem);">Featured Projects</h2>
+                <p id="portfolio-subtitle" class="text-base mt-3 max-w-xl mx-auto" style="color:rgba(21,32,44,0.62);">A selection of websites we've built for ministries, churches, and organizations.</p>
             </div>
         </div>
 
         <div id="portfolio-cards" class="relative grid grid-cols-1 sm:grid-cols-3 gap-6 px-2 sm:px-6" style="margin-top:-72px;z-index:2;">
             @foreach ($portfolioProjects as $project)
                 @php $hasLink = !empty($project['url']); @endphp
-                <div class="portfolio-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1.5" style="background:linear-gradient(160deg,#4A3C2C,#382D21);border:1px solid rgba(201,168,76,0.22);box-shadow:0 25px 60px rgba(0,0,0,0.35);">
+                <div class="portfolio-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1.5" style="background:#FFFFFF;border:1px solid rgba(201,168,76,0.22);box-shadow:0 20px 45px rgba(21,32,44,0.10);">
                     @if ($hasLink)
                         <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="block">
                     @endif
-                        <div class="relative overflow-hidden flex items-center justify-center" style="height:200px;background:#3A2F22;">
+                        <div class="relative overflow-hidden flex items-center justify-center" style="height:200px;background:#F4EFE3;">
                             @if (!empty($project['image']))
                                 {{-- contain (not cover) — these are wide desktop screenshots;
                                      cover here was zooming in ~6x and cropping the headline text --}}
                                 <img src="@assetv($project['image'])" alt="{{ $project['title'] }}" class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105" loading="lazy" decoding="async">
                             @else
-                                <svg class="w-10 h-10" style="color:rgba(201,168,76,0.55);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 3l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                                <svg class="w-10 h-10" style="color:rgba(201,168,76,0.65);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 3l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
                             @endif
                             @if ($hasLink)
                             {{-- Hover arrow badge — mirrors the services-card hover affordance --}}
@@ -901,8 +901,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         </div>
                         <div class="px-5 py-5 text-left">
                             <span class="text-xs font-semibold tracking-widest uppercase" style="color:#C9A84C;">{{ $project['num'] }}</span>
-                            <h4 class="font-bold text-lg mt-1" style="color:#FFFFFF;">{{ $project['title'] }}</h4>
-                            <p class="text-sm mt-0.5" style="color:rgba(255,255,255,0.55);">{{ $project['category'] }}</p>
+                            <h4 class="font-bold text-lg mt-1" style="color:#15202C;">{{ $project['title'] }}</h4>
+                            <p class="text-sm mt-0.5" style="color:rgba(21,32,44,0.55);">{{ $project['category'] }}</p>
                         </div>
                     @if ($hasLink)
                         </a>
@@ -915,7 +915,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
              once, so this is purely visual, not a functioning carousel. --}}
         <div class="flex items-center justify-center gap-2 mt-10">
             @foreach ($portfolioProjects as $project)
-                <span class="rounded-full transition-all duration-300" style="height:8px;width:{{ $loop->index === 1 ? '22px' : '8px' }};background:{{ $loop->index === 1 ? '#C9A84C' : 'rgba(255,255,255,0.20)' }};"></span>
+                <span class="rounded-full transition-all duration-300" style="height:8px;width:{{ $loop->index === 1 ? '22px' : '8px' }};background:{{ $loop->index === 1 ? '#C9A84C' : 'rgba(21,32,44,0.18)' }};"></span>
             @endforeach
         </div>
 
