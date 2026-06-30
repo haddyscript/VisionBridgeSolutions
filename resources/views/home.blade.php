@@ -473,9 +473,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      divider: the photo stays pinned to the viewport (background-attachment:
      fixed, like the site's own footer) while the page content scrolls
      past it. --}}
-<div class="relative" style="height:600px;overflow:hidden;background-image:url('@assetv('image/parallax-bg3-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 40%;" aria-hidden="true">
-    <div class="relative h-full flex items-center justify-center">
-        <div class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
+<div class="relative" style="height:600px;overflow:hidden;background-image:url('@assetv('image/parallax-bg3-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 40%;">
+    {{-- Dark gradient so the overlay quote stays readable over the bright photo --}}
+    <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
+    <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
+        <div class="bridge-cable-divider mb-8" aria-hidden="true">{!! $bridgeCableDivider !!}</div>
+        <p class="font-extrabold mb-5" style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.3;color:#FFFFFF;max-width:820px;">&ldquo;A bridge isn&rsquo;t just steel and cable &mdash; it&rsquo;s the promise that two sides will meet.&rdquo;</p>
+        <div style="width:48px;height:1.5px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);margin-bottom:1rem;"></div>
+        <span class="text-sm font-semibold tracking-widest uppercase" style="color:#C9A84C;">VisionBridge Solutions</span>
     </div>
 </div>
 
