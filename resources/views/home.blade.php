@@ -473,7 +473,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      divider: the photo stays pinned to the viewport (background-attachment:
      fixed, like the site's own footer) while the page content scrolls
      past it. --}}
-<div class="relative" style="height:600px;overflow:hidden;background-image:url('@assetv('image/parallax-bg3-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 40%;">
+<div class="relative parallax-divider" style="height:600px;overflow:hidden;background-image:url('@assetv('image/parallax-bg3-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 40%;">
     {{-- Dark gradient so the overlay quote stays readable over the bright photo --}}
     <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
@@ -564,7 +564,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      dividers: the photo stays pinned to the viewport (background-attachment:
      fixed, like the site's own footer) while the page content scrolls
      past it. --}}
-<div class="relative" style="height:600px;overflow:hidden;background-image:url('@assetv('image/parallax-bg4-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 40%;">
+<div class="relative parallax-divider" style="height:600px;overflow:hidden;background-image:url('@assetv('image/parallax-bg4-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 40%;">
     {{-- Dark gradient so the overlay text/button stay readable over the bright photo --}}
     <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
@@ -654,7 +654,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      dividers: the photo stays pinned to the viewport (background-attachment:
      fixed, like the site's own footer) while the page content scrolls
      past it. --}}
-<div class="relative" style="height:600px;overflow:hidden;background-image:url('@assetv('image/parallax-bg5-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 40%;">
+<div class="relative parallax-divider" style="height:600px;overflow:hidden;background-image:url('@assetv('image/parallax-bg5-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 40%;">
     {{-- Dark gradient so the overlay text/button stay readable over the bright photo --}}
     <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
@@ -835,7 +835,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      "fixed background" parallax: it stays pinned to the viewport (same
      technique the site's own footer uses) while the divider/page content
      scrolls past it, instead of moving with the page like a normal image. --}}
-<div class="relative" style="height:600px;overflow:hidden;background-image:url('@assetv('image/parallax-bg2-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 45%;">
+<div class="relative parallax-divider" style="height:600px;overflow:hidden;background-image:url('@assetv('image/parallax-bg2-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 45%;">
     {{-- Dark gradient so the overlay quote stays readable over the bright photo --}}
     <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">

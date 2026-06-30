@@ -75,4 +75,13 @@
     #mobile-menu-links {
         padding-bottom: 16px !important;
     }
+
+    /* Parallax dividers — background-attachment:fixed is broken/ignored on
+       iOS Safari, so the dramatic bridge-photo dividers render flat on
+       phones. mobile-design.js drives background-position on scroll
+       instead; this just switches attachment to scroll so that works. */
+    .parallax-divider {
+        background-attachment: scroll !important;
+        will-change: background-position;
+    }
 }

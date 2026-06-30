@@ -1925,5 +1925,7 @@
 
     @yield('scripts')
 
+    <script src="@assetv('mobile-design.js')"></script>
+
 </body>
 </html>
