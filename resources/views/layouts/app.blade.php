@@ -465,6 +465,7 @@
         }
         .plan-cta-btn:hover {
             color: #15202C !important;
+            box-shadow: inset 0 0 0 2px rgba(21,32,44,0.18), 0 16px 32px rgba(21,32,44,0.16) !important;
         }
         .plan-cta-btn .plan-cta-content {
             position: relative;
