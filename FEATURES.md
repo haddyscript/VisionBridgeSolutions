@@ -210,7 +210,7 @@ The boss delivered the **CLIENT WEBSITE DEVELOPMENT & WEBSITE CARE PLAN MASTER A
 | Step 2 — Create Client Account | **Done** | Existing registration flow | No change needed |
 | Step 3 — Verify Email | **Done** | Existing email verification | No change needed |
 | Step 6 — Select Website Care Plan | **Done** | `CarePlanAgreementController` + care plan selection view | Logic exists; position in sequence changes |
-| Steps 8–10 — Read PDF + Checkboxes + Sign | Partial | `ServiceAgreementController` + PDF upload support + signature flow | PDF iframe viewer, typed name, drawn signature, SHA-256 hash, audit trail all exist; checkboxes need adding |
+| Steps 8–10 — Read PDF + Checkboxes + Sign | **Done** | `ServiceAgreementController` + PDF upload support + signature flow | PDF iframe viewer (70vh), 5 pre-signature acknowledgment checkboxes (all must be checked to unlock signing), Organization Name, Authorized Representative, Title, drawn signature, SHA-256 hash, full audit trail |
 | Step 13 — Welcome to Client Portal | **Done** | First-visit welcome banner (`welcomed_at` on `users`) | No change needed |
 
 **Needs significant rework or is entirely new:**
@@ -228,6 +228,5 @@ The boss delivered the **CLIENT WEBSITE DEVELOPMENT & WEBSITE CARE PLAN MASTER A
 | Middleware / step tracker | **Done** | `users.onboarding_step` tinyint (default 1) added via migration with backfill. `EnsureOnboardingComplete` now gates on step value: `< 6` → questionnaire, `< 8` → care plan, `< 13` → agreement. Each completing controller advances the step: questionnaire → 6, care plan → 8, signing → 13. |
 
 **Decision still pending:**
-- Step 7 — Agreement Summary screen design (what fields to show, what layout)
 - Step 12 — Payment: requires pre-set pricing model or a new trigger independent of manual admin quoting
 - Do existing clients who already signed the old Service Agreement need to re-sign the Master Agreement?
