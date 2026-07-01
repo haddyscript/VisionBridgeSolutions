@@ -57,6 +57,25 @@ class PartnerPayoutController extends Controller
         return back()->with('status', 'FaithStack payout rate updated.');
     }
 
+    public function recalculateAll()
+    {
+        $rate = (float) AppSetting::get('faithstack_percentage', 0);
+
+        if ($rate <= 0) {
+            return back()->with('error', 'No FaithStack rate set — set a rate first before recalculating.');
+        }
+
+        $count = 0;
+        PartnerPayout::each(function (PartnerPayout $payout) use ($rate, &$count) {
+            $payout->update([
+                'faithstack_amount' => (int) round($payout->client_amount * $rate / 100),
+            ]);
+            $count++;
+        });
+
+        return back()->with('status', "Recalculated FaithStack amount for {$count} ".str($count)->plural('row').'.');
+    }
+
     public function update(Request $request, PartnerPayout $partnerPayout)
     {
         // Still inside its 7-day verification window — block release even if
