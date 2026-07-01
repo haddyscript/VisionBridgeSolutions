@@ -24,7 +24,7 @@
                 <p class="text-sm text-gold-dark font-medium">No rate set — amounts entered manually per row.</p>
             @endif
         </div>
-        <form method="POST" action="{{ route('partner-payouts.set-rate') }}" class="flex flex-wrap items-end gap-3">
+        <form method="POST" action="{{ route('admin.partner-payouts.set-rate') }}" class="flex flex-wrap items-end gap-3">
             @csrf
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Set Rate (%)</label>
@@ -120,7 +120,7 @@
                         </td>
                         <td class="px-5 py-3.5 text-right">
                             @if ($payout->isReady() || $payout->isFlagged())
-                                <form method="POST" action="{{ route('partner-payouts.update', $payout) }}" class="flex items-center justify-end gap-2"
+                                <form method="POST" action="{{ route('admin.partner-payouts.update', $payout) }}" class="flex items-center justify-end gap-2"
                                       onsubmit="return confirm('{{ $payout->isFlagged() ? 'This payout was flagged ('.$payout->flag_reason.'). Send FaithStack anyway?' : 'Confirm you have sent FaithStack this amount?' }}')">
                                     @csrf
                                     @method('PATCH')

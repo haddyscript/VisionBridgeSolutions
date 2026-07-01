@@ -51,7 +51,7 @@
 
 {{-- Search --}}
 <div class="mb-4">
-    <form method="GET" action="{{ route('clients.index') }}" class="flex gap-2">
+    <form method="GET" action="{{ route('admin.clients.index') }}" class="flex gap-2">
         <input type="text" name="search" value="{{ $search }}" placeholder="Search by name or email…"
             class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-800 dark:text-white">
         <button type="submit"
@@ -59,7 +59,7 @@
             Search
         </button>
         @if ($search)
-            <a href="{{ route('clients.index') }}"
+            <a href="{{ route('admin.clients.index') }}"
                 class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                 Clear
             </a>
