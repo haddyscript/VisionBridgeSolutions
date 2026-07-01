@@ -67,6 +67,8 @@ class CarePlanAgreementController extends Controller
             ]);
         });
 
+        $request->user()->update(['onboarding_step' => 8]);
+
         return redirect()->route('portal.agreement.show')
             ->with('status', 'Care Plan selected — next, please review and sign your Service Agreement.');
     }

@@ -9,11 +9,24 @@ use Symfony\Component\HttpFoundation\Response;
 class EnsureOnboardingComplete
 {
     /**
-     * No project work may begin until the client has completed the onboarding
-     * questionnaire (business information), then agreed to a Website Care Plan,
-     * then digitally signed the Master Agreement. Admins are exempt — this
-     * only gates clients. Suspended projects are blocked entirely, regardless
-     * of onboarding progress — see EnsureProjectNotSuspended, which runs first.
+     * 13-step onboarding gate. Steps and their minimum value to pass each gate:
+     *
+     *   1  Welcome landing (public, no auth)
+     *   2  Create account
+     *   3  Verify email
+     *   4  Business information (questionnaire) ← GATE 1 (step < 6 → questionnaire)
+     *   5  Website Package          [pending Thursday meeting]
+     *   6  Care Plan selection      ← GATE 2 (step < 8 → care plan)
+     *   7  Agreement Summary        [pending Thursday meeting]
+     *   8  Read Master Agreement
+     *   9  Acknowledgment checkboxes
+     *  10  Electronic Signature     ← GATE 3 (step < 13 → agreement)
+     *  11  Billing Authorization    [pending Thursday meeting]
+     *  12  Payment                  [pending Thursday meeting]
+     *  13  Portal access granted
+     *
+     * Admins are exempt. Suspended projects are blocked by EnsureProjectNotSuspended
+     * which runs before this middleware.
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -21,15 +34,17 @@ class EnsureOnboardingComplete
         $project = $user?->projects()->first();
 
         if ($user && ! $user->isAdmin() && $project) {
-            if (! $project->hasCompletedQuestionnaire()) {
+            $step = $user->onboarding_step ?? 1;
+
+            if ($step < 6) {
                 return redirect()->route('portal.questionnaire.show');
             }
 
-            if (! $project->hasAgreedToCarePlan()) {
+            if ($step < 8) {
                 return redirect()->route('portal.care-plan-agreement.show');
             }
 
-            if (! $project->hasSignedCurrentAgreement()) {
+            if ($step < 13) {
                 return redirect()->route('portal.agreement.show');
             }
         }

@@ -15,10 +15,6 @@ class ProjectQuestionnaireController extends Controller
 
         abort_unless($project, 404);
 
-        if (! $project->hasSignedCurrentAgreement()) {
-            return redirect()->route('portal.agreement.show');
-        }
-
         if ($project->hasCompletedQuestionnaire()) {
             return redirect()->route('portal.dashboard');
         }
@@ -34,10 +30,6 @@ class ProjectQuestionnaireController extends Controller
         $project = $request->user()->projects()->first();
 
         abort_unless($project, 404);
-
-        if (! $project->hasSignedCurrentAgreement()) {
-            return redirect()->route('portal.agreement.show');
-        }
 
         $validated = $request->validate([
             'organization_name' => ['required', 'string', 'max:255'],
@@ -72,6 +64,9 @@ class ProjectQuestionnaireController extends Controller
 
         Mail::to(config('mail.admin_address'))->send(new QuestionnaireCompletedMail($questionnaire));
 
-        return redirect()->route('portal.dashboard')->with('status', 'Onboarding questionnaire submitted — thank you!');
+        $request->user()->update(['onboarding_step' => 6]);
+
+        return redirect()->route('portal.care-plan-agreement.show')
+            ->with('status', 'Business information saved — next, select your Website Care Plan.');
     }
 }

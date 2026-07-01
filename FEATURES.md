@@ -224,7 +224,7 @@ The boss delivered the **CLIENT WEBSITE DEVELOPMENT & WEBSITE CARE PLAN MASTER A
 | Step 9 — Acknowledgment checkboxes | Partial | Current signing flow has typed name + drawn signature but no explicit "I have read and understand…" checkbox confirmations; checkboxes must gate the signature step |
 | Step 11 — Billing Authorization | New | Distinct from payment — likely a stored payment method setup (SetupIntent) before the actual charge; no equivalent exists in the current flow |
 | Step 12 — Payment | Structural change | Deposit payment currently requires admin to manually set a price first (`ProjectController::store` triggers it); making it a self-serve onboarding step requires pre-set pricing or a new trigger |
-| Middleware / step tracker | Full rewrite | `EnsureOnboardingComplete` currently checks 3 boolean conditions; a 13-step flow needs a proper step-state model (likely a `users.onboarding_step` int column or a dedicated `onboarding_states` table) |
+| Middleware / step tracker | **Done** | `users.onboarding_step` tinyint (default 1) added via migration with backfill. `EnsureOnboardingComplete` now gates on step value: `< 6` → questionnaire, `< 8` → care plan, `< 13` → agreement. Each completing controller advances the step: questionnaire → 6, care plan → 8, signing → 13. Steps 5, 7, 11, 12 reserved for Thursday meeting decisions. |
 
 **Decision pending at Thursday meeting:**
 - What does "Select Website Package" (step 5) mean in practice — a fixed price tier or something else?
