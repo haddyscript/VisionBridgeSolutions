@@ -73,7 +73,7 @@ class PartnerPayoutController extends Controller
             $count++;
         });
 
-        return back()->with('status', "Recalculated FaithStack amount for {$count} ".str($count)->plural('row').'.');
+        return back()->with('status', "Recalculated FaithStack amount for {$count} ".($count === 1 ? 'row' : 'rows').'.');
     }
 
     public function update(Request $request, PartnerPayout $partnerPayout)
