@@ -26,110 +26,151 @@
 </a>
 
 {{-- Client + project header --}}
-<div id="header-card" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+<div id="header-card" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+
+    {{-- Suspension banner --}}
     @if ($project->isSuspended())
-        <div class="flex items-center justify-between gap-3 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 px-4 py-3 mb-5">
-            <p class="text-sm text-red-600">
-                <strong>Suspended for non-payment</strong> — portal access has been blocked since
-                {{ $project->suspended_at->format('M j, Y \a\t g:i A') }}.
+        <div class="flex items-center justify-between gap-3 bg-red-50 dark:bg-red-500/10 border-b border-red-200 dark:border-red-500/20 px-6 py-3">
+            <p class="text-sm text-red-600 dark:text-red-400">
+                <strong>Suspended for non-payment</strong> — portal access blocked since {{ $project->suspended_at->format('M j, Y \a\t g:i A') }}.
             </p>
             <form method="POST" action="{{ route('admin.projects.restore-access', $project) }}" data-ajax-target="header-card">
                 @csrf
-                <button type="submit" class="shrink-0 bg-white dark:bg-gray-800 border border-red-300 text-red-600 text-xs font-semibold px-3 py-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors">
-                    Restore Access Manually
+                <button type="submit" class="shrink-0 border border-red-300 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors">
+                    Restore Access
                 </button>
             </form>
         </div>
     @endif
 
-    <div class="flex flex-wrap items-start justify-between gap-4 mb-5">
-        <div>
-            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">Client</p>
-            <p class="font-semibold text-navy dark:text-white">{{ $project->user->name }}</p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $project->user->email }}</p>
-            <button type="button" onclick="openResetPasswordModal()" class="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3 py-2 rounded-lg transition-colors">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                Reset Password to "admin123"
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-0 divide-y lg:divide-y-0 lg:divide-x divide-gray-100 dark:divide-gray-700">
+
+        {{-- Left: Client identity --}}
+        <div class="p-6">
+            <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Client</p>
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
+                    style="background:#1B2A4A20; color:#1B2A4A;">
+                    {{ strtoupper(substr($project->user->name, 0, 1)) }}
+                </div>
+                <div>
+                    <p class="font-semibold text-navy dark:text-white">{{ $project->user->name }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $project->user->email }}</p>
+                    @if ($project->user->phone)
+                        <p class="text-sm text-gray-400 dark:text-gray-500">{{ $project->user->phone }}</p>
+                    @endif
+                </div>
+            </div>
+            <button type="button" onclick="openResetPasswordModal()"
+                class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:text-navy dark:hover:text-white bg-white dark:bg-gray-800 px-3 py-1.5 rounded-lg transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+                Reset Client Password
             </button>
         </div>
 
-        <form method="POST" action="{{ route('admin.projects.update', $project) }}" class="flex items-center gap-2" data-ajax-target="header-card">
-            @csrf
-            @method('PATCH')
-            <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Status</label>
-            <select name="status" onchange="this.form.requestSubmit()"
-                    class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                @foreach ($statusLabels as $value => $label)
-                    <option value="{{ $value }}" {{ $project->status === $value ? 'selected' : '' }}>{{ $label }}</option>
-                @endforeach
-            </select>
-        </form>
-    </div>
+        {{-- Right: Project settings (unified form) --}}
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+                <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">Project Settings</p>
+                {{-- Status: auto-saves on change, stays its own form --}}
+                <form method="POST" action="{{ route('admin.projects.update', $project) }}" data-ajax-target="header-card">
+                    @csrf
+                    @method('PATCH')
+                    <select name="status" onchange="this.form.requestSubmit()"
+                        class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                        @foreach ($statusLabels as $value => $label)
+                            <option value="{{ $value }}" {{ $project->status === $value ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </form>
+            </div>
 
-    <form method="POST" action="{{ route('admin.projects.update', $project) }}" class="flex items-center gap-2" data-ajax-target="header-card">
-        @csrf
-        @method('PATCH')
-        <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 shrink-0">Preview URL</label>
-        <input type="url" name="preview_url" value="{{ old('preview_url', $project->preview_url) }}" placeholder="https://staging.example.com"
-               class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-        <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-            Save
-        </button>
-    </form>
-
-    <form method="POST" action="{{ route('admin.projects.update', $project) }}" class="flex items-center gap-2 mt-3" data-ajax-target="header-card">
-        @csrf
-        @method('PATCH')
-        <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 shrink-0">Total Project Price</label>
-        <input type="number" name="total_price" step="0.01" min="1" placeholder="e.g. 2500.00"
-               value="{{ old('total_price', $project->total_price !== null ? $project->total_price / 100 : '') }}"
-               class="w-36 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-        <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-            Save
-        </button>
-        @if ($project->total_price === null)
-            <span class="text-xs text-gray-400 dark:text-gray-500">Setting this creates the initial 50% deposit request.</span>
-        @elseif ($project->depositPayment())
-            <span class="text-xs text-gray-400 dark:text-gray-500">Deposit: {{ $project->depositPayment()->formattedAmount() }} ({{ $project->depositPayment()->isPaid() ? 'paid' : 'pending' }})</span>
-        @endif
-    </form>
-
-    <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">
-        <span>
-            Project Progress
-            @if ($project->milestones->isNotEmpty() && ! $project->isProgressOverridden())
-                <span class="text-xs text-gray-400 dark:text-gray-500">({{ $project->milestones->where('status', 'completed')->count() }} of {{ $project->milestones->count() }} milestones completed)</span>
-            @elseif ($project->isProgressOverridden())
-                <span class="text-xs text-gold-dark">(manually set)</span>
-            @endif
-        </span>
-        <span class="font-semibold text-navy dark:text-white">{{ $project->progressPercent() }}%</span>
-    </div>
-    <div class="w-full h-2 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden mb-3">
-        <div class="h-full bg-gold rounded-full" style="width: {{ $project->progressPercent() }}%"></div>
-    </div>
-
-    <div class="flex items-center gap-2">
-        <form method="POST" action="{{ route('admin.projects.update', $project) }}" class="flex items-center gap-2" data-ajax-target="header-card">
-            @csrf
-            @method('PATCH')
-            <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 shrink-0">Override Progress %</label>
-            <input type="number" name="progress_override" min="0" max="100" placeholder="auto" value="{{ old('progress_override', $project->progress_override) }}"
-                   class="w-24 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-            <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-                Save
-            </button>
-        </form>
-        @if ($project->isProgressOverridden())
-            <form method="POST" action="{{ route('admin.projects.update', $project) }}" data-ajax-target="header-card">
+            {{-- Unified settings form --}}
+            <form method="POST" action="{{ route('admin.projects.update', $project) }}" data-ajax-target="header-card" class="space-y-4">
                 @csrf
                 @method('PATCH')
-                <input type="hidden" name="progress_override" value="">
-                <button type="submit" class="shrink-0 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white px-3 py-2 transition-colors">
-                    Clear (use auto)
-                </button>
+
+                {{-- Preview URL --}}
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Preview URL</label>
+                    <input type="url" name="preview_url" value="{{ old('preview_url', $project->preview_url) }}"
+                        placeholder="https://staging.example.com"
+                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Shown to client as a "View Live Preview" button on their dashboard.</p>
+                </div>
+
+                {{-- Total Project Price --}}
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Total Project Price ($)</label>
+                    <input type="number" name="total_price" step="0.01" min="1" placeholder="e.g. 2500.00"
+                        value="{{ old('total_price', $project->total_price !== null ? $project->total_price / 100 : '') }}"
+                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                        @if ($project->total_price === null)
+                            Setting this for the first time creates the initial 50% deposit request and emails the client their quote.
+                        @elseif ($project->depositPayment())
+                            Deposit: <strong>{{ $project->depositPayment()->formattedAmount() }}</strong> — {{ $project->depositPayment()->isPaid() ? 'paid' : 'pending' }}.
+                        @endif
+                    </p>
+                </div>
+
+                {{-- Progress bar + override, grouped together --}}
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400">
+                            Project Progress
+                            @if ($project->milestones->isNotEmpty() && ! $project->isProgressOverridden())
+                                <span class="text-gray-400">({{ $project->milestones->where('status', 'completed')->count() }}/{{ $project->milestones->count() }} milestones)</span>
+                            @elseif ($project->isProgressOverridden())
+                                <span class="text-gold-dark">(manually set)</span>
+                            @endif
+                        </label>
+                        <span class="text-sm font-bold text-navy dark:text-white">{{ $project->progressPercent() }}%</span>
+                    </div>
+                    <div class="w-full h-3 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden mb-3">
+                        <div class="h-full bg-gold rounded-full transition-all duration-500" style="width: {{ $project->progressPercent() }}%"></div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="relative flex-1">
+                            <input type="number" name="progress_override" min="0" max="100"
+                                placeholder="Auto (from milestones)"
+                                value="{{ old('progress_override', $project->progress_override) }}"
+                                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                        </div>
+                        @if ($project->isProgressOverridden())
+                            <button type="button"
+                                onclick="document.getElementById('clear-override-form').requestSubmit()"
+                                class="shrink-0 text-xs font-medium text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 border border-gray-200 dark:border-gray-600 px-3 py-2 rounded-lg transition-colors">
+                                Clear override
+                            </button>
+                        @endif
+                    </div>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Leave blank to calculate automatically from milestone completion.</p>
+                </div>
+
+                {{-- Unified save --}}
+                <div class="flex justify-end pt-1">
+                    <button type="submit"
+                        class="inline-flex items-center gap-2 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Save Project Settings
+                    </button>
+                </div>
             </form>
-        @endif
+
+            {{-- Hidden form for clearing the progress override --}}
+            @if ($project->isProgressOverridden())
+                <form id="clear-override-form" method="POST" action="{{ route('admin.projects.update', $project) }}" data-ajax-target="header-card" class="hidden">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="progress_override" value="">
+                </form>
+            @endif
+        </div>
     </div>
 </div>
 
