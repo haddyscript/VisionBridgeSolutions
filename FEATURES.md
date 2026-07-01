@@ -217,8 +217,8 @@ The boss delivered the **CLIENT WEBSITE DEVELOPMENT & WEBSITE CARE PLAN MASTER A
 
 | New Step | Status | What's Required |
 |---|---|---|
-| Step 1 — Welcome landing (pre-account) | New | A branded welcome/intro screen shown before the user creates an account — doesn't exist today |
-| Step 4 — Complete Business Information | Structural move | Onboarding Questionnaire currently runs *after* signing; needs to move *before* the agreement steps and possibly slim down to just org/business info |
+| Step 1 — Welcome landing (pre-account) | **Done** | `/onboarding/start` → `resources/views/onboarding/welcome.blade.php` using `layouts.auth`; shows all 12 upcoming steps, "Get Started" CTA → register, "Sign In" secondary link; redirects to portal if already logged in |
+| Step 4 — Complete Business Information | **Done** | `EnsureOnboardingComplete` middleware gate order changed: questionnaire now runs **first** (before care plan and service agreement), so clients fill in business information before selecting a care plan or signing |
 | Step 5 — Select Website Package | New | No package selection step exists; unclear if this means a pricing tier, a project type, or something else — confirm at Thursday meeting |
 | Step 7 — Agreement Summary | New | Intermediate screen summarizing what the client is about to sign (care plan chosen, package selected, etc.) before the PDF loads |
 | Step 9 — Acknowledgment checkboxes | Partial | Current signing flow has typed name + drawn signature but no explicit "I have read and understand…" checkbox confirmations; checkboxes must gate the signature step |

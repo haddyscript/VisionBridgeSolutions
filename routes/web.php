@@ -54,6 +54,13 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
+Route::get('/onboarding/start', function () {
+    if (auth()->check()) {
+        return redirect()->route('portal.dashboard');
+    }
+    return view('onboarding.welcome');
+})->name('onboarding.welcome');
+
 Route::get('/get-started', [IntakeController::class, 'create'])->name('intake.create');
 Route::post('/get-started', [IntakeController::class, 'store'])->name('intake.store');
 
