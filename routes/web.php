@@ -159,6 +159,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/', AdminDashboardController::class)->name('dashboard');
 
     Route::get('/clients', [AdminClientController::class, 'index'])->name('clients.index');
+    Route::patch('/clients/{client}', [AdminClientController::class, 'update'])->name('clients.update');
 
     Route::get('/calendar', [AdminCalendarController::class, 'index'])->name('calendar');
     Route::post('/calendar/events', [AdminCalendarController::class, 'store'])->name('calendar.events.store');

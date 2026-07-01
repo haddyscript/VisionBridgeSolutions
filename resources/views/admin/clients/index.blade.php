@@ -149,6 +149,14 @@
                             {{-- Actions --}}
                             <td class="px-5 py-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
+                                    <button type="button"
+                                        onclick="openEditModal({{ $client->id }}, '{{ addslashes($client->name) }}', '{{ addslashes($client->email) }}', '{{ addslashes($client->phone ?? '') }}')"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gold text-navy text-xs font-semibold hover:bg-gold-dark transition-colors">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
+                                        Edit
+                                    </button>
                                     @if ($project)
                                         <a href="{{ route('admin.projects.show', $project) }}"
                                             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-navy text-white text-xs font-semibold hover:bg-navy-light transition-colors">
@@ -207,7 +215,74 @@
     @endif
 </div>
 
+{{-- Edit Client Modal --}}
+<div id="edit-client-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 hidden">
+    <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+
+        <div class="px-6 pt-6 pb-5" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
+            <button type="button" onclick="closeEditModal()" class="absolute top-4 right-4 text-white/40 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+            <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Admin</p>
+            <h2 class="font-display text-xl font-bold text-white">Edit Client Information</h2>
+        </div>
+
+        <form id="edit-client-form" method="POST" class="px-6 py-6 space-y-4">
+            @csrf
+            @method('PATCH')
+
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Full Name</label>
+                <input type="text" name="name" id="edit-name" required
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Email Address</label>
+                <input type="email" name="email" id="edit-email" required
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Phone Number <span class="text-gray-400">(optional)</span></label>
+                <input type="tel" name="phone" id="edit-phone"
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white"
+                    placeholder="(000) 000-0000">
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" onclick="closeEditModal()"
+                    class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="px-5 py-2 rounded-lg bg-gold hover:bg-gold-dark text-navy text-sm font-semibold transition-colors">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    const baseUrl = '{{ url('/admin/clients') }}';
+
+    function openEditModal(id, name, email, phone) {
+        document.getElementById('edit-name').value  = name;
+        document.getElementById('edit-email').value = email;
+        document.getElementById('edit-phone').value = phone;
+        document.getElementById('edit-client-form').action = baseUrl + '/' + id;
+        document.getElementById('edit-client-modal').classList.remove('hidden');
+    }
+
+    function closeEditModal() {
+        document.getElementById('edit-client-modal').classList.add('hidden');
+    }
+
+    document.getElementById('edit-client-modal').addEventListener('click', function (e) {
+        if (e.target === this) closeEditModal();
+    });
+
     // Lightweight Alpine-style toggle without requiring Alpine.js
     document.querySelectorAll('[x-data]').forEach(function (el) {
         let open = false;
