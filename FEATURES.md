@@ -229,4 +229,5 @@ The boss delivered the **CLIENT WEBSITE DEVELOPMENT & WEBSITE CARE PLAN MASTER A
 
 **Decision still pending:**
 - Step 12 — Payment: requires pre-set pricing model or a new trigger independent of manual admin quoting
-- Do existing clients who already signed the old Service Agreement need to re-sign the Master Agreement?
+
+**Resolved — no re-signing needed:** The system has not been introduced to any real clients yet — it is in staging/pre-launch. No signatures exist against the old agreement, so the Master Agreement PDF is a clean start with no migration concern.
