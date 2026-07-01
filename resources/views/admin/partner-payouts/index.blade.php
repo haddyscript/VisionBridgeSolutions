@@ -52,7 +52,7 @@
                     </button>
                     @if ($faithstackRate > 0)
                         <form method="POST" action="{{ route('admin.partner-payouts.recalculate') }}"
-                              onsubmit="return confirm('This will overwrite every existing FaithStack amount using the current {{ $faithstackRate }}% rate. Continue?')">
+                              onsubmit="return confirm('This will recalculate FaithStack amounts for all rows still verifying, using the current {{ $faithstackRate }}% rate. Continue?')">
                             @csrf
                             <button type="submit"
                                 class="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-gold hover:text-gold text-sm font-semibold rounded-lg transition-colors">

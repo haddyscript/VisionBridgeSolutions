@@ -66,7 +66,7 @@ class PartnerPayoutController extends Controller
         }
 
         $count = 0;
-        PartnerPayout::each(function (PartnerPayout $payout) use ($rate, &$count) {
+        PartnerPayout::where('status', 'pending')->each(function (PartnerPayout $payout) use ($rate, &$count) {
             $payout->update([
                 'faithstack_amount' => (int) round($payout->client_amount * $rate / 100),
             ]);
