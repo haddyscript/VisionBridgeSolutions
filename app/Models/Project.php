@@ -13,6 +13,7 @@ class Project extends Model
         'user_id',
         'name',
         'description',
+        'website_type',
         'preview_url',
         'status',
         'progress_override',

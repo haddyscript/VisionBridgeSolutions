@@ -15,8 +15,8 @@ class EnsureOnboardingComplete
      *   2  Create account
      *   3  Verify email
      *   4  Business information (questionnaire) ← GATE 1 (step < 6 → questionnaire)
-     *   5  Website Package          [pending Thursday meeting]
-     *   6  Care Plan selection      ← GATE 2 (step < 8 → care plan)
+     *   5  Select Website Type      ← GATE 2 (step < 7 → website-type)
+     *   6  Care Plan selection      ← GATE 3 (step < 8 → care plan)
      *   7  Agreement Summary        ← GATE 3 (step < 10 → summary)
      *   8  Read Master Agreement
      *   9  Acknowledgment checkboxes
@@ -38,6 +38,10 @@ class EnsureOnboardingComplete
 
             if ($step < 6) {
                 return redirect()->route('portal.questionnaire.show');
+            }
+
+            if ($step < 7) {
+                return redirect()->route('portal.website-type.show');
             }
 
             if ($step < 8) {

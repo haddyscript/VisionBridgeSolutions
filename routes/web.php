@@ -41,6 +41,7 @@ use App\Http\Controllers\Portal\ProjectQuestionnaireController as PortalProjectQ
 use App\Http\Controllers\Portal\ProjectRequestController as PortalProjectRequestController;
 use App\Http\Controllers\Portal\ProjectReviewController as PortalProjectReviewController;
 use App\Http\Controllers\Portal\ServiceAgreementController as PortalServiceAgreementController;
+use App\Http\Controllers\Portal\WebsiteTypeController as PortalWebsiteTypeController;
 use App\Http\Controllers\Portal\SubscriptionController as PortalSubscriptionController;
 use App\Http\Controllers\Portal\SuspendedController as PortalSuspendedController;
 use App\Http\Controllers\Portal\UploadController;
@@ -107,6 +108,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // onboarding.complete middleware below would redirect here in a loop.
     // Each controller enforces its own step's prerequisite (e.g. the
     // questionnaire redirects back to the agreement if it isn't signed yet).
+    Route::get('/portal/website-type', [PortalWebsiteTypeController::class, 'show'])->name('portal.website-type.show');
+    Route::post('/portal/website-type', [PortalWebsiteTypeController::class, 'store'])->name('portal.website-type.store');
+
     Route::get('/portal/care-plan-agreement', [PortalCarePlanAgreementController::class, 'show'])->name('portal.care-plan-agreement.show');
     Route::post('/portal/care-plan-agreement', [PortalCarePlanAgreementController::class, 'store'])->name('portal.care-plan-agreement.store');
 
