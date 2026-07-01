@@ -205,13 +205,13 @@ The boss delivered the **CLIENT WEBSITE DEVELOPMENT & WEBSITE CARE PLAN MASTER A
 
 **Already built — maps directly to new steps:**
 
-| New Step | Maps To | Notes |
-|---|---|---|
-| Step 2 — Create Client Account | Existing registration flow | No change needed |
-| Step 3 — Verify Email | Existing email verification | No change needed |
-| Step 6 — Select Website Care Plan | `CarePlanAgreementController` + care plan selection view | Logic exists; position in sequence changes |
-| Steps 8–10 — Read PDF + Checkboxes + Sign | `ServiceAgreementController` + PDF upload support + signature flow | PDF iframe viewer, typed name, drawn signature, SHA-256 hash, audit trail all exist; checkboxes need adding |
-| Step 13 — Welcome to Client Portal | First-visit welcome banner (`welcomed_at` on `users`) | No change needed |
+| New Step | Status | Maps To | Notes |
+|---|---|---|---|
+| Step 2 — Create Client Account | **Done** | Existing registration flow | No change needed |
+| Step 3 — Verify Email | **Done** | Existing email verification | No change needed |
+| Step 6 — Select Website Care Plan | **Done** | `CarePlanAgreementController` + care plan selection view | Logic exists; position in sequence changes |
+| Steps 8–10 — Read PDF + Checkboxes + Sign | Partial | `ServiceAgreementController` + PDF upload support + signature flow | PDF iframe viewer, typed name, drawn signature, SHA-256 hash, audit trail all exist; checkboxes need adding |
+| Step 13 — Welcome to Client Portal | **Done** | First-visit welcome banner (`welcomed_at` on `users`) | No change needed |
 
 **Needs significant rework or is entirely new:**
 
