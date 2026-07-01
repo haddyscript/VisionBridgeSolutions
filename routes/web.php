@@ -156,15 +156,20 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+
+    // ─── Dashboard ───────────────────────────────────────────────────────────
     Route::get('/', AdminDashboardController::class)->name('dashboard');
 
+    // ─── Clients ─────────────────────────────────────────────────────────────
     Route::get('/clients', [AdminClientController::class, 'index'])->name('clients.index');
     Route::patch('/clients/{client}', [AdminClientController::class, 'update'])->name('clients.update');
 
+    // ─── Calendar ────────────────────────────────────────────────────────────
     Route::get('/calendar', [AdminCalendarController::class, 'index'])->name('calendar');
     Route::post('/calendar/events', [AdminCalendarController::class, 'store'])->name('calendar.events.store');
     Route::delete('/calendar/events/{calendarEvent}', [AdminCalendarController::class, 'destroy'])->name('calendar.events.destroy');
 
+    // ─── Inbox ───────────────────────────────────────────────────────────────
     Route::get('/contact-messages', [AdminContactMessageController::class, 'index'])->name('contact-messages.index');
     Route::patch('/contact-messages/{contactMessage}/read', [AdminContactMessageController::class, 'toggleRead'])->name('contact-messages.toggle-read');
 
@@ -185,6 +190,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/project-requests/{projectRequest}', [AdminProjectRequestController::class, 'show'])->name('project-requests.show');
     Route::patch('/project-requests/{projectRequest}', [AdminProjectRequestController::class, 'update'])->name('project-requests.update');
 
+    // ─── Projects & Milestones ───────────────────────────────────────────────
     Route::get('/projects/{project}', [AdminProjectController::class, 'show'])->name('projects.show');
     Route::patch('/projects/{project}', [AdminProjectController::class, 'update'])->name('projects.update');
     Route::post('/projects/{project}/reset-client-password', [AdminProjectController::class, 'resetClientPassword'])->name('projects.reset-client-password');
@@ -194,10 +200,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/milestones/{milestone}', [AdminMilestoneController::class, 'update'])->name('milestones.update');
     Route::delete('/milestones/{milestone}', [AdminMilestoneController::class, 'destroy'])->name('milestones.destroy');
 
+    // ─── Files, Content & Revisions ──────────────────────────────────────────
+    Route::patch('/uploads/{upload}/approve', [UploadApprovalController::class, 'toggle'])->name('uploads.approve');
+    Route::patch('/uploads/{upload}/status', [UploadApprovalController::class, 'updateStatus'])->name('uploads.status');
+    Route::patch('/uploads/{upload}/reply', [UploadApprovalController::class, 'reply'])->name('uploads.reply');
+    Route::patch('/uploads/{upload}/dev-instructions', [UploadApprovalController::class, 'updateDevInstructions'])->name('uploads.dev-instructions');
+
     Route::get('/recommendations', [AdminRecommendationController::class, 'index'])->name('recommendations.index');
     Route::post('/projects/{project}/recommendations', [AdminRecommendationController::class, 'store'])->name('recommendations.store');
     Route::patch('/recommendations/{recommendation}', [AdminRecommendationController::class, 'update'])->name('recommendations.update');
 
+    // ─── Payments & Billing ──────────────────────────────────────────────────
     Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments.index');
     Route::post('/projects/{project}/payments', [AdminPaymentController::class, 'store'])->name('payments.store');
     Route::delete('/payments/{payment}', [AdminPaymentController::class, 'destroy'])->name('payments.destroy');
@@ -210,19 +223,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/partner-payouts', [AdminPartnerPayoutController::class, 'index'])->name('partner-payouts.index');
     Route::patch('/partner-payouts/{partnerPayout}', [AdminPartnerPayoutController::class, 'update'])->name('partner-payouts.update');
 
-    Route::get('/service-agreement', [AdminServiceAgreementController::class, 'index'])->name('service-agreement.index');
-    Route::post('/service-agreement', [AdminServiceAgreementController::class, 'store'])->name('service-agreement.store');
-    Route::get('/service-agreement/templates/{serviceAgreementTemplate}/download', [AdminServiceAgreementController::class, 'downloadTemplate'])->name('service-agreement.templates.download');
-
-    Route::patch('/uploads/{upload}/approve', [UploadApprovalController::class, 'toggle'])->name('uploads.approve');
-    Route::patch('/uploads/{upload}/status', [UploadApprovalController::class, 'updateStatus'])->name('uploads.status');
-    Route::patch('/uploads/{upload}/reply', [UploadApprovalController::class, 'reply'])->name('uploads.reply');
-    Route::patch('/uploads/{upload}/dev-instructions', [UploadApprovalController::class, 'updateDevInstructions'])->name('uploads.dev-instructions');
-
+    // ─── Settings ────────────────────────────────────────────────────────────
     Route::get('/care-plans', [AdminMaintenancePlanController::class, 'index'])->name('care-plans.index');
     Route::post('/care-plans', [AdminMaintenancePlanController::class, 'store'])->name('care-plans.store');
     Route::patch('/care-plans/{carePlan}', [AdminMaintenancePlanController::class, 'update'])->name('care-plans.update');
     Route::delete('/care-plans/{carePlan}', [AdminMaintenancePlanController::class, 'destroy'])->name('care-plans.destroy');
+
+    Route::get('/service-agreement', [AdminServiceAgreementController::class, 'index'])->name('service-agreement.index');
+    Route::post('/service-agreement', [AdminServiceAgreementController::class, 'store'])->name('service-agreement.store');
+    Route::get('/service-agreement/templates/{serviceAgreementTemplate}/download', [AdminServiceAgreementController::class, 'downloadTemplate'])->name('service-agreement.templates.download');
 
     Route::get('/team', [AdminTeamController::class, 'index'])->name('team.index');
     Route::post('/team', [AdminTeamController::class, 'store'])->name('team.store');
