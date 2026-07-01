@@ -22,12 +22,14 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
         'role',
         'stripe_customer_id',
         'theme',
         'email_verified_at',
         'activity_last_read_at',
+        'welcomed_at',
         'notify_on_replies',
         'notify_on_consultations',
     ];
@@ -53,6 +55,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'last_seen_at' => 'datetime',
             'activity_last_read_at' => 'datetime',
+            'welcomed_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -75,6 +78,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function projectRequests()
     {
         return $this->hasMany(ProjectRequest::class);
+    }
+
+    public function loginActivities()
+    {
+        return $this->hasMany(LoginActivity::class);
     }
 
     public function hasPendingPayment(): bool

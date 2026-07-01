@@ -70,6 +70,13 @@
                     @error('email') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Phone Number <span class="text-gray-400">(optional)</span></label>
+                    <input type="tel" name="phone" value="{{ old('phone', $user->phone) }}"
+                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white"
+                        placeholder="(000) 000-0000">
+                    @error('phone') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+                <div>
                     <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Current Password <span class="text-gray-400">(required to confirm changes)</span></label>
                     <input type="password" name="current_password" required
                         class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
@@ -166,6 +173,89 @@
                         Save Preferences
                     </button>
                 </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- Row: Login Activity --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <button type="button" data-toggle="section-logins"
+            class="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+            <div class="w-9 h-9 rounded-lg bg-navy/8 dark:bg-white/8 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5 text-navy dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-navy dark:text-white">Login Activity</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500">Your 5 most recent sign-ins</p>
+            </div>
+            <svg data-chevron="section-logins" class="w-4 h-4 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </button>
+
+        <div id="section-logins" class="hidden border-t border-gray-100 dark:border-gray-700 px-5 py-5">
+            @if ($recentLogins->isEmpty())
+                <p class="text-sm text-gray-400 dark:text-gray-500">No login activity recorded yet.</p>
+            @else
+                <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+                    @foreach ($recentLogins as $login)
+                        <li class="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-8 h-8 rounded-full bg-navy/6 dark:bg-white/6 flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4 text-navy/50 dark:text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-medium text-navy dark:text-white">{{ $login->simpleBrowser() }}</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 truncate">{{ $login->ip_address ?? 'Unknown IP' }}</p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 shrink-0">{{ $login->logged_in_at->format('M j, Y g:i A') }}</p>
+                        </li>
+                    @endforeach
+                </ul>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-4">If you don't recognize a sign-in, change your password immediately.</p>
+            @endif
+        </div>
+    </div>
+
+    {{-- Row: Danger Zone --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-red-200 dark:border-red-900/50 overflow-hidden">
+        <button type="button" data-toggle="section-danger"
+            class="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors group">
+            <div class="w-9 h-9 rounded-lg bg-red-50 dark:bg-red-900/20 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a1 1 0 00.86 1.5h18.64a1 1 0 00.86-1.5L13.71 3.86a1 1 0 00-1.42 0z"/>
+                </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-red-600 dark:text-red-400">Danger Zone</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500">Request account closure</p>
+            </div>
+            <svg data-chevron="section-danger" class="w-4 h-4 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </button>
+
+        <div id="section-danger" class="hidden border-t border-red-100 dark:border-red-900/40 px-5 py-5">
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-1 font-medium">Request Account Closure</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-5">
+                Submitting this request notifies our team. We will review your request and follow up within 1–2 business days.
+                Your account and project data will not be deleted until we confirm with you directly.
+            </p>
+            <form method="POST" action="{{ route('portal.account.closure-request') }}">
+                @csrf
+                <button type="submit"
+                    onclick="return confirm('Are you sure you want to request account closure? Our team will follow up before anything is deleted.')"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Request Closure
+                </button>
             </form>
         </div>
     </div>

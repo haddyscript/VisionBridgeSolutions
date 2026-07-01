@@ -12,9 +12,11 @@ use Illuminate\Validation\Rules;
 
 class AccountController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('portal.account');
+        return view('portal.account', [
+            'recentLogins' => $request->user()->loginActivities()->latest('logged_in_at')->take(5)->get(),
+        ]);
     }
 
     public function updateProfile(Request $request)
@@ -22,8 +24,9 @@ class AccountController extends Controller
         $user = $request->user();
 
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'name'             => ['required', 'string', 'max:255'],
+            'email'            => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'phone'            => ['nullable', 'string', 'max:30'],
             'current_password' => ['required', 'current_password'],
         ]);
 
@@ -31,8 +34,9 @@ class AccountController extends Controller
         $emailChanged = $validated['email'] !== $oldEmail;
 
         $user->update([
-            'name' => $validated['name'],
+            'name'  => $validated['name'],
             'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
         ]);
 
         if ($emailChanged) {
@@ -68,5 +72,17 @@ class AccountController extends Controller
         ]);
 
         return back()->with('status', 'Notification preferences updated.');
+    }
+
+    public function requestClosure(Request $request)
+    {
+        $user = $request->user();
+
+        Mail::raw(
+            "Account closure requested.\n\nName: {$user->name}\nEmail: {$user->email}\nTime: " . now()->toDateTimeString(),
+            fn ($m) => $m->to(config('mail.admin_address'))->subject('Account Closure Request — ' . $user->name)
+        );
+
+        return back()->with('status', 'Your closure request has been received. Our team will follow up within 1–2 business days.');
     }
 }

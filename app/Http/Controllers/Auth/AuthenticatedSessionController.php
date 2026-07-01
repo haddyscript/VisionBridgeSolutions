@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\LoginActivity;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,6 +30,13 @@ class AuthenticatedSessionController extends Controller
         }
 
         $request->session()->regenerate();
+
+        LoginActivity::create([
+            'user_id'      => $request->user()->id,
+            'ip_address'   => $request->ip(),
+            'user_agent'   => $request->userAgent(),
+            'logged_in_at' => now(),
+        ]);
 
         if (! $request->user()->isAdmin()) {
             $request->session()->put('show_payment_reminder', true);
