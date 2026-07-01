@@ -221,6 +221,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/subscriptions/{subscription}', [AdminSubscriptionController::class, 'destroy'])->name('subscriptions.destroy');
 
     Route::get('/partner-payouts', [AdminPartnerPayoutController::class, 'index'])->name('partner-payouts.index');
+    Route::post('/partner-payouts/rate', [AdminPartnerPayoutController::class, 'setRate'])->name('partner-payouts.set-rate');
     Route::patch('/partner-payouts/{partnerPayout}', [AdminPartnerPayoutController::class, 'update'])->name('partner-payouts.update');
 
     // ─── Settings ────────────────────────────────────────────────────────────
