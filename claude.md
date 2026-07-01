@@ -51,4 +51,4 @@ Goal: reduce wasted searches, redundant file reads, and unnecessary token spend.
 - After completing any code change (edit, fix, new feature), always end your response with a ready-to-use commit message in this format:
 - - Keep the message concise (under ~72 characters for the summary line) and written in imperative mood (e.g. "Fix upload path", "Add pending payment nav indicator").
 - If the change touches multiple unrelated things, suggest splitting into multiple commits and give a commit message for each.
-- Do not run `git commit` or `git push` yourself — just provide the command for me to run manually.
+- Do not run `git commit` and `git push` yourself — just provide the command for me to run manually.
