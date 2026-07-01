@@ -182,3 +182,52 @@ The boss authored an 80-page Service Agreement and wanted to upload it directly 
 `Portal\PaymentController::checkout` no longer redirects to Stripe's hosted Checkout page either — it creates a `PaymentIntent` directly (saved to `Payment::stripe_payment_intent_id` immediately, before confirmation) and renders `resources/views/portal/payment-checkout.blade.php` with Stripe Elements. Unlike the maintenance plan flow, a one-time `PaymentIntent` always has its own stable `client_secret`, so no SetupIntent-first workaround was needed — `stripe.confirmPayment` is called directly.
 
 Because there's no Checkout Session anymore, both `StripeWebhookController::handlePaymentIntentSucceeded` and `PaymentReconciler::reconcile` were updated to match a `Payment` by `stripe_payment_intent_id` directly when no session id is present, falling back to the old `stripe_checkout_session_id` lookup for anything still pending from before this change. A parallel `fetchReceiptUrlFromPaymentIntent()` was added alongside the existing session-based `fetchReceiptUrl()` since there's no Session object to expand through in this path.
+
+## 13. Master Agreement Onboarding Overhaul — Gap Analysis (2026-07-01)
+
+The boss delivered the **CLIENT WEBSITE DEVELOPMENT & WEBSITE CARE PLAN MASTER AGREEMENT — Executive Edition** (134-page PDF) and specified a 13-step onboarding sequence to replace the current 3-step flow. Thursday meeting scheduled to review and finalize before any implementation begins.
+
+**Target 13-step onboarding sequence (per boss instruction):**
+
+1. Welcome to VisionBridge Solutions
+2. Create Client Account
+3. Verify Email Address
+4. Complete Business Information
+5. Select Website Package
+6. Select Website Care Plan
+7. Agreement Summary
+8. Read the Master Client Agreement (PDF)
+9. Complete acknowledgment checkboxes
+10. Electronic Signature
+11. Billing Authorization
+12. Payment
+13. Welcome to the VisionBridge Client Portal
+
+**Already built — maps directly to new steps:**
+
+| New Step | Maps To | Notes |
+|---|---|---|
+| Step 2 — Create Client Account | Existing registration flow | No change needed |
+| Step 3 — Verify Email | Existing email verification | No change needed |
+| Step 6 — Select Website Care Plan | `CarePlanAgreementController` + care plan selection view | Logic exists; position in sequence changes |
+| Steps 8–10 — Read PDF + Checkboxes + Sign | `ServiceAgreementController` + PDF upload support + signature flow | PDF iframe viewer, typed name, drawn signature, SHA-256 hash, audit trail all exist; checkboxes need adding |
+| Step 13 — Welcome to Client Portal | First-visit welcome banner (`welcomed_at` on `users`) | No change needed |
+
+**Needs significant rework or is entirely new:**
+
+| New Step | Status | What's Required |
+|---|---|---|
+| Step 1 — Welcome landing (pre-account) | New | A branded welcome/intro screen shown before the user creates an account — doesn't exist today |
+| Step 4 — Complete Business Information | Structural move | Onboarding Questionnaire currently runs *after* signing; needs to move *before* the agreement steps and possibly slim down to just org/business info |
+| Step 5 — Select Website Package | New | No package selection step exists; unclear if this means a pricing tier, a project type, or something else — confirm at Thursday meeting |
+| Step 7 — Agreement Summary | New | Intermediate screen summarizing what the client is about to sign (care plan chosen, package selected, etc.) before the PDF loads |
+| Step 9 — Acknowledgment checkboxes | Partial | Current signing flow has typed name + drawn signature but no explicit "I have read and understand…" checkbox confirmations; checkboxes must gate the signature step |
+| Step 11 — Billing Authorization | New | Distinct from payment — likely a stored payment method setup (SetupIntent) before the actual charge; no equivalent exists in the current flow |
+| Step 12 — Payment | Structural change | Deposit payment currently requires admin to manually set a price first (`ProjectController::store` triggers it); making it a self-serve onboarding step requires pre-set pricing or a new trigger |
+| Middleware / step tracker | Full rewrite | `EnsureOnboardingComplete` currently checks 3 boolean conditions; a 13-step flow needs a proper step-state model (likely a `users.onboarding_step` int column or a dedicated `onboarding_states` table) |
+
+**Decision pending at Thursday meeting:**
+- What does "Select Website Package" (step 5) mean in practice — a fixed price tier or something else?
+- Does billing authorization (step 11) mean storing a card for future Care Plan billing, or authorizing the deposit charge specifically?
+- Should Business Information (step 4) be a slimmed-down version of the existing questionnaire, or the full form moved earlier?
+- Do existing clients who already signed the old Service Agreement need to re-sign the Master Agreement?
