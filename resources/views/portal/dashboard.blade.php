@@ -106,7 +106,7 @@
                         gets underway.
                     </p>
                     <div class="mt-5 flex flex-wrap gap-3">
-                        <a href="{{ route('portal.category', 'logos') }}"
+                        <a href="{{ route('portal.category', 'logo') }}"
                             class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gold text-navy text-sm font-semibold hover:bg-gold-dark transition-colors">
                             Upload Your Files
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
