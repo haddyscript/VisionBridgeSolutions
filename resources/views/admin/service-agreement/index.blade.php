@@ -60,9 +60,19 @@
 
             <div id="agreement-source-panel-pdf" class="mb-4" style="{{ $source === 'pdf' ? '' : 'display:none;' }}">
                 <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Agreement PDF</label>
-                <input type="file" name="pdf" accept="application/pdf"
+                <input type="file" name="pdf" accept="application/pdf" id="pdf-upload-input"
+                       onchange="previewPdf(this)"
                        class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gold/15 file:text-navy dark:text-white file:font-semibold file:text-sm hover:file:bg-gold/25">
                 <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5">PDF only, up to 25 MB. Clients will review/download this exact file, then sign with their typed name and drawn signature as usual.</p>
+
+                <div id="pdf-preview-wrap" class="hidden mt-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400">Preview</p>
+                        <button type="button" onclick="clearPdfPreview()"
+                            class="text-xs text-gray-400 hover:text-red-500 transition-colors">✕ Remove</button>
+                    </div>
+                    <iframe id="pdf-preview-frame" src="" class="w-full rounded-xl border border-gray-200 dark:border-gray-700" style="height:700px;"></iframe>
+                </div>
             </div>
 
             <button type="submit" class="bg-navy hover:bg-navy-light text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
@@ -73,6 +83,24 @@
 </details>
 
 <script>
+    function previewPdf(input) {
+        const wrap = document.getElementById('pdf-preview-wrap');
+        const frame = document.getElementById('pdf-preview-frame');
+        if (input.files && input.files[0]) {
+            const url = URL.createObjectURL(input.files[0]);
+            frame.src = url;
+            wrap.classList.remove('hidden');
+        }
+    }
+
+    function clearPdfPreview() {
+        const input = document.getElementById('pdf-upload-input');
+        const frame = document.getElementById('pdf-preview-frame');
+        input.value = '';
+        frame.src = '';
+        document.getElementById('pdf-preview-wrap').classList.add('hidden');
+    }
+
     function setAgreementSource(value) {
         document.getElementById('agreement-source-input').value = value;
         document.getElementById('agreement-source-panel-text').style.display = value === 'text' ? '' : 'none';
