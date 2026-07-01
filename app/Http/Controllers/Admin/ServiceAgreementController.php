@@ -59,4 +59,13 @@ class ServiceAgreementController extends Controller
 
         return Storage::disk('local')->download($serviceAgreementTemplate->pdf_path, $serviceAgreementTemplate->title.'.pdf');
     }
+
+    public function viewTemplate(ServiceAgreementTemplate $serviceAgreementTemplate)
+    {
+        abort_unless($serviceAgreementTemplate->isPdfBased(), 404);
+
+        return Storage::disk('local')->response($serviceAgreementTemplate->pdf_path, $serviceAgreementTemplate->title.'.pdf', [
+            'Content-Disposition' => 'inline',
+        ]);
+    }
 }

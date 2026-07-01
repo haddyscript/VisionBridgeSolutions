@@ -241,6 +241,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/service-agreement', [AdminServiceAgreementController::class, 'index'])->name('service-agreement.index');
     Route::post('/service-agreement', [AdminServiceAgreementController::class, 'store'])->name('service-agreement.store');
     Route::get('/service-agreement/templates/{serviceAgreementTemplate}/download', [AdminServiceAgreementController::class, 'downloadTemplate'])->name('service-agreement.templates.download');
+    Route::get('/service-agreement/templates/{serviceAgreementTemplate}/view', [AdminServiceAgreementController::class, 'viewTemplate'])->name('service-agreement.templates.view');
 
     Route::get('/team', [AdminTeamController::class, 'index'])->name('team.index');
     Route::post('/team', [AdminTeamController::class, 'store'])->name('team.store');

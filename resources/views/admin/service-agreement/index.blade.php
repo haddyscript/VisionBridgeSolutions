@@ -30,7 +30,7 @@
                         <a href="{{ route('admin.service-agreement.templates.download', $activeTemplate) }}" class="text-gold-dark font-semibold hover:underline">Download</a>
                     </p>
                 </div>
-                <iframe src="{{ route('admin.service-agreement.templates.download', $activeTemplate) }}"
+                <iframe src="{{ route('admin.service-agreement.templates.view', $activeTemplate) }}"
                         class="w-full rounded-xl border border-gray-200 dark:border-gray-700"
                         style="height:750px;">
                 </iframe>
