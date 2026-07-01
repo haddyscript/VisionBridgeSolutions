@@ -49,5 +49,9 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        $this->call([
+            MaintenancePlanSeeder::class,
+            ServiceAgreementTemplateSeeder::class,
+        ]);
     }
 }

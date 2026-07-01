@@ -4,22 +4,39 @@ namespace Database\Seeders;
 
 use App\Models\ServiceAgreementTemplate;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class ServiceAgreementTemplateSeeder extends Seeder
 {
-    /**
-     * IMPORTANT: This is placeholder legal text, not a reviewed contract.
-     * VisionBridge must have an actual attorney review and replace this
-     * body (via the admin Service Agreement editor) before relying on any
-     * signature collected against it.
-     */
+    // Known PDF path on disk — survives migrate:fresh since the file is never deleted.
+    // If the file is present, we restore the DB record pointing to it rather than
+    // falling back to the placeholder text template.
+    const PDF_PATH = 'agreements/templates/cds97i5UDc5KClPs0k0eIPtdn6h6TzHKCr32A2IM.pdf';
+
     public function run(): void
     {
+        if (Storage::disk('local')->exists(self::PDF_PATH)) {
+            ServiceAgreementTemplate::updateOrCreate(
+                ['version' => 1],
+                [
+                    'title' => 'VisionBridge Solutions Master Agreement',
+                    'is_active' => true,
+                    'body' => '',
+                    'pdf_path' => self::PDF_PATH,
+                ]
+            );
+
+            return;
+        }
+
+        // Fallback: no PDF on disk — seed placeholder text so the system still works.
+        // IMPORTANT: This is placeholder legal text, not a reviewed contract.
         ServiceAgreementTemplate::updateOrCreate(
             ['version' => 1],
             [
                 'title' => 'VisionBridge Solutions — Client Service Agreement',
                 'is_active' => true,
+                'pdf_path' => null,
                 'body' => <<<'TEXT'
 [PLACEHOLDER — REPLACE BEFORE LAUNCH. This text has not been reviewed by an attorney.]
 
