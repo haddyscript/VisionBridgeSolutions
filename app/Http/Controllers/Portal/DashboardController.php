@@ -27,8 +27,15 @@ class DashboardController extends Controller
         $showPaymentReminder = $request->session()->pull('show_payment_reminder', false)
             && $pendingPayment !== null;
 
+        $user = $request->user();
+        $firstVisit = is_null($user->welcomed_at);
+
         if ($project) {
-            $request->user()->update(['activity_last_read_at' => now()]);
+            $updates = ['activity_last_read_at' => now()];
+            if ($firstVisit) {
+                $updates['welcomed_at'] = now();
+            }
+            $user->update($updates);
         }
 
         return view('portal.dashboard', [
@@ -38,6 +45,7 @@ class DashboardController extends Controller
             'pendingPayment' => $pendingPayment,
             'activity' => $project ? $project->recentActivity()->take(8) : collect(),
             'recommendations' => $recommendations,
+            'firstVisit' => $firstVisit,
         ]);
     }
 }

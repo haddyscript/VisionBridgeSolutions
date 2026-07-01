@@ -77,6 +77,71 @@
     </script>
 @endif
 
+@if ($firstVisit)
+    <div id="welcome-banner" class="relative overflow-hidden rounded-2xl mb-8 shadow-lg">
+        <div class="px-8 py-8 md:py-10" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
+
+            <button type="button" id="welcome-banner-close" aria-label="Dismiss"
+                class="absolute top-4 right-4 text-white/40 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+
+            <div class="flex items-start gap-5">
+                <div class="shrink-0 w-12 h-12 rounded-full bg-gold/15 text-gold flex items-center justify-center mt-0.5">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 3l14 9-14 9V3z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Welcome to VisionBridge</p>
+                    <h2 class="font-display text-xl md:text-2xl font-bold text-white mb-2">
+                        You're in — let's build something great.
+                    </h2>
+                    <p class="text-sm text-white/70 max-w-xl leading-relaxed">
+                        Your client portal is ready. You can upload files, submit website content, track your project
+                        milestones, and manage payments — all from right here. We'll be in touch as your project
+                        gets underway.
+                    </p>
+                    <div class="mt-5 flex flex-wrap gap-3">
+                        <a href="{{ route('portal.category', 'logos') }}"
+                            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gold text-navy text-sm font-semibold hover:bg-gold-dark transition-colors">
+                            Upload Your Files
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                        <a href="{{ route('portal.faq') }}"
+                            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-colors">
+                            View FAQ
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            document.getElementById('welcome-banner-close')?.addEventListener('click', function () {
+                const banner = document.getElementById('welcome-banner');
+                banner.style.transition = 'opacity 200ms, max-height 300ms';
+                banner.style.overflow = 'hidden';
+                banner.style.maxHeight = banner.offsetHeight + 'px';
+                requestAnimationFrame(() => {
+                    banner.style.opacity = '0';
+                    banner.style.maxHeight = '0';
+                    banner.style.marginBottom = '0';
+                });
+                banner.addEventListener('transitionend', () => banner.remove(), { once: true });
+            });
+        })();
+    </script>
+@endif
+
 @if (! $project)
 
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
