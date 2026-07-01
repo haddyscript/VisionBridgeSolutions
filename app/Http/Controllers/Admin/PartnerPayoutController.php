@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AppSetting;
 use App\Models\PartnerPayout;
 use App\Models\Payment;
 use App\Models\Subscription;
@@ -26,11 +27,34 @@ class PartnerPayoutController extends Controller
             ->get();
 
         return view('admin.partner-payouts.index', [
-            'payouts' => $payouts,
-            'totalVerifying' => $payouts->where('status', 'pending')->sum('faithstack_amount'),
-            'totalReady' => $payouts->where('status', 'ready')->sum('faithstack_amount'),
-            'totalUndecided' => $payouts->whereNull('faithstack_amount')->count(),
+            'payouts'            => $payouts,
+            'totalVerifying'     => $payouts->where('status', 'pending')->sum('faithstack_amount'),
+            'totalReady'         => $payouts->where('status', 'ready')->sum('faithstack_amount'),
+            'totalUndecided'     => $payouts->whereNull('faithstack_amount')->count(),
+            'faithstackRate'     => (float) AppSetting::get('faithstack_percentage', 0),
         ]);
+    }
+
+    public function setRate(Request $request)
+    {
+        $validated = $request->validate([
+            'faithstack_percentage' => ['required', 'numeric', 'min:0', 'max:100'],
+            'apply_to_existing'     => ['nullable', 'boolean'],
+        ]);
+
+        $rate = (float) $validated['faithstack_percentage'];
+        AppSetting::set('faithstack_percentage', $rate);
+
+        if ($request->boolean('apply_to_existing') && $rate > 0) {
+            PartnerPayout::whereNull('faithstack_amount')
+                ->each(function (PartnerPayout $payout) use ($rate) {
+                    $payout->update([
+                        'faithstack_amount' => (int) round($payout->client_amount * $rate / 100),
+                    ]);
+                });
+        }
+
+        return back()->with('status', 'FaithStack payout rate updated.');
     }
 
     public function update(Request $request, PartnerPayout $partnerPayout)

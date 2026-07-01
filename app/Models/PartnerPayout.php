@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class PartnerPayout extends Model
 {
@@ -31,6 +32,18 @@ class PartnerPayout extends Model
             'flagged_at' => 'datetime',
             'paid_at' => 'datetime',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $payout) {
+            if ($payout->faithstack_amount === null) {
+                $rate = (float) AppSetting::get('faithstack_percentage', 0);
+                if ($rate > 0) {
+                    $payout->faithstack_amount = (int) round($payout->client_amount * $rate / 100);
+                }
+            }
+        });
     }
 
     public function payable()
