@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CalendarController as AdminCalendarController;
+use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\ConsultationController as AdminConsultationController;
 use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -156,6 +157,8 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminDashboardController::class)->name('dashboard');
+
+    Route::get('/clients', [AdminClientController::class, 'index'])->name('clients.index');
 
     Route::get('/calendar', [AdminCalendarController::class, 'index'])->name('calendar');
     Route::post('/calendar/events', [AdminCalendarController::class, 'store'])->name('calendar.events.store');

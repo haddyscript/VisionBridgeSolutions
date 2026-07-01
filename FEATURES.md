@@ -46,6 +46,7 @@ A plain-language summary of everything the site and client portal offer today.
 
 | Feature | What it does |
 |---|---|
+| Client List | A searchable list of every client account — avatar with online indicator, name, email, phone, project name, project status badge, email-verified status, joined date, and last-seen time; a "⋮" dropdown per row shows account details and a "Send Password Reset" action; stat cards at the top show total clients, currently online, verified, and accounts with no project yet |
 | All Projects | A list of every client project, with a green "Online" indicator next to a client's name if they're currently active in the portal, and a different status badge color for each project stage |
 | Calendar | A month view combining every consultation booking and milestone due date in one place, plus the ability to add and remove our own reminders/tasks; clicking a task opens a popup with its full details and a quick way to remove it |
 | Contact Messages | An inbox of everyone who used the Contact form, sortable and searchable by page |
