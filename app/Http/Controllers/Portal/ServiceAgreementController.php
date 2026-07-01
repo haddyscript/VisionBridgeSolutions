@@ -13,6 +13,44 @@ use Illuminate\Support\Facades\Storage;
 
 class ServiceAgreementController extends Controller
 {
+    public function summary(Request $request)
+    {
+        $user = $request->user();
+        $project = $user->projects()->first();
+
+        abort_unless($project, 404);
+
+        if (! $project->hasAgreedToCarePlan()) {
+            return redirect()->route('portal.care-plan-agreement.show');
+        }
+
+        if ($project->hasSignedCurrentAgreement()) {
+            return redirect()->route('portal.dashboard');
+        }
+
+        $template = ServiceAgreementTemplate::currentActive();
+        $carePlanAgreement = $project->carePlanAgreement;
+
+        return view('portal.agreement-summary', [
+            'project'           => $project,
+            'template'          => $template,
+            'carePlanAgreement' => $carePlanAgreement,
+            'plan'              => $carePlanAgreement?->maintenancePlan,
+        ]);
+    }
+
+    public function confirmSummary(Request $request)
+    {
+        $user = $request->user();
+        $project = $user->projects()->first();
+
+        abort_unless($project && $project->hasAgreedToCarePlan(), 422);
+
+        $user->update(['onboarding_step' => 10]);
+
+        return redirect()->route('portal.agreement.show');
+    }
+
     public function show(Request $request)
     {
         $project = $request->user()->projects()->first();

@@ -17,12 +17,12 @@ class EnsureOnboardingComplete
      *   4  Business information (questionnaire) ← GATE 1 (step < 6 → questionnaire)
      *   5  Website Package          [pending Thursday meeting]
      *   6  Care Plan selection      ← GATE 2 (step < 8 → care plan)
-     *   7  Agreement Summary        [pending Thursday meeting]
+     *   7  Agreement Summary        ← GATE 3 (step < 10 → summary)
      *   8  Read Master Agreement
      *   9  Acknowledgment checkboxes
-     *  10  Electronic Signature     ← GATE 3 (step < 13 → agreement)
-     *  11  Billing Authorization    [pending Thursday meeting]
-     *  12  Payment                  [pending Thursday meeting]
+     *  10  Electronic Signature     ← GATE 4 (step < 13 → agreement)
+     *  11  Billing Authorization    [baked into signature — no separate gate]
+     *  12  Payment                  [pending — requires pre-set pricing]
      *  13  Portal access granted
      *
      * Admins are exempt. Suspended projects are blocked by EnsureProjectNotSuspended
@@ -42,6 +42,10 @@ class EnsureOnboardingComplete
 
             if ($step < 8) {
                 return redirect()->route('portal.care-plan-agreement.show');
+            }
+
+            if ($step < 10) {
+                return redirect()->route('portal.agreement.summary');
             }
 
             if ($step < 13) {

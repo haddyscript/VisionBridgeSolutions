@@ -110,6 +110,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/portal/care-plan-agreement', [PortalCarePlanAgreementController::class, 'show'])->name('portal.care-plan-agreement.show');
     Route::post('/portal/care-plan-agreement', [PortalCarePlanAgreementController::class, 'store'])->name('portal.care-plan-agreement.store');
 
+    Route::get('/portal/agreement/summary', [PortalServiceAgreementController::class, 'summary'])->name('portal.agreement.summary');
+    Route::post('/portal/agreement/summary', [PortalServiceAgreementController::class, 'confirmSummary'])->name('portal.agreement.summary.confirm');
+
     Route::get('/portal/agreement', [PortalServiceAgreementController::class, 'show'])->name('portal.agreement.show');
     Route::post('/portal/agreement', [PortalServiceAgreementController::class, 'store'])->name('portal.agreement.store');
     Route::get('/portal/agreement/{signature}/download', [PortalServiceAgreementController::class, 'download'])->name('portal.agreement.download');
