@@ -61,34 +61,73 @@
     <input type="hidden" name="signature_image" id="signature_image">
 
     @if ($errors->any())
-        <div class="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+        <div class="mb-5 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
             @foreach ($errors->all() as $error)
                 <p>{{ $error }}</p>
             @endforeach
         </div>
     @endif
 
+    {{-- Client Pre-Signature Acknowledgments --}}
+    <div class="mb-6 p-5 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+        <p class="text-xs font-bold uppercase tracking-widest text-navy dark:text-white mb-1">Client Pre-Signature Acknowledgments</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Before signing, please confirm each of the following:</p>
+        <div class="space-y-3">
+            @foreach ([
+                'ack_read'       => 'I have read this Agreement in its entirety.',
+                'ack_terms'      => 'I understand the terms and conditions contained herein.',
+                'ack_billing'    => 'I understand that recurring Website Care Plan billing will occur until properly canceled.',
+                'ack_binding'    => 'I understand this Agreement is legally binding.',
+                'ack_electronic' => 'I agree to conduct business electronically through the VisionBridge Client Portal.',
+            ] as $name => $label)
+                <label class="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300 cursor-pointer acknowledgment-label">
+                    <input type="checkbox" name="{{ $name }}" required
+                           class="acknowledgment-check mt-0.5 rounded border-gray-300 text-gold focus:ring-gold"
+                           onchange="updateSubmitState()">
+                    {{ $label }}
+                </label>
+            @endforeach
+        </div>
+    </div>
+
+    {{-- Signature Fields --}}
     <div class="mb-5">
-        <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Type your full legal name *</label>
-        <input type="text" name="signer_name" id="signer_name" required
+        <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Client / Organization Name *</label>
+        <input type="text" name="organization_name" required value="{{ old('organization_name') }}"
+               placeholder="Your organization or company name"
                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
     </div>
 
-    <div class="mb-3">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+        <div>
+            <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Authorized Representative *</label>
+            <input type="text" name="signer_name" id="signer_name" required value="{{ old('signer_name') }}"
+                   placeholder="Full legal name"
+                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Title *</label>
+            <input type="text" name="title" required value="{{ old('title') }}"
+                   placeholder="e.g. Executive Director, CEO"
+                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+        </div>
+    </div>
+
+    <div class="mb-6">
         <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Draw your signature *</label>
         <canvas id="signature-pad" width="600" height="180"
                 class="w-full border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-white touch-none" style="max-width:600px;height:180px;cursor:crosshair;"></canvas>
         <button type="button" id="signature-clear" class="mt-2 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white underline">Clear</button>
     </div>
 
-    <label class="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-300 mb-6">
-        <input type="checkbox" name="agree" required class="mt-0.5 rounded border-gray-300 text-gold focus:ring-gold">
-        I have read and agree to the terms of this Service Agreement.
-    </label>
-
-    <button type="submit" id="agreement-submit" class="w-full bg-gold hover:bg-gold-dark text-navy font-bold text-base py-3.5 rounded-lg transition-colors shadow">
+    <button type="submit" id="agreement-submit"
+            class="w-full bg-gold hover:bg-gold-dark text-navy font-bold text-base py-3.5 rounded-lg transition-colors shadow disabled:opacity-40 disabled:cursor-not-allowed"
+            disabled>
         Sign Agreement
     </button>
+    <p id="submit-hint" class="text-center text-xs text-gray-400 dark:text-gray-500 mt-2">
+        Please check all acknowledgments above to enable signing.
+    </p>
 </form>
 
 <script>
@@ -117,6 +156,7 @@
         ctx.beginPath();
         ctx.moveTo(p.x, p.y);
         canvas.setPointerCapture(e.pointerId);
+        updateSubmitState();
     });
     canvas.addEventListener('pointermove', (e) => {
         if (!drawing) return;
@@ -131,7 +171,26 @@
     document.getElementById('signature-clear').addEventListener('click', () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         hasSignature = false;
+        updateSubmitState();
     });
+
+    window.updateSubmitState = function () {
+        const checks = document.querySelectorAll('.acknowledgment-check');
+        const allChecked = Array.from(checks).every(c => c.checked);
+        const btn = document.getElementById('agreement-submit');
+        const hint = document.getElementById('submit-hint');
+        const ready = allChecked && hasSignature;
+        btn.disabled = !ready;
+        if (allChecked && !hasSignature) {
+            hint.textContent = 'Please draw your signature above to enable signing.';
+            hint.classList.remove('hidden');
+        } else if (!allChecked) {
+            hint.textContent = 'Please check all acknowledgments above to enable signing.';
+            hint.classList.remove('hidden');
+        } else {
+            hint.classList.add('hidden');
+        }
+    };
 
     document.getElementById('agreement-form').addEventListener('submit', (e) => {
         if (!hasSignature) {

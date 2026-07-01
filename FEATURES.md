@@ -219,15 +219,15 @@ The boss delivered the **CLIENT WEBSITE DEVELOPMENT & WEBSITE CARE PLAN MASTER A
 |---|---|---|
 | Step 1 — Welcome landing (pre-account) | **Done** | `/onboarding/start` → `resources/views/onboarding/welcome.blade.php` using `layouts.auth`; shows all 12 upcoming steps, "Get Started" CTA → register, "Sign In" secondary link; redirects to portal if already logged in |
 | Step 4 — Complete Business Information | **Done** | `EnsureOnboardingComplete` middleware gate order changed: questionnaire now runs **first** (before care plan and service agreement), so clients fill in business information before selecting a care plan or signing |
-| Step 5 — Select Website Package | New | No package selection step exists; unclear if this means a pricing tier, a project type, or something else — confirm at Thursday meeting |
-| Step 7 — Agreement Summary | New | Intermediate screen summarizing what the client is about to sign (care plan chosen, package selected, etc.) before the PDF loads |
-| Step 9 — Acknowledgment checkboxes | Partial | Current signing flow has typed name + drawn signature but no explicit "I have read and understand…" checkbox confirmations; checkboxes must gate the signature step |
-| Step 11 — Billing Authorization | New | Distinct from payment — likely a stored payment method setup (SetupIntent) before the actual charge; no equivalent exists in the current flow |
+| Step 5 — Select Website Package | **Resolved — same as Step 6** | The PDF's "Website Care Plan Selection" section lists the 3 tiers (Essential $59, Growth $149, Elite $249) — this IS the care plan selection already built. Steps 5 and 6 are the same step; no separate "Website Package" screen needed. |
+| Step 7 — Agreement Summary | New | Intermediate screen summarizing what the client is about to sign (care plan chosen, project name, etc.) before the PDF loads. Still pending. |
+| Step 9 — Acknowledgment checkboxes | **Done** | 5 checkboxes from the PDF's "CLIENT PRE-SIGNATURE ACKNOWLEDGMENTS" section added to `resources/views/portal/agreement.blade.php`. All 5 must be checked to unlock the "Sign Agreement" button. `ack_read`, `ack_terms`, `ack_billing`, `ack_binding`, `ack_electronic` validated as `accepted` in `Portal\ServiceAgreementController::store()`. |
+| Step 10 — Signature fields | **Done** | Added `Client / Organization Name` and `Title` fields alongside existing `Authorized Representative` (signer_name) and drawn signature. `organization_name` + `title` columns added to `service_agreement_signatures` via migration `2026_07_01_000002`. |
+| Step 11 — Billing Authorization | **Resolved — baked into signature** | The PDF's "BILLING AUTHORIZATION" section states "By signing this Agreement, the Client authorizes VisionBridge Solutions to process…" — the act of signing IS the authorization. No separate screen needed. |
 | Step 12 — Payment | Structural change | Deposit payment currently requires admin to manually set a price first (`ProjectController::store` triggers it); making it a self-serve onboarding step requires pre-set pricing or a new trigger |
-| Middleware / step tracker | **Done** | `users.onboarding_step` tinyint (default 1) added via migration with backfill. `EnsureOnboardingComplete` now gates on step value: `< 6` → questionnaire, `< 8` → care plan, `< 13` → agreement. Each completing controller advances the step: questionnaire → 6, care plan → 8, signing → 13. Steps 5, 7, 11, 12 reserved for Thursday meeting decisions. |
+| Middleware / step tracker | **Done** | `users.onboarding_step` tinyint (default 1) added via migration with backfill. `EnsureOnboardingComplete` now gates on step value: `< 6` → questionnaire, `< 8` → care plan, `< 13` → agreement. Each completing controller advances the step: questionnaire → 6, care plan → 8, signing → 13. |
 
-**Decision pending at Thursday meeting:**
-- What does "Select Website Package" (step 5) mean in practice — a fixed price tier or something else?
-- Does billing authorization (step 11) mean storing a card for future Care Plan billing, or authorizing the deposit charge specifically?
-- Should Business Information (step 4) be a slimmed-down version of the existing questionnaire, or the full form moved earlier?
+**Decision still pending:**
+- Step 7 — Agreement Summary screen design (what fields to show, what layout)
+- Step 12 — Payment: requires pre-set pricing model or a new trigger independent of manual admin quoting
 - Do existing clients who already signed the old Service Agreement need to re-sign the Master Agreement?

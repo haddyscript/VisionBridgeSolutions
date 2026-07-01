@@ -12,6 +12,8 @@ class ServiceAgreementSignature extends Model
         'project_id',
         'service_agreement_template_id',
         'signer_name',
+        'organization_name',
+        'title',
         'signature_image_path',
         'agreement_hash',
         'ip_address',

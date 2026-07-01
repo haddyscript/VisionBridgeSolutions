@@ -42,9 +42,15 @@ class ServiceAgreementController extends Controller
         abort_unless($template, 404);
 
         $validated = $request->validate([
-            'signer_name' => ['required', 'string', 'max:255'],
-            'signature_image' => ['required', 'string', 'starts_with:data:image/png;base64,'],
-            'agree' => ['accepted'],
+            'organization_name' => ['required', 'string', 'max:255'],
+            'signer_name'       => ['required', 'string', 'max:255'],
+            'title'             => ['required', 'string', 'max:255'],
+            'signature_image'   => ['required', 'string', 'starts_with:data:image/png;base64,'],
+            'ack_read'          => ['accepted'],
+            'ack_terms'         => ['accepted'],
+            'ack_billing'       => ['accepted'],
+            'ack_binding'       => ['accepted'],
+            'ack_electronic'    => ['accepted'],
         ]);
 
         $user = $request->user();
@@ -65,7 +71,9 @@ class ServiceAgreementController extends Controller
             'user_id' => $user->id,
             'project_id' => $project->id,
             'service_agreement_template_id' => $template->id,
+            'organization_name' => $validated['organization_name'],
             'signer_name' => $validated['signer_name'],
+            'title' => $validated['title'],
             'signature_image_path' => $signaturePath,
             'agreement_hash' => $template->isPdfBased() ? $template->pdfHash() : hash('sha256', $template->body),
             'ip_address' => $request->ip(),
