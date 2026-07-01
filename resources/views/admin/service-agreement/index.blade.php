@@ -23,11 +23,18 @@
 
     <div class="border-t border-gray-200 dark:border-gray-700 p-6">
         @if ($activeTemplate?->isPdfBased())
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                The current version is an uploaded PDF —
-                <a href="{{ route('admin.service-agreement.templates.download', $activeTemplate) }}" class="text-gold-dark font-semibold hover:underline">download it</a>
-                to review. Publishing below replaces it with a new version (text or PDF).
-            </p>
+            <div class="mb-5">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Current version is an uploaded PDF.
+                        <a href="{{ route('admin.service-agreement.templates.download', $activeTemplate) }}" class="text-gold-dark font-semibold hover:underline">Download</a>
+                    </p>
+                </div>
+                <iframe src="{{ route('admin.service-agreement.templates.download', $activeTemplate) }}"
+                        class="w-full rounded-xl border border-gray-200 dark:border-gray-700"
+                        style="height:750px;">
+                </iframe>
+            </div>
         @endif
 
         @php $source = old('source', $activeTemplate?->isPdfBased() ? 'pdf' : 'text'); @endphp
