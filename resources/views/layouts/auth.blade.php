@@ -88,6 +88,44 @@
             button.querySelector('.eye-icon').classList.toggle('hidden', isHidden);
             button.querySelector('.eye-off-icon').classList.toggle('hidden', !isHidden);
         }
+
+        function updatePasswordStrength(input, groupId) {
+            const group = document.getElementById(groupId);
+            const meter = group.querySelector('.password-strength-meter');
+            const bars  = group.querySelectorAll('.strength-bar');
+            const label = group.querySelector('.strength-label');
+            const password = input.value;
+
+            if (!password) {
+                meter.classList.add('hidden');
+                return;
+            }
+            meter.classList.remove('hidden');
+
+            let score = 0;
+            if (password.length >= 8) score++;
+            if (password.length >= 12) score++;
+            if (/[a-z]/.test(password)) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+
+            let tier, color, filledBars;
+            if (score <= 2) {
+                tier = 'Weak'; color = '#DC2626'; filledBars = 1;
+            } else if (score <= 4) {
+                tier = 'Strong'; color = '#C9A84C'; filledBars = 2;
+            } else {
+                tier = 'Very Strong'; color = '#2A9D8F'; filledBars = 3;
+            }
+
+            bars.forEach((bar, i) => {
+                bar.style.backgroundColor = i < filledBars ? color : '#E5E7EB';
+            });
+
+            label.textContent = tier;
+            label.style.color = color;
+        }
     </script>
 </body>
 </html>
