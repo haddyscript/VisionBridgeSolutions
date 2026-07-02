@@ -36,7 +36,7 @@
         {{-- Illustration panel (slanted on desktop) --}}
         <div class="hidden lg:flex lg:absolute lg:inset-y-0 lg:left-0 lg:w-[58%] relative overflow-hidden items-center p-12 pr-24"
              style="background-image:url('{{ asset('image/Landing_Page_Development.jpeg') }}'); background-size:cover; background-position:center; clip-path:polygon(0 0, 100% 0, 78% 100%, 0 100%);">
-            <div class="absolute inset-0" style="background:linear-gradient(135deg,rgba(17,29,51,0.78),rgba(27,42,74,0.55));"></div>
+            <div class="absolute inset-0" style="background:linear-gradient(135deg,rgba(17,29,51,0.88),rgba(27,42,74,0.78));"></div>
             <div class="absolute bottom-0 left-1/4 w-3/4 h-28" style="background-image:radial-gradient(circle,rgba(255,255,255,0.5) 1.5px,transparent 1.5px);background-size:14px 14px;"></div>
 
             <div class="relative max-w-sm pl-4">
@@ -46,8 +46,8 @@
                     </div>
                 </div>
 
-                <h2 class="font-display text-3xl font-extrabold text-white mb-3">Your project, all in one place</h2>
-                <p class="text-white/88 text-base font-medium leading-relaxed mb-6">
+                <h2 class="font-display text-3xl font-extrabold text-white mb-3" style="text-shadow:0 1px 3px rgba(0,0,0,0.35);">Your project, all in one place</h2>
+                <p class="text-white text-base font-medium leading-relaxed mb-6" style="text-shadow:0 1px 3px rgba(0,0,0,0.35);">
                     Upload files, track progress, and manage billing for your website project &mdash; every step of the way, from onboarding to launch.
                 </p>
 
