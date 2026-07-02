@@ -33,6 +33,7 @@ use App\Models\MaintenancePlan;
 use App\Http\Controllers\Portal\AccountController as PortalAccountController;
 use App\Http\Controllers\Portal\CarePlanAgreementController as PortalCarePlanAgreementController;
 use App\Http\Controllers\Portal\CategoryController;
+use App\Http\Controllers\Portal\ConsultationController as PortalConsultationController;
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\DocumentController as PortalDocumentController;
 use App\Http\Controllers\Portal\FaqFeedbackController;
@@ -135,6 +136,8 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
     Route::get('/portal/documents', [PortalDocumentController::class, 'index'])->name('portal.documents.index');
     Route::get('/portal/project-requests', [PortalProjectRequestController::class, 'show'])->name('portal.project-requests.show');
     Route::post('/portal/project-requests', [PortalProjectRequestController::class, 'store'])->name('portal.project-requests.store');
+    Route::get('/portal/consultation', [PortalConsultationController::class, 'create'])->name('portal.consultation.create');
+    Route::post('/portal/consultation', [PortalConsultationController::class, 'store'])->name('portal.consultation.store');
     Route::get('/portal/files/{category}', [CategoryController::class, 'show'])->name('portal.category');
     Route::get('/portal/files/{category}/download', [CategoryController::class, 'downloadAll'])->name('portal.category.download');
     Route::post('/portal/projects/{project}/uploads', [UploadController::class, 'store'])->name('portal.uploads.store');
