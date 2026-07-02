@@ -152,8 +152,12 @@
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $signature->project->name }}</td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">v{{ $signature->template->version }}</td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $signature->signed_at->format('M j, Y') }}</td>
-                        <td class="px-5 py-3.5 text-right">
+                        <td class="px-5 py-3.5 text-right whitespace-nowrap">
                             <a href="{{ route('portal.agreement.download', $signature) }}" class="text-gold-dark font-semibold hover:underline">Download PDF</a>
+                            <form method="POST" action="{{ route('admin.service-agreement.resend', $signature) }}" class="inline" onsubmit="return confirm('Resend the signed agreement email to {{ $signature->user->email }}?')">
+                                @csrf
+                                <button type="submit" class="text-navy dark:text-white font-semibold hover:underline ml-3">Resend Email</button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach

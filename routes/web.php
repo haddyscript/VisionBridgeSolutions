@@ -247,6 +247,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/service-agreement', [AdminServiceAgreementController::class, 'index'])->name('service-agreement.index');
     Route::post('/service-agreement', [AdminServiceAgreementController::class, 'store'])->name('service-agreement.store');
+    Route::post('/service-agreement/{serviceAgreementSignature}/resend', [AdminServiceAgreementController::class, 'resend'])->name('service-agreement.resend');
     Route::get('/service-agreement/templates/{serviceAgreementTemplate}/download', [AdminServiceAgreementController::class, 'downloadTemplate'])->name('service-agreement.templates.download');
     Route::get('/service-agreement/templates/{serviceAgreementTemplate}/view', [AdminServiceAgreementController::class, 'viewTemplate'])->name('service-agreement.templates.view');
 

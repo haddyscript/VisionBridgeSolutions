@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ServiceAgreementSignedMail;
 use App\Models\ServiceAgreementSignature;
 use App\Models\ServiceAgreementTemplate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class ServiceAgreementController extends Controller
@@ -51,6 +53,13 @@ class ServiceAgreementController extends Controller
         ]);
 
         return back()->with('status', "Published Service Agreement version {$nextVersion}. Clients who haven't signed yet will see the new version; existing signatures are unaffected.");
+    }
+
+    public function resend(ServiceAgreementSignature $serviceAgreementSignature)
+    {
+        Mail::to($serviceAgreementSignature->user->email)->send(new ServiceAgreementSignedMail($serviceAgreementSignature));
+
+        return back()->with('status', "Signed agreement resent to {$serviceAgreementSignature->user->email}.");
     }
 
     public function downloadTemplate(ServiceAgreementTemplate $serviceAgreementTemplate)
