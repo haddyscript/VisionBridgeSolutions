@@ -10,6 +10,8 @@
         "barryvdh/laravel-dompdf": "^3.1",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
+        "setasign/fpdf": "^1.9",
+        "setasign/fpdi": "^2.6",
         "stripe/stripe-php": "^20.2"
     },
     "require-dev": {

@@ -43,3 +43,8 @@ php artisan db:seed
 php artisan db:seed --class=MaintenancePlanSeeder
 php artisan db:seed --class=ServiceAgreementTemplateSeeder
 composer update barryvdh/laravel-dompdf
+
+composer require setasign/fpdi setasign/fpdf
+
+# Install poppler-utils so PDF pages can be rendered for reading
+which brew && brew install poppler 2>&1 | tail -20

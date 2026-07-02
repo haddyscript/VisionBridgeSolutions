@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\ServiceAgreementSignedMail;
 use App\Models\ServiceAgreementSignature;
 use App\Models\ServiceAgreementTemplate;
+use App\Services\AgreementPdfFiller;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -121,12 +122,10 @@ class ServiceAgreementController extends Controller
 
         $pdfPath = "agreements/{$project->id}/agreement-{$signature->id}.pdf";
 
-        // PDF-based templates can't be re-rendered from text, and merging a
-        // signature page into an uploaded multi-page PDF needs a library we
-        // don't have installed — so we generate a one-page certificate that
-        // references the uploaded agreement (by title/version/hash) instead.
-        // The uploaded agreement itself stays downloadable from the Documents
-        // page and this same signing screen.
+        // PDF-based templates can't be re-rendered from text, so this is a
+        // one-page certificate referencing the uploaded agreement (by
+        // title/version/hash) — proof of signature, kept separate from the
+        // filled agreement itself (see AgreementPdfFiller below).
         $pdf = $template->isPdfBased()
             ? Pdf::loadView('pdfs.service-agreement-certificate', [
                 'template' => $template,
@@ -142,6 +141,11 @@ class ServiceAgreementController extends Controller
         Storage::disk('local')->put($pdfPath, $pdf->output());
 
         $signature->update(['pdf_path' => $pdfPath]);
+
+        if ($template->isPdfBased()) {
+            $filledPdfPath = (new AgreementPdfFiller)->fill($template, $signature->fresh());
+            $signature->update(['filled_pdf_path' => $filledPdfPath]);
+        }
 
         Mail::to($user->email)->send(new ServiceAgreementSignedMail($signature));
         Mail::to(config('mail.admin_address'))->send(new ServiceAgreementSignedMail($signature));
@@ -169,6 +173,16 @@ class ServiceAgreementController extends Controller
         abort_unless($signature->pdf_path && Storage::disk('local')->exists($signature->pdf_path), 404);
 
         return Storage::disk('local')->response($signature->pdf_path, 'VisionBridge-Service-Agreement.pdf');
+    }
+
+    public function viewFilled(Request $request, ServiceAgreementSignature $signature)
+    {
+        $user = $request->user();
+
+        abort_unless($user->isAdmin() || $signature->user_id === $user->id, 403);
+        abort_unless($signature->filled_pdf_path && Storage::disk('local')->exists($signature->filled_pdf_path), 404);
+
+        return Storage::disk('local')->response($signature->filled_pdf_path, 'VisionBridge-Signed-Agreement.pdf');
     }
 
     public function viewTemplate(Request $request, ServiceAgreementTemplate $serviceAgreementTemplate)

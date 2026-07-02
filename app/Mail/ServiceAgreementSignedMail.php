@@ -30,7 +30,9 @@ class ServiceAgreementSignedMail extends Mailable
                 $mail->attachFromStorageDisk('local', $this->signature->pdf_path, 'VisionBridge-Signature-Certificate.pdf');
             }
 
-            if ($template->pdf_path) {
+            if ($this->signature->filled_pdf_path) {
+                $mail->attachFromStorageDisk('local', $this->signature->filled_pdf_path, 'VisionBridge-Service-Agreement.pdf');
+            } elseif ($template->pdf_path) {
                 $mail->attachFromStorageDisk('local', $template->pdf_path, 'VisionBridge-Service-Agreement.pdf');
             }
         } elseif ($this->signature->pdf_path) {

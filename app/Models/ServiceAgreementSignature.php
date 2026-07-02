@@ -19,6 +19,7 @@ class ServiceAgreementSignature extends Model
         'ip_address',
         'user_agent',
         'pdf_path',
+        'filled_pdf_path',
         'signed_at',
     ];
 
