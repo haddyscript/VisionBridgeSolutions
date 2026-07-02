@@ -10,7 +10,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->unsignedTinyInteger('onboarding_step')->default(1)->after('welcomed_at');
+            $table->unsignedTinyInteger('onboarding_step')->default(1);
         });
 
         // Backfill existing users based on how far through the old 3-step flow they got.
