@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,6 +34,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Applies everywhere `Rules\Password::defaults()` is used — register,
+        // password reset, portal account settings, admin team settings.
+        Password::defaults(function () {
+            return Password::min(8)->mixedCase()->numbers();
+        });
+
         // @assetv('image/logo.png') — same as asset() but appends the file's
         // last-modified time as a cache-busting query string, so updated
         // images/videos show up on a normal reload without a hard refresh.
