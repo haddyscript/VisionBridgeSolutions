@@ -80,5 +80,14 @@
         </div>
     </div>
 
+    <script>
+        function togglePasswordVisibility(button) {
+            const input = button.parentElement.querySelector('input');
+            const isHidden = input.type === 'password';
+            input.type = isHidden ? 'text' : 'password';
+            button.querySelector('.eye-icon').classList.toggle('hidden', isHidden);
+            button.querySelector('.eye-off-icon').classList.toggle('hidden', !isHidden);
+        }
+    </script>
 </body>
 </html>
