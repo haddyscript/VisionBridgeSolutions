@@ -12,12 +12,14 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('verification.send') }}" class="mb-4">
+    <form method="POST" action="{{ route('verification.send') }}" class="mb-3">
         @csrf
         <button type="submit" class="w-full bg-gold hover:bg-gold-dark text-navy font-bold text-lg py-3.5 rounded-lg transition-colors">
             Resend Verification Email
         </button>
     </form>
+
+    <p class="text-center text-sm text-gray-500 mb-4">Don't see it? Be sure to check your spam or junk folder.</p>
 
     <form method="POST" action="{{ route('logout') }}">
         @csrf
