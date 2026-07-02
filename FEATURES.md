@@ -230,3 +230,12 @@ The boss delivered the **CLIENT WEBSITE DEVELOPMENT & WEBSITE CARE PLAN MASTER A
 **All decisions resolved.** Step 12 (Payment) is confirmed admin-manual permanently — VisionBridge reviews the client's website type selection and provides a custom proposal/quote, after which the admin sets the project price and the deposit request is created as it works today. No automation needed.
 
 **Resolved — no re-signing needed:** The system has not been introduced to any real clients yet — it is in staging/pre-launch. No signatures exist against the old agreement, so the Master Agreement PDF is a clean start with no migration concern.
+
+## 14. Boss Clarifications Ahead of Launch (2026-07-02)
+
+Two clarifications from the boss's pre-Thursday-meeting email, checked against the codebase:
+
+| Clarification | Finding | Action |
+|---|---|---|
+| Master Agreement must not define "Full Website" as a fixed page count (e.g. "seven pages") — should instead point to the client's Proposal/SOW/Project Work Order | No page-count or "Full Website" language exists anywhere in app code or portal views — this language only lives in the Master Agreement PDF text itself | No code change needed; wording fix is on the boss's PDF revision, to be re-uploaded via the existing Service Agreement PDF-replace flow (`Admin\ServiceAgreementController::store`) when ready |
+| The 7-day landing page window is a **Review Period**, not a "Free Trial" — language should say so consistently | No "free trial" language existed in the codebase, but the client-facing copy on the Overview page also never named it a "7-Day Landing Page Review Period" explicitly — just a generic "review window" | Updated `resources/views/portal/dashboard.blade.php` review-window card to explicitly label it "7-Day Landing Page Review Period" and state it is not a free trial |

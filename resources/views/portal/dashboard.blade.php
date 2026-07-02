@@ -246,14 +246,16 @@
                     View Final Payment
                 </a>
             @else
-                <p class="text-xs font-semibold uppercase tracking-widest text-teal-dark mb-2">Your Website Is Ready for Review</p>
+                <p class="text-xs font-semibold uppercase tracking-widest text-teal-dark mb-2">7-Day Landing Page Review Period</p>
                 <h2 class="font-display text-xl font-bold text-navy dark:text-white mb-2">Take a look and let us know what you think</h2>
                 <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 max-w-2xl">
                     @if ($project->isReviewWindowOpen())
                         You have <strong>{{ $project->daysLeftInReview() }} day{{ $project->daysLeftInReview() === 1 ? '' : 's' }}</strong>
-                        left to review your site and either approve it or request revisions within scope.
+                        left in your 7-Day Landing Page Review Period to request minor revisions. This is a review
+                        period, not a free trial — at the end of it, you can approve the landing page as your
+                        completed project or authorize us to continue building the rest of your site.
                     @else
-                        Your review window has closed, but you can still approve below or reach out if you need revisions.
+                        Your 7-Day Landing Page Review Period has closed, but you can still approve below or reach out if you need revisions.
                     @endif
                 </p>
 
