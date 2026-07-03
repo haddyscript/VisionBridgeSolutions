@@ -84,8 +84,8 @@
         @php
             $extColors = [
                 'pdf' => ['bg' => 'bg-red-50 dark:bg-red-500/10', 'text' => 'text-red-500', 'border' => 'border-red-100'],
-                'doc' => ['bg' => 'bg-blue-50', 'text' => 'text-blue-500', 'border' => 'border-blue-100'],
-                'docx' => ['bg' => 'bg-blue-50', 'text' => 'text-blue-500', 'border' => 'border-blue-100'],
+                'doc' => ['bg' => 'bg-navy/5 dark:bg-navy/10', 'text' => 'text-navy dark:text-white', 'border' => 'border-navy/10'],
+                'docx' => ['bg' => 'bg-navy/5 dark:bg-navy/10', 'text' => 'text-navy dark:text-white', 'border' => 'border-navy/10'],
                 'xls' => ['bg' => 'bg-teal-50', 'text' => 'text-teal-dark', 'border' => 'border-teal-100'],
                 'xlsx' => ['bg' => 'bg-teal-50', 'text' => 'text-teal-dark', 'border' => 'border-teal-100'],
                 'zip' => ['bg' => 'bg-gold/10', 'text' => 'text-gold-dark', 'border' => 'border-gold/20'],

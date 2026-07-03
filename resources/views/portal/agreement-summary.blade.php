@@ -61,9 +61,9 @@
     </div>
 </div>
 
-<div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40 rounded-xl px-5 py-4 mb-6">
-    <p class="text-sm text-amber-800 dark:text-amber-300 font-semibold mb-1">Billing Authorization Notice</p>
-    <p class="text-sm text-amber-700 dark:text-amber-400">
+<div class="bg-gold/10 dark:bg-gold/10 border border-gold/30 dark:border-gold/30 rounded-xl px-5 py-4 mb-6">
+    <p class="text-sm text-gold-dark font-semibold mb-1">Billing Authorization Notice</p>
+    <p class="text-sm text-gold-dark">
         By signing the Master Agreement on the next step, you authorize VisionBridge Solutions to process
         the recurring monthly subscription fee for the Website Care Plan selected above. Recurring billing
         continues until properly canceled in accordance with the terms of the Agreement.

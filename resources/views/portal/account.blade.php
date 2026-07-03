@@ -9,11 +9,11 @@
 
 {{-- Status flash --}}
 @if (session('status'))
-    <div class="mb-6 flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20 px-4 py-3">
-        <svg class="w-4 h-4 text-green-600 dark:text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="mb-6 flex items-center gap-3 rounded-xl border border-teal/30 bg-teal/10 px-4 py-3">
+        <svg class="w-4 h-4 text-teal-dark dark:text-teal-light shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
         </svg>
-        <p class="text-sm font-medium text-green-700 dark:text-green-300">{{ session('status') }}</p>
+        <p class="text-sm font-medium text-teal-dark dark:text-teal-light">{{ session('status') }}</p>
     </div>
 @endif
 

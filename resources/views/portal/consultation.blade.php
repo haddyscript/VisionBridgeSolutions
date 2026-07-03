@@ -14,7 +14,7 @@
         </div>
     @endif
     @if (! $hasUploadedFile)
-        <div class="mb-6 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
+        <div class="mb-6 text-sm text-gold-dark bg-gold/10 border border-gold/30 rounded-lg px-4 py-3">
             Please upload at least one project file (image, video, logo, document, or marketing material) in
             <a href="{{ route('portal.category', 'image') }}" class="font-semibold underline">Project Files</a>
             before booking a consultation.
