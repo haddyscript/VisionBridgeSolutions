@@ -887,7 +887,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <iframe src="https://player.vimeo.com/video/1204394600?api=1&background=1&autoplay=1&loop=1&muted=1&h=4a378f873f"
                         style="position:absolute;top:50%;left:50%;width:177.78vh;height:56.25vw;min-width:100%;min-height:100%;transform:translate(-50%,-50%);pointer-events:none;"
                         frameborder="0" allow="autoplay; fullscreen" loading="lazy" title="VisionBridge showcase reel"></iframe>
-                <div class="absolute inset-0" style="background:linear-gradient(135deg,rgba(255,255,255,0.90) 0%,rgba(251,248,241,0.86) 55%,rgba(255,255,255,0.92) 100%);"></div>
+                {{-- Light wash only where it's needed for legibility (top,
+                     behind the heading, and bottom, behind the card grid
+                     overlap) — the middle stays clear so the video reads
+                     as the actual background, not a washed-out tint. --}}
+                <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(255,255,255,0.55) 0%,rgba(255,255,255,0.05) 30%,rgba(255,255,255,0.05) 65%,rgba(255,255,255,0.55) 100%);"></div>
             </div>
 
             <div class="hero-orb" style="width:420px;height:420px;top:-120px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,0.18) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 20s ease-in-out infinite;z-index:1;"></div>
@@ -912,9 +916,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             </div>
 
             <div class="relative" style="z-index:2;">
-                <span id="portfolio-kicker" class="inline-block text-sm font-semibold tracking-widest uppercase mb-3" style="color:#2A9D8F;">Our Work</span>
-                <h2 id="portfolio-heading" class="font-display font-bold" style="color:#15202C;font-size:clamp(1.875rem,4vw,2.75rem);">We Build Websites That Grow Your Mission</h2>
-                <p id="portfolio-subtitle" class="text-base mt-3 max-w-xl mx-auto" style="color:rgba(21,32,44,0.62);">Because a lasting online presence isn't built by chance — it's shaped with purpose, one mission at a time.</p>
+                <span id="portfolio-kicker" class="inline-block text-sm font-semibold tracking-widest uppercase mb-3" style="color:#2A9D8F;text-shadow:0 1px 16px rgba(255,255,255,0.9);">Our Work</span>
+                <h2 id="portfolio-heading" class="font-display font-bold" style="color:#15202C;font-size:clamp(1.875rem,4vw,2.75rem);text-shadow:0 2px 20px rgba(255,255,255,0.9);">We Build Websites That Grow Your Mission</h2>
+                <p id="portfolio-subtitle" class="text-base mt-3 max-w-xl mx-auto" style="color:rgba(21,32,44,0.75);text-shadow:0 1px 14px rgba(255,255,255,0.9);">Because a lasting online presence isn't built by chance — it's shaped with purpose, one mission at a time.</p>
             </div>
         </div>
 
