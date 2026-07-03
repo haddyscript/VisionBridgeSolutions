@@ -877,17 +877,44 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         ];
         @endphp
 
-        {{-- Dark glass panel — heading sits inside it, project cards
-             float over its bottom edge (overlap via negative margin on the
-             card grid below, rather than absolute positioning). --}}
-        <div id="portfolio-panel" class="rounded-3xl relative text-center overflow-hidden px-6 sm:px-12 pt-16 pb-28" style="background:linear-gradient(135deg,#FFFFFF,#FBF8F1);border:1px solid rgba(201,168,76,0.25);box-shadow:0 20px 50px rgba(21,32,44,0.08);">
-            <div class="hero-orb" style="width:420px;height:420px;top:-120px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,0.18) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 20s ease-in-out infinite;"></div>
-            <div class="hero-orb" style="width:360px;height:360px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.14) 0%,transparent 70%);filter:blur(54px);animation:orb-drift 18s ease-in-out infinite reverse 3s;"></div>
+        {{-- Glass panel — a looping showcase reel plays behind a soft
+             white/cream overlay so heading text and badges stay legible;
+             heading sits on top, project cards float over the bottom edge
+             (overlap via negative margin on the card grid below). --}}
+        <div id="portfolio-panel" class="rounded-3xl relative text-center overflow-hidden px-6 sm:px-12 pt-16 pb-28" style="border:1px solid rgba(201,168,76,0.25);box-shadow:0 20px 50px rgba(21,32,44,0.08);">
+            {{-- Background video loop --}}
+            <div class="absolute inset-0" style="z-index:0;">
+                <iframe src="https://player.vimeo.com/video/1204394600?api=1&background=1&autoplay=1&loop=1&muted=1&h=4a378f873f"
+                        style="position:absolute;top:50%;left:50%;width:177.78vh;height:56.25vw;min-width:100%;min-height:100%;transform:translate(-50%,-50%);pointer-events:none;"
+                        frameborder="0" allow="autoplay; fullscreen" loading="lazy" title="VisionBridge showcase reel"></iframe>
+                <div class="absolute inset-0" style="background:linear-gradient(135deg,rgba(255,255,255,0.90) 0%,rgba(251,248,241,0.86) 55%,rgba(255,255,255,0.92) 100%);"></div>
+            </div>
 
-            <div class="relative" style="z-index:1;">
+            <div class="hero-orb" style="width:420px;height:420px;top:-120px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,0.18) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 20s ease-in-out infinite;z-index:1;"></div>
+            <div class="hero-orb" style="width:360px;height:360px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.14) 0%,transparent 70%);filter:blur(54px);animation:orb-drift 18s ease-in-out infinite reverse 3s;z-index:1;"></div>
+
+            {{-- Floating service badges --}}
+            <div class="portfolio-badge portfolio-badge-1 hidden lg:flex items-center gap-2.5">
+                <svg class="w-4 h-4" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10M9 21V3h6v18M9 8h6M9 13h6"/></svg>
+                <span class="text-sm font-semibold" style="color:#15202C;">Website Design</span>
+            </div>
+            <div class="portfolio-badge portfolio-badge-2 hidden lg:flex items-center gap-2.5">
+                <svg class="w-4 h-4" style="color:#2A9D8F;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l-4 4 4 4m8-8l4 4-4 4M14 5l-4 14"/></svg>
+                <span class="text-sm font-semibold" style="color:#15202C;">Development</span>
+            </div>
+            <div class="portfolio-badge portfolio-badge-3 hidden lg:flex items-center gap-2.5">
+                <svg class="w-4 h-4" style="color:#2A9D8F;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7l7-4z"/></svg>
+                <span class="text-sm font-semibold" style="color:#15202C;">Care Plans</span>
+            </div>
+            <div class="portfolio-badge portfolio-badge-4 hidden lg:flex items-center gap-2.5">
+                <svg class="w-4 h-4" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12a7 7 0 0113.9-1.4A4.5 4.5 0 0118.5 19H6a4 4 0 01-1-7.87"/></svg>
+                <span class="text-sm font-semibold" style="color:#15202C;">Hosting</span>
+            </div>
+
+            <div class="relative" style="z-index:2;">
                 <span id="portfolio-kicker" class="inline-block text-sm font-semibold tracking-widest uppercase mb-3" style="color:#2A9D8F;">Our Work</span>
-                <h2 id="portfolio-heading" class="font-display font-bold" style="color:#15202C;font-size:clamp(1.875rem,4vw,2.75rem);">Featured Projects</h2>
-                <p id="portfolio-subtitle" class="text-base mt-3 max-w-xl mx-auto" style="color:rgba(21,32,44,0.62);">A selection of websites we've built for ministries, churches, and organizations.</p>
+                <h2 id="portfolio-heading" class="font-display font-bold" style="color:#15202C;font-size:clamp(1.875rem,4vw,2.75rem);">We Build Websites That Grow Your Mission</h2>
+                <p id="portfolio-subtitle" class="text-base mt-3 max-w-xl mx-auto" style="color:rgba(21,32,44,0.62);">Because a lasting online presence isn't built by chance — it's shaped with purpose, one mission at a time.</p>
             </div>
         </div>
 
@@ -1995,10 +2022,21 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         { opacity:0, y:16 },
                         { opacity:1, y:0, duration:0.50, ease:'power2.out' }, '-=0.28');
 
-                // Cards: scale-up zoom — 85% → 100% with back.out(1.55) overshoot
+                // Cards: scale-up zoom — 85% → 100% with back.out(1.55) overshoot,
+                // then settle into a continuous gentle up/down float once landed
+                // (chained via onComplete rather than a separate CSS animation so
+                // it never fights the entrance tween's own transform values).
                 gsap.fromTo('.portfolio-card',
                     { opacity:0, scale:0.85, y:44 },
-                    { opacity:1, scale:1, y:0, duration:0.82, ease:'back.out(1.55)', stagger:0.13, delay:0.22 }
+                    {
+                        opacity:1, scale:1, y:0, duration:0.82, ease:'back.out(1.55)', stagger:0.13, delay:0.22,
+                        onComplete() {
+                            gsap.to('.portfolio-card', {
+                                y:'-=16', duration:2.4, ease:'sine.inOut',
+                                yoyo:true, repeat:-1, stagger:{ each:0.4, from:'start' },
+                            });
+                        },
+                    }
                 );
             }
 

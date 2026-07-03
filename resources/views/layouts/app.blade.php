@@ -198,6 +198,22 @@
             50%      { transform:translateY(-13px) rotate(0deg); }
         }
 
+        /* ─── Portfolio floating service badges — same glassmorphism
+             pill treatment as .float-card, reused for the 4 corner
+             badges around the Our Work video panel. ─── */
+        .portfolio-badge {
+            position:absolute; pointer-events:none; z-index:3;
+            background:rgba(255,255,255,.92); border:1px solid rgba(47,58,69,.08);
+            box-shadow:0 8px 28px rgba(47,58,69,.10);
+            backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            border-radius:9999px; padding:10px 20px;
+            will-change:transform;
+        }
+        .portfolio-badge-1 { top:6%;    left:2%;  animation:float-a 5s   ease-in-out infinite; }
+        .portfolio-badge-2 { top:8%;    right:2%; animation:float-b 6.5s ease-in-out infinite 0.6s; }
+        .portfolio-badge-3 { bottom:8%; left:3%;  animation:float-b 6s   ease-in-out infinite 1.2s; }
+        .portfolio-badge-4 { bottom:6%; right:3%; animation:float-a 5.5s ease-in-out infinite 1.8s; }
+
         /* ─── Atmospheric orbs ─── */
         .hero-orb { position:absolute; border-radius:50%; pointer-events:none; will-change:transform; }
         @keyframes orb-drift {
@@ -1875,7 +1891,7 @@
             const selectors = [
                 '.hero-orb', '#svc-toggle-btn', '.wave-teal', '.wave-main',
                 '.shimmer-gold', '.live-dot', '.float-card-1', '.float-card-2',
-                '#hscroll-edge-arrow', '.medallion-sweep',
+                '.portfolio-badge', '#hscroll-edge-arrow', '.medallion-sweep',
             ];
             const els = document.querySelectorAll(selectors.join(','));
             if (!els.length) return;
