@@ -882,8 +882,10 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
              heading sits on top, project cards float over the bottom edge
              (overlap via negative margin on the card grid below). --}}
         <div id="portfolio-panel" class="rounded-3xl relative text-center overflow-hidden px-6 sm:px-12 pt-16 pb-16" style="border:1px solid rgba(201,168,76,0.25);box-shadow:0 20px 50px rgba(21,32,44,0.08);">
-            {{-- Background video loop --}}
-            <div class="absolute inset-0" style="z-index:0;">
+            {{-- Background video loop — removed via JS for visitors with
+                 prefers-reduced-motion set, leaving just the section's own
+                 cream gradient behind it. --}}
+            <div id="portfolio-video" class="absolute inset-0" style="z-index:0;">
                 <iframe src="https://player.vimeo.com/video/1204394600?api=1&background=1&autoplay=1&loop=1&muted=1&h=4a378f873f"
                         style="position:absolute;top:50%;left:50%;width:177.78vh;height:56.25vw;min-width:100%;min-height:100%;transform:translate(-50%,-50%);pointer-events:none;"
                         frameborder="0" allow="autoplay; fullscreen" loading="lazy" title="VisionBridge showcase reel"></iframe>
@@ -919,6 +921,23 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <span id="portfolio-kicker" class="inline-block text-sm font-semibold tracking-widest uppercase mb-3" style="color:#2A9D8F;text-shadow:0 1px 16px rgba(255,255,255,0.9);">Our Work</span>
                 <h2 id="portfolio-heading" class="font-display font-bold" style="color:#15202C;font-size:clamp(1.875rem,4vw,2.75rem);text-shadow:0 2px 20px rgba(255,255,255,0.9);">We Build Websites That Grow Your Mission</h2>
                 <p id="portfolio-subtitle" class="text-base mt-3 max-w-xl mx-auto" style="color:rgba(21,32,44,0.75);text-shadow:0 1px 14px rgba(255,255,255,0.9);">Because a lasting online presence isn't built by chance — it's shaped with purpose, one mission at a time.</p>
+
+                {{-- Mobile fallback for the 4 floating service badges, which
+                     are desktop-only (hidden lg:flex) — otherwise this list
+                     of services disappears entirely below the lg breakpoint. --}}
+                <div class="flex lg:hidden flex-wrap justify-center gap-2 mt-6">
+                    @foreach ([
+                        ['label' => 'Website Design', 'color' => '#C9A84C', 'path' => 'M7 21h10M9 21V3h6v18M9 8h6M9 13h6'],
+                        ['label' => 'Development',    'color' => '#2A9D8F', 'path' => 'M8 9l-4 4 4 4m8-8l4 4-4 4M14 5l-4 14'],
+                        ['label' => 'Care Plans',      'color' => '#2A9D8F', 'path' => 'M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7l7-4z'],
+                        ['label' => 'Hosting',         'color' => '#C9A84C', 'path' => 'M5 12a7 7 0 0113.9-1.4A4.5 4.5 0 0118.5 19H6a4 4 0 01-1-7.87'],
+                    ] as $service)
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full" style="background:rgba(255,255,255,0.85);color:#15202C;">
+                            <svg class="w-3.5 h-3.5" style="color:{{ $service['color'] }};" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $service['path'] }}"/></svg>
+                            {{ $service['label'] }}
+                        </span>
+                    @endforeach
+                </div>
             </div>
 
             {{-- Project names as plain floating text over the video — no
@@ -930,7 +949,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         <span class="text-xs font-semibold tracking-widest uppercase" style="color:#C9A84C;text-shadow:0 1px 12px rgba(255,255,255,0.9);">{{ $project['num'] }}</span>
                         <h4 class="font-bold text-lg mt-1">
                             @if ($hasLink)
-                                <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="hover:underline" style="color:#15202C;text-shadow:0 1px 12px rgba(255,255,255,0.9);">{{ $project['title'] }}</a>
+                                <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="hover:underline text-[#15202C] hover:text-[#C9A84C] transition-colors" style="text-shadow:0 1px 12px rgba(255,255,255,0.9);">{{ $project['title'] }}</a>
                             @else
                                 <span style="color:#15202C;text-shadow:0 1px 12px rgba(255,255,255,0.9);">{{ $project['title'] }}</span>
                             @endif
@@ -940,13 +959,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 @endforeach
             </div>
 
-            {{-- Decorative pagination dots — all 3 projects already show at
-                 once, so this is purely visual, not a functioning carousel. --}}
-            <div class="relative flex items-center justify-center gap-2 mt-8" style="z-index:2;">
-                @foreach ($portfolioProjects as $project)
-                    <span class="rounded-full transition-all duration-300" style="height:8px;width:{{ $loop->index === 1 ? '22px' : '8px' }};background:{{ $loop->index === 1 ? '#C9A84C' : 'rgba(21,32,44,0.25)' }};"></span>
-                @endforeach
-            </div>
         </div>
 
     </div>
@@ -1990,14 +2002,29 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         // ============================================================
         (function() {
             let portfolioAnimated = false;
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            // Visitors who've asked their OS for reduced motion don't get the
+            // autoplaying background video either — drop the iframe entirely
+            // and let the section's own cream gradient show through instead.
+            if (reduceMotion) {
+                document.getElementById('portfolio-video')?.remove();
+            }
 
             // Set hidden initial state immediately so elements don't flash visible
             gsap.set(['#portfolio-kicker','#portfolio-heading','#portfolio-subtitle'], { opacity:0 });
             gsap.set('.portfolio-card', { opacity:0, scale:0.85, y:44, transformOrigin:'center bottom' });
+            gsap.set('.portfolio-badge', { opacity:0 });
 
             function runPortfolioAnimation() {
                 if (portfolioAnimated) return;
                 portfolioAnimated = true;
+
+                if (reduceMotion) {
+                    // Skip straight to the final visible state — no motion at all.
+                    gsap.set(['#portfolio-kicker','#portfolio-heading','#portfolio-subtitle','.portfolio-card','.portfolio-badge'], { opacity:1, x:0, y:0, scale:1, skewY:0 });
+                    return;
+                }
 
                 // Header cascade: kicker sweeps left → heading rises → subtitle fades
                 gsap.timeline()
@@ -2027,6 +2054,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         },
                     }
                 );
+
+                // Badges: fade in only — their continuous float already comes
+                // from the .portfolio-badge-N CSS animations, so GSAP never
+                // touches their transform (avoids fighting the CSS keyframes).
+                gsap.to('.portfolio-badge', { opacity:1, duration:0.6, stagger:0.15, ease:'power2.out', delay:0.35 });
             }
 
             const io = new IntersectionObserver((entries) => {
