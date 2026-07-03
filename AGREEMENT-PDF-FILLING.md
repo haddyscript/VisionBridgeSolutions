@@ -50,7 +50,7 @@ confirmed offset.
 
 | Field | Page | x | y (baseline) | Source data |
 |---|---|---|---|---|
-| 5 pre-signature acknowledgment checkboxes | 129 | 74.5 | 109.99, 136.75, 163.39, 190.15, 216.79 (each checkbox's own yMin + 13) | Not per-field data — `ServiceAgreementController::store()` validates all 5 `ack_*` inputs as `'accepted'` before a signature can be created at all, so every filled PDF stamps an "X" on all 5 unconditionally |
+| 5 pre-signature acknowledgment checkboxes | 129 | 74 | 108.99, 135.75, 162.39, 189.15, 215.79 (each checkbox's own yMin + 12) | Not per-field data — `ServiceAgreementController::store()` validates all 5 `ack_*` inputs as `'accepted'` before a signature can be created at all, so every filled PDF stamps a check mark on all 5 unconditionally. Drawn in the `ZapfDingbats` standard PDF font (`chr(52)`), not Helvetica — a plain "X" in a text font sits on top of the PDF's existing hollow "☐" outline and reads as a boxed X rather than a checked box |
 | Selected Care Plan | 132 | 72.024 | 651.5 | `$project->carePlanAgreement->maintenancePlan->name` |
 | Monthly Investment | 132 | 85 (right after the printed "$") | 702 | `maintenancePlan->price / 100`, formatted `number_format(..., 2)` |
 | Client / Organization Name | 133 | 72.024 | 624.86 | `ServiceAgreementSignature->organization_name` |
@@ -59,7 +59,7 @@ confirmed offset.
 | Signature (image) | 134 | 72.024 (top-left of image) | 105 (top), 110×33pt box | `ServiceAgreementSignature->signature_image_path` (PNG) |
 | Date | 134 | 72.024 | 183.3 | `ServiceAgreementSignature->signed_at->format('F j, Y')` |
 
-Font used for all text fields: Helvetica, 11pt, near-black (`SetTextColor(20,20,20)`).
+Font used for all text fields: Helvetica, 11pt, near-black (`SetTextColor(20,20,20)`). The 5 checkboxes are the one exception — `ZapfDingbats`, 11pt, same color — since Helvetica has no check mark glyph.
 
 The signature image box (110×33pt) matches the aspect ratio of the capture
 canvas in `resources/views/portal/agreement.blade.php` (`600×180px` = 10:3),

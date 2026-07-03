@@ -69,11 +69,16 @@ class AgreementPdfFiller
         // as 'accepted' before a signature can be created at all, so every
         // signature reaching this method had all 5 checked — no per-field
         // state to read back.
-        $pdf->SetFont('Helvetica', 'B', 10);
+        //
+        // Uses the ZapfDingbats standard PDF font (not Helvetica) so the
+        // glyph is an actual check mark — a plain "X" drawn in a text font
+        // sits on top of the PDF's existing hollow "☐" box outline and reads
+        // as a boxed X (⊠) rather than a checked box.
+        $pdf->SetFont('ZapfDingbats', '', 11);
         $pdf->SetTextColor(20, 20, 20);
 
         foreach (self::ACKNOWLEDGMENT_CHECKBOX_Y as $checkboxYMin) {
-            $pdf->Text(74.5, $checkboxYMin + 13, 'X');
+            $pdf->Text(74, $checkboxYMin + 12, chr(52));
         }
     }
 
