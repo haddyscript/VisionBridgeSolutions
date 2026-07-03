@@ -286,6 +286,47 @@ A sidebar walkthrough for new clients — spotlights one nav item at a time (Ove
 
 **Full spec — step list, trigger conditions, why a video was rejected, known limitations — lives in [specs/INTERACTIVE_PRODUCT_TOUR.md](specs/INTERACTIVE_PRODUCT_TOUR.md).**
 
+## 15e. In-Portal Announcements Banner (2026-07-03)
+
+An admin-postable notice (maintenance windows, holiday closures, policy changes) shown to every client on Overview, dismissible per-client — closes the gap where the only way to reach every client at once was a one-off manual email.
+
+- New `announcements` (`title`, `body`, `is_active`, `created_by`) and `announcement_dismissals` (`announcement_id`, `user_id`, `dismissed_at`, unique together) tables. Only one announcement can be `is_active` at a time — enforced in `Admin\AnnouncementController::update()`, which deactivates any other active row before activating the one requested — not a DB constraint, since past announcements stay around as history.
+- Admin page at `/admin/announcements` — create (as a draft, not auto-activated), activate/deactivate, delete.
+- The active, not-yet-dismissed-by-this-user announcement renders as a banner on Overview, above the first-visit welcome banner (`Portal\DashboardController` queries it via `whereDoesntHave('dismissals', ...)`). Dismissing POSTs to `portal.announcements.dismiss`, which is per-announcement — dismissing #5 doesn't hide a later #6.
+
+**Full spec — data model, admin flow, known limitations (no scheduling, portal-wide only) — lives in [specs/PORTAL_ANNOUNCEMENTS.md](specs/PORTAL_ANNOUNCEMENTS.md).**
+
+## 15f. Global Portal Search (2026-07-03)
+
+A single search box in the portal header (before the notification bell) searching across a client's own Project Files, Website Content & Revisions, Documents, and Payments — so a client hunting for "that file I uploaded" doesn't have to guess which of ~10 sidebar sections it's in.
+
+- `Portal\SearchController::index()` — `GET /portal/search?q=...` — live `LIKE` queries scoped to the logged-in client's own project only, no new table (fine at this data volume; revisit with a real search index only if it becomes slow).
+- Debounced (250ms) fetch-as-you-type, results grouped by source in a dropdown — same visual language as the notification bell.
+- **FAQ deliberately excluded** — its content is a hardcoded PHP array in `resources/views/portal/faq.blade.php`, not a database table, so it isn't queryable from a backend endpoint without a bigger refactor. The FAQ page already has its own client-side search for that content.
+
+**Full spec — exact sources searched, why FAQ was excluded, known limitations — lives in [specs/PORTAL_GLOBAL_SEARCH.md](specs/PORTAL_GLOBAL_SEARCH.md).**
+
+## 15g. Post-Launch Satisfaction Survey (2026-07-03)
+
+A short 1–5 star rating + optional feedback, offered the moment a project launches — nothing in the portal previously collected a client's opinion after the engagement, only the FAQ's per-answer "was this helpful?" rating.
+
+- New `satisfaction_surveys` table (`project_id` unique, `user_id`, `rating`, `feedback`, `submitted_at`) — a row is created the instant a project becomes `launched`, from **both** places that can happen: `StripeWebhookController::maybeAutoLaunchProject()` (the fully-automatic path) and `Admin\ProjectController::update()` (an admin manually setting status to launched).
+- Client sees a prompt card on Overview linking to `/portal/survey` until submitted — deliberately reappears every visit rather than being dismiss-and-gone like the welcome banner, since this is worth a nudge.
+- Admin gets a read-only list at `/admin/satisfaction-surveys` with an average-rating stat card — no edit/delete, it's a record, not something admin curates.
+
+**Full spec — trigger points, why not dismissible, known limitations (no reminder email, single-question by design) — lives in [specs/POST_LAUNCH_SATISFACTION_SURVEY.md](specs/POST_LAUNCH_SATISFACTION_SURVEY.md).**
+
+## 15h. Two-Factor Authentication (2026-07-03)
+
+Optional TOTP-based 2FA (Google Authenticator, Authy, 1Password, etc.) for any account — client or admin — since both handle signed legal agreements and payment info.
+
+- `App\Services\TwoFactorAuthenticator` implements RFC 4226/6238 (HOTP/TOTP) directly with PHP's built-in `hash_hmac` — no `pragmarx/google2fa` or QR-code package added. QR generation was dropped from v1 specifically because rendering one either needs a new dependency or means sending the raw secret to a third-party image API, a real secrets-leak risk — v1 uses "enter a setup key manually" instead, which every authenticator app supports.
+- `users` gains `two_factor_secret` (encrypted), `two_factor_recovery_codes` (encrypted array, one-time-use, 8 codes), `two_factor_confirmed_at`.
+- Enrollment at `/portal/two-factor` (linked from Account Settings): generate secret → confirm with a 6-digit code → recovery codes shown once. Disabling or regenerating recovery codes both require re-entering the current password.
+- Login gate: `AuthenticatedSessionController::store()` — if the authenticated user has 2FA confirmed, it immediately logs them back out, stashes a pending user id in session, and redirects to `/two-factor-challenge` (`throttle:6,1`) instead of completing login. The session never holds a fully-authenticated user until the code (or a recovery code) checks out.
+
+**Full spec — why TOTP over a package, full enrollment/login flow, known limitations (no "remember this device," no admin-side settings link yet) — lives in [specs/TWO_FACTOR_AUTHENTICATION.md](specs/TWO_FACTOR_AUTHENTICATION.md).**
+
 ## 16. `specs/` Folder
 
-Starting 2026-07-03, implementation specs for features with enough moving parts to warrant one (multi-step flows, anything with a diagram, precise technical reference like PDF field coordinates) live in `specs/` as their own Markdown file, linked from the relevant FEATURES.md entry rather than inlined there. FEATURES.md stays the plain-language "what it does" summary; `specs/` is where the "how, and why it's built that way" detail goes. Existing docs there: [specs/CARE_PLAN_SUBSCRIPTION_FLOW.md](specs/CARE_PLAN_SUBSCRIPTION_FLOW.md), [specs/AGREEMENT-PDF-FILLING.md](specs/AGREEMENT-PDF-FILLING.md), [specs/INTERACTIVE_PRODUCT_TOUR.md](specs/INTERACTIVE_PRODUCT_TOUR.md).
+Starting 2026-07-03, implementation specs for features with enough moving parts to warrant one (multi-step flows, anything with a diagram, precise technical reference like PDF field coordinates) live in `specs/` as their own Markdown file, linked from the relevant FEATURES.md entry rather than inlined there. FEATURES.md stays the plain-language "what it does" summary; `specs/` is where the "how, and why it's built that way" detail goes. Existing docs there: [specs/CARE_PLAN_SUBSCRIPTION_FLOW.md](specs/CARE_PLAN_SUBSCRIPTION_FLOW.md), [specs/AGREEMENT-PDF-FILLING.md](specs/AGREEMENT-PDF-FILLING.md), [specs/INTERACTIVE_PRODUCT_TOUR.md](specs/INTERACTIVE_PRODUCT_TOUR.md), [specs/PORTAL_ANNOUNCEMENTS.md](specs/PORTAL_ANNOUNCEMENTS.md), [specs/PORTAL_GLOBAL_SEARCH.md](specs/PORTAL_GLOBAL_SEARCH.md), [specs/POST_LAUNCH_SATISFACTION_SURVEY.md](specs/POST_LAUNCH_SATISFACTION_SURVEY.md), [specs/TWO_FACTOR_AUTHENTICATION.md](specs/TWO_FACTOR_AUTHENTICATION.md).
