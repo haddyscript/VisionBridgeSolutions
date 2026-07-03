@@ -21,6 +21,7 @@ class TwoFactorController extends Controller
         return view('portal.two-factor', [
             'enabled' => $user->hasTwoFactorEnabled(),
             'secretForDisplay' => $user->hasTwoFactorEnabled() ? null : $authenticator->formatSecretForDisplay($user->two_factor_secret),
+            'qrCodeSvg' => $user->hasTwoFactorEnabled() ? null : $authenticator->getQrCodeSvg($user->two_factor_secret, $user->email),
             'recoveryCodes' => session('two_factor.fresh_recovery_codes'),
         ]);
     }

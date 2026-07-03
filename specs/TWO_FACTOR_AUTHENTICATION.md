@@ -5,28 +5,29 @@ any account — client or admin — since both handle sensitive data (signed
 legal agreements, payment info) and this portal has no Fortify/Jetstream
 already installed to lean on.
 
-## Why TOTP, and why no new composer package
+## Why TOTP, and why only one new composer package
 
 Considered `laravel/fortify` (brings 2FA out of the box) — rejected because
 adopting it wholesale would mean restructuring the existing hand-rolled
 `AuthenticatedSessionController`/`RegisteredUserController` flow this app
 already has, for a single feature.
 
-Considered `pragmarx/google2fa` + `bacon/bacon-qr-code` (the common
-lightweight combo) — TOTP itself (RFC 6238) is short enough to implement
-directly with PHP's built-in `hash_hmac`, and QR rendering was dropped from
-v1 anyway (see below), so pulling in two packages for what's ultimately a
-~60-line HMAC routine wasn't worth the dependency. `App\Services\TwoFactorAuthenticator`
-implements RFC 4226 (HOTP) / RFC 6238 (TOTP) directly: base32 encode/decode,
-counter-based HMAC-SHA1, 6-digit code, ±1 time-step window for clock drift.
+Considered `pragmarx/google2fa` for the TOTP math itself — rejected because
+RFC 6238 is short enough to implement directly with PHP's built-in
+`hash_hmac`. `App\Services\TwoFactorAuthenticator` implements RFC 4226
+(HOTP) / RFC 6238 (TOTP) directly: base32 encode/decode, counter-based
+HMAC-SHA1, 6-digit code, ±1 time-step window for clock drift.
 
-**No QR code in v1.** Generating a scannable QR image either needs a new
-package or hitting a third-party image API with the raw secret in the URL —
-the latter is a real secrets-leak risk, not just a style choice, so it was
-ruled out rather than deferred. v1 shows the base32 secret as text (grouped
-in 4s for readability) for the "enter a setup key manually" flow every
-authenticator app supports. Add `bacon/bacon-qr-code` later if manual entry
-proves too much friction for clients.
+**QR code: added via `bacon/bacon-qr-code`, rendered fully server-side.**
+The original plan (2026-07-03, earlier same day) shipped without a QR code —
+the concern was that generating a scannable image usually means hitting a
+third-party API (e.g. Google Charts) with the raw TOTP secret in the URL, a
+real secrets-leak risk. That concern is about *external* services, not QR
+generation itself — `TwoFactorAuthenticator::getQrCodeSvg()` builds the
+`otpauth://` URI and renders it to inline SVG entirely in-process via
+`bacon/bacon-qr-code` (pure PHP, no image API, no network call, nothing
+ever leaves this server). The manual "enter a setup key" text still shows
+alongside the QR code as a fallback for anyone whose scanner has trouble.
 
 ## Data model
 
@@ -51,7 +52,8 @@ proves too much friction for clients.
 accounts — no portal-specific logic):
 
 1. `GET /account/two-factor` — if no secret yet, generates one and saves it
-   unconfirmed; shows the manual setup key + a 6-digit code input.
+   unconfirmed; shows a scannable QR code, the manual setup key as a
+   fallback, and a 6-digit code input.
 2. `POST /account/two-factor/confirm` — validates the code against the
    pending secret. On match: sets `two_factor_confirmed_at`, generates 8
    recovery codes (format `XXXX-XXXX`), and shows them **once** on the

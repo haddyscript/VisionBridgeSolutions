@@ -2,11 +2,20 @@
 
 namespace App\Services;
 
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
+
 /**
  * RFC 4226 (HOTP) / RFC 6238 (TOTP) implemented directly rather than pulling
  * in pragmarx/google2fa — see specs/TWO_FACTOR_AUTHENTICATION.md for why.
  * Compatible with Google Authenticator, Authy, 1Password, etc. (6-digit
  * codes, 30-second step, SHA1 — the universal defaults every app assumes).
+ *
+ * QR rendering uses bacon/bacon-qr-code, generated entirely server-side —
+ * unlike hitting a third-party QR image API (e.g. Google Charts) with the
+ * raw secret in the URL, nothing here ever leaves this server.
  */
 class TwoFactorAuthenticator
 {
@@ -35,6 +44,30 @@ class TwoFactorAuthenticator
     public function formatSecretForDisplay(string $secret): string
     {
         return trim(chunk_split($secret, 4, ' '));
+    }
+
+    public function getOtpAuthUri(string $secret, string $email, string $issuer = 'VisionBridge Solutions'): string
+    {
+        $label = rawurlencode("{$issuer}:{$email}");
+
+        return sprintf(
+            'otpauth://totp/%s?secret=%s&issuer=%s&algorithm=SHA1&digits=%d&period=%d',
+            $label,
+            $secret,
+            rawurlencode($issuer),
+            self::DIGITS,
+            self::PERIOD,
+        );
+    }
+
+    public function getQrCodeSvg(string $secret, string $email): string
+    {
+        $renderer = new ImageRenderer(
+            new RendererStyle(200),
+            new SvgImageBackEnd(),
+        );
+
+        return (new Writer($renderer))->writeString($this->getOtpAuthUri($secret, $email));
     }
 
     public function verify(string $secret, string $code): bool

@@ -78,9 +78,13 @@
             </p>
 
             <ol class="text-sm text-gray-600 dark:text-gray-300 space-y-3 mb-5 list-decimal list-inside">
-                <li>Open your authenticator app and choose "Enter a setup key" (or similar).</li>
-                <li>Enter <strong>{{ auth()->user()->email }}</strong> as the account name and paste this key:</li>
+                <li>Open your authenticator app.</li>
+                <li>Scan the QR code below, or choose "Enter a setup key" and enter <strong>{{ auth()->user()->email }}</strong> as the account name with the key underneath it.</li>
             </ol>
+
+            <div class="bg-white rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-4 flex justify-center">
+                {!! $qrCodeSvg !!}
+            </div>
 
             <div class="bg-gray-50 dark:bg-gray-900 rounded-lg px-4 py-3 mb-5 text-center">
                 <code class="text-base font-mono tracking-widest text-navy dark:text-white">{{ $secretForDisplay }}</code>
