@@ -248,7 +248,7 @@ The boss raised a concern: the onboarding flow (Business Info → Website Type �
 Two things address this:
 
 - **Nothing is actually lost if they do log out.** `users.onboarding_step` is a persisted column checked by `EnsureOnboardingComplete` on every request, so a client who logs back in is redirected straight back to the exact onboarding step they left off on — never asked to redo earlier steps.
-- **A "Step X of 13" progress bar** was added to all 5 gated onboarding pages (Business Info, Website Type, Care Plan, Agreement Summary, Read & Sign Agreement) via a shared partial (`resources/views/portal/partials/onboarding-progress.blade.php`), plus a reassurance line ("You can log out anytime — we'll save your progress and pick up right where you left off") — so the flow no longer feels open-ended, and the fear of losing progress by leaving is addressed directly on the page.
+- **A "Step X of 5" progress bar** was added to all 5 gated onboarding pages (Business Info, Website Type, Care Plan, Agreement Summary, Read & Sign Agreement) via a shared partial (`resources/views/portal/partials/onboarding-progress.blade.php`), plus a reassurance line ("You can log out anytime — we'll save your progress and pick up right where you left off") — so the flow no longer feels open-ended, and the fear of losing progress by leaving is addressed directly on the page. Counts the 5 client-facing pages, not the PDF's internal 13-step numbering (`EnsureOnboardingComplete`'s `onboarding_step` gates) — "1 of 13" read as far more tedious than the same flow actually is.
 
 ## 15. Filled-In PDF Agreements (2026-07-02)
 

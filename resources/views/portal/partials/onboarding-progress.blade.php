@@ -1,12 +1,11 @@
 @php
-    $onboardingTotalSteps = 13;
-    $onboardingDisplayStep = $stepDisplay ?? $step;
+    $onboardingTotalSteps = 5;
     $onboardingPercent = min(100, round(($step / $onboardingTotalSteps) * 100));
 @endphp
 
 <div class="mb-6">
     <div class="flex items-center justify-between mb-1.5 text-xs">
-        <span class="font-bold uppercase tracking-widest text-gold-dark">Step {{ $onboardingDisplayStep }} of {{ $onboardingTotalSteps }}</span>
+        <span class="font-bold uppercase tracking-widest text-gold-dark">Step {{ $step }} of {{ $onboardingTotalSteps }}</span>
         <span class="text-gray-400 dark:text-gray-500">{{ $label }}</span>
     </div>
     <div class="w-full h-1.5 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
