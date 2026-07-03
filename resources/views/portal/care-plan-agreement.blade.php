@@ -5,6 +5,8 @@
 
 @section('content')
 
+@include('portal.partials.onboarding-progress', ['step' => 6, 'label' => 'Select Website Care Plan'])
+
 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
     A Website Care Plan is required for every website we build — it keeps your site secure, updated, and supported
     long after launch. Please select a plan and agree to its terms below before we can begin your project. Billing

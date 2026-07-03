@@ -5,6 +5,8 @@
 
 @section('content')
 
+@include('portal.partials.onboarding-progress', ['step' => 7, 'label' => 'Agreement Summary'])
+
 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
     Please review your agreement details below. Once you proceed, you will read and sign the Master Agreement.
 </p>

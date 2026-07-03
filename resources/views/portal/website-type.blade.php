@@ -5,6 +5,8 @@
 
 @section('content')
 
+@include('portal.partials.onboarding-progress', ['step' => 5, 'label' => 'Select Website Type'])
+
 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
     Select the type of website that best describes what you need. VisionBridge will review your selection and
     prepare a custom proposal tailored to your specific requirements.

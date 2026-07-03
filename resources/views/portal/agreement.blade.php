@@ -5,6 +5,8 @@
 
 @section('content')
 
+@include('portal.partials.onboarding-progress', ['step' => 9, 'stepDisplay' => '8–10', 'label' => 'Read & Sign Agreement'])
+
 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
     Please review and sign your Client Service Agreement below. No project work can begin until this is signed.
 </p>

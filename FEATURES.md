@@ -241,6 +241,15 @@ Two clarifications from the boss's pre-Thursday-meeting email, checked against t
 | Master Agreement must not define "Full Website" as a fixed page count (e.g. "seven pages") — should instead point to the client's Proposal/SOW/Project Work Order | No page-count or "Full Website" language exists anywhere in app code or portal views — this language only lives in the Master Agreement PDF text itself | No code change needed; wording fix is on the boss's PDF revision, to be re-uploaded via the existing Service Agreement PDF-replace flow (`Admin\ServiceAgreementController::store`) when ready |
 | The 7-day landing page window is a **Review Period**, not a "Free Trial" — language should say so consistently | No "free trial" language existed in the codebase, but the client-facing copy on the Overview page also never named it a "7-Day Landing Page Review Period" explicitly — just a generic "review window" | Updated `resources/views/portal/dashboard.blade.php` review-window card to explicitly label it "7-Day Landing Page Review Period" and state it is not a free trial |
 
+## 15a. Onboarding Progress Indicator (2026-07-03)
+
+The boss raised a concern: the onboarding flow (Business Info → Website Type → Care Plan → Agreement Summary → Read/Sign Agreement) is fully gated — a client can't reach any other portal feature until they finish it — and a long, open-ended locked flow risks clients getting bored or frustrated and logging out partway through.
+
+Two things address this:
+
+- **Nothing is actually lost if they do log out.** `users.onboarding_step` is a persisted column checked by `EnsureOnboardingComplete` on every request, so a client who logs back in is redirected straight back to the exact onboarding step they left off on — never asked to redo earlier steps.
+- **A "Step X of 13" progress bar** was added to all 5 gated onboarding pages (Business Info, Website Type, Care Plan, Agreement Summary, Read & Sign Agreement) via a shared partial (`resources/views/portal/partials/onboarding-progress.blade.php`), plus a reassurance line ("You can log out anytime — we'll save your progress and pick up right where you left off") — so the flow no longer feels open-ended, and the fear of losing progress by leaving is addressed directly on the page.
+
 ## 15. Filled-In PDF Agreements (2026-07-02)
 
 Clients who sign a PDF-based agreement now get their Care Plan selection and signature block actually stamped onto the real Master Agreement PDF at signing time (`App\Services\AgreementPdfFiller`, via `setasign/fpdi` + `setasign/fpdf`), instead of only ever seeing the blank uploaded template plus a separate certificate. Used on the Documents page, the signed-agreement email attachment, and admin download.

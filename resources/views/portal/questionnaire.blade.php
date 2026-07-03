@@ -5,6 +5,8 @@
 
 @section('content')
 
+@include('portal.partials.onboarding-progress', ['step' => 4, 'label' => 'Complete Business Information'])
+
 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
     Tell us about your organization so we can get started. Once submitted, you'll move on to your initial project payment.
 </p>
