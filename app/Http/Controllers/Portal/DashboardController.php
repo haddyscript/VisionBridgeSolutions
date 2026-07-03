@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Portal\CategoryController;
+use App\Models\Announcement;
 use App\Models\ClientNotification;
 use Illuminate\Http\Request;
 
@@ -11,7 +12,15 @@ class DashboardController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $project = $request->user()->projects()->with('milestones', 'uploads.replies', 'payments', 'recommendations')->first();
+        $user = $request->user();
+        $project = $user->projects()->with('milestones', 'uploads.replies', 'payments', 'recommendations', 'satisfactionSurvey')->first();
+        $pendingSurvey = $project?->satisfactionSurvey && ! $project->satisfactionSurvey->isSubmitted()
+            ? $project->satisfactionSurvey
+            : null;
+
+        $announcement = Announcement::where('is_active', true)
+            ->whereDoesntHave('dismissals', fn ($q) => $q->where('user_id', $user->id))
+            ->first();
 
         $recommendations = $project?->recommendations->filter(fn ($r) => $r->isVisibleToClient()) ?? collect();
 
@@ -28,7 +37,6 @@ class DashboardController extends Controller
         $showPaymentReminder = $request->session()->pull('show_payment_reminder', false)
             && $pendingPayment !== null;
 
-        $user = $request->user();
         $firstVisit = is_null($user->welcomed_at);
 
         if ($project) {
@@ -49,6 +57,8 @@ class DashboardController extends Controller
             'activity' => $project ? $project->recentActivity()->take(8) : collect(),
             'recommendations' => $recommendations,
             'firstVisit' => $firstVisit,
+            'announcement' => $announcement,
+            'pendingSurvey' => $pendingSurvey,
         ]);
     }
 }

@@ -5,6 +5,42 @@
 
 @section('content')
 
+@if ($announcement)
+    <div id="announcement-banner" class="relative flex items-start gap-3 rounded-xl border border-gold/30 bg-gold/10 px-5 py-4 mb-6">
+        <svg class="w-5 h-5 text-gold-dark shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+        <div class="min-w-0 flex-1">
+            <p class="text-sm font-bold text-navy dark:text-white">{{ $announcement->title }}</p>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mt-0.5">{{ $announcement->body }}</p>
+        </div>
+        <button type="button" id="announcement-dismiss" data-id="{{ $announcement->id }}" aria-label="Dismiss"
+                class="text-gray-400 hover:text-navy dark:hover:text-white transition-colors shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+    </div>
+
+    <script>
+        document.getElementById('announcement-dismiss')?.addEventListener('click', function () {
+            const banner = document.getElementById('announcement-banner');
+            const id = this.dataset.id;
+            banner.remove();
+            fetch('/portal/announcements/' + id + '/dismiss', {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+            });
+        });
+    </script>
+@endif
+
+@if ($pendingSurvey)
+    <div class="flex items-center justify-between gap-4 rounded-xl border border-teal/30 bg-teal/10 px-5 py-4 mb-6">
+        <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-teal-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.958a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.368 2.447a1 1 0 00-.363 1.118l1.287 3.957c.3.922-.755 1.688-1.539 1.118l-3.367-2.446a1 1 0 00-1.176 0l-3.367 2.446c-.784.57-1.838-.196-1.539-1.118l1.287-3.957a1 1 0 00-.363-1.118L2.062 9.385c-.783-.57-.38-1.81.588-1.81h4.163a1 1 0 00.95-.69l1.286-3.958z"/></svg>
+            <p class="text-sm font-semibold text-navy dark:text-white">Your project launched — how did we do?</p>
+        </div>
+        <a href="{{ route('portal.survey.show') }}" class="shrink-0 text-sm font-semibold text-teal-dark hover:underline">Share Feedback →</a>
+    </div>
+@endif
+
 @if ($showPaymentReminder)
     <div id="payment-reminder-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 opacity-0 transition-opacity duration-200">
         <div id="payment-reminder-card" class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden scale-95 transition-transform duration-200">

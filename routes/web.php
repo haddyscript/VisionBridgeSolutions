@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
 use App\Http\Controllers\Admin\CalendarController as AdminCalendarController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\ConsultationController as AdminConsultationController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
 use App\Http\Controllers\Admin\ProjectRequestController as AdminProjectRequestController;
 use App\Http\Controllers\Admin\RecommendationController as AdminRecommendationController;
+use App\Http\Controllers\Admin\SatisfactionSurveyController as AdminSatisfactionSurveyController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
 use App\Http\Controllers\Admin\ServiceAgreementController as AdminServiceAgreementController;
 use App\Http\Controllers\Admin\PartnerPayoutController as AdminPartnerPayoutController;
@@ -23,6 +25,7 @@ use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\CarePlanSignupController;
 use App\Http\Controllers\ConsultationController;
@@ -31,6 +34,7 @@ use App\Http\Controllers\DeployerController;
 use App\Http\Controllers\IntakeController;
 use App\Models\MaintenancePlan;
 use App\Http\Controllers\Portal\AccountController as PortalAccountController;
+use App\Http\Controllers\Portal\AnnouncementController as PortalAnnouncementController;
 use App\Http\Controllers\Portal\CarePlanAgreementController as PortalCarePlanAgreementController;
 use App\Http\Controllers\Portal\CategoryController;
 use App\Http\Controllers\Portal\ConsultationController as PortalConsultationController;
@@ -43,7 +47,10 @@ use App\Http\Controllers\Portal\PaymentController as PortalPaymentController;
 use App\Http\Controllers\Portal\ProjectQuestionnaireController as PortalProjectQuestionnaireController;
 use App\Http\Controllers\Portal\ProjectRequestController as PortalProjectRequestController;
 use App\Http\Controllers\Portal\ProjectReviewController as PortalProjectReviewController;
+use App\Http\Controllers\Portal\SatisfactionSurveyController as PortalSatisfactionSurveyController;
+use App\Http\Controllers\Portal\SearchController as PortalSearchController;
 use App\Http\Controllers\Portal\ServiceAgreementController as PortalServiceAgreementController;
+use App\Http\Controllers\Portal\TwoFactorController as PortalTwoFactorController;
 use App\Http\Controllers\Portal\WebsiteTypeController as PortalWebsiteTypeController;
 use App\Http\Controllers\Portal\SubscriptionController as PortalSubscriptionController;
 use App\Http\Controllers\Portal\SuspendedController as PortalSuspendedController;
@@ -95,6 +102,9 @@ Route::middleware('guest')->group(function () {
     Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
     Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.store');
 });
+
+Route::get('/two-factor-challenge', [TwoFactorChallengeController::class, 'create'])->name('two-factor.challenge');
+Route::post('/two-factor-challenge', [TwoFactorChallengeController::class, 'store'])->middleware('throttle:6,1')->name('two-factor.challenge.store');
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
@@ -174,17 +184,34 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
     Route::patch('/portal/account/notifications', [PortalAccountController::class, 'updateNotifications'])->name('portal.account.notifications.update');
     Route::post('/portal/account/closure-request', [PortalAccountController::class, 'requestClosure'])->name('portal.account.closure-request');
 
+    Route::get('/portal/two-factor', [PortalTwoFactorController::class, 'show'])->name('portal.two-factor.show');
+    Route::post('/portal/two-factor/confirm', [PortalTwoFactorController::class, 'confirm'])->name('portal.two-factor.confirm');
+    Route::post('/portal/two-factor/disable', [PortalTwoFactorController::class, 'disable'])->name('portal.two-factor.disable');
+    Route::post('/portal/two-factor/recovery-codes', [PortalTwoFactorController::class, 'regenerateRecoveryCodes'])->name('portal.two-factor.recovery-codes');
+
     Route::view('/portal/faq', 'portal.faq')->name('portal.faq');
     Route::post('/portal/faq/feedback', [FaqFeedbackController::class, 'store'])->name('portal.faq.feedback');
 
     Route::post('/portal/review/approve', [PortalProjectReviewController::class, 'approve'])->name('portal.review.approve');
     Route::post('/portal/review/cancel', [PortalProjectReviewController::class, 'cancel'])->name('portal.review.cancel');
+
+    Route::post('/portal/announcements/{announcement}/dismiss', [PortalAnnouncementController::class, 'dismiss'])->name('portal.announcements.dismiss');
+    Route::get('/portal/search', [PortalSearchController::class, 'index'])->name('portal.search');
+
+    Route::get('/portal/survey', [PortalSatisfactionSurveyController::class, 'show'])->name('portal.survey.show');
+    Route::post('/portal/survey', [PortalSatisfactionSurveyController::class, 'store'])->name('portal.survey.store');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
 
     // ─── Dashboard ───────────────────────────────────────────────────────────
     Route::get('/', AdminDashboardController::class)->name('dashboard');
+
+    // ─── Announcements ───────────────────────────────────────────────────────
+    Route::get('/announcements', [AdminAnnouncementController::class, 'index'])->name('announcements.index');
+    Route::post('/announcements', [AdminAnnouncementController::class, 'store'])->name('announcements.store');
+    Route::patch('/announcements/{announcement}', [AdminAnnouncementController::class, 'update'])->name('announcements.update');
+    Route::delete('/announcements/{announcement}', [AdminAnnouncementController::class, 'destroy'])->name('announcements.destroy');
 
     // ─── Clients ─────────────────────────────────────────────────────────────
     Route::get('/clients', [AdminClientController::class, 'index'])->name('clients.index');
@@ -231,6 +258,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/uploads/{upload}/status', [UploadApprovalController::class, 'updateStatus'])->name('uploads.status');
     Route::patch('/uploads/{upload}/reply', [UploadApprovalController::class, 'reply'])->name('uploads.reply');
     Route::patch('/uploads/{upload}/dev-instructions', [UploadApprovalController::class, 'updateDevInstructions'])->name('uploads.dev-instructions');
+
+    Route::get('/satisfaction-surveys', [AdminSatisfactionSurveyController::class, 'index'])->name('satisfaction-surveys.index');
 
     Route::get('/recommendations', [AdminRecommendationController::class, 'index'])->name('recommendations.index');
     Route::post('/projects/{project}/recommendations', [AdminRecommendationController::class, 'store'])->name('recommendations.store');
