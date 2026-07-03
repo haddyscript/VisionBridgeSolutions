@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\ProjectQuoteReadyMail;
 use App\Models\ClientNotification;
 use App\Models\Project;
+use App\Models\SatisfactionSurvey;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -36,6 +37,7 @@ class ProjectController extends Controller
             && $project->total_price === null;
 
         $startingReview = ($validated['status'] ?? null) === 'review' && $project->status !== 'review';
+        $launching = ($validated['status'] ?? null) === 'launched' && $project->status !== 'launched';
 
         if (array_key_exists('total_price', $validated)) {
             $validated['total_price'] = $validated['total_price'] !== null
@@ -50,6 +52,13 @@ class ProjectController extends Controller
         }
 
         $project->update($validated);
+
+        if ($launching) {
+            SatisfactionSurvey::firstOrCreate(
+                ['project_id' => $project->id],
+                ['user_id' => $project->user_id],
+            );
+        }
 
         // Quoting a price for the first time auto-creates the initial 50%
         // deposit request and emails the client — they're shown a "preparing

@@ -82,6 +82,11 @@ class Project extends Model
         return $this->hasOne(ServiceAgreementSignature::class)->latestOfMany();
     }
 
+    public function satisfactionSurvey()
+    {
+        return $this->hasOne(SatisfactionSurvey::class);
+    }
+
     public function hasSignedCurrentAgreement(): bool
     {
         $active = ServiceAgreementTemplate::currentActive();

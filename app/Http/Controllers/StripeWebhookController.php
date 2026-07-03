@@ -13,6 +13,7 @@ use App\Mail\SystemAlertMail;
 use App\Mail\WelcomeClientMail;
 use App\Models\PartnerPayout;
 use App\Models\Payment;
+use App\Models\SatisfactionSurvey;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -171,6 +172,11 @@ class StripeWebhookController extends Controller
         }
 
         $project->update(['status' => 'launched']);
+
+        SatisfactionSurvey::firstOrCreate(
+            ['project_id' => $project->id],
+            ['user_id' => $project->user_id],
+        );
 
         $pendingCarePlan = $project->subscription?->isPending() ? $project->subscription : null;
 
