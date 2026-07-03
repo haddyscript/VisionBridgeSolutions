@@ -274,4 +274,18 @@ The boss asked for a notification bell (before the light/dark mode toggle) since
 
 Clients who sign a PDF-based agreement now get their Care Plan selection and signature block actually stamped onto the real Master Agreement PDF at signing time (`App\Services\AgreementPdfFiller`, via `setasign/fpdi` + `setasign/fpdf`), instead of only ever seeing the blank uploaded template plus a separate certificate. Used on the Documents page, the signed-agreement email attachment, and admin download.
 
-**Full technical reference — field-by-field coordinates, what's filled vs. not, how to recalibrate if a revised PDF is uploaded, and current untested status — lives in [AGREEMENT-PDF-FILLING.md](AGREEMENT-PDF-FILLING.md).**
+**Full technical reference — field-by-field coordinates, what's filled vs. not, how to recalibrate if a revised PDF is uploaded, and current untested status — lives in [specs/AGREEMENT-PDF-FILLING.md](specs/AGREEMENT-PDF-FILLING.md).**
+
+## 15d. Interactive Portal Tour (2026-07-03)
+
+A sidebar walkthrough for new clients — spotlights one nav item at a time (Overview, notification bell, Project Files, Website Content, Payments, Book a Consultation, Documents, FAQ) with a tooltip explaining what it does, instead of leaving them to guess what ~10 unlabeled sidebar sections mean. Chosen over a static demo video since a video goes stale the moment the sidebar changes and can't point at the client's own live UI.
+
+- Fires automatically once, on a client's first Overview visit (`users.tour_completed_at` nullable timestamp, separate from the existing `welcomed_at` used by the welcome banner so dismissing one doesn't dismiss the other) — replayable anytime after via a "Take a Tour" button in the welcome banner or a permanent link in the sidebar's "Need Help?" box.
+- Pure vanilla JS, no new dependency — a dark backdrop with a cutout around the current target (marked via `data-tour="<key>"` attributes directly on the existing sidebar links in `layouts/portal.blade.php`) plus a positioned tooltip card with Back/Next/Skip.
+- Marking complete: `Portal\TourController::complete()`, `POST /portal/tour/complete`.
+
+**Full spec — step list, trigger conditions, why a video was rejected, known limitations — lives in [specs/INTERACTIVE_PRODUCT_TOUR.md](specs/INTERACTIVE_PRODUCT_TOUR.md).**
+
+## 16. `specs/` Folder
+
+Starting 2026-07-03, implementation specs for features with enough moving parts to warrant one (multi-step flows, anything with a diagram, precise technical reference like PDF field coordinates) live in `specs/` as their own Markdown file, linked from the relevant FEATURES.md entry rather than inlined there. FEATURES.md stays the plain-language "what it does" summary; `specs/` is where the "how, and why it's built that way" detail goes. Existing docs there: [specs/CARE_PLAN_SUBSCRIPTION_FLOW.md](specs/CARE_PLAN_SUBSCRIPTION_FLOW.md), [specs/AGREEMENT-PDF-FILLING.md](specs/AGREEMENT-PDF-FILLING.md), [specs/INTERACTIVE_PRODUCT_TOUR.md](specs/INTERACTIVE_PRODUCT_TOUR.md).

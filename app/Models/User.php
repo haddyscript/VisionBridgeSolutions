@@ -30,6 +30,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at',
         'activity_last_read_at',
         'welcomed_at',
+        'tour_completed_at',
         'onboarding_step',
         'notify_on_replies',
         'notify_on_consultations',
@@ -57,6 +58,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'last_seen_at' => 'datetime',
             'activity_last_read_at' => 'datetime',
             'welcomed_at' => 'datetime',
+            'tour_completed_at' => 'datetime',
             'onboarding_step' => 'integer',
             'password' => 'hashed',
         ];

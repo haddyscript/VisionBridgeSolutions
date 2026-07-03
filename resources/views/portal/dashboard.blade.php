@@ -117,6 +117,10 @@
                             class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-colors">
                             View FAQ
                         </a>
+                        <button type="button" id="welcome-banner-tour-btn"
+                            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-colors">
+                            Take a Tour
+                        </button>
                     </div>
                 </div>
             </div>
@@ -138,6 +142,14 @@
                 });
                 banner.addEventListener('transitionend', () => banner.remove(), { once: true });
             });
+
+            document.getElementById('welcome-banner-tour-btn')?.addEventListener('click', function () {
+                document.getElementById('tour-replay-trigger')?.click();
+            });
+
+            @if (! auth()->user()->tour_completed_at)
+                window.autoStartTour = true;
+            @endif
         })();
     </script>
 @endif

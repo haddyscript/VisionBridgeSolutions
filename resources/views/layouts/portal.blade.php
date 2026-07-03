@@ -57,7 +57,7 @@
 
             <nav class="flex-1 overflow-y-auto py-5 px-3 space-y-0.5">
                 <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mb-2">Client Portal</p>
-                <a href="{{ route('portal.dashboard') }}"
+                <a href="{{ route('portal.dashboard') }}" data-tour="overview"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.dashboard') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -67,7 +67,7 @@
                         <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500 text-white">{{ $unreadNotificationCount }}</span>
                     @endif
                 </a>
-                <a href="{{ route('portal.documents.index') }}"
+                <a href="{{ route('portal.documents.index') }}" data-tour="documents"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.documents.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -81,7 +81,7 @@
                     </svg>
                     Request a New Project
                 </a>
-                <a href="{{ route('portal.consultation.create') }}"
+                <a href="{{ route('portal.consultation.create') }}" data-tour="consultation"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.consultation.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -96,7 +96,7 @@
                     $fileCategories = ['image', 'video', 'logo', 'document', 'marketing'];
                 @endphp
                 <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mt-5 mb-2">Project Files</p>
-                <a href="{{ route('portal.category', 'image') }}"
+                <a href="{{ route('portal.category', 'image') }}" data-tour="files"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.category') && in_array(request()->route('category'), $fileCategories, true) ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -106,7 +106,7 @@
 
                 <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mt-5 mb-2">Content &amp; Revisions</p>
                 @foreach (['content' => 'Website Content', 'revision' => 'Revisions'] as $cat => $label)
-                    <a href="{{ route('portal.category', $cat) }}"
+                    <a href="{{ route('portal.category', $cat) }}" {{ $cat === 'content' ? 'data-tour=content-revisions' : '' }}
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.category') && request()->route('category') === $cat ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $categoryIcons[$cat] }}"/>
@@ -116,7 +116,7 @@
                 @endforeach
 
                 <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mt-5 mb-2">Billing</p>
-                <a href="{{ route('portal.payments.index') }}"
+                <a href="{{ route('portal.payments.index') }}" data-tour="payments"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.payments.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h5M5 6h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"/>
@@ -135,7 +135,7 @@
                     </svg>
                     Account Settings
                 </a>
-                <a href="{{ route('portal.faq') }}"
+                <a href="{{ route('portal.faq') }}" data-tour="faq"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.faq') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -156,6 +156,10 @@
                         (404) 426-2856
                     </a>
                 </div>
+                <button type="button" id="tour-replay-trigger" class="w-full flex items-center gap-2 mt-2.5 text-xs text-white/70 hover:text-gold transition-colors">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Take a Tour
+                </button>
             </div>
 
             <div class="border-t border-white/10 pt-3 shrink-0">
@@ -196,7 +200,7 @@
                 <h1 class="font-display text-lg font-bold text-navy dark:text-white flex-1">@yield('page-title', 'Client Portal')</h1>
 
                 <div class="relative">
-                    <button id="notification-bell-toggle" type="button" title="Notifications"
+                    <button id="notification-bell-toggle" type="button" title="Notifications" data-tour="notification-bell"
                             class="relative w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
@@ -451,6 +455,160 @@
 
             bindConfirmForms(document);
             window.bindConfirmForms = bindConfirmForms;
+        })();
+    </script>
+
+    {{-- Interactive portal tour — see specs/INTERACTIVE_PRODUCT_TOUR.md --}}
+    <div id="tour-backdrop" class="hidden fixed inset-0 z-50"></div>
+    <div id="tour-card" class="hidden fixed z-50 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-5">
+        <p id="tour-step-count" class="text-xs font-semibold uppercase tracking-widest text-gold-dark mb-1.5"></p>
+        <h3 id="tour-title" class="font-display text-base font-bold text-navy dark:text-white mb-1.5"></h3>
+        <p id="tour-description" class="text-sm text-gray-500 dark:text-gray-400 mb-4"></p>
+        <div class="flex items-center justify-between">
+            <button type="button" id="tour-skip" class="text-xs font-medium text-gray-400 hover:text-navy dark:hover:text-white transition-colors">Skip Tour</button>
+            <div class="flex items-center gap-2">
+                <button type="button" id="tour-back" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Back</button>
+                <button type="button" id="tour-next" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gold hover:bg-gold-dark text-navy transition-colors">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const TOUR_STEPS = [
+                { key: 'overview', title: 'Project Overview', description: "Your project status, progress, and recent activity — all in one place." },
+                { key: 'notification-bell', title: 'Notifications', description: "Updates from our team — replies, approvals, milestones — land here." },
+                { key: 'files', title: 'Project Files', description: "Upload your logo, photos, videos, and documents." },
+                { key: 'content-revisions', title: 'Website Content', description: "Submit your site copy or request changes as a running conversation with us." },
+                { key: 'payments', title: 'Payments', description: "See what's owed, pay securely, and download receipts." },
+                { key: 'consultation', title: 'Book a Consultation', description: "Grab time on our calendar whenever you want to talk." },
+                { key: 'documents', title: 'Documents', description: "Re-download any signed agreement, anytime." },
+                { key: 'faq', title: 'FAQ & Help Guide', description: "Quick answers to common questions." },
+            ];
+
+            const backdrop = document.getElementById('tour-backdrop');
+            const card = document.getElementById('tour-card');
+            const stepCount = document.getElementById('tour-step-count');
+            const titleEl = document.getElementById('tour-title');
+            const descriptionEl = document.getElementById('tour-description');
+            const backBtn = document.getElementById('tour-back');
+            const nextBtn = document.getElementById('tour-next');
+            const skipBtn = document.getElementById('tour-skip');
+
+            let currentStep = 0;
+            let sidebarWasOpen = false;
+
+            function target(key) {
+                return document.querySelector('[data-tour="' + key + '"]');
+            }
+
+            function positionCard(el) {
+                const rect = el.getBoundingClientRect();
+                const cardWidth = 288;
+                let left = rect.right + 16;
+                if (left + cardWidth > window.innerWidth - 16) {
+                    left = Math.max(16, rect.left - cardWidth - 16);
+                }
+                let top = Math.min(rect.top, window.innerHeight - 220);
+                top = Math.max(16, top);
+
+                card.style.left = left + 'px';
+                card.style.top = top + 'px';
+            }
+
+            function paintBackdrop(el) {
+                const rect = el.getBoundingClientRect();
+                const pad = 6;
+                backdrop.style.background =
+                    'rgba(17,29,51,0.6)';
+                backdrop.style.clipPath =
+                    'polygon(0% 0%, 0% 100%, ' + (rect.left - pad) + 'px 100%, ' + (rect.left - pad) + 'px ' + (rect.top - pad) + 'px, ' +
+                    (rect.right + pad) + 'px ' + (rect.top - pad) + 'px, ' + (rect.right + pad) + 'px ' + (rect.bottom + pad) + 'px, ' +
+                    (rect.left - pad) + 'px ' + (rect.bottom + pad) + 'px, ' + (rect.left - pad) + 'px 100%, 100% 100%, 100% 0%)';
+            }
+
+            function renderStep() {
+                const step = TOUR_STEPS[currentStep];
+                const el = target(step.key);
+
+                if (!el) {
+                    // Target isn't in the DOM (shouldn't happen for fixed sidebar
+                    // items, but fail safe rather than getting stuck).
+                    currentStep < TOUR_STEPS.length - 1 ? nextStep() : endTour(true);
+                    return;
+                }
+
+                stepCount.textContent = 'Step ' + (currentStep + 1) + ' of ' + TOUR_STEPS.length;
+                titleEl.textContent = step.title;
+                descriptionEl.textContent = step.description;
+                backBtn.classList.toggle('invisible', currentStep === 0);
+                nextBtn.textContent = currentStep === TOUR_STEPS.length - 1 ? 'Finish' : 'Next';
+
+                paintBackdrop(el);
+                positionCard(el);
+            }
+
+            function nextStep() {
+                if (currentStep < TOUR_STEPS.length - 1) {
+                    currentStep++;
+                    renderStep();
+                } else {
+                    endTour(true);
+                }
+            }
+
+            function prevStep() {
+                if (currentStep > 0) {
+                    currentStep--;
+                    renderStep();
+                }
+            }
+
+            function startTour() {
+                currentStep = 0;
+
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    sidebarWasOpen = false;
+                    openSidebar();
+                } else {
+                    sidebarWasOpen = true;
+                }
+
+                backdrop.classList.remove('hidden');
+                card.classList.remove('hidden');
+                renderStep();
+            }
+
+            function endTour(markComplete) {
+                backdrop.classList.add('hidden');
+                card.classList.add('hidden');
+
+                if (!sidebarWasOpen) {
+                    closeSidebar();
+                }
+
+                if (markComplete) {
+                    fetch('{{ route('portal.tour.complete') }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        },
+                    });
+                }
+            }
+
+            nextBtn.addEventListener('click', nextStep);
+            backBtn.addEventListener('click', prevStep);
+            skipBtn.addEventListener('click', function () { endTour(true); });
+            window.addEventListener('resize', function () {
+                if (!card.classList.contains('hidden')) renderStep();
+            });
+
+            document.getElementById('tour-replay-trigger')?.addEventListener('click', startTour);
+
+            if (window.autoStartTour) {
+                startTour();
+            }
         })();
     </script>
 
