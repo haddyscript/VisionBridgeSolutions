@@ -26,12 +26,29 @@ class ConsultationController extends Controller
             ->map(fn ($dt) => $dt->format('Y-m-d\TH:i'))
             ->values();
 
-        $project = $request->user()->projects()->first();
+        $user = $request->user();
+        $project = $user->projects()->first();
+
+        // Consultations aren't tied to a user_id/project_id column — matched
+        // by email, same as the admin inbox has no other way to link them.
+        $consultations = Consultation::where('email', $user->email)->get();
+
+        $upcoming = $consultations
+            ->filter(fn ($c) => $c->status !== 'cancelled' && (! $c->preferred_at || $c->preferred_at->isFuture()))
+            ->sortBy('preferred_at')
+            ->values();
+
+        $history = $consultations
+            ->reject(fn ($c) => $upcoming->contains('id', $c->id))
+            ->sortByDesc('preferred_at')
+            ->values();
 
         return view('portal.consultation', [
             'bookedSlots' => $bookedSlots,
-            'user' => $request->user(),
+            'user' => $user,
             'hasUploadedFile' => $this->hasUploadedFile($project),
+            'upcomingConsultations' => $upcoming,
+            'pastConsultations' => $history,
         ]);
     }
 

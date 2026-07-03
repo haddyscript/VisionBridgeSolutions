@@ -124,6 +124,82 @@
     </form>
 </div>
 
+@php
+    $consultationStatusLabels = [
+        'new' => 'Pending Confirmation',
+        'confirmed' => 'Confirmed',
+        'rescheduled' => 'Rescheduled',
+        'cancelled' => 'Cancelled',
+    ];
+    $consultationStatusColors = [
+        'new' => 'bg-gold/15 text-gold-dark',
+        'confirmed' => 'bg-emerald-100 text-emerald-700',
+        'rescheduled' => 'bg-teal/15 text-teal-dark',
+        'cancelled' => 'bg-red-100 text-red-600',
+    ];
+@endphp
+
+<div class="mt-8">
+    <h2 class="font-display text-lg font-bold text-navy dark:text-white mb-4">Upcoming Consultations</h2>
+
+    @if ($upcomingConsultations->isEmpty())
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 text-sm text-gray-500 dark:text-gray-400">
+            You don't have any upcoming consultations booked.
+        </div>
+    @else
+        <div class="space-y-3">
+            @foreach ($upcomingConsultations as $consultation)
+                <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 flex items-start justify-between gap-4">
+                    <div class="min-w-0">
+                        <p class="text-sm font-semibold text-navy dark:text-white">
+                            {{ $consultation->preferred_at?->format('F j, Y \a\t g:i A') ?? 'Time to be confirmed' }}
+                        </p>
+                        @if ($consultation->message)
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{{ $consultation->message }}</p>
+                        @endif
+                        @if ($consultation->meeting_link)
+                            <a href="{{ $consultation->meeting_link }}" target="_blank" class="inline-flex items-center gap-1 text-xs font-semibold text-gold-dark hover:underline mt-2">
+                                Join Meeting Link
+                            </a>
+                        @endif
+                    </div>
+                    <span class="shrink-0 text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $consultationStatusColors[$consultation->status] ?? 'bg-gray-100 text-gray-600' }}">
+                        {{ $consultationStatusLabels[$consultation->status] ?? $consultation->status }}
+                    </span>
+                </div>
+            @endforeach
+        </div>
+    @endif
+</div>
+
+<div class="mt-8">
+    <h2 class="font-display text-lg font-bold text-navy dark:text-white mb-4">Consultation History</h2>
+
+    @if ($pastConsultations->isEmpty())
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 text-sm text-gray-500 dark:text-gray-400">
+            No past or canceled consultations yet.
+        </div>
+    @else
+        <div class="space-y-3">
+            @foreach ($pastConsultations as $consultation)
+                <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 flex items-start justify-between gap-4 opacity-80">
+                    <div class="min-w-0">
+                        <p class="text-sm font-semibold text-navy dark:text-white">
+                            {{ $consultation->preferred_at?->format('F j, Y \a\t g:i A') ?? 'No time selected' }}
+                        </p>
+                        @if ($consultation->message)
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{{ $consultation->message }}</p>
+                        @endif
+                    </div>
+                    <span class="shrink-0 text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $consultationStatusColors[$consultation->status] ?? 'bg-gray-100 text-gray-600' }}">
+                        {{ $consultationStatusLabels[$consultation->status] ?? $consultation->status }}
+                    </span>
+                </div>
+            @endforeach
+        </div>
+    @endif
+</div>
+
 {{-- Notice modal, used instead of the native browser alert() --}}
 <div id="notice-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
     <div id="notice-modal-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
