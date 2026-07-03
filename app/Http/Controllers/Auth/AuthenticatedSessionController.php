@@ -29,6 +29,26 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
+        if (Auth::user()->hasTwoFactorEnabled()) {
+            $userId = Auth::user()->id;
+            Auth::logout();
+
+            $request->session()->put('2fa.user_id', $userId);
+            $request->session()->put('2fa.remember', $request->boolean('remember'));
+
+            return redirect()->route('two-factor.challenge');
+        }
+
+        return static::finishLogin($request);
+    }
+
+    /**
+     * Shared by the normal (no 2FA) path here and TwoFactorChallengeController
+     * once a pending login's code has been verified — both need the same
+     * session regen, activity log, and redirect.
+     */
+    public static function finishLogin(Request $request): RedirectResponse
+    {
         $request->session()->regenerate();
 
         LoginActivity::create([

@@ -34,6 +34,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'onboarding_step',
         'notify_on_replies',
         'notify_on_consultations',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'two_factor_confirmed_at',
     ];
 
     /**
@@ -44,6 +47,8 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -61,7 +66,30 @@ class User extends Authenticatable implements MustVerifyEmail
             'tour_completed_at' => 'datetime',
             'onboarding_step' => 'integer',
             'password' => 'hashed',
+            'two_factor_secret' => 'encrypted',
+            'two_factor_recovery_codes' => 'encrypted:array',
+            'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    public function hasTwoFactorEnabled(): bool
+    {
+        return $this->two_factor_confirmed_at !== null;
+    }
+
+    public function consumeTwoFactorRecoveryCode(string $code): bool
+    {
+        $codes = $this->two_factor_recovery_codes ?? [];
+        $index = array_search(strtoupper(trim($code)), $codes, true);
+
+        if ($index === false) {
+            return false;
+        }
+
+        unset($codes[$index]);
+        $this->update(['two_factor_recovery_codes' => array_values($codes)]);
+
+        return true;
     }
 
     public function isOnline(): bool
