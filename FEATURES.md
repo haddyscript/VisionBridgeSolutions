@@ -250,6 +250,14 @@ Two things address this:
 - **Nothing is actually lost if they do log out.** `users.onboarding_step` is a persisted column checked by `EnsureOnboardingComplete` on every request, so a client who logs back in is redirected straight back to the exact onboarding step they left off on — never asked to redo earlier steps.
 - **A "Step X of 5" progress bar** was added to all 5 gated onboarding pages (Business Info, Website Type, Care Plan, Agreement Summary, Read & Sign Agreement) via a shared partial (`resources/views/portal/partials/onboarding-progress.blade.php`), plus a reassurance line ("You can log out anytime — we'll save your progress and pick up right where you left off") — so the flow no longer feels open-ended, and the fear of losing progress by leaving is addressed directly on the page. Counts the 5 client-facing pages, not the PDF's internal 13-step numbering (`EnsureOnboardingComplete`'s `onboarding_step` gates) — "1 of 13" read as far more tedious than the same flow actually is.
 
+## 15b. Book a Consultation — Validation Gap Fixed (2026-07-03)
+
+The in-portal "Book a Consultation" form (`Portal\ConsultationController::store`) had no real validation — `phone` and `message` were both `nullable`, so a client could submit with both left blank. Fixed:
+
+- `phone` and `message` are now `required` (server-side in the controller, and `required` added to both fields in `resources/views/portal/consultation.blade.php` for immediate browser-level feedback).
+- Booking now also requires the client to have already uploaded at least one Project File (image, video, logo, document, or marketing material — the same 5 categories as the Project Files page; text-only "content"/"revision" categories don't count) before they can book. The submit button is disabled with an inline banner and a direct link to Project Files if they haven't uploaded anything yet, and the server enforces the same rule independently (`ConsultationController::hasUploadedFile()`) in case the button is bypassed.
+- This condition (require an uploaded file first) does not apply to the public, pre-account "Book a Consultation" page (`ConsultationController@store` outside the portal) — only the logged-in portal version, since only portal clients have a project to attach files to.
+
 ## 15. Filled-In PDF Agreements (2026-07-02)
 
 Clients who sign a PDF-based agreement now get their Care Plan selection and signature block actually stamped onto the real Master Agreement PDF at signing time (`App\Services\AgreementPdfFiller`, via `setasign/fpdi` + `setasign/fpdf`), instead of only ever seeing the blank uploaded template plus a separate certificate. Used on the Documents page, the signed-agreement email attachment, and admin download.

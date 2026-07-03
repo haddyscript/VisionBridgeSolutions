@@ -13,6 +13,13 @@
             Thanks! Your consultation request has been received. We'll be in touch within 24 hours to confirm.
         </div>
     @endif
+    @if (! $hasUploadedFile)
+        <div class="mb-6 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
+            Please upload at least one project file (image, video, logo, document, or marketing material) in
+            <a href="{{ route('portal.category', 'image') }}" class="font-semibold underline">Project Files</a>
+            before booking a consultation.
+        </div>
+    @endif
 </div>
 
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -95,7 +102,7 @@
                                 </div>
                             </div>
                         </div>
-                        <input type="tel" id="phone_number" placeholder="Phone number"
+                        <input type="tel" id="phone_number" placeholder="Phone number" required
                                class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                     </div>
                     <input type="hidden" name="phone" id="phone" value="{{ old('phone') }}">
@@ -104,11 +111,12 @@
 
                 <div>
                     <label for="message" class="block text-sm font-bold text-navy dark:text-white mb-1.5">Message</label>
-                    <textarea name="message" id="message" rows="3"
+                    <textarea name="message" id="message" rows="3" required
                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('message') }}</textarea>
                 </div>
 
-                <button type="submit" id="consultation-submit-btn" class="w-full bg-gold hover:bg-gold-dark text-navy font-bold text-sm py-3 rounded-lg transition-colors inline-flex items-center justify-center gap-2">
+                <button type="submit" id="consultation-submit-btn" {{ $hasUploadedFile ? '' : 'disabled' }}
+                        class="w-full bg-gold hover:bg-gold-dark text-navy font-bold text-sm py-3 rounded-lg transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
                     <span id="consultation-submit-label">Book Consultation</span>
                 </button>
             </div>
