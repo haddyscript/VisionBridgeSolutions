@@ -881,7 +881,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
              white/cream overlay so heading text and badges stay legible;
              heading sits on top, project cards float over the bottom edge
              (overlap via negative margin on the card grid below). --}}
-        <div id="portfolio-panel" class="rounded-3xl relative text-center overflow-hidden px-6 sm:px-12 pt-16 pb-28" style="border:1px solid rgba(201,168,76,0.25);box-shadow:0 20px 50px rgba(21,32,44,0.08);">
+        <div id="portfolio-panel" class="rounded-3xl relative text-center overflow-hidden px-6 sm:px-12 pt-16 pb-16" style="border:1px solid rgba(201,168,76,0.25);box-shadow:0 20px 50px rgba(21,32,44,0.08);">
             {{-- Background video loop --}}
             <div class="absolute inset-0" style="z-index:0;">
                 <iframe src="https://player.vimeo.com/video/1204394600?api=1&background=1&autoplay=1&loop=1&muted=1&h=4a378f873f"
@@ -920,48 +920,33 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <h2 id="portfolio-heading" class="font-display font-bold" style="color:#15202C;font-size:clamp(1.875rem,4vw,2.75rem);text-shadow:0 2px 20px rgba(255,255,255,0.9);">We Build Websites That Grow Your Mission</h2>
                 <p id="portfolio-subtitle" class="text-base mt-3 max-w-xl mx-auto" style="color:rgba(21,32,44,0.75);text-shadow:0 1px 14px rgba(255,255,255,0.9);">Because a lasting online presence isn't built by chance — it's shaped with purpose, one mission at a time.</p>
             </div>
-        </div>
 
-        <div id="portfolio-cards" class="relative grid grid-cols-1 sm:grid-cols-3 gap-6 px-2 sm:px-6" style="margin-top:-72px;z-index:2;">
-            @foreach ($portfolioProjects as $project)
-                @php $hasLink = !empty($project['url']); @endphp
-                <div class="portfolio-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1.5" style="background:#FFFFFF;border:1px solid rgba(201,168,76,0.22);box-shadow:0 20px 45px rgba(21,32,44,0.10);">
-                    @if ($hasLink)
-                        <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="block">
-                    @endif
-                        <div class="relative overflow-hidden flex items-center justify-center" style="height:200px;background:#F4EFE3;">
-                            @if (!empty($project['image']))
-                                {{-- contain (not cover) — these are wide desktop screenshots;
-                                     cover here was zooming in ~6x and cropping the headline text --}}
-                                <img src="@assetv($project['image'])" alt="{{ $project['title'] }}" class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105" loading="lazy" decoding="async">
-                            @else
-                                <svg class="w-10 h-10" style="color:rgba(201,168,76,0.65);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 3l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
-                            @endif
+            {{-- Project names as plain floating text over the video — no
+                 card/image, so the video stays the section's real visual. --}}
+            <div class="relative grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto mt-14" style="z-index:2;">
+                @foreach ($portfolioProjects as $project)
+                    @php $hasLink = !empty($project['url']); @endphp
+                    <div class="portfolio-card text-center">
+                        <span class="text-xs font-semibold tracking-widest uppercase" style="color:#C9A84C;text-shadow:0 1px 12px rgba(255,255,255,0.9);">{{ $project['num'] }}</span>
+                        <h4 class="font-bold text-lg mt-1">
                             @if ($hasLink)
-                            {{-- Hover arrow badge — mirrors the services-card hover affordance --}}
-                            <div class="absolute bottom-3 right-3 w-9 h-9 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300" style="background:#C9A84C;">
-                                <svg width="14" height="14" fill="none" stroke="#15202C" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                            </div>
+                                <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="hover:underline" style="color:#15202C;text-shadow:0 1px 12px rgba(255,255,255,0.9);">{{ $project['title'] }}</a>
+                            @else
+                                <span style="color:#15202C;text-shadow:0 1px 12px rgba(255,255,255,0.9);">{{ $project['title'] }}</span>
                             @endif
-                        </div>
-                        <div class="px-5 py-5 text-left">
-                            <span class="text-xs font-semibold tracking-widest uppercase" style="color:#C9A84C;">{{ $project['num'] }}</span>
-                            <h4 class="font-bold text-lg mt-1" style="color:#15202C;">{{ $project['title'] }}</h4>
-                            <p class="text-sm mt-0.5" style="color:rgba(21,32,44,0.55);">{{ $project['category'] }}</p>
-                        </div>
-                    @if ($hasLink)
-                        </a>
-                    @endif
-                </div>
-            @endforeach
-        </div>
+                        </h4>
+                        <p class="text-sm mt-0.5" style="color:rgba(21,32,44,0.7);text-shadow:0 1px 10px rgba(255,255,255,0.85);">{{ $project['category'] }}</p>
+                    </div>
+                @endforeach
+            </div>
 
-        {{-- Decorative pagination dots — all 3 projects already show at
-             once, so this is purely visual, not a functioning carousel. --}}
-        <div class="flex items-center justify-center gap-2 mt-10">
-            @foreach ($portfolioProjects as $project)
-                <span class="rounded-full transition-all duration-300" style="height:8px;width:{{ $loop->index === 1 ? '22px' : '8px' }};background:{{ $loop->index === 1 ? '#C9A84C' : 'rgba(21,32,44,0.18)' }};"></span>
-            @endforeach
+            {{-- Decorative pagination dots — all 3 projects already show at
+                 once, so this is purely visual, not a functioning carousel. --}}
+            <div class="relative flex items-center justify-center gap-2 mt-8" style="z-index:2;">
+                @foreach ($portfolioProjects as $project)
+                    <span class="rounded-full transition-all duration-300" style="height:8px;width:{{ $loop->index === 1 ? '22px' : '8px' }};background:{{ $loop->index === 1 ? '#C9A84C' : 'rgba(21,32,44,0.25)' }};"></span>
+                @endforeach
+            </div>
         </div>
 
     </div>
