@@ -199,6 +199,16 @@
                 </button>
                 <h1 class="font-display text-lg font-bold text-navy dark:text-white flex-1">@yield('page-title', 'Client Portal')</h1>
 
+                <div class="relative hidden sm:block w-64">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
+                    </svg>
+                    <input type="text" id="portal-search-input" placeholder="Search your files, payments..." autocomplete="off"
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+
+                    <div id="portal-search-results" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-30 max-h-96 overflow-y-auto"></div>
+                </div>
+
                 <div class="relative">
                     <button id="notification-bell-toggle" type="button" title="Notifications" data-tour="notification-bell"
                             class="relative w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
@@ -351,6 +361,73 @@
         document.addEventListener('click', function (e) {
             if (bellDropdown && !bellDropdown.classList.contains('hidden') && !bellDropdown.contains(e.target) && e.target !== bellToggle) {
                 bellDropdown.classList.add('hidden');
+            }
+        });
+
+        // Global search
+        const searchInput = document.getElementById('portal-search-input');
+        const searchResults = document.getElementById('portal-search-results');
+        let searchDebounce = null;
+        let searchRequestId = 0;
+
+        const SEARCH_GROUPS = [
+            { key: 'files', label: 'Project Files' },
+            { key: 'content', label: 'Website Content & Revisions' },
+            { key: 'documents', label: 'Documents' },
+            { key: 'payments', label: 'Payments' },
+        ];
+
+        function renderSearchResults(data, query) {
+            const groupsWithResults = SEARCH_GROUPS.filter(g => (data[g.key] || []).length > 0);
+
+            if (groupsWithResults.length === 0) {
+                searchResults.innerHTML = '<p class="text-sm text-gray-400 dark:text-gray-500 text-center py-6 px-4">No matches for &quot;' +
+                    query.replace(/</g, '&lt;') + '&quot;.</p>';
+                return;
+            }
+
+            searchResults.innerHTML = groupsWithResults.map(function (group) {
+                const items = data[group.key].map(function (item) {
+                    return '<a href="' + item.url + '" class="block px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">' +
+                        '<p class="text-sm font-medium text-navy dark:text-white truncate">' + item.title + '</p>' +
+                        '<p class="text-xs text-gray-400 dark:text-gray-500 truncate">' + item.subtitle + '</p>' +
+                        '</a>';
+                }).join('');
+
+                return '<div class="border-b border-gray-100 dark:border-gray-700 last:border-0">' +
+                    '<p class="px-4 pt-3 pb-1 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">' + group.label + '</p>' +
+                    items +
+                    '</div>';
+            }).join('');
+        }
+
+        searchInput?.addEventListener('input', function () {
+            const query = this.value.trim();
+            clearTimeout(searchDebounce);
+
+            if (query.length < 2) {
+                searchResults.classList.add('hidden');
+                return;
+            }
+
+            searchDebounce = setTimeout(function () {
+                const requestId = ++searchRequestId;
+
+                fetch('{{ route('portal.search') }}?q=' + encodeURIComponent(query), {
+                    headers: { 'Accept': 'application/json' },
+                })
+                    .then(function (response) { return response.json(); })
+                    .then(function (data) {
+                        if (requestId !== searchRequestId) return; // stale response
+                        renderSearchResults(data, query);
+                        searchResults.classList.remove('hidden');
+                    });
+            }, 250);
+        });
+
+        document.addEventListener('click', function (e) {
+            if (searchResults && !searchResults.classList.contains('hidden') && !searchResults.contains(e.target) && e.target !== searchInput) {
+                searchResults.classList.add('hidden');
             }
         });
     </script>
