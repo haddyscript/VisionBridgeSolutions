@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\ClientNotification;
 use App\Models\Consultation;
 use App\Models\ContactMessage;
 use App\Models\IntakeSubmission;
@@ -12,7 +13,6 @@ use App\Models\ProjectRequest;
 use App\Models\Recommendation;
 use App\Models\User;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
@@ -62,9 +62,9 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('layouts.portal', function ($view) {
             $view->with('gettingStartedTasks', $this->clientGettingStartedTasks());
-            [$notifications, $unreadActivityCount] = $this->clientNotifications();
+            [$notifications, $unreadNotificationCount] = $this->clientNotifications();
             $view->with('notifications', $notifications);
-            $view->with('unreadActivityCount', $unreadActivityCount);
+            $view->with('unreadNotificationCount', $unreadNotificationCount);
             $view->with('upcomingConsultationCount', $this->clientUpcomingConsultationCount());
         });
     }
@@ -87,25 +87,28 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Powers the header notification bell — returns [items, unreadCount] from
-     * the same activity feed the Overview page's "Recent Activity" card
-     * already uses, capped to the 8 most recent, so there's one source of
-     * truth instead of a separate notifications log.
+     * the persisted `client_notifications` log (written by ClientNotification::send()
+     * at the point admin actions affect a client — reply, approval, etc.),
+     * capped to the 8 most recent.
      */
     private function clientNotifications(): array
     {
         $user = Auth::user();
-        $project = $user?->projects()->with('milestones', 'uploads.replies', 'payments')->first();
 
-        if (! $project) {
+        if (! $user) {
             return [collect(), 0];
         }
 
-        $since = $user->activity_last_read_at ?? Carbon::createFromTimestamp(0);
-        $activity = $project->recentActivity();
+        $notifications = ClientNotification::where('user_id', $user->id)
+            ->latest()
+            ->take(8)
+            ->get();
 
-        $unreadCount = $activity->filter(fn ($event) => $event['at']->gt($since))->count();
+        $unreadCount = ClientNotification::where('user_id', $user->id)
+            ->whereNull('read_at')
+            ->count();
 
-        return [$activity->take(8), $unreadCount];
+        return [$notifications, $unreadCount];
     }
 
     private function adminGettingStartedTasks(): array

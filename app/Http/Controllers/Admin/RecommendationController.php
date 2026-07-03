@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ClientNotification;
 use App\Models\Project;
 use App\Models\Recommendation;
 use Illuminate\Http\Request;
@@ -47,7 +48,20 @@ class RecommendationController extends Controller
             $validated['presented_at'] = now();
         }
 
+        $becomingVisible = ! $recommendation->isVisibleToClient()
+            && in_array($validated['status'], ['approved_for_client', 'presented'], true);
+
         $recommendation->update($validated);
+
+        if ($becomingVisible) {
+            ClientNotification::send(
+                $recommendation->project->user,
+                'recommendation',
+                'New growth opportunity',
+                $recommendation->title,
+                route('portal.dashboard'),
+            );
+        }
 
         return back()->with('status', 'Recommendation updated.');
     }

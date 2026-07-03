@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\ProjectQuoteReadyMail;
+use App\Models\ClientNotification;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -61,6 +62,14 @@ class ProjectController extends Controller
             ]);
 
             Mail::to($project->user->email)->send(new ProjectQuoteReadyMail($project, $depositPayment));
+
+            ClientNotification::send(
+                $project->user,
+                'quote_ready',
+                'Your project quote is ready',
+                'Pay your initial 50% deposit to kick off development.',
+                route('portal.payments.index'),
+            );
         }
 
         return back()->with('status', 'Project updated.');

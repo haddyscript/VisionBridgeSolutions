@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\ConsultationCancelledMail;
 use App\Mail\ConsultationConfirmedMail;
 use App\Mail\ConsultationRescheduledMail;
+use App\Models\ClientNotification;
 use App\Models\Consultation;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -82,6 +83,20 @@ class ConsultationController extends Controller
 
         if (! $account || $account->notify_on_consultations) {
             Mail::to($consultation->email)->send($mailable);
+        }
+
+        if ($account) {
+            $statusLabels = ['confirmed' => 'confirmed', 'rescheduled' => 'rescheduled', 'cancelled' => 'canceled'];
+
+            ClientNotification::send(
+                $account,
+                'consultation_update',
+                'Consultation '.$statusLabels[$consultation->status],
+                $consultation->status === 'confirmed'
+                    ? 'Your consultation on '.$consultation->preferred_at->format('F j, Y \a\t g:i A').' has been confirmed.'
+                    : null,
+                route('portal.consultation.create'),
+            );
         }
 
         $consultation->update(['confirmation_sent_at' => now()]);

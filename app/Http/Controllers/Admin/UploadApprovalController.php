@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Portal\CategoryController;
 use App\Mail\UploadRepliedMail;
+use App\Models\ClientNotification;
 use App\Models\Upload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -12,9 +14,23 @@ class UploadApprovalController extends Controller
 {
     public function toggle(Upload $upload)
     {
+        $wasApproved = $upload->isApproved();
+
         $upload->update([
-            'approved_at' => $upload->isApproved() ? null : now(),
+            'approved_at' => $wasApproved ? null : now(),
         ]);
+
+        if (! $wasApproved) {
+            $label = CategoryController::CATEGORIES[$upload->category]['label'] ?? 'file';
+
+            ClientNotification::send(
+                $upload->user,
+                'file_approved',
+                'File approved',
+                "Your {$label} upload \"{$upload->original_name}\" has been approved.",
+                route('portal.category', $upload->category),
+            );
+        }
 
         return back()->with('status', $upload->isApproved() ? 'File approved.' : 'Approval removed.');
     }
@@ -59,6 +75,16 @@ class UploadApprovalController extends Controller
         if ($upload->user->notify_on_replies) {
             Mail::to($upload->user->email)->send(new UploadRepliedMail($reply));
         }
+
+        $label = CategoryController::CATEGORIES[$upload->category]['label'] ?? 'submission';
+
+        ClientNotification::send(
+            $upload->user,
+            'revision_reply',
+            "VisionBridge replied to your {$label}",
+            $reply->body,
+            route('portal.category', $upload->category),
+        );
 
         if ($request->wantsJson()) {
             return response()->json([

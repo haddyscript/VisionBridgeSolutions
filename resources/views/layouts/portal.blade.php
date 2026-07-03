@@ -63,8 +63,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
                     <span class="flex-1">Overview</span>
-                    @if (($unreadActivityCount ?? 0) > 0)
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500 text-white">{{ $unreadActivityCount }}</span>
+                    @if (($unreadNotificationCount ?? 0) > 0)
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500 text-white">{{ $unreadNotificationCount }}</span>
                     @endif
                 </a>
                 <a href="{{ route('portal.documents.index') }}"
@@ -201,7 +201,7 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                         </svg>
-                        @if ($unreadActivityCount > 0)
+                        @if ($unreadNotificationCount > 0)
                             <span id="notification-bell-badge" class="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500"></span>
                         @endif
                     </button>
@@ -215,25 +215,31 @@
                         @else
                             @php
                                 $notificationIcons = [
-                                    'milestone' => ['bg' => 'bg-teal/10', 'text' => 'text-teal-dark', 'path' => 'M5 13l4 4L19 7'],
-                                    'approved' => ['bg' => 'bg-teal/10', 'text' => 'text-teal-dark', 'path' => 'M5 13l4 4L19 7'],
-                                    'reply' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z'],
-                                    'payment' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M9 7h6m0 0v6m0-6L4 21'],
+                                    'milestone_completed' => ['bg' => 'bg-teal/10', 'text' => 'text-teal-dark', 'path' => 'M5 13l4 4L19 7'],
+                                    'file_approved' => ['bg' => 'bg-teal/10', 'text' => 'text-teal-dark', 'path' => 'M5 13l4 4L19 7'],
+                                    'revision_reply' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z'],
+                                    'quote_ready' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M9 7h6m0 0v6m0-6L4 21'],
+                                    'consultation_update' => ['bg' => 'bg-teal/10', 'text' => 'text-teal-dark', 'path' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
+                                    'recommendation' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M13 10V3L4 14h7v7l9-11h-7z'],
                                 ];
                             @endphp
                             <ul class="divide-y divide-gray-100 dark:divide-gray-700">
-                                @foreach ($notifications as $event)
-                                    @php $icon = $notificationIcons[$event['icon']] ?? $notificationIcons['milestone']; @endphp
-                                    <li class="flex items-start gap-3 px-4 py-3">
+                                @foreach ($notifications as $notification)
+                                    @php $icon = $notificationIcons[$notification->type] ?? $notificationIcons['milestone_completed']; @endphp
+                                    <li class="flex items-start gap-3 px-4 py-3 {{ $notification->read_at ? '' : 'bg-gold/5' }}">
                                         <span class="w-8 h-8 rounded-full {{ $icon['bg'] }} flex items-center justify-center shrink-0">
                                             <svg class="w-4 h-4 {{ $icon['text'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon['path'] }}"/></svg>
                                         </span>
                                         <div class="min-w-0">
-                                            <p class="text-sm font-medium text-navy dark:text-white">{{ $event['title'] }}</p>
-                                            @if ($event['description'])
-                                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $event['description'] }}</p>
+                                            @if ($notification->url)
+                                                <a href="{{ $notification->url }}" class="text-sm font-medium text-navy dark:text-white hover:underline">{{ $notification->title }}</a>
+                                            @else
+                                                <p class="text-sm font-medium text-navy dark:text-white">{{ $notification->title }}</p>
                                             @endif
-                                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $event['at']->diffForHumans() }}</p>
+                                            @if ($notification->description)
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $notification->description }}</p>
+                                            @endif
+                                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $notification->created_at->diffForHumans() }}</p>
                                         </div>
                                     </li>
                                 @endforeach
