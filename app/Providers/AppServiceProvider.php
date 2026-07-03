@@ -63,7 +63,24 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layouts.portal', function ($view) {
             $view->with('gettingStartedTasks', $this->clientGettingStartedTasks());
             $view->with('unreadActivityCount', $this->clientUnreadActivityCount());
+            $view->with('upcomingConsultationCount', $this->clientUpcomingConsultationCount());
         });
+    }
+
+    private function clientUpcomingConsultationCount(): int
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return 0;
+        }
+
+        // Consultation has no user_id/project_id column — matched by email,
+        // same limitation ConsultationController::create() already has.
+        return Consultation::where('email', $user->email)
+            ->where('status', '!=', 'cancelled')
+            ->where(fn ($q) => $q->whereNull('preferred_at')->orWhere('preferred_at', '>=', now()))
+            ->count();
     }
 
     private function clientUnreadActivityCount(): int
