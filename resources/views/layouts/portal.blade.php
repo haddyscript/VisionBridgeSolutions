@@ -194,6 +194,54 @@
                     </svg>
                 </button>
                 <h1 class="font-display text-lg font-bold text-navy dark:text-white flex-1">@yield('page-title', 'Client Portal')</h1>
+
+                <div class="relative">
+                    <button id="notification-bell-toggle" type="button" title="Notifications"
+                            class="relative w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        @if ($unreadActivityCount > 0)
+                            <span id="notification-bell-badge" class="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500"></span>
+                        @endif
+                    </button>
+
+                    <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-30 max-h-96 overflow-y-auto">
+                        <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                            <p class="text-sm font-bold text-navy dark:text-white">Notifications</p>
+                        </div>
+                        @if ($notifications->isEmpty())
+                            <p class="text-sm text-gray-400 dark:text-gray-500 text-center py-8 px-4">No updates yet.</p>
+                        @else
+                            @php
+                                $notificationIcons = [
+                                    'milestone' => ['bg' => 'bg-teal/10', 'text' => 'text-teal-dark', 'path' => 'M5 13l4 4L19 7'],
+                                    'approved' => ['bg' => 'bg-teal/10', 'text' => 'text-teal-dark', 'path' => 'M5 13l4 4L19 7'],
+                                    'reply' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z'],
+                                    'payment' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M9 7h6m0 0v6m0-6L4 21'],
+                                ];
+                            @endphp
+                            <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+                                @foreach ($notifications as $event)
+                                    @php $icon = $notificationIcons[$event['icon']] ?? $notificationIcons['milestone']; @endphp
+                                    <li class="flex items-start gap-3 px-4 py-3">
+                                        <span class="w-8 h-8 rounded-full {{ $icon['bg'] }} flex items-center justify-center shrink-0">
+                                            <svg class="w-4 h-4 {{ $icon['text'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon['path'] }}"/></svg>
+                                        </span>
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-medium text-navy dark:text-white">{{ $event['title'] }}</p>
+                                            @if ($event['description'])
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $event['description'] }}</p>
+                                            @endif
+                                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $event['at']->diffForHumans() }}</p>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
+                </div>
+
                 <button id="theme-toggle" type="button" title="Toggle dark mode"
                         class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -267,6 +315,33 @@
                 },
                 body: JSON.stringify({ theme: isDark ? 'dark' : 'light' }),
             });
+        });
+
+        // Notification bell
+        const bellToggle = document.getElementById('notification-bell-toggle');
+        const bellDropdown = document.getElementById('notification-dropdown');
+        const bellBadge = document.getElementById('notification-bell-badge');
+
+        bellToggle?.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const opening = bellDropdown.classList.contains('hidden');
+            bellDropdown.classList.toggle('hidden');
+
+            if (opening && bellBadge) {
+                bellBadge.remove();
+                fetch('{{ route('portal.notifications.read') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    },
+                });
+            }
+        });
+
+        document.addEventListener('click', function (e) {
+            if (bellDropdown && !bellDropdown.classList.contains('hidden') && !bellDropdown.contains(e.target) && e.target !== bellToggle) {
+                bellDropdown.classList.add('hidden');
+            }
         });
     </script>
 

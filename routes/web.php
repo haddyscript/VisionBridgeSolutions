@@ -37,6 +37,7 @@ use App\Http\Controllers\Portal\ConsultationController as PortalConsultationCont
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\DocumentController as PortalDocumentController;
 use App\Http\Controllers\Portal\FaqFeedbackController;
+use App\Http\Controllers\Portal\NotificationController as PortalNotificationController;
 use App\Http\Controllers\Portal\PaymentController as PortalPaymentController;
 use App\Http\Controllers\Portal\ProjectQuestionnaireController as PortalProjectQuestionnaireController;
 use App\Http\Controllers\Portal\ProjectRequestController as PortalProjectRequestController;
@@ -127,6 +128,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/portal/questionnaire', [PortalProjectQuestionnaireController::class, 'show'])->name('portal.questionnaire.show');
     Route::post('/portal/questionnaire', [PortalProjectQuestionnaireController::class, 'store'])->name('portal.questionnaire.store');
+
+    // The notification bell renders on every portal page (layouts.portal),
+    // including onboarding pages, so this must be reachable regardless of
+    // onboarding progress too.
+    Route::post('/portal/notifications/read', [PortalNotificationController::class, 'markRead'])->name('portal.notifications.read');
 });
 
 Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.complete'])->group(function () {

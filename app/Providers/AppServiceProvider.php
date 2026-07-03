@@ -62,7 +62,9 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('layouts.portal', function ($view) {
             $view->with('gettingStartedTasks', $this->clientGettingStartedTasks());
-            $view->with('unreadActivityCount', $this->clientUnreadActivityCount());
+            [$notifications, $unreadActivityCount] = $this->clientNotifications();
+            $view->with('notifications', $notifications);
+            $view->with('unreadActivityCount', $unreadActivityCount);
             $view->with('upcomingConsultationCount', $this->clientUpcomingConsultationCount());
         });
     }
@@ -83,18 +85,27 @@ class AppServiceProvider extends ServiceProvider
             ->count();
     }
 
-    private function clientUnreadActivityCount(): int
+    /**
+     * Powers the header notification bell — returns [items, unreadCount] from
+     * the same activity feed the Overview page's "Recent Activity" card
+     * already uses, capped to the 8 most recent, so there's one source of
+     * truth instead of a separate notifications log.
+     */
+    private function clientNotifications(): array
     {
         $user = Auth::user();
         $project = $user?->projects()->with('milestones', 'uploads.replies', 'payments')->first();
 
         if (! $project) {
-            return 0;
+            return [collect(), 0];
         }
 
         $since = $user->activity_last_read_at ?? Carbon::createFromTimestamp(0);
+        $activity = $project->recentActivity();
 
-        return $project->recentActivity()->filter(fn ($event) => $event['at']->gt($since))->count();
+        $unreadCount = $activity->filter(fn ($event) => $event['at']->gt($since))->count();
+
+        return [$activity->take(8), $unreadCount];
     }
 
     private function adminGettingStartedTasks(): array

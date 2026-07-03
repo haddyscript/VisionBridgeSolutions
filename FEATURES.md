@@ -260,6 +260,16 @@ The in-portal "Book a Consultation" form (`Portal\ConsultationController::store`
 - The portal "Book a Consultation" page now also lists the client's own **Upcoming Consultations** and **Consultation History** below the booking form, so a client can see what they've already requested instead of just a blank booking form every visit. `Consultation` has no `user_id`/`project_id` column, so these are matched by email (same limitation the admin inbox already has) — split into upcoming (status not `cancelled` and time in the future or unset) vs. history (past or canceled), each showing the requested time, status badge, message, and the meeting link once one is set.
 - The sidebar's "Book a Consultation" link now shows a gold count badge (same pattern as the red unread-activity badge on Overview) whenever the client has 1+ upcoming consultations, so they don't have to open the page to know one's pending — computed in `AppServiceProvider::clientUpcomingConsultationCount()` and shared to `layouts.portal` via the existing view composer.
 
+## 15c. Notification Bell (2026-07-03)
+
+The boss asked for a notification bell (before the light/dark mode toggle) since the portal had no central place to see "what's new" — updates were easy to miss unless a client happened to be on the Overview page.
+
+Rather than building a separate notifications table/log from scratch, the bell reuses the **same activity feed** the Overview page's "Recent Activity" card already builds (`Project::recentActivity()` — milestones completed, files approved, admin replies, payments received) and the same `users.activity_last_read_at` column that already powered the Overview sidebar's unread badge. One source of truth, no duplicate logging:
+
+- `AppServiceProvider::clientNotifications()` (replaces the old `clientUnreadActivityCount()`) loads the activity feed once and returns both the 8 most recent items and the unread count, shared to every `layouts.portal` view as `$notifications` and `$unreadActivityCount`.
+- A bell icon sits in the header before the theme toggle, with a red dot when there's anything unread. Clicking it opens a dropdown listing recent updates (same icons/labels as the Overview activity card) and immediately POSTs to a new `portal.notifications.read` route (`Portal\NotificationController::markRead`) to clear the unread state — mirroring what already happened automatically on an Overview page visit, just now reachable from anywhere in the portal without navigating away.
+- The bell renders on every portal page including onboarding pages (the route sits in the "reachable regardless of onboarding progress" middleware group), since `layouts.portal` is shared across both.
+
 ## 15. Filled-In PDF Agreements (2026-07-02)
 
 Clients who sign a PDF-based agreement now get their Care Plan selection and signature block actually stamped onto the real Master Agreement PDF at signing time (`App\Services\AgreementPdfFiller`, via `setasign/fpdi` + `setasign/fpdf`), instead of only ever seeing the blank uploaded template plus a separate certificate. Used on the Documents page, the signed-agreement email attachment, and admin download.
