@@ -14,17 +14,25 @@ use setasign\Fpdi\Fpdi;
  *
  * Coordinates below are hardcoded against the current Master Agreement PDF
  * ("CLIENT WEBSITE DEVELOPMENT & WEBSITE CARE PLAN MASTER AGREEMENT-OFFICIAL
- * 6.30.pdf", pages 132-134) — extracted via `pdftotext -bbox-layout`, not
+ * 6.30.pdf", pages 129, 132-134) — extracted via `pdftotext -bbox-layout`, not
  * guessed. If the boss uploads a revised version with a different layout or
  * page count, these page numbers and y-coordinates will need updating.
  */
 class AgreementPdfFiller
 {
+    private const PAGE_ACKNOWLEDGMENTS = 129;
+
     private const PAGE_CARE_PLAN = 132;
 
     private const PAGE_CLIENT_INFO = 133;
 
     private const PAGE_CLIENT_SIGNATURE = 134;
+
+    /**
+     * yMin of each "☐" glyph on the acknowledgments page, extracted via
+     * `pdftotext -bbox-layout` (x is the same, 72.024, for all five).
+     */
+    private const ACKNOWLEDGMENT_CHECKBOX_Y = [96.992, 123.752, 150.392, 177.152, 203.792];
 
     public function fill(ServiceAgreementTemplate $template, ServiceAgreementSignature $signature): string
     {
@@ -41,6 +49,7 @@ class AgreementPdfFiller
             $pdf->useTemplate($templateId);
 
             match ($pageNumber) {
+                self::PAGE_ACKNOWLEDGMENTS => $this->fillAcknowledgmentsPage($pdf, $signature),
                 self::PAGE_CARE_PLAN => $this->fillCarePlanPage($pdf, $signature),
                 self::PAGE_CLIENT_INFO => $this->fillClientInfoPage($pdf, $signature),
                 self::PAGE_CLIENT_SIGNATURE => $this->fillClientSignaturePage($pdf, $signature),
@@ -52,6 +61,20 @@ class AgreementPdfFiller
         Storage::disk('local')->put($outputPath, $pdf->Output('S'));
 
         return $outputPath;
+    }
+
+    private function fillAcknowledgmentsPage(Fpdi $pdf, ServiceAgreementSignature $signature): void
+    {
+        // ServiceAgreementController::store() validates all 5 ack_* fields
+        // as 'accepted' before a signature can be created at all, so every
+        // signature reaching this method had all 5 checked — no per-field
+        // state to read back.
+        $pdf->SetFont('Helvetica', 'B', 10);
+        $pdf->SetTextColor(20, 20, 20);
+
+        foreach (self::ACKNOWLEDGMENT_CHECKBOX_Y as $checkboxYMin) {
+            $pdf->Text(74.5, $checkboxYMin + 13, 'X');
+        }
     }
 
     private function fillCarePlanPage(Fpdi $pdf, ServiceAgreementSignature $signature): void

@@ -46,10 +46,11 @@ label at y=667.42 → blank row at y=692.38–704.38, i.e. label yMin + 25 to
 (near the bottom of that same band, just above the drawn rule) using this
 confirmed offset.
 
-## Field map (what's filled, page 132-134 of that PDF)
+## Field map (what's filled, pages 129, 132-134 of that PDF)
 
 | Field | Page | x | y (baseline) | Source data |
 |---|---|---|---|---|
+| 5 pre-signature acknowledgment checkboxes | 129 | 74.5 | 109.99, 136.75, 163.39, 190.15, 216.79 (each checkbox's own yMin + 13) | Not per-field data — `ServiceAgreementController::store()` validates all 5 `ack_*` inputs as `'accepted'` before a signature can be created at all, so every filled PDF stamps an "X" on all 5 unconditionally |
 | Selected Care Plan | 132 | 72.024 | 651.5 | `$project->carePlanAgreement->maintenancePlan->name` |
 | Monthly Investment | 132 | 85 (right after the printed "$") | 702 | `maintenancePlan->price / 100`, formatted `number_format(..., 2)` |
 | Client / Organization Name | 133 | 72.024 | 624.86 | `ServiceAgreementSignature->organization_name` |
@@ -83,9 +84,9 @@ If any of these get added later, extend `AgreementPdfFiller` with the same
   provided by `setasign/fpdf`). Imports every page of the source PDF via
   `importPage()`/`useTemplate()` (so the rest of the 134-page document passes
   through untouched) and overlays text/image only on pages 132-134.
-- Constants `PAGE_CARE_PLAN = 132`, `PAGE_CLIENT_INFO = 133`,
-  `PAGE_CLIENT_SIGNATURE = 134` at the top of the class — **update these
-  first** if the page count changes.
+- Constants `PAGE_ACKNOWLEDGMENTS = 129`, `PAGE_CARE_PLAN = 132`,
+  `PAGE_CLIENT_INFO = 133`, `PAGE_CLIENT_SIGNATURE = 134` at the top of the
+  class — **update these first** if the page count changes.
 - Triggered in `Portal\ServiceAgreementController::store()`, right after the
   signature certificate is generated, only when `$template->isPdfBased()`.
   Output saved to `service_agreement_signatures.filled_pdf_path`
@@ -118,7 +119,14 @@ gracefully.
 
 ## Status
 
-**Untested end-to-end as of 2026-07-02.** The service was written and wired
+**Untested end-to-end as of 2026-07-03.** The service was written and wired
 in without a way to run PHP/Composer locally — it needs a real signing
 walkthrough on the server to confirm the overlay actually lands correctly
 and that the required PHP extensions are enabled.
+
+**2026-07-03:** The 5 pre-signature acknowledgment checkboxes (page 129)
+were missing from the original field map entirely — only pages 132-134 were
+ever filled, so clients saw all 5 boxes still empty in their completed PDF
+even though they'd checked them (and the signature was gated on it) in the
+portal. Added `PAGE_ACKNOWLEDGMENTS` / `fillAcknowledgmentsPage()` to stamp
+an "X" on all 5. Still needs the same real-signing verification as above.
