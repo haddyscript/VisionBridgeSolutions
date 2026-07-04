@@ -149,4 +149,41 @@ return [
 
     'contact_address' => env('MAIL_CONTACT_ADDRESS', env('MAIL_ADMIN_ADDRESS', env('MAIL_FROM_ADDRESS', 'hello@example.com'))),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Support Notification Address
+    |--------------------------------------------------------------------------
+    |
+    | General client-facing operations: contact form, consultation requests,
+    | new client inquiries, uploads, revision/content replies, and technical
+    | issues. Falls back to the admin address if unset.
+    |
+    */
+
+    'support_address' => env('MAIL_SUPPORT_ADDRESS', env('MAIL_ADMIN_ADDRESS', env('MAIL_FROM_ADDRESS', 'hello@example.com'))),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Billing Notification Address
+    |--------------------------------------------------------------------------
+    |
+    | Stripe payment/subscription notifications, failed payments, refunds,
+    | and financial reporting. Falls back to the admin address if unset.
+    |
+    */
+
+    'billing_address' => env('MAIL_BILLING_ADDRESS', env('MAIL_ADMIN_ADDRESS', env('MAIL_FROM_ADDRESS', 'hello@example.com'))),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Executive Notification Address (Johnny)
+    |--------------------------------------------------------------------------
+    |
+    | Signed client agreements, account closures, and other high-priority or
+    | administrative matters. Falls back to the admin address if unset.
+    |
+    */
+
+    'johnny_address' => env('MAIL_JOHNNY_ADDRESS', env('MAIL_ADMIN_ADDRESS', env('MAIL_FROM_ADDRESS', 'hello@example.com'))),
+
 ];

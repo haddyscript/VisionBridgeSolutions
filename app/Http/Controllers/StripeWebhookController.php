@@ -41,7 +41,7 @@ class StripeWebhookController extends Controller
             Log::warning('Stripe webhook signature verification failed.', ['error' => $e->getMessage()]);
 
             if (Cache::add('system-alert:stripe-signature-failure', true, now()->addMinutes(15))) {
-                Mail::to(config('mail.admin_address'))->send(new SystemAlertMail(
+                Mail::to(config('mail.billing_address'))->send(new SystemAlertMail(
                     'Stripe Webhook Signature Verification Failed',
                     "A request to the Stripe webhook endpoint failed signature verification. This usually means a misconfigured webhook secret, or could indicate someone probing the endpoint. Further alerts of this type are suppressed for 15 minutes.",
                     ['Error' => $e->getMessage()],
@@ -181,7 +181,7 @@ class StripeWebhookController extends Controller
         $pendingCarePlan = $project->subscription?->isPending() ? $project->subscription : null;
 
         Mail::to($project->user->email)->send(new ProjectLaunchedMail($project, $pendingCarePlan));
-        Mail::to(config('mail.admin_address'))->send(new SystemAlertMail(
+        Mail::to(config('mail.support_address'))->send(new SystemAlertMail(
             'Project Launched — '.$project->name,
             "{$project->user->name}'s project was automatically marked as launched — paid in full, approved, and funds cleared.",
             [
@@ -232,7 +232,7 @@ class StripeWebhookController extends Controller
 
     private function notifyAdminOfPayment(Payment $payment): void
     {
-        Mail::to(config('mail.admin_address'))->send(new AdminPaymentNotificationMail(
+        Mail::to(config('mail.billing_address'))->send(new AdminPaymentNotificationMail(
             $payment,
             $payment->project->user->name,
             $payment->project->name,
@@ -346,7 +346,7 @@ class StripeWebhookController extends Controller
         ]);
 
         if ($newStatus !== $previousStatus && in_array($newStatus, ['past_due', 'canceled'], true)) {
-            Mail::to(config('mail.admin_address'))->send(new SubscriptionStatusAlertMail($subscription));
+            Mail::to(config('mail.billing_address'))->send(new SubscriptionStatusAlertMail($subscription));
         }
 
         if ($newStatus === 'active' && $previousStatus !== 'active') {
@@ -371,7 +371,7 @@ class StripeWebhookController extends Controller
         $project->update(['suspended_at' => null]);
 
         Mail::to($project->user->email)->send(new ProjectRestoredMail($project));
-        Mail::to(config('mail.admin_address'))->send(new SystemAlertMail(
+        Mail::to(config('mail.billing_address'))->send(new SystemAlertMail(
             'Project Restored — '.$project->name,
             "{$project->user->name}'s overdue Care Plan payment was received and verified — their website access has been automatically restored.",
             [
@@ -394,7 +394,7 @@ class StripeWebhookController extends Controller
             'canceled_at' => now(),
         ]);
 
-        Mail::to(config('mail.admin_address'))->send(new SubscriptionStatusAlertMail($subscription));
+        Mail::to(config('mail.billing_address'))->send(new SubscriptionStatusAlertMail($subscription));
     }
 
     private function handleInvoicePaymentSucceeded($invoice): void
@@ -453,7 +453,7 @@ class StripeWebhookController extends Controller
             new SubscriptionReceiptMail($subscriptionPayment)
         );
 
-        Mail::to(config('mail.admin_address'))->send(new AdminPaymentNotificationMail(
+        Mail::to(config('mail.billing_address'))->send(new AdminPaymentNotificationMail(
             $subscription,
             $subscription->project->user->name,
             $subscription->project->name,
@@ -533,7 +533,7 @@ class StripeWebhookController extends Controller
 
         $project = $payout->project();
 
-        Mail::to(config('mail.admin_address'))->send(new SystemAlertMail(
+        Mail::to(config('mail.billing_address'))->send(new SystemAlertMail(
             $wasAlreadyPaid
                 ? "Client Payment {$reason} After FaithStack Was Already Paid"
                 : "Client Payment {$reason} — FaithStack Payout Held",

@@ -327,6 +327,16 @@ Optional TOTP-based 2FA (Google Authenticator, Authy, 1Password, etc.) for any a
 
 **Full spec — why TOTP over a package, full enrollment/login flow, known limitations (no "remember this device," no admin-side settings link yet) — lives in [specs/TWO_FACTOR_AUTHENTICATION.md](specs/TWO_FACTOR_AUTHENTICATION.md).**
 
+## 15i. Split Internal Notification Addresses (2026-07-03)
+
+Every internal (team-facing) notification used to funnel through one shared address (`MAIL_ADMIN_ADDRESS`). The boss set up three real mailboxes and asked for notifications routed by topic:
+
+- **`support@`** (`MAIL_SUPPORT_ADDRESS`) — contact form, consultation requests (public + portal), new client inquiries/registrations, new project requests, questionnaire completions, client uploads, revision/content thread replies, upload failures, and project-launched/restored status notices.
+- **`billing@`** (`MAIL_BILLING_ADDRESS`) — all Stripe payment/subscription notifications, failed/overdue payments, refunds (including failed-refund alerts), FaithStack payout holds, and the Stripe webhook signature-failure alert.
+- **`johnny@`** (`MAIL_JOHNNY_ADDRESS`) — signed Service Agreements and account closure requests.
+
+New config keys in `config/mail.php` (each falls back to `admin_address` if unset, so nothing breaks if an env var is missing). The public/portal "Book a Consultation" notification previously sent to `admin_address` **and** cc'd `contact_address` — since both now resolve to the same `support@` mailbox, the redundant cc was removed. `FaithStack Payouts`' own `faithstack_address` (a partner, not internal staff) is unrelated and untouched. Six placements weren't explicit in the boss's routing list and were assigned by judgment call (confirmed with the boss): new project requests, questionnaire completions, project-launched/approved/restored notices → `support@`; account closure requests → `johnny@`; Stripe signature-verification failures → `billing@`.
+
 ## 16. `specs/` Folder
 
 Starting 2026-07-03, implementation specs for features with enough moving parts to warrant one (multi-step flows, anything with a diagram, precise technical reference like PDF field coordinates) live in `specs/` as their own Markdown file, linked from the relevant FEATURES.md entry rather than inlined there. FEATURES.md stays the plain-language "what it does" summary; `specs/` is where the "how, and why it's built that way" detail goes. Existing docs there: [specs/CARE_PLAN_SUBSCRIPTION_FLOW.md](specs/CARE_PLAN_SUBSCRIPTION_FLOW.md), [specs/AGREEMENT-PDF-FILLING.md](specs/AGREEMENT-PDF-FILLING.md), [specs/INTERACTIVE_PRODUCT_TOUR.md](specs/INTERACTIVE_PRODUCT_TOUR.md), [specs/PORTAL_ANNOUNCEMENTS.md](specs/PORTAL_ANNOUNCEMENTS.md), [specs/PORTAL_GLOBAL_SEARCH.md](specs/PORTAL_GLOBAL_SEARCH.md), [specs/POST_LAUNCH_SATISFACTION_SURVEY.md](specs/POST_LAUNCH_SATISFACTION_SURVEY.md), [specs/TWO_FACTOR_AUTHENTICATION.md](specs/TWO_FACTOR_AUTHENTICATION.md).

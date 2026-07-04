@@ -47,7 +47,7 @@ class UploadController extends Controller
             $path = $file->store("projects/{$project->id}/{$validated['category']}", 'client_uploads');
 
             if ($path === false) {
-                Mail::to(config('mail.admin_address'))->send(new SystemAlertMail(
+                Mail::to(config('mail.support_address'))->send(new SystemAlertMail(
                     'Client Upload Disk Write Failed',
                     "A client's file upload could not be saved to disk. The client uploads disk may be full or misconfigured.",
                     [
@@ -74,7 +74,7 @@ class UploadController extends Controller
         $upload->setRelation('project', $project);
         $upload->setRelation('user', $request->user());
 
-        Mail::to(config('mail.admin_address'))->send(new NewClientUploadMail($upload));
+        Mail::to(config('mail.support_address'))->send(new NewClientUploadMail($upload));
 
         if ($request->wantsJson()) {
             return response()->json(['message' => 'Submitted successfully.']);
@@ -105,7 +105,7 @@ class UploadController extends Controller
             'body' => $validated['body'],
         ]);
 
-        Mail::to(config('mail.admin_address'))->send(new ClientReplyMail($reply));
+        Mail::to(config('mail.support_address'))->send(new ClientReplyMail($reply));
 
         if ($request->wantsJson()) {
             return response()->json([

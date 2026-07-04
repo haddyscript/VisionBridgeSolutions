@@ -25,7 +25,7 @@ class ProjectRequestController extends Controller
 
         $projectRequest = $request->user()->projectRequests()->create($validated);
 
-        Mail::to(config('mail.admin_address'))->send(new NewProjectRequestMail($projectRequest));
+        Mail::to(config('mail.support_address'))->send(new NewProjectRequestMail($projectRequest));
 
         return redirect()->route('portal.project-requests.show')
             ->with('status', 'Your project request has been sent — we\'ll be in touch soon.');

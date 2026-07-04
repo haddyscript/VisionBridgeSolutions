@@ -41,7 +41,7 @@ class RegisteredUserController extends Controller
             'name' => $user->name.'\'s Website',
         ]);
 
-        Mail::to(config('mail.admin_address'))->send(new NewClientRegistrationMail($user));
+        Mail::to(config('mail.support_address'))->send(new NewClientRegistrationMail($user));
 
         $user->sendEmailVerificationNotification();
 

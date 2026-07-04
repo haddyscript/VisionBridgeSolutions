@@ -105,7 +105,7 @@ class PaymentReconciler
             new PaymentReceiptMail($payment, $receiptUrl)
         );
 
-        Mail::to(config('mail.admin_address'))->send(new AdminPaymentNotificationMail(
+        Mail::to(config('mail.billing_address'))->send(new AdminPaymentNotificationMail(
             $payment,
             $payment->project->user->name,
             $payment->project->name,

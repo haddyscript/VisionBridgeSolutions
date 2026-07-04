@@ -34,7 +34,7 @@ class SuspendOverdueProjects extends Command
             $project->update(['suspended_at' => now()]);
 
             Mail::to($project->user->email)->send(new ProjectSuspendedMail($project, $subscription));
-            Mail::to(config('mail.admin_address'))->send(new SystemAlertMail(
+            Mail::to(config('mail.billing_address'))->send(new SystemAlertMail(
                 'Project Suspended for Non-Payment — '.$project->name,
                 "{$project->user->name}'s Care Plan payment has been past due beyond the ".Subscription::GRACE_PERIOD_DAYS." day grace period. Their portal access has been suspended automatically until payment is received.",
                 [

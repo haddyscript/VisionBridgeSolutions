@@ -54,9 +54,7 @@ class ConsultationController extends Controller
 
         $consultation = Consultation::create($validated);
 
-        Mail::to(config('mail.admin_address'))
-            ->cc(config('mail.contact_address'))
-            ->send(new NewConsultationMail($consultation));
+        Mail::to(config('mail.support_address'))->send(new NewConsultationMail($consultation));
 
         Mail::to($consultation->email)->send(new ConsultationReceivedMail($consultation));
 

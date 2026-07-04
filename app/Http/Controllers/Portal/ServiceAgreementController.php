@@ -148,7 +148,7 @@ class ServiceAgreementController extends Controller
         }
 
         Mail::to($user->email)->send(new ServiceAgreementSignedMail($signature));
-        Mail::to(config('mail.admin_address'))->send(new ServiceAgreementSignedMail($signature));
+        Mail::to(config('mail.johnny_address'))->send(new ServiceAgreementSignedMail($signature));
 
         $user->update(['onboarding_step' => 13]);
 

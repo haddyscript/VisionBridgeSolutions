@@ -37,7 +37,7 @@ class ProjectReviewController extends Controller
         }
 
         if ($finalPayment) {
-            Mail::to(config('mail.admin_address'))->send(new ProjectApprovedMail($project, $finalPayment));
+            Mail::to(config('mail.support_address'))->send(new ProjectApprovedMail($project, $finalPayment));
         }
 
         return back()->with('status', 'Thanks for approving! Your final payment request is ready in the Payments tab.');
@@ -68,7 +68,7 @@ class ProjectReviewController extends Controller
                 'amount' => $refundAmount,
             ]);
         } catch (ApiErrorException $e) {
-            Mail::to(config('mail.admin_address'))->send(new SystemAlertMail(
+            Mail::to(config('mail.billing_address'))->send(new SystemAlertMail(
                 'Client Cancellation Refund Failed',
                 "A client tried to cancel and get refunded during their review period, but the Stripe refund failed. This needs manual handling.",
                 [
@@ -91,7 +91,7 @@ class ProjectReviewController extends Controller
         $project->update(['status' => 'canceled']);
 
         Mail::to($project->user->email)->send(new ProjectCanceledMail($project, $payment));
-        Mail::to(config('mail.admin_address'))->send(new SystemAlertMail(
+        Mail::to(config('mail.billing_address'))->send(new SystemAlertMail(
             'Client Canceled During Review Period',
             "{$project->user->name} canceled their project during the review window. A partial refund (minus Stripe's fee) has been issued automatically.",
             [

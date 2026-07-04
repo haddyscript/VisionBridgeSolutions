@@ -80,7 +80,7 @@ class AccountController extends Controller
 
         Mail::raw(
             "Account closure requested.\n\nName: {$user->name}\nEmail: {$user->email}\nTime: " . now()->toDateTimeString(),
-            fn ($m) => $m->to(config('mail.admin_address'))->subject('Account Closure Request — ' . $user->name)
+            fn ($m) => $m->to(config('mail.johnny_address'))->subject('Account Closure Request — ' . $user->name)
         );
 
         return back()->with('status', 'Your closure request has been received. Our team will follow up within 1–2 business days.');
