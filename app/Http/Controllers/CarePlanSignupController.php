@@ -44,6 +44,7 @@ class CarePlanSignupController extends Controller
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
+                'phone' => $validated['phone'] ?? null,
                 'password' => Str::random(40),
                 'role' => 'client',
                 'email_verified_at' => now(),
