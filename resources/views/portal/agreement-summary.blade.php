@@ -33,7 +33,7 @@
             <div class="flex items-start justify-between gap-4 px-6 py-4">
                 <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 shrink-0 w-48">Monthly Subscription</span>
                 <span class="text-sm text-navy dark:text-white font-medium text-right">
-                    ${{ number_format($plan->price, 2) }} / {{ $plan->interval ?? 'month' }}
+                    {{ $plan->formattedPrice() }} / {{ $plan->interval ?? 'month' }}
                 </span>
             </div>
         @endif
