@@ -149,9 +149,16 @@ class Project extends Model
         return $this->hasMany(Subscription::class)->latest();
     }
 
+    /**
+     * "The" current subscription for this project — deliberately excludes
+     * canceled rows, not just picking whichever was created most recently.
+     * Without this, a canceled duplicate created after the real active/pending
+     * one (see specs/CARE_PLAN_SUBSCRIPTION_FLOW.md §6) would incorrectly win
+     * over the subscription that's actually in effect.
+     */
     public function subscription()
     {
-        return $this->hasOne(Subscription::class)->latestOfMany();
+        return $this->hasOne(Subscription::class)->where('status', '!=', 'canceled')->latestOfMany();
     }
 
     public function progressPercent(): int

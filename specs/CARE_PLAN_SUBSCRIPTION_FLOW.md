@@ -167,3 +167,15 @@ client activated this way, silently breaking the renewal-reminder feature
   object exists yet — a local status change only, never a real Stripe
   cancellation) and `subscriptions:backfill-period-end` (re-fetches the real
   value from Stripe for any active subscription still missing it).
+- **Related third bug found while verifying the cancel-duplicates fix:**
+  `Project::subscription()` (the singular "current subscription" relation used
+  by the admin project Billing tab, portal billing/suspended pages, and the
+  launch email) was defined as `hasOne(Subscription::class)->latestOfMany()`
+  with no status filter — "latest" meant *most recently created*, not
+  *currently in effect*. Since the duplicate row was created after the real
+  one, canceling the duplicate left the relation pointing at a canceled row,
+  making the Billing tab say "no current plan" even with a real active
+  subscription underneath. Fixed by excluding canceled rows from the relation
+  entirely (`->where('status', '!=', 'canceled')->latestOfMany()`) — this
+  self-corrected the display for all 3 affected projects immediately, no data
+  changes needed beyond the `subscriptions:cancel-duplicates` run already done.
