@@ -690,11 +690,12 @@
     </script>
 
     {{-- Full-screen loading overlay --}}
-    <div id="page-loading-overlay" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-white/70 dark:bg-gray-900/80 backdrop-blur-sm">
+    <div id="page-loading-overlay" class="fixed inset-0 z-[9999] hidden flex-col items-center justify-center gap-3 bg-white/70 dark:bg-gray-900/80 backdrop-blur-sm">
         <svg class="w-10 h-10 animate-spin text-gold" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
         </svg>
+        <p id="page-loading-text" class="text-sm font-medium text-navy dark:text-white">Processing your request…</p>
     </div>
 
     <script>
@@ -707,19 +708,31 @@
         // feedback (e.g. an AJAX-driven form).
         (function () {
             const overlay = document.getElementById('page-loading-overlay');
+            const overlayText = document.getElementById('page-loading-text');
             if (!overlay) return;
+
+            const DEFAULT_TEXT = 'Processing your request…';
+            const SLOW_TEXT = "Still working on it — this can take a little longer than usual. Please don't close or refresh this page.";
+            let slowTimer = null;
 
             document.addEventListener('submit', function (e) {
                 const form = e.target;
                 if (form.tagName !== 'FORM' || form.dataset.noLoadingOverlay !== undefined) return;
 
+                overlayText.textContent = DEFAULT_TEXT;
                 overlay.classList.remove('hidden');
                 overlay.classList.add('flex');
+
+                clearTimeout(slowTimer);
+                slowTimer = setTimeout(function () {
+                    overlayText.textContent = SLOW_TEXT;
+                }, 10000);
             }, true);
 
             // If the user navigates back to a page that was mid-submit
             // (bfcache), don't leave the overlay stuck showing.
             window.addEventListener('pageshow', function () {
+                clearTimeout(slowTimer);
                 overlay.classList.add('hidden');
                 overlay.classList.remove('flex');
             });
