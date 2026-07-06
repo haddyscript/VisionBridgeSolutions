@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Subscription;
+use App\Services\SubscriptionReconciler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Stripe\Exception\ApiErrorException;
@@ -69,5 +70,15 @@ class SubscriptionController extends Controller
         $subscription->update(['status' => 'canceled', 'canceled_at' => now()]);
 
         return back()->with('status', 'Maintenance plan canceled.');
+    }
+
+    /**
+     * Admin-side equivalent of the client's own "Refresh Status" button in
+     * the portal — re-checks the real status with Stripe rather than relying
+     * on whatever the last webhook happened to leave locally.
+     */
+    public function sync(Subscription $subscription, SubscriptionReconciler $reconciler)
+    {
+        return back()->with('status', $reconciler->reconcile($subscription));
     }
 }

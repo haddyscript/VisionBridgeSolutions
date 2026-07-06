@@ -277,6 +277,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/subscriptions', [AdminSubscriptionController::class, 'index'])->name('subscriptions.index');
     Route::post('/projects/{project}/subscriptions', [AdminSubscriptionController::class, 'store'])->name('subscriptions.store');
     Route::delete('/subscriptions/{subscription}', [AdminSubscriptionController::class, 'destroy'])->name('subscriptions.destroy');
+    Route::post('/subscriptions/{subscription}/sync', [AdminSubscriptionController::class, 'sync'])->name('subscriptions.sync');
 
     Route::get('/partner-payouts', [AdminPartnerPayoutController::class, 'index'])->name('partner-payouts.index');
     Route::post('/partner-payouts/rate', [AdminPartnerPayoutController::class, 'setRate'])->name('partner-payouts.set-rate');

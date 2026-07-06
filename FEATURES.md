@@ -76,6 +76,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Client downloads a full statement | Client | One click downloads their entire payment history as a spreadsheet file for their own records/bookkeeping |
 | We cancel an unpaid request | Our team | Only possible if the client hasn't started paying yet |
 | We double-check a stuck payment | Our team | One click re-checks the payment's real status with our payment provider |
+| We double-check a stuck maintenance plan | Our team | A "Refresh" button on the project's Billing tab re-checks the plan's real status with our payment provider — same as the client's own "Refresh Status" button, from the admin side |
 | We set up a recurring plan | Our team | A monthly maintenance/care plan tied to a project |
 | Client starts the plan | Client | Pays on our own branded "Start Plan" page (Stripe Elements card form embedded directly in the portal) instead of being sent to a Stripe-hosted checkout page — card details still go straight to Stripe, never through our servers |
 | Client gets a maintenance plan receipt | Client | Each month's payment email links to our own branded receipt page (matching the one-time payment receipt design) instead of Stripe's hosted invoice page; the official Stripe invoice is still linked as a secondary option on that page |
