@@ -74,9 +74,20 @@ class StripeWebhookController extends Controller
                 ->where('stripe_checkout_session_id', $session->id)->first();
 
             if ($subscription && $subscription->isPending()) {
+                // Fetch the real Stripe Subscription to record current_period_end
+                // now, while activating — handleInvoicePaymentSucceeded()'s own
+                // backfill for this field only runs while status is still
+                // 'pending', which is no longer true the instant this update()
+                // call below runs, so it would otherwise never get set at all.
+                Stripe::setApiKey(config('services.stripe.secret'));
+                $stripeSubscription = \Stripe\Subscription::retrieve($session->subscription);
+                $periodEnd = $stripeSubscription->current_period_end
+                    ?? ($stripeSubscription->items->data[0]->current_period_end ?? null);
+
                 $subscription->update([
                     'status' => 'active',
                     'stripe_subscription_id' => $session->subscription,
+                    'current_period_end' => $periodEnd ? Carbon::createFromTimestamp($periodEnd) : null,
                 ]);
 
                 // Only the new public Website Care Plan self-checkout flow links a

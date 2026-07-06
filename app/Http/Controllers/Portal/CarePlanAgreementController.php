@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Models\MaintenancePlan;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,8 +16,8 @@ class CarePlanAgreementController extends Controller
 
         abort_unless($project, 404);
 
-        if ($project->hasAgreedToCarePlan()) {
-            return redirect()->route('portal.agreement.show');
+        if ($this->autoAgreeIfSubscriptionAlreadyExists($request, $project)) {
+            return redirect()->route('portal.agreement.summary');
         }
 
         return view('portal.care-plan-agreement', [
@@ -33,8 +34,9 @@ class CarePlanAgreementController extends Controller
 
         abort_unless($project, 404);
 
-        if ($project->hasAgreedToCarePlan()) {
-            return redirect()->route('portal.agreement.show');
+        if ($this->autoAgreeIfSubscriptionAlreadyExists($request, $project)) {
+            return redirect()->route('portal.agreement.summary')
+                ->with('status', 'Care Plan selected — please review your agreement summary before signing.');
         }
 
         $validated = $request->validate([
@@ -71,5 +73,44 @@ class CarePlanAgreementController extends Controller
 
         return redirect()->route('portal.agreement.summary')
             ->with('status', 'Care Plan selected — please review your agreement summary before signing.');
+    }
+
+    /**
+     * A client who signed up through the public pre-account Care Plan form
+     * (CarePlanSignupController) already selected a plan and paid — they
+     * still have to pass through this onboarding step since it gates every
+     * account regardless of how it was created, but presenting the form
+     * again and letting store() run would create a second, duplicate
+     * Subscription for the same project (see specs/CARE_PLAN_SUBSCRIPTION_FLOW.md).
+     * If a non-canceled subscription already exists, auto-record the
+     * agreement against that plan instead and skip creating a new one.
+     */
+    private function autoAgreeIfSubscriptionAlreadyExists(Request $request, Project $project): bool
+    {
+        if ($project->hasAgreedToCarePlan()) {
+            return true;
+        }
+
+        $existingSubscription = $project->subscriptions()
+            ->whereNotNull('maintenance_plan_id')
+            ->where('status', '!=', 'canceled')
+            ->first();
+
+        if (! $existingSubscription) {
+            return false;
+        }
+
+        DB::transaction(function () use ($project, $existingSubscription, $request) {
+            $project->carePlanAgreement()->create([
+                'maintenance_plan_id' => $existingSubscription->maintenance_plan_id,
+                'agreed_at' => now(),
+                'ip_address' => $request->ip(),
+                'user_agent' => (string) $request->userAgent(),
+            ]);
+        });
+
+        $request->user()->update(['onboarding_step' => max($request->user()->onboarding_step ?? 1, 8)]);
+
+        return true;
     }
 }

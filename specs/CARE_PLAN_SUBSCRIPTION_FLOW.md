@@ -129,3 +129,41 @@ never actually referenced his Product/Price catalog. Fixed ahead of launch:
   those were never tied to a fixed Care Plan tier in the first place.
 - Live Price IDs currently on file: Essential `price_1Tpbh5IDvdvf6G8fqsFPevyQ`,
   Growth `price_1TpbnNIDvdvf6G8f235N3gah`, Elite `price_1TpbqDIDvdvf6G8fAaHKMPSA`.
+
+## 6. Duplicate Subscription + Missing current_period_end — Fixed (2026-07-07)
+
+Discovered via 3 real client signups during pre-launch testing: every client
+who signed up through this public flow, then continued into the portal's
+13-step onboarding sequence, ended up with **two** `Subscription` rows for
+the same project — the real `active` one from this flow, plus an orphaned,
+permanently `pending` duplicate created by
+`Portal\CarePlanAgreementController::store()` (onboarding step 6, "Select
+Care Plan"), which had no awareness that a subscription already existed. Left
+alone, the pending duplicate would have caused `ProjectLaunchedMail` to
+eventually invite an already-paying client to "set up billing" a second time
+once their project reached `launched` status.
+
+Separately, `StripeWebhookController::handleCheckoutCompleted()` (the
+activation path for this flow) never set `current_period_end` — it only set
+`status` and `stripe_subscription_id`. The one place that normally backfills
+it, `handleInvoicePaymentSucceeded()`, only does so while `isPending()` is
+still true, which is no longer the case by the time that invoice webhook
+arrives (this flow's own activation already flipped it to `active` moments
+earlier). Result: `current_period_end` stayed permanently `null` for every
+client activated this way, silently breaking the renewal-reminder feature
+(`subscriptions:send-renewal-reminders`) for them specifically.
+
+**Fixed:**
+- `CarePlanAgreementController` now checks for an existing non-canceled
+  Subscription on the project before creating one — if found, it
+  auto-records the Care Plan agreement against that existing plan instead of
+  presenting the selection form again.
+- `handleCheckoutCompleted()` now fetches the real Stripe Subscription and
+  sets `current_period_end` at activation time, same fallback logic already
+  used elsewhere for Stripe's 2025+ flexible-billing item-level period dates.
+- Two one-time (safe to re-run) Artisan commands added to fix the data
+  already affected by both bugs: `subscriptions:cancel-duplicates` (only
+  touches pending rows with no `stripe_subscription_id`, i.e. no real Stripe
+  object exists yet — a local status change only, never a real Stripe
+  cancellation) and `subscriptions:backfill-period-end` (re-fetches the real
+  value from Stripe for any active subscription still missing it).
