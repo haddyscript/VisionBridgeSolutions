@@ -5,7 +5,7 @@ How auto-deploy from GitHub to the Hostinger server was set up for this project.
 ## What it does
 
 Pushing to `main` on GitHub now automatically updates the live site at
-`https://maroon-magpie-775843.hostingersite.com` — no more manual FTP uploads.
+`https://visionbridgesolutions.com` — no more manual FTP uploads.
 
 A GitHub webhook hits a password-protected route (`/deployer`) on the live
 site, which runs `git fetch` + `git reset --hard origin/main` on the server
@@ -13,8 +13,16 @@ and clears Laravel's caches.
 
 ## Server paths
 
-- App root (the actual Laravel/git repo): `/home/u290597841/domains/maroon-magpie-775843.hostingersite.com/laravel-app`
-- Web root (what the domain serves): `/home/u290597841/domains/maroon-magpie-775843.hostingersite.com/public_html`
+**Note on domain names:** `visionbridgesolutions.com` (registered at GoDaddy) is
+the real public-facing domain and the one used in all URLs below.
+`vbs.johnnydavisglobalmission.org` is just the internal Hostinger subdomain
+name the hosting folder happens to be labeled with — both point at the same
+Hostinger account and the same `laravel-app` folder. The original
+`maroon-magpie-775843.hostingersite.com` Hostinger placeholder domain used
+during initial setup has since been deleted.
+
+- App root (the actual Laravel/git repo): `/home/u290597841/domains/vbs.johnnydavisglobalmission.org/laravel-app`
+- Web root (what the domain serves): `/home/u290597841/domains/vbs.johnnydavisglobalmission.org/public_html`
   - This is now a **symlink** to `laravel-app/public`, not a separate copy.
 
 ## Code added to the repo
@@ -33,7 +41,7 @@ and clears Laravel's caches.
 1. **Generate a GitHub deploy key on the server** (not on the local Mac — it has to live on the server that's doing the `git pull`):
    ```bash
    ssh -p 65002 u290597841@45.130.228.160
-   cd ~/domains/maroon-magpie-775843.hostingersite.com
+   cd ~/domains/vbs.johnnydavisglobalmission.org
    ssh-keygen -t ed25519 -f ~/.ssh/vbs_deploy_key -N "" -C "hostinger-deploy"
    cat ~/.ssh/vbs_deploy_key.pub
    ```
@@ -54,7 +62,7 @@ and clears Laravel's caches.
    Should reply: `Hi haddyscript/VisionBridgeSolutions! You've successfully authenticated...`
 4. **Turn the existing `laravel-app` folder into a git repo tracking GitHub:**
    ```bash
-   cd ~/domains/maroon-magpie-775843.hostingersite.com/laravel-app
+   cd ~/domains/vbs.johnnydavisglobalmission.org/laravel-app
    git init
    git remote add origin git@github.com:haddyscript/VisionBridgeSolutions.git
    git fetch origin main
@@ -75,18 +83,18 @@ and clears Laravel's caches.
    ```
 6. **Swap `public_html` for a symlink** so every future deploy goes live instantly with no copy step:
    ```bash
-   cd ~/domains/maroon-magpie-775843.hostingersite.com
+   cd ~/domains/vbs.johnnydavisglobalmission.org
    mv public_html public_html.bak
    ln -s laravel-app/public public_html
    ```
 7. **Test the endpoint:**
    ```bash
-   curl -i "https://maroon-magpie-775843.hostingersite.com/deployer?password=YOUR_DEPLOYER_PASSWORD"
+   curl -i "https://visionbridgesolutions.com/deployer?password=YOUR_DEPLOYER_PASSWORD"
    ```
    Should return `200` with the git/artisan output as plain text.
 8. **Add the GitHub webhook:**
    Repo → Settings → Webhooks → Add webhook
-   - Payload URL: `https://maroon-magpie-775843.hostingersite.com/deployer?password=YOUR_DEPLOYER_PASSWORD` (URL-encode any special characters in the real password)
+   - Payload URL: `https://visionbridgesolutions.com/deployer?password=YOUR_DEPLOYER_PASSWORD` (URL-encode any special characters in the real password)
    - Content type: `application/json`
    - Events: just the **push** event
    - Active: checked
@@ -97,7 +105,7 @@ and clears Laravel's caches.
 - **Normal deploy:** just `git push` to `main`. The webhook fires automatically and the site updates within a few seconds.
 - **Manual deploy:** visit in browser:
   ```
-  https://maroon-magpie-775843.hostingersite.com/deployer?password=YOUR_DEPLOYER_PASSWORD
+  https://visionbridgesolutions.com/deployer?password=YOUR_DEPLOYER_PASSWORD
   ```
 - **Reverting a bad push:** use `git revert <commit>` (not `reset --hard` + force push) and push the revert commit — this triggers another auto-deploy that undoes the change. Don't rewrite already-pushed history.
 
