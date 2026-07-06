@@ -11,3 +11,9 @@ Artisan::command('inspire', function () {
 Schedule::command('payouts:verify')->daily();
 Schedule::command('projects:suspend-overdue')->hourly();
 Schedule::command('subscriptions:send-renewal-reminders')->daily();
+// Manual run over SSH (also fires automatically twice a day via this
+// schedule, if the server's cron is wired up):
+//   ssh -p 65002 u290597841@45.130.228.160
+//   cd domains/vbs.johnnydavisglobalmission.org/laravel-app
+//   php artisan payments:retry-failed
+Schedule::command('payments:retry-failed')->twiceDaily();
