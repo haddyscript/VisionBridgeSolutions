@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
+    /** How many days after payment a client can still request a refund. */
+    public const REFUND_REQUEST_WINDOW_DAYS = 30;
+
     protected $fillable = [
         'project_id',
         'description',
@@ -38,6 +41,30 @@ class Payment extends Model
     public function payouts()
     {
         return $this->morphMany(PartnerPayout::class, 'payable')->latest();
+    }
+
+    public function refundRequests()
+    {
+        return $this->hasMany(RefundRequest::class)->latest();
+    }
+
+    /**
+     * Whether a client can still submit a new refund request for this
+     * payment — must be paid, within the request window, and not already
+     * have a pending or approved request on file (a declined one can be
+     * re-requested).
+     */
+    public function isRefundRequestable(): bool
+    {
+        if (! $this->isPaid() || ! $this->paid_at) {
+            return false;
+        }
+
+        if ($this->paid_at->lt(now()->subDays(self::REFUND_REQUEST_WINDOW_DAYS))) {
+            return false;
+        }
+
+        return ! $this->refundRequests()->whereIn('status', ['pending', 'approved'])->exists();
     }
 
     public function isDeposit(): bool

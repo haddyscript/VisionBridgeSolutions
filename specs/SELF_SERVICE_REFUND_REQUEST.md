@@ -76,7 +76,35 @@ requests today.
 
 ## 5. Status
 
-**Not started.** No code changes made toward this. The exact code path (if
-any) that currently keeps `Payment::refunded_at` in sync outside the
-review-window cancellation flow should be confirmed before building on top of
-it, rather than assumed.
+**Implemented (2026-07-07)**, per the request-and-review design in §3, scoped
+per business decisions made before building:
+
+- **One-time payments only** — recurring Care Plan/subscription payments are
+  explicitly out of scope for now.
+- **Full refund only, fee deducted** — no partial-amount option; matches the
+  review-window refund exactly (`payment->amount - Stripe's balance
+  transaction fee`), confirmed by reading `Portal\ProjectReviewController::cancel()`
+  directly, which is also where `Payment::refunded_at` etc. turned out to
+  already be written (confirmed, not just assumed as this doc originally
+  flagged).
+- **30-day window** — `Payment::isRefundRequestable()` (new) governs
+  eligibility: paid, within `Payment::REFUND_REQUEST_WINDOW_DAYS` (30) of
+  `paid_at`, and no existing pending/approved request already on file (a
+  declined one can be re-requested).
+
+**What was built:**
+- `refund_requests` table + `RefundRequest` model (`pending → approved` /
+  `declined`, `admin_notes`, `decided_at`).
+- Client-facing: a "Request a Refund" action inside the existing payment
+  transaction-detail popup (`portal/payments.blade.php`) — reveals a reason
+  textarea, submits to `Portal\RefundRequestController::store`.
+- Admin-facing: `/admin/refund-requests` inbox (sidebar link with a pending
+  count badge, same pattern as Project Requests/Recommendations) —
+  Approve triggers the real Stripe refund and updates `Payment`'s refund
+  columns in one step; Decline accepts an optional note back to the client.
+- Three emails: `NewRefundRequestMail` (to `billing@`),
+  `RefundRequestApprovedMail` and `RefundRequestDeclinedMail` (to the
+  client).
+
+**Still not built:** partial refunds, recurring/subscription payment refunds
+— both explicitly deferred, see §3.

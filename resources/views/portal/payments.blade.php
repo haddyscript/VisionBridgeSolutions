@@ -227,7 +227,8 @@
                                  data-intent="{{ $payment->stripe_payment_intent_id }}"
                                  data-session="{{ $payment->stripe_checkout_session_id }}"
                                  data-checkout-url="{{ $payment->isPending() ? route('portal.payments.checkout', $payment) : '' }}"
-                                 data-receipt-url="{{ $payment->isPaid() ? route('portal.payments.receipt', $payment) : '' }}">
+                                 data-receipt-url="{{ $payment->isPaid() ? route('portal.payments.receipt', $payment) : '' }}"
+                                 data-refund-request-url="{{ $payment->isRefundRequestable() ? route('portal.payments.refund-request', $payment) : '' }}">
                                 <span class="absolute left-0 top-3 bottom-3 w-1 rounded-full {{ $statusDots[$payment->status] ?? 'bg-gray-400' }} opacity-0 group-hover:opacity-100 transition-opacity"></span>
                                 <div class="flex items-center gap-4">
                                     <span class="w-10 h-10 rounded-lg bg-navy/5 dark:bg-white/5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
@@ -324,6 +325,21 @@
                         <a id="modal-receipt-link" href="#" target="_blank" class="block w-full text-center bg-navy hover:bg-navy-light text-white text-sm font-semibold px-5 py-3 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
                             View Receipt
                         </a>
+                    </div>
+
+                    <div id="modal-refund-action" class="hidden pt-2">
+                        <button type="button" id="modal-refund-toggle" onclick="toggleRefundForm()"
+                            class="block w-full text-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 text-navy dark:text-white text-sm font-semibold px-5 py-3 rounded-lg transition-colors">
+                            Request a Refund
+                        </button>
+                        <form id="modal-refund-form" method="POST" action="#" class="hidden mt-3 space-y-2">
+                            @csrf
+                            <textarea name="reason" required maxlength="2000" rows="3" placeholder="Tell us why you're requesting a refund..."
+                                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
+                            <button type="submit" class="block w-full text-center bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
+                                Submit Refund Request
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -504,12 +520,29 @@
                 receiptAction.classList.add('hidden');
             }
 
+            const refundAction = document.getElementById('modal-refund-action');
+            const refundForm = document.getElementById('modal-refund-form');
+            refundForm.classList.add('hidden');
+            document.getElementById('modal-refund-toggle').classList.remove('hidden');
+            refundForm.reset();
+            if (d.refundRequestUrl) {
+                refundForm.action = d.refundRequestUrl;
+                refundAction.classList.remove('hidden');
+            } else {
+                refundAction.classList.add('hidden');
+            }
+
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             requestAnimationFrame(function () {
                 backdrop.classList.remove('opacity-0');
                 panel.classList.remove('scale-95', 'opacity-0');
             });
+        };
+
+        window.toggleRefundForm = function () {
+            document.getElementById('modal-refund-form').classList.remove('hidden');
+            document.getElementById('modal-refund-toggle').classList.add('hidden');
         };
 
         window.closePaymentModal = function () {

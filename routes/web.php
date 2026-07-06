@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\MilestoneController as AdminMilestoneController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
 use App\Http\Controllers\Admin\ProjectRequestController as AdminProjectRequestController;
+use App\Http\Controllers\Admin\RefundRequestController as AdminRefundRequestController;
 use App\Http\Controllers\Admin\RecommendationController as AdminRecommendationController;
 use App\Http\Controllers\Admin\SatisfactionSurveyController as AdminSatisfactionSurveyController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
@@ -45,6 +46,7 @@ use App\Http\Controllers\Portal\FaqFeedbackController;
 use App\Http\Controllers\Portal\NotificationController as PortalNotificationController;
 use App\Http\Controllers\Portal\TourController as PortalTourController;
 use App\Http\Controllers\Portal\PaymentController as PortalPaymentController;
+use App\Http\Controllers\Portal\RefundRequestController as PortalRefundRequestController;
 use App\Http\Controllers\Portal\ProjectQuestionnaireController as PortalProjectQuestionnaireController;
 use App\Http\Controllers\Portal\ProjectRequestController as PortalProjectRequestController;
 use App\Http\Controllers\Portal\ProjectReviewController as PortalProjectReviewController;
@@ -167,6 +169,7 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
     Route::get('/portal/payments', [PortalPaymentController::class, 'index'])->name('portal.payments.index');
     Route::post('/portal/payments/{payment}/checkout', [PortalPaymentController::class, 'checkout'])->name('portal.payments.checkout');
     Route::get('/portal/payments/{payment}/receipt', [PortalPaymentController::class, 'receipt'])->name('portal.payments.receipt');
+    Route::post('/portal/payments/{payment}/refund-request', [PortalRefundRequestController::class, 'store'])->name('portal.payments.refund-request');
     Route::get('/portal/payments-statement', [PortalPaymentController::class, 'statement'])->name('portal.payments.statement');
 
     // GET allowed too so the "set up your billing" link in emails can take the
@@ -245,6 +248,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/project-requests', [AdminProjectRequestController::class, 'index'])->name('project-requests.index');
     Route::get('/project-requests/{projectRequest}', [AdminProjectRequestController::class, 'show'])->name('project-requests.show');
     Route::patch('/project-requests/{projectRequest}', [AdminProjectRequestController::class, 'update'])->name('project-requests.update');
+
+    Route::get('/refund-requests', [AdminRefundRequestController::class, 'index'])->name('refund-requests.index');
+    Route::patch('/refund-requests/{refundRequest}', [AdminRefundRequestController::class, 'update'])->name('refund-requests.update');
 
     // ─── Projects & Milestones ───────────────────────────────────────────────
     Route::get('/projects/{project}', [AdminProjectController::class, 'show'])->name('projects.show');

@@ -123,6 +123,16 @@
                     </svg>
                     Payments
                 </a>
+                <a href="{{ route('admin.refund-requests.index') }}"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.refund-requests.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l-4-4 4-4m-4 4h11a4 4 0 010 8h-1"/>
+                    </svg>
+                    <span class="flex-1">Refund Requests</span>
+                    @if ($pendingRefundRequestCount > 0)
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500 text-white">{{ $pendingRefundRequestCount }}</span>
+                    @endif
+                </a>
                 <a href="{{ route('admin.subscriptions.index') }}"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.subscriptions.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

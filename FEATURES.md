@@ -33,6 +33,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Book a Consultation | Existing clients can also book a consultation from inside the portal (not just as a public visitor) — same calendar/time-slot picker as the public page, but name and email are taken from their account automatically; shows up in the same admin Consultations inbox as any other request |
 | Growth Opportunities | When our team approves an improvement idea for a client's site (better CTAs, SEO, speed, etc.), it shows up as a read-only card on the client's Overview page |
 | Payments | Clients see what's owed and paid, pay securely online, search/filter their payment history, and download/print a receipt or their full statement |
+| Request a Refund | Within 30 days of a paid one-time payment (deposit, final, or custom invoice), clients can request a refund with a short reason directly from the payment's transaction detail popup; our team reviews and approves/declines it — approving issues a real refund automatically (minus Stripe's processing fee, same as the 7-day review-window refund) |
 | Website Review & Approval | Once a project's status is set to "In Review," clients get a 7-day window on their Overview page to approve the finished website (which auto-creates the final 50% payment) or request revisions; canceling within the window automatically refunds the deposit (minus Stripe's processing fee) and ends the project |
 | Automatic Launch | Once a client has paid the final 50% payment in full, approved the website, and the deposit had already cleared, the project is automatically marked "Launched" — no admin step needed |
 | Maintenance Plans | Clients can start a recurring care plan and manage their billing (update card, cancel, etc.) themselves; a "Refresh Status" button instantly re-checks their plan with our payment provider if it ever looks out of date |
@@ -58,6 +59,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Revision & Content Threads | Move a client's change request through six stages (Request Received → Under Review → In Progress → Waiting on Client → Needs VisionBridge Approval → Completed), and go back and forth with them in a live chat-style thread — every status change and reply sends instantly with no page reload and emails the other side. Each revision also has an internal-only "Dev Instructions" note (never shown to the client) for clarifying or rewriting the request before work begins, and is flagged "Overdue" once it's been open more than 24 hours |
 | Project Requests | An inbox of every "request a new project" submission from existing clients, with internal notes and a status (Pending → Reviewed → Converted/Declined) for tracking it through to becoming an actual second project |
 | Recommendations | Submit improvement ideas (better CTAs, images, SEO, speed, forms, mobile layout, etc.) against any client's project, then decide whether to approve it for the client to see, present it, or decline it — a cross-project "Recommendations" inbox shows everything still pending review |
+| Refund Requests | An inbox of every client-submitted refund request on a one-time payment, with the client's reason — Approve (processes a real Stripe refund immediately, minus Stripe's fee, and emails the client) or Decline (with an optional note back to the client) |
 | Payment Requests | The Payments page has two tabs — "One-Time Payments" (create requests, remove unpaid ones, re-check a stuck payment) and "Maintenance Plans" (every recurring plan and its status). A "Pending Maintenance Plans" count sits right in the page's summary stats so a plan awaiting the client's checkout never gets missed without having to open each project individually |
 | Maintenance Plans | Set up or cancel a client's recurring care plan — can only be started once a project's status is "Launched" or "Maintenance," since billing isn't meant to begin during development. If access was suspended for non-payment, a banner shows on the project page with a manual "Restore Access" override in case it ever needs a human override |
 | Care Plan Pricing | Control the pricing tiers shown on the public website — name, tagline, description, price, header icon, badge, response time, and a list of features (each with its own short description) — each plan collapses to a quick summary and expands to edit, with a live preview showing exactly how the card will look on the homepage as you type |
@@ -115,6 +117,9 @@ A plain-language summary of everything the site and client portal offer today.
 | We reply to a client's revision/content request | The client |
 | A client replies to us on a revision/content thread | Our team |
 | A one-time payment is completed | The client (receipt) |
+| A client requests a refund | Our team |
+| A refund request is approved | The client (refund processed) |
+| A refund request is declined | The client |
 | A maintenance plan payment is completed | The client (receipt) |
 | Any payment is completed | Our team |
 | A maintenance plan falls past due or is canceled | Our team |

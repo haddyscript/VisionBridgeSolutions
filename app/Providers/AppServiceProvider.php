@@ -11,6 +11,7 @@ use App\Models\Milestone;
 use App\Models\Project;
 use App\Models\ProjectRequest;
 use App\Models\Recommendation;
+use App\Models\RefundRequest;
 use App\Models\User;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Facades\Auth;
@@ -55,6 +56,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with('newIntakeCount', IntakeSubmission::where('status', 'new')->count());
             $view->with('pendingProjectRequestCount', ProjectRequest::where('status', 'pending')->count());
             $view->with('pendingRecommendationCount', Recommendation::where('status', 'pending_review')->count());
+            $view->with('pendingRefundRequestCount', RefundRequest::where('status', 'pending')->count());
             $view->with('unreadContactCount', ContactMessage::whereNull('read_at')->count());
             $view->with('unreadConsultationCount', Consultation::whereNull('read_at')->count());
             $view->with('gettingStartedTasks', $this->adminGettingStartedTasks());
