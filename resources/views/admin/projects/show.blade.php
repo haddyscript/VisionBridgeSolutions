@@ -816,7 +816,12 @@
 
                     const targetIds = form.dataset.ajaxTarget.split(' ').filter(Boolean);
                     const submitBtns = form.querySelectorAll('button[type="submit"]');
-                    submitBtns.forEach((b) => (b.disabled = true));
+                    submitBtns.forEach((b) => {
+                        b.dataset.originalHtml = b.innerHTML;
+                        b.disabled = true;
+                        b.classList.add('opacity-60', 'cursor-wait');
+                        b.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Saving…';
+                    });
 
                     fetch(form.action, {
                         method: 'POST',
@@ -848,7 +853,15 @@
                             alert('Something went wrong. Please try again.');
                         })
                         .finally(() => {
-                            submitBtns.forEach((b) => (b.disabled = false));
+                            // Harmless no-op for buttons whose form got replaced on
+                            // success (fresh server-rendered markup already has its
+                            // own default button state) — only matters when the
+                            // form stays in place after an error above.
+                            submitBtns.forEach((b) => {
+                                b.disabled = false;
+                                b.classList.remove('opacity-60', 'cursor-wait');
+                                if (b.dataset.originalHtml) b.innerHTML = b.dataset.originalHtml;
+                            });
                         });
                 });
             });
