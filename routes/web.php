@@ -218,6 +218,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // ─── Clients ─────────────────────────────────────────────────────────────
     Route::get('/clients', [AdminClientController::class, 'index'])->name('clients.index');
     Route::patch('/clients/{client}', [AdminClientController::class, 'update'])->name('clients.update');
+    Route::delete('/clients/{client}', [AdminClientController::class, 'destroy'])->name('clients.destroy');
 
     // ─── Calendar ────────────────────────────────────────────────────────────
     Route::get('/calendar', [AdminCalendarController::class, 'index'])->name('calendar');

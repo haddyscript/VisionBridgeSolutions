@@ -203,6 +203,17 @@
                                                     </form>
                                                 </div>
                                             @endif
+                                            <div class="border-t border-gray-100 dark:border-gray-700 pt-1 mt-1">
+                                                <form method="POST" action="{{ route('admin.clients.destroy', $client) }}"
+                                                    onsubmit="return confirm('Permanently delete {{ addslashes($client->name) }}\'s account? This removes the account, project, payments, subscriptions (canceling any active Stripe plan), files, and everything else tied to it. This cannot be undone.')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="w-full text-left px-3 py-2 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                                        Delete Client Account
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
