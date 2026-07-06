@@ -71,11 +71,14 @@ class CarePlanSignupController extends Controller
 
         Stripe::setApiKey(config('services.stripe.secret'));
 
-        $session = CheckoutSession::create([
-            'mode' => 'subscription',
-            'payment_method_types' => ['card'],
-            'customer' => $subscription->project->user->getOrCreateStripeCustomerId(),
-            'line_items' => [[
+        // Use the real Stripe product/price the boss set up in the dashboard
+        // whenever one's on file, so subscribers land against the actual
+        // Care Plan products (reporting, tax category, etc. all tied to it) —
+        // fall back to building a price on the fly only if a plan hasn't had
+        // its Stripe Price ID entered yet in the admin Care Plan Pricing page.
+        $lineItem = $maintenancePlan->stripe_price_id
+            ? ['price' => $maintenancePlan->stripe_price_id, 'quantity' => 1]
+            : [
                 'quantity' => 1,
                 'price_data' => [
                     'currency' => $subscription->currency,
@@ -85,7 +88,13 @@ class CarePlanSignupController extends Controller
                         'name' => $maintenancePlan->name.' — Website Care Plan',
                     ],
                 ],
-            ]],
+            ];
+
+        $session = CheckoutSession::create([
+            'mode' => 'subscription',
+            'payment_method_types' => ['card'],
+            'customer' => $subscription->project->user->getOrCreateStripeCustomerId(),
+            'line_items' => [$lineItem],
             'success_url' => route('care-plan-signup.confirmation').'?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('care-plan-signup.create', $maintenancePlan).'?checkout=cancel',
             'metadata' => [

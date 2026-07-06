@@ -11,6 +11,7 @@ class MaintenancePlan extends Model
         'tagline',
         'description',
         'price',
+        'stripe_price_id',
         'faithstack_compensation',
         'interval',
         'badge',

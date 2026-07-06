@@ -49,6 +49,7 @@ class MaintenancePlanController extends Controller
             'tagline' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:255'],
             'price' => ['nullable', 'numeric', 'min:0'],
+            'stripe_price_id' => ['nullable', 'string', 'max:255'],
             'badge' => ['nullable', 'string', 'max:255'],
             'icon' => ['nullable', 'string', 'max:255'],
             'response_time' => ['nullable', 'string', 'max:255'],
@@ -62,6 +63,8 @@ class MaintenancePlanController extends Controller
         $validated['price'] = $validated['price'] !== null && $validated['price'] !== ''
             ? (int) round($validated['price'] * 100)
             : null;
+
+        $validated['stripe_price_id'] = $validated['stripe_price_id'] !== '' ? $validated['stripe_price_id'] : null;
 
         // Each line is "Feature Title | Short description" — the description half is optional.
         $validated['features'] = collect(explode("\n", $validated['features'] ?? ''))

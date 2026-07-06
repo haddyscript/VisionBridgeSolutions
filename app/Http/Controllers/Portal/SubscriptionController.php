@@ -112,19 +112,30 @@ class SubscriptionController extends Controller
                 }
             }
 
-            $product = \Stripe\Product::create(['name' => $subscription->description]);
+            // Use the real Stripe product/price the boss set up in the
+            // dashboard whenever this subscription is tied to one of the
+            // fixed Care Plan tiers — fall back to building an ad-hoc
+            // product/price for admin-created custom amounts that aren't
+            // tied to a maintenance_plan_id at all.
+            if ($subscription->maintenancePlan?->stripe_price_id) {
+                $item = ['price' => $subscription->maintenancePlan->stripe_price_id];
+            } else {
+                $product = \Stripe\Product::create(['name' => $subscription->description]);
 
-            $stripeSubscription = \Stripe\Subscription::create([
-                'customer' => $setupIntent->customer,
-                'default_payment_method' => $setupIntent->payment_method,
-                'items' => [[
+                $item = [
                     'price_data' => [
                         'currency' => $subscription->currency,
                         'unit_amount' => $subscription->amount,
                         'recurring' => ['interval' => $subscription->interval],
                         'product' => $product->id,
                     ],
-                ]],
+                ];
+            }
+
+            $stripeSubscription = \Stripe\Subscription::create([
+                'customer' => $setupIntent->customer,
+                'default_payment_method' => $setupIntent->payment_method,
+                'items' => [$item],
                 'metadata' => ['subscription_id' => $subscription->id],
             ]);
 

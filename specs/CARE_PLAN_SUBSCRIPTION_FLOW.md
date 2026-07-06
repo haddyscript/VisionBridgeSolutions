@@ -108,3 +108,24 @@ or PayMongo, which hasn't been decided on yet.
 If a visitor abandons Stripe Checkout, the `User` + `Project` + pending
 `Subscription` created at form-submit time are **not** cleaned up automatically.
 This matches the flow as specified; revisit if abandoned signups start piling up.
+
+## 5. Real Stripe Price IDs (2026-07-06)
+
+Both checkout paths (`CarePlanSignupController::store` and
+`Portal\SubscriptionController::confirm`, used when an existing client starts a
+plan from inside the portal) originally built a brand-new Stripe Product +
+inline `price_data` on every single checkout — dollar amounts matched the
+boss's real Stripe Products by coincidence (our seeded price = his price), but
+never actually referenced his Product/Price catalog. Fixed ahead of launch:
+
+- `maintenance_plans.stripe_price_id` (nullable string) holds the real
+  `price_...` ID from the boss's Stripe dashboard, set per-tier in
+  `MaintenancePlanSeeder` and editable from the admin Care Plan Pricing page.
+- Both checkout paths now check `$maintenancePlan->stripe_price_id` first and
+  pass `'price' => $stripePriceId` directly if set. They only fall back to the
+  old ad-hoc `price_data` construction when it's blank — this keeps
+  admin-created custom one-off subscriptions (`Admin\SubscriptionController::store`,
+  which has no `maintenance_plan_id` at all) working exactly as before, since
+  those were never tied to a fixed Care Plan tier in the first place.
+- Live Price IDs currently on file: Essential `price_1Tpbh5IDvdvf6G8fqsFPevyQ`,
+  Growth `price_1TpbnNIDvdvf6G8f235N3gah`, Elite `price_1TpbqDIDvdvf6G8fAaHKMPSA`.
