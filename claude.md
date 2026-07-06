@@ -3,6 +3,30 @@
 These rules apply to all Claude Code sessions in this project (VisionBridgeSolutions).
 Goal: reduce wasted searches, redundant file reads, and unnecessary token spend.
 
+## ⚠️ LIVE PRODUCTION DATA — READ BEFORE ANY DESTRUCTIVE ACTION
+
+As of 2026-07-06, this system holds **real client data**, not just test/staging
+rows — including at least 2 real client accounts with **active, paying Stripe
+subscriptions** (e.g. `info@johnnydavisglobalmissions.org`,
+`info@johnnydavisministries.org`). The database is no longer safe to assume
+empty or disposable.
+
+Before doing any of the following, **stop and ask first** rather than assuming
+it's safe, even if a past conversation described the DB as "still empty/staging":
+- `migrate:fresh` or any other command that wipes/rebuilds the database
+- Deleting a client account, project, payment, or subscription (including via
+  the admin "Delete Client Account" button — always confirm which specific
+  account first, since it cancels a real Stripe subscription and is
+  irreversible)
+- Any bulk data edit/cleanup script or direct DB manipulation
+- Any change to Stripe-related code that could affect a currently-active
+  subscription's billing
+
+If unsure whether a record is real client data or leftover test data, ask
+before touching it.
+
+## Numbered rules below
+
 ## 1. File Discovery
 - **Do NOT run broad `find`/`grep`/`glob` searches across the whole project.**
 - If you need to locate a file and don't already know the path, **stop and ask me** for:
