@@ -96,6 +96,11 @@ class CarePlanSignupController extends Controller
             'payment_method_types' => ['card'],
             'customer' => $subscription->project->user->getOrCreateStripeCustomerId(),
             'line_items' => [$lineItem],
+            // Stripe renders its own promo code field on the hosted Checkout
+            // page and handles validation/discount math entirely itself —
+            // coupons/promotion codes are created directly in the Stripe
+            // Dashboard, no app code needed for that part.
+            'allow_promotion_codes' => true,
             'success_url' => route('care-plan-signup.confirmation').'?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('care-plan-signup.create', $maintenancePlan).'?checkout=cancel',
             'metadata' => [

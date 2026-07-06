@@ -67,4 +67,15 @@ Checkout does:
 
 ## 5. Status
 
-**Not started.** No code changes made toward this.
+**Partially done (2026-07-07).** `allow_promotion_codes: true` added to the
+public signup's Checkout Session (`CarePlanSignupController::store`) —
+visitors signing up through the public "Get Started" pricing page now see
+Stripe's own promo code field on the hosted checkout page, and any
+coupon/promotion code created directly in the Stripe Dashboard works
+immediately with zero further app changes.
+
+**Still not started:** the portal-embedded flows (existing clients starting a
+plan or paying a one-time invoice from inside the portal) and the admin
+custom-plan/invoice flows — see §3 above, unchanged. A client who already has
+an account and starts/switches a Care Plan from inside the portal cannot use
+a promo code yet.
