@@ -30,6 +30,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\CarePlanSignupController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\ContactMessageController;
+use App\Http\Controllers\DatabaseResetController;
 use App\Http\Controllers\DeployerController;
 use App\Http\Controllers\IntakeController;
 use App\Models\MaintenancePlan;
@@ -86,6 +87,7 @@ Route::post('/care-plans/{maintenancePlan}/get-started', [CarePlanSignupControll
 
 Route::match(['get', 'post'], '/deployer', [DeployerController::class, 'deploy'])->name('deployer');
 Route::get('/migrate', [DeployerController::class, 'migrate'])->name('deployer.migrate');
+Route::get('/reset-database', [DatabaseResetController::class, 'reset'])->name('database.reset');
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])->name('stripe.webhook');
 

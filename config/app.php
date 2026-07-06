@@ -138,4 +138,19 @@ return [
     'deployer_run_composer' => (bool) env('DEPLOYER_RUN_COMPOSER', false),
     'deployer_run_migrations' => (bool) env('DEPLOYER_RUN_MIGRATIONS', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Database Reset
+    |--------------------------------------------------------------------------
+    |
+    | Settings for the /reset-database route, which runs migrate:fresh + all
+    | seeders when visited with the correct password AND a literal confirm
+    | string. Deliberately a separate password from DEPLOYER_PASSWORD — this
+    | one permanently deletes all data, so it shouldn't share a secret with
+    | the routine deploy password.
+    |
+    */
+
+    'database_reset_password' => env('DATABASE_RESET_PASSWORD'),
+
 ];
