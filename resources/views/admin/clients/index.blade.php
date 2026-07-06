@@ -175,7 +175,7 @@
                                             </svg>
                                         </button>
                                         <div x-show="open" x-transition
-                                            class="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg z-10 py-1">
+                                            class="fixed w-48 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg z-50 py-1">
                                             <p class="px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-gray-400">Account Info</p>
                                             <div class="px-3 py-2 border-t border-gray-100 dark:border-gray-700 space-y-1">
                                                 <p class="text-xs text-gray-500 dark:text-gray-400">
@@ -294,7 +294,13 @@
         if (e.target === this) closeEditModal();
     });
 
-    // Lightweight Alpine-style toggle without requiring Alpine.js
+    // Lightweight Alpine-style toggle without requiring Alpine.js.
+    // The menu uses `position: fixed`, positioned here via getBoundingClientRect()
+    // rather than CSS `absolute` — the table wrapper has overflow-hidden/
+    // overflow-x-auto for its rounded corners and horizontal scroll, which
+    // clips anything `absolute`-positioned once a row is near the bottom of
+    // that box. `fixed` positioning is computed against the viewport, so it
+    // escapes that clipping regardless of which row opened it.
     document.querySelectorAll('[x-data]').forEach(function (el) {
         let open = false;
         const btn = el.querySelector('button');
@@ -303,15 +309,30 @@
         if (!btn || !menu) return;
         menu.style.display = 'none';
 
+        function positionMenu() {
+            const rect = btn.getBoundingClientRect();
+            menu.style.top = (rect.bottom + 4) + 'px';
+            menu.style.right = (window.innerWidth - rect.right) + 'px';
+        }
+
         btn.addEventListener('click', function (e) {
             e.stopPropagation();
             open = !open;
+            if (open) positionMenu();
             menu.style.display = open ? 'block' : 'none';
         });
 
         document.addEventListener('click', function () {
             open = false;
             menu.style.display = 'none';
+        });
+
+        window.addEventListener('scroll', function () {
+            if (open) positionMenu();
+        }, true);
+
+        window.addEventListener('resize', function () {
+            if (open) positionMenu();
         });
     });
 </script>
