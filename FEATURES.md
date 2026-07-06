@@ -118,6 +118,10 @@ A plain-language summary of everything the site and client portal offer today.
 | Any payment is completed | Our team |
 | A maintenance plan falls past due or is canceled | Our team |
 | Something technical breaks behind the scenes | Our team (so we can fix it fast) |
+| Our team creates a custom invoice/payment request for a client | The client ("Invoice Sent" — description, amount, and a link to pay) |
+| A client's Care Plan subscription is successfully activated from the portal | The client ("Care Plan is now active" confirmation) |
+| A recurring Care Plan charge attempt fails | The client (immediately, on every failed attempt — separate from the internal past-due alert) |
+| A Care Plan is renewing within 3 days | The client (once per billing period, day it enters the 3-day window) |
 
 ## 6. Known Gaps & Technical Limitations (Dev Notes)
 
@@ -336,6 +340,17 @@ Every internal (team-facing) notification used to funnel through one shared addr
 - **`johnny@`** (`MAIL_JOHNNY_ADDRESS`) — signed Service Agreements and account closure requests.
 
 New config keys in `config/mail.php` (each falls back to `admin_address` if unset, so nothing breaks if an env var is missing). The public/portal "Book a Consultation" notification previously sent to `admin_address` **and** cc'd `contact_address` — since both now resolve to the same `support@` mailbox, the redundant cc was removed. `FaithStack Payouts`' own `faithstack_address` (a partner, not internal staff) is unrelated and untouched. Six placements weren't explicit in the boss's routing list and were assigned by judgment call (confirmed with the boss): new project requests, questionnaire completions, project-launched/approved/restored notices → `support@`; account closure requests → `johnny@`; Stripe signature-verification failures → `billing@`.
+
+## 15j. Client-Facing Billing Notifications Closed (2026-07-06)
+
+Boss's pre-launch Stripe checklist asked for five client email types (Invoice Sent, Subscription Created, Failed Payment, Renewal Notification) that the app either didn't send at all, or only alerted the internal team about. No architecture change — the existing custom `Payment`/`Subscription` + embedded Stripe Elements flow stays as-is (see §13 gap analysis); this closes the notification gaps on top of it:
+
+- **Invoice Sent** — `InvoiceSentMail` now goes to the client the moment an admin creates a one-off payment request (`Admin\PaymentController::store`). Previously the client only found out by logging into the portal.
+- **Subscription Created** — `SubscriptionCreatedMail` fires in `Portal\SubscriptionController::confirm()` right after a Care Plan subscription activates from inside the portal. The pre-account public Care Plan signup flow (`CarePlanSignupController`) is untouched — it already sends `WelcomeClientMail`, which serves the same purpose combined with portal account setup, so it doesn't also get this new email.
+- **Failed Payment** — new `invoice.payment_failed` webhook case in `StripeWebhookController` sends `PaymentFailedMail` to the client on every failed recurring charge attempt (including dunning retries), independent of `SubscriptionStatusAlertMail` (internal-only, fires once the subscription's overall status flips to `past_due`).
+- **Renewal reminder** — new `subscriptions.renewal_reminder_period_end` column, `Subscription::needsRenewalReminder()` (active, `current_period_end` within `RENEWAL_REMINDER_DAYS` = 3, not already reminded for that specific period), and a new daily-scheduled command `subscriptions:send-renewal-reminders` sending `SubscriptionRenewalReminderMail`. Comparing against `current_period_end` (not a plain boolean) means the reminder re-arms itself automatically every billing cycle.
+
+**Deliberately not built:** real Stripe Invoice API objects (hosted PDF invoicing, invoice numbering) — confirmed with the boss as out of scope for tonight's launch; the existing `PaymentRequest`-style flow already covers "custom invoice" functionally. One-time `PaymentIntent` failures aren't emailed either — the client is already shown the decline reason synchronously in the embedded checkout UI at the moment it happens, so there's no async gap to close there the way there is for recurring billing.
 
 ## 16. `specs/` Folder
 

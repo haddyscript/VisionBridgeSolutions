@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('payouts:verify')->daily();
 Schedule::command('projects:suspend-overdue')->hourly();
+Schedule::command('subscriptions:send-renewal-reminders')->daily();

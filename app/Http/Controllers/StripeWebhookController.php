@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\AdminPaymentNotificationMail;
 use App\Mail\FaithStackNewClientMail;
+use App\Mail\PaymentFailedMail;
 use App\Mail\PaymentReceiptMail;
 use App\Mail\ProjectLaunchedMail;
 use App\Mail\ProjectRestoredMail;
@@ -56,6 +57,7 @@ class StripeWebhookController extends Controller
             'customer.subscription.updated' => $this->handleSubscriptionUpdated($event->data->object),
             'customer.subscription.deleted' => $this->handleSubscriptionDeleted($event->data->object),
             'invoice.payment_succeeded' => $this->handleInvoicePaymentSucceeded($event->data->object),
+            'invoice.payment_failed' => $this->handleInvoicePaymentFailed($event->data->object),
             'payment_intent.succeeded' => $this->handlePaymentIntentSucceeded($event->data->object),
             'charge.refunded' => $this->flagPayoutForCharge($event->data->object, 'Refunded'),
             'charge.dispute.created' => $this->flagPayoutForDispute($event->data->object),
@@ -479,6 +481,34 @@ class StripeWebhookController extends Controller
                 ]
             );
         }
+    }
+
+    /**
+     * Emails the client the moment a recurring Care Plan charge attempt fails
+     * (Stripe fires this on every dunning retry, not just the first attempt,
+     * so the client hears about it as early as possible — separate from
+     * SubscriptionStatusAlertMail, which only alerts the internal team once
+     * the subscription's overall status flips to past_due).
+     */
+    private function handleInvoicePaymentFailed($invoice): void
+    {
+        $stripeSubscriptionId = $invoice->parent->subscription_details->subscription
+            ?? $invoice->subscription
+            ?? null;
+
+        if (! $stripeSubscriptionId) {
+            return;
+        }
+
+        $subscription = Subscription::with('project.user')->where('stripe_subscription_id', $stripeSubscriptionId)->first();
+
+        if (! $subscription) {
+            return;
+        }
+
+        Mail::to($subscription->project->user->email)->send(
+            new PaymentFailedMail($subscription, $invoice->amount_due)
+        );
     }
 
     /**

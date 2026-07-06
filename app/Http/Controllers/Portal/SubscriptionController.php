@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Mail\SubscriptionCreatedMail;
 use App\Models\Subscription;
 use App\Models\SubscriptionPayment;
 use App\Services\SubscriptionReconciler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Stripe\Exception\ApiErrorException;
 use Stripe\HttpClient\CurlClient;
 use Stripe\Stripe;
@@ -163,6 +165,8 @@ class SubscriptionController extends Controller
                 'error' => $declineReason ?? 'Your card could not be charged. Please try a different card.',
             ], 422);
         }
+
+        Mail::to($request->user()->email)->send(new SubscriptionCreatedMail($subscription->load('project.user')));
 
         return response()->json(['redirect' => route('portal.payments.index').'?checkout=success']);
     }

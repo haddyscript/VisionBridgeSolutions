@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\InvoiceSentMail;
 use App\Models\Payment;
 use App\Models\Project;
 use App\Models\Subscription;
 use App\Services\PaymentReconciler;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class PaymentController extends Controller
 {
@@ -29,10 +31,12 @@ class PaymentController extends Controller
             'amount' => ['required', 'numeric', 'min:1'],
         ]);
 
-        $project->payments()->create([
+        $payment = $project->payments()->create([
             'description' => $validated['description'],
             'amount' => (int) round($validated['amount'] * 100),
         ]);
+
+        Mail::to($project->user->email)->send(new InvoiceSentMail($payment->load('project.user')));
 
         return back()->with('status', 'Payment request created.');
     }
