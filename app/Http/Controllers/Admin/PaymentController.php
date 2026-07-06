@@ -7,6 +7,7 @@ use App\Mail\InvoiceSentMail;
 use App\Models\Payment;
 use App\Models\Project;
 use App\Models\Subscription;
+use App\Models\SubscriptionPayment;
 use App\Services\PaymentReconciler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -18,9 +19,16 @@ class PaymentController extends Controller
         $payments = Payment::with('project.user')->latest()->get();
         $subscriptions = Subscription::with('project.user')->latest()->get();
 
+        // "Total Collected" needs recurring Care Plan revenue too, not just
+        // one-time payments — otherwise a business running entirely on
+        // subscriptions (no one-time payments yet) would show $0 collected
+        // despite real revenue existing.
+        $subscriptionPaymentsTotal = SubscriptionPayment::sum('amount_paid');
+
         return view('admin.payments.index', [
             'payments' => $payments,
             'subscriptions' => $subscriptions,
+            'subscriptionPaymentsTotal' => $subscriptionPaymentsTotal,
         ]);
     }
 

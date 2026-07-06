@@ -18,7 +18,7 @@
         'failed' => 'bg-red-500',
         'canceled' => 'bg-gray-400',
     ];
-    $totalPaid = $payments->where('status', 'paid')->sum('amount');
+    $totalPaid = $payments->where('status', 'paid')->sum('amount') + $subscriptionPaymentsTotal;
     $totalPending = $payments->where('status', 'pending')->sum('amount');
 
     $subscriptionStatusColors = [
