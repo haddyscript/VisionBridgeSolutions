@@ -18,8 +18,16 @@
         'failed' => 'bg-red-500',
         'canceled' => 'bg-gray-400',
     ];
-    $totalPaid = $payments->where('status', 'paid')->sum('amount') + $subscriptionPaymentsTotal;
+    $grandTotal = $oneTimeTotal + $subscriptionTotal;
     $totalPending = $payments->where('status', 'pending')->sum('amount');
+
+    $rangeLabels = [
+        'this_month' => 'This Month',
+        'last_month' => 'Last Month',
+        '7_days' => 'Last 7 Days',
+        '14_days' => 'Last 2 Weeks',
+        'custom' => 'Custom',
+    ];
 
     $subscriptionStatusColors = [
         'pending' => 'bg-gold/15 text-gold-dark',
@@ -42,14 +50,55 @@
     <div class="absolute -bottom-20 -left-10 w-56 h-56 rounded-full" style="background:radial-gradient(circle,rgba(42,157,143,0.14) 0%,transparent 70%);"></div>
 
     <div class="relative">
-        <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-2">Payments Overview</p>
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-2">
+            <p class="text-xs font-semibold uppercase tracking-widest text-gold">Payments Overview</p>
+
+            {{-- Date range filter — applies to the revenue row below only --}}
+            <div class="flex items-center gap-1.5 flex-wrap">
+                @foreach (['this_month', 'last_month', '7_days', '14_days'] as $key)
+                    <a href="{{ route('admin.payments.index', ['range' => $key]) }}"
+                        class="px-3 py-1 rounded-full text-xs font-medium transition-colors {{ $range === $key ? 'bg-gold text-navy-dark' : 'bg-white/10 text-white/70 hover:bg-white/20' }}">
+                        {{ $rangeLabels[$key] }}
+                    </a>
+                @endforeach
+                <button type="button" onclick="document.getElementById('custom-range-form').classList.toggle('hidden')"
+                    class="px-3 py-1 rounded-full text-xs font-medium transition-colors {{ $range === 'custom' ? 'bg-gold text-navy-dark' : 'bg-white/10 text-white/70 hover:bg-white/20' }}">
+                    Custom
+                </button>
+            </div>
+        </div>
+
+        <form id="custom-range-form" method="GET" action="{{ route('admin.payments.index') }}"
+            class="{{ $range === 'custom' ? '' : 'hidden' }} flex items-center flex-wrap gap-2 mb-4">
+            <input type="hidden" name="range" value="custom">
+            <input type="date" name="from" value="{{ $rangeFrom }}" required
+                class="rounded-lg border-0 bg-white/10 text-white text-xs px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-gold">
+            <span class="text-white/40 text-xs">to</span>
+            <input type="date" name="to" value="{{ $rangeTo }}" required
+                class="rounded-lg border-0 bg-white/10 text-white text-xs px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-gold">
+            <button type="submit" class="px-3 py-1.5 rounded-lg bg-gold text-navy-dark text-xs font-semibold">Apply</button>
+        </form>
+
         <h2 class="font-display text-2xl font-bold text-white mb-6">All client payment activity</h2>
 
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        {{-- Revenue breakdown — scoped to the date range selected above --}}
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
             <div class="rounded-xl px-5 py-4" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);">
-                <p class="text-xs font-medium uppercase tracking-wide text-white/40 mb-1.5">Total Collected</p>
-                <p class="font-display text-2xl font-bold text-white">${{ number_format($totalPaid / 100, 2) }}</p>
+                <p class="text-xs font-medium uppercase tracking-wide text-white/40 mb-1.5">One-Time Payments</p>
+                <p class="font-display text-2xl font-bold text-white">${{ number_format($oneTimeTotal / 100, 2) }}</p>
             </div>
+            <div class="rounded-xl px-5 py-4" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);">
+                <p class="text-xs font-medium uppercase tracking-wide text-white/40 mb-1.5">Subscription Revenue</p>
+                <p class="font-display text-2xl font-bold text-white">${{ number_format($subscriptionTotal / 100, 2) }}</p>
+            </div>
+            <div class="rounded-xl px-5 py-4" style="background:rgba(201,168,76,0.14);border:1px solid rgba(201,168,76,0.35);">
+                <p class="text-xs font-medium uppercase tracking-wide text-gold mb-1.5">Total Collected ({{ $rangeLabels[$range] }})</p>
+                <p class="font-display text-2xl font-bold text-white">${{ number_format($grandTotal / 100, 2) }}</p>
+            </div>
+        </div>
+
+        {{-- Current-state snapshots — not affected by the date range --}}
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div class="rounded-xl px-5 py-4" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);">
                 <p class="text-xs font-medium uppercase tracking-wide text-white/40 mb-1.5">Outstanding</p>
                 <p class="font-display text-2xl font-bold text-white">${{ number_format($totalPending / 100, 2) }}</p>

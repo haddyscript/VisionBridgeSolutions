@@ -10,26 +10,80 @@ use App\Models\Subscription;
 use App\Models\SubscriptionPayment;
 use App\Services\PaymentReconciler;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
 
 class PaymentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        [$from, $to, $range] = $this->resolveDateRange($request);
+
         $payments = Payment::with('project.user')->latest()->get();
         $subscriptions = Subscription::with('project.user')->latest()->get();
 
-        // "Total Collected" needs recurring Care Plan revenue too, not just
-        // one-time payments — otherwise a business running entirely on
-        // subscriptions (no one-time payments yet) would show $0 collected
-        // despite real revenue existing.
-        $subscriptionPaymentsTotal = SubscriptionPayment::sum('amount_paid');
+        // Collected totals are split so the business can see how much of its
+        // revenue is one-time vs. recurring Care Plan payments, both scoped
+        // to the selected date range — "Outstanding"/"Pending Maintenance
+        // Plans"/"Total Requests" stay unfiltered since those are current
+        // snapshots (a pending payment is pending regardless of when it was
+        // created), not historical activity.
+        $oneTimeTotal = Payment::where('status', 'paid')
+            ->whereBetween('paid_at', [$from, $to])
+            ->sum('amount');
+
+        $subscriptionTotal = SubscriptionPayment::whereBetween('paid_at', [$from, $to])
+            ->sum('amount_paid');
 
         return view('admin.payments.index', [
             'payments' => $payments,
             'subscriptions' => $subscriptions,
-            'subscriptionPaymentsTotal' => $subscriptionPaymentsTotal,
+            'oneTimeTotal' => $oneTimeTotal,
+            'subscriptionTotal' => $subscriptionTotal,
+            'range' => $range,
+            'rangeFrom' => $from->toDateString(),
+            'rangeTo' => $to->toDateString(),
         ]);
+    }
+
+    /**
+     * Resolves the ?range= (and, for custom, ?from=&to=) query params into a
+     * concrete date window. Defaults to "This Month" when nothing is set.
+     */
+    private function resolveDateRange(Request $request): array
+    {
+        $range = $request->input('range', 'this_month');
+        $now = now();
+
+        switch ($range) {
+            case 'last_month':
+                $from = $now->copy()->subMonthNoOverflow()->startOfMonth();
+                $to = $now->copy()->subMonthNoOverflow()->endOfMonth();
+                break;
+            case '7_days':
+                $from = $now->copy()->subDays(7)->startOfDay();
+                $to = $now->copy()->endOfDay();
+                break;
+            case '14_days':
+                $from = $now->copy()->subDays(14)->startOfDay();
+                $to = $now->copy()->endOfDay();
+                break;
+            case 'custom':
+                $from = $request->filled('from')
+                    ? Carbon::parse($request->input('from'))->startOfDay()
+                    : $now->copy()->startOfMonth();
+                $to = $request->filled('to')
+                    ? Carbon::parse($request->input('to'))->endOfDay()
+                    : $now->copy()->endOfDay();
+                break;
+            default:
+                $range = 'this_month';
+                $from = $now->copy()->startOfMonth();
+                $to = $now->copy()->endOfMonth();
+                break;
+        }
+
+        return [$from, $to, $range];
     }
 
     public function store(Request $request, Project $project)
