@@ -689,5 +689,42 @@
         })();
     </script>
 
+    {{-- Full-screen loading overlay --}}
+    <div id="page-loading-overlay" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-white/70 dark:bg-gray-900/80 backdrop-blur-sm">
+        <svg class="w-10 h-10 animate-spin text-gold" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+    </div>
+
+    <script>
+        // Every onboarding/portal form here is a plain server round-trip
+        // (no AJAX) — without feedback, the page just sits still after a
+        // click until the next page loads, which reads as "hanging"
+        // especially on a slower connection. Shows a full-screen spinner the
+        // instant any form on the page is submitted. A form can opt out with
+        // data-no-loading-overlay if it already handles its own submit
+        // feedback (e.g. an AJAX-driven form).
+        (function () {
+            const overlay = document.getElementById('page-loading-overlay');
+            if (!overlay) return;
+
+            document.addEventListener('submit', function (e) {
+                const form = e.target;
+                if (form.tagName !== 'FORM' || form.dataset.noLoadingOverlay !== undefined) return;
+
+                overlay.classList.remove('hidden');
+                overlay.classList.add('flex');
+            }, true);
+
+            // If the user navigates back to a page that was mid-submit
+            // (bfcache), don't leave the overlay stuck showing.
+            window.addEventListener('pageshow', function () {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+            });
+        })();
+    </script>
+
 </body>
 </html>
