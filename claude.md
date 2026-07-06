@@ -5,11 +5,14 @@ Goal: reduce wasted searches, redundant file reads, and unnecessary token spend.
 
 ## ⚠️ LIVE PRODUCTION DATA — READ BEFORE ANY DESTRUCTIVE ACTION
 
-As of 2026-07-06, this system holds **real client data**, not just test/staging
-rows — including at least 2 real client accounts with **active, paying Stripe
-subscriptions** (e.g. `info@johnnydavisglobalmissions.org`,
-`info@johnnydavisministries.org`). The database is no longer safe to assume
-empty or disposable.
+As of 2026-07-07, this system holds **real client data**, not just test/staging
+rows — including 3 real client accounts with **active, paying Stripe
+subscriptions**:
+- `johnnydavis45@yahoo.com` — Vision Bridge Solutions
+- `info@johnnydavisministries.org` — Johnny Davis Ministries
+- `info@johnnydavisglobalmissions.org` — Johnny Davis Global Missions
+
+The database is no longer safe to assume empty or disposable.
 
 Before doing any of the following, **stop and ask first** rather than assuming
 it's safe, even if a past conversation described the DB as "still empty/staging":
