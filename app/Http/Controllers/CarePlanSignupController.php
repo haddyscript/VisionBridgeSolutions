@@ -20,6 +20,17 @@ class CarePlanSignupController extends Controller
         return view('care-plan-signup.create', ['plan' => $maintenancePlan]);
     }
 
+    public function checkEmail(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email', 'max:255'],
+        ]);
+
+        return response()->json([
+            'exists' => User::where('email', $validated['email'])->exists(),
+        ]);
+    }
+
     public function store(Request $request, MaintenancePlan $maintenancePlan)
     {
         abort_unless($maintenancePlan->is_available && $maintenancePlan->price !== null, 404);

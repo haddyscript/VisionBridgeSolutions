@@ -49,8 +49,11 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
                         <label class="block text-base font-bold text-navy mb-1">Email *</label>
-                        <input type="email" name="email" value="{{ old('email') }}" required
+                        <input type="email" name="email" id="email" value="{{ old('email') }}" required
                                class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                        <p id="email-exists-warning" class="hidden mt-1.5 text-sm font-medium text-red-600">
+                            An account already exists with this email. Please <a href="{{ route('login') }}" class="underline">log in</a> instead.
+                        </p>
                     </div>
                     <div>
                         <label class="block text-base font-bold text-navy mb-1">Phone</label>
@@ -78,7 +81,7 @@
                               class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('notes') }}</textarea>
                 </div>
 
-                <button type="submit" class="w-full bg-gold hover:bg-gold-dark text-navy font-bold text-lg py-4 rounded-xl transition-colors shadow">
+                <button type="submit" id="submit-button" class="w-full bg-gold hover:bg-gold-dark text-navy font-bold text-lg py-4 rounded-xl transition-colors shadow disabled:opacity-50 disabled:cursor-not-allowed">
                     Continue to Secure Checkout
                 </button>
 
@@ -90,5 +93,43 @@
         </div>
     </div>
 </section>
+
+<script>
+    (function () {
+        const emailInput = document.getElementById('email');
+        const warning = document.getElementById('email-exists-warning');
+        const submitButton = document.getElementById('submit-button');
+
+        emailInput.addEventListener('blur', function () {
+            const email = emailInput.value.trim();
+
+            if (!email || !emailInput.checkValidity()) {
+                warning.classList.add('hidden');
+                submitButton.disabled = false;
+                return;
+            }
+
+            fetch(`{{ route('care-plan-signup.check-email') }}?email=${encodeURIComponent(email)}`, {
+                headers: { 'Accept': 'application/json' },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    warning.classList.toggle('hidden', !data.exists);
+                    submitButton.disabled = !!data.exists;
+                })
+                .catch(() => {
+                    warning.classList.add('hidden');
+                    submitButton.disabled = false;
+                });
+        });
+
+        emailInput.addEventListener('input', function () {
+            if (!warning.classList.contains('hidden')) {
+                warning.classList.add('hidden');
+                submitButton.disabled = false;
+            }
+        });
+    })();
+</script>
 
 @endsection

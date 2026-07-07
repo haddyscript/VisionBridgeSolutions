@@ -85,6 +85,7 @@ Route::get('/book-consultation', [ConsultationController::class, 'create'])->nam
 Route::post('/book-consultation', [ConsultationController::class, 'store'])->name('consultation.store');
 
 Route::get('/care-plans/get-started/confirmation', [CarePlanSignupController::class, 'confirmation'])->name('care-plan-signup.confirmation');
+Route::get('/care-plans/check-email', [CarePlanSignupController::class, 'checkEmail'])->name('care-plan-signup.check-email');
 Route::get('/care-plans/{maintenancePlan}/get-started', [CarePlanSignupController::class, 'create'])->name('care-plan-signup.create');
 Route::post('/care-plans/{maintenancePlan}/get-started', [CarePlanSignupController::class, 'store'])->name('care-plan-signup.store');
 
