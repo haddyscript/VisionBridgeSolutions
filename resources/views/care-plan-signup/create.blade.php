@@ -110,6 +110,13 @@
             'icloud.com', 'aol.com', 'live.com', 'msn.com',
         ];
 
+        // Used for the general trailing-digit TLD check below, so it also
+        // catches typos on domains that aren't a known free provider, e.g.
+        // "johnnyglobalmissions.org12".
+        const COMMON_TLDS = [
+            'com', 'org', 'net', 'edu', 'gov', 'mil', 'info', 'biz', 'co', 'io', 'us',
+        ];
+
         function levenshtein(a, b) {
             const rows = a.length + 1;
             const cols = b.length + 1;
@@ -147,6 +154,19 @@
 
                 if (pattern.test(domain)) {
                     return known;
+                }
+            }
+
+            // General check, independent of the known-provider list: stray
+            // digits stuck onto an otherwise valid TLD, e.g.
+            // "johnnyglobalmissions.org12" -> "johnnyglobalmissions.org".
+            const lastDot = domain.lastIndexOf('.');
+            if (lastDot !== -1) {
+                const namePart = domain.slice(0, lastDot);
+                const tldMatch = domain.slice(lastDot + 1).match(/^([a-z]+)([0-9]{1,3})$/);
+
+                if (tldMatch && COMMON_TLDS.includes(tldMatch[1])) {
+                    return `${namePart}.${tldMatch[1]}`;
                 }
             }
 
