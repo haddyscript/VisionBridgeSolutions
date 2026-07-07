@@ -7,7 +7,7 @@
     <meta name="description" content="@yield('description', 'Custom websites designed to strengthen your brand, expand your reach, and protect your online presence.')">
 
     <!-- Favicon — VisionBridge logo mark, matching the navbar logo -->
-    <link rel="icon" type="image/png" href="@assetv('image/vbs-logo-v2.png')">
+    <link rel="icon" type="image/png" href="@assetv('image/logo/visionbridgesolutions-logo-tagline.png')">
 
     <!-- Mobile-only design enhancements — loaded after the inline styles below so its rules can override them on small screens -->
     <link rel="stylesheet" href="@assetv('mobile-design.css')">
@@ -1219,7 +1219,7 @@
 
             {{-- Logo --}}
             <a id="nav-logo" href="{{ $homeAnchor }}#hero" class="flex items-center shrink-0 opacity-0">
-                <img src="@assetv('image/vbs-logo-v2.png')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
+                <img src="@assetv('image/logo/visionbridgesolutions-logo-tagline.png')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
             </a>
 
             {{-- Desktop links with sliding capsule --}}
@@ -1449,7 +1449,7 @@
                 {{-- Column 1: Brand --}}
                 <div id="footer-col-1" class="footer-col">
                     <div class="flex items-center mb-4">
-                        <img src="@assetv('image/vbs-logo-v2.png')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
+                        <img src="@assetv('image/logo/visionbridgesolutions-logo-tagline.png')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
                     </div>
                     <p class="text-navy/80 text-base font-medium leading-relaxed">Building Websites. Expanding Reach.<br>Helping organizations establish a professional online presence.</p>
                 </div>

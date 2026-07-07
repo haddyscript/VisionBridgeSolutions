@@ -15,12 +15,7 @@
                     {{-- Header --}}
                     <tr>
                         <td style="background-color:#111D33; padding:32px 40px; text-align:center;">
-                            <div style="display:inline-block; width:40px; height:40px; background-color:#C9A84C; border-radius:8px; vertical-align:middle; line-height:40px; text-align:center;">
-                                <span style="color:#111D33; font-weight:bold; font-size:18px;">VB</span>
-                            </div>
-                            <p style="color:#ffffff; font-size:18px; font-weight:700; margin:14px 0 0;">
-                                VisionBridge <span style="color:#C9A84C;">Solutions</span>
-                            </p>
+                            <img src="{{ asset('image/logo/visionbridgesolutions-logo-tagline.png') }}" alt="VisionBridge Solutions" style="height:64px; width:auto; display:inline-block;">
                         </td>
                     </tr>
 

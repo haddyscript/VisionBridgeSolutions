@@ -13,9 +13,7 @@
 
                     <tr>
                         <td style="background-color:#111D33; padding:32px 40px; text-align:center;">
-                            <p style="color:#ffffff; font-size:18px; font-weight:700; margin:0;">
-                                VisionBridge <span style="color:#C9A84C;">Solutions</span>
-                            </p>
+                            <img src="{{ asset('image/logo/visionbridgesolutions-logo-tagline.png') }}" alt="VisionBridge Solutions" style="height:64px; width:auto; display:inline-block;">
                         </td>
                     </tr>
 

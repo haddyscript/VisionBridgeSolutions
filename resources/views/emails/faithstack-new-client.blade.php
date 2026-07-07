@@ -13,8 +13,9 @@
 
                     <tr>
                         <td style="background-color:#111D33; padding:26px 32px;">
-                            <p style="color:#C9A84C; font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; margin:0;">
-                                VisionBridge Solutions &middot; FaithStack Partnership
+                            <img src="{{ asset('image/logo/visionbridgesolutions-logo-tagline.png') }}" alt="VisionBridge Solutions" style="height:28px; width:auto; display:block; margin:0 0 4px;">
+                            <p style="color:#C9A84C; font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; margin:0 0 4px;">
+                                &middot; FaithStack Partnership
                             </p>
                             <h1 style="color:#ffffff; font-size:20px; font-weight:800; margin:8px 0 0;">
                                 New Website Care Plan Client

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'VisionBridge Solutions')</title>
-    <link rel="icon" type="image/png" href="{{ asset('image/vbs-logo-v2.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('image/logo/visionbridgesolutions-logo-tagline.png') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,7 +42,7 @@
             <div class="relative max-w-sm pl-4">
                 <div class="flex items-center mb-10">
                     <div class="bg-white rounded-lg px-3 py-1.5 inline-flex items-center">
-                        <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="h-7 w-auto object-contain">
+                        <img src="{{ asset('image/logo/visionbridgesolutions-logo-tagline.png') }}" alt="VisionBridge Solutions" class="h-7 w-auto object-contain">
                     </div>
                 </div>
 
@@ -68,7 +68,7 @@
         <div class="flex-1 flex items-center justify-center px-4 py-12 lg:ml-[58%]">
             <div class="w-full max-w-md">
                 <div class="flex items-center justify-center mb-8 lg:hidden">
-                    <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
+                    <img src="{{ asset('image/logo/visionbridgesolutions-logo-tagline.png') }}" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
                 </div>
 
                 <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
