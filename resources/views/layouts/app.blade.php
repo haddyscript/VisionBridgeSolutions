@@ -1217,8 +1217,11 @@
         {{-- Floating pill inner wrapper --}}
         <div id="nav-inner" class="mx-auto flex items-center justify-between px-5 sm:px-7" style="height:60px;">
 
-            {{-- Logo --}}
-            <a id="nav-logo" href="{{ $homeAnchor }}#hero" class="flex items-center shrink-0 opacity-0">
+            {{-- Logo — always a full navigation to the homepage (not just
+                 "#hero"), so clicking it replays the intro video even when
+                 already on the homepage, matching the intro's own
+                 route('home')-only trigger further down. --}}
+            <a id="nav-logo" href="{{ route('home') }}#hero" class="flex items-center shrink-0 opacity-0">
                 <img src="@assetv('image/logo/visionbridgesolutions-logo-tagline.png')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
             </a>
 
@@ -1877,6 +1880,28 @@
 
             // Safety net: never trap a visitor on the intro
             setTimeout(revealSite, 12000);
+
+            // Clicking the logo always replays the intro from the start —
+            // only reachable here since the overlay (and this whole
+            // function) only exists on the homepage; from other pages the
+            // logo's href just navigates back to the homepage, where the
+            // intro already autoplays on load.
+            const logo = document.getElementById('nav-logo');
+            if (logo) {
+                logo.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                    revealed = false;
+                    document.body.style.overflow = 'hidden';
+                    gsap.set(overlay, { scale: 1, opacity: 1, display: 'block' });
+                    if (video) {
+                        video.currentTime = 0;
+                        video.play().catch(revealSite);
+                    } else {
+                        revealSite();
+                    }
+                });
+            }
         }
         initIntro();
     })();
