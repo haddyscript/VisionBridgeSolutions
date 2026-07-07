@@ -37,8 +37,8 @@
 
         {{-- Sidebar --}}
         <aside id="admin-sidebar" class="fixed inset-y-0 left-0 z-40 w-64 flex flex-col -translate-x-full md:translate-x-0 transition-transform duration-200" style="background:#111D33;">
-            <div class="flex items-center justify-center py-5 border-b border-white/10 shrink-0">
-                <img src="{{ asset('image/logo/visionbridgesolutions-logo-tagline.png') }}" alt="VisionBridge Solutions" class="h-16 w-auto object-contain rounded-md">
+            <div class="flex items-center justify-center py-6 border-b border-white/10 shrink-0">
+                <img src="{{ asset('image/logo/visionbridgesolutions-logo-tagline.png') }}" alt="VisionBridge Solutions" class="h-28 w-auto object-contain rounded-md">
             </div>
 
             <nav class="flex-1 overflow-y-auto py-5 px-3 space-y-0.5">
