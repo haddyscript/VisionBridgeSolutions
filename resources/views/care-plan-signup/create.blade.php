@@ -59,9 +59,36 @@
                         </p>
                     </div>
                     <div>
-                        <label class="block text-base font-bold text-navy mb-1">Phone</label>
-                        <input type="text" name="phone" value="{{ old('phone') }}"
-                               class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                        <label class="block text-base font-bold text-navy mb-1">Phone *</label>
+                        <div class="flex gap-2">
+                            <div class="relative shrink-0">
+                                <button type="button" id="phone-country-trigger"
+                                        class="w-[5.5rem] h-full rounded-lg border border-gray-300 px-2 py-2.5 text-base flex items-center justify-between gap-1 bg-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                    <span id="phone-country-display" class="truncate"></span>
+                                    <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <div id="phone-country-list" class="hidden absolute z-20 mt-1 w-72 bg-white border border-gray-200 rounded-lg shadow-lg">
+                                    <div class="p-2 border-b border-gray-100">
+                                        <input type="text" id="phone-country-search" placeholder="Search country..."
+                                               class="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                    </div>
+                                    <div class="max-h-56 overflow-y-auto py-1">
+                                        @foreach (config('dial_codes') as $country)
+                                            <button type="button" class="phone-country-option w-full text-left px-3 py-2 text-sm hover:bg-gold/10 flex items-center gap-2.5"
+                                                    data-dial="{{ $country['dial'] }}" data-flag="{{ $country['flag'] }}" data-name="{{ strtolower($country['name']) }}" data-full-name="{{ $country['name'] }}">
+                                                <span>{{ $country['flag'] }}</span>
+                                                <span class="text-gray-400 w-12 shrink-0">{{ $country['dial'] }}</span>
+                                                <span class="text-navy truncate">{{ $country['name'] }}</span>
+                                            </button>
+                                        @endforeach
+                                        <p id="phone-country-empty" class="hidden text-sm text-gray-400 text-center py-4">No countries found.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="tel" id="phone_number" placeholder="Phone number" required
+                                   class="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                        </div>
+                        <input type="hidden" name="phone" id="phone" value="{{ old('phone') }}">
                     </div>
                 </div>
 
@@ -262,6 +289,87 @@
             checkExists();
             emailInput.focus();
         });
+    })();
+
+    (function () {
+        const phoneNumber    = document.getElementById('phone_number');
+        const phoneHidden    = document.getElementById('phone');
+        const countryTrigger = document.getElementById('phone-country-trigger');
+        const countryDisplay = document.getElementById('phone-country-display');
+        const countryList    = document.getElementById('phone-country-list');
+        const countryOptions = document.querySelectorAll('.phone-country-option');
+        const countrySearch  = document.getElementById('phone-country-search');
+        const countryEmpty   = document.getElementById('phone-country-empty');
+
+        let selectedDial = '+1';
+        let selectedFlag = '🇺🇸';
+
+        function renderCountryDisplay() {
+            countryDisplay.textContent = selectedFlag + ' ' + selectedDial;
+        }
+
+        function selectCountry(dial, flag) {
+            selectedDial = dial;
+            selectedFlag = flag;
+            renderCountryDisplay();
+            closeCountryList();
+            syncPhone();
+        }
+
+        function filterCountries() {
+            const query = countrySearch.value.trim().toLowerCase();
+            let visibleCount = 0;
+
+            countryOptions.forEach((opt) => {
+                const matches = opt.dataset.name.includes(query) || opt.dataset.dial.includes(query);
+                opt.classList.toggle('hidden', !matches);
+                if (matches) visibleCount++;
+            });
+
+            countryEmpty.classList.toggle('hidden', visibleCount > 0);
+        }
+
+        function openCountryList() {
+            countryList.classList.remove('hidden');
+            countrySearch.value = '';
+            filterCountries();
+            countrySearch.focus();
+        }
+
+        function closeCountryList() {
+            countryList.classList.add('hidden');
+        }
+
+        countryOptions.forEach((opt) => {
+            opt.addEventListener('click', () => selectCountry(opt.dataset.dial, opt.dataset.flag));
+        });
+
+        countrySearch.addEventListener('input', filterCountries);
+        countrySearch.addEventListener('click', (e) => e.stopPropagation());
+
+        countryTrigger.addEventListener('click', () => {
+            countryList.classList.contains('hidden') ? openCountryList() : closeCountryList();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!countryTrigger.contains(e.target) && !countryList.contains(e.target)) {
+                closeCountryList();
+            }
+        });
+
+        function syncPhone() {
+            const num = phoneNumber.value.trim();
+            phoneHidden.value = num ? (selectedDial + ' ' + num) : '';
+        }
+
+        const oldPhone = @js(old('phone'));
+        if (oldPhone) {
+            phoneNumber.value = oldPhone;
+        }
+
+        phoneNumber.addEventListener('input', syncPhone);
+        renderCountryDisplay();
+        syncPhone();
     })();
 </script>
 
