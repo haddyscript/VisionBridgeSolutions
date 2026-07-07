@@ -54,6 +54,9 @@
                         <p id="email-exists-warning" class="hidden mt-1.5 text-sm font-medium text-red-600">
                             An account already exists with this email. Please <a href="{{ route('login') }}" class="underline">log in</a> instead.
                         </p>
+                        <p id="email-typo-warning" class="hidden mt-1.5 text-sm font-medium text-red-600">
+                            Did you mean <button type="button" id="email-typo-fix" class="underline"></button>?
+                        </p>
                     </div>
                     <div>
                         <label class="block text-base font-bold text-navy mb-1">Phone</label>
@@ -97,15 +100,100 @@
 <script>
     (function () {
         const emailInput = document.getElementById('email');
-        const warning = document.getElementById('email-exists-warning');
+        const existsWarning = document.getElementById('email-exists-warning');
+        const typoWarning = document.getElementById('email-typo-warning');
+        const typoFixButton = document.getElementById('email-typo-fix');
         const submitButton = document.getElementById('submit-button');
 
-        emailInput.addEventListener('blur', function () {
+        const KNOWN_DOMAINS = [
+            'gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com',
+            'icloud.com', 'aol.com', 'live.com', 'msn.com',
+        ];
+
+        function levenshtein(a, b) {
+            const rows = a.length + 1;
+            const cols = b.length + 1;
+            const d = Array.from({ length: rows }, () => new Array(cols).fill(0));
+
+            for (let i = 0; i < rows; i++) d[i][0] = i;
+            for (let j = 0; j < cols; j++) d[0][j] = j;
+
+            for (let i = 1; i < rows; i++) {
+                for (let j = 1; j < cols; j++) {
+                    const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+                    d[i][j] = Math.min(
+                        d[i - 1][j] + 1,
+                        d[i][j - 1] + 1,
+                        d[i - 1][j - 1] + cost
+                    );
+                }
+            }
+
+            return d[rows - 1][cols - 1];
+        }
+
+        function suggestedDomain(domain) {
+            if (KNOWN_DOMAINS.includes(domain)) {
+                return null;
+            }
+
+            for (const known of KNOWN_DOMAINS) {
+                // Catches a stray prefix typed before the domain, e.g. "123gmail.com".
+                if (domain.endsWith(known) && domain.length - known.length <= 5
+                    && /^[0-9]+$/.test(domain.slice(0, domain.length - known.length))) {
+                    return known;
+                }
+            }
+
+            let best = null;
+            let bestDistance = Infinity;
+
+            for (const known of KNOWN_DOMAINS) {
+                const distance = levenshtein(domain, known);
+                if (distance <= 2 && distance < bestDistance) {
+                    best = known;
+                    bestDistance = distance;
+                }
+            }
+
+            return best;
+        }
+
+        function updateSubmitState() {
+            const blocked = !existsWarning.classList.contains('hidden')
+                || !typoWarning.classList.contains('hidden');
+            submitButton.disabled = blocked;
+        }
+
+        function checkTypo() {
+            const email = emailInput.value.trim();
+            const atIndex = email.lastIndexOf('@');
+
+            if (atIndex === -1 || atIndex === email.length - 1) {
+                typoWarning.classList.add('hidden');
+                return false;
+            }
+
+            const domain = email.slice(atIndex + 1).toLowerCase();
+            const suggestion = suggestedDomain(domain);
+
+            if (suggestion) {
+                typoFixButton.textContent = email.slice(0, atIndex + 1) + suggestion;
+                typoFixButton.dataset.suggestion = email.slice(0, atIndex + 1) + suggestion;
+                typoWarning.classList.remove('hidden');
+                return true;
+            }
+
+            typoWarning.classList.add('hidden');
+            return false;
+        }
+
+        function checkExists() {
             const email = emailInput.value.trim();
 
             if (!email || !emailInput.checkValidity()) {
-                warning.classList.add('hidden');
-                submitButton.disabled = false;
+                existsWarning.classList.add('hidden');
+                updateSubmitState();
                 return;
             }
 
@@ -114,20 +202,47 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    warning.classList.toggle('hidden', !data.exists);
-                    submitButton.disabled = !!data.exists;
+                    existsWarning.classList.toggle('hidden', !data.exists);
+                    updateSubmitState();
                 })
                 .catch(() => {
-                    warning.classList.add('hidden');
-                    submitButton.disabled = false;
+                    existsWarning.classList.add('hidden');
+                    updateSubmitState();
                 });
+        }
+
+        emailInput.addEventListener('blur', function () {
+            const email = emailInput.value.trim();
+
+            if (!email || !emailInput.checkValidity()) {
+                typoWarning.classList.add('hidden');
+                existsWarning.classList.add('hidden');
+                updateSubmitState();
+                return;
+            }
+
+            const hasTypo = checkTypo();
+            updateSubmitState();
+
+            // Skip the exists-check while a likely typo is showing — the
+            // domain is probably wrong anyway, no point hitting the network.
+            if (!hasTypo) {
+                checkExists();
+            }
         });
 
         emailInput.addEventListener('input', function () {
-            if (!warning.classList.contains('hidden')) {
-                warning.classList.add('hidden');
-                submitButton.disabled = false;
-            }
+            existsWarning.classList.add('hidden');
+            typoWarning.classList.add('hidden');
+            updateSubmitState();
+        });
+
+        typoFixButton.addEventListener('click', function () {
+            emailInput.value = typoFixButton.dataset.suggestion || emailInput.value;
+            typoWarning.classList.add('hidden');
+            updateSubmitState();
+            checkExists();
+            emailInput.focus();
         });
     })();
 </script>
