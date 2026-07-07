@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\ConsultationController as AdminConsultationController;
 use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\EmailTemplateController as AdminEmailTemplateController;
 use App\Http\Controllers\Admin\IntakeSubmissionController as AdminIntakeSubmissionController;
 use App\Http\Controllers\Admin\MaintenancePlanController as AdminMaintenancePlanController;
 use App\Http\Controllers\Admin\MilestoneController as AdminMilestoneController;
@@ -307,6 +308,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/team/profile', [AdminTeamController::class, 'updateProfile'])->name('team.profile.update');
     Route::patch('/team/password', [AdminTeamController::class, 'updatePassword'])->name('team.password.update');
     Route::delete('/team/{user}', [AdminTeamController::class, 'destroy'])->name('team.destroy');
+
+    Route::get('/email-templates', [AdminEmailTemplateController::class, 'index'])->name('email-templates.index');
+    Route::get('/email-templates/{template}/preview', [AdminEmailTemplateController::class, 'preview'])->name('email-templates.preview');
 
     Route::view('/faq', 'admin.faq')->name('faq');
 });
