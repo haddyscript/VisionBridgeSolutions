@@ -138,9 +138,14 @@
             }
 
             for (const known of KNOWN_DOMAINS) {
-                // Catches a stray prefix typed before the domain, e.g. "123gmail.com".
-                if (domain.endsWith(known) && domain.length - known.length <= 5
-                    && /^[0-9]+$/.test(domain.slice(0, domain.length - known.length))) {
+                // Catches stray digits typed around the provider name, e.g.
+                // "123gmail.com" or "gmail123.com".
+                const dotIndex = known.lastIndexOf('.');
+                const label = known.slice(0, dotIndex);
+                const tld = known.slice(dotIndex + 1);
+                const pattern = new RegExp(`^[0-9]{1,4}${label}\\.${tld}$|^${label}[0-9]{1,4}\\.${tld}$`);
+
+                if (pattern.test(domain)) {
                     return known;
                 }
             }
