@@ -46,50 +46,49 @@
                            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div>
-                        <label class="block text-base font-bold text-navy mb-1">Email *</label>
-                        <input type="email" name="email" id="email" value="{{ old('email') }}" required
-                               class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
-                        <p id="email-exists-warning" class="hidden mt-1.5 text-sm font-medium text-red-600">
-                            An account already exists with this email. Please <a href="{{ route('login') }}" class="underline">log in</a> instead.
-                        </p>
-                        <p id="email-typo-warning" class="hidden mt-1.5 text-sm font-medium text-red-600">
-                            Did you mean <button type="button" id="email-typo-fix" class="underline"></button>?
-                        </p>
-                    </div>
-                    <div>
-                        <label class="block text-base font-bold text-navy mb-1">Phone *</label>
-                        <div class="flex gap-2">
-                            <div class="relative shrink-0">
-                                <button type="button" id="phone-country-trigger"
-                                        class="w-[5.5rem] h-full rounded-lg border border-gray-300 px-2 py-2.5 text-base flex items-center justify-between gap-1 bg-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
-                                    <span id="phone-country-display" class="truncate"></span>
-                                    <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                                </button>
-                                <div id="phone-country-list" class="hidden absolute z-20 mt-1 w-72 bg-white border border-gray-200 rounded-lg shadow-lg">
-                                    <div class="p-2 border-b border-gray-100">
-                                        <input type="text" id="phone-country-search" placeholder="Search country..."
-                                               class="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
-                                    </div>
-                                    <div class="max-h-56 overflow-y-auto py-1">
-                                        @foreach (config('dial_codes') as $country)
-                                            <button type="button" class="phone-country-option w-full text-left px-3 py-2 text-sm hover:bg-gold/10 flex items-center gap-2.5"
-                                                    data-dial="{{ $country['dial'] }}" data-flag="{{ $country['flag'] }}" data-name="{{ strtolower($country['name']) }}" data-full-name="{{ $country['name'] }}">
-                                                <span>{{ $country['flag'] }}</span>
-                                                <span class="text-gray-400 w-12 shrink-0">{{ $country['dial'] }}</span>
-                                                <span class="text-navy truncate">{{ $country['name'] }}</span>
-                                            </button>
-                                        @endforeach
-                                        <p id="phone-country-empty" class="hidden text-sm text-gray-400 text-center py-4">No countries found.</p>
-                                    </div>
+                <div>
+                    <label class="block text-base font-bold text-navy mb-1">Email *</label>
+                    <input type="email" name="email" id="email" value="{{ old('email') }}" required
+                           class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                    <p id="email-exists-warning" class="hidden mt-1.5 text-sm font-medium text-red-600">
+                        An account already exists with this email. Please <a href="{{ route('login') }}" class="underline">log in</a> instead.
+                    </p>
+                    <p id="email-typo-warning" class="hidden mt-1.5 text-sm font-medium text-red-600">
+                        Did you mean <button type="button" id="email-typo-fix" class="underline"></button>?
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-base font-bold text-navy mb-1">Phone *</label>
+                    <div class="flex gap-2">
+                        <div class="relative shrink-0">
+                            <button type="button" id="phone-country-trigger"
+                                    class="w-[5.5rem] h-full rounded-lg border border-gray-300 px-2 py-2.5 text-base flex items-center justify-between gap-1 bg-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                <span id="phone-country-display" class="truncate"></span>
+                                <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div id="phone-country-list" class="hidden absolute z-20 mt-1 w-72 bg-white border border-gray-200 rounded-lg shadow-lg">
+                                <div class="p-2 border-b border-gray-100">
+                                    <input type="text" id="phone-country-search" placeholder="Search country..."
+                                           class="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                </div>
+                                <div class="max-h-56 overflow-y-auto py-1">
+                                    @foreach (config('dial_codes') as $country)
+                                        <button type="button" class="phone-country-option w-full text-left px-3 py-2 text-sm hover:bg-gold/10 flex items-center gap-2.5"
+                                                data-dial="{{ $country['dial'] }}" data-flag="{{ $country['flag'] }}" data-name="{{ strtolower($country['name']) }}" data-full-name="{{ $country['name'] }}">
+                                            <span>{{ $country['flag'] }}</span>
+                                            <span class="text-gray-400 w-12 shrink-0">{{ $country['dial'] }}</span>
+                                            <span class="text-navy truncate">{{ $country['name'] }}</span>
+                                        </button>
+                                    @endforeach
+                                    <p id="phone-country-empty" class="hidden text-sm text-gray-400 text-center py-4">No countries found.</p>
                                 </div>
                             </div>
-                            <input type="tel" id="phone_number" placeholder="Phone number" required
-                                   class="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                         </div>
-                        <input type="hidden" name="phone" id="phone" value="{{ old('phone') }}">
+                        <input type="tel" id="phone_number" placeholder="Phone number" required
+                               class="flex-1 min-w-0 rounded-lg border border-gray-300 px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                     </div>
+                    <input type="hidden" name="phone" id="phone" value="{{ old('phone') }}">
                 </div>
 
                 <div>
