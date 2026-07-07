@@ -65,17 +65,10 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div>
-                        <label class="block text-base font-bold text-navy mb-1">Website Domain</label>
-                        <input type="text" name="domain" value="{{ old('domain') }}" placeholder="e.g. yourorganization.org"
-                               class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
-                    </div>
-                    <div>
-                        <label class="block text-base font-bold text-navy mb-1">Current Hosting Provider</label>
-                        <input type="text" name="hosting_provider" value="{{ old('hosting_provider') }}" placeholder="If applicable"
-                               class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
-                    </div>
+                <div>
+                    <label class="block text-base font-bold text-navy mb-1">Website Domain</label>
+                    <input type="text" name="domain" value="{{ old('domain') }}" placeholder="e.g. yourorganization.org"
+                           class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                 </div>
 
                 <div>
