@@ -55,6 +55,20 @@ class Upload extends Model
         return $this->status === 'completed';
     }
 
+    /**
+     * Whether the client can still remove this themselves — only before our
+     * team has acted on it, so an approval or in-progress revision thread
+     * can't be erased out from under us.
+     */
+    public function isDeletable(): bool
+    {
+        if (in_array($this->category, ['content', 'revision'], true)) {
+            return $this->status === 'request_received';
+        }
+
+        return ! $this->isApproved();
+    }
+
     public function isOverdue(): bool
     {
         return $this->category === 'revision'
