@@ -24,16 +24,32 @@ class EmailTemplateController extends Controller
     {
         abort_unless(in_array($template, $this->availableTemplates(), true), 404);
 
-        try {
-            $html = view('emails.'.$template, $this->sampleData())->render();
-        } catch (\Throwable $e) {
-            $html = view('admin.email-templates.render-error', [
-                'template' => $template,
-                'message' => $e->getMessage(),
-            ])->render();
+        $data = $this->sampleData();
+
+        // Mail classes pass their own arbitrary variable names (not just
+        // model keys), so rather than pre-guessing every one, retry on each
+        // "Undefined variable" error by stubbing in exactly the variable
+        // it's missing, until the template renders or we give up.
+        for ($attempt = 0; $attempt < 20; $attempt++) {
+            try {
+                return response(view('emails.'.$template, $data)->render());
+            } catch (\Throwable $e) {
+                if (preg_match('/Undefined variable \$(\w+)/', $e->getMessage(), $matches)) {
+                    $data[$matches[1]] = new EmailPreviewStub($matches[1]);
+                    continue;
+                }
+
+                return response(view('admin.email-templates.render-error', [
+                    'template' => $template,
+                    'message' => $e->getMessage(),
+                ])->render());
+            }
         }
 
-        return response($html);
+        return response(view('admin.email-templates.render-error', [
+            'template' => $template,
+            'message' => 'Too many undefined variables to resolve automatically.',
+        ])->render());
     }
 
     protected function availableTemplates(): array
