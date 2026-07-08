@@ -61,14 +61,16 @@
                             <img src="{{ $item->url() }}" alt="{{ $item->original_name }}" class="w-full h-full object-cover">
                         @endif
                     </a>
-                    <form method="POST" action="{{ route('portal.uploads.destroy', $item) }}" data-confirm="Remove this file?"
-                          class="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" title="Remove" class="w-6 h-6 rounded-full bg-white/90 hover:bg-red-500 hover:text-white text-gray-500 dark:text-gray-400 flex items-center justify-center shadow">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                    </form>
+                    @if ($item->isDeletable())
+                        <form method="POST" action="{{ route('portal.uploads.destroy', $item) }}" data-confirm="Remove this file?"
+                              class="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" title="Remove" class="w-6 h-6 rounded-full bg-white/90 hover:bg-red-500 hover:text-white text-gray-500 dark:text-gray-400 flex items-center justify-center shadow">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </form>
+                    @endif
                     @if ($item->isApproved())
                         <span class="absolute top-1.5 left-1.5 inline-flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-teal text-white shadow">
                             <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
@@ -118,13 +120,15 @@
                             </span>
                         </span>
                     </a>
-                    <form method="POST" action="{{ route('portal.uploads.destroy', $item) }}" data-confirm="Remove this file?" class="shrink-0">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" title="Remove" class="w-8 h-8 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9.5 7V4.5A1.5 1.5 0 0111 3h2a1.5 1.5 0 011.5 1.5V7M4 7h16"/></svg>
-                        </button>
-                    </form>
+                    @if ($item->isDeletable())
+                        <form method="POST" action="{{ route('portal.uploads.destroy', $item) }}" data-confirm="Remove this file?" class="shrink-0">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" title="Remove" class="w-8 h-8 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9.5 7V4.5A1.5 1.5 0 0111 3h2a1.5 1.5 0 011.5 1.5V7M4 7h16"/></svg>
+                            </button>
+                        </form>
+                    @endif
                 </div>
             @endforeach
         </div>

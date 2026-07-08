@@ -122,6 +122,10 @@ class UploadController extends Controller
     {
         $this->authorizeProject($request, $upload->project);
 
+        if (! $upload->isDeletable()) {
+            return back()->withErrors(['upload' => 'This can no longer be removed since our team has already started reviewing it.']);
+        }
+
         if ($upload->path) {
             Storage::disk('client_uploads')->delete($upload->path);
         }

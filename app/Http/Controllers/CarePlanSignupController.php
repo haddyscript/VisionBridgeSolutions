@@ -20,6 +20,17 @@ class CarePlanSignupController extends Controller
         return view('care-plan-signup.create', ['plan' => $maintenancePlan]);
     }
 
+    public function checkEmail(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email', 'max:255'],
+        ]);
+
+        return response()->json([
+            'exists' => User::where('email', $validated['email'])->exists(),
+        ]);
+    }
+
     public function store(Request $request, MaintenancePlan $maintenancePlan)
     {
         abort_unless($maintenancePlan->is_available && $maintenancePlan->price !== null, 404);
@@ -28,7 +39,7 @@ class CarePlanSignupController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'organization' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
+            'phone' => ['required', 'string', 'max:50'],
             'domain' => ['nullable', 'string', 'max:255'],
             'hosting_provider' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:2000'],
@@ -44,7 +55,7 @@ class CarePlanSignupController extends Controller
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
-                'phone' => $validated['phone'] ?? null,
+                'phone' => $validated['phone'],
                 'password' => Str::random(40),
                 'role' => 'client',
                 'email_verified_at' => now(),
@@ -61,7 +72,7 @@ class CarePlanSignupController extends Controller
                 'amount' => $maintenancePlan->price,
                 'currency' => 'usd',
                 'interval' => $maintenancePlan->interval,
-                'client_phone' => $validated['phone'] ?? null,
+                'client_phone' => $validated['phone'],
                 'domain' => $validated['domain'] ?? null,
                 'hosting_provider' => $validated['hosting_provider'] ?? null,
                 'notes' => $validated['notes'] ?? null,
