@@ -28,7 +28,7 @@
 </head>
 <body>
     <div class="header">
-        <img class="logo" src="{{ public_path('image/logo/visionbridgesolutions-logo-tagline.png') }}" alt="VisionBridge Solutions">
+        <img class="logo" src="{{ public_path('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions">
         <h1>{{ $template->title }}</h1>
         <p class="meta">Version {{ $template->version }}</p>
     </div>

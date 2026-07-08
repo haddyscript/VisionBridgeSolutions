@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Not Found — VisionBridge Solutions</title>
-    <link rel="icon" type="image/png" href="{{ asset('image/vbs-logo-v2.png') }}">
+    <link rel="icon" type="image/jpeg" href="{{ asset('image/logo/vbs-logo-v3.jpeg') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
@@ -60,7 +60,7 @@
 <body>
     <div class="card">
         <div class="logo">
-            <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions">
+            <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions">
         </div>
         <p class="code">404</p>
         <h1>This page doesn't exist.</h1>

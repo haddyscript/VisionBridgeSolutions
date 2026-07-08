@@ -15,7 +15,7 @@
                     {{-- Header --}}
                     <tr>
                         <td style="background-color:#111D33; padding:32px 40px; text-align:center;">
-                            <img src="{{ asset('image/logo/visionbridgesolutions-logo-tagline.png') }}" alt="VisionBridge Solutions" style="height:64px; width:auto; display:inline-block;">
+                            <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" style="height:64px; width:auto; display:inline-block;">
                             <p style="color:rgba(255,255,255,0.4); font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; margin:10px 0 0;">
                                 Internal Admin Notification
                             </p>

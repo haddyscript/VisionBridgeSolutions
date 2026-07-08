@@ -21,7 +21,7 @@
 </head>
 <body>
     <div class="header">
-        <img class="logo" src="{{ public_path('image/logo/visionbridgesolutions-logo-tagline.png') }}" alt="VisionBridge Solutions">
+        <img class="logo" src="{{ public_path('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions">
         <h1>Signature Certificate</h1>
         <p class="meta">For: {{ $template->title }} — Version {{ $template->version }}</p>
     </div>

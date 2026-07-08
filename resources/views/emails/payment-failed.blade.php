@@ -13,7 +13,7 @@
 
                     <tr>
                         <td style="background-color:#111D33; padding:32px 40px; text-align:center;">
-                            <img src="{{ asset('image/logo/visionbridgesolutions-logo-tagline.png') }}" alt="VisionBridge Solutions" style="height:64px; width:auto; display:inline-block;">
+                            <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" style="height:64px; width:auto; display:inline-block;">
                         </td>
                     </tr>
 

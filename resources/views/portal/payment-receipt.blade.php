@@ -43,7 +43,7 @@
         <div class="px-8 py-7" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
             <div class="flex items-center mb-6">
                 <div class="bg-white rounded-lg px-3 py-1.5 inline-flex items-center">
-                    <img src="{{ asset('image/vbs-logo-v2.png') }}" alt="VisionBridge Solutions" class="h-6 w-auto object-contain">
+                    <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" class="h-6 w-auto object-contain">
                 </div>
             </div>
             <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Payment Receipt</p>

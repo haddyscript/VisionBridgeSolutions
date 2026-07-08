@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'VisionBridge Solutions')</title>
-    <link rel="icon" type="image/png" href="{{ asset('image/logo/visionbridgesolutions-logo-tagline.png') }}">
+    <link rel="icon" type="image/jpeg" href="{{ asset('image/logo/vbs-logo-v3.jpeg') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,7 +41,7 @@
 
             <div class="relative max-w-sm pl-4">
                 <div class="flex items-center mb-10">
-                    <img src="{{ asset('image/logo/visionbridgesolutions-logo-tagline.png') }}" alt="VisionBridge Solutions" class="h-28 w-auto object-contain rounded-md shadow-lg">
+                    <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" class="h-28 w-auto object-contain rounded-md shadow-lg">
                 </div>
 
                 <h2 class="font-display text-3xl font-extrabold text-white mb-3" style="text-shadow:0 1px 3px rgba(0,0,0,0.35);">Your project, all in one place</h2>
@@ -66,7 +66,7 @@
         <div class="flex-1 flex items-center justify-center px-4 py-12 lg:ml-[58%]">
             <div class="w-full max-w-md">
                 <div class="flex items-center justify-center mb-8 lg:hidden">
-                    <img src="{{ asset('image/logo/visionbridgesolutions-logo-tagline.png') }}" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
+                    <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
                 </div>
 
                 <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">

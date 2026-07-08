@@ -13,7 +13,7 @@
 
                     <tr>
                         <td style="background-color:#111D33; padding:26px 32px;">
-                            <img src="{{ asset('image/logo/visionbridgesolutions-logo-tagline.png') }}" alt="VisionBridge Solutions" style="height:28px; width:auto; display:block; margin:0 0 4px;">
+                            <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" style="height:28px; width:auto; display:block; margin:0 0 4px;">
                             <p style="color:#C9A84C; font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; margin:0 0 4px;">
                                 &middot; FaithStack Partnership
                             </p>
