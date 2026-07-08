@@ -42,11 +42,15 @@ class StripeWebhookController extends Controller
             Log::warning('Stripe webhook signature verification failed.', ['error' => $e->getMessage()]);
 
             if (Cache::add('system-alert:stripe-signature-failure', true, now()->addMinutes(15))) {
-                Mail::to(config('mail.billing_address'))->send(new SystemAlertMail(
-                    'Stripe Webhook Signature Verification Failed',
-                    "A request to the Stripe webhook endpoint failed signature verification. This usually means a misconfigured webhook secret, or could indicate someone probing the endpoint. Further alerts of this type are suppressed for 15 minutes.",
-                    ['Error' => $e->getMessage()],
-                ));
+                $errorMessage = $e->getMessage();
+
+                dispatch(function () use ($errorMessage) {
+                    Mail::to(config('mail.billing_address'))->send(new SystemAlertMail(
+                        'Stripe Webhook Signature Verification Failed',
+                        "A request to the Stripe webhook endpoint failed signature verification. This usually means a misconfigured webhook secret, or could indicate someone probing the endpoint. Further alerts of this type are suppressed for 15 minutes.",
+                        ['Error' => $errorMessage],
+                    ));
+                })->afterResponse();
             }
 
             return response('Invalid signature.', 400);
@@ -113,9 +117,11 @@ class StripeWebhookController extends Controller
                 'paid_at' => now(),
             ]);
 
-            Mail::to($payment->project->user->email)->send(
-                new PaymentReceiptMail($payment, $receiptUrl)
-            );
+            dispatch(function () use ($payment, $receiptUrl) {
+                Mail::to($payment->project->user->email)->send(
+                    new PaymentReceiptMail($payment, $receiptUrl)
+                );
+            })->afterResponse();
 
             $this->notifyAdminOfPayment($payment);
             $this->logPartnerPayoutForPayment($payment);
@@ -150,9 +156,11 @@ class StripeWebhookController extends Controller
             'paid_at' => now(),
         ]);
 
-        Mail::to($payment->project->user->email)->send(
-            new PaymentReceiptMail($payment, $receiptUrl)
-        );
+        dispatch(function () use ($payment, $receiptUrl) {
+            Mail::to($payment->project->user->email)->send(
+                new PaymentReceiptMail($payment, $receiptUrl)
+            );
+        })->afterResponse();
 
         $this->notifyAdminOfPayment($payment);
         $this->logPartnerPayoutForPayment($payment);
@@ -193,15 +201,17 @@ class StripeWebhookController extends Controller
 
         $pendingCarePlan = $project->subscription?->isPending() ? $project->subscription : null;
 
-        Mail::to($project->user->email)->send(new ProjectLaunchedMail($project, $pendingCarePlan));
-        Mail::to(config('mail.support_address'))->send(new SystemAlertMail(
-            'Project Launched — '.$project->name,
-            "{$project->user->name}'s project was automatically marked as launched — paid in full, approved, and funds cleared.",
-            [
-                'Client' => $project->user->name,
-                'Project' => $project->name,
-            ],
-        ));
+        dispatch(function () use ($project, $pendingCarePlan) {
+            Mail::to($project->user->email)->send(new ProjectLaunchedMail($project, $pendingCarePlan));
+            Mail::to(config('mail.support_address'))->send(new SystemAlertMail(
+                'Project Launched — '.$project->name,
+                "{$project->user->name}'s project was automatically marked as launched — paid in full, approved, and funds cleared.",
+                [
+                    'Client' => $project->user->name,
+                    'Project' => $project->name,
+                ],
+            ));
+        })->afterResponse();
     }
 
     /**
@@ -239,19 +249,23 @@ class StripeWebhookController extends Controller
         $resetToken = Password::createToken($user);
         $resetUrl = route('password.reset', ['token' => $resetToken, 'email' => $user->email]);
 
-        Mail::to($user->email)->send(new WelcomeClientMail($user, $resetUrl));
-        Mail::to(config('mail.faithstack_address'))->send(new FaithStackNewClientMail($subscription));
+        dispatch(function () use ($user, $resetUrl, $subscription) {
+            Mail::to($user->email)->send(new WelcomeClientMail($user, $resetUrl));
+            Mail::to(config('mail.faithstack_address'))->send(new FaithStackNewClientMail($subscription));
+        })->afterResponse();
     }
 
     private function notifyAdminOfPayment(Payment $payment): void
     {
-        Mail::to(config('mail.billing_address'))->send(new AdminPaymentNotificationMail(
-            $payment,
-            $payment->project->user->name,
-            $payment->project->name,
-            $payment->formattedAmount(),
-            $payment->paid_at ?? now(),
-        ));
+        dispatch(function () use ($payment) {
+            Mail::to(config('mail.billing_address'))->send(new AdminPaymentNotificationMail(
+                $payment,
+                $payment->project->user->name,
+                $payment->project->name,
+                $payment->formattedAmount(),
+                $payment->paid_at ?? now(),
+            ));
+        })->afterResponse();
     }
 
     private function fetchReceiptUrl(string $sessionId): ?string
@@ -359,7 +373,9 @@ class StripeWebhookController extends Controller
         ]);
 
         if ($newStatus !== $previousStatus && in_array($newStatus, ['past_due', 'canceled'], true)) {
-            Mail::to(config('mail.billing_address'))->send(new SubscriptionStatusAlertMail($subscription));
+            dispatch(function () use ($subscription) {
+                Mail::to(config('mail.billing_address'))->send(new SubscriptionStatusAlertMail($subscription));
+            })->afterResponse();
         }
 
         if ($newStatus === 'active' && $previousStatus !== 'active') {
@@ -383,15 +399,17 @@ class StripeWebhookController extends Controller
 
         $project->update(['suspended_at' => null]);
 
-        Mail::to($project->user->email)->send(new ProjectRestoredMail($project));
-        Mail::to(config('mail.billing_address'))->send(new SystemAlertMail(
-            'Project Restored — '.$project->name,
-            "{$project->user->name}'s overdue Care Plan payment was received and verified — their website access has been automatically restored.",
-            [
-                'Client' => $project->user->name,
-                'Project' => $project->name,
-            ],
-        ));
+        dispatch(function () use ($project) {
+            Mail::to($project->user->email)->send(new ProjectRestoredMail($project));
+            Mail::to(config('mail.billing_address'))->send(new SystemAlertMail(
+                'Project Restored — '.$project->name,
+                "{$project->user->name}'s overdue Care Plan payment was received and verified — their website access has been automatically restored.",
+                [
+                    'Client' => $project->user->name,
+                    'Project' => $project->name,
+                ],
+            ));
+        })->afterResponse();
     }
 
     private function handleSubscriptionDeleted($stripeSubscription): void
@@ -407,7 +425,9 @@ class StripeWebhookController extends Controller
             'canceled_at' => now(),
         ]);
 
-        Mail::to(config('mail.billing_address'))->send(new SubscriptionStatusAlertMail($subscription));
+        dispatch(function () use ($subscription) {
+            Mail::to(config('mail.billing_address'))->send(new SubscriptionStatusAlertMail($subscription));
+        })->afterResponse();
     }
 
     private function handleInvoicePaymentSucceeded($invoice): void
@@ -462,17 +482,21 @@ class StripeWebhookController extends Controller
             ]
         );
 
-        Mail::to($subscription->project->user->email)->send(
-            new SubscriptionReceiptMail($subscriptionPayment)
-        );
+        $amountPaidFormatted = '$'.number_format($invoice->amount_paid / 100, 2);
 
-        Mail::to(config('mail.billing_address'))->send(new AdminPaymentNotificationMail(
-            $subscription,
-            $subscription->project->user->name,
-            $subscription->project->name,
-            '$'.number_format($invoice->amount_paid / 100, 2),
-            $paidAt,
-        ));
+        dispatch(function () use ($subscription, $subscriptionPayment, $amountPaidFormatted, $paidAt) {
+            Mail::to($subscription->project->user->email)->send(
+                new SubscriptionReceiptMail($subscriptionPayment)
+            );
+
+            Mail::to(config('mail.billing_address'))->send(new AdminPaymentNotificationMail(
+                $subscription,
+                $subscription->project->user->name,
+                $subscription->project->name,
+                $amountPaidFormatted,
+                $paidAt,
+            ));
+        })->afterResponse();
 
         // Track what VisionBridge owes FaithStack for this billing cycle. Starts
         // 'pending' — VerifyPartnerPayouts promotes it to 'ready' after 7 clean
@@ -517,9 +541,13 @@ class StripeWebhookController extends Controller
             return;
         }
 
-        Mail::to($subscription->project->user->email)->send(
-            new PaymentFailedMail($subscription, $invoice->amount_due)
-        );
+        $amountDue = $invoice->amount_due;
+
+        dispatch(function () use ($subscription, $amountDue) {
+            Mail::to($subscription->project->user->email)->send(
+                new PaymentFailedMail($subscription, $amountDue)
+            );
+        })->afterResponse();
     }
 
     /**
@@ -574,19 +602,21 @@ class StripeWebhookController extends Controller
 
         $project = $payout->project();
 
-        Mail::to(config('mail.billing_address'))->send(new SystemAlertMail(
-            $wasAlreadyPaid
-                ? "Client Payment {$reason} After FaithStack Was Already Paid"
-                : "Client Payment {$reason} — FaithStack Payout Held",
-            $wasAlreadyPaid
-                ? "A client payment that FaithStack has already been paid for was just marked '{$reason}'. This needs manual review."
-                : "A client payment was marked '{$reason}' during its 7-day verification window. The FaithStack payout for this cycle has been held and needs manual review before release.",
-            [
-                'Client' => $project?->user->name ?? 'Unknown',
-                'For' => $payout->sourceLabel(),
-                'FaithStack Amount' => $payout->formattedFaithstackAmount(),
-                'Payout Status' => $payout->status,
-            ],
-        ));
+        dispatch(function () use ($wasAlreadyPaid, $reason, $project, $payout) {
+            Mail::to(config('mail.billing_address'))->send(new SystemAlertMail(
+                $wasAlreadyPaid
+                    ? "Client Payment {$reason} After FaithStack Was Already Paid"
+                    : "Client Payment {$reason} — FaithStack Payout Held",
+                $wasAlreadyPaid
+                    ? "A client payment that FaithStack has already been paid for was just marked '{$reason}'. This needs manual review."
+                    : "A client payment was marked '{$reason}' during its 7-day verification window. The FaithStack payout for this cycle has been held and needs manual review before release.",
+                [
+                    'Client' => $project?->user->name ?? 'Unknown',
+                    'For' => $payout->sourceLabel(),
+                    'FaithStack Amount' => $payout->formattedFaithstackAmount(),
+                    'Payout Status' => $payout->status,
+                ],
+            ));
+        })->afterResponse();
     }
 }

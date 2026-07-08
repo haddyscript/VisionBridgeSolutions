@@ -147,8 +147,10 @@ class ServiceAgreementController extends Controller
             $signature->update(['filled_pdf_path' => $filledPdfPath]);
         }
 
-        Mail::to($user->email)->send(new ServiceAgreementSignedMail($signature));
-        Mail::to(config('mail.johnny_address'))->send(new ServiceAgreementSignedMail($signature));
+        dispatch(function () use ($user, $signature) {
+            Mail::to($user->email)->send(new ServiceAgreementSignedMail($signature));
+            Mail::to(config('mail.johnny_address'))->send(new ServiceAgreementSignedMail($signature));
+        })->afterResponse();
 
         $user->update(['onboarding_step' => 13]);
 

@@ -183,7 +183,12 @@ class SubscriptionController extends Controller
             ], 422);
         }
 
-        Mail::to($request->user()->email)->send(new SubscriptionCreatedMail($subscription->load('project.user')));
+        $subscription->load('project.user');
+        $userEmail = $request->user()->email;
+
+        dispatch(function () use ($userEmail, $subscription) {
+            Mail::to($userEmail)->send(new SubscriptionCreatedMail($subscription));
+        })->afterResponse();
 
         return response()->json(['redirect' => route('portal.payments.index').'?checkout=success']);
     }

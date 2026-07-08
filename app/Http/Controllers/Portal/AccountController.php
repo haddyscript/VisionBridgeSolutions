@@ -40,7 +40,11 @@ class AccountController extends Controller
         ]);
 
         if ($emailChanged) {
-            Mail::to($oldEmail)->send(new AccountEmailChangedMail($user, $oldEmail, $validated['email']));
+            $newEmail = $validated['email'];
+
+            dispatch(function () use ($user, $oldEmail, $newEmail) {
+                Mail::to($oldEmail)->send(new AccountEmailChangedMail($user, $oldEmail, $newEmail));
+            })->afterResponse();
         }
 
         return back()->with('status', 'Profile updated.');
@@ -59,7 +63,9 @@ class AccountController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        Mail::to($user->email)->send(new AccountPasswordChangedMail($user));
+        dispatch(function () use ($user) {
+            Mail::to($user->email)->send(new AccountPasswordChangedMail($user));
+        })->afterResponse();
 
         return back()->with('status', 'Password updated.');
     }
@@ -78,10 +84,12 @@ class AccountController extends Controller
     {
         $user = $request->user();
 
-        Mail::raw(
-            "Account closure requested.\n\nName: {$user->name}\nEmail: {$user->email}\nTime: " . now()->toDateTimeString(),
-            fn ($m) => $m->to(config('mail.johnny_address'))->subject('Account Closure Request — ' . $user->name)
-        );
+        dispatch(function () use ($user) {
+            Mail::raw(
+                "Account closure requested.\n\nName: {$user->name}\nEmail: {$user->email}\nTime: " . now()->toDateTimeString(),
+                fn ($m) => $m->to(config('mail.johnny_address'))->subject('Account Closure Request — ' . $user->name)
+            );
+        })->afterResponse();
 
         return back()->with('status', 'Your closure request has been received. Our team will follow up within 1–2 business days.');
     }

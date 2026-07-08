@@ -102,9 +102,10 @@ class ConsultationController extends Controller
             'email' => $user->email,
         ]);
 
-        Mail::to(config('mail.support_address'))->send(new NewConsultationMail($consultation));
-
-        Mail::to($consultation->email)->send(new ConsultationReceivedMail($consultation));
+        dispatch(function () use ($consultation) {
+            Mail::to(config('mail.support_address'))->send(new NewConsultationMail($consultation));
+            Mail::to($consultation->email)->send(new ConsultationReceivedMail($consultation));
+        })->afterResponse();
 
         if ($request->wantsJson()) {
             return response()->json([

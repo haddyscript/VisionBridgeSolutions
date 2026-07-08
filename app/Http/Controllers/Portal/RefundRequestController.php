@@ -25,7 +25,11 @@ class RefundRequestController extends Controller
             'reason' => $validated['reason'],
         ]);
 
-        Mail::to(config('mail.billing_address'))->send(new NewRefundRequestMail($refundRequest->load('payment.project.user')));
+        $refundRequest->load('payment.project.user');
+
+        dispatch(function () use ($refundRequest) {
+            Mail::to(config('mail.billing_address'))->send(new NewRefundRequestMail($refundRequest));
+        })->afterResponse();
 
         return back()->with('status', 'Your refund request has been submitted — our team will review it shortly.');
     }

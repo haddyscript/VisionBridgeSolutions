@@ -47,16 +47,22 @@ class UploadController extends Controller
             $path = $file->store("projects/{$project->id}/{$validated['category']}", 'client_uploads');
 
             if ($path === false) {
-                Mail::to(config('mail.support_address'))->send(new SystemAlertMail(
-                    'Client Upload Disk Write Failed',
-                    "A client's file upload could not be saved to disk. The client uploads disk may be full or misconfigured.",
-                    [
-                        'Project' => $project->name,
-                        'Client' => $request->user()->name,
-                        'File' => $originalName,
-                        'Category' => $validated['category'],
-                    ],
-                ));
+                $projectName = $project->name;
+                $clientName = $request->user()->name;
+                $category = $validated['category'];
+
+                dispatch(function () use ($projectName, $clientName, $originalName, $category) {
+                    Mail::to(config('mail.support_address'))->send(new SystemAlertMail(
+                        'Client Upload Disk Write Failed',
+                        "A client's file upload could not be saved to disk. The client uploads disk may be full or misconfigured.",
+                        [
+                            'Project' => $projectName,
+                            'Client' => $clientName,
+                            'File' => $originalName,
+                            'Category' => $category,
+                        ],
+                    ));
+                })->afterResponse();
 
                 return $this->errorResponse($request, 'file', 'Something went wrong saving your file. Please try again or contact support.');
             }
@@ -74,7 +80,9 @@ class UploadController extends Controller
         $upload->setRelation('project', $project);
         $upload->setRelation('user', $request->user());
 
-        Mail::to(config('mail.support_address'))->send(new NewClientUploadMail($upload));
+        dispatch(function () use ($upload) {
+            Mail::to(config('mail.support_address'))->send(new NewClientUploadMail($upload));
+        })->afterResponse();
 
         if ($request->wantsJson()) {
             return response()->json(['message' => 'Submitted successfully.']);
@@ -105,7 +113,9 @@ class UploadController extends Controller
             'body' => $validated['body'],
         ]);
 
-        Mail::to(config('mail.support_address'))->send(new ClientReplyMail($reply));
+        dispatch(function () use ($reply) {
+            Mail::to(config('mail.support_address'))->send(new ClientReplyMail($reply));
+        })->afterResponse();
 
         if ($request->wantsJson()) {
             return response()->json([

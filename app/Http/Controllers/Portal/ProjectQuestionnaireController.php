@@ -62,7 +62,9 @@ class ProjectQuestionnaireController extends Controller
             ]
         );
 
-        Mail::to(config('mail.support_address'))->send(new QuestionnaireCompletedMail($questionnaire));
+        dispatch(function () use ($questionnaire) {
+            Mail::to(config('mail.support_address'))->send(new QuestionnaireCompletedMail($questionnaire));
+        })->afterResponse();
 
         $request->user()->update(['onboarding_step' => 6]);
 
