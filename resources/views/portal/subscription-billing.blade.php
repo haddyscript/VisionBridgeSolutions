@@ -9,6 +9,38 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
         <div class="lg:col-span-2 lg:border-r lg:border-gray-200 dark:lg:border-gray-700 lg:pr-10">
+            @if ($upgradeOptions->isNotEmpty())
+                <div class="bg-teal/5 dark:bg-teal/10 rounded-2xl border-2 border-teal/20 p-6 mb-8">
+                    <div class="flex items-start gap-3 mb-4">
+                        <span class="w-9 h-9 rounded-full bg-teal/15 flex items-center justify-center shrink-0">
+                            <svg class="w-4.5 h-4.5 text-teal-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                        </span>
+                        <div>
+                            <h3 class="font-bold text-navy dark:text-white">Upgrade Your Plan</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Your renewal date stays the same — you'll only see the prorated difference on your next invoice.</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        @foreach ($upgradeOptions as $plan)
+                            <div class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
+                                <div>
+                                    <p class="font-semibold text-navy dark:text-white">{{ $plan->name }}</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $plan->formattedPrice() }}/{{ $plan->interval }}</p>
+                                </div>
+                                <form method="POST" action="{{ route('portal.subscriptions.change-plan', $subscription) }}"
+                                      data-confirm="Upgrade to the {{ $plan->name }} plan for {{ $plan->formattedPrice() }}/{{ $plan->interval }}? Your renewal date won't change.">
+                                    @csrf
+                                    <input type="hidden" name="maintenance_plan_id" value="{{ $plan->id }}">
+                                    <button type="submit" class="bg-teal hover:bg-teal-dark text-white font-semibold text-sm px-5 py-2.5 rounded-lg transition-colors shadow shrink-0">
+                                        Upgrade
+                                    </button>
+                                </form>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             <div class="bg-red-50/60 dark:bg-red-500/5 rounded-2xl border-2 border-red-200 dark:border-red-500/30 p-6 mb-8">
                 <div class="flex items-start gap-3 mb-4">
                     <span class="w-9 h-9 rounded-full bg-red-100 dark:bg-red-500/15 flex items-center justify-center shrink-0">

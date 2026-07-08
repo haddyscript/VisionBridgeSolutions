@@ -24,14 +24,14 @@ class SubscriptionController extends Controller
 
     public function store(Request $request, Project $project)
     {
-        abort_if($project->subscription && ! $project->subscription->isCanceled(), 422, 'This project already has a maintenance plan.');
+        abort_if($project->subscription && ! $project->subscription->isCanceled(), 422, 'This project already has a care plan.');
 
         // Maintenance billing doesn't start during development — only once the
         // website has actually launched (per the client onboarding workflow).
         abort_unless(
             in_array($project->status, ['launched', 'maintenance'], true),
             422,
-            'This project must be launched before starting a recurring maintenance plan.'
+            'This project must be launched before starting a recurring care plan.'
         );
 
         $validated = $request->validate([
@@ -44,7 +44,7 @@ class SubscriptionController extends Controller
             'amount' => (int) round($validated['amount'] * 100),
         ]);
 
-        return back()->with('status', 'Maintenance plan request created.');
+        return back()->with('status', 'Care plan request created.');
     }
 
     public function destroy(Subscription $subscription)
@@ -69,7 +69,7 @@ class SubscriptionController extends Controller
 
         $subscription->update(['status' => 'canceled', 'canceled_at' => now()]);
 
-        return back()->with('status', 'Maintenance plan canceled.');
+        return back()->with('status', 'Care plan canceled.');
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Mail\SubscriptionCreatedMail;
+use App\Models\MaintenancePlan;
 use App\Models\Subscription;
 use App\Models\SubscriptionPayment;
 use App\Services\SubscriptionReconciler;
@@ -29,7 +30,7 @@ class SubscriptionController extends Controller
         $project = $request->user()->projects()->first();
 
         abort_unless($project && $subscription->project_id === $project->id, 403);
-        abort_unless($subscription->isPending(), 422, 'This maintenance plan has already been processed.');
+        abort_unless($subscription->isPending(), 422, 'This care plan has already been processed.');
 
         $this->configureStripe();
 
@@ -72,7 +73,7 @@ class SubscriptionController extends Controller
         $project = $request->user()->projects()->first();
 
         abort_unless($project && $subscription->project_id === $project->id, 403);
-        abort_unless($subscription->isPending(), 422, 'This maintenance plan has already been processed.');
+        abort_unless($subscription->isPending(), 422, 'This care plan has already been processed.');
 
         $validated = $request->validate([
             'setup_intent' => ['required', 'string'],
@@ -233,7 +234,18 @@ class SubscriptionController extends Controller
         $project = $request->user()->projects()->first();
         $subscription = $project?->subscription;
 
-        abort_unless($subscription && ! $subscription->isPending(), 404, 'No active maintenance plan found.');
+        abort_unless($subscription && ! $subscription->isPending(), 404, 'No active care plan found.');
+
+        // Only a subscription tied to a real MaintenancePlan tier (not an
+        // admin-created ad-hoc amount) has a well-defined "higher tier" to
+        // upgrade to.
+        $upgradeOptions = $subscription->maintenance_plan_id && $subscription->isActive()
+            ? MaintenancePlan::where('is_available', true)
+                ->whereNotNull('stripe_price_id')
+                ->where('price', '>', $subscription->maintenancePlan->price)
+                ->orderBy('price')
+                ->get()
+            : collect();
 
         $this->configureStripe();
 
@@ -269,6 +281,7 @@ class SubscriptionController extends Controller
             'card' => $card,
             'clientSecret' => $setupIntent->client_secret,
             'stripeKey' => config('services.stripe.key'),
+            'upgradeOptions' => $upgradeOptions,
         ]);
     }
 
@@ -277,7 +290,7 @@ class SubscriptionController extends Controller
         $project = $request->user()->projects()->first();
 
         abort_unless($project && $subscription->project_id === $project->id, 403);
-        abort_unless($subscription->stripe_subscription_id, 422, 'No active maintenance plan found.');
+        abort_unless($subscription->stripe_subscription_id, 422, 'No active care plan found.');
 
         $validated = $request->validate([
             'setup_intent' => ['required', 'string'],
@@ -340,7 +353,7 @@ class SubscriptionController extends Controller
 
         $subscription->update(['status' => 'canceled', 'canceled_at' => now()]);
 
-        return redirect()->route('portal.payments.index')->with('status', 'Maintenance plan canceled.');
+        return redirect()->route('portal.payments.index')->with('status', 'Care plan canceled.');
     }
 
     /**
@@ -365,5 +378,79 @@ class SubscriptionController extends Controller
         ]);
 
         return redirect()->route('portal.subscriptions.checkout', $newSubscription);
+    }
+
+    /**
+     * Self-service upgrade to a higher Care Plan tier. Swaps the Stripe
+     * subscription item's price via Subscription::update() rather than
+     * canceling and recreating the subscription — that's what keeps the
+     * existing billing cycle anchor (and therefore the renewal date)
+     * untouched; only proration_behavior controls how the price difference
+     * gets billed. Downgrades aren't offered here — same mechanism would
+     * work, but self-service is scoped to upgrades only for now.
+     */
+    public function changePlan(Request $request, Subscription $subscription)
+    {
+        $project = $request->user()->projects()->first();
+
+        abort_unless($project && $subscription->project_id === $project->id, 403);
+        abort_unless($subscription->isActive(), 422, 'Only an active care plan can be upgraded.');
+        abort_unless(
+            $subscription->stripe_subscription_id && $subscription->maintenance_plan_id,
+            422,
+            'This care plan isn\'t eligible for a self-service upgrade — contact support.'
+        );
+
+        $validated = $request->validate([
+            'maintenance_plan_id' => ['required', 'exists:maintenance_plans,id'],
+        ]);
+
+        $targetPlan = MaintenancePlan::findOrFail($validated['maintenance_plan_id']);
+
+        abort_unless(
+            $targetPlan->is_available && $targetPlan->stripe_price_id && $targetPlan->price > $subscription->maintenancePlan->price,
+            422,
+            'That plan isn\'t available as an upgrade.'
+        );
+
+        $this->configureStripe();
+
+        try {
+            $stripeSubscription = \Stripe\Subscription::retrieve($subscription->stripe_subscription_id);
+            $item = $stripeSubscription->items->data[0];
+
+            // Omitting billing_cycle_anchor keeps Stripe's default behavior —
+            // the existing renewal date stays exactly where it is.
+            // proration_behavior 'create_prorations' bills the prorated
+            // difference on the next regular invoice instead of charging
+            // anything today.
+            \Stripe\Subscription::update($subscription->stripe_subscription_id, [
+                'items' => [[
+                    'id' => $item->id,
+                    'price' => $targetPlan->stripe_price_id,
+                ]],
+                'proration_behavior' => 'create_prorations',
+            ]);
+        } catch (ApiErrorException $e) {
+            Log::error('Stripe error upgrading care plan.', [
+                'subscription_id' => $subscription->id,
+                'target_plan_id' => $targetPlan->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->withErrors(['subscription' => 'Could not reach Stripe to upgrade this plan. Please try again or contact support.']);
+        }
+
+        $subscription->update([
+            'maintenance_plan_id' => $targetPlan->id,
+            'description' => $targetPlan->name,
+            'amount' => $targetPlan->price,
+            'interval' => $targetPlan->interval,
+        ]);
+
+        return redirect()->route('portal.billing.show')->with(
+            'status',
+            "Upgraded to the {$targetPlan->name} plan. Your renewal date hasn't changed — you'll see the prorated difference on your next invoice."
+        );
     }
 }

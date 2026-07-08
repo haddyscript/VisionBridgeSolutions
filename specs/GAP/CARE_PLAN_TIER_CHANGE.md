@@ -77,8 +77,20 @@ A tier change today requires manual admin intervention:
 
 ## 5. Status
 
-**Not started.** No code changes made toward this. Treat as a deliberate
-roadmap decision (like `specs/GAP/MULTI_PROJECT_SUPPORT.md`) rather than
-something to bolt on incrementally — the proration/business-rule question in
-particular needs a decision from the boss before implementation, not just
-engineering judgment.
+**Partially built (2026-07-08).** Self-service **upgrades** now work exactly
+as described in §3: a plan picker on `portal/subscription-billing.blade.php`
+(only showing tiers priced higher than the client's current one), and
+`Portal\SubscriptionController::changePlan()` uses Stripe's native
+`Subscription::update()` to swap the subscription item's price — no
+cancel+recreate, so the existing billing cycle anchor (and renewal date)
+is untouched. The boss settled the two open business questions: upgrades
+only for now (no self-service downgrade), and `proration_behavior:
+create_prorations` (the price difference lands on the client's next regular
+invoice, not an immediate separate charge). See FEATURES.md §15n.
+
+**Still not built:**
+- Self-service downgrades (same mechanism would work — just needs the boss's
+  go-ahead to open it up).
+- Admin-side parity — `Admin\SubscriptionController` still has no tier-aware
+  switch; an admin performing a tier change on a client's behalf still means
+  manual intervention per §4 below.
