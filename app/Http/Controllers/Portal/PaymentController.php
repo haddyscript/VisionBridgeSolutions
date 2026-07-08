@@ -33,6 +33,14 @@ class PaymentController extends Controller
         abort_unless($project && $payment->project_id === $project->id, 403);
         abort_unless($payment->isPending(), 422, 'This payment has already been processed.');
 
+        $validated = $request->validate([
+            'timezone' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        if (! empty($validated['timezone'])) {
+            $payment->update(['timezone' => $validated['timezone']]);
+        }
+
         Stripe::setApiKey(config('services.stripe.secret'));
 
         if ($payment->stripe_payment_intent_id) {

@@ -57,7 +57,7 @@
                                 <tr>
                                     <td style="padding:18px 20px; border-bottom:1px solid #f0f0f0;">
                                         <p style="font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#9ca3af; margin:0 0 4px;">Date Paid</p>
-                                        <p style="font-size:14px; color:#111D33; font-weight:600; margin:0;">{{ $payment->paid_at?->format('F j, Y \a\t g:ia') }}</p>
+                                        <p style="font-size:14px; color:#111D33; font-weight:600; margin:0;">{{ $payment->paid_at?->copy()->setTimezone($payment->timezone ?: config('app.timezone'))->format('F j, Y \a\t g:ia') }}</p>
                                     </td>
                                 </tr>
                                 <tr>

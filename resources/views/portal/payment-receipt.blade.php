@@ -76,7 +76,7 @@
 
             <div class="flex items-center justify-between">
                 <span class="text-sm text-gray-500">Date Paid</span>
-                <span class="text-sm font-semibold text-navy">{{ $payment->paid_at?->format('M j, Y \a\t g:ia') }}</span>
+                <span class="text-sm font-semibold text-navy">{{ $payment->paid_at?->copy()->setTimezone($payment->timezone ?: config('app.timezone'))->format('M j, Y \a\t g:ia') }}</span>
             </div>
 
             @if ($payment->stripe_payment_intent_id)

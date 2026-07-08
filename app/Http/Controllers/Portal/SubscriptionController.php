@@ -76,7 +76,12 @@ class SubscriptionController extends Controller
 
         $validated = $request->validate([
             'setup_intent' => ['required', 'string'],
+            'timezone' => ['nullable', 'string', 'max:100'],
         ]);
+
+        if (! empty($validated['timezone'])) {
+            $subscription->update(['timezone' => $validated['timezone']]);
+        }
 
         $this->configureStripe();
 

@@ -76,7 +76,7 @@
 
             <div class="flex items-center justify-between">
                 <span class="text-sm text-gray-500">Date Paid</span>
-                <span class="text-sm font-semibold text-navy">{{ $subscriptionPayment->paid_at->format('M j, Y \a\t g:ia') }}</span>
+                <span class="text-sm font-semibold text-navy">{{ $subscriptionPayment->paid_at->copy()->setTimezone($subscriptionPayment->subscription->timezone ?: config('app.timezone'))->format('M j, Y \a\t g:ia') }}</span>
             </div>
 
             @if ($subscriptionPayment->subscription->current_period_end)

@@ -10,6 +10,9 @@
         <div class="text-center mb-8">
             <p class="text-sm font-bold uppercase tracking-widest text-gold-dark mb-3">Website Care Plan Signup</p>
             <h1 class="font-display text-3xl md:text-4xl font-extrabold text-navy mb-3">{{ $plan->name }}</h1>
+            <p class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-navy bg-navy/5 rounded-full px-3 py-1 mb-3">
+                {{ ucfirst($plan->interval) }}ly Subscription
+            </p>
             <p class="text-gray-700 text-lg font-medium">
                 {{ $plan->formattedPrice() }}/{{ $plan->interval }} &mdash; tell us a bit about your organization and
                 you'll be redirected to our secure checkout to complete your subscription.
@@ -33,6 +36,7 @@
         <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
             <form method="POST" action="{{ route('care-plan-signup.store', $plan) }}" class="space-y-5">
                 @csrf
+                <input type="hidden" name="timezone" id="timezone" value="{{ old('timezone') }}">
 
                 <div>
                     <label class="block text-base font-bold text-navy mb-1">Full Name *</label>
@@ -117,6 +121,12 @@
 </section>
 
 <script>
+    (function () {
+        // Same browser-timezone capture used on Book a Consultation — lets
+        // receipt emails show the correct local payment time.
+        document.getElementById('timezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    })();
+
     (function () {
         const emailInput = document.getElementById('email');
         const existsWarning = document.getElementById('email-exists-warning');

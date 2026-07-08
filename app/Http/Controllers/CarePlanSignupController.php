@@ -43,6 +43,7 @@ class CarePlanSignupController extends Controller
             'domain' => ['nullable', 'string', 'max:255'],
             'hosting_provider' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:2000'],
+            'timezone' => ['nullable', 'string', 'max:100'],
         ]);
 
         if (User::where('email', $validated['email'])->exists()) {
@@ -76,6 +77,7 @@ class CarePlanSignupController extends Controller
                 'domain' => $validated['domain'] ?? null,
                 'hosting_provider' => $validated['hosting_provider'] ?? null,
                 'notes' => $validated['notes'] ?? null,
+                'timezone' => $validated['timezone'] ?? null,
             ]);
         });
 

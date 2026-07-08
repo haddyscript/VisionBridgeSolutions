@@ -31,6 +31,7 @@ class Subscription extends Model
         'renewal_reminder_period_end',
         'cancel_at_period_end',
         'canceled_at',
+        'timezone',
     ];
 
     protected function casts(): array

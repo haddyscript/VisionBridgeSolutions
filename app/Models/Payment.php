@@ -23,6 +23,7 @@ class Payment extends Model
         'refunded_amount',
         'refunded_at',
         'stripe_refund_id',
+        'timezone',
     ];
 
     protected function casts(): array

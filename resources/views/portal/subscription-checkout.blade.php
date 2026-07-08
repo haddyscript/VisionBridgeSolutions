@@ -32,7 +32,11 @@
         </div>
 
         <div class="lg:col-span-1">
-            <h3 class="font-display text-xl font-bold text-navy dark:text-white mb-5">Summary</h3>
+            <h3 class="font-display text-xl font-bold text-navy dark:text-white mb-2">Summary</h3>
+            <p class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gold-dark mb-5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                {{ ucfirst($subscription->interval) }}ly Subscription
+            </p>
             <div class="flex items-center justify-between gap-4 py-3 border-b border-gray-100 dark:border-gray-700 text-sm">
                 <span class="text-gray-500 dark:text-gray-400">{{ $subscription->description }}</span>
                 <span class="font-semibold text-navy dark:text-white shrink-0">{{ $subscription->formattedAmount() }}</span>
@@ -116,7 +120,10 @@
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
                 },
-                body: JSON.stringify({ setup_intent: setupIntentId }),
+                body: JSON.stringify({
+                    setup_intent: setupIntentId,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                }),
             });
 
             const data = await response.json();

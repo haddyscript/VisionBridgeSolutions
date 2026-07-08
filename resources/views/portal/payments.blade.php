@@ -246,8 +246,9 @@
                                         {{ ucfirst($payment->status) }}
                                     </span>
                                     @if ($payment->isPending())
-                                        <form method="POST" action="{{ route('portal.payments.checkout', $payment) }}" onclick="event.stopPropagation()">
+                                        <form method="POST" action="{{ route('portal.payments.checkout', $payment) }}" onclick="event.stopPropagation()" class="js-payment-checkout-form">
                                             @csrf
+                                            <input type="hidden" name="timezone" class="js-timezone-input">
                                             <button type="submit" class="bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
                                                 Pay Now
                                             </button>
@@ -313,8 +314,9 @@
                     </div>
 
                     <div id="modal-pay-action" class="hidden pt-2">
-                        <form id="modal-pay-form" method="POST" action="#">
+                        <form id="modal-pay-form" method="POST" action="#" class="js-payment-checkout-form">
                             @csrf
+                            <input type="hidden" name="timezone" class="js-timezone-input">
                             <button type="submit" class="block w-full text-center bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-3 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
                                 Pay Now
                             </button>
@@ -410,6 +412,18 @@
         <span id="toast-message"></span>
     </div>
 </div>
+
+<script>
+    (function () {
+        // Stamps the payer's own browser timezone onto each "Pay Now" form so
+        // the receipt email can show the correct local time instead of the
+        // server's UTC default.
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        document.querySelectorAll('.js-timezone-input').forEach(function (input) {
+            input.value = timezone;
+        });
+    })();
+</script>
 
 <script>
     (function () {
