@@ -191,6 +191,16 @@
                                                     {{ $client->phone ?: 'Not provided' }}
                                                 </p>
                                             </div>
+                                            <div class="border-t border-gray-100 dark:border-gray-700 pt-1 mt-1">
+                                                <form method="POST" action="{{ route('admin.clients.impersonate', $client) }}"
+                                                    onsubmit="return confirm('Log in as {{ addslashes($client->name) }}? You\'ll see the portal exactly as they do until you click \'Return to Admin\'. This is logged.')">
+                                                    @csrf
+                                                    <button type="submit"
+                                                        class="w-full text-left px-3 py-2 text-xs text-navy dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                                        Log In as Client
+                                                    </button>
+                                                </form>
+                                            </div>
                                             @if ($project)
                                                 <div class="border-t border-gray-100 dark:border-gray-700 pt-1 mt-1">
                                                     <form method="POST" action="{{ route('admin.projects.reset-client-password', $project) }}"

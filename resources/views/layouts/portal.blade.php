@@ -271,6 +271,16 @@
                 </button>
             </header>
 
+            @if (session('impersonator_id'))
+                <div class="bg-gold text-navy-dark text-sm font-semibold px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-3">
+                    <span>👁️ Viewing as {{ auth()->user()->name }} — any changes you make here are real.</span>
+                    <form method="POST" action="{{ route('impersonate.stop') }}">
+                        @csrf
+                        <button type="submit" class="underline hover:no-underline shrink-0">Return to Admin</button>
+                    </form>
+                </div>
+            @endif
+
             <main class="px-4 sm:px-6 lg:px-8 py-8">
                 @if (session('status'))
                     <div id="flash-status-banner" class="mb-6 text-sm text-teal-dark dark:text-teal-light bg-teal/10 border border-teal/30 rounded-lg px-4 py-3">

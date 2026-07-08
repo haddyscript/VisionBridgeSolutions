@@ -34,6 +34,7 @@ use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\DatabaseResetController;
 use App\Http\Controllers\DeployerController;
+use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\IntakeController;
 use App\Models\MaintenancePlan;
 use App\Http\Controllers\Portal\AccountController as PortalAccountController;
@@ -151,6 +152,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // onboarding progress too.
     Route::post('/portal/notifications/read', [PortalNotificationController::class, 'markRead'])->name('portal.notifications.read');
     Route::post('/portal/tour/complete', [PortalTourController::class, 'complete'])->name('portal.tour.complete');
+
+    // Reachable while impersonating (i.e. authenticated *as the client*, not
+    // an admin) — this is how an admin viewing-as-client gets back to their
+    // own session, so it deliberately sits outside the admin-only route group.
+    Route::post('/impersonate/stop', [ImpersonationController::class, 'stop'])->name('impersonate.stop');
 });
 
 Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.complete'])->group(function () {
@@ -225,6 +231,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/clients', [AdminClientController::class, 'index'])->name('clients.index');
     Route::patch('/clients/{client}', [AdminClientController::class, 'update'])->name('clients.update');
     Route::delete('/clients/{client}', [AdminClientController::class, 'destroy'])->name('clients.destroy');
+    Route::post('/clients/{client}/impersonate', [AdminClientController::class, 'impersonate'])->name('clients.impersonate');
 
     // ─── Calendar ────────────────────────────────────────────────────────────
     Route::get('/calendar', [AdminCalendarController::class, 'index'])->name('calendar');

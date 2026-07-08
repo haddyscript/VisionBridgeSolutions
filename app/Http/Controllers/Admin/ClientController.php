@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\LoginActivity;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -13,6 +15,35 @@ use Stripe\Stripe;
 
 class ClientController extends Controller
 {
+    /**
+     * "Login as client" — lets an admin see the portal exactly as the client
+     * sees it, without ever needing the client's password (e.g. to reproduce
+     * a bug or a support complaint). Every use is logged to login_activities
+     * with the acting admin recorded via impersonator_id, and the client-side
+     * portal.blade.php layout shows a persistent "Return to Admin" banner for
+     * as long as session('impersonator_id') is set.
+     */
+    public function impersonate(Request $request, User $client)
+    {
+        abort_if($client->isAdmin(), 403, 'Admin accounts cannot be impersonated.');
+
+        $adminId = $request->user()->id;
+
+        LoginActivity::create([
+            'user_id' => $client->id,
+            'impersonator_id' => $adminId,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'logged_in_at' => now(),
+        ]);
+
+        $request->session()->put('impersonator_id', $adminId);
+
+        Auth::login($client);
+
+        return redirect()->route('portal.dashboard');
+    }
+
     public function update(Request $request, User $client)
     {
         abort_if($client->isAdmin(), 403);
