@@ -42,6 +42,27 @@
             'revision' => 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15',
         ];
     @endphp
+
+    {{-- Gold sidebar scrollbar --}}
+    <style>
+        .gold-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #C9A84C transparent;
+        }
+        .gold-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .gold-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .gold-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #C9A84C;
+            border-radius: 9999px;
+        }
+        .gold-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: #DFC06A;
+        }
+    </style>
 </head>
 <body class="font-sans antialiased text-gray-800 dark:text-gray-100 bg-gray-50 dark:bg-gray-900 min-h-screen">
 
@@ -53,7 +74,7 @@
                 <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" class="h-28 w-auto object-contain rounded-md">
             </div>
 
-            <nav class="flex-1 overflow-y-auto py-5 px-3 space-y-0.5">
+            <nav class="flex-1 overflow-y-auto gold-scrollbar py-5 px-3 space-y-0.5">
                 <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mb-2">Client Portal</p>
                 <a href="{{ route('portal.dashboard') }}" data-tour="overview"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.dashboard') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
