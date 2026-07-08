@@ -1,0 +1,57 @@
+Found it. Two contributing factors:
+
+No queue worker exists in this deployment (checked docker-compose.yml/Dockerfile/DEPLOYER-SETUP.md — nothing runs queue:work), and QUEUE_CONNECTION=sync anyway — so even if I marked mailables ShouldQueue, they'd still run inline.
+Mail goes out via Gmail SMTP (smtp.gmail.com:587), not a dedicated transactional provider — Gmail's per-message handshake/send latency is exactly the kind of multi-second (sometimes 10s+) delay that matches what you saw.
+
+Portal\UploadController::store() sends NewClientUploadMail synchronously (Mail::to(...)->send(...)) before returning the response — so the browser sits waiting on that slow Gmail round-trip before it even knows the upload succeeded.
+
+There's a real fix I can apply right now with no infrastructure change: Laravel's dispatch(...)->afterResponse() sends the HTTP response back to the client first, then sends the email afterward in the same request — the upload feels instant, and the email still goes out normally. This works today regardless of the missing queue worker.
+
+The catch: this exact synchronous-mail-before-response pattern likely exists in most of the other ~30 Mail::to(...)->send(...) call sites across the app (contact form, consultations, payments, etc.) — not just this one.
+
+This is a large sweep — ~48 call sites across ~19 files (I'll skip SuspendOverdueProjects/SendRenewalReminders since those run as scheduled console commands with no HTTP response to defer). Let me set up tracking and start working through them file by file.
+
+
+Update Todos
+
+Portal/ProjectRequestController.php ✅ DONE
+
+Portal/AccountController.php ✅ DONE
+ 
+Portal/RefundRequestController.php ✅ DONE
+ 
+Portal/SubscriptionController.php ✅ DONE
+
+Portal/ProjectQuestionnaireController.php ✅ DONE
+
+Portal/UploadController.php ✅ DONE
+
+Portal/ProjectReviewController.php ✅ DONE
+
+Portal/ServiceAgreementController.php ✅ DONE
+
+Portal/ConsultationController.php ✅ DONE
+
+StripeWebhookController.php (highest priority - avoids Stripe retry storms)
+
+Auth/RegisteredUserController.php
+
+Admin/ProjectController.php
+
+Admin/UploadApprovalController.php
+
+Admin/IntakeSubmissionController.php
+
+Admin/RefundRequestController.php
+
+Admin/PaymentController.php + PaymentReconciler.php
+
+Admin/ServiceAgreementController.php
+
+Admin/ConsultationController.php
+
+IntakeController.php
+
+ContactMessageController.php
+
+ConsultationController.php (public)
