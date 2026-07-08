@@ -364,11 +364,12 @@ Boss switched the brand logo to `public/image/logo/vbs-logo-v3.jpeg` (gold "V" m
 
 ## 15l. VBS/FaithStack Meeting Follow-Ups (2026-07-08)
 
-Three fixes from the VisionBridge/FaithStack meeting minutes:
+Four fixes from the VisionBridge/FaithStack meeting minutes:
 
 - **Post-payment "sign your agreement" pop-up** — added only to `care-plan-signup/confirmation.blade.php`. This is the *only* onboarding path where payment happens before the Service Agreement is signed (every other path — the standard account-signup funnel gated by `EnsureOnboardingComplete` — already signs the agreement before charging the card, so a "next: sign your agreement" prompt would be confusing everywhere else and wasn't added there).
 - **Receipt timestamp accuracy** — `payments.timezone` and `subscriptions.timezone` (new nullable columns) now capture the payer's browser timezone (`Intl.DateTimeFormat().resolvedOptions().timeZone`, same technique as the existing Book-a-Consultation flow) at the moment of checkout — portal one-time payment forms, the portal Care Plan subscription-confirm AJAX call, and the public Care Plan signup form. Previously receipt timestamps (`emails/payment-receipt`, `emails/subscription-receipt`, `portal/payment-receipt`, `portal/subscription-receipt`) rendered in `APP_TIMEZONE` (UTC), so a client's morning payment could show as mid-afternoon. A subscription's timezone is captured once at initial checkout and reused for every recurring `SubscriptionPayment` receipt after that, since renewal charges happen via webhook with no browser present to ask.
 - **"Monthly Subscription" checkout labeling** — both `portal/subscription-checkout.blade.php` (Summary panel) and the public `care-plan-signup/create.blade.php` header now show an explicit "{Interval}ly Subscription" label instead of only implying it via the price string.
+- **Payment-processing loading state** — `portal/payment-checkout.blade.php` and `portal/subscription-checkout.blade.php` (the two in-page Stripe Elements flows) now show a full-page spinner overlay ("Processing your payment…" / "Saving your card…" / "Starting your plan…") for the duration of the Stripe confirmation call, instead of relying on the submit button's label alone — easy to miss, especially if 3D Secure authentication adds extra delay. The public Care Plan signup form (which redirects to Stripe's own hosted Checkout) wasn't touched, since Stripe's hosted page has its own loading state once the redirect lands.
 
 ## 16. `specs/` Folder
 

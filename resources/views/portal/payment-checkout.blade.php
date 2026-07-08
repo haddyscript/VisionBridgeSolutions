@@ -46,6 +46,20 @@
     </div>
 </div>
 
+{{-- Full-page processing overlay — the button label alone is easy to miss,
+     and stripe.confirmPayment() can take several seconds (longer still if
+     3D Secure authentication kicks in). --}}
+<div id="processing-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-white/95 dark:bg-navy-dark/95 backdrop-blur-sm">
+    <div class="text-center px-6">
+        <svg class="w-12 h-12 mx-auto mb-5 text-gold animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+        <p id="processing-overlay-text" class="font-display text-lg font-bold text-navy dark:text-white mb-1.5">Processing your payment&hellip;</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Please don't close or refresh this window.</p>
+    </div>
+</div>
+
 <script src="https://js.stripe.com/v3/"></script>
 <script>
 (function () {
@@ -88,8 +102,19 @@
     const submitButton = document.getElementById('submit-button');
     const submitButtonText = document.getElementById('submit-button-text');
     const errorBox = document.getElementById('checkout-error');
+    const overlay = document.getElementById('processing-overlay');
     const originalButtonText = submitButtonText.textContent;
     let submitting = false;
+
+    function showOverlay() {
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+    }
+
+    function hideOverlay() {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+    }
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -100,6 +125,7 @@
         submitButton.disabled = true;
         submitButtonText.textContent = 'Processing…';
         errorBox.classList.add('hidden');
+        showOverlay();
 
         const { error } = await stripe.confirmPayment({
             elements,
@@ -117,6 +143,7 @@
                 return;
             }
 
+            hideOverlay();
             errorBox.textContent = error.message || 'Something went wrong confirming your card. Please try again.';
             errorBox.classList.remove('hidden');
             submitButton.disabled = false;

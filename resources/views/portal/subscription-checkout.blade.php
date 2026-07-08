@@ -51,6 +51,21 @@
     </div>
 </div>
 
+{{-- Full-page processing overlay — this flow has two async legs
+     (confirmSetup, then the confirm() call that actually creates and
+     charges the subscription), so it can take noticeably longer than a
+     one-time payment. --}}
+<div id="processing-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-white/95 dark:bg-navy-dark/95 backdrop-blur-sm">
+    <div class="text-center px-6">
+        <svg class="w-12 h-12 mx-auto mb-5 text-gold animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+        <p id="processing-overlay-text" class="font-display text-lg font-bold text-navy dark:text-white mb-1.5">Setting up your plan&hellip;</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Please don't close or refresh this window.</p>
+    </div>
+</div>
+
 <script src="https://js.stripe.com/v3/"></script>
 <script>
 (function () {
@@ -93,14 +108,28 @@
     const submitButton = document.getElementById('submit-button');
     const submitButtonText = document.getElementById('submit-button-text');
     const errorBox = document.getElementById('checkout-error');
+    const overlay = document.getElementById('processing-overlay');
+    const overlayText = document.getElementById('processing-overlay-text');
     const originalButtonText = submitButtonText.textContent;
     const setupIntentId = '{{ $clientSecret }}'.split('_secret_')[0];
     let submitting = false;
+
+    function showOverlay(message) {
+        overlayText.textContent = message;
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+    }
+
+    function hideOverlay() {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+    }
 
     function resetButton() {
         submitting = false;
         submitButton.disabled = false;
         submitButtonText.textContent = originalButtonText;
+        hideOverlay();
     }
 
     function showError(message) {
@@ -111,6 +140,7 @@
 
     async function finishSetup() {
         submitButtonText.textContent = 'Starting plan…';
+        showOverlay('Starting your plan…');
 
         try {
             const response = await fetch('{{ route('portal.subscriptions.confirm', $subscription) }}', {
@@ -148,6 +178,7 @@
         submitButton.disabled = true;
         submitButtonText.textContent = 'Saving card…';
         errorBox.classList.add('hidden');
+        showOverlay('Saving your card…');
 
         const { error } = await stripe.confirmSetup({
             elements,
