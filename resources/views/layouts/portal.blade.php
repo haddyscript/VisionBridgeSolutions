@@ -272,7 +272,7 @@
             </header>
 
             @if (session('impersonator_id'))
-                <div class="bg-gold text-navy-dark text-sm font-semibold px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-3">
+                <div class="sticky top-16 z-20 bg-gold text-navy-dark text-sm font-semibold px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-3">
                     <span>👁️ Viewing as {{ auth()->user()->name }} — any changes you make here are real.</span>
                     <form method="POST" action="{{ route('impersonate.stop') }}">
                         @csrf
