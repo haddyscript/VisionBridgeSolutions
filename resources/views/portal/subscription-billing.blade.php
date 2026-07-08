@@ -19,10 +19,10 @@
                         <p class="text-sm text-red-600/80 dark:text-red-400/70 mt-0.5">This stops future billing immediately. You can start a new plan anytime from the Payments page.</p>
                     </div>
                 </div>
-                <form id="cancel-form" method="POST" action="{{ route('portal.subscriptions.cancel', $subscription) }}" data-confirm="Cancel this maintenance plan? This stops future billing immediately.">
+                <form id="cancel-form" method="POST" action="{{ route('portal.subscriptions.cancel', $subscription) }}" data-confirm="Cancel this care plan? This stops future billing immediately.">
                     @csrf
                     <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold text-sm px-5 py-2.5 rounded-lg transition-colors shadow">
-                        Cancel Maintenance Plan
+                        Cancel Care Plan
                     </button>
                 </form>
             </div>

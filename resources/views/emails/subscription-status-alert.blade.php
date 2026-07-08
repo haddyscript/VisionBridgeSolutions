@@ -23,7 +23,7 @@
                     <tr>
                         <td style="padding:32px;">
                             <p style="font-size:14px; color:#4b5563; margin:0 0 20px;">
-                                A client's maintenance plan subscription changed status and may need attention.
+                                A client's care plan subscription changed status and may need attention.
                             </p>
 
                             <h2 style="font-size:15px; color:#111D33; margin:0 0 10px;">Client</h2>

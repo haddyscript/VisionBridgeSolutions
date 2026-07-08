@@ -22,7 +22,7 @@
             ],
             [
                 'q' => 'What do the project status labels mean?',
-                'a' => 'Onboarding — we\'re still collecting what we need from you. In Progress — we\'re actively building your site. In Review — we\'re finalizing details before launch. Launched — your site is live. Maintenance — your site is live and under an active care plan.',
+                'a' => 'Onboarding — we\'re still collecting what we need from you. In Progress — we\'re actively building your site. In Review — we\'re finalizing details before launch. Launched — your site is live. Care — your site is live and under an active care plan.',
             ],
         ],
         'Uploading Files' => [
@@ -85,12 +85,12 @@
                 'a' => 'Yes — once your payment is confirmed, you\'ll automatically receive a payment receipt email with the amount, description, and a link to the official Stripe receipt.',
             ],
             [
-                'q' => 'What\'s the difference between a one-time payment and a Maintenance Plan?',
-                'a' => 'One-time payments are individual invoices for specific work (e.g. a deposit or milestone payment). A Maintenance Plan is a recurring monthly subscription that covers ongoing website updates and support after launch.',
+                'q' => 'What\'s the difference between a one-time payment and a Care Plan?',
+                'a' => 'One-time payments are individual invoices for specific work (e.g. a deposit or milestone payment). A Care Plan is a recurring monthly subscription that covers ongoing website updates and support after launch.',
             ],
             [
-                'q' => 'How do I manage or cancel my Maintenance Plan billing?',
-                'a' => 'Once your maintenance plan is active, use the "Manage Billing" link on the Payments page — it opens Stripe\'s secure billing portal where you can update your card or manage your subscription.',
+                'q' => 'How do I manage or cancel my Care Plan billing?',
+                'a' => 'Once your care plan is active, use the "Manage Billing" link on the Payments page — it opens Stripe\'s secure billing portal where you can update your card or manage your subscription.',
             ],
         ],
         'Account & Security' => [
@@ -110,7 +110,7 @@
         'Emails You Might Receive' => [
             [
                 'q' => 'What emails will VisionBridge Solutions send me?',
-                'a' => 'A welcome email when your account is created, payment receipts after each successful payment, and (for maintenance plans) recurring billing receipts. All emails come from VisionBridge Solutions — if anything looks suspicious, contact us before clicking.',
+                'a' => 'A welcome email when your account is created, payment receipts after each successful payment, and (for care plans) recurring billing receipts. All emails come from VisionBridge Solutions — if anything looks suspicious, contact us before clicking.',
             ],
         ],
     ];

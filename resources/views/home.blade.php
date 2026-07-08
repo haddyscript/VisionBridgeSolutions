@@ -457,7 +457,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     Our experienced team of website designers, developers, technical specialists, and support professionals work together to deliver reliable, high-quality digital solutions for every client we serve.
                 </p>
                 <p class="team-panel-line text-white/85 mb-5" style="font-size:0.95rem;line-height:1.8;">
-                    From your initial consultation through website launch and ongoing maintenance, our team is committed to providing professional service, dependable support, and long-term website stability.
+                    From your initial consultation through website launch and ongoing care, our team is committed to providing professional service, dependable support, and long-term website stability.
                 </p>
                 <p class="team-panel-line text-white/85 mb-8" style="font-size:0.95rem;line-height:1.8;">
                     Every project is managed through VisionBridge Solutions, giving our clients a single point of contact and a seamless experience from beginning to end.
@@ -500,7 +500,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <span id="services-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">What We Offer</span>
             <h2 id="services-heading" class="section-title">Our Services</h2>
             <div id="services-accent-line"></div>
-            <p id="services-subtitle" class="section-subtitle">From initial design to long-term maintenance — we cover everything your online presence needs.</p>
+            <p id="services-subtitle" class="section-subtitle">From initial design to long-term care — we cover everything your online presence needs.</p>
         </div>
 
         {{-- Toggle button sits above the grid so it's always reachable --}}
@@ -524,7 +524,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 ['icon'=>'heart',   'image'=>'image/Nonprofit_Website_Development.jpeg',    'title'=>'Nonprofit Website Development',     'desc'=>'Compelling nonprofit websites that tell your story and inspire support for your cause.'],
                 ['icon'=>'building','image'=>'image/Small_Business_Website_Development.jpeg','title'=>'Small Business Website Development', 'desc'=>'Affordable, professional websites that help small businesses compete and grow online.'],
                 ['icon'=>'refresh', 'image'=>'image/Website_Redesign_Services.jpeg',     'title'=>'Website Redesign Services',     'desc'=>'Breathe new life into an outdated website with a modern, performance-focused redesign.'],
-                ['icon'=>'cog',     'image'=>'image/Website_Maintenance_Services.jpeg', 'title'=>'Website Maintenance Services',  'desc'=>'Regular updates, monitoring, and care to keep your website running at peak performance.'],
+                ['icon'=>'cog',     'image'=>'image/Website_Maintenance_Services.jpeg', 'title'=>'Website Care Services',  'desc'=>'Regular updates, monitoring, and care to keep your website running at peak performance.'],
                 ['icon'=>'globe',   'image'=>'image/Hosting_Management.jpeg',           'title'=>'Hosting Management',            'desc'=>'We manage your hosting environment so you can focus on running your organization.'],
                 ['icon'=>'cursor',  'image'=>'image/Website_Consulting.jpeg',           'title'=>'Website Consulting',            'desc'=>'Strategic guidance on your website\'s direction, technology, and digital growth potential.'],
             ] as $service)
@@ -1071,7 +1071,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     <p class="pt-4">A bridge connects people to opportunities. It connects ministries to those seeking hope, nonprofits to generous supporters, and businesses to the customers they were created to serve.</p>
                     <p>That realization became the foundation of VisionBridge Solutions.</p>
                     <p>Our mission is to bridge the gap between vision and reality by creating professional, dependable websites that help organizations grow, build trust, and expand their impact.</p>
-                    <p>We don't just build custom websites—we build lasting partnerships through ongoing support, proactive maintenance, and a commitment to helping our clients succeed long after their website launches.</p>
+                    <p>We don't just build custom websites—we build lasting partnerships through ongoing support, proactive care, and a commitment to helping our clients succeed long after their website launches.</p>
                     <p>Every project we take on is about more than technology. It's about helping organizations fulfill their purpose, strengthen their communities, and create a lasting impact.</p>
                     <p>Because when your vision reaches more people, together we help make the world a better place.</p>
                 </div>
@@ -1285,7 +1285,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         'Small Business Website Development',
                         'Landing Page Development',
                         'Website Redesign',
-                        'Website Maintenance',
+                        'Website Care',
                         'Hosting Management',
                         'Website Consulting',
                     ]; @endphp

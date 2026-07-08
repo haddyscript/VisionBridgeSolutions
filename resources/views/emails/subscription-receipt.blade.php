@@ -26,7 +26,7 @@
                                 <span style="color:#3DBFB0; font-size:26px; font-weight:bold;">&#10003;</span>
                             </div>
                             <p style="font-size:13px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#3DBFB0; margin:0 0 8px;">
-                                Maintenance Plan Payment Received
+                                Care Plan Payment Received
                             </p>
                             <p style="font-family:Georgia, 'Times New Roman', serif; font-size:38px; font-weight:700; color:#ffffff; margin:0;">
                                 {{ $formattedAmountPaid }}
@@ -38,7 +38,7 @@
                     <tr>
                         <td style="padding:40px;">
                             <p style="font-size:15px; line-height:1.7; color:#4b5563; margin:0 0 28px;">
-                                Hi {{ $subscription->project->user->name }}, your monthly maintenance plan payment was processed successfully. Here's your receipt for the records.
+                                Hi {{ $subscription->project->user->name }}, your monthly care plan payment was processed successfully. Here's your receipt for the records.
                             </p>
 
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb; border-radius:12px; margin:0 0 28px;">

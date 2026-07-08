@@ -13,7 +13,7 @@
         'in_progress' => 'In Progress',
         'review'      => 'In Review',
         'launched'    => 'Launched',
-        'maintenance' => 'Maintenance',
+        'maintenance' => 'Care',
         'canceled'    => 'Canceled',
     ];
     $milestoneStatuses = ['pending' => 'Pending', 'in_progress' => 'In Progress', 'completed' => 'Completed'];
@@ -353,7 +353,7 @@
     $currentSubscription = $project->subscription;
 @endphp
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
-    <h3 class="font-semibold text-navy dark:text-white mb-4">Maintenance Plan</h3>
+    <h3 class="font-semibold text-navy dark:text-white mb-4">Care Plan</h3>
 
     @if ($currentSubscription && ! $currentSubscription->isCanceled())
         <div class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2.5">
@@ -376,7 +376,7 @@
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                     </button>
                 </form>
-                <form method="POST" action="{{ route('admin.subscriptions.destroy', $currentSubscription) }}" data-confirm="Cancel this maintenance plan?" data-ajax-target="panel-billing">
+                <form method="POST" action="{{ route('admin.subscriptions.destroy', $currentSubscription) }}" data-confirm="Cancel this care plan?" data-ajax-target="panel-billing">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
@@ -386,16 +386,16 @@
             </div>
         </div>
     @else
-        <p class="text-sm text-gray-400 dark:text-gray-500 mb-4">No active maintenance plan.</p>
+        <p class="text-sm text-gray-400 dark:text-gray-500 mb-4">No active care plan.</p>
         @if (! in_array($project->status, ['launched', 'maintenance'], true))
             <p class="text-sm text-gold-dark bg-gold/10 border border-gold/30 rounded-lg px-4 py-3">
-                Maintenance billing doesn't start until this project is launched — set status to "Launched" on the
+                Care Plan billing doesn't start until this project is launched — set status to "Launched" on the
                 Overview tab first (or it'll happen automatically once the final payment clears and the client has approved).
             </p>
         @else
             <form method="POST" action="{{ route('admin.subscriptions.store', $project) }}" class="flex items-center gap-3" data-ajax-target="panel-billing">
                 @csrf
-                <input type="text" name="description" placeholder="e.g. Monthly Website Maintenance" required
+                <input type="text" name="description" placeholder="e.g. Monthly Website Care" required
                        class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
                 <input type="number" name="amount" step="0.01" min="1" placeholder="Amount / month (USD)" required
                        class="w-48 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">

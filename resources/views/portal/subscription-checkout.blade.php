@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Start Maintenance Plan – Client Portal')
+@section('title', 'Start Care Plan – Client Portal')
 @section('page-title', 'Checkout')
 
 @section('content')

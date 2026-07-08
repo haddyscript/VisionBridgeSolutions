@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Maintenance Plans – Admin')
-@section('page-title', 'Maintenance Plans')
+@section('title', 'Care Plans – Admin')
+@section('page-title', 'Care Plans')
 
 @section('content')
 
@@ -22,7 +22,7 @@
 
 @if ($subscriptions->isEmpty())
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
-        <p class="text-gray-500 dark:text-gray-400">No maintenance plans yet.</p>
+        <p class="text-gray-500 dark:text-gray-400">No care plans yet.</p>
     </div>
 @else
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">

@@ -11,7 +11,7 @@
         'in_progress' => 'In Progress',
         'review'      => 'In Review',
         'launched'    => 'Launched',
-        'maintenance' => 'Maintenance',
+        'maintenance' => 'Care',
     ];
     $statusColors = [
         'onboarding'  => 'bg-gold/15 text-gold-dark',

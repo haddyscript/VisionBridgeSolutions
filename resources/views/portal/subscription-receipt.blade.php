@@ -46,7 +46,7 @@
                     <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" class="h-6 w-auto object-contain">
                 </div>
             </div>
-            <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Maintenance Plan Payment Receipt</p>
+            <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Care Plan Payment Receipt</p>
             <h1 class="font-display text-2xl font-bold text-white">{{ $subscriptionPayment->subscription->description }}</h1>
         </div>
 

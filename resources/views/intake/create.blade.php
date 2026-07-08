@@ -136,7 +136,7 @@
                         @foreach ([
                             'Custom Website Development', 'Landing Page Development', 'Church Website Development',
                             'Ministry Website Development', 'Nonprofit Website Development', 'Small Business Website Development',
-                            'Website Redesign Services', 'Website Maintenance Services', 'Hosting Management', 'Website Consulting',
+                            'Website Redesign Services', 'Website Care Services', 'Hosting Management', 'Website Consulting',
                         ] as $service)
                             <label class="flex items-center gap-2.5 text-base font-medium text-gray-700">
                                 <input type="checkbox" name="services[]" value="{{ $service }}"

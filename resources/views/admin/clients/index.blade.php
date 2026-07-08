@@ -19,7 +19,7 @@
         'in_progress' => 'In Progress',
         'in_review'   => 'In Review',
         'launched'    => 'Launched',
-        'maintenance' => 'Maintenance',
+        'maintenance' => 'Care',
         'paused'      => 'Paused',
     ];
 

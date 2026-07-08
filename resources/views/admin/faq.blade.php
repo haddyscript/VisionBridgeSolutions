@@ -65,13 +65,13 @@
                 'a' => 'Check storage/logs/laravel.log around the time of payment for errors in StripeWebhookController. A failed receipt-URL lookup or mail send can prevent the email from going out even though the payment itself was recorded correctly.',
             ],
         ],
-        'Maintenance Plans & Subscriptions' => [
+        'Care Plans & Subscriptions' => [
             [
                 'q' => 'What\'s the difference between Care Plans and a client\'s Subscription?',
                 'a' => 'Care Plans (under "Care Plan Pricing") are the pricing tiers you define and offer, e.g. a $20/month plan. A Subscription is a specific client\'s active enrollment in one of those plans, tied to their project.',
             ],
             [
-                'q' => 'How do recurring maintenance payments get billed?',
+                'q' => 'How do recurring care plan payments get billed?',
                 'a' => 'Once a client starts a plan, Stripe bills them automatically each period. Each successful invoice triggers a receipt email to the client and an internal notification email to you, the same as one-time payments.',
             ],
             [
@@ -98,7 +98,7 @@
         'The "Getting Started" Checklist' => [
             [
                 'q' => 'What is the checklist in the sidebar tracking?',
-                'a' => 'Five setup milestones for your own admin account: reviewing your first intake submission, converting your first client, adding a milestone to a project, inviting a teammate, and setting up a maintenance plan tier. It auto-checks off items as soon as the underlying data exists — nothing to click.',
+                'a' => 'Five setup milestones for your own admin account: reviewing your first intake submission, converting your first client, adding a milestone to a project, inviting a teammate, and setting up a care plan tier. It auto-checks off items as soon as the underlying data exists — nothing to click.',
             ],
         ],
     ];

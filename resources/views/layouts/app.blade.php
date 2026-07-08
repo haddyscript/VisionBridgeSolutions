@@ -1463,7 +1463,7 @@
                     <ul class="space-y-3 text-base font-medium text-navy/80">
                         <li><a href="{{ $homeAnchor }}#about"     class="footer-link hover:text-gold">About Us<span class="footer-link-bar"></span></a></li>
                         <li><a href="{{ $homeAnchor }}#services"  class="footer-link hover:text-gold">Services<span class="footer-link-bar"></span></a></li>
-                        <li><a href="{{ $homeAnchor }}#plans"     class="footer-link hover:text-gold">Maintenance Plans<span class="footer-link-bar"></span></a></li>
+                        <li><a href="{{ $homeAnchor }}#plans"     class="footer-link hover:text-gold">Care Plans<span class="footer-link-bar"></span></a></li>
                         <li><a href="{{ $homeAnchor }}#portfolio" class="footer-link hover:text-gold">Portfolio<span class="footer-link-bar"></span></a></li>
                         <li><a href="{{ $homeAnchor }}#contact"   class="footer-link hover:text-gold">Contact<span class="footer-link-bar"></span></a></li>
                     </ul>

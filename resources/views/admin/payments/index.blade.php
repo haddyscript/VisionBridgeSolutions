@@ -104,7 +104,7 @@
                 <p class="font-display text-2xl font-bold text-white">${{ number_format($totalPending / 100, 2) }}</p>
             </div>
             <div class="rounded-xl px-5 py-4 cursor-pointer" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);" onclick="showPaymentsTab('maintenance')">
-                <p class="text-xs font-medium uppercase tracking-wide text-white/40 mb-1.5">Pending Maintenance Plans</p>
+                <p class="text-xs font-medium uppercase tracking-wide text-white/40 mb-1.5">Pending Care Plans</p>
                 <p class="font-display text-2xl font-bold text-white">{{ $pendingSubscriptionCount }}</p>
             </div>
             <div class="rounded-xl px-5 py-4" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);">
@@ -123,7 +123,7 @@
     </button>
     <button type="button" data-tab-button="maintenance" onclick="showPaymentsTab('maintenance')"
             class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
-        Maintenance Plans
+        Care Plans
         @if ($pendingSubscriptionCount > 0)
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">{{ $pendingSubscriptionCount }} pending</span>
         @endif
@@ -206,7 +206,7 @@
 
 @if ($subscriptions->isEmpty())
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
-        <p class="text-gray-500 dark:text-gray-400">No maintenance plans yet.</p>
+        <p class="text-gray-500 dark:text-gray-400">No care plans yet.</p>
     </div>
 @else
     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">

@@ -5,7 +5,7 @@
 
 @section('content')
 
-<p class="text-sm text-gray-500 dark:text-gray-400 mb-6">These cards control the "Website Maintenance Plans" pricing section on the public homepage.</p>
+<p class="text-sm text-gray-500 dark:text-gray-400 mb-6">These cards control the "Website Care Plans" pricing section on the public homepage.</p>
 
 <div class="space-y-4 mb-8">
     @foreach ($plans as $plan)

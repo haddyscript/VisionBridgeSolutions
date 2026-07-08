@@ -69,7 +69,7 @@
                     <p class="font-display text-2xl font-bold text-white">${{ number_format($totalPaid / 100, 2) }}</p>
                 </div>
                 <div class="rounded-xl px-5 py-4" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);">
-                    <p class="text-xs font-medium uppercase tracking-wide text-white/40 mb-1.5">Maintenance Plan</p>
+                    <p class="text-xs font-medium uppercase tracking-wide text-white/40 mb-1.5">Care Plan</p>
                     @if ($subscription)
                         <p class="font-display text-2xl font-bold {{ $subscription->isCanceled() ? 'text-white/40' : 'text-white' }}">{{ $subscription->status === 'past_due' ? 'Past Due' : ucfirst($subscription->status) }}</p>
                     @else
@@ -98,7 +98,7 @@
                         <svg class="w-[1.375rem] h-[1.375rem] text-teal-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                     </span>
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-0.5">Maintenance Plan</p>
+                        <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-0.5">Care Plan</p>
                         <p class="font-display text-lg font-bold text-navy dark:text-white">{{ $subscription->description }}</p>
                         <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
                             {{ $subscription->formattedAmount() }}
@@ -365,7 +365,7 @@
                     <div class="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center bg-teal/15">
                         <svg class="w-7 h-7 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                     </div>
-                    <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Maintenance Plan</p>
+                    <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Care Plan</p>
                     <p id="sub-modal-amount" class="font-display text-3xl font-bold text-white"></p>
                     <p id="sub-modal-description" class="text-sm text-white/50 mt-1"></p>
                 </div>
