@@ -240,8 +240,11 @@
                     </button>
 
                     <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-30 max-h-96 overflow-y-auto">
-                        <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                        <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
                             <p class="text-sm font-bold text-navy dark:text-white">Notifications</p>
+                            @if ($unreadNotificationCount > 0)
+                                <button type="button" id="notifications-mark-all-read" class="text-xs font-semibold text-gold-dark hover:underline">Mark all as read</button>
+                            @endif
                         </div>
                         @if ($notifications->isEmpty())
                             <p class="text-sm text-gray-400 dark:text-gray-500 text-center py-8 px-4">No updates yet.</p>
@@ -259,7 +262,10 @@
                             <ul class="divide-y divide-gray-100 dark:divide-gray-700">
                                 @foreach ($notifications as $notification)
                                     @php $icon = $notificationIcons[$notification->type] ?? $notificationIcons['milestone_completed']; @endphp
-                                    <li class="flex items-start gap-3 px-4 py-3 {{ $notification->read_at ? '' : 'bg-gold/5' }}">
+                                    <li class="js-notification-item flex items-start gap-3 px-4 py-3 cursor-pointer {{ $notification->read_at ? '' : 'bg-gold/5' }}"
+                                        data-id="{{ $notification->id }}" data-unread="{{ $notification->read_at ? '0' : '1' }}"
+                                        data-mark-read-url="{{ route('portal.notifications.read-one', $notification) }}"
+                                        @if ($notification->url) data-url="{{ $notification->url }}" @endif>
                                         <span class="w-8 h-8 rounded-full {{ $icon['bg'] }} flex items-center justify-center shrink-0">
                                             <svg class="w-4 h-4 {{ $icon['text'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon['path'] }}"/></svg>
                                         </span>
@@ -366,25 +372,64 @@
             });
         });
 
-        // Notification bell
+        // Notification bell — a notification is only ever marked read when
+        // the client actually clicks it (or explicitly hits "Mark all as
+        // read"), never just by opening the dropdown or visiting a page.
         const bellToggle = document.getElementById('notification-bell-toggle');
         const bellDropdown = document.getElementById('notification-dropdown');
-        const bellBadge = document.getElementById('notification-bell-badge');
+        let bellBadge = document.getElementById('notification-bell-badge');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        let unreadCount = document.querySelectorAll('.js-notification-item[data-unread="1"]').length;
+
+        function updateBadge() {
+            if (unreadCount <= 0 && bellBadge) {
+                bellBadge.remove();
+                bellBadge = null;
+            }
+        }
 
         bellToggle?.addEventListener('click', function (e) {
             e.stopPropagation();
-            const opening = bellDropdown.classList.contains('hidden');
             bellDropdown.classList.toggle('hidden');
+        });
 
-            if (opening && bellBadge) {
-                bellBadge.remove();
-                fetch('{{ route('portal.notifications.read') }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    },
-                });
-            }
+        document.querySelectorAll('.js-notification-item').forEach(function (item) {
+            item.addEventListener('click', function () {
+                if (item.dataset.unread === '1') {
+                    item.dataset.unread = '0';
+                    item.classList.remove('bg-gold/5');
+                    unreadCount = Math.max(0, unreadCount - 1);
+                    updateBadge();
+
+                    fetch(item.dataset.markReadUrl, {
+                        method: 'POST',
+                        headers: { 'X-CSRF-TOKEN': csrfToken },
+                        keepalive: true,
+                    });
+                }
+
+                if (item.dataset.url) {
+                    window.location.href = item.dataset.url;
+                }
+            });
+        });
+
+        document.getElementById('notifications-mark-all-read')?.addEventListener('click', function (e) {
+            e.stopPropagation();
+
+            document.querySelectorAll('.js-notification-item[data-unread="1"]').forEach(function (item) {
+                item.dataset.unread = '0';
+                item.classList.remove('bg-gold/5');
+            });
+            unreadCount = 0;
+            updateBadge();
+            this.remove();
+
+            fetch('{{ route('portal.notifications.read') }}', {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrfToken },
+                keepalive: true,
+            });
         });
 
         document.addEventListener('click', function (e) {

@@ -151,6 +151,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // including onboarding pages, so this must be reachable regardless of
     // onboarding progress too.
     Route::post('/portal/notifications/read', [PortalNotificationController::class, 'markRead'])->name('portal.notifications.read');
+    Route::post('/portal/notifications/{notification}/read', [PortalNotificationController::class, 'markOneRead'])->name('portal.notifications.read-one');
     Route::post('/portal/tour/complete', [PortalTourController::class, 'complete'])->name('portal.tour.complete');
 
     // Reachable while impersonating (i.e. authenticated *as the client*, not

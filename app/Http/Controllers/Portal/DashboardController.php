@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Portal\CategoryController;
 use App\Models\Announcement;
-use App\Models\ClientNotification;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -45,8 +44,6 @@ class DashboardController extends Controller
                 $updates['welcomed_at'] = now();
             }
             $user->update($updates);
-
-            ClientNotification::where('user_id', $user->id)->whereNull('read_at')->update(['read_at' => now()]);
         }
 
         return view('portal.dashboard', [
