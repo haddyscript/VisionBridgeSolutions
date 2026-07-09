@@ -124,13 +124,7 @@
                         @endforeach
                     </div>
 
-                    <div id="client-reply-toggle-{{ $item->id }}" class="flex justify-end mt-2">
-                        <button type="button" onclick="document.getElementById('client-reply-form-{{ $item->id }}').classList.remove('hidden'); document.getElementById('client-reply-toggle-{{ $item->id }}').classList.add('hidden');" class="text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3 py-1.5 rounded-full transition-colors">
-                            Reply
-                        </button>
-                    </div>
-
-                    <form id="client-reply-form-{{ $item->id }}" data-upload-id="{{ $item->id }}" method="POST" action="{{ route('portal.uploads.reply', $item) }}" class="ajax-client-reply-form hidden mt-2 flex items-start gap-2">
+                    <form id="client-reply-form-{{ $item->id }}" data-upload-id="{{ $item->id }}" method="POST" action="{{ route('portal.uploads.reply', $item) }}" class="ajax-client-reply-form mt-2 flex items-start gap-2">
                         @csrf
                         <textarea name="body" rows="2" placeholder="Write a reply..." required
                                   class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
@@ -232,8 +226,6 @@
                     }
 
                     textarea.value = '';
-                    form.classList.add('hidden');
-                    document.getElementById('client-reply-toggle-' + uploadId).classList.remove('hidden');
                 })
                 .catch(function () {
                     alert('Could not send the reply. Please try again.');
