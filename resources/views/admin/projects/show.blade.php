@@ -708,19 +708,28 @@
     <div id="confirm-modal-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
 
     <div id="confirm-modal-panel" class="relative w-full max-w-sm transform scale-95 opacity-0 transition-all duration-200">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
-            <div class="w-11 h-11 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center mb-4">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14.18A1 1 0 003 19.5h18a1 1 0 00.86-1.46L13.71 3.86a1 1 0 00-1.72 0z"/></svg>
+        <div class="relative overflow-hidden rounded-2xl shadow-2xl" style="background:linear-gradient(135deg,#111D33,#1B2A4A 60%,#1B2A4A);">
+            <div class="absolute -top-20 -right-12 w-56 h-56 rounded-full" style="background:radial-gradient(circle,rgba(201,168,76,0.20) 0%,transparent 70%);"></div>
+            <div class="absolute -bottom-24 -left-10 w-56 h-56 rounded-full" style="background:radial-gradient(circle,rgba(220,38,38,0.16) 0%,transparent 70%);"></div>
+
+            <div class="relative px-7 pt-8 pb-6 text-center">
+                <div class="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center bg-red-500/15">
+                    <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14.18A1 1 0 003 19.5h18a1 1 0 00.86-1.46L13.71 3.86a1 1 0 00-1.72 0z"/></svg>
+                </div>
+                <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Confirm Action</p>
+                <h2 class="font-display text-2xl font-bold text-white">Are you sure?</h2>
             </div>
-            <h2 class="font-display text-lg font-bold text-navy dark:text-white mb-2">Are you sure?</h2>
-            <p id="confirm-modal-message" class="text-sm text-gray-500 dark:text-gray-400 mb-6"></p>
-            <div class="flex justify-end gap-2.5">
-                <button type="button" id="confirm-modal-cancel" class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                    Cancel
-                </button>
-                <button type="button" id="confirm-modal-confirm" class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-red-500 hover:bg-red-600 text-white transition-colors">
-                    Confirm
-                </button>
+
+            <div class="relative bg-white dark:bg-gray-800 rounded-t-2xl px-7 py-6">
+                <p id="confirm-modal-message" class="text-sm text-gray-500 dark:text-gray-400 mb-6 text-center"></p>
+                <div class="flex justify-end gap-2.5">
+                    <button type="button" id="confirm-modal-cancel" class="px-4 py-2.5 rounded-lg text-sm font-medium text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="button" id="confirm-modal-confirm" class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-red-500 hover:bg-red-600 text-white transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                        Confirm
+                    </button>
+                </div>
             </div>
         </div>
     </div>
