@@ -25,6 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'phone',
         'password',
         'role',
+        'is_super_admin',
         'stripe_customer_id',
         'theme',
         'email_verified_at',
@@ -65,6 +66,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'welcomed_at' => 'datetime',
             'tour_completed_at' => 'datetime',
             'onboarding_step' => 'integer',
+            'is_super_admin' => 'boolean',
             'password' => 'hashed',
             'two_factor_secret' => 'encrypted',
             'two_factor_recovery_codes' => 'encrypted:array',
@@ -127,6 +129,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->isAdmin() && $this->is_super_admin;
     }
 
     public function isDarkTheme(): bool

@@ -68,30 +68,43 @@
     <div class="space-y-6">
         <div>
             <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1">Team Management</p>
-            <p class="text-sm text-gray-500">Add or remove admin accounts.</p>
+            <p class="text-sm text-gray-500">
+                @if (auth()->user()->isSuperAdmin())
+                    Add or remove admin accounts.
+                @else
+                    Only a super admin can add or remove team members.
+                @endif
+            </p>
         </div>
 
-        {{-- Add team member --}}
-        <div class="bg-white rounded-xl border border-gray-200 p-5">
-            <h3 class="text-sm font-semibold text-navy mb-3">Add Team Member</h3>
-            <form method="POST" action="{{ route('admin.team.store') }}" class="space-y-4">
-                @csrf
-                <div>
-                    <label class="block text-xs font-medium text-navy mb-1">Full Name</label>
-                    <input type="text" name="name" value="{{ old('name') }}" required
-                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-navy mb-1">Email</label>
-                    <input type="email" name="email" value="{{ old('email') }}" required
-                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
-                </div>
-                <p class="text-xs text-gray-400">New members are created with the default password <span class="font-semibold text-navy">admin123</span>.</p>
-                <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-                    Add Team Member
-                </button>
-            </form>
-        </div>
+        @if (auth()->user()->isSuperAdmin())
+            {{-- Add team member --}}
+            <div class="bg-white rounded-xl border border-gray-200 p-5">
+                <h3 class="text-sm font-semibold text-navy mb-3">Add Team Member</h3>
+                <form method="POST" action="{{ route('admin.team.store') }}" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-medium text-navy mb-1">Full Name</label>
+                        <input type="text" name="name" value="{{ old('name') }}" required
+                               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-navy mb-1">Email</label>
+                        <input type="email" name="email" value="{{ old('email') }}" required
+                               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                    </div>
+                    <label class="flex items-center gap-2 text-sm text-navy">
+                        <input type="checkbox" name="is_super_admin" value="1" {{ old('is_super_admin') ? 'checked' : '' }}
+                               class="rounded border-gray-300 text-gold focus:ring-gold">
+                        Grant super admin access
+                    </label>
+                    <p class="text-xs text-gray-400">New members are created with the default password <span class="font-semibold text-navy">admin123</span>.</p>
+                    <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                        Add Team Member
+                    </button>
+                </form>
+            </div>
+        @endif
 
         {{-- Existing team members --}}
         <div class="bg-white rounded-xl border border-gray-200 p-5">
@@ -109,11 +122,14 @@
                                     @if ($admin->is(auth()->user()))
                                         <span class="text-xs text-gray-400">(you)</span>
                                     @endif
+                                    @if ($admin->isSuperAdmin())
+                                        <span class="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-gold-dark bg-gold/15 px-2 py-0.5 rounded-full ml-1">Super Admin</span>
+                                    @endif
                                 </p>
                                 <p class="text-xs text-gray-400">{{ $admin->email }}</p>
                             </div>
                         </div>
-                        @if (! $admin->is(auth()->user()))
+                        @if (auth()->user()->isSuperAdmin() && ! $admin->is(auth()->user()))
                             <form method="POST" action="{{ route('admin.team.destroy', $admin) }}" onsubmit="return confirm('Remove this team member?')">
                                 @csrf
                                 @method('DELETE')

@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'super-admin' => \App\Http\Middleware\EnsureUserIsSuperAdmin::class,
             'onboarding.complete' => \App\Http\Middleware\EnsureOnboardingComplete::class,
             'project.not-suspended' => \App\Http\Middleware\EnsureProjectNotSuspended::class,
         ]);

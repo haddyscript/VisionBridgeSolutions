@@ -22,6 +22,7 @@ class TeamController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'is_super_admin' => ['nullable', 'boolean'],
         ]);
 
         User::create([
@@ -29,6 +30,7 @@ class TeamController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make('admin123'),
             'role' => 'admin',
+            'is_super_admin' => $validated['is_super_admin'] ?? false,
         ]);
 
         return back()->with('status', 'Team member added.');
@@ -70,6 +72,10 @@ class TeamController extends Controller
 
         if (User::where('role', 'admin')->count() <= 1) {
             return back()->withErrors(['team' => 'At least one admin account must remain.']);
+        }
+
+        if ($user->isSuperAdmin() && User::where('role', 'admin')->where('is_super_admin', true)->count() <= 1) {
+            return back()->withErrors(['team' => 'At least one super admin account must remain.']);
         }
 
         $user->delete();

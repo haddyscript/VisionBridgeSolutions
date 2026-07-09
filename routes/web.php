@@ -315,10 +315,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/service-agreement/templates/{serviceAgreementTemplate}/view', [AdminServiceAgreementController::class, 'viewTemplate'])->name('service-agreement.templates.view');
 
     Route::get('/team', [AdminTeamController::class, 'index'])->name('team.index');
-    Route::post('/team', [AdminTeamController::class, 'store'])->name('team.store');
     Route::patch('/team/profile', [AdminTeamController::class, 'updateProfile'])->name('team.profile.update');
     Route::patch('/team/password', [AdminTeamController::class, 'updatePassword'])->name('team.password.update');
-    Route::delete('/team/{user}', [AdminTeamController::class, 'destroy'])->name('team.destroy');
+
+    Route::middleware('super-admin')->group(function () {
+        Route::post('/team', [AdminTeamController::class, 'store'])->name('team.store');
+        Route::delete('/team/{user}', [AdminTeamController::class, 'destroy'])->name('team.destroy');
+    });
 
     Route::get('/email-templates', [AdminEmailTemplateController::class, 'index'])->name('email-templates.index');
     Route::get('/email-templates/{template}/preview', [AdminEmailTemplateController::class, 'preview'])->name('email-templates.preview');
