@@ -469,13 +469,13 @@ Confirmed decision (2026-07-09): `admin@visionbridgesolutions.com` (the FaithSta
 
 ## 15x. AI Client Portal Assistant (2026-07-09)
 
-A persistent AI chatbot is now live in the Client Portal — a floating gold bubble (bottom-right) on every portal page, powered by Google's Gemini API (`gemini-2.0-flash` by default, called directly via REST — no SDK dependency). Originally built against Anthropic Claude; switched to Gemini same-day since Gemini offers a persistent free API tier and there wasn't budget yet for a paid one.
+A persistent AI chatbot is now live in the Client Portal — a floating gold bubble (bottom-right) on every portal page, powered by Google's Gemini API (`gemini-2.5-flash` by default, called directly via REST — no SDK dependency). Originally built against Anthropic Claude; switched to Gemini same-day since Gemini offers a persistent free API tier and there wasn't budget yet for a paid one.
 
 - **What it answers** — FAQ content (portal usage, billing, refunds, Care Plans) and account-specific questions ("what's my project status?", "is my Care Plan past due?"). For account-specific questions, the app computes the fact directly from the database (project status/progress, pending one-time payments, Care Plan status/renewal/past-due) the same way the existing portal pages already do, and only that computed fact — never the client's raw record — is handed to the LLM to phrase into an answer. See `specs/AI_ASSISTANT_KNOWLEDGE_BASE.md` for the full guardrails.
 - **Persisted history** — new `assistant_conversations`/`assistant_messages` tables, one conversation per client (mirrors the `client_notifications` persistence pattern) — a client can close the portal and resume the same thread later.
 - **Human handoff** — if the client is upset, disputes a charge, needs a policy exception, or the assistant can't answer confidently, it hands off by creating a `ContactMessage` (the existing admin inbox) with the full conversation transcript attached, so support doesn't have to ask the client to re-explain.
 - **Rate limiting** — 40 messages/client/day by default, configurable via `AI_ASSISTANT_DAILY_LIMIT`.
-- **New config/env** — `GEMINI_API_KEY`, `GEMINI_MODEL` (default `gemini-2.0-flash`), `AI_ASSISTANT_DAILY_LIMIT` (default 40) in `.env`; wired through `config/services.php`.
+- **New config/env** — `GEMINI_API_KEY`, `GEMINI_MODEL` (default `gemini-2.5-flash`), `AI_ASSISTANT_DAILY_LIMIT` (default 40) in `.env`; wired through `config/services.php`.
 - **Provider tradeoff worth knowing** — the free Gemini tier may use request data to improve Google's models (unlike a paid tier). Only computed facts ever reach the prompt, not raw account records, but this is worth revisiting once there's budget for a paid tier.
 - Full implementation notes: `specs/AI_ASSISTANT_KNOWLEDGE_BASE.md` §9.
 
