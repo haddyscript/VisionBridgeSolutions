@@ -303,6 +303,46 @@
             panel?.querySelectorAll('input[name="permissions[]"]').forEach((box) => { box.checked = checked; });
         });
     });
+
+    // Lightweight Alpine-style toggle without requiring Alpine.js (same
+    // pattern as admin/clients/index.blade.php). Uses `position: fixed`
+    // computed via getBoundingClientRect() rather than CSS `absolute` —
+    // the Admins list has overflow-y-auto for its scroll/rounded corners,
+    // which clips anything `absolute`-positioned near the bottom of that box.
+    document.querySelectorAll('[x-data]').forEach(function (el) {
+        let open = false;
+        const btn = el.querySelector('button');
+        const menu = el.querySelector('[x-show]');
+
+        if (!btn || !menu) return;
+        menu.style.display = 'none';
+
+        function positionMenu() {
+            const rect = btn.getBoundingClientRect();
+            menu.style.top = (rect.bottom + 4) + 'px';
+            menu.style.right = (window.innerWidth - rect.right) + 'px';
+        }
+
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            open = !open;
+            if (open) positionMenu();
+            menu.style.display = open ? 'block' : 'none';
+        });
+
+        document.addEventListener('click', function () {
+            open = false;
+            menu.style.display = 'none';
+        });
+
+        window.addEventListener('scroll', function () {
+            if (open) positionMenu();
+        }, true);
+
+        window.addEventListener('resize', function () {
+            if (open) positionMenu();
+        });
+    });
 </script>
 
 @endsection
