@@ -196,7 +196,7 @@
                     <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mt-5 mb-2.5">{{ $monthLabel }}</p>
                     <div class="space-y-3">
                         @foreach ($monthPayments as $subscriptionPayment)
-                            <a href="{{ route('portal.subscription-payments.receipt', $subscriptionPayment) }}"
+                            <a href="{{ route('portal.subscription-payments.receipt', $subscriptionPayment) }}" target="_blank" rel="noopener"
                                class="group relative flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-100 dark:border-gray-700/60 px-5 py-4 transition-all hover:border-gold/40 hover:shadow-lg hover:-translate-y-0.5">
                                 <span class="absolute left-0 top-3 bottom-3 w-1 rounded-full bg-teal opacity-0 group-hover:opacity-100 transition-opacity"></span>
                                 <div class="flex items-center gap-4">
