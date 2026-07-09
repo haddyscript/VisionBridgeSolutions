@@ -71,6 +71,7 @@
     </div>
 
     {{-- Team Management --}}
+    @if (auth()->user()->isSuperAdmin() || auth()->user()->canAccessAdminPage('team'))
     <div class="space-y-6">
         <div>
             <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1">Team Management</p>
@@ -176,6 +177,7 @@
                                     'Client Work' => ['clients', 'calendar', 'consultations', 'intake-submissions', 'project-requests', 'recommendations'],
                                     'Billing' => ['payments', 'refund-requests', 'subscriptions', 'partner-payouts', 'care-plan-pricing'],
                                     'Content & Communication' => ['contact-messages', 'service-agreement', 'email-templates', 'satisfaction-surveys', 'announcements'],
+                                    'Administration' => ['team'],
                                 ];
                             @endphp
                             <div id="permissions-{{ $admin->id }}" class="permissions-panel hidden border-t border-gray-200 bg-gray-50 px-5 py-5">
@@ -229,6 +231,12 @@
             </div>
         </div>
     </div>
+    @else
+    <div class="bg-white rounded-xl border border-gray-200 p-5">
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1">Team Management</p>
+        <p class="text-sm text-gray-500">You don't have access to this section.</p>
+    </div>
+    @endif
 
 </div>
 

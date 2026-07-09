@@ -5,15 +5,21 @@ namespace App\Support;
 use Illuminate\Support\Str;
 
 /**
- * Restrictable admin sidebar sections. `admin.dashboard`, `admin.team.*`, and
- * `admin.faq` are deliberately NOT listed here — they stay reachable by every
- * admin regardless of restrictions (dashboard is the post-login landing
- * page/fallback, team holds each admin's own profile/password settings, and
- * FAQ is just internal help content with no client data).
+ * Restrictable admin sidebar sections. `admin.dashboard` and `admin.faq` are
+ * deliberately NOT listed here — they stay reachable by every admin
+ * regardless of restrictions (dashboard is the post-login landing
+ * page/fallback, and FAQ is just internal help content with no client data).
+ *
+ * `team` is a special case: its `routes` list is empty on purpose, since
+ * `admin.team.*` must stay reachable for every admin (that page is also
+ * where each admin manages their own profile/password) — it's checked
+ * view-side in admin/team/index.blade.php to hide just the Admins
+ * roster/management column, not enforced by the route middleware.
  */
 class AdminPermissions
 {
     public const SECTIONS = [
+        'team' => ['label' => 'Team Members', 'routes' => []],
         'clients' => ['label' => 'Clients & Projects', 'routes' => ['admin.clients.*', 'admin.projects.*', 'admin.milestones.*', 'admin.uploads.*']],
         'calendar' => ['label' => 'Calendar', 'routes' => ['admin.calendar', 'admin.calendar.*']],
         'contact-messages' => ['label' => 'Contact Messages', 'routes' => ['admin.contact-messages.*']],
