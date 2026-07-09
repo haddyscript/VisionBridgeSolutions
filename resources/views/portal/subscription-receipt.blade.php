@@ -42,9 +42,7 @@
 
         <div class="px-8 py-7" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
             <div class="flex items-center mb-6">
-                <div class="bg-white rounded-lg px-3 py-1.5 inline-flex items-center">
-                    <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" class="h-6 w-auto object-contain">
-                </div>
+                <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" class="h-10 w-auto object-contain rounded">
             </div>
             <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Care Plan Payment Receipt</p>
             <h1 class="font-display text-2xl font-bold text-white">{{ $subscriptionPayment->subscription->description }}</h1>
