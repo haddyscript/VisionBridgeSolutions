@@ -26,6 +26,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'role',
         'is_super_admin',
+        'restricted_access',
         'stripe_customer_id',
         'theme',
         'email_verified_at',
@@ -67,6 +68,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'tour_completed_at' => 'datetime',
             'onboarding_step' => 'integer',
             'is_super_admin' => 'boolean',
+            'restricted_access' => 'boolean',
             'password' => 'hashed',
             'two_factor_secret' => 'encrypted',
             'two_factor_recovery_codes' => 'encrypted:array',
@@ -134,6 +136,28 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isSuperAdmin(): bool
     {
         return $this->isAdmin() && $this->is_super_admin;
+    }
+
+    public function adminPermissions()
+    {
+        return $this->hasMany(AdminPagePermission::class);
+    }
+
+    /**
+     * Super admins and anyone not explicitly restricted always have access.
+     * Only meaningful for the sections listed in \App\Support\AdminPermissions
+     * — anything else (dashboard, team, faq) is reachable regardless.
+     */
+    public function canAccessAdminPage(string $permissionKey): bool
+    {
+        if ($this->isSuperAdmin() || ! $this->restricted_access) {
+            return true;
+        }
+
+        // Property access (not the relation method) so Eloquent caches the
+        // result after the first check — the sidebar checks this ~16 times
+        // per render.
+        return $this->adminPermissions->contains('permission_key', $permissionKey);
     }
 
     public function isDarkTheme(): bool

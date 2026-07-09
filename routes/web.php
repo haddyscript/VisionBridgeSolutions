@@ -218,7 +218,7 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
     Route::post('/portal/survey', [PortalSatisfactionSurveyController::class, 'store'])->name('portal.survey.store');
 });
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name('admin.')->group(function () {
 
     // ─── Dashboard ───────────────────────────────────────────────────────────
     Route::get('/', AdminDashboardController::class)->name('dashboard');
@@ -321,6 +321,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::middleware('super-admin')->group(function () {
         Route::post('/team', [AdminTeamController::class, 'store'])->name('team.store');
         Route::patch('/team/{user}/super-admin', [AdminTeamController::class, 'toggleSuperAdmin'])->name('team.toggle-super-admin');
+        Route::patch('/team/{user}/permissions', [AdminTeamController::class, 'updatePermissions'])->name('team.permissions.update');
         Route::delete('/team/{user}', [AdminTeamController::class, 'destroy'])->name('team.destroy');
     });
 

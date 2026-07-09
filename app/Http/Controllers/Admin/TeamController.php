@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\AdminPermissions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 
 class TeamController extends Controller
@@ -13,7 +15,8 @@ class TeamController extends Controller
     public function index()
     {
         return view('admin.team.index', [
-            'admins' => User::where('role', 'admin')->orderBy('name')->get(),
+            'admins' => User::where('role', 'admin')->orderBy('name')->with('adminPermissions')->get(),
+            'sections' => AdminPermissions::SECTIONS,
         ]);
     }
 
@@ -79,6 +82,31 @@ class TeamController extends Controller
         return back()->with('status', $user->isSuperAdmin()
             ? $user->name.' is now a super admin.'
             : $user->name.' is no longer a super admin.');
+    }
+
+    public function updatePermissions(Request $request, User $user)
+    {
+        abort_unless($user->isAdmin(), 404);
+
+        if ($user->isSuperAdmin()) {
+            return back()->withErrors(['team' => 'Super admins always have full access — remove super admin first if you want to restrict this account.']);
+        }
+
+        $validated = $request->validate([
+            'restricted_access' => ['nullable', 'boolean'],
+            'permissions' => ['array'],
+            'permissions.*' => ['string', Rule::in(array_keys(AdminPermissions::SECTIONS))],
+        ]);
+
+        $user->update(['restricted_access' => (bool) ($validated['restricted_access'] ?? false)]);
+
+        $user->adminPermissions()->delete();
+
+        foreach ($validated['permissions'] ?? [] as $key) {
+            $user->adminPermissions()->create(['permission_key' => $key]);
+        }
+
+        return back()->with('status', 'Access updated for '.$user->name.'.');
     }
 
     public function destroy(Request $request, User $user)
