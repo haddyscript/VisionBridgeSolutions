@@ -11,7 +11,7 @@ class PaymentController extends Controller
 {
     public function index(Request $request)
     {
-        $project = $request->user()->projects()->with('payments', 'subscription')->first();
+        $project = $request->user()->projects()->with('payments', 'subscription.payments')->first();
 
         return view('portal.payments', [
             'project' => $project,

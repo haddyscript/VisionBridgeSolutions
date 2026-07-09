@@ -47,7 +47,8 @@
             'canceled' => 'bg-gray-400',
         ];
         $totalDue = $payments->where('status', 'pending')->sum('amount');
-        $totalPaid = $payments->where('status', 'paid')->sum('amount');
+        $totalPaid = $payments->where('status', 'paid')->sum('amount')
+            + ($subscription ? $subscription->payments->sum('amount_paid') : 0);
     @endphp
 
     {{-- Billing Overview hero --}}
@@ -263,6 +264,44 @@
             @endforeach
         @endif
     </div>
+
+    {{-- Care Plan Payment History --}}
+    @if ($subscription && $subscription->payments->isNotEmpty())
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 mt-6">
+            <h3 class="font-display text-lg font-bold text-navy dark:text-white mb-5">Care Plan Payment History <span class="text-gray-400 dark:text-gray-500 font-normal">({{ $subscription->payments->count() }})</span></h3>
+
+            @foreach ($subscription->payments->groupBy(fn ($p) => $p->paid_at->format('F Y')) as $monthLabel => $monthPayments)
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mt-5 mb-2.5">{{ $monthLabel }}</p>
+                    <div class="space-y-3">
+                        @foreach ($monthPayments as $subscriptionPayment)
+                            <a href="{{ route('portal.subscription-payments.receipt', $subscriptionPayment) }}"
+                               class="group relative flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-100 dark:border-gray-700/60 px-5 py-4 transition-all hover:border-gold/40 hover:shadow-lg hover:-translate-y-0.5">
+                                <span class="absolute left-0 top-3 bottom-3 w-1 rounded-full bg-teal opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                <div class="flex items-center gap-4">
+                                    <span class="w-10 h-10 rounded-lg bg-navy/5 dark:bg-white/5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
+                                        <svg class="w-[1.125rem] h-[1.125rem] text-navy dark:text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                    </span>
+                                    <div>
+                                        <p class="font-medium text-navy dark:text-white">{{ $subscription->description }}</p>
+                                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $subscriptionPayment->paid_at->format('M j, Y') }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span class="font-display text-lg font-bold text-navy dark:text-white">{{ $subscriptionPayment->formattedAmountPaid() }}</span>
+                                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full bg-teal/15 text-teal-dark">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-teal"></span>
+                                        Paid
+                                    </span>
+                                    <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gold transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
 
     {{-- Transaction Detail Modal --}}
     <div id="payment-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
