@@ -62,8 +62,9 @@
                 <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" class="h-28 w-auto object-contain rounded-md">
             </div>
 
+            <p class="px-6 pt-4 pb-2 text-xs font-bold uppercase tracking-widest text-gold shrink-0 border-b border-white/10">{{ auth()->user()->name }} Portal</p>
+
             <nav class="flex-1 overflow-y-auto gold-scrollbar py-5 px-3 space-y-0.5">
-                <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mb-2">{{ auth()->user()->name }} Portal</p>
                 <a href="{{ route('admin.dashboard') }}"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.dashboard') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
