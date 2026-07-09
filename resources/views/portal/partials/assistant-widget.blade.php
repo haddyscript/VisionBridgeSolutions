@@ -79,6 +79,33 @@
             messagesEl.scrollTop = messagesEl.scrollHeight;
         }
 
+        function typeOutMessage(content) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex justify-start';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'max-w-[85%] rounded-2xl rounded-bl-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm px-3.5 py-2.5 whitespace-pre-wrap break-words';
+
+            wrapper.appendChild(bubble);
+            messagesEl.appendChild(wrapper);
+
+            let shown = 0;
+            // A few characters per tick reads as natural typing without
+            // dragging out long replies too much.
+            const CHARS_PER_TICK = 3;
+            const TICK_MS = 20;
+
+            const interval = setInterval(function () {
+                shown = Math.min(content.length, shown + CHARS_PER_TICK);
+                bubble.innerHTML = escapeHtml(content.slice(0, shown)).replace(/\n/g, '<br>');
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+
+                if (shown >= content.length) {
+                    clearInterval(interval);
+                }
+            }, TICK_MS);
+        }
+
         function appendTyping() {
             const wrapper = document.createElement('div');
             wrapper.id = 'assistant-typing';
@@ -162,12 +189,12 @@
                 })
                 .then(function (data) {
                     removeTyping();
-                    appendMessage('assistant', data.reply);
+                    typeOutMessage(data.reply);
                     escalatedBanner.classList.toggle('hidden', !data.escalated);
                 })
                 .catch(function (error) {
                     removeTyping();
-                    appendMessage('assistant', error.message || "Sorry, I couldn't process that. Please try again or contact support@visionbridgesolutions.com.");
+                    typeOutMessage(error.message || "Sorry, I couldn't process that. Please try again or contact support@visionbridgesolutions.com.");
                 })
                 .finally(function () {
                     sendBtn.disabled = false;
