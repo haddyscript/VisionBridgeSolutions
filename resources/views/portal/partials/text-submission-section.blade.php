@@ -8,7 +8,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
         <div>
             <h3 class="font-semibold text-navy dark:text-white mb-1">{{ $label }}</h3>
-            <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Submit a new request below. To respond to an existing one, expand it on the right and use Reply.</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Submit a new request below. To respond to an existing one, use the message box under Revision History.</p>
 
             <form method="POST" action="{{ route('portal.uploads.store', $project) }}" enctype="multipart/form-data" class="space-y-2">
                 @csrf
@@ -32,7 +32,7 @@
             @if ($items->isEmpty())
                 <p class="text-sm text-gray-400 dark:text-gray-500">{{ $why ?? 'Nothing submitted yet.' }}</p>
             @else
-                <div id="revision-history-{{ $category }}" class="space-y-2.5 lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto lg:pr-1">
+                <div id="revision-history-{{ $category }}" class="space-y-2.5 lg:max-h-[calc(100vh-320px)] lg:overflow-y-auto lg:pr-1">
             @foreach ($items as $item)
                 @php
                     $borderColor = match ($item->status) {
@@ -51,8 +51,8 @@
                         'under_review' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-500',
                     ][$item->status] ?? 'bg-red-50 dark:bg-red-500/10 text-red-500';
                 @endphp
-                <details class="group rounded-lg border border-gray-200 dark:border-gray-700 border-l-4 {{ $borderColor }} px-4 py-3 {{ $item->isCompleted() ? 'opacity-60' : '' }}" {{ ! $item->isCompleted() ? 'open' : '' }}>
-                    <summary class="sticky top-0 z-10 bg-white dark:bg-gray-800 flex items-center justify-between gap-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                <div class="rounded-lg border border-gray-200 dark:border-gray-700 border-l-4 {{ $borderColor }} px-4 py-3 {{ $item->isCompleted() ? 'opacity-60' : '' }}">
+                    <div class="sticky top-0 z-10 bg-white dark:bg-gray-800 flex items-center justify-between gap-4">
                         <div class="flex items-center gap-2">
                             <span class="text-xs text-gray-400 dark:text-gray-500">{{ $item->created_at->format('M j, Y \a\t g:ia') }}</span>
                             <span class="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $statusBadgeColor }}">
@@ -62,19 +62,16 @@
                                 {{ \App\Models\Upload::STATUSES[$item->status] ?? $item->status }}
                             </span>
                         </div>
-                        <div class="flex items-center gap-1 shrink-0">
-                            @if ($item->isDeletable())
-                                <form method="POST" action="{{ route('portal.uploads.destroy', $item) }}" data-confirm="Remove this submission?" onclick="event.stopPropagation()">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" title="Remove" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                    </button>
-                                </form>
-                            @endif
-                            <svg class="w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                        </div>
-                    </summary>
+                        @if ($item->isDeletable())
+                            <form method="POST" action="{{ route('portal.uploads.destroy', $item) }}" data-confirm="Remove this submission?">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" title="Remove" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors shrink-0">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </form>
+                        @endif
+                    </div>
 
                     {{-- Your message bubble --}}
                     <div class="flex items-start justify-end gap-2 max-w-[75%] ml-auto mt-2">
@@ -123,18 +120,23 @@
                             @endif
                         @endforeach
                     </div>
-
-                    <form id="client-reply-form-{{ $item->id }}" data-upload-id="{{ $item->id }}" method="POST" action="{{ route('portal.uploads.reply', $item) }}" class="ajax-client-reply-form mt-2 flex items-start gap-2">
-                        @csrf
-                        <textarea name="body" rows="2" placeholder="Write a reply..." required
-                                  class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
-                        <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-                            Reply
-                        </button>
-                    </form>
-                </details>
+                </div>
             @endforeach
                 </div>
+
+                {{-- Shared WhatsApp-style composer — always replies to the most recent request --}}
+                @php $latestItem = $items->last(); @endphp
+                <form id="shared-reply-form" data-upload-id="{{ $latestItem->id }}" method="POST" action="{{ route('portal.uploads.reply', $latestItem) }}"
+                      class="ajax-client-reply-form mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 flex items-center gap-2">
+                    @csrf
+                    <textarea name="body" rows="1" placeholder="Type a message…" required
+                              class="flex-1 resize-none rounded-full border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
+                    <button type="submit" title="Send" class="shrink-0 w-10 h-10 rounded-full bg-navy hover:bg-navy-light text-white flex items-center justify-center transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                        </svg>
+                    </button>
+                </form>
             @endif
         </div>
     </div>
@@ -168,12 +170,6 @@
     }
 
     initMessageToggles();
-
-    document.querySelectorAll('details').forEach(function (details) {
-        details.addEventListener('toggle', function () {
-            if (details.open) initMessageToggles(details);
-        });
-    });
 
     document.querySelectorAll('.ajax-client-reply-form').forEach(function (form) {
         if (form.dataset.bound) return;
