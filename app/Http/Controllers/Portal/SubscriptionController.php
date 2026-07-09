@@ -255,13 +255,15 @@ class SubscriptionController extends Controller
 
         abort_unless($subscription && ! $subscription->isPending(), 404, 'No active care plan found.');
 
-        // Only a subscription tied to a real MaintenancePlan tier (not an
-        // admin-created ad-hoc amount) has a well-defined "higher tier" to
-        // upgrade to.
-        $upgradeOptions = $subscription->maintenance_plan_id && $subscription->isActive()
+        // Compared against the subscription's own current amount (not
+        // maintenancePlan->price) so this works even for admin-created
+        // ad-hoc subscriptions that were never tied to a real plan tier —
+        // clients shouldn't need an admin to set that link up first just to
+        // self-upgrade.
+        $upgradeOptions = $subscription->isActive()
             ? MaintenancePlan::where('is_available', true)
                 ->whereNotNull('stripe_price_id')
-                ->where('price', '>', $subscription->maintenancePlan->price)
+                ->where('price', '>', $subscription->amount)
                 ->orderBy('price')
                 ->get()
             : collect();
@@ -415,7 +417,7 @@ class SubscriptionController extends Controller
         abort_unless($project && $subscription->project_id === $project->id, 403);
         abort_unless($subscription->isActive(), 422, 'Only an active care plan can be upgraded.');
         abort_unless(
-            $subscription->stripe_subscription_id && $subscription->maintenance_plan_id,
+            $subscription->stripe_subscription_id,
             422,
             'This care plan isn\'t eligible for a self-service upgrade — contact support.'
         );
@@ -426,8 +428,11 @@ class SubscriptionController extends Controller
 
         $targetPlan = MaintenancePlan::findOrFail($validated['maintenance_plan_id']);
 
+        // Compared against the subscription's own current amount, not
+        // maintenancePlan->price, since this subscription may not have been
+        // tied to a real plan tier to begin with (see manageBilling()).
         abort_unless(
-            $targetPlan->is_available && $targetPlan->stripe_price_id && $targetPlan->price > $subscription->maintenancePlan->price,
+            $targetPlan->is_available && $targetPlan->stripe_price_id && $targetPlan->price > $subscription->amount,
             422,
             'That plan isn\'t available as an upgrade.'
         );
