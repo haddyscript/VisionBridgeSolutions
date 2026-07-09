@@ -112,14 +112,14 @@
             <div class="space-y-2.5">
                 @foreach ($admins as $admin)
                     <div class="rounded-lg border border-gray-200">
-                        <div class="flex items-center justify-between gap-4 px-4 py-3">
-                            <div class="flex items-center gap-3">
+                        <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
+                            <div class="flex items-center gap-3 min-w-0">
                                 <div class="w-9 h-9 rounded-full bg-gold/15 text-gold-dark flex items-center justify-center text-sm font-semibold shrink-0">
                                     {{ strtoupper(substr($admin->name, 0, 1)) }}
                                 </div>
                                 <div class="min-w-0">
                                     <div class="flex flex-wrap items-center gap-1.5">
-                                        <span class="text-sm font-medium text-navy">{{ $admin->name }}</span>
+                                        <span class="text-sm font-medium text-navy whitespace-nowrap">{{ $admin->name }}</span>
                                         @if ($admin->is(auth()->user()))
                                             <span class="text-xs text-gray-400">(you)</span>
                                         @endif
@@ -133,9 +133,9 @@
                                 </div>
                             </div>
                             @if (auth()->user()->isSuperAdmin())
-                                <div class="flex items-center gap-3 shrink-0">
+                                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 justify-end shrink-0 ml-auto">
                                     @if (! $admin->isSuperAdmin())
-                                        <button type="button" class="permissions-toggle text-xs font-semibold text-navy hover:text-gold-dark" data-target="permissions-{{ $admin->id }}">
+                                        <button type="button" class="permissions-toggle whitespace-nowrap text-xs font-semibold text-navy hover:text-gold-dark" data-target="permissions-{{ $admin->id }}">
                                             Manage Access
                                         </button>
                                     @endif
@@ -144,7 +144,7 @@
                                               onsubmit="return confirm('{{ $admin->isSuperAdmin() ? 'Revoke' : 'Grant' }} super admin access for {{ $admin->name }}?')">
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit" class="text-xs font-semibold text-navy hover:text-gold-dark">
+                                            <button type="submit" class="whitespace-nowrap text-xs font-semibold text-navy hover:text-gold-dark">
                                                 {{ $admin->isSuperAdmin() ? 'Revoke Super Admin' : 'Grant Super Admin' }}
                                             </button>
                                         </form>
@@ -153,7 +153,7 @@
                                         <form method="POST" action="{{ route('admin.team.destroy', $admin) }}" onsubmit="return confirm('Remove this team member?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-xs font-semibold text-red-400 hover:text-red-600">Remove</button>
+                                            <button type="submit" class="whitespace-nowrap text-xs font-semibold text-red-400 hover:text-red-600">Remove</button>
                                         </form>
                                     @endif
                                 </div>
