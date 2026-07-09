@@ -36,6 +36,11 @@ class TeamController extends Controller
             'password' => Hash::make('admin123'),
             'role' => 'admin',
             'is_super_admin' => $validated['is_super_admin'] ?? false,
+            // Admins never go through the client-facing email verification
+            // flow (only portal.* routes require the 'verified' middleware),
+            // so mark them verified at creation rather than leaving this
+            // null and inert.
+            'email_verified_at' => now(),
         ]);
 
         return back()->with('status', 'Team member added.');
