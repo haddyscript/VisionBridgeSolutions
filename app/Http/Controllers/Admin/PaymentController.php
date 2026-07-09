@@ -20,7 +20,7 @@ class PaymentController extends Controller
         [$from, $to, $range] = $this->resolveDateRange($request);
 
         $payments = Payment::with('project.user')->latest()->get();
-        $subscriptions = Subscription::with('project.user')->latest()->get();
+        $subscriptions = Subscription::with('project.user', 'payments')->latest()->get();
 
         // Collected totals are split so the business can see how much of its
         // revenue is one-time vs. recurring Care Plan payments, both scoped

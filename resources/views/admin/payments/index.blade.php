@@ -242,10 +242,36 @@
                             @endif
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $subscription->current_period_end?->format('M j, Y') ?? '—' }}</td>
-                        <td class="px-5 py-3.5 text-right">
+                        <td class="px-5 py-3.5 text-right whitespace-nowrap">
+                            @if ($subscription->payments->isNotEmpty())
+                                <button type="button" class="subscription-history-toggle inline-flex items-center gap-1 text-navy dark:text-white font-semibold hover:text-gold-dark mr-4" data-target="subscription-history-{{ $subscription->id }}">
+                                    History ({{ $subscription->payments->count() }})
+                                    <svg class="w-3.5 h-3.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </button>
+                            @endif
                             <a href="{{ route('admin.projects.show', $subscription->project) }}" class="text-gold-dark font-semibold hover:underline">View Project</a>
                         </td>
                     </tr>
+                    @if ($subscription->payments->isNotEmpty())
+                        <tr id="subscription-history-{{ $subscription->id }}" class="subscription-history-row hidden bg-gray-50/60 dark:bg-gray-900/40">
+                            <td colspan="6" class="px-5 py-4">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">Payment History</p>
+                                <div class="space-y-1.5">
+                                    @foreach ($subscription->payments as $subscriptionPayment)
+                                        <div class="flex items-center justify-between gap-4 text-sm">
+                                            <span class="text-gray-500 dark:text-gray-400">{{ $subscriptionPayment->paid_at->format('M j, Y \a\t g:ia') }}</span>
+                                            <span class="font-medium text-navy dark:text-white">{{ $subscriptionPayment->formattedAmountPaid() }}</span>
+                                            @if ($subscriptionPayment->hosted_invoice_url)
+                                                <a href="{{ $subscriptionPayment->hosted_invoice_url }}" target="_blank" rel="noopener" class="text-gold-dark hover:underline shrink-0">View Invoice</a>
+                                            @else
+                                                <span class="text-gray-300 dark:text-gray-600 shrink-0">—</span>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </td>
+                        </tr>
+                    @endif
                 @endforeach
             </tbody>
         </table>
@@ -269,6 +295,15 @@
             btn.classList.toggle('dark:text-gray-500', !active);
         });
     }
+
+    document.querySelectorAll('.subscription-history-toggle').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const row = document.getElementById(btn.dataset.target);
+            if (!row) return;
+            row.classList.toggle('hidden');
+            btn.querySelector('svg').classList.toggle('rotate-90');
+        });
+    });
 </script>
 
 {{-- Transaction Detail Modal --}}
