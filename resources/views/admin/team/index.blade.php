@@ -161,31 +161,57 @@
                         </div>
 
                         @if (auth()->user()->isSuperAdmin() && ! $admin->isSuperAdmin())
-                            @php $adminPermissionKeys = $admin->adminPermissions->pluck('permission_key')->all(); @endphp
-                            <div id="permissions-{{ $admin->id }}" class="permissions-panel hidden border-t border-gray-200 bg-gray-50 px-4 py-4">
-                                <form method="POST" action="{{ route('admin.team.permissions.update', $admin) }}" class="space-y-3">
+                            @php
+                                $adminPermissionKeys = $admin->adminPermissions->pluck('permission_key')->all();
+                                $permissionGroups = [
+                                    'Client Work' => ['clients', 'calendar', 'consultations', 'intake-submissions', 'project-requests', 'recommendations'],
+                                    'Billing' => ['payments', 'refund-requests', 'subscriptions', 'partner-payouts', 'care-plan-pricing'],
+                                    'Content & Communication' => ['contact-messages', 'service-agreement', 'email-templates', 'satisfaction-surveys', 'announcements'],
+                                ];
+                            @endphp
+                            <div id="permissions-{{ $admin->id }}" class="permissions-panel hidden border-t border-gray-200 bg-gray-50 px-5 py-5">
+                                <form method="POST" action="{{ route('admin.team.permissions.update', $admin) }}" class="space-y-4">
                                     @csrf
                                     @method('PATCH')
-                                    <label class="flex items-center gap-2 text-sm font-medium text-navy">
-                                        <input type="checkbox" name="restricted_access" value="1" class="restricted-access-checkbox rounded border-gray-300 text-gold focus:ring-gold"
-                                               {{ $admin->restricted_access ? 'checked' : '' }} data-panel="permissions-fields-{{ $admin->id }}">
-                                        Restrict this admin's access
-                                    </label>
-                                    <p class="text-xs text-gray-400">Unchecked = full access to every section (default). Checked = only the pages selected below.</p>
 
-                                    <div id="permissions-fields-{{ $admin->id }}" class="grid grid-cols-2 gap-x-4 gap-y-1.5 {{ $admin->restricted_access ? '' : 'hidden' }}">
-                                        @foreach ($sections as $key => $section)
-                                            <label class="flex items-center gap-2 text-sm text-navy">
-                                                <input type="checkbox" name="permissions[]" value="{{ $key }}" class="rounded border-gray-300 text-gold focus:ring-gold"
-                                                       {{ in_array($key, $adminPermissionKeys, true) ? 'checked' : '' }}>
-                                                {{ $section['label'] }}
-                                            </label>
+                                    <label class="flex items-start gap-2.5 bg-white border border-gray-200 rounded-lg px-3.5 py-3 cursor-pointer">
+                                        <input type="checkbox" name="restricted_access" value="1" class="restricted-access-checkbox mt-0.5 rounded border-gray-300 text-gold focus:ring-gold focus:ring-offset-0"
+                                               {{ $admin->restricted_access ? 'checked' : '' }} data-panel="permissions-fields-{{ $admin->id }}">
+                                        <span>
+                                            <span class="block text-sm font-semibold text-navy">Restrict this admin's access</span>
+                                            <span class="block text-xs text-gray-400 mt-0.5">Off = full access to every section (default). On = only the pages checked below.</span>
+                                        </span>
+                                    </label>
+
+                                    <div id="permissions-fields-{{ $admin->id }}" class="space-y-4 {{ $admin->restricted_access ? '' : 'hidden' }}">
+                                        <div class="flex items-center justify-end gap-3 -mb-1">
+                                            <button type="button" class="select-all-permissions text-xs font-semibold text-gold-dark hover:underline" data-panel="permissions-fields-{{ $admin->id }}">Select All</button>
+                                            <span class="text-gray-300">|</span>
+                                            <button type="button" class="select-none-permissions text-xs font-semibold text-gray-400 hover:underline" data-panel="permissions-fields-{{ $admin->id }}">Select None</button>
+                                        </div>
+
+                                        @foreach ($permissionGroups as $groupLabel => $groupKeys)
+                                            <div>
+                                                <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">{{ $groupLabel }}</p>
+                                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                    @foreach ($groupKeys as $key)
+                                                        <label class="flex items-center gap-2 text-sm text-navy bg-white border border-gray-200 rounded-lg px-3 py-2 cursor-pointer transition-colors has-[:checked]:border-gold has-[:checked]:bg-gold/5 hover:border-gray-300">
+                                                            <input type="checkbox" name="permissions[]" value="{{ $key }}" class="rounded border-gray-300 text-gold focus:ring-gold focus:ring-offset-0"
+                                                                   {{ in_array($key, $adminPermissionKeys, true) ? 'checked' : '' }}>
+                                                            {{ $sections[$key]['label'] }}
+                                                        </label>
+                                                    @endforeach
+                                                </div>
+                                            </div>
                                         @endforeach
                                     </div>
 
-                                    <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-                                        Save Access
-                                    </button>
+                                    <div class="flex items-center gap-3 pt-1">
+                                        <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                                            Save Access
+                                        </button>
+                                        <button type="button" class="permissions-toggle text-xs font-semibold text-gray-400 hover:text-navy" data-target="permissions-{{ $admin->id }}">Cancel</button>
+                                    </div>
                                 </form>
                             </div>
                         @endif
@@ -207,6 +233,14 @@
     document.querySelectorAll('.restricted-access-checkbox').forEach((checkbox) => {
         checkbox.addEventListener('change', () => {
             document.getElementById(checkbox.dataset.panel)?.classList.toggle('hidden', !checkbox.checked);
+        });
+    });
+
+    document.querySelectorAll('.select-all-permissions, .select-none-permissions').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const panel = document.getElementById(btn.dataset.panel);
+            const checked = btn.classList.contains('select-all-permissions');
+            panel?.querySelectorAll('input[name="permissions[]"]').forEach((box) => { box.checked = checked; });
         });
     });
 </script>
