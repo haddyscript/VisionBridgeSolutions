@@ -325,6 +325,10 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
         Route::delete('/team/{user}', [AdminTeamController::class, 'destroy'])->name('team.destroy');
     });
 
+    Route::middleware('owner')->group(function () {
+        Route::patch('/team/{user}/active', [AdminTeamController::class, 'toggleActive'])->name('team.toggle-active');
+    });
+
     Route::get('/email-templates', [AdminEmailTemplateController::class, 'index'])->name('email-templates.index');
     Route::get('/email-templates/{template}/preview', [AdminEmailTemplateController::class, 'preview'])->name('email-templates.preview');
 

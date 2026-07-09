@@ -29,6 +29,14 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
+        if (Auth::user()->isAdmin() && ! Auth::user()->is_active) {
+            Auth::logout();
+
+            throw ValidationException::withMessages([
+                'email' => 'This account has been deactivated. Contact a super admin for access.',
+            ]);
+        }
+
         if (Auth::user()->hasTwoFactorEnabled()) {
             $userId = Auth::user()->id;
             Auth::logout();

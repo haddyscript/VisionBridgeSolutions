@@ -133,10 +133,15 @@
                                         @if ($admin->is(auth()->user()))
                                             <span class="text-xs text-gray-400">(you)</span>
                                         @endif
-                                        @if ($admin->isSuperAdmin())
+                                        @if ($admin->isOwner())
+                                            <span class="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-white bg-navy px-2 py-0.5 rounded-full shrink-0">Owner</span>
+                                        @elseif ($admin->isSuperAdmin())
                                             <span class="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-gold-dark bg-gold/15 px-2 py-0.5 rounded-full shrink-0">Super Admin</span>
                                         @elseif ($admin->restricted_access)
                                             <span class="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-navy bg-gray-100 px-2 py-0.5 rounded-full shrink-0">Restricted</span>
+                                        @endif
+                                        @if (! $admin->is_active)
+                                            <span class="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-red-500 bg-red-50 px-2 py-0.5 rounded-full shrink-0">Inactive</span>
                                         @endif
                                     </div>
                                     <p class="text-xs text-gray-400 mt-0.5">{{ $admin->email }}</p>
@@ -149,7 +154,7 @@
                                             Manage Access
                                         </button>
                                     @endif
-                                    @if (! ($admin->isSuperAdmin() && $admin->is(auth()->user())))
+                                    @if (! $admin->isOwner() && ! ($admin->isSuperAdmin() && $admin->is(auth()->user())))
                                         <form method="POST" action="{{ route('admin.team.toggle-super-admin', $admin) }}"
                                               onsubmit="return confirm('{{ $admin->isSuperAdmin() ? 'Revoke' : 'Grant' }} super admin access for {{ $admin->name }}?')">
                                             @csrf
@@ -159,7 +164,17 @@
                                             </button>
                                         </form>
                                     @endif
-                                    @if (! $admin->is(auth()->user()))
+                                    @if (auth()->user()->isOwner() && ! $admin->is(auth()->user()))
+                                        <form method="POST" action="{{ route('admin.team.toggle-active', $admin) }}"
+                                              onsubmit="return confirm('{{ $admin->is_active ? 'Deactivate' : 'Reactivate' }} {{ $admin->name }}? {{ $admin->is_active ? 'They will be logged out and blocked from logging back in until reactivated.' : '' }}')">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="whitespace-nowrap text-xs font-semibold {{ $admin->is_active ? 'text-orange-500 hover:text-orange-600' : 'text-teal-dark hover:text-teal' }}">
+                                                {{ $admin->is_active ? 'Deactivate' : 'Reactivate' }}
+                                            </button>
+                                        </form>
+                                    @endif
+                                    @if (! $admin->is(auth()->user()) && ! $admin->isOwner())
                                         <form method="POST" action="{{ route('admin.team.destroy', $admin) }}" onsubmit="return confirm('Remove this team member?')">
                                             @csrf
                                             @method('DELETE')

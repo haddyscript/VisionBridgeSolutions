@@ -27,6 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'role',
         'is_super_admin',
         'restricted_access',
+        'is_active',
         'stripe_customer_id',
         'theme',
         'email_verified_at',
@@ -69,6 +70,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'onboarding_step' => 'integer',
             'is_super_admin' => 'boolean',
             'restricted_access' => 'boolean',
+            'is_active' => 'boolean',
             'password' => 'hashed',
             'two_factor_secret' => 'encrypted',
             'two_factor_recovery_codes' => 'encrypted:array',
@@ -128,14 +130,28 @@ class User extends Authenticatable implements MustVerifyEmail
             ->exists();
     }
 
+    /**
+     * The one permanent, hardcoded root account (the FaithStack shared admin
+     * login) — always a super admin, can never be removed or deactivated by
+     * anyone else, and is the only account allowed to remove or deactivate
+     * another super admin. Deliberately not a toggleable flag: the whole
+     * point is that this can't be reassigned or revoked from within the app.
+     */
+    public const OWNER_EMAIL = 'admin@visionbridgesolutions.com';
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
 
+    public function isOwner(): bool
+    {
+        return $this->isAdmin() && strcasecmp($this->email, self::OWNER_EMAIL) === 0;
+    }
+
     public function isSuperAdmin(): bool
     {
-        return $this->isAdmin() && $this->is_super_admin;
+        return $this->isOwner() || ($this->isAdmin() && $this->is_super_admin);
     }
 
     public function adminPermissions()

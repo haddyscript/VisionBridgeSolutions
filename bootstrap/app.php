@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
             'super-admin' => \App\Http\Middleware\EnsureUserIsSuperAdmin::class,
+            'owner' => \App\Http\Middleware\EnsureUserIsOwner::class,
             'admin-page-access' => \App\Http\Middleware\EnsureUserCanAccessAdminPage::class,
             'onboarding.complete' => \App\Http\Middleware\EnsureOnboardingComplete::class,
             'project.not-suspended' => \App\Http\Middleware\EnsureProjectNotSuspended::class,

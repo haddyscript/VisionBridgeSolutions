@@ -69,6 +69,10 @@ class TeamController extends Controller
     {
         abort_unless($user->isAdmin(), 404);
 
+        if ($user->isOwner()) {
+            return back()->withErrors(['team' => 'The owner account is always a super admin — this can\'t be changed.']);
+        }
+
         if ($user->isSuperAdmin() && $user->is($request->user())) {
             return back()->withErrors(['team' => 'You cannot revoke your own super admin access. Ask another super admin to do it.']);
         }
@@ -82,6 +86,26 @@ class TeamController extends Controller
         return back()->with('status', $user->isSuperAdmin()
             ? $user->name.' is now a super admin.'
             : $user->name.' is no longer a super admin.');
+    }
+
+    /**
+     * Owner-only. Reversible suspension — blocks login/kicks an active
+     * session (see EnsureUserIsAdmin) without deleting the account or any of
+     * its history/associations, unlike destroy().
+     */
+    public function toggleActive(Request $request, User $user)
+    {
+        abort_unless($user->isAdmin(), 404);
+
+        if ($user->is($request->user())) {
+            return back()->withErrors(['team' => 'You cannot deactivate your own account.']);
+        }
+
+        $user->update(['is_active' => ! $user->is_active]);
+
+        return back()->with('status', $user->is_active
+            ? $user->name.' has been reactivated.'
+            : $user->name.' has been deactivated.');
     }
 
     public function updatePermissions(Request $request, User $user)
@@ -117,12 +141,22 @@ class TeamController extends Controller
             return back()->withErrors(['team' => 'You cannot remove your own account.']);
         }
 
-        if (User::where('role', 'admin')->count() <= 1) {
-            return back()->withErrors(['team' => 'At least one admin account must remain.']);
+        if ($user->isOwner()) {
+            return back()->withErrors(['team' => 'The owner account can\'t be removed.']);
         }
 
-        if ($user->isSuperAdmin() && User::where('role', 'admin')->where('is_super_admin', true)->count() <= 1) {
-            return back()->withErrors(['team' => 'At least one super admin account must remain.']);
+        // The owner can remove anyone — including the last remaining super
+        // admin — since the owner itself always counts as a super admin and
+        // can never be locked out. Every other super admin still has to
+        // respect the safety nets below.
+        if (! $request->user()->isOwner()) {
+            if (User::where('role', 'admin')->count() <= 1) {
+                return back()->withErrors(['team' => 'At least one admin account must remain.']);
+            }
+
+            if ($user->isSuperAdmin() && User::where('role', 'admin')->where('is_super_admin', true)->count() <= 1) {
+                return back()->withErrors(['team' => 'At least one super admin account must remain.']);
+            }
         }
 
         $user->delete();
