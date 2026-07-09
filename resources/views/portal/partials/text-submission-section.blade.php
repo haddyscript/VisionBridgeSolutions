@@ -52,7 +52,7 @@
                     ][$item->status] ?? 'bg-red-50 dark:bg-red-500/10 text-red-500';
                 @endphp
                 <details class="group rounded-lg border border-gray-200 dark:border-gray-700 border-l-4 {{ $borderColor }} px-4 py-3 {{ $item->isCompleted() ? 'opacity-60' : '' }}" {{ ! $item->isCompleted() ? 'open' : '' }}>
-                    <summary class="flex items-center justify-between gap-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                    <summary class="sticky top-0 z-10 bg-white dark:bg-gray-800 flex items-center justify-between gap-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                         <div class="flex items-center gap-2">
                             <span class="text-xs text-gray-400 dark:text-gray-500">{{ $item->created_at->format('M j, Y \a\t g:ia') }}</span>
                             <span class="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $statusBadgeColor }}">
