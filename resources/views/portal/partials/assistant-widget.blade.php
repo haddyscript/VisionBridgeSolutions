@@ -33,7 +33,7 @@
         This conversation has been shared with our team — someone will follow up by email if needed.
     </div>
 
-    <form id="assistant-form" class="shrink-0 border-t border-gray-100 dark:border-gray-700 p-3 flex items-end gap-2">
+    <form id="assistant-form" data-no-loading-overlay class="shrink-0 border-t border-gray-100 dark:border-gray-700 p-3 flex items-end gap-2">
         @csrf
         <textarea id="assistant-input" rows="1" maxlength="2000" placeholder="Type your question…"
                   class="flex-1 resize-none rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold"></textarea>
