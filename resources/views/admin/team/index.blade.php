@@ -15,9 +15,12 @@
         </div>
 
         {{-- My profile --}}
-        <div class="bg-white rounded-xl border border-gray-200 p-5">
-            <h3 class="text-sm font-semibold text-navy mb-3">My Profile</h3>
-            <form method="POST" action="{{ route('admin.team.profile.update') }}" class="space-y-4">
+        <details class="group bg-white rounded-xl border border-gray-200 p-5">
+            <summary class="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                <h3 class="text-sm font-semibold text-navy">My Profile</h3>
+                <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </summary>
+            <form method="POST" action="{{ route('admin.team.profile.update') }}" class="space-y-4 mt-4">
                 @csrf
                 @method('PATCH')
                 <div>
@@ -34,12 +37,15 @@
                     Save Profile
                 </button>
             </form>
-        </div>
+        </details>
 
         {{-- Change password --}}
-        <div class="bg-white rounded-xl border border-gray-200 p-5">
-            <h3 class="text-sm font-semibold text-navy mb-3">Change Password</h3>
-            <form method="POST" action="{{ route('admin.team.password.update') }}" class="space-y-4">
+        <details class="group bg-white rounded-xl border border-gray-200 p-5">
+            <summary class="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                <h3 class="text-sm font-semibold text-navy">Change Password</h3>
+                <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </summary>
+            <form method="POST" action="{{ route('admin.team.password.update') }}" class="space-y-4 mt-4">
                 @csrf
                 @method('PATCH')
                 <div>
@@ -61,7 +67,7 @@
                     Update Password
                 </button>
             </form>
-        </div>
+        </details>
     </div>
 
     {{-- Team Management --}}
@@ -79,9 +85,12 @@
 
         @if (auth()->user()->isSuperAdmin())
             {{-- Add team member --}}
-            <div class="bg-white rounded-xl border border-gray-200 p-5">
-                <h3 class="text-sm font-semibold text-navy mb-3">Add Team Member</h3>
-                <form method="POST" action="{{ route('admin.team.store') }}" class="space-y-4">
+            <details class="group bg-white rounded-xl border border-gray-200 p-5">
+                <summary class="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                    <h3 class="text-sm font-semibold text-navy">Add Team Member</h3>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </summary>
+                <form method="POST" action="{{ route('admin.team.store') }}" class="space-y-4 mt-4">
                     @csrf
                     <div>
                         <label class="block text-xs font-medium text-navy mb-1">Full Name</label>
@@ -103,7 +112,7 @@
                         Add Team Member
                     </button>
                 </form>
-            </div>
+            </details>
         @endif
 
         {{-- Existing team members --}}
