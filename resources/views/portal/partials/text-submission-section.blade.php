@@ -80,7 +80,8 @@
                     <div class="flex items-start justify-end gap-2 max-w-[75%] ml-auto mt-2">
                         <div class="rounded-2xl rounded-tr-sm bg-gold/10 px-3.5 py-2">
                             @if ($item->body)
-                                <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line">{{ $item->body }}</p>
+                                <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line message-text max-h-24 overflow-hidden">{{ $item->body }}</p>
+                                <button type="button" class="message-toggle hidden text-xs font-semibold text-navy dark:text-white hover:text-gold-dark mt-1">See more</button>
                             @endif
                             @if ($item->path)
                                 <a href="{{ $item->url() }}" target="_blank"
@@ -103,7 +104,8 @@
                                 {{-- Your reply bubble --}}
                                 <div class="flex items-start justify-end gap-2 max-w-[75%] ml-auto mt-2">
                                     <div class="rounded-2xl rounded-tr-sm bg-gold/10 px-3.5 py-2">
-                                        <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line">{{ $reply->body }}</p>
+                                        <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line message-text max-h-24 overflow-hidden">{{ $reply->body }}</p>
+                                        <button type="button" class="message-toggle hidden text-xs font-semibold text-navy dark:text-white hover:text-gold-dark mt-1">See more</button>
                                         <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ $reply->created_at->format('M j, Y \a\t g:ia') }}</p>
                                     </div>
                                 </div>
@@ -113,7 +115,8 @@
                                     <span class="w-7 h-7 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0">VB</span>
                                     <div class="rounded-2xl rounded-tl-sm bg-navy text-white px-3.5 py-2">
                                         <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>
-                                        <p class="text-sm whitespace-pre-line">{{ $reply->body }}</p>
+                                        <p class="text-sm whitespace-pre-line message-text max-h-24 overflow-hidden">{{ $reply->body }}</p>
+                                        <button type="button" class="message-toggle hidden text-xs font-semibold text-gold hover:text-white mt-1">See more</button>
                                         <p class="text-xs text-white/40 mt-1">{{ $reply->created_at->format('M j, Y \a\t g:ia') }}</p>
                                     </div>
                                 </div>
@@ -149,6 +152,34 @@
     if (historyEl) {
         historyEl.scrollTop = historyEl.scrollHeight;
     }
+
+    function initMessageToggles(scope) {
+        (scope || document).querySelectorAll('.message-text').forEach(function (el) {
+            if (el.dataset.toggleInit) return;
+            if (el.offsetParent === null) return;
+            el.dataset.toggleInit = '1';
+            if (el.scrollHeight > el.clientHeight + 2) {
+                const btn = el.nextElementSibling;
+                if (btn && btn.classList.contains('message-toggle')) {
+                    btn.classList.remove('hidden');
+                    btn.addEventListener('click', function () {
+                        const expanded = el.classList.toggle('message-expanded');
+                        el.classList.toggle('max-h-24', !expanded);
+                        el.classList.toggle('overflow-hidden', !expanded);
+                        btn.textContent = expanded ? 'See less' : 'See more';
+                    });
+                }
+            }
+        });
+    }
+
+    initMessageToggles();
+
+    document.querySelectorAll('details').forEach(function (details) {
+        details.addEventListener('toggle', function () {
+            if (details.open) initMessageToggles(details);
+        });
+    });
 
     document.querySelectorAll('.ajax-client-reply-form').forEach(function (form) {
         if (form.dataset.bound) return;
@@ -188,12 +219,14 @@
                     bubble.className = 'flex items-start justify-end gap-2 max-w-[75%] ml-auto mt-2';
                     bubble.innerHTML =
                         '<div class="rounded-2xl rounded-tr-sm bg-gold/10 px-3.5 py-2">' +
-                            '<p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line"></p>' +
+                            '<p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line message-text max-h-24 overflow-hidden"></p>' +
+                            '<button type="button" class="message-toggle hidden text-xs font-semibold text-navy dark:text-white hover:text-gold-dark mt-1">See more</button>' +
                             '<p class="text-xs text-gray-400 dark:text-gray-500 mt-1"></p>' +
                         '</div>';
                     bubble.querySelector('.text-sm').textContent = data.body;
                     bubble.querySelector('.text-xs').textContent = data.sentAt;
                     repliesContainer.appendChild(bubble);
+                    initMessageToggles(bubble);
                     if (historyEl) {
                         historyEl.scrollTop = historyEl.scrollHeight;
                     }
