@@ -783,7 +783,8 @@
         // especially on a slower connection. Shows a full-screen spinner the
         // instant any form on the page is submitted. A form can opt out with
         // data-no-loading-overlay if it already handles its own submit
-        // feedback (e.g. an AJAX-driven form).
+        // feedback (e.g. an AJAX-driven form). Sidebar navigation links get
+        // the same treatment below — those are also plain page navigations.
         (function () {
             const overlay = document.getElementById('page-loading-overlay');
             const overlayText = document.getElementById('page-loading-text');
@@ -793,10 +794,7 @@
             const SLOW_TEXT = "Still working on it — this can take a little longer than usual. Please don't close or refresh this page.";
             let slowTimer = null;
 
-            document.addEventListener('submit', function (e) {
-                const form = e.target;
-                if (form.tagName !== 'FORM' || form.dataset.noLoadingOverlay !== undefined) return;
-
+            function showOverlay() {
                 overlayText.textContent = DEFAULT_TEXT;
                 overlay.classList.remove('hidden');
                 overlay.classList.add('flex');
@@ -805,7 +803,30 @@
                 slowTimer = setTimeout(function () {
                     overlayText.textContent = SLOW_TEXT;
                 }, 10000);
+            }
+
+            document.addEventListener('submit', function (e) {
+                const form = e.target;
+                if (form.tagName !== 'FORM' || form.dataset.noLoadingOverlay !== undefined) return;
+
+                showOverlay();
             }, true);
+
+            // Sidebar nav links are plain <a href> page navigations too —
+            // show the same overlay, but only for an actual same-tab
+            // navigation: skip modifier/middle clicks (new tab), target="_blank",
+            // mailto:/tel: links, and same-page hash anchors.
+            document.addEventListener('click', function (e) {
+                const link = e.target.closest('#portal-sidebar nav a[href]');
+                if (!link || link.dataset.noLoadingOverlay !== undefined) return;
+                if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                if (link.target === '_blank') return;
+
+                const href = link.getAttribute('href');
+                if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+
+                showOverlay();
+            });
 
             // If the user navigates back to a page that was mid-submit
             // (bfcache), don't leave the overlay stuck showing.
