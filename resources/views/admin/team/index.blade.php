@@ -117,9 +117,9 @@
         @endif
 
         {{-- Existing team members --}}
-        <div class="bg-white rounded-xl border border-gray-200 p-5">
-            <h3 class="text-sm font-semibold text-navy mb-3">Admins ({{ $admins->count() }})</h3>
-            <div class="space-y-2.5">
+        <div class="bg-white rounded-xl border border-gray-200 flex flex-col max-h-[36rem]">
+            <h3 class="text-sm font-semibold text-navy px-5 pt-5 pb-3 shrink-0">Admins ({{ $admins->count() }})</h3>
+            <div class="space-y-2.5 overflow-y-auto px-5 pb-5">
                 @foreach ($admins as $admin)
                     <div class="rounded-lg border border-gray-200">
                         <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
@@ -194,27 +194,29 @@
                                         </span>
                                     </label>
 
-                                    <div id="permissions-fields-{{ $admin->id }}" class="space-y-4 {{ $admin->restricted_access ? '' : 'hidden' }}">
-                                        <div class="flex items-center justify-end gap-3 -mb-1">
+                                    <div id="permissions-fields-{{ $admin->id }}" class="{{ $admin->restricted_access ? '' : 'hidden' }}">
+                                        <div class="flex items-center justify-end gap-3 pb-2">
                                             <button type="button" class="select-all-permissions text-xs font-semibold text-gold-dark hover:underline" data-panel="permissions-fields-{{ $admin->id }}">Select All</button>
                                             <span class="text-gray-300">|</span>
                                             <button type="button" class="select-none-permissions text-xs font-semibold text-gray-400 hover:underline" data-panel="permissions-fields-{{ $admin->id }}">Select None</button>
                                         </div>
 
-                                        @foreach ($permissionGroups as $groupLabel => $groupKeys)
-                                            <div>
-                                                <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">{{ $groupLabel }}</p>
-                                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                    @foreach ($groupKeys as $key)
-                                                        <label class="flex items-center gap-2 text-sm text-navy bg-white border border-gray-200 rounded-lg px-3 py-2 cursor-pointer transition-colors has-[:checked]:border-gold has-[:checked]:bg-gold/5 hover:border-gray-300">
-                                                            <input type="checkbox" name="permissions[]" value="{{ $key }}" class="rounded border-gray-300 text-gold focus:ring-gold focus:ring-offset-0"
-                                                                   {{ in_array($key, $adminPermissionKeys, true) ? 'checked' : '' }}>
-                                                            {{ $sections[$key]['label'] }}
-                                                        </label>
-                                                    @endforeach
+                                        <div class="space-y-4 max-h-72 overflow-y-auto pr-1">
+                                            @foreach ($permissionGroups as $groupLabel => $groupKeys)
+                                                <div>
+                                                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">{{ $groupLabel }}</p>
+                                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                        @foreach ($groupKeys as $key)
+                                                            <label class="flex items-center gap-2 text-sm text-navy bg-white border border-gray-200 rounded-lg px-3 py-2 cursor-pointer transition-colors has-[:checked]:border-gold has-[:checked]:bg-gold/5 hover:border-gray-300">
+                                                                <input type="checkbox" name="permissions[]" value="{{ $key }}" class="rounded border-gray-300 text-gold focus:ring-gold focus:ring-offset-0"
+                                                                       {{ in_array($key, $adminPermissionKeys, true) ? 'checked' : '' }}>
+                                                                {{ $sections[$key]['label'] }}
+                                                            </label>
+                                                        @endforeach
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        @endforeach
+                                            @endforeach
+                                        </div>
                                     </div>
 
                                     <div class="flex items-center gap-3 pt-1">
