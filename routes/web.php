@@ -39,6 +39,7 @@ use App\Http\Controllers\IntakeController;
 use App\Models\MaintenancePlan;
 use App\Http\Controllers\Portal\AccountController as PortalAccountController;
 use App\Http\Controllers\Portal\AnnouncementController as PortalAnnouncementController;
+use App\Http\Controllers\Portal\AssistantController as PortalAssistantController;
 use App\Http\Controllers\Portal\CarePlanAgreementController as PortalCarePlanAgreementController;
 use App\Http\Controllers\Portal\CategoryController;
 use App\Http\Controllers\Portal\ConsultationController as PortalConsultationController;
@@ -213,6 +214,9 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
 
     Route::post('/portal/announcements/{announcement}/dismiss', [PortalAnnouncementController::class, 'dismiss'])->name('portal.announcements.dismiss');
     Route::get('/portal/search', [PortalSearchController::class, 'index'])->name('portal.search');
+
+    Route::get('/portal/assistant', [PortalAssistantController::class, 'show'])->name('portal.assistant.show');
+    Route::post('/portal/assistant', [PortalAssistantController::class, 'send'])->name('portal.assistant.send');
 
     Route::get('/portal/survey', [PortalSatisfactionSurveyController::class, 'show'])->name('portal.survey.show');
     Route::post('/portal/survey', [PortalSatisfactionSurveyController::class, 'store'])->name('portal.survey.store');

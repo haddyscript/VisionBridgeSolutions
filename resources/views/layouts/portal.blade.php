@@ -817,5 +817,7 @@
         })();
     </script>
 
+    @include('portal.partials.assistant-widget')
+
 </body>
 </html>
