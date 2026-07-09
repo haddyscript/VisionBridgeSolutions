@@ -214,7 +214,21 @@ class SubscriptionController extends Controller
 
         abort_unless($project && $subscription->project_id === $project->id, 403);
 
-        return back()->with('status', $reconciler->reconcile($subscription));
+        $status = $reconciler->reconcile($subscription);
+
+        // The "Refresh Status" button already submits via AJAX and swaps in
+        // just the #maintenance-plan-card fragment (see bindAjaxForms() in
+        // portal/payments.blade.php) — returning that fragment directly here
+        // instead of a redirect skips a whole second full-page GET request,
+        // which was doubling how long the button felt like it took given the
+        // live Stripe API call this already has to wait on.
+        if ($request->header('X-Requested-With') === 'XMLHttpRequest') {
+            $card = view('portal.partials.subscription-card', ['subscription' => $subscription->fresh()])->render();
+
+            return response($card.'<div id="flash-status-banner" class="hidden">'.e($status).'</div>');
+        }
+
+        return back()->with('status', $status);
     }
 
     public function receipt(Request $request, SubscriptionPayment $subscriptionPayment)
