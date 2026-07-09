@@ -62,7 +62,7 @@
             @if ($card)
                 <h3 class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Card on File</h3>
                 <div class="flex items-center gap-3 mb-6 pb-6 border-b border-gray-100 dark:border-gray-700">
-                    <span class="w-10 h-7 rounded bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs font-bold uppercase text-gray-500 dark:text-gray-300">{{ $card->brand }}</span>
+                    <span class="shrink-0 h-7 px-2 rounded bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs font-bold uppercase text-gray-500 dark:text-gray-300 whitespace-nowrap">{{ $card->brand }}</span>
                     <span class="text-sm text-gray-700 dark:text-gray-200">Ending in {{ $card->last4 }} &middot; Expires {{ str_pad($card->exp_month, 2, '0', STR_PAD_LEFT) }}/{{ $card->exp_year }}</span>
                 </div>
             @endif
