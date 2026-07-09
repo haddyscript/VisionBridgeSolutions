@@ -320,6 +320,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::middleware('super-admin')->group(function () {
         Route::post('/team', [AdminTeamController::class, 'store'])->name('team.store');
+        Route::patch('/team/{user}/super-admin', [AdminTeamController::class, 'toggleSuperAdmin'])->name('team.toggle-super-admin');
         Route::delete('/team/{user}', [AdminTeamController::class, 'destroy'])->name('team.destroy');
     });
 
