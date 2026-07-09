@@ -61,6 +61,16 @@ class UploadApprovalController extends Controller
         return back()->with('status', 'Dev instructions saved.');
     }
 
+    public function markRead(Upload $upload)
+    {
+        $upload->replies()
+            ->where('user_id', $upload->user_id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        return response()->json(['message' => 'Marked read.']);
+    }
+
     public function reply(Request $request, Upload $upload)
     {
         $validated = $request->validate([

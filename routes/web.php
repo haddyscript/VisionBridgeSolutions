@@ -283,6 +283,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::patch('/uploads/{upload}/status', [UploadApprovalController::class, 'updateStatus'])->name('uploads.status');
     Route::patch('/uploads/{upload}/reply', [UploadApprovalController::class, 'reply'])->name('uploads.reply');
     Route::patch('/uploads/{upload}/dev-instructions', [UploadApprovalController::class, 'updateDevInstructions'])->name('uploads.dev-instructions');
+    Route::post('/uploads/{upload}/read', [UploadApprovalController::class, 'markRead'])->name('uploads.read');
 
     Route::get('/satisfaction-surveys', [AdminSatisfactionSurveyController::class, 'index'])->name('satisfaction-surveys.index');
 

@@ -100,6 +100,15 @@ class Upload extends Model
             ->count();
     }
 
+    /** Replies from the client no admin has opened this thread to see yet. */
+    public function unreadClientRepliesCount(): int
+    {
+        return $this->replies
+            ->where('user_id', $this->user_id)
+            ->whereNull('read_at')
+            ->count();
+    }
+
     public function url(): ?string
     {
         return $this->path ? asset('client-uploads/'.$this->path) : null;

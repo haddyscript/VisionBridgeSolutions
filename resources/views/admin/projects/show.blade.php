@@ -613,66 +613,125 @@
 </div>
 
 <script>
-(function () {
-    document.querySelectorAll('.ajax-reply-form').forEach(function (form) {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
+// Admin Website Content / Revisions thread UI (list <-> detail, unread
+// badges, message truncation, always-visible composer). Defined here --
+// outside any data-ajax-target panel -- as global functions referenced via
+// inline onclick/onsubmit attributes in admin/projects/_text-thread.blade.php,
+// since injected <script> tags inside an ajax-swapped panel never
+// re-execute, but inline event attributes are re-attached automatically
+// every time their element is inserted into the DOM.
+function openAdminThread(cat, itemId, hasUnread, markReadUrl) {
+    const list = document.getElementById('thread-list-' + cat);
+    if (list) list.classList.add('hidden');
 
-            const uploadId = form.dataset.uploadId;
-            const textarea = form.querySelector('textarea[name="admin_reply"]');
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalBtnHtml = submitBtn.innerHTML;
-
-            submitBtn.disabled = true;
-            submitBtn.innerHTML =
-                '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">' +
-                    '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>' +
-                    '<path class="opacity-75" fill="currentColor" d="M12 2a10 10 0 0110 10h-4a6 6 0 00-6-6V2z"></path>' +
-                '</svg> Sending…';
-            submitBtn.classList.add('inline-flex', 'items-center', 'gap-2');
-
-            fetch(form.action, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
-                    'X-HTTP-Method-Override': 'PATCH',
-                },
-                body: new FormData(form),
-            })
-                .then(function (response) {
-                    if (!response.ok) throw new Error('Request failed');
-                    return response.json();
-                })
-                .then(function (data) {
-                    const repliesContainer = document.getElementById('replies-' + uploadId);
-                    const bubble = document.createElement('div');
-                    bubble.className = 'flex items-start justify-end gap-2.5 max-w-[85%] ml-auto mt-3';
-                    bubble.innerHTML =
-                        '<div class="rounded-2xl rounded-tr-sm bg-navy text-white px-4 py-2.5">' +
-                            '<p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>' +
-                            '<p class="text-sm whitespace-pre-line"></p>' +
-                            '<p class="text-xs text-white/40 mt-1.5"></p>' +
-                        '</div>' +
-                        '<span class="w-7 h-7 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0">VB</span>';
-                    bubble.querySelector('.text-sm').textContent = data.body;
-                    bubble.querySelector('.text-xs').textContent = data.sentAt;
-                    repliesContainer.appendChild(bubble);
-
-                    textarea.value = '';
-                    form.classList.add('hidden');
-                    document.getElementById('reply-toggle-' + uploadId).classList.remove('hidden');
-                })
-                .catch(function () {
-                    alert('Could not send the reply. Please try again.');
-                })
-                .finally(function () {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnHtml;
-                });
-        });
+    document.querySelectorAll('.admin-thread').forEach(function (thread) {
+        thread.classList.toggle('hidden', thread.id !== 'thread-' + cat + '-' + itemId);
     });
-})();
+
+    const thread = document.getElementById('thread-' + cat + '-' + itemId);
+    if (thread) {
+        thread.querySelectorAll('.message-text').forEach(function (el) {
+            if (el.scrollHeight > el.clientHeight + 2) {
+                const btn = el.nextElementSibling;
+                if (btn && btn.classList.contains('message-toggle')) {
+                    btn.classList.remove('hidden');
+                }
+            }
+        });
+
+        const scrollEl = thread.querySelector('.admin-thread-scroll');
+        if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
+    }
+
+    if (hasUnread && markReadUrl) {
+        fetch(markReadUrl, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+            },
+        });
+    }
+}
+
+function closeAdminThread(cat) {
+    document.querySelectorAll('.admin-thread').forEach(function (thread) {
+        thread.classList.add('hidden');
+    });
+    const list = document.getElementById('thread-list-' + cat);
+    if (list) list.classList.remove('hidden');
+}
+
+function toggleAdminMessage(btn) {
+    const el = btn.previousElementSibling;
+    if (!el || !el.classList.contains('message-text')) return;
+
+    const expanded = el.classList.toggle('message-expanded');
+    el.classList.toggle('max-h-24', !expanded);
+    el.classList.toggle('overflow-hidden', !expanded);
+    btn.textContent = expanded ? 'See less' : 'See more';
+}
+
+function submitAdminReply(form, event) {
+    event.preventDefault();
+
+    const uploadId = form.dataset.uploadId;
+    const cat = form.dataset.cat;
+    const textarea = form.querySelector('textarea[name="admin_reply"]');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnHtml = submitBtn.innerHTML;
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML =
+        '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">' +
+            '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>' +
+            '<path class="opacity-75" fill="currentColor" d="M12 2a10 10 0 0110 10h-4a6 6 0 00-6-6V2z"></path>' +
+        '</svg>';
+
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+            'X-HTTP-Method-Override': 'PATCH',
+        },
+        body: new FormData(form),
+    })
+        .then(function (response) {
+            if (!response.ok) throw new Error('Request failed');
+            return response.json();
+        })
+        .then(function (data) {
+            const repliesContainer = document.getElementById('replies-' + uploadId);
+            const bubble = document.createElement('div');
+            bubble.className = 'flex items-start justify-end gap-2.5 max-w-[85%] ml-auto mt-3';
+            bubble.innerHTML =
+                '<div class="rounded-2xl rounded-tr-sm bg-navy text-white px-4 py-2.5">' +
+                    '<p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>' +
+                    '<p class="text-sm whitespace-pre-line message-text max-h-24 overflow-hidden"></p>' +
+                    '<button type="button" onclick="toggleAdminMessage(this)" class="message-toggle hidden text-xs font-semibold text-gold hover:text-white mt-1">See more</button>' +
+                    '<p class="text-xs text-white/40 mt-1.5"></p>' +
+                '</div>' +
+                '<span class="w-7 h-7 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0">VB</span>';
+            bubble.querySelector('.message-text').textContent = data.body;
+            bubble.querySelector('.text-xs').textContent = data.sentAt;
+            repliesContainer.appendChild(bubble);
+
+            const scrollEl = document.getElementById('thread-' + cat + '-' + uploadId)?.querySelector('.admin-thread-scroll');
+            if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
+
+            textarea.value = '';
+        })
+        .catch(function () {
+            alert('Could not send the reply. Please try again.');
+        })
+        .finally(function () {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnHtml;
+        });
+
+    return false;
+}
 </script>
 
 {{-- Reset Password confirm modal --}}
