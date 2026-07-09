@@ -117,19 +117,19 @@
                                 <div class="w-9 h-9 rounded-full bg-gold/15 text-gold-dark flex items-center justify-center text-sm font-semibold shrink-0">
                                     {{ strtoupper(substr($admin->name, 0, 1)) }}
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-navy">
-                                        {{ $admin->name }}
+                                <div class="min-w-0">
+                                    <div class="flex flex-wrap items-center gap-1.5">
+                                        <span class="text-sm font-medium text-navy">{{ $admin->name }}</span>
                                         @if ($admin->is(auth()->user()))
                                             <span class="text-xs text-gray-400">(you)</span>
                                         @endif
                                         @if ($admin->isSuperAdmin())
-                                            <span class="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-gold-dark bg-gold/15 px-2 py-0.5 rounded-full ml-1">Super Admin</span>
+                                            <span class="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-gold-dark bg-gold/15 px-2 py-0.5 rounded-full shrink-0">Super Admin</span>
                                         @elseif ($admin->restricted_access)
-                                            <span class="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-navy bg-gray-100 px-2 py-0.5 rounded-full ml-1">Restricted</span>
+                                            <span class="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-navy bg-gray-100 px-2 py-0.5 rounded-full shrink-0">Restricted</span>
                                         @endif
-                                    </p>
-                                    <p class="text-xs text-gray-400">{{ $admin->email }}</p>
+                                    </div>
+                                    <p class="text-xs text-gray-400 mt-0.5">{{ $admin->email }}</p>
                                 </div>
                             </div>
                             @if (auth()->user()->isSuperAdmin())
