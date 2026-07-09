@@ -54,8 +54,9 @@
                             $lastReply = $item->replies->last();
                             $isMine = ! $lastReply || $lastReply->user_id === $item->user_id;
                             $previewText = $lastReply->body ?? $item->body ?? $item->original_name ?? '';
+                            $unreadCount = $item->unreadRepliesCount();
                         @endphp
-                        <button type="button" class="revision-list-item w-full text-left flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 border-l-4 {{ $borderColor }} px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors {{ $item->isCompleted() ? 'opacity-60' : '' }}" data-thread="revision-thread-{{ $item->id }}">
+                        <button type="button" class="revision-list-item w-full text-left flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 border-l-4 {{ $borderColor }} px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors {{ $item->isCompleted() ? 'opacity-60' : '' }}" data-thread="revision-thread-{{ $item->id }}" data-mark-read-url="{{ route('portal.uploads.read', $item) }}">
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center justify-between gap-2">
                                     <span class="text-xs text-gray-400 dark:text-gray-500">{{ $item->created_at->format('M j, Y') }}</span>
@@ -68,6 +69,7 @@
                                 </div>
                                 <p class="text-sm text-gray-600 dark:text-gray-300 truncate mt-1">{{ $isMine ? 'You: ' : '' }}{{ \Illuminate\Support\Str::limit($previewText, 60) }}</p>
                             </div>
+                            <span class="unread-badge shrink-0 min-w-[1.25rem] h-5 px-1.5 rounded-full bg-teal text-white text-xs font-semibold flex items-center justify-center {{ $unreadCount === 0 ? 'hidden' : '' }}">{{ $unreadCount }}</span>
                             <svg class="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </button>
                     @endforeach
@@ -215,6 +217,18 @@
     document.querySelectorAll('.revision-list-item').forEach(function (row) {
         row.addEventListener('click', function () {
             openThread(row.dataset.thread);
+
+            const badge = row.querySelector('.unread-badge');
+            if (badge && !badge.classList.contains('hidden') && row.dataset.markReadUrl) {
+                badge.classList.add('hidden');
+                fetch(row.dataset.markReadUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+                    },
+                });
+            }
         });
     });
 

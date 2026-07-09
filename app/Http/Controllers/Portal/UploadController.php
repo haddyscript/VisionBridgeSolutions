@@ -128,6 +128,18 @@ class UploadController extends Controller
         return back()->with('status', 'Reply sent.');
     }
 
+    public function markRead(Request $request, Upload $upload)
+    {
+        $this->authorizeProject($request, $upload->project);
+
+        $upload->replies()
+            ->where('user_id', '!=', $upload->user_id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        return response()->json(['message' => 'Marked read.']);
+    }
+
     public function destroy(Request $request, Upload $upload)
     {
         $this->authorizeProject($request, $upload->project);

@@ -173,6 +173,7 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
     Route::get('/portal/files/{category}/download', [CategoryController::class, 'downloadAll'])->name('portal.category.download');
     Route::post('/portal/projects/{project}/uploads', [UploadController::class, 'store'])->name('portal.uploads.store');
     Route::post('/portal/uploads/{upload}/reply', [UploadController::class, 'reply'])->name('portal.uploads.reply');
+    Route::post('/portal/uploads/{upload}/read', [UploadController::class, 'markRead'])->name('portal.uploads.read');
     Route::delete('/portal/uploads/{upload}', [UploadController::class, 'destroy'])->name('portal.uploads.destroy');
 
     Route::get('/portal/payments', [PortalPaymentController::class, 'index'])->name('portal.payments.index');

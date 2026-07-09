@@ -91,6 +91,15 @@ class Upload extends Model
         return $this->hasMany(UploadReply::class)->oldest();
     }
 
+    /** Replies from our team the client hasn't opened this thread to see yet. */
+    public function unreadRepliesCount(): int
+    {
+        return $this->replies
+            ->where('user_id', '!=', $this->user_id)
+            ->whereNull('read_at')
+            ->count();
+    }
+
     public function url(): ?string
     {
         return $this->path ? asset('client-uploads/'.$this->path) : null;

@@ -413,6 +413,7 @@ Boss's US clients are used to WhatsApp and found the old click-to-expand accordi
 - Clicking a row opens that request as its own **full-screen thread** (message bubbles + a "Back to all requests" link + its own WhatsApp-style composer at the bottom), entirely client-side — no page reload. Only one thread is shown at a time.
 - Long messages (client's own or the team's) still collapse to a fixed height with a "See more / See less" toggle, and each opened thread auto-scrolls to its latest message.
 - Superseded the immediately-prior "always expanded, one shared composer" version of this same rework — the list/detail pattern below replaced it same-day after client feedback.
+- **Unread reply badge** — each list row shows a small gold-teal count badge (like WhatsApp's unread count) when the team has replied and the client hasn't opened that thread yet. New nullable `read_at` column on `upload_replies` (migration `2026_07_09_000001_add_read_at_to_upload_replies_table.php`); `Upload::unreadRepliesCount()` counts the client's own team replies with `read_at` still null. Opening a thread (`Portal\UploadController::markRead()`, `POST /portal/uploads/{upload}/read`) marks every team reply on that request read and clears the badge instantly client-side — mirrors the per-notification (not bulk) read pattern already used for the notification bell (§15p).
 
 ## 16. `specs/` Folder
 
