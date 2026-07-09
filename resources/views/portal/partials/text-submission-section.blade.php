@@ -32,7 +32,7 @@
             @if ($items->isEmpty())
                 <p class="text-sm text-gray-400 dark:text-gray-500">{{ $why ?? 'Nothing submitted yet.' }}</p>
             @else
-                <div class="space-y-2.5 lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto lg:pr-1">
+                <div id="revision-history-{{ $category }}" class="space-y-2.5 lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto lg:pr-1">
             @foreach ($items as $item)
                 @php
                     $borderColor = match ($item->status) {
@@ -145,6 +145,11 @@
 
 <script>
 (function () {
+    const historyEl = document.getElementById('revision-history-{{ $category }}');
+    if (historyEl) {
+        historyEl.scrollTop = historyEl.scrollHeight;
+    }
+
     document.querySelectorAll('.ajax-client-reply-form').forEach(function (form) {
         if (form.dataset.bound) return;
         form.dataset.bound = '1';
@@ -189,6 +194,9 @@
                     bubble.querySelector('.text-sm').textContent = data.body;
                     bubble.querySelector('.text-xs').textContent = data.sentAt;
                     repliesContainer.appendChild(bubble);
+                    if (historyEl) {
+                        historyEl.scrollTop = historyEl.scrollHeight;
+                    }
 
                     textarea.value = '';
                     form.classList.add('hidden');
