@@ -62,9 +62,13 @@ class TeamController extends Controller
         return back()->with('status', 'Password updated.');
     }
 
-    public function toggleSuperAdmin(User $user)
+    public function toggleSuperAdmin(Request $request, User $user)
     {
         abort_unless($user->isAdmin(), 404);
+
+        if ($user->isSuperAdmin() && $user->is($request->user())) {
+            return back()->withErrors(['team' => 'You cannot revoke your own super admin access. Ask another super admin to do it.']);
+        }
 
         if ($user->isSuperAdmin() && User::where('role', 'admin')->where('is_super_admin', true)->count() <= 1) {
             return back()->withErrors(['team' => 'At least one super admin account must remain.']);

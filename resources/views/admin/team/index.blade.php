@@ -131,14 +131,16 @@
                         </div>
                         @if (auth()->user()->isSuperAdmin())
                             <div class="flex items-center gap-3 shrink-0">
-                                <form method="POST" action="{{ route('admin.team.toggle-super-admin', $admin) }}"
-                                      onsubmit="return confirm('{{ $admin->isSuperAdmin() ? 'Revoke' : 'Grant' }} super admin access for {{ $admin->name }}?')">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" class="text-xs font-semibold text-navy hover:text-gold-dark">
-                                        {{ $admin->isSuperAdmin() ? 'Revoke Super Admin' : 'Grant Super Admin' }}
-                                    </button>
-                                </form>
+                                @if (! ($admin->isSuperAdmin() && $admin->is(auth()->user())))
+                                    <form method="POST" action="{{ route('admin.team.toggle-super-admin', $admin) }}"
+                                          onsubmit="return confirm('{{ $admin->isSuperAdmin() ? 'Revoke' : 'Grant' }} super admin access for {{ $admin->name }}?')">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="text-xs font-semibold text-navy hover:text-gold-dark">
+                                            {{ $admin->isSuperAdmin() ? 'Revoke Super Admin' : 'Grant Super Admin' }}
+                                        </button>
+                                    </form>
+                                @endif
                                 @if (! $admin->is(auth()->user()))
                                     <form method="POST" action="{{ route('admin.team.destroy', $admin) }}" onsubmit="return confirm('Remove this team member?')">
                                         @csrf
