@@ -407,12 +407,12 @@ Bug: a client reported that notifications already showed as read even though the
 
 ## 15q. WhatsApp-Style Website Content & Revisions Thread (2026-07-09)
 
-Boss's US clients are used to WhatsApp and found the old click-to-expand accordion (each revision request collapsed behind a chevron, with its own "Reply" button that had to be clicked before a textbox appeared) confusing. `resources/views/portal/partials/text-submission-section.blade.php` (shared by both Website Content and Revisions) was reworked to feel more like a chat app:
+Boss's US clients are used to WhatsApp and found the old click-to-expand accordion (each revision request collapsed behind a chevron, with its own "Reply" button that had to be clicked before a textbox appeared) confusing. `resources/views/portal/partials/text-submission-section.blade.php` (shared by both Website Content and Revisions) was reworked to feel more like a chat app, matching WhatsApp's own list → conversation pattern:
 
-- Each request is now always expanded — no more collapse/expand accordion. Its status badge and delete button sit in a small sticky header row above the message bubbles.
-- The per-request "Reply" button + hidden textbox was removed. One shared composer (rounded input + circular send button, styled like WhatsApp's message bar) now sits fixed at the bottom of the Revision History panel and always sends to the most recent request.
-- Long messages (client's own or the team's) collapse to a fixed height with a "See more / See less" toggle instead of stretching the thread indefinitely.
-- The history panel auto-scrolls to the latest message on page load and after sending a reply, so clients land on the newest message instead of having to scroll down manually.
+- Revision History now opens on a **conversation list** — one compact row per request showing its date, status badge, and a preview of the latest message (prefixed "You: " when the client sent the last message, matching WhatsApp's own list behavior).
+- Clicking a row opens that request as its own **full-screen thread** (message bubbles + a "Back to all requests" link + its own WhatsApp-style composer at the bottom), entirely client-side — no page reload. Only one thread is shown at a time.
+- Long messages (client's own or the team's) still collapse to a fixed height with a "See more / See less" toggle, and each opened thread auto-scrolls to its latest message.
+- Superseded the immediately-prior "always expanded, one shared composer" version of this same rework — the list/detail pattern below replaced it same-day after client feedback.
 
 ## 16. `specs/` Folder
 
