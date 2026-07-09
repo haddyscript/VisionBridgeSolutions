@@ -42,13 +42,14 @@
                 <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-0.5">Care Plan</p>
                 <p class="font-display text-lg font-bold text-navy dark:text-white">{{ $subscription->description }}</p>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                    {{ $subscription->formattedAmount() }}
                     @if ($subscription->isCanceled() && $subscription->canceled_at)
-                        &middot; canceled {{ $subscription->canceled_at->format('M j, Y') }}
+                        You canceled this plan on {{ $subscription->canceled_at->format('M j, Y') }}.
                     @elseif ($subscription->cancel_at_period_end && $subscription->current_period_end)
-                        &middot; cancels {{ $subscription->current_period_end->format('M j, Y') }}
+                        You're billed {{ $subscription->formattedAmount() }} until this plan ends on {{ $subscription->current_period_end->format('M j, Y') }} ({{ $subscription->current_period_end->diffForHumans() }}).
                     @elseif ($subscription->current_period_end)
-                        &middot; renews {{ $subscription->current_period_end->format('M j, Y') }}
+                        You're billed {{ $subscription->formattedAmount() }} — next renewal {{ $subscription->current_period_end->format('M j, Y') }} ({{ $subscription->current_period_end->diffForHumans() }}).
+                    @else
+                        You're billed {{ $subscription->formattedAmount() }}.
                     @endif
                 </p>
             </div>
