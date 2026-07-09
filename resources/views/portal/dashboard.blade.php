@@ -332,6 +332,29 @@
         </div>
     @endif
 
+    {{-- What's Next — the single highest-priority thing to do or expect --}}
+    @if ($whatsNext)
+        <div class="flex items-start gap-3.5 rounded-xl border {{ $whatsNext['actionable'] ? 'border-gold/30 bg-gold/5' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800' }} px-5 py-4 mb-8">
+            <span class="w-9 h-9 rounded-full {{ $whatsNext['actionable'] ? 'bg-gold/15 text-gold-dark' : 'bg-teal/10 text-teal-dark' }} flex items-center justify-center shrink-0">
+                @if ($whatsNext['actionable'])
+                    <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                @else
+                    <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                @endif
+            </span>
+            <div class="min-w-0 flex-1">
+                <p class="text-xs font-semibold uppercase tracking-widest {{ $whatsNext['actionable'] ? 'text-gold-dark' : 'text-teal-dark' }} mb-0.5">What's Next</p>
+                <p class="text-sm font-semibold text-navy dark:text-white">{{ $whatsNext['title'] }}</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ $whatsNext['description'] }}</p>
+            </div>
+            @if ($whatsNext['url'])
+                <a href="{{ $whatsNext['url'] }}" class="shrink-0 text-sm font-semibold text-navy dark:text-white bg-gold/15 hover:bg-gold/25 px-4 py-2 rounded-lg transition-colors">
+                    {{ $whatsNext['actionLabel'] }}
+                </a>
+            @endif
+        </div>
+    @endif
+
     {{-- Project header --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Portal\CategoryController;
 use App\Models\Announcement;
+use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class DashboardController extends Controller
 {
@@ -56,6 +58,69 @@ class DashboardController extends Controller
             'firstVisit' => $firstVisit,
             'announcement' => $announcement,
             'pendingSurvey' => $pendingSurvey,
+            'whatsNext' => $project ? $this->whatsNext($project) : null,
         ]);
+    }
+
+    /**
+     * The single highest-priority "what should I do (or expect) next" prompt
+     * for the Overview page. Deliberately skips anything that already has
+     * its own dedicated banner on this same page (pending payment, the
+     * 7-day review window) to avoid saying the same thing twice.
+     */
+    private function whatsNext(Project $project): array
+    {
+        $hasCoreFiles = $project->uploads->whereIn('category', ['image', 'logo', 'document'])->isNotEmpty();
+        if (! $hasCoreFiles) {
+            return [
+                'title' => 'Upload your logo, photos, or documents',
+                'description' => 'Share your branding files in Project Files so our team can start building.',
+                'url' => route('portal.category', 'image'),
+                'actionLabel' => 'Upload Files',
+                'actionable' => true,
+            ];
+        }
+
+        $hasContent = $project->uploads->where('category', 'content')->isNotEmpty();
+        if (! $hasContent) {
+            return [
+                'title' => 'Tell us what you want your site to say',
+                'description' => 'Submit your website copy in Website Content — mission statement, page text, calls to action.',
+                'url' => route('portal.category', 'content'),
+                'actionLabel' => 'Submit Content',
+                'actionable' => true,
+            ];
+        }
+
+        $waitingOnClient = $project->uploads
+            ->where('category', 'revision')
+            ->firstWhere('status', 'waiting_on_client');
+        if ($waitingOnClient) {
+            return [
+                'title' => "We're waiting on your reply",
+                'description' => Str::limit($waitingOnClient->body ?: 'A revision request needs your response before we can continue.', 90),
+                'url' => route('portal.category', 'revision'),
+                'actionLabel' => 'View Revision',
+                'actionable' => true,
+            ];
+        }
+
+        if ($nextMilestone = $project->nextMilestone()) {
+            return [
+                'title' => "We're working on: {$nextMilestone->title}",
+                'description' => "Nothing needed from you right now — we'll notify you as it progresses.",
+                'url' => null,
+                'actionLabel' => null,
+                'actionable' => false,
+            ];
+        }
+
+        return [
+            'title' => "You're all caught up!",
+            'description' => "We'll notify you the moment there's an update on your project.",
+            'url' => null,
+            'actionLabel' => null,
+            'actionable' => false,
+        ];
     }
 }
