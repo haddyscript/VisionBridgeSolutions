@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\LoginActivity;
 use App\Models\User;
 use App\Support\AdminPermissions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
@@ -131,6 +133,35 @@ class TeamController extends Controller
         }
 
         return back()->with('status', 'Access updated for '.$user->name.'.');
+    }
+
+    /**
+     * Owner-only "log in as admin" — same session/audit pattern as
+     * Admin\ClientController::impersonate(), just admin-to-admin instead of
+     * admin-to-client. ImpersonationController::stop() ends it and returns
+     * here (not the client portal) since it checks who's actually logged in.
+     */
+    public function impersonate(Request $request, User $user)
+    {
+        abort_unless($user->isAdmin(), 404);
+        abort_if($user->is($request->user()), 403, 'You are already logged in as yourself.');
+        abort_unless($user->is_active, 422, 'This account is deactivated — reactivate it first.');
+
+        $ownerId = $request->user()->id;
+
+        LoginActivity::create([
+            'user_id' => $user->id,
+            'impersonator_id' => $ownerId,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'logged_in_at' => now(),
+        ]);
+
+        $request->session()->put('impersonator_id', $ownerId);
+
+        Auth::login($user);
+
+        return redirect()->route('admin.dashboard')->with('status', 'Logged in as '.$user->name.'.');
     }
 
     public function destroy(Request $request, User $user)

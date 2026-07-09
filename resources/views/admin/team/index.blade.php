@@ -164,6 +164,15 @@
                                             </button>
                                         </form>
                                     @endif
+                                    @if (auth()->user()->isOwner() && ! $admin->is(auth()->user()) && $admin->is_active)
+                                        <form method="POST" action="{{ route('admin.team.impersonate', $admin) }}"
+                                              onsubmit="return confirm('Log in as {{ $admin->name }}? You will see exactly what they see.')">
+                                            @csrf
+                                            <button type="submit" class="whitespace-nowrap text-xs font-semibold text-navy hover:text-gold-dark">
+                                                Log In as Admin
+                                            </button>
+                                        </form>
+                                    @endif
                                     @if (auth()->user()->isOwner() && ! $admin->is(auth()->user()))
                                         <form method="POST" action="{{ route('admin.team.toggle-active', $admin) }}"
                                               onsubmit="return confirm('{{ $admin->is_active ? 'Deactivate' : 'Reactivate' }} {{ $admin->name }}? {{ $admin->is_active ? 'They will be logged out and blocked from logging back in until reactivated.' : '' }}')">

@@ -327,6 +327,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
 
     Route::middleware('owner')->group(function () {
         Route::patch('/team/{user}/active', [AdminTeamController::class, 'toggleActive'])->name('team.toggle-active');
+        Route::post('/team/{user}/impersonate', [AdminTeamController::class, 'impersonate'])->name('team.impersonate');
     });
 
     Route::get('/email-templates', [AdminEmailTemplateController::class, 'index'])->name('email-templates.index');
