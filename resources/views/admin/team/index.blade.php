@@ -148,49 +148,66 @@
                                 </div>
                             </div>
                             @if (auth()->user()->isSuperAdmin())
-                                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 justify-end shrink-0 ml-auto">
-                                    @if (! $admin->isSuperAdmin())
-                                        <button type="button" class="permissions-toggle whitespace-nowrap text-xs font-semibold text-navy hover:text-gold-dark" data-target="permissions-{{ $admin->id }}">
-                                            Manage Access
+                                @php
+                                    $hasAnyAction = ! $admin->isSuperAdmin()
+                                        || (! $admin->isOwner() && ! ($admin->isSuperAdmin() && $admin->is(auth()->user())))
+                                        || (auth()->user()->isOwner() && ! $admin->is(auth()->user()));
+                                @endphp
+                                @if ($hasAnyAction)
+                                    <div class="relative shrink-0 ml-auto" x-data="{ open: false }">
+                                        <button type="button" @click="open = !open" @click.outside="open = false"
+                                                class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+                                            </svg>
                                         </button>
-                                    @endif
-                                    @if (! $admin->isOwner() && ! ($admin->isSuperAdmin() && $admin->is(auth()->user())))
-                                        <form method="POST" action="{{ route('admin.team.toggle-super-admin', $admin) }}"
-                                              onsubmit="return confirm('{{ $admin->isSuperAdmin() ? 'Revoke' : 'Grant' }} super admin access for {{ $admin->name }}?')">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" class="whitespace-nowrap text-xs font-semibold text-navy hover:text-gold-dark">
-                                                {{ $admin->isSuperAdmin() ? 'Revoke Super Admin' : 'Grant Super Admin' }}
-                                            </button>
-                                        </form>
-                                    @endif
-                                    @if (auth()->user()->isOwner() && ! $admin->is(auth()->user()) && $admin->is_active)
-                                        <form method="POST" action="{{ route('admin.team.impersonate', $admin) }}"
-                                              onsubmit="return confirm('Log in as {{ $admin->name }}? You will see exactly what they see.')">
-                                            @csrf
-                                            <button type="submit" class="whitespace-nowrap text-xs font-semibold text-navy hover:text-gold-dark">
-                                                Log In as Admin
-                                            </button>
-                                        </form>
-                                    @endif
-                                    @if (auth()->user()->isOwner() && ! $admin->is(auth()->user()))
-                                        <form method="POST" action="{{ route('admin.team.toggle-active', $admin) }}"
-                                              onsubmit="return confirm('{{ $admin->is_active ? 'Deactivate' : 'Reactivate' }} {{ $admin->name }}? {{ $admin->is_active ? 'They will be logged out and blocked from logging back in until reactivated.' : '' }}')">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" class="whitespace-nowrap text-xs font-semibold {{ $admin->is_active ? 'text-orange-500 hover:text-orange-600' : 'text-teal-dark hover:text-teal' }}">
-                                                {{ $admin->is_active ? 'Deactivate' : 'Reactivate' }}
-                                            </button>
-                                        </form>
-                                    @endif
-                                    @if (! $admin->is(auth()->user()) && ! $admin->isOwner())
-                                        <form method="POST" action="{{ route('admin.team.destroy', $admin) }}" onsubmit="return confirm('Remove this team member?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="whitespace-nowrap text-xs font-semibold text-red-400 hover:text-red-600">Remove</button>
-                                        </form>
-                                    @endif
-                                </div>
+                                        <div x-show="open" x-transition class="fixed w-52 bg-white rounded-xl border border-gray-200 shadow-lg z-50 py-1">
+                                            @if (! $admin->isSuperAdmin())
+                                                <button type="button" class="permissions-toggle w-full text-left px-3 py-2 text-xs text-navy hover:bg-gray-50 transition-colors" data-target="permissions-{{ $admin->id }}">
+                                                    Manage Access
+                                                </button>
+                                            @endif
+                                            @if (! $admin->isOwner() && ! ($admin->isSuperAdmin() && $admin->is(auth()->user())))
+                                                <form method="POST" action="{{ route('admin.team.toggle-super-admin', $admin) }}"
+                                                      onsubmit="return confirm('{{ $admin->isSuperAdmin() ? 'Revoke' : 'Grant' }} super admin access for {{ $admin->name }}?')">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="w-full text-left px-3 py-2 text-xs text-navy hover:bg-gray-50 transition-colors">
+                                                        {{ $admin->isSuperAdmin() ? 'Revoke Super Admin' : 'Grant Super Admin' }}
+                                                    </button>
+                                                </form>
+                                            @endif
+                                            @if (auth()->user()->isOwner() && ! $admin->is(auth()->user()) && $admin->is_active)
+                                                <form method="POST" action="{{ route('admin.team.impersonate', $admin) }}"
+                                                      onsubmit="return confirm('Log in as {{ $admin->name }}? You will see exactly what they see.')">
+                                                    @csrf
+                                                    <button type="submit" class="w-full text-left px-3 py-2 text-xs text-navy hover:bg-gray-50 transition-colors">
+                                                        Log In as Admin
+                                                    </button>
+                                                </form>
+                                            @endif
+                                            @if (auth()->user()->isOwner() && ! $admin->is(auth()->user()))
+                                                <form method="POST" action="{{ route('admin.team.toggle-active', $admin) }}"
+                                                      onsubmit="return confirm('{{ $admin->is_active ? 'Deactivate' : 'Reactivate' }} {{ $admin->name }}? {{ $admin->is_active ? 'They will be logged out and blocked from logging back in until reactivated.' : '' }}')">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="w-full text-left px-3 py-2 text-xs {{ $admin->is_active ? 'text-orange-500' : 'text-teal-dark' }} hover:bg-gray-50 transition-colors">
+                                                        {{ $admin->is_active ? 'Deactivate' : 'Reactivate' }}
+                                                    </button>
+                                                </form>
+                                            @endif
+                                            @if (! $admin->is(auth()->user()) && ! $admin->isOwner())
+                                                <div class="border-t border-gray-100 mt-1 pt-1">
+                                                    <form method="POST" action="{{ route('admin.team.destroy', $admin) }}" onsubmit="return confirm('Remove this team member?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="w-full text-left px-3 py-2 text-xs text-red-500 hover:bg-red-50 transition-colors">Remove</button>
+                                                    </form>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endif
                             @endif
                         </div>
 
