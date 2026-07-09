@@ -15,7 +15,17 @@ class AccountController extends Controller
     public function index(Request $request)
     {
         return view('portal.account', [
-            'recentLogins' => $request->user()->loginActivities()->latest('logged_in_at')->take(5)->get(),
+            // Excludes admin "log in as client" impersonation sessions
+            // (LoginActivity rows with impersonator_id set) — those are a
+            // real admin action, not the client's own sign-in, and showing
+            // them here would read as unrecognized/suspicious activity to
+            // the client. The row itself is still written (it's the audit
+            // trail admins rely on for impersonation), just not surfaced here.
+            'recentLogins' => $request->user()->loginActivities()
+                ->whereNull('impersonator_id')
+                ->latest('logged_in_at')
+                ->take(5)
+                ->get(),
         ]);
     }
 
