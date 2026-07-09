@@ -475,7 +475,8 @@ A persistent AI chatbot is now live in the Client Portal — a floating gold bub
 - **Persisted history** — new `assistant_conversations`/`assistant_messages` tables, one conversation per client (mirrors the `client_notifications` persistence pattern) — a client can close the portal and resume the same thread later.
 - **Human handoff** — if the client is upset, disputes a charge, needs a policy exception, or the assistant can't answer confidently, it hands off by creating a `ContactMessage` (the existing admin inbox) with the full conversation transcript attached, so support doesn't have to ask the client to re-explain.
 - **Rate limiting** — 40 messages/client/day by default, configurable via `AI_ASSISTANT_DAILY_LIMIT`.
-- **New config/env** — `GEMINI_API_KEY`, `GEMINI_MODEL` (default `gemini-2.5-flash`), `AI_ASSISTANT_DAILY_LIMIT` (default 40) in `.env`; wired through `config/services.php`.
+- **Automatic model fallback** — if the primary model (`gemini-2.5-flash`) is rate-limited (Gemini's free tier can be), the request automatically retries against the next model in `GEMINI_FALLBACK_MODELS` (default `gemini-2.5-flash-lite`, `gemini-3-flash`) before giving up — a client never has to know or care which model actually answered them.
+- **New config/env** — `GEMINI_API_KEY`, `GEMINI_MODEL` (default `gemini-2.5-flash`), `GEMINI_FALLBACK_MODELS` (default `gemini-2.5-flash-lite,gemini-3-flash`), `AI_ASSISTANT_DAILY_LIMIT` (default 40) in `.env`; wired through `config/services.php`.
 - **Provider tradeoff worth knowing** — the free Gemini tier may use request data to improve Google's models (unlike a paid tier). Only computed facts ever reach the prompt, not raw account records, but this is worth revisiting once there's budget for a paid tier.
 - Full implementation notes: `specs/AI_ASSISTANT_KNOWLEDGE_BASE.md` §9.
 

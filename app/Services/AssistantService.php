@@ -55,28 +55,7 @@ class AssistantService
             ])
             ->toArray();
 
-        $model = config('services.gemini.model');
-
-        // Gemini takes the API key as a query string parameter, not a
-        // header or JSON body field.
-        $response = Http::timeout(30)
-            ->withOptions(['query' => ['key' => config('services.gemini.key')]])
-            ->post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent", [
-                'contents' => $contents,
-                'systemInstruction' => [
-                    'parts' => [['text' => $this->systemPrompt($user)]],
-                ],
-                'generationConfig' => [
-                    'maxOutputTokens' => 1024,
-                ],
-            ]);
-
-        if ($response->failed()) {
-            report(new RuntimeException('Gemini API request failed: '.$response->body()));
-            abort(502, "Sorry, I'm having trouble responding right now. Please try again in a moment, or contact support@visionbridgesolutions.com.");
-        }
-
-        $text = $response->json('candidates.0.content.parts.0.text', '');
+        $text = $this->generateContent($contents, $this->systemPrompt($user));
 
         $shouldEscalate = str_contains($text, self::ESCALATION_MARKER);
         $text = trim(str_replace(self::ESCALATION_MARKER, '', $text));
@@ -89,6 +68,52 @@ class AssistantService
         }
 
         return $assistantMessage;
+    }
+
+    /**
+     * Tries the configured Gemini model first, then falls through
+     * services.gemini.fallback_models in order — but only on a 429 (rate
+     * limited) response. Any other failure (bad key, bad request, server
+     * error) stops immediately rather than masking a real bug behind
+     * several silent retries.
+     */
+    private function generateContent(array $contents, string $systemPrompt): string
+    {
+        $models = collect([config('services.gemini.model')])
+            ->merge(config('services.gemini.fallback_models', []))
+            ->filter()
+            ->unique()
+            ->values();
+
+        foreach ($models as $model) {
+            // Gemini takes the API key as a query string parameter, not a
+            // header or JSON body field.
+            $response = Http::timeout(30)
+                ->withOptions(['query' => ['key' => config('services.gemini.key')]])
+                ->post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent", [
+                    'contents' => $contents,
+                    'systemInstruction' => [
+                        'parts' => [['text' => $systemPrompt]],
+                    ],
+                    'generationConfig' => [
+                        'maxOutputTokens' => 1024,
+                    ],
+                ]);
+
+            if ($response->successful()) {
+                return $response->json('candidates.0.content.parts.0.text', '');
+            }
+
+            if ($response->status() !== 429) {
+                report(new RuntimeException("Gemini API request failed on model {$model}: ".$response->body()));
+                abort(502, "Sorry, I'm having trouble responding right now. Please try again in a moment, or contact support@visionbridgesolutions.com.");
+            }
+
+            // 429 — rate limited on this model, try the next one in the chain.
+        }
+
+        report(new RuntimeException('All configured Gemini models are rate limited: '.$models->implode(', ')));
+        abort(429, "Our assistant is getting a lot of traffic right now. Please try again in a few minutes, or contact support@visionbridgesolutions.com.");
     }
 
     private function escalate(AssistantConversation $conversation, User $user): void

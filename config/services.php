@@ -44,6 +44,12 @@ return [
     'gemini' => [
         'key' => env('GEMINI_API_KEY'),
         'model' => env('GEMINI_MODEL', 'gemini-2.5-flash'),
+        // Tried in order after the primary model above, only when Gemini
+        // returns 429 (rate limited) — not on other error types.
+        'fallback_models' => array_values(array_filter(explode(',', env(
+            'GEMINI_FALLBACK_MODELS',
+            'gemini-2.5-flash-lite,gemini-3-flash'
+        )))),
         'daily_message_limit' => env('AI_ASSISTANT_DAILY_LIMIT', 40),
     ],
 
