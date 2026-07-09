@@ -207,12 +207,13 @@ A welcome email when your account is created, payment receipts after each succes
 
 ---
 
-## 8. Open Questions Before Implementation
+## 8. Implementation Decisions
 
-These need answers before writing the assistant's code — not blocking this knowledge-base doc, but tracked here so they're not lost:
+Decided 2026-07-09, ahead of writing any code. Kept here so the next session can pick up straight into implementation without re-litigating scope.
 
-- **Where does it live in the UI?** A persistent chat bubble (like the notification bell) vs. a dedicated page vs. embedded in the FAQ page?
-- **Which LLM/provider**, and is client project data (name, project status, payment history) sent to a third-party API, or does the assistant only ever answer from this static knowledge base + FAQ, with account-specific questions ("what's my balance?") answered by the app querying its own database rather than the LLM guessing?
-- **Conversation history** — persisted per client (own table, like `client_notifications`) or ephemeral per session?
-- **Cost/rate limiting** — any cap on messages per client per day?
-- **Human handoff mechanism** — does "escalate to support" auto-create something in an admin inbox (mirroring the existing Contact Messages / Revisions pattern), or just show contact info?
+- **UI placement — DECIDED: persistent chat bubble.** A floating icon (bottom-right) on every portal page, click to expand a chat panel. Always reachable regardless of which page the client is on, same pattern as most SaaS help widgets. (Not a dedicated sidebar page, not embedded only in FAQ.)
+- **Account-specific data — DECIDED: app computes the fact, LLM phrases the answer.** For account-specific questions ("what's my balance?", "what's my project status?"), the backend queries the client's own data the same way the existing portal pages already do, and hands only that specific computed answer to the LLM to phrase naturally. The LLM never sees the client's full record or other clients' data — this is the actual privacy/security boundary, not just a prompt instruction.
+- **Conversation history — DECIDED: persisted per client.** New table, mirroring the existing `client_notifications` pattern — a client can close the portal and resume the same thread later instead of starting fresh every session.
+- **Human handoff — DECIDED: auto-creates a support inbox entry.** Escalating from the chat (per the §1 guardrail rules) automatically creates an entry an admin sees in an inbox (mirroring the existing Contact Messages pattern), with the conversation context attached — the client doesn't have to manually email support and re-explain everything.
+- **Cost/rate limiting — STILL OPEN.** Not yet decided whether there's a cap on messages per client per day. Ask before implementation.
+- **LLM/provider — STILL OPEN.** Not yet decided which model/API to call. Ask before implementation.
