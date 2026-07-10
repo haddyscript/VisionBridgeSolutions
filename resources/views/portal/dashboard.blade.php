@@ -466,9 +466,16 @@
         $totalPaid = $project->payments->where('status', 'paid')->sum('amount');
         $paymentPercent = $totalDue > 0 ? (int) round($totalPaid / $totalDue * 100) : 100;
 
+        // Build % reflects actual milestone completion (e.g. 1 of 5 = 20%) so it
+        // matches its own subtext; only falls back to the project's overall
+        // progress figure when there are no milestones yet.
+        $buildPercent = $milestonesTotal > 0
+            ? (int) round($milestonesDone / $milestonesTotal * 100)
+            : $project->progressPercent();
+
         $progressRings = [
             ['label' => 'Onboarding', 'sub' => 'Getting set up', 'percent' => 100, 'color' => '#2A9D8F'],
-            ['label' => 'Project Build', 'sub' => $milestonesTotal > 0 ? "{$milestonesDone} of {$milestonesTotal} milestones" : 'Overall progress', 'percent' => $project->progressPercent(), 'color' => '#C9A84C'],
+            ['label' => 'Project Build', 'sub' => $milestonesTotal > 0 ? "{$milestonesDone} of {$milestonesTotal} milestones" : 'Overall progress', 'percent' => $buildPercent, 'color' => '#C9A84C'],
             ['label' => 'Payments', 'sub' => $totalDue > 0 ? 'Paid to date' : 'Nothing due', 'percent' => $paymentPercent, 'color' => '#22C55E'],
         ];
     @endphp
@@ -484,7 +491,7 @@
                     <div class="space-y-2.5">
                         @foreach ($counts as $cat)
                             <div class="flex items-center gap-3">
-                                <span class="w-28 shrink-0 text-xs text-gray-500 dark:text-gray-400 truncate">{{ $cat['label'] }}</span>
+                                <span class="w-36 shrink-0 text-xs text-gray-500 dark:text-gray-400 leading-tight">{{ $cat['label'] }}</span>
                                 <div class="flex-1 h-2.5 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
                                     <div class="h-full rounded-full bg-gold" style="width: {{ $cat['count'] > 0 ? max(round($cat['count'] / $maxCount * 100), 5) : 0 }}%"></div>
                                 </div>
@@ -596,9 +603,9 @@
 
             <label class="block text-xs font-medium text-navy dark:text-white mb-1">Your referral link</label>
             <div class="flex items-center gap-2 mb-4">
-                <input id="referral-link-input" type="text" readonly value="{{ $referralLink }}"
-                       class="flex-1 min-w-0 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 px-3 py-2 text-xs text-gray-600 dark:text-gray-300 focus:outline-none">
-                <button type="button" id="referral-copy-btn" class="shrink-0 px-3 py-2 rounded-lg text-xs font-semibold bg-gold/15 text-navy dark:text-white hover:bg-gold/25 transition-colors">Copy</button>
+                <input id="referral-link-input" type="text" readonly value="{{ $referralLink }}" onclick="this.select()"
+                       class="flex-1 min-w-0 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 px-3 py-2 text-xs text-gray-600 dark:text-gray-300 cursor-pointer focus:outline-none">
+                <button type="button" id="referral-copy-btn" class="shrink-0 min-w-[4.5rem] inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold bg-gold/15 text-navy dark:text-white hover:bg-gold/25 transition-colors">Copy</button>
             </div>
 
             <a href="mailto:?subject={{ rawurlencode('A website recommendation for you') }}&body={{ rawurlencode("I've been working with VisionBridge Solutions on my website and thought you'd be a great fit too. You can get started here: ".$referralLink) }}"
@@ -607,17 +614,30 @@
             </a>
         </div>
     </div>
+    <style>
+        @keyframes copiedPop { 0% { transform: scale(1); } 40% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        #referral-copy-btn.is-copied { background-color: #0D9488 !important; color: #fff !important; animation: copiedPop .3s ease; }
+    </style>
     <script>
         (function () {
             const btn = document.getElementById('referral-copy-btn');
             const input = document.getElementById('referral-link-input');
             if (!btn || !input) return;
+
+            const checkSvg = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>';
+            let resetTimer;
+
             btn.addEventListener('click', function () {
                 input.select();
+                input.setSelectionRange(0, input.value.length); // iOS Safari
                 const done = function () {
-                    const orig = btn.textContent;
-                    btn.textContent = 'Copied!';
-                    setTimeout(function () { btn.textContent = orig; }, 1500);
+                    clearTimeout(resetTimer);
+                    btn.classList.add('is-copied');
+                    btn.innerHTML = checkSvg + 'Copied!';
+                    resetTimer = setTimeout(function () {
+                        btn.classList.remove('is-copied');
+                        btn.textContent = 'Copy';
+                    }, 1600);
                 };
                 if (navigator.clipboard) {
                     navigator.clipboard.writeText(input.value).then(done).catch(done);
