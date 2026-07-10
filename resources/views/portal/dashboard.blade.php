@@ -454,7 +454,7 @@
         </div>
 
         <style>
-            .progress-ring-arc { transition: stroke-dasharray 1.1s cubic-bezier(0.22, 1, 0.36, 1); }
+            .progress-ring-arc { transition: stroke-dasharray 2.4s cubic-bezier(0.33, 1, 0.68, 1); }
             @media (prefers-reduced-motion: reduce) { .progress-ring-arc { transition: none; } }
         </style>
         <script>
@@ -477,7 +477,7 @@
                 // Count the numbers up in sync with the sweep.
                 values.forEach((el) => {
                     const target = clamp(el.dataset.pct);
-                    const duration = 1100;
+                    const duration = 2400;
                     const start = performance.now();
                     (function tick(now) {
                         const t = Math.min(1, (now - start) / duration);
