@@ -630,8 +630,9 @@
             </div>
 
             <a href="mailto:?subject={{ rawurlencode('A website recommendation for you') }}&body={{ rawurlencode("I've been working with VisionBridge Solutions on my website and thought you'd be a great fit too. You can get started here: ".$referralLink) }}"
-               class="mt-auto text-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-navy dark:bg-gold text-white dark:text-navy hover:bg-navy-light dark:hover:bg-gold-light transition-colors">
-                Refer your friend
+               class="group relative mt-auto overflow-hidden text-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-navy dark:bg-gold text-white dark:text-navy transition-colors duration-300 hover:text-navy dark:hover:text-navy">
+                <span class="absolute inset-0 bg-white origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+                <span class="relative z-10">Refer your friend</span>
             </a>
         </div>
     </div>
