@@ -437,7 +437,30 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
         <h2 class="font-display text-lg font-bold text-navy dark:text-white mb-5">Progress Tracker</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 my-auto">
+        <div class="flex-1 flex flex-col justify-center gap-8">
+            {{-- Content by section (horizontal bar chart) --}}
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Your Content by Section</p>
+                @php $maxCount = max(1, (int) $counts->max('count')); @endphp
+                @if ((int) $counts->sum('count') > 0)
+                    <div class="space-y-2.5">
+                        @foreach ($counts as $cat)
+                            <div class="flex items-center gap-3">
+                                <span class="w-28 shrink-0 text-xs text-gray-500 dark:text-gray-400 truncate">{{ $cat['label'] }}</span>
+                                <div class="flex-1 h-2.5 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                                    <div class="h-full rounded-full bg-gold" style="width: {{ $cat['count'] > 0 ? max(round($cat['count'] / $maxCount * 100), 5) : 0 }}%"></div>
+                                </div>
+                                <span class="w-5 shrink-0 text-right text-xs font-semibold text-navy dark:text-white">{{ $cat['count'] }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-sm text-gray-400 dark:text-gray-500">No files uploaded yet — add your logo, photos, and content to get started.</p>
+                @endif
+            </div>
+
+            {{-- Progress rings --}}
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             @foreach ($progressRings as $ring)
                 @php $pct = max(0, min(100, (int) $ring['percent'])); @endphp
                 <div class="group flex flex-col items-center text-center">
@@ -452,6 +475,7 @@
                     <p class="text-xs text-gray-400 dark:text-gray-500">{{ $ring['sub'] }}</p>
                 </div>
             @endforeach
+            </div>
         </div>
 
         <style>
