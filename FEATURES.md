@@ -50,6 +50,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Need Help? | Our support email and phone number, always visible in the sidebar |
 | Getting Started checklist | Tracks this specific client's real onboarding progress (Care Plan, Service Agreement, Questionnaire, file uploads, content, deposit, project progress) instead of a generic fixed list — each unfinished item links straight to where they'd complete it |
 | Light / dark mode | Clients can switch the portal's appearance to their preference |
+| Header quick-utilities | The portal header carries: a live project-status pill next to the page title (e.g. "● In Development", "● Under Review", "● Care Plan"), a "+ Quick Action" dropdown (shortcuts to Upload Files, Request a Revision, Book a Consultation), a Help/Support icon linking to the FAQ, plus the existing global search, notification bell, and theme toggle |
 
 ## 3. Admin Dashboard (for our team)
 

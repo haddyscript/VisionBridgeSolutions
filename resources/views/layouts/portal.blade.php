@@ -347,7 +347,67 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
-                <h1 class="font-display text-lg font-bold text-navy dark:text-white flex-1">@yield('page-title', 'Client Portal')</h1>
+                @php
+                    $hdrProject = auth()->user()->projects()->first();
+                    $hdrStatusLabels = [
+                        'onboarding' => 'Onboarding',
+                        'in_progress' => 'In Development',
+                        'review' => 'Under Review',
+                        'launched' => 'Launched',
+                        'maintenance' => 'Care Plan',
+                    ];
+                    $hdrStatusColors = [
+                        'onboarding' => 'bg-gold/10 text-gold-dark',
+                        'in_progress' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300',
+                        'review' => 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-300',
+                        'launched' => 'bg-teal/10 text-teal-dark',
+                        'maintenance' => 'bg-teal/10 text-teal-dark',
+                    ];
+                @endphp
+                <div class="flex items-center gap-2.5 flex-1 min-w-0">
+                    <h1 class="font-display text-lg font-bold text-navy dark:text-white truncate">@yield('page-title', 'Client Portal')</h1>
+                    @if ($hdrProject)
+                        <span class="hidden sm:inline-flex items-center gap-1.5 shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full {{ $hdrStatusColors[$hdrProject->status] ?? 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-300' }}">
+                            <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                            {{ $hdrStatusLabels[$hdrProject->status] ?? ucfirst($hdrProject->status) }}
+                        </span>
+                    @endif
+                </div>
+
+                {{-- Quick Action --}}
+                <div class="relative hidden md:block" id="quick-action-wrap">
+                    <button type="button" id="quick-action-toggle"
+                            class="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-gold hover:bg-gold-dark text-navy text-sm font-semibold transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                        Quick Action
+                    </button>
+                    <div id="quick-action-menu" class="hidden absolute left-0 mt-2 w-52 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-30 py-1">
+                        <a href="{{ route('portal.category', 'image') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-navy dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.9A5 5 0 1115.9 6 5 5 0 0117 15.9M12 12v9m0-9l-3 3m3-3l3 3"/></svg>
+                            Upload Files
+                        </a>
+                        <a href="{{ route('portal.category', 'revision') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-navy dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            Request a Revision
+                        </a>
+                        <a href="{{ route('portal.consultation.create') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-navy dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            Book a Consultation
+                        </a>
+                    </div>
+                </div>
+                <script>
+                    (function () {
+                        const toggle = document.getElementById('quick-action-toggle');
+                        const menu = document.getElementById('quick-action-menu');
+                        if (!toggle || !menu) return;
+                        toggle.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            menu.classList.toggle('hidden');
+                        });
+                        document.addEventListener('click', function () { menu.classList.add('hidden'); });
+                    })();
+                </script>
 
                 <div class="relative hidden sm:block w-64">
                     <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -358,6 +418,13 @@
 
                     <div id="portal-search-results" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-30 max-h-96 overflow-y-auto"></div>
                 </div>
+
+                <a href="{{ route('portal.faq') }}" title="Help &amp; Support" aria-label="Help &amp; Support"
+                   class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </a>
 
                 <div class="relative">
                     <button id="notification-bell-toggle" type="button" title="Notifications" data-tour="notification-bell"
