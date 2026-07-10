@@ -451,7 +451,7 @@
                     <p class="mt-3 text-sm font-semibold text-navy dark:text-white">{{ $ring['label'] }}</p>
                     <p class="text-xs text-gray-400 dark:text-gray-500">{{ $ring['sub'] }}</p>
                 </div>
-            @endforeach
+            @endforeac
         </div>
 
         <style>
