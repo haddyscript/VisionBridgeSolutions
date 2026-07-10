@@ -33,7 +33,7 @@
                     </button>
                 @endfor
             </div>
-            <input type="hidden" name="rating" id="survey-rating" value="{{ old('rating') }}" required>
+            <input type="hidden" name="rating" id="survey-rating" value="{{ old('rating', in_array((int) request('rating'), [1, 2, 3, 4, 5], true) ? (int) request('rating') : '') }}" required>
         </div>
 
         <div class="mb-6">

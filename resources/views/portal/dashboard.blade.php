@@ -123,8 +123,8 @@
                 </svg>
             </button>
 
-            <div class="px-6 pt-7 pb-6" style="background:linear-gradient(135deg,#0F766E,#0D9488);">
-                <div class="w-12 h-12 rounded-full bg-white/15 text-white flex items-center justify-center mb-4">
+            <div class="px-6 pt-6 pb-5" style="background:linear-gradient(135deg,#0F766E,#0D9488);">
+                <div class="w-12 h-12 rounded-full bg-white/15 text-white flex items-center justify-center mb-3">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.958a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.368 2.447a1 1 0 00-.363 1.118l1.287 3.957c.3.922-.755 1.688-1.539 1.118l-3.367-2.446a1 1 0 00-1.176 0l-3.367 2.446c-.784.57-1.838-.196-1.539-1.118l1.287-3.957a1 1 0 00-.363-1.118L2.062 9.385c-.783-.57-.38-1.81.588-1.81h4.163a1 1 0 00.95-.69l1.286-3.958z"/>
                     </svg>
@@ -133,16 +133,26 @@
                 <h2 class="font-display text-xl font-bold text-white">Your project launched — how did we do?</h2>
             </div>
 
-            <div class="px-6 py-6">
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+            <div class="px-6 pt-5 pb-6">
+                <p class="text-sm text-gray-500 dark:text-gray-400 text-center mb-4">
                     We'd love to hear about your experience. It only takes a minute, and it helps us serve you better.
                 </p>
 
-                <div class="flex flex-col sm:flex-row sm:justify-end gap-2.5">
-                    <button type="button" id="survey-dismiss" class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                {{-- Interactive rating --}}
+                <div id="survey-stars" role="radiogroup" aria-label="Rate your experience" class="flex items-center justify-center gap-1.5 mb-5">
+                    @for ($i = 1; $i <= 5; $i++)
+                        <button type="button" class="survey-star text-gray-300 dark:text-gray-600 hover:scale-110 transition-transform duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold rounded"
+                                data-value="{{ $i }}" aria-label="{{ $i }} star{{ $i > 1 ? 's' : '' }}">
+                            <svg class="w-9 h-9" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.786 1.401 8.169L12 18.896l-7.335 3.869 1.401-8.169L.132 9.21l8.2-1.192z"/></svg>
+                        </button>
+                    @endfor
+                </div>
+
+                <div class="flex items-center justify-center gap-2">
+                    <button type="button" id="survey-dismiss" class="inline-flex items-center justify-center h-11 px-4 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         Maybe later
                     </button>
-                    <a href="{{ route('portal.survey.show') }}" class="text-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-teal-dark text-white hover:bg-teal transition-colors">
+                    <a id="survey-submit" href="{{ route('portal.survey.show') }}" class="inline-flex items-center justify-center h-11 px-5 rounded-lg text-sm font-semibold bg-teal-dark text-white hover:bg-teal transition-colors">
                         Share Feedback
                     </a>
                 </div>
@@ -170,6 +180,34 @@
             document.getElementById('survey-close')?.addEventListener('click', closeModal);
             overlay.addEventListener('click', function (e) {
                 if (e.target === overlay) closeModal();
+            });
+
+            // Interactive star rating — hover previews, click selects, and the
+            // choice is carried to the survey page via ?rating=N.
+            const stars = Array.from(document.querySelectorAll('.survey-star'));
+            const submit = document.getElementById('survey-submit');
+            const baseHref = submit ? submit.getAttribute('href') : '';
+            let selected = 0;
+
+            function paint(n) {
+                stars.forEach(function (s, i) {
+                    const on = i < n;
+                    s.classList.toggle('text-gold', on);
+                    s.classList.toggle('text-gray-300', !on);
+                    s.classList.toggle('dark:text-gray-600', !on);
+                });
+            }
+
+            stars.forEach(function (star, i) {
+                star.addEventListener('mouseenter', function () { paint(i + 1); });
+                star.addEventListener('mouseleave', function () { paint(selected); });
+                star.addEventListener('click', function () {
+                    selected = i + 1;
+                    paint(selected);
+                    if (submit) {
+                        submit.setAttribute('href', baseHref + (baseHref.includes('?') ? '&' : '?') + 'rating=' + selected);
+                    }
+                });
             });
         })();
     </script>
