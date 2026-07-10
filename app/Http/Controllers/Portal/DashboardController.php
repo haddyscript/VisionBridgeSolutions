@@ -53,7 +53,7 @@ class DashboardController extends Controller
 
         // The layout's view composer only shares notifications with the layout
         // itself, not this child view — load them here for the recap card.
-        $recentNotifications = ClientNotification::where('user_id', $user->id)->latest()->take(5)->get();
+        $recentNotifications = ClientNotification::where('user_id', $user->id)->latest()->take(2)->get();
         $unreadNotificationCount = ClientNotification::where('user_id', $user->id)->whereNull('read_at')->count();
 
         if ($project) {
