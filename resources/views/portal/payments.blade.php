@@ -204,8 +204,8 @@
                 if (chevron) chevron.style.transform = open ? '' : 'rotate(-90deg)';
             }
 
-            // Remember the client's choice across visits; expanded by default.
-            apply(localStorage.getItem('paymentHistoryOpen') !== 'false');
+            // Remember the client's choice across visits; collapsed by default.
+            apply(localStorage.getItem('paymentHistoryOpen') === 'true');
 
             btn.addEventListener('click', function () {
                 const open = body.classList.contains('hidden');
