@@ -489,6 +489,83 @@
         </script>
     </div>
 
+    {{-- Notifications recap + Refer-A-Friend --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {{-- Notifications recap --}}
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <div class="flex items-center gap-2 mb-4">
+                <h2 class="font-display text-lg font-bold text-navy dark:text-white">Notifications</h2>
+                @if (($unreadNotificationCount ?? 0) > 0)
+                    <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-red-500 text-white">{{ $unreadNotificationCount }}</span>
+                @endif
+            </div>
+            @forelse ($notifications->take(5) as $n)
+                <div class="flex items-start gap-3 py-2.5 border-t border-gray-100 dark:border-gray-700 first:border-t-0">
+                    <span class="w-8 h-8 rounded-full bg-gold/15 text-gold-dark flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                    </span>
+                    <div class="min-w-0">
+                        <p class="text-xs text-gray-400 dark:text-gray-500">{{ $n->created_at->diffForHumans() }}</p>
+                        @if ($n->url)
+                            <a href="{{ $n->url }}" class="text-sm font-medium text-navy dark:text-white hover:underline">{{ $n->title }}</a>
+                        @else
+                            <p class="text-sm font-medium text-navy dark:text-white">{{ $n->title }}</p>
+                        @endif
+                        @if ($n->description)
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $n->description }}</p>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <p class="text-sm text-gray-400 dark:text-gray-500 py-6 text-center">No updates yet — we'll let you know the moment something happens.</p>
+            @endforelse
+        </div>
+
+        {{-- Refer-A-Friend --}}
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
+            <div class="flex items-center gap-2 mb-1">
+                <h2 class="font-display text-lg font-bold text-navy dark:text-white">Refer a Friend</h2>
+                @if ($referralCount > 0)
+                    <span class="text-xs font-semibold text-teal-dark bg-teal/10 px-2 py-0.5 rounded-full">{{ $referralCount }} referred</span>
+                @endif
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Know a business that needs a website? Share your link — we'll take great care of them.</p>
+
+            <label class="block text-xs font-medium text-navy dark:text-white mb-1">Your referral link</label>
+            <div class="flex items-center gap-2 mb-4">
+                <input id="referral-link-input" type="text" readonly value="{{ $referralLink }}"
+                       class="flex-1 min-w-0 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 px-3 py-2 text-xs text-gray-600 dark:text-gray-300 focus:outline-none">
+                <button type="button" id="referral-copy-btn" class="shrink-0 px-3 py-2 rounded-lg text-xs font-semibold bg-gold/15 text-navy dark:text-white hover:bg-gold/25 transition-colors">Copy</button>
+            </div>
+
+            <a href="mailto:?subject={{ rawurlencode('A website recommendation for you') }}&body={{ rawurlencode("I've been working with VisionBridge Solutions on my website and thought you'd be a great fit too. You can get started here: ".$referralLink) }}"
+               class="mt-auto text-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-navy dark:bg-gold text-white dark:text-navy hover:bg-navy-light dark:hover:bg-gold-light transition-colors">
+                Refer your friend
+            </a>
+        </div>
+    </div>
+    <script>
+        (function () {
+            const btn = document.getElementById('referral-copy-btn');
+            const input = document.getElementById('referral-link-input');
+            if (!btn || !input) return;
+            btn.addEventListener('click', function () {
+                input.select();
+                const done = function () {
+                    const orig = btn.textContent;
+                    btn.textContent = 'Copied!';
+                    setTimeout(function () { btn.textContent = orig; }, 1500);
+                };
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(input.value).then(done).catch(done);
+                } else {
+                    document.execCommand('copy');
+                    done();
+                }
+            });
+        })();
+    </script>
+
     {{-- Project header --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">

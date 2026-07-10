@@ -190,6 +190,18 @@
                                                     <span class="font-medium text-navy dark:text-white">Phone:</span>
                                                     {{ $client->phone ?: 'Not provided' }}
                                                 </p>
+                                                @if ($client->referredBy)
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                        <span class="font-medium text-navy dark:text-white">Referred by:</span>
+                                                        {{ $client->referredBy->name }}
+                                                    </p>
+                                                @endif
+                                                @if ($client->referrals_count ?? $client->referrals()->count())
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                        <span class="font-medium text-navy dark:text-white">Referrals:</span>
+                                                        {{ $client->referrals_count ?? $client->referrals()->count() }}
+                                                    </p>
+                                                @endif
                                             </div>
                                             <div class="border-t border-gray-100 dark:border-gray-700 pt-1 mt-1">
                                                 <form method="POST" action="{{ route('admin.clients.impersonate', $client) }}"

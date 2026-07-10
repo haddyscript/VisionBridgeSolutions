@@ -47,6 +47,9 @@ class DashboardController extends Controller
 
         $firstVisit = is_null($user->welcomed_at);
 
+        $referralCode = $user->getReferralCode();
+        $referralCount = $user->referrals()->count();
+
         if ($project) {
             $updates = ['activity_last_read_at' => now()];
             if ($firstVisit) {
@@ -66,6 +69,9 @@ class DashboardController extends Controller
             'announcement' => $announcement,
             'pendingSurvey' => $pendingSurvey,
             'showSurveyModal' => $showSurveyModal,
+            'referralCode' => $referralCode,
+            'referralCount' => $referralCount,
+            'referralLink' => route('register', ['ref' => $referralCode]),
             'whatsNext' => $project ? $this->whatsNext($project) : null,
         ]);
     }

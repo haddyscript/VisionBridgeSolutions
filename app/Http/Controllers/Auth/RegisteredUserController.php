@@ -15,8 +15,14 @@ use Illuminate\Validation\Rules;
 
 class RegisteredUserController extends Controller
 {
-    public function create()
+    public function create(Request $request)
     {
+        // Remember a referral code from the link (?ref=CODE) so we can attribute
+        // the account once the visitor finishes registering.
+        if ($request->filled('ref')) {
+            $request->session()->put('referral_ref', $request->query('ref'));
+        }
+
         return view('auth.register');
     }
 
@@ -28,11 +34,18 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // Attribute the signup to a referrer if they arrived via a referral link.
+        $referrerId = null;
+        if ($refCode = $request->session()->pull('referral_ref')) {
+            $referrerId = User::where('referral_code', $refCode)->where('role', 'client')->value('id');
+        }
+
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => 'client',
+            'referred_by_id' => $referrerId,
         ]);
 
         event(new Registered($user));

@@ -26,6 +26,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'role',
         'job_title',
+        'referral_code',
+        'referred_by_id',
         'is_super_admin',
         'restricted_access',
         'is_active',
@@ -172,6 +174,35 @@ class User extends Authenticatable implements MustVerifyEmail
     public function adminPermissions()
     {
         return $this->hasMany(AdminPagePermission::class);
+    }
+
+    /** The client who referred this account (if any). */
+    public function referredBy()
+    {
+        return $this->belongsTo(User::class, 'referred_by_id');
+    }
+
+    /** Accounts that signed up through this client's referral link. */
+    public function referrals()
+    {
+        return $this->hasMany(User::class, 'referred_by_id');
+    }
+
+    /**
+     * This client's referral code, generating and persisting a unique one on
+     * first use so we never have to backfill every account up front.
+     */
+    public function getReferralCode(): string
+    {
+        if (! $this->referral_code) {
+            do {
+                $code = strtoupper(\Illuminate\Support\Str::random(8));
+            } while (self::where('referral_code', $code)->exists());
+
+            $this->update(['referral_code' => $code]);
+        }
+
+        return $this->referral_code;
     }
 
     /**
