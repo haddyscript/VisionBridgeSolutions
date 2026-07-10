@@ -653,7 +653,7 @@
                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                 All milestones complete — your site is live!
             </p>
-        @endi
+        @endif
 
         @if ($project->milestones->isNotEmpty())
             <ul class="mt-5 space-y-2">
