@@ -150,7 +150,7 @@
             <div class="space-y-2.5 overflow-y-auto px-5 pb-5">
                 @foreach ($admins as $admin)
                     <div class="rounded-lg border border-gray-200">
-                        <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
+                        <div class="admin-row flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors" data-modal="access-modal-{{ $admin->id }}">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="w-9 h-9 rounded-full bg-gold/15 text-gold-dark flex items-center justify-center text-sm font-semibold shrink-0">
                                     {{ strtoupper(substr($admin->name, 0, 1)) }}
@@ -328,6 +328,68 @@
                                 </form>
                             </div>
                         @endif
+
+                        {{-- Access details modal (read-only) — opens when the row is clicked --}}
+                        @php
+                            $modalFullAccess = $admin->isSuperAdmin() || ! $admin->restricted_access;
+                            $modalAccessKeys = $admin->adminPermissions->pluck('permission_key')->all();
+                        @endphp
+                        <div id="access-modal-{{ $admin->id }}" class="access-modal hidden fixed inset-0 z-[60] items-center justify-center bg-black/40 px-4">
+                            <div class="access-modal-panel bg-white rounded-2xl border border-gray-200 shadow-xl w-full max-w-md max-h-[85vh] overflow-y-auto">
+                                <div class="flex items-start justify-between gap-3 p-5 border-b border-gray-100">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <div class="w-10 h-10 rounded-full bg-gold/15 text-gold-dark flex items-center justify-center text-sm font-semibold shrink-0">
+                                            {{ strtoupper(substr($admin->name, 0, 1)) }}
+                                        </div>
+                                        <div class="min-w-0">
+                                            <div class="flex flex-wrap items-center gap-1.5">
+                                                <span class="text-sm font-semibold text-navy">{{ $admin->name }}</span>
+                                                @if ($admin->isOwner())
+                                                    <span class="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-white bg-navy px-2 py-0.5 rounded-full">Owner</span>
+                                                @elseif ($admin->isSuperAdmin())
+                                                    <span class="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-gold-dark bg-gold/15 px-2 py-0.5 rounded-full">Super Admin</span>
+                                                @elseif ($admin->restricted_access)
+                                                    <span class="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-navy bg-gray-100 px-2 py-0.5 rounded-full">Restricted</span>
+                                                @endif
+                                            </div>
+                                            <p class="text-xs text-gray-400 mt-0.5 truncate">{{ $admin->email }}</p>
+                                            @if ($admin->job_title)
+                                                <p class="text-xs font-medium text-gold-dark mt-0.5">{{ $admin->job_title }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <button type="button" class="access-modal-close w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors shrink-0" aria-label="Close">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>
+                                </div>
+                                <div class="p-5">
+                                    <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Admin Page Access</p>
+                                    @if ($modalFullAccess)
+                                        <div class="flex items-start gap-2 bg-teal-50 border border-teal-100 rounded-lg px-3.5 py-3">
+                                            <svg class="w-5 h-5 text-teal-dark shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                            <p class="text-sm text-navy">Full access to <span class="font-semibold">every</span> admin section.</p>
+                                        </div>
+                                    @elseif (count($modalAccessKeys) === 0)
+                                        <div class="bg-gray-50 border border-gray-200 rounded-lg px-3.5 py-3">
+                                            <p class="text-sm text-gray-500">No sections enabled — this member currently has no admin page access.</p>
+                                        </div>
+                                    @endif
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
+                                        @foreach ($sections as $key => $section)
+                                            @php $canAccess = $modalFullAccess || in_array($key, $modalAccessKeys, true); @endphp
+                                            <div class="flex items-center gap-2 text-sm rounded-lg border px-3 py-2 {{ $canAccess ? 'border-gold/40 bg-gold/5 text-navy' : 'border-gray-200 bg-white text-gray-400' }}">
+                                                @if ($canAccess)
+                                                    <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                                @else
+                                                    <svg class="w-4 h-4 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                @endif
+                                                {{ $section['label'] }}
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -343,6 +405,38 @@
 </div>
 
 <script>
+    // Open the access modal when an admin row is clicked — but ignore clicks
+    // that land on the three-dot actions menu (or anything inside it).
+    document.querySelectorAll('.admin-row').forEach((row) => {
+        row.addEventListener('click', (e) => {
+            if (e.target.closest('[x-data]')) return;
+            const modal = document.getElementById(row.dataset.modal);
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        });
+    });
+
+    function closeAccessModal(modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    document.querySelectorAll('.access-modal').forEach((modal) => {
+        // Backdrop click (outside the panel) closes.
+        modal.addEventListener('click', (e) => {
+            if (!e.target.closest('.access-modal-panel')) closeAccessModal(modal);
+        });
+        modal.querySelectorAll('.access-modal-close').forEach((btn) => {
+            btn.addEventListener('click', () => closeAccessModal(modal));
+        });
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        document.querySelectorAll('.access-modal:not(.hidden)').forEach(closeAccessModal);
+    });
+
     document.querySelectorAll('.password-toggle').forEach((btn) => {
         btn.addEventListener('click', () => {
             const input = btn.closest('.relative')?.querySelector('input');
