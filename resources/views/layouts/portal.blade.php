@@ -322,6 +322,17 @@
                     });
                     el.addEventListener('mouseleave', function () { tip.classList.remove('visible'); });
                 });
+
+                // The sidebar resets to the top on every full page reload — bring
+                // the active nav item (uniquely marked with `text-gold`) into view
+                // by centering it within the scrollable nav.
+                const nav = document.querySelector('#portal-sidebar nav');
+                const active = nav?.querySelector('a.text-gold');
+                if (nav && active) {
+                    const navRect = nav.getBoundingClientRect();
+                    const aRect = active.getBoundingClientRect();
+                    nav.scrollTop += (aRect.top - navRect.top) - (nav.clientHeight - active.clientHeight) / 2;
+                }
             })();
         </script>
 
