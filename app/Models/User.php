@@ -25,6 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'phone',
         'password',
         'role',
+        'job_title',
         'is_super_admin',
         'restricted_access',
         'is_active',
@@ -138,6 +139,20 @@ class User extends Authenticatable implements MustVerifyEmail
      * point is that this can't be reassigned or revoked from within the app.
      */
     public const OWNER_EMAIL = 'admin@visionbridgesolutions.com';
+
+    /**
+     * Selectable job titles for admin/team accounts. Purely descriptive (a
+     * label for who the person is) — it does not grant or restrict access;
+     * that's governed separately by is_super_admin / restricted_access /
+     * adminPermissions.
+     */
+    public const JOB_TITLES = [
+        'Customer Support Representative',
+        'Sales Representative',
+        'Developer',
+        'Project Manager',
+        'Administrative Staff',
+    ];
 
     public function isAdmin(): bool
     {

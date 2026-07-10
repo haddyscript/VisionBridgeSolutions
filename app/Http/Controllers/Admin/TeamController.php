@@ -19,6 +19,7 @@ class TeamController extends Controller
         return view('admin.team.index', [
             'admins' => User::where('role', 'admin')->orderBy('name')->with('adminPermissions')->get(),
             'sections' => AdminPermissions::SECTIONS,
+            'jobTitles' => User::JOB_TITLES,
         ]);
     }
 
@@ -27,6 +28,7 @@ class TeamController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'job_title' => ['nullable', 'string', Rule::in(User::JOB_TITLES)],
             'is_super_admin' => ['nullable', 'boolean'],
         ]);
 
@@ -35,6 +37,7 @@ class TeamController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make('admin123'),
             'role' => 'admin',
+            'job_title' => $validated['job_title'] ?? null,
             'is_super_admin' => $validated['is_super_admin'] ?? false,
             // Admins never go through the client-facing email verification
             // flow (only portal.* routes require the 'verified' middleware),
@@ -138,6 +141,19 @@ class TeamController extends Controller
         }
 
         return back()->with('status', 'Access updated for '.$user->name.'.');
+    }
+
+    public function updateJobTitle(Request $request, User $user)
+    {
+        abort_unless($user->isAdmin(), 404);
+
+        $validated = $request->validate([
+            'job_title' => ['nullable', 'string', Rule::in(User::JOB_TITLES)],
+        ]);
+
+        $user->update(['job_title' => $validated['job_title'] ?? null]);
+
+        return back()->with('status', 'Job title updated for '.$user->name.'.');
     }
 
     /**
