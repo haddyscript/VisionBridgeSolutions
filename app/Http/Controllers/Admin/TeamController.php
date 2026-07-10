@@ -182,7 +182,9 @@ class TeamController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('admin.dashboard')->with('status', 'Logged in as '.$user->name.'.');
+        // Land on a page this admin can actually see — impersonating a
+        // restricted admin who lacks "All Projects" would otherwise 403.
+        return redirect()->to(AdminPermissions::adminLandingRoute($user))->with('status', 'Logged in as '.$user->name.'.');
     }
 
     public function destroy(Request $request, User $user)
