@@ -439,19 +439,54 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             @foreach ($progressRings as $ring)
                 @php $pct = max(0, min(100, (int) $ring['percent'])); @endphp
-                <div class="flex flex-col items-center text-center">
-                    <div class="relative w-28 h-28">
-                        <svg class="w-28 h-28 -rotate-90" viewBox="0 0 36 36">
+                <div class="group flex flex-col items-center text-center">
+                    <div class="relative w-28 h-28 transition-transform duration-300 group-hover:scale-105">
+                        <svg class="w-28 h-28 -rotate-90 drop-shadow-sm" viewBox="0 0 36 36">
                             <circle class="stroke-gray-200 dark:stroke-gray-700" cx="18" cy="18" r="15.915" fill="none" stroke-width="3.2"/>
-                            <circle cx="18" cy="18" r="15.915" fill="none" stroke="{{ $ring['color'] }}" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="{{ $pct }} 100"/>
+                            <circle class="progress-ring-arc" cx="18" cy="18" r="15.915" fill="none" stroke="{{ $ring['color'] }}" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="0 100" data-pct="{{ $pct }}"/>
                         </svg>
-                        <span class="absolute inset-0 flex items-center justify-center font-display text-2xl font-bold text-navy dark:text-white">{{ $pct }}%</span>
+                        <span class="progress-ring-value absolute inset-0 flex items-center justify-center font-display text-2xl font-bold text-navy dark:text-white" data-pct="{{ $pct }}">0%</span>
                     </div>
                     <p class="mt-3 text-sm font-semibold text-navy dark:text-white">{{ $ring['label'] }}</p>
                     <p class="text-xs text-gray-400 dark:text-gray-500">{{ $ring['sub'] }}</p>
                 </div>
             @endforeach
         </div>
+
+        <style>
+            .progress-ring-arc { transition: stroke-dasharray 1.1s cubic-bezier(0.22, 1, 0.36, 1); }
+            @media (prefers-reduced-motion: reduce) { .progress-ring-arc { transition: none; } }
+        </style>
+        <script>
+            (function () {
+                const arcs = document.querySelectorAll('.progress-ring-arc');
+                const values = document.querySelectorAll('.progress-ring-value');
+                const clamp = (n) => Math.max(0, Math.min(100, parseInt(n, 10) || 0));
+
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    arcs.forEach((a) => a.setAttribute('stroke-dasharray', clamp(a.dataset.pct) + ' 100'));
+                    values.forEach((e) => e.textContent = clamp(e.dataset.pct) + '%');
+                    return;
+                }
+
+                // Sweep the arcs from 0 to their value.
+                requestAnimationFrame(() => {
+                    arcs.forEach((a) => a.setAttribute('stroke-dasharray', clamp(a.dataset.pct) + ' 100'));
+                });
+
+                // Count the numbers up in sync with the sweep.
+                values.forEach((el) => {
+                    const target = clamp(el.dataset.pct);
+                    const duration = 1100;
+                    const start = performance.now();
+                    (function tick(now) {
+                        const t = Math.min(1, (now - start) / duration);
+                        el.textContent = Math.round(target * (1 - Math.pow(1 - t, 3))) + '%';
+                        if (t < 1) requestAnimationFrame(tick);
+                    })(start);
+                });
+            })();
+        </script>
     </div>
 
     {{-- Project header --}}
