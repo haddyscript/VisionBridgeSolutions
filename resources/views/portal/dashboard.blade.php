@@ -440,9 +440,12 @@
                     </div>
                     <p class="text-base font-bold text-navy dark:text-white mb-1">🎉 Congratulations — your site is live!</p>
                     <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">How did we do? A minute of your feedback helps us serve you even better.</p>
-                    <a href="{{ route('portal.survey.show') }}" class="mt-auto self-start inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-semibold bg-teal-dark text-white hover:bg-teal transition-colors">
-                        Share Feedback
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    <a href="{{ route('portal.survey.show') }}" class="group relative mt-auto self-start inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-teal-dark overflow-hidden transition-colors duration-300 hover:text-teal-dark">
+                        <span class="absolute inset-0 bg-white origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+                        <span class="relative z-10 inline-flex items-center gap-1.5">
+                            Share Feedback
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                        </span>
                     </a>
                 </div>
             @endif
