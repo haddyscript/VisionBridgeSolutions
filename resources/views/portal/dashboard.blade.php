@@ -417,6 +417,43 @@
         </div>
     @endif
 
+    {{-- Progress Tracker --}}
+    @php
+        // Onboarding is always complete here — the dashboard sits behind the
+        // `onboarding.complete` middleware, so reaching it means it's done.
+        $milestonesDone = $project->milestones->where('status', 'completed')->count();
+        $milestonesTotal = $project->milestones->count();
+
+        $totalDue = $project->payments->sum('amount');
+        $totalPaid = $project->payments->where('status', 'paid')->sum('amount');
+        $paymentPercent = $totalDue > 0 ? (int) round($totalPaid / $totalDue * 100) : 100;
+
+        $progressRings = [
+            ['label' => 'Onboarding', 'sub' => 'Getting set up', 'percent' => 100, 'color' => '#2A9D8F'],
+            ['label' => 'Project Build', 'sub' => $milestonesTotal > 0 ? "{$milestonesDone} of {$milestonesTotal} milestones" : 'Overall progress', 'percent' => $project->progressPercent(), 'color' => '#C9A84C'],
+            ['label' => 'Payments', 'sub' => $totalDue > 0 ? 'Paid to date' : 'Nothing due', 'percent' => $paymentPercent, 'color' => '#22C55E'],
+        ];
+    @endphp
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
+        <h2 class="font-display text-lg font-bold text-navy dark:text-white mb-5">Progress Tracker</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            @foreach ($progressRings as $ring)
+                @php $pct = max(0, min(100, (int) $ring['percent'])); @endphp
+                <div class="flex flex-col items-center text-center">
+                    <div class="relative w-28 h-28">
+                        <svg class="w-28 h-28 -rotate-90" viewBox="0 0 36 36">
+                            <circle class="stroke-gray-200 dark:stroke-gray-700" cx="18" cy="18" r="15.915" fill="none" stroke-width="3.2"/>
+                            <circle cx="18" cy="18" r="15.915" fill="none" stroke="{{ $ring['color'] }}" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="{{ $pct }} 100"/>
+                        </svg>
+                        <span class="absolute inset-0 flex items-center justify-center font-display text-2xl font-bold text-navy dark:text-white">{{ $pct }}%</span>
+                    </div>
+                    <p class="mt-3 text-sm font-semibold text-navy dark:text-white">{{ $ring['label'] }}</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500">{{ $ring['sub'] }}</p>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
     {{-- Project header --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
