@@ -434,10 +434,10 @@
             ['label' => 'Payments', 'sub' => $totalDue > 0 ? 'Paid to date' : 'Nothing due', 'percent' => $paymentPercent, 'color' => '#22C55E'],
         ];
     @endphp
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 items-start">
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
         <h2 class="font-display text-lg font-bold text-navy dark:text-white mb-5">Progress Tracker</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 my-auto">
             @foreach ($progressRings as $ring)
                 @php $pct = max(0, min(100, (int) $ring['percent'])); @endphp
                 <div class="group flex flex-col items-center text-center">
