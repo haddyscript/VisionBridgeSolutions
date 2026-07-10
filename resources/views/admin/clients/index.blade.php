@@ -311,13 +311,22 @@
     // clips anything `absolute`-positioned once a row is near the bottom of
     // that box. `fixed` positioning is computed against the viewport, so it
     // escapes that clipping regardless of which row opened it.
+    const clientMenus = [];
+
+    function closeAllClientMenus(except) {
+        clientMenus.forEach(function (m) {
+            if (m !== except) m.close();
+        });
+    }
+
     document.querySelectorAll('[x-data]').forEach(function (el) {
-        let open = false;
         const btn = el.querySelector('button');
         const menu = el.querySelector('[x-show]');
 
         if (!btn || !menu) return;
         menu.style.display = 'none';
+
+        const entry = { open: false };
 
         function positionMenu() {
             const rect = btn.getBoundingClientRect();
@@ -334,26 +343,38 @@
             menu.style.right = (window.innerWidth - rect.right) + 'px';
         }
 
+        entry.close = function () {
+            entry.open = false;
+            menu.style.display = 'none';
+        };
+
         btn.addEventListener('click', function (e) {
             e.stopPropagation();
-            open = !open;
+            if (entry.open) {
+                entry.close();
+                return;
+            }
+            // Only one menu open at a time — close any other first.
+            closeAllClientMenus(entry);
+            entry.open = true;
             // Show first so positionMenu() can measure the menu's height.
-            menu.style.display = open ? 'block' : 'none';
-            if (open) positionMenu();
-        });
-
-        document.addEventListener('click', function () {
-            open = false;
-            menu.style.display = 'none';
+            menu.style.display = 'block';
+            positionMenu();
         });
 
         window.addEventListener('scroll', function () {
-            if (open) positionMenu();
+            if (entry.open) positionMenu();
         }, true);
 
         window.addEventListener('resize', function () {
-            if (open) positionMenu();
+            if (entry.open) positionMenu();
         });
+
+        clientMenus.push(entry);
+    });
+
+    document.addEventListener('click', function () {
+        closeAllClientMenus();
     });
 </script>
 
