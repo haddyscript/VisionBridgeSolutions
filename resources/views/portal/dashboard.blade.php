@@ -31,15 +31,8 @@
     </script>
 @endif
 
-@if ($pendingSurvey)
-    <div class="flex items-center justify-between gap-4 rounded-xl border border-teal/30 bg-teal/10 px-5 py-4 mb-6">
-        <div class="flex items-center gap-3">
-            <svg class="w-5 h-5 text-teal-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.958a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.368 2.447a1 1 0 00-.363 1.118l1.287 3.957c.3.922-.755 1.688-1.539 1.118l-3.367-2.446a1 1 0 00-1.176 0l-3.367 2.446c-.784.57-1.838-.196-1.539-1.118l1.287-3.957a1 1 0 00-.363-1.118L2.062 9.385c-.783-.57-.38-1.81.588-1.81h4.163a1 1 0 00.95-.69l1.286-3.958z"/></svg>
-            <p class="text-sm font-semibold text-navy dark:text-white">Your project launched — how did we do?</p>
-        </div>
-        <a href="{{ route('portal.survey.show') }}" class="shrink-0 text-sm font-semibold text-teal-dark hover:underline">Share Feedback →</a>
-    </div>
-@endif
+{{-- The launch feedback card is rendered side-by-side with "What's Next" below
+     (inside the project section) — see the two-column grid there. --}}
 
 @if ($showPaymentReminder)
     <div id="payment-reminder-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 opacity-0 transition-opacity duration-200">
@@ -432,26 +425,51 @@
         </div>
     @endif
 
-    {{-- What's Next — the single highest-priority thing to do or expect --}}
-    @if ($whatsNext)
-        <div class="flex items-start gap-3.5 rounded-xl border {{ $whatsNext['actionable'] ? 'border-gold/30 bg-gold/5' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800' }} px-5 py-4 mb-8">
-            <span class="w-9 h-9 rounded-full {{ $whatsNext['actionable'] ? 'bg-gold/15 text-gold-dark' : 'bg-teal/10 text-teal-dark' }} flex items-center justify-center shrink-0">
-                @if ($whatsNext['actionable'])
-                    <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                @else
-                    <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                @endif
-            </span>
-            <div class="min-w-0 flex-1">
-                <p class="text-xs font-semibold uppercase tracking-widest {{ $whatsNext['actionable'] ? 'text-gold-dark' : 'text-teal-dark' }} mb-0.5">What's Next</p>
-                <p class="text-sm font-semibold text-navy dark:text-white">{{ $whatsNext['title'] }}</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ $whatsNext['description'] }}</p>
-            </div>
-            @if ($whatsNext['url'])
-                <a href="{{ $whatsNext['url'] }}" class="shrink-0 text-sm font-semibold text-navy dark:text-white bg-gold/15 hover:bg-gold/25 px-4 py-2 rounded-lg transition-colors">
-                    {{ $whatsNext['actionLabel'] }}
-                </a>
+    {{-- Launch feedback + What's Next — side by side (stack on mobile) --}}
+    @if ($pendingSurvey || $whatsNext)
+        <div class="grid grid-cols-1 {{ ($pendingSurvey && $whatsNext) ? 'lg:grid-cols-2' : '' }} gap-6 mb-8 items-stretch">
+
+            @if ($pendingSurvey)
+                {{-- Feedback card — teal accent --}}
+                <div class="flex flex-col rounded-xl border border-teal/30 bg-teal/10 p-5">
+                    <div class="flex items-center gap-2.5 mb-3">
+                        <span class="w-9 h-9 rounded-full bg-teal/20 text-teal-dark flex items-center justify-center shrink-0">
+                            <svg class="w-[1.125rem] h-[1.125rem]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.786 1.401 8.169L12 18.896l-7.335 3.869 1.401-8.169L.132 9.21l8.2-1.192z"/></svg>
+                        </span>
+                        <p class="text-xs font-semibold uppercase tracking-widest text-teal-dark">Your Project Launched</p>
+                    </div>
+                    <p class="text-base font-bold text-navy dark:text-white mb-1">🎉 Congratulations — your site is live!</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">How did we do? A minute of your feedback helps us serve you even better.</p>
+                    <a href="{{ route('portal.survey.show') }}" class="mt-auto self-start inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-semibold bg-teal-dark text-white hover:bg-teal transition-colors">
+                        Share Feedback
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    </a>
+                </div>
             @endif
+
+            @if ($whatsNext)
+                {{-- What's Next — subtle action card --}}
+                <div class="flex flex-col rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-5">
+                    <div class="flex items-center gap-2.5 mb-3">
+                        <span class="w-9 h-9 rounded-full {{ $whatsNext['actionable'] ? 'bg-gold/15 text-gold-dark' : 'bg-teal/10 text-teal-dark' }} flex items-center justify-center shrink-0">
+                            @if ($whatsNext['actionable'])
+                                <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            @else
+                                <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            @endif
+                        </span>
+                        <p class="text-xs font-semibold uppercase tracking-widest {{ $whatsNext['actionable'] ? 'text-gold-dark' : 'text-teal-dark' }}">What's Next</p>
+                    </div>
+                    <p class="text-base font-bold text-navy dark:text-white mb-1">{{ $whatsNext['title'] }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{{ $whatsNext['description'] }}</p>
+                    @if ($whatsNext['url'])
+                        <a href="{{ $whatsNext['url'] }}" class="mt-auto self-start px-4 py-2.5 rounded-lg text-sm font-semibold bg-gold text-navy hover:bg-gold-dark transition-colors">
+                            {{ $whatsNext['actionLabel'] }}
+                        </a>
+                    @endif
+                </div>
+            @endif
+
         </div>
     @endif
 
