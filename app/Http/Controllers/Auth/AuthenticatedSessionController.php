@@ -103,6 +103,7 @@ class AuthenticatedSessionController extends Controller
 
         if (! $user->isAdmin()) {
             $request->session()->put('show_payment_reminder', true);
+            $request->session()->put('show_survey_prompt', true);
         }
 
         $destination = $request->user()->isAdmin()

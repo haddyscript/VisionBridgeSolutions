@@ -113,6 +113,68 @@
     </script>
 @endif
 
+@if ($showSurveyModal)
+    <div id="survey-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 opacity-0 transition-opacity duration-200">
+        <div id="survey-card" class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden scale-95 transition-transform duration-200">
+
+            <button type="button" id="survey-close" aria-label="Close" class="absolute top-4 right-4 text-white/70 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+
+            <div class="px-6 pt-7 pb-6" style="background:linear-gradient(135deg,#0F766E,#0D9488);">
+                <div class="w-12 h-12 rounded-full bg-white/15 text-white flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.958a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.368 2.447a1 1 0 00-.363 1.118l1.287 3.957c.3.922-.755 1.688-1.539 1.118l-3.367-2.446a1 1 0 00-1.176 0l-3.367 2.446c-.784.57-1.838-.196-1.539-1.118l1.287-3.957a1 1 0 00-.363-1.118L2.062 9.385c-.783-.57-.38-1.81.588-1.81h4.163a1 1 0 00.95-.69l1.286-3.958z"/>
+                    </svg>
+                </div>
+                <p class="text-xs font-semibold uppercase tracking-widest text-white/70 mb-1">Your Feedback</p>
+                <h2 class="font-display text-xl font-bold text-white">Your project launched — how did we do?</h2>
+            </div>
+
+            <div class="px-6 py-6">
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                    We'd love to hear about your experience. It only takes a minute, and it helps us serve you better.
+                </p>
+
+                <div class="flex flex-col sm:flex-row sm:justify-end gap-2.5">
+                    <button type="button" id="survey-dismiss" class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        Maybe later
+                    </button>
+                    <a href="{{ route('portal.survey.show') }}" class="text-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-teal-dark text-white hover:bg-teal transition-colors">
+                        Share Feedback
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const overlay = document.getElementById('survey-modal');
+            const card = document.getElementById('survey-card');
+
+            requestAnimationFrame(() => {
+                overlay.classList.remove('opacity-0');
+                card.classList.remove('scale-95');
+            });
+
+            function closeModal() {
+                overlay.classList.add('opacity-0');
+                card.classList.add('scale-95');
+                setTimeout(() => overlay.remove(), 200);
+            }
+
+            document.getElementById('survey-dismiss')?.addEventListener('click', closeModal);
+            document.getElementById('survey-close')?.addEventListener('click', closeModal);
+            overlay.addEventListener('click', function (e) {
+                if (e.target === overlay) closeModal();
+            });
+        })();
+    </script>
+@endif
+
 @if ($firstVisit)
     <div id="welcome-banner" class="relative overflow-hidden rounded-2xl mb-8 shadow-lg">
         <div class="px-8 py-8 md:py-10" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">

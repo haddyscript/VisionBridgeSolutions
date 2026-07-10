@@ -38,6 +38,13 @@ class DashboardController extends Controller
         $showPaymentReminder = $request->session()->pull('show_payment_reminder', false)
             && $pendingPayment !== null;
 
+        // Survey prompt modal — once per login, only if the survey is still
+        // pending (hidden once submitted), and never stacked on top of the
+        // payment reminder modal.
+        $showSurveyModal = $request->session()->pull('show_survey_prompt', false)
+            && $pendingSurvey !== null
+            && ! $showPaymentReminder;
+
         $firstVisit = is_null($user->welcomed_at);
 
         if ($project) {
@@ -58,6 +65,7 @@ class DashboardController extends Controller
             'firstVisit' => $firstVisit,
             'announcement' => $announcement,
             'pendingSurvey' => $pendingSurvey,
+            'showSurveyModal' => $showSurveyModal,
             'whatsNext' => $project ? $this->whatsNext($project) : null,
         ]);
     }
