@@ -518,11 +518,41 @@
                     <span class="text-xs text-gray-400 dark:text-gray-500">({{ $project->milestones->where('status', 'completed')->count() }} of {{ $project->milestones->count() }} milestones)</span>
                 @endif
             </span>
-            <span class="font-semibold text-navy dark:text-white">{{ $project->progressPercent() }}%</span>
+            <span class="progress-bar-value font-semibold text-navy dark:text-white" data-pct="{{ $project->progressPercent() }}">0%</span>
         </div>
         <div class="w-full h-2 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
-            <div class="h-full bg-gold rounded-full" style="width: {{ $project->progressPercent() }}%"></div>
+            <div class="progress-bar-fill h-full bg-gold rounded-full" style="width: 0%" data-pct="{{ $project->progressPercent() }}"></div>
         </div>
+        <style>
+            .progress-bar-fill { transition: width 2.4s cubic-bezier(0.33, 1, 0.68, 1); }
+            @media (prefers-reduced-motion: reduce) { .progress-bar-fill { transition: none; } }
+        </style>
+        <script>
+            (function () {
+                const clamp = (n) => Math.max(0, Math.min(100, parseInt(n, 10) || 0));
+                const fill = document.querySelector('.progress-bar-fill');
+                const val = document.querySelector('.progress-bar-value');
+                if (!fill) return;
+                const target = clamp(fill.dataset.pct);
+
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    fill.style.width = target + '%';
+                    if (val) val.textContent = target + '%';
+                    return;
+                }
+
+                requestAnimationFrame(() => { fill.style.width = target + '%'; });
+
+                if (val) {
+                    const duration = 2400, start = performance.now();
+                    (function tick(now) {
+                        const t = Math.min(1, (now - start) / duration);
+                        val.textContent = Math.round(target * (1 - Math.pow(1 - t, 3))) + '%';
+                        if (t < 1) requestAnimationFrame(tick);
+                    })(start);
+                }
+            })();
+        </script>
 
         @php $nextMilestone = $project->nextMilestone(); @endphp
         @if ($nextMilestone)
