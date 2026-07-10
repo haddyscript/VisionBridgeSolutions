@@ -62,16 +62,59 @@
         .gold-scrollbar::-webkit-scrollbar-thumb:hover {
             background-color: #DFC06A;
         }
+
+        /* ── Collapsible sidebar (desktop only) ───────────────────────── */
+        #portal-sidebar { transition: transform .2s ease, width .2s ease; }
+
+        @media (min-width: 768px) {
+            body.sidebar-collapsed #portal-sidebar { width: 5rem; }
+            body.sidebar-collapsed #portal-main { margin-left: 5rem; }
+
+            /* Icons keep their fixed w/h; text collapses to zero width */
+            body.sidebar-collapsed #portal-sidebar nav a,
+            body.sidebar-collapsed #portal-sidebar .sidebar-signout {
+                justify-content: center;
+                gap: 0;
+                font-size: 0;
+            }
+            body.sidebar-collapsed #portal-sidebar nav > p { display: none; }
+            body.sidebar-collapsed .sidebar-hide-collapsed { display: none; }
+            body.sidebar-collapsed .sidebar-logo { height: 2.75rem; }
+        }
+
+        /* Floating tooltip for the collapsed rail */
+        #sidebar-tooltip {
+            position: fixed;
+            z-index: 60;
+            background: #1B2A4A;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.35rem 0.6rem;
+            border-radius: 0.4rem;
+            white-space: nowrap;
+            pointer-events: none;
+            box-shadow: 0 6px 16px rgba(0,0,0,.28);
+            opacity: 0;
+            transition: opacity .12s ease;
+        }
+        #sidebar-tooltip.visible { opacity: 1; }
+        @media (max-width: 767px) { #sidebar-tooltip { display: none !important; } }
     </style>
 </head>
 <body class="font-sans antialiased text-gray-800 dark:text-gray-100 bg-gray-50 dark:bg-gray-900 min-h-screen">
+<script>if (localStorage.getItem('portalSidebarCollapsed') === 'true') document.body.classList.add('sidebar-collapsed');</script>
 
     <div class="flex min-h-screen">
 
         {{-- Sidebar --}}
         <aside id="portal-sidebar" class="fixed inset-y-0 left-0 z-40 w-64 flex flex-col -translate-x-full md:translate-x-0 transition-transform duration-200" style="background:#111D33;">
-            <div class="flex items-center justify-center py-6 border-b border-white/10 shrink-0">
-                <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" class="h-28 w-auto object-contain rounded-md">
+            <div class="relative flex items-center justify-center py-6 border-b border-white/10 shrink-0">
+                <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" class="sidebar-logo h-28 w-auto object-contain rounded-md transition-all duration-200">
+                <button type="button" id="sidebar-collapse-toggle" aria-label="Collapse sidebar"
+                        class="hidden md:flex absolute top-2 right-2 w-6 h-6 items-center justify-center rounded-full bg-white/10 text-white/70 hover:bg-white/20 hover:text-white transition-colors">
+                    <svg id="sidebar-collapse-icon" class="w-3.5 h-3.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
             </div>
 
             <nav class="flex-1 overflow-y-auto gold-scrollbar py-5 px-3 space-y-0.5">
@@ -163,7 +206,7 @@
                 </a>
             </nav>
 
-            <div class="px-3 pb-3 shrink-0">
+            <div class="px-3 pb-3 shrink-0 sidebar-hide-collapsed">
                 <div class="rounded-lg bg-white/5 border border-white/10 px-3.5 py-3">
                     <button type="button" id="need-help-toggle" aria-expanded="false" aria-controls="need-help-content"
                             class="w-full flex items-center justify-between text-left group">
@@ -211,20 +254,22 @@
             </div>
 
             <div class="border-t border-white/10 pt-3 shrink-0">
-                @include('partials.getting-started')
+                <div class="sidebar-hide-collapsed">
+                    @include('partials.getting-started')
 
-                <div class="flex items-center gap-3 px-3 py-2 mb-1">
-                    <div class="w-8 h-8 rounded-full bg-gold/20 text-gold flex items-center justify-center text-sm font-semibold shrink-0">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    </div>
-                    <div class="min-w-0">
-                        <p class="text-sm font-medium text-white truncate">{{ auth()->user()->name }}</p>
-                        <p class="text-xs text-white/40 truncate">{{ auth()->user()->email }}</p>
+                    <div class="flex items-center gap-3 px-3 py-2 mb-1">
+                        <div class="w-8 h-8 rounded-full bg-gold/20 text-gold flex items-center justify-center text-sm font-semibold shrink-0">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-medium text-white truncate">{{ auth()->user()->name }}</p>
+                            <p class="text-xs text-white/40 truncate">{{ auth()->user()->email }}</p>
+                        </div>
                     </div>
                 </div>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/65 hover:bg-white/5 hover:text-white transition-colors">
+                    <button type="submit" class="sidebar-signout w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/65 hover:bg-white/5 hover:text-white transition-colors">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                         </svg>
@@ -234,11 +279,52 @@
             </div>
         </aside>
 
+        <script>
+            (function () {
+                const toggle = document.getElementById('sidebar-collapse-toggle');
+                const icon = document.getElementById('sidebar-collapse-icon');
+                if (!toggle) return;
+
+                function syncIcon() {
+                    const collapsed = document.body.classList.contains('sidebar-collapsed');
+                    if (icon) icon.style.transform = collapsed ? 'rotate(180deg)' : '';
+                    toggle.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+                }
+                syncIcon();
+
+                toggle.addEventListener('click', function () {
+                    const collapsed = document.body.classList.toggle('sidebar-collapsed');
+                    localStorage.setItem('portalSidebarCollapsed', collapsed ? 'true' : 'false');
+                    syncIcon();
+                });
+
+                // Hover tooltips — only meaningful while collapsed on desktop.
+                const tip = document.createElement('div');
+                tip.id = 'sidebar-tooltip';
+                document.body.appendChild(tip);
+
+                document.querySelectorAll('#portal-sidebar nav a, #portal-sidebar .sidebar-signout').forEach(function (el) {
+                    el.addEventListener('mouseenter', function () {
+                        if (!document.body.classList.contains('sidebar-collapsed') || window.innerWidth < 768) return;
+                        const label = (el.querySelector('span')?.textContent || el.textContent || '').trim();
+                        if (!label) return;
+                        tip.textContent = label;
+                        const rect = el.getBoundingClientRect();
+                        tip.style.top = (rect.top + rect.height / 2) + 'px';
+                        tip.style.left = (rect.right + 12) + 'px';
+                        tip.style.transform = 'translateY(-50%)';
+                        tip.classList.add('visible');
+                    });
+                    el.addEventListener('mouseleave', function () { tip.classList.remove('visible'); });
+                });
+            })();
+        </script>
+
         {{-- Mobile overlay --}}
         <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-30 hidden md:hidden"></div>
 
         {{-- Main content --}}
-        <div class="flex-1 md:ml-64 min-w-0">
+        <div id="portal-main" class="flex-1 md:ml-64 min-w-0 transition-[margin] duration-200">
             <header class="sticky top-0 z-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 h-16 flex items-center px-4 sm:px-6 lg:px-8 gap-4">
                 <button id="sidebar-toggle" class="md:hidden text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

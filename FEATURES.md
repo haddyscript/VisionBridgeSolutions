@@ -42,6 +42,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Account Settings | Clients update their name, email, or password — changing the password or email sends a security alert email |
 | Help & FAQ | A searchable list of common questions and answers, with expand/collapse all and a quick "Was this helpful?" rating on each answer |
 | Collapsible "Need Help?" | The support contact box near the bottom of the portal sidebar collapses to just its "Need Help?" header (with a chevron) so the sidebar needs less scrolling; clicking it expands the email/phone. The open/closed choice is remembered per browser (localStorage) and it starts collapsed |
+| Collapsible Sidebar | On desktop, an arrow button at the top of the portal sidebar collapses it to a slim icon-only rail (labels/section headers/profile/help hidden, icons centered) to give the page more room; hovering an icon shows its name as a tooltip. Starts expanded, and the collapsed/expanded choice is remembered per browser (localStorage). On mobile the sidebar still uses the existing slide-in hamburger, unaffected |
 | Need Help? | Our support email and phone number, always visible in the sidebar |
 | Getting Started checklist | Tracks this specific client's real onboarding progress (Care Plan, Service Agreement, Questionnaire, file uploads, content, deposit, project progress) instead of a generic fixed list — each unfinished item links straight to where they'd complete it |
 | Light / dark mode | Clients can switch the portal's appearance to their preference |
