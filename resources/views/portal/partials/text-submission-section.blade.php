@@ -5,8 +5,8 @@
     $items: collection of uploads already filtered to this category
 --}}
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
-        <div>
+    <div class="content-grid grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
+        <div class="new-request-col">
             <h3 class="font-semibold text-navy dark:text-white mb-1">{{ $label }}</h3>
             <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Submit a new request below. To respond to an existing one, use the message box under Revision History.</p>
 
@@ -25,7 +25,7 @@
             </form>
         </div>
 
-        <div class="lg:border-l lg:border-gray-200 dark:lg:border-gray-700 lg:pl-8">
+        <div class="history-col lg:border-l lg:border-gray-200 dark:lg:border-gray-700 lg:pl-8">
             <h3 class="font-semibold text-navy dark:text-white mb-1">Revision History</h3>
             <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">{{ $items->count() }} submission{{ $items->count() === 1 ? '' : 's' }} so far.</p>
 
@@ -171,18 +171,21 @@
                             </div>
                         </div>
 
-                        {{-- WhatsApp-style composer for this conversation --}}
-                        <form data-upload-id="{{ $item->id }}" method="POST" action="{{ route('portal.uploads.reply', $item) }}"
-                              class="ajax-client-reply-form mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 flex items-center gap-2">
-                            @csrf
-                            <textarea name="body" rows="1" placeholder="Type a message…" required
-                                      class="flex-1 resize-none rounded-full border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
-                            <button type="submit" title="Send" class="shrink-0 w-10 h-10 rounded-full bg-navy hover:bg-navy-light text-white flex items-center justify-center transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                                </svg>
-                            </button>
-                        </form>
+                        {{-- Reply composer — a distinct pill so it's clearly for replying to this thread --}}
+                        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <p class="text-xs font-medium text-gray-400 dark:text-gray-500 mb-2">Reply to this request</p>
+                            <form data-upload-id="{{ $item->id }}" method="POST" action="{{ route('portal.uploads.reply', $item) }}"
+                                  class="ajax-client-reply-form flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50 pl-4 pr-1.5 py-1 focus-within:border-gold focus-within:ring-2 focus-within:ring-gold/30 transition">
+                                @csrf
+                                <textarea name="body" rows="1" placeholder="Type a message…" required
+                                          class="flex-1 resize-none bg-transparent border-0 py-2 text-sm text-navy dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-0"></textarea>
+                                <button type="submit" title="Send" class="shrink-0 w-9 h-9 rounded-full bg-navy hover:bg-navy-light text-white flex items-center justify-center transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 @endforeach
             @endif
@@ -193,9 +196,24 @@
 <script>
 (function () {
     const listEl = document.getElementById('revision-list-{{ $category }}');
+    const grid = document.querySelector('.content-grid');
+    const newRequestCol = document.querySelector('.new-request-col');
+    const historyCol = document.querySelector('.history-col');
+
+    // With a thread open, hide the "New Request" form and let the conversation
+    // take the full card width; restore the split view when going back.
+    function expandWorkspace(expand) {
+        if (newRequestCol) newRequestCol.classList.toggle('hidden', expand);
+        if (grid) grid.classList.toggle('lg:grid-cols-2', !expand);
+        if (historyCol) {
+            historyCol.classList.toggle('lg:border-l', !expand);
+            historyCol.classList.toggle('lg:pl-8', !expand);
+        }
+    }
 
     function openThread(threadId) {
         if (listEl) listEl.classList.add('hidden');
+        expandWorkspace(true);
         document.querySelectorAll('.revision-thread').forEach(function (thread) {
             thread.classList.toggle('hidden', thread.id !== threadId);
         });
@@ -211,6 +229,7 @@
         document.querySelectorAll('.revision-thread').forEach(function (thread) {
             thread.classList.add('hidden');
         });
+        expandWorkspace(false);
         if (listEl) listEl.classList.remove('hidden');
     }
 
