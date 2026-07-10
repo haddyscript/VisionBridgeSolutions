@@ -321,15 +321,25 @@
 
         function positionMenu() {
             const rect = btn.getBoundingClientRect();
-            menu.style.top = (rect.bottom + 4) + 'px';
+            const menuHeight = menu.offsetHeight;
+            const spaceBelow = window.innerHeight - rect.bottom;
+
+            // Flip the menu above the button when there isn't room below it
+            // (e.g. the last row), so it never gets cut off by the viewport.
+            if (spaceBelow < menuHeight + 8 && rect.top > menuHeight + 8) {
+                menu.style.top = (rect.top - menuHeight - 4) + 'px';
+            } else {
+                menu.style.top = (rect.bottom + 4) + 'px';
+            }
             menu.style.right = (window.innerWidth - rect.right) + 'px';
         }
 
         btn.addEventListener('click', function (e) {
             e.stopPropagation();
             open = !open;
-            if (open) positionMenu();
+            // Show first so positionMenu() can measure the menu's height.
             menu.style.display = open ? 'block' : 'none';
+            if (open) positionMenu();
         });
 
         document.addEventListener('click', function () {
