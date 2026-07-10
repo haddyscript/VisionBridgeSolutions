@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\ClientNotification;
 use App\Models\LoginActivity;
 use App\Support\AdminPermissions;
 use Illuminate\Http\RedirectResponse;
@@ -60,14 +61,47 @@ class AuthenticatedSessionController extends Controller
     {
         $request->session()->regenerate();
 
+        $user = $request->user();
+
+        // Flag an unrecognized sign-in (a browser or device/IP the client has
+        // never used) BEFORE recording this login, so we compare against their
+        // own genuine history — not impersonation logins, and not this one.
+        $unrecognizedLogin = false;
+        if (! $user->isAdmin()) {
+            $browser = LoginActivity::browserFromAgent($request->userAgent());
+            $ip = $request->ip();
+
+            $priorLogins = LoginActivity::where('user_id', $user->id)
+                ->whereNull('impersonator_id')
+                ->get(['user_agent', 'ip_address']);
+
+            if ($priorLogins->isNotEmpty()) {
+                $unrecognizedLogin = ! $priorLogins->contains(
+                    fn ($l) => LoginActivity::browserFromAgent($l->user_agent) === $browser
+                        && $l->ip_address === $ip
+                );
+            }
+        }
+
         LoginActivity::create([
-            'user_id'      => $request->user()->id,
+            'user_id'      => $user->id,
             'ip_address'   => $request->ip(),
             'user_agent'   => $request->userAgent(),
             'logged_in_at' => now(),
         ]);
 
-        if (! $request->user()->isAdmin()) {
+        if ($unrecognizedLogin) {
+            ClientNotification::send(
+                $user,
+                'security',
+                'New sign-in to your account',
+                'We noticed a sign-in from '.LoginActivity::browserFromAgent($request->userAgent())
+                    .' ('.($request->ip() ?? 'unknown IP').'). If this wasn\'t you, change your password right away.',
+                route('portal.account.index'),
+            );
+        }
+
+        if (! $user->isAdmin()) {
             $request->session()->put('show_payment_reminder', true);
         }
 

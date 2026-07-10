@@ -22,7 +22,12 @@ class LoginActivity extends Model
 
     public function simpleBrowser(): string
     {
-        $ua = $this->user_agent ?? '';
+        return static::browserFromAgent($this->user_agent);
+    }
+
+    public static function browserFromAgent(?string $ua): string
+    {
+        $ua = $ua ?? '';
 
         if (str_contains($ua, 'Edg/')) return 'Microsoft Edge';
         if (str_contains($ua, 'Chrome/')) return 'Chrome';
