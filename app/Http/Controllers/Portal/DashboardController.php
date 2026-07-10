@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Portal\CategoryController;
 use App\Models\Announcement;
+use App\Models\ClientNotification;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -50,6 +51,11 @@ class DashboardController extends Controller
         $referralCode = $user->getReferralCode();
         $referralCount = $user->referrals()->count();
 
+        // The layout's view composer only shares notifications with the layout
+        // itself, not this child view — load them here for the recap card.
+        $recentNotifications = ClientNotification::where('user_id', $user->id)->latest()->take(5)->get();
+        $unreadNotificationCount = ClientNotification::where('user_id', $user->id)->whereNull('read_at')->count();
+
         if ($project) {
             $updates = ['activity_last_read_at' => now()];
             if ($firstVisit) {
@@ -72,6 +78,8 @@ class DashboardController extends Controller
             'referralCode' => $referralCode,
             'referralCount' => $referralCount,
             'referralLink' => route('register', ['ref' => $referralCode]),
+            'recentNotifications' => $recentNotifications,
+            'unreadNotificationCount' => $unreadNotificationCount,
             'whatsNext' => $project ? $this->whatsNext($project) : null,
         ]);
     }
