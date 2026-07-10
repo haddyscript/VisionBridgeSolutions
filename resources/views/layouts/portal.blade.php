@@ -77,6 +77,9 @@
                 gap: 0;
                 font-size: 0;
             }
+            /* Hide labels AND badges/dots (spans keep their own font size, so
+               font-size:0 alone won't shrink them) — leaves just the icon. */
+            body.sidebar-collapsed #portal-sidebar nav a span { display: none; }
             body.sidebar-collapsed #portal-sidebar nav > p { display: none; }
             body.sidebar-collapsed .sidebar-hide-collapsed { display: none; }
             body.sidebar-collapsed .sidebar-logo { height: 2.75rem; }
