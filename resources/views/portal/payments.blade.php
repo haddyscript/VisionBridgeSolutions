@@ -89,7 +89,10 @@
     {{-- One-Time Payments --}}
     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-            <h3 class="font-display text-lg font-bold text-navy dark:text-white">Payment History <span class="text-gray-400 dark:text-gray-500 font-normal">({{ $payments->count() }})</span></h3>
+            <button type="button" id="payment-history-toggle" aria-expanded="true" aria-controls="payment-history-body" class="group inline-flex items-center gap-2 text-left">
+                <h3 class="font-display text-lg font-bold text-navy dark:text-white">Payment History <span class="text-gray-400 dark:text-gray-500 font-normal">({{ $payments->count() }})</span></h3>
+                <svg id="payment-history-chevron" class="w-4 h-4 text-gray-400 group-hover:text-navy dark:group-hover:text-white transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
             <div class="flex items-center gap-4">
                 @if ($payments->isNotEmpty())
                     <a href="{{ route('portal.payments.statement') }}" class="inline-flex items-center gap-1.5 text-sm text-gold-dark hover:underline">
@@ -106,6 +109,7 @@
             </div>
         </div>
 
+        <div id="payment-history-body">
         @if ($payments->isEmpty())
             <div class="text-center py-10">
                 <div class="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
@@ -184,7 +188,32 @@
                 </div>
             @endforeach
         @endif
+        </div>
     </div>
+
+    <script>
+        (function () {
+            const btn = document.getElementById('payment-history-toggle');
+            const body = document.getElementById('payment-history-body');
+            const chevron = document.getElementById('payment-history-chevron');
+            if (!btn || !body) return;
+
+            function apply(open) {
+                body.classList.toggle('hidden', !open);
+                btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                if (chevron) chevron.style.transform = open ? '' : 'rotate(-90deg)';
+            }
+
+            // Remember the client's choice across visits; expanded by default.
+            apply(localStorage.getItem('paymentHistoryOpen') !== 'false');
+
+            btn.addEventListener('click', function () {
+                const open = body.classList.contains('hidden');
+                apply(open);
+                localStorage.setItem('paymentHistoryOpen', open ? 'true' : 'false');
+            });
+        })();
+    </script>
 
     {{-- Care Plan Payment History --}}
     @if ($subscription && $subscription->payments->isNotEmpty())
