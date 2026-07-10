@@ -114,9 +114,9 @@
         <aside id="portal-sidebar" class="fixed inset-y-0 left-0 z-40 w-64 flex flex-col -translate-x-full md:translate-x-0 transition-transform duration-200" style="background:#111D33;">
             <div class="relative flex items-center justify-center py-6 border-b border-white/10 shrink-0">
                 <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" class="sidebar-logo h-28 w-auto object-contain rounded-md transition-all duration-200">
-                <button type="button" id="sidebar-collapse-toggle" aria-label="Collapse sidebar"
-                        class="hidden md:flex absolute top-2 right-2 w-6 h-6 items-center justify-center rounded-full bg-white/10 text-white/70 hover:bg-white/20 hover:text-white transition-colors">
-                    <svg id="sidebar-collapse-icon" class="w-3.5 h-3.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                <button type="button" id="sidebar-collapse-toggle" aria-label="Collapse sidebar" title="Collapse sidebar"
+                        class="hidden md:flex absolute top-3 -right-3 w-8 h-8 items-center justify-center rounded-full bg-gold text-navy-dark ring-2 ring-navy-dark shadow-lg hover:bg-gold-light hover:scale-110 transition-all duration-200">
+                    <svg id="sidebar-collapse-icon" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                 </button>
             </div>
 
@@ -291,7 +291,9 @@
                 function syncIcon() {
                     const collapsed = document.body.classList.contains('sidebar-collapsed');
                     if (icon) icon.style.transform = collapsed ? 'rotate(180deg)' : '';
-                    toggle.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+                    const label = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+                    toggle.setAttribute('aria-label', label);
+                    toggle.setAttribute('title', label);
                 }
                 syncIcon();
 
