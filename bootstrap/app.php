@@ -57,12 +57,26 @@ return Application::configure(basePath: dirname(__DIR__))
                 return null;
             }
 
-            $status = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
-
-            if ($status >= 500) {
-                return response()->view('errors.maintenance', [], 503);
+            // Let Laravel handle exceptions it has dedicated behavior for —
+            // validation (redirect back with errors), auth (redirect to login),
+            // and missing models (404). Masking these would break normal flows
+            // like a failed login showing its error message.
+            if ($e instanceof \Illuminate\Validation\ValidationException
+                || $e instanceof \Illuminate\Auth\AuthenticationException
+                || $e instanceof \Illuminate\Auth\Access\AuthorizationException
+                || $e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+                return null;
             }
 
-            return null;
+            // HTTP exceptions carry their own status — only mask true 5xx,
+            // leaving 404/403/etc. to their own error views.
+            if ($e instanceof HttpExceptionInterface) {
+                return $e->getStatusCode() >= 500
+                    ? response()->view('errors.maintenance', [], 503)
+                    : null;
+            }
+
+            // Anything else is an uncaught server error → show maintenance page.
+            return response()->view('errors.maintenance', [], 503);
         });
     })->create();
