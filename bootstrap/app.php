@@ -5,6 +5,8 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Session\TokenMismatchException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Throwable;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -42,5 +44,25 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             return redirect()->route('login')->with('status', 'Your session expired. Please sign in again.');
+        });
+
+        // In production, hide real server errors (5xx) behind a friendly
+        // maintenance page for everyone, so visitors never see a raw stack
+        // trace or "Internal Server Error". Append ?error=true to any URL to
+        // bypass the mask and see the actual error page (for debugging).
+        // Local/APP_DEBUG always shows the real page so developers still get
+        // the full trace. 4xx errors (404/403/419) keep their own views.
+        $exceptions->render(function (Throwable $e, Request $request) {
+            if (config('app.debug') || $request->boolean('error') || $request->expectsJson()) {
+                return null;
+            }
+
+            $status = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
+
+            if ($status >= 500) {
+                return response()->view('errors.maintenance', [], 503);
+            }
+
+            return null;
         });
     })->create();

@@ -524,6 +524,26 @@ Client portal sidebar links (Overview, Documents, Project Files, Website Content
 
 **Fix:** extended the existing full-screen loading overlay in `layouts/portal.blade.php` (previously shown only on form submit — see §15s for its `data-no-loading-overlay` opt-out) to also fire on sidebar link clicks. Factored the show-overlay logic into a shared `showOverlay()` function used by both the existing submit listener and a new click listener scoped to `#portal-sidebar nav a[href]`. Deliberately skips: modifier/middle clicks and `target="_blank"` (opens in a new tab — the current tab isn't navigating, so nothing to show a spinner for), and `mailto:`/`tel:`/`#` links (not page navigations at all). A link can opt out with the same `data-no-loading-overlay` attribute the form-submit path already supports.
 
+## 15aa. Friendly Maintenance Page for Production Errors (2026-07-10)
+
+In production, an uncaught server error (500 / "Internal Server Error") no
+longer shows visitors a raw error page or stack trace. Instead, any 5xx error
+renders a branded, self-contained "We'll be right back" maintenance page
+(`resources/views/errors/maintenance.blade.php`, returned with a 503 status).
+The masking is wired in `bootstrap/app.php`'s `withExceptions` render callback.
+
+- **Bypass for debugging:** append `?error=true` to any URL to skip the mask
+  and see the actual error page. In production this shows Laravel's default
+  error page (generic, no stack trace — safe to leave guessable); it only shows
+  the detailed trace if `APP_DEBUG` is on.
+- **Local/dev unaffected:** when `APP_DEBUG=true`, the real detailed error page
+  always shows, so developers still get the full trace without needing the flag.
+- **Scope:** only 5xx errors are masked. 4xx pages (404, 403, the 419
+  session-expired redirect) keep their own existing behavior. JSON/API requests
+  are never masked.
+- The maintenance view uses inline CSS (no external assets or DB), so it renders
+  even when the error is caused by broken assets or the database being down.
+
 ## 16. `specs/` Folder
 
 Starting 2026-07-03, implementation specs for features with enough moving parts to warrant one (multi-step flows, anything with a diagram, precise technical reference like PDF field coordinates) live in `specs/` as their own Markdown file, linked from the relevant FEATURES.md entry rather than inlined there. FEATURES.md stays the plain-language "what it does" summary; `specs/` is where the "how, and why it's built that way" detail goes. Existing docs there: [specs/ARTISAN_COMMANDS.md](specs/ARTISAN_COMMANDS.md), [specs/GAP/MULTI_PROJECT_SUPPORT.md](specs/GAP/MULTI_PROJECT_SUPPORT.md), [specs/GAP/CARE_PLAN_TIER_CHANGE.md](specs/GAP/CARE_PLAN_TIER_CHANGE.md), [specs/GAP/COUPON_PROMO_CODE_SUPPORT.md](specs/GAP/COUPON_PROMO_CODE_SUPPORT.md), [specs/GAP/SELF_SERVICE_REFUND_REQUEST.md](specs/GAP/SELF_SERVICE_REFUND_REQUEST.md), [specs/LOGIN/LOGIN_FLOW.md](specs/LOGIN/LOGIN_FLOW.md), [specs/PAYMENT_FLOW.md](specs/PAYMENT_FLOW.md), [specs/CARE_PLAN_SUBSCRIPTION_FLOW.md](specs/CARE_PLAN_SUBSCRIPTION_FLOW.md), [specs/AGREEMENT-PDF-FILLING.md](specs/AGREEMENT-PDF-FILLING.md), [specs/INTERACTIVE_PRODUCT_TOUR.md](specs/INTERACTIVE_PRODUCT_TOUR.md), [specs/PORTAL_ANNOUNCEMENTS.md](specs/PORTAL_ANNOUNCEMENTS.md), [specs/PORTAL_GLOBAL_SEARCH.md](specs/PORTAL_GLOBAL_SEARCH.md), [specs/POST_LAUNCH_SATISFACTION_SURVEY.md](specs/POST_LAUNCH_SATISFACTION_SURVEY.md), [specs/TWO_FACTOR_AUTHENTICATION.md](specs/TWO_FACTOR_AUTHENTICATION.md), [specs/AI_ASSISTANT_KNOWLEDGE_BASE.md](specs/AI_ASSISTANT_KNOWLEDGE_BASE.md) *(knowledge base + implementation notes for the AI Client Portal assistant — see §15x)*.
