@@ -434,7 +434,8 @@
             ['label' => 'Payments', 'sub' => $totalDue > 0 ? 'Paid to date' : 'Nothing due', 'percent' => $paymentPercent, 'color' => '#22C55E'],
         ];
     @endphp
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 items-start">
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
         <h2 class="font-display text-lg font-bold text-navy dark:text-white mb-5">Progress Tracker</h2>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             @foreach ($progressRings as $ring)
@@ -489,8 +490,8 @@
         </script>
     </div>
 
-    {{-- Notifications recap + Refer-A-Friend --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {{-- Right column: Notifications above Refer a Friend --}}
+        <div class="space-y-6">
         {{-- Notifications recap --}}
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex items-center gap-2 mb-4">
@@ -565,6 +566,7 @@
             });
         })();
     </script>
+    </div>
 
     {{-- Project header --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
