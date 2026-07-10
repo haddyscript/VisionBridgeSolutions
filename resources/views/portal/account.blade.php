@@ -241,9 +241,27 @@
                         <li class="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="w-8 h-8 rounded-full bg-navy/6 dark:bg-white/6 flex items-center justify-center shrink-0">
-                                    <svg class="w-4 h-4 text-navy/50 dark:text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                    </svg>
+                                    @switch($login->simpleBrowser())
+                                        @case('Chrome')
+                                            <svg class="w-5 h-5" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#fff"/><path fill="#4285F4" d="M24 14a10 10 0 019.5 6.9H24a3.1 3.1 0 00-2.9 4L15.5 15A20 20 0 0124 14z" transform="translate(0 0)"/><path fill="#EA4335" d="M24 4a20 20 0 00-17.3 10l7.8 13.5A10 10 0 0124 14h17.3A20 20 0 0024 4z"/><path fill="#FBBC05" d="M6.7 14A20 20 0 004 24a20 20 0 0016.3 19.7l7.8-13.5A10 10 0 0114.5 27.5z"/><path fill="#34A853" d="M41.3 14H24a10 10 0 019.5 13.5l-9.2 16A20 20 0 0041.3 14z"/><circle cx="24" cy="24" r="7" fill="#fff"/><circle cx="24" cy="24" r="6" fill="#4285F4"/></svg>
+                                            @break
+                                        @case('Safari')
+                                            <svg class="w-5 h-5" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#1E88E5"/><circle cx="24" cy="24" r="16.5" fill="#fff"/><path fill="#FF3B30" d="M25.4 22.6 34 14l-8.6 11.4z"/><path fill="#F1F1F1" d="M22.6 25.4 14 34l8.6-11.4z"/><path d="M24 22.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" fill="#555"/></svg>
+                                            @break
+                                        @case('Firefox')
+                                            <svg class="w-5 h-5" viewBox="0 0 48 48"><circle cx="24" cy="25" r="19" fill="#FF9500"/><path fill="#FF3B30" d="M40 14c-1-3-4-7-7-8 1 2 1 4 0 6-2-3-6-5-11-4C11 10 7 17 8 25c1-9 9-13 16-11 6 2 9 8 7 14-2 5-8 8-14 6 5 4 13 3 18-2 5-5 5-13 5-18z"/><circle cx="22" cy="24" r="9" fill="#FFCd00"/></svg>
+                                            @break
+                                        @case('Microsoft Edge')
+                                            <svg class="w-5 h-5" viewBox="0 0 48 48"><path fill="#0C88DA" d="M43 31c-3 8-11 13-19 12-9 0-17-7-18-16 0 6 5 10 11 10 5 0 8-2 11-5 3-2 8-3 15-1z"/><path fill="#33B4E5" d="M6 20C9 10 18 4 27 6c7 1 12 6 13 12-3-4-8-5-13-4-8 2-12 8-13 15-2-3-4-6-8-9z"/><path fill="#2C7A3E" d="M6 20c2-1 5-1 8 1 3 3 3 8 1 13-1 4 0 8 3 11C10 44 3 36 3 27c0-2 1-5 3-7z"/></svg>
+                                            @break
+                                        @case('Opera')
+                                            <svg class="w-5 h-5" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#FF1B2D"/><ellipse cx="24" cy="24" rx="9" ry="14" fill="#fff"/></svg>
+                                            @break
+                                        @default
+                                            <svg class="w-4 h-4 text-navy/50 dark:text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                            </svg>
+                                    @endswitch
                                 </div>
                                 <div class="min-w-0">
                                     <p class="text-sm font-medium text-navy dark:text-white">{{ $login->simpleBrowser() }}</p>
