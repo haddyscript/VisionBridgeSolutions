@@ -15,8 +15,23 @@
                 <input type="hidden" name="category" value="{{ $category }}">
                 <textarea name="body" rows="3" placeholder="{{ $placeholder }}"
                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
-                <input type="file" name="file"
-                       class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gold/15 file:text-navy dark:text-white file:font-semibold file:text-sm hover:file:bg-gold/25">
+                <div class="upload-attach">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <label class="inline-flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 hover:border-gold hover:bg-gold/5 px-3.5 py-2 text-sm font-medium text-navy dark:text-white transition-colors">
+                            <input type="file" name="file" class="attach-input sr-only">
+                            <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 10-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                            <span>Attach a file</span>
+                        </label>
+                        <span class="attach-filename hidden items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 rounded-lg bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-700 px-2.5 py-1.5">
+                            <svg class="w-3.5 h-3.5 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            <span class="attach-name truncate max-w-[180px]"></span>
+                            <button type="button" class="attach-clear text-gray-400 hover:text-red-500 transition-colors" title="Remove">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5">Optional — attach a document or image (up to 50MB).</p>
+                </div>
                 <div class="flex justify-end">
                     <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
                         Submit
@@ -276,6 +291,28 @@
     }
 
     initMessageToggles();
+
+    // New-request file attachment: show the chosen filename with a clear button.
+    const attachInput = document.querySelector('.upload-attach .attach-input');
+    if (attachInput) {
+        const wrap = attachInput.closest('.upload-attach');
+        const nameWrap = wrap.querySelector('.attach-filename');
+        const nameEl = wrap.querySelector('.attach-name');
+        const clearBtn = wrap.querySelector('.attach-clear');
+
+        attachInput.addEventListener('change', function () {
+            if (attachInput.files.length) {
+                nameEl.textContent = attachInput.files[0].name;
+                nameWrap.classList.remove('hidden');
+                nameWrap.classList.add('inline-flex');
+            }
+        });
+        clearBtn.addEventListener('click', function () {
+            attachInput.value = '';
+            nameWrap.classList.add('hidden');
+            nameWrap.classList.remove('inline-flex');
+        });
+    }
 
     document.querySelectorAll('.ajax-client-reply-form').forEach(function (form) {
         if (form.dataset.bound) return;
