@@ -196,11 +196,6 @@
                                             <button type="button" class="permissions-toggle w-full text-left px-3 py-2 text-xs text-navy hover:bg-gray-50 transition-colors" data-target="job-title-{{ $admin->id }}">
                                                 Set Job Title
                                             </button>
-                                            @if (! $admin->isSuperAdmin())
-                                                <button type="button" class="permissions-toggle w-full text-left px-3 py-2 text-xs text-navy hover:bg-gray-50 transition-colors" data-target="permissions-{{ $admin->id }}">
-                                                    Manage Access
-                                                </button>
-                                            @endif
                                             @if (! $admin->isOwner() && ! ($admin->isSuperAdmin() && $admin->is(auth()->user())))
                                                 <form method="POST" action="{{ route('admin.team.toggle-super-admin', $admin) }}"
                                                       onsubmit="return confirm('{{ $admin->isSuperAdmin() ? 'Revoke' : 'Grant' }} super admin access for {{ $admin->name }}?')">
@@ -270,69 +265,13 @@
                             </div>
                         @endif
 
-                        @if (auth()->user()->isSuperAdmin() && ! $admin->isSuperAdmin())
-                            @php
-                                $adminPermissionKeys = $admin->adminPermissions->pluck('permission_key')->all();
-                                $permissionGroups = [
-                                    'Client Work' => ['clients', 'calendar', 'consultations', 'intake-submissions', 'project-requests', 'recommendations'],
-                                    'Billing' => ['payments', 'refund-requests', 'subscriptions', 'partner-payouts', 'care-plan-pricing'],
-                                    'Content & Communication' => ['contact-messages', 'service-agreement', 'email-templates', 'satisfaction-surveys', 'announcements'],
-                                    'Administration' => ['team'],
-                                ];
-                            @endphp
-                            <div id="permissions-{{ $admin->id }}" class="permissions-panel hidden border-t border-gray-200 bg-gray-50 px-5 py-5">
-                                <form method="POST" action="{{ route('admin.team.permissions.update', $admin) }}" class="space-y-4">
-                                    @csrf
-                                    @method('PATCH')
-
-                                    <label class="flex items-start gap-2.5 bg-white border border-gray-200 rounded-lg px-3.5 py-3 cursor-pointer">
-                                        <input type="checkbox" name="restricted_access" value="1" class="restricted-access-checkbox mt-0.5 rounded border-gray-300 text-gold focus:ring-gold focus:ring-offset-0"
-                                               {{ $admin->restricted_access ? 'checked' : '' }} data-panel="permissions-fields-{{ $admin->id }}">
-                                        <span>
-                                            <span class="block text-sm font-semibold text-navy">Restrict this admin's access</span>
-                                            <span class="block text-xs text-gray-400 mt-0.5">Off = full access to every section (default). On = only the pages checked below.</span>
-                                        </span>
-                                    </label>
-
-                                    <div id="permissions-fields-{{ $admin->id }}" class="{{ $admin->restricted_access ? '' : 'hidden' }}">
-                                        <div class="flex items-center justify-end gap-3 pb-2">
-                                            <button type="button" class="select-all-permissions text-xs font-semibold text-gold-dark hover:underline" data-panel="permissions-fields-{{ $admin->id }}">Select All</button>
-                                            <span class="text-gray-300">|</span>
-                                            <button type="button" class="select-none-permissions text-xs font-semibold text-gray-400 hover:underline" data-panel="permissions-fields-{{ $admin->id }}">Select None</button>
-                                        </div>
-
-                                        <div class="space-y-4 max-h-72 overflow-y-auto pr-1">
-                                            @foreach ($permissionGroups as $groupLabel => $groupKeys)
-                                                <div>
-                                                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">{{ $groupLabel }}</p>
-                                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                        @foreach ($groupKeys as $key)
-                                                            <label class="flex items-center gap-2 text-sm text-navy bg-white border border-gray-200 rounded-lg px-3 py-2 cursor-pointer transition-colors has-[:checked]:border-gold has-[:checked]:bg-gold/5 hover:border-gray-300">
-                                                                <input type="checkbox" name="permissions[]" value="{{ $key }}" class="rounded border-gray-300 text-gold focus:ring-gold focus:ring-offset-0"
-                                                                       {{ in_array($key, $adminPermissionKeys, true) ? 'checked' : '' }}>
-                                                                {{ $sections[$key]['label'] }}
-                                                            </label>
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-
-                                    <div class="flex items-center gap-3 pt-1">
-                                        <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-                                            Save Access
-                                        </button>
-                                        <button type="button" class="permissions-toggle text-xs font-semibold text-gray-400 hover:text-navy" data-target="permissions-{{ $admin->id }}">Cancel</button>
-                                    </div>
-                                </form>
-                            </div>
-                        @endif
-
-                        {{-- Access details modal (read-only) — opens when the row is clicked --}}
+                        {{-- Access modal — opens when the row is clicked. Super admins can edit a
+                             non-super-admin's access here; everyone else sees a read-only summary. --}}
                         @php
                             $modalFullAccess = $admin->isSuperAdmin() || ! $admin->restricted_access;
                             $modalAccessKeys = $admin->adminPermissions->pluck('permission_key')->all();
+                            // A super admin can edit access for any non-super-admin right here.
+                            $canEditAccess = auth()->user()->isSuperAdmin() && ! $admin->isSuperAdmin();
                         @endphp
                         <div id="access-modal-{{ $admin->id }}" class="access-modal hidden fixed inset-0 z-[60] items-center justify-center bg-black/40 px-4">
                             <div class="access-modal-panel bg-white rounded-2xl border border-gray-200 shadow-xl w-full max-w-md max-h-[85vh] overflow-y-auto">
@@ -364,29 +303,70 @@
                                 </div>
                                 <div class="p-5">
                                     <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Admin Page Access</p>
-                                    @if ($modalFullAccess)
-                                        <div class="flex items-start gap-2 bg-teal-50 border border-teal-100 rounded-lg px-3.5 py-3">
-                                            <svg class="w-5 h-5 text-teal-dark shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                            <p class="text-sm text-navy">Full access to <span class="font-semibold">every</span> admin section.</p>
-                                        </div>
-                                    @elseif (count($modalAccessKeys) === 0)
-                                        <div class="bg-gray-50 border border-gray-200 rounded-lg px-3.5 py-3">
-                                            <p class="text-sm text-gray-500">No sections enabled — this member currently has no admin page access.</p>
+
+                                    @if ($canEditAccess)
+                                        {{-- Editable — same fields as the permissions.update endpoint --}}
+                                        <form method="POST" action="{{ route('admin.team.permissions.update', $admin) }}" class="space-y-4">
+                                            @csrf
+                                            @method('PATCH')
+
+                                            <label class="flex items-start gap-2.5 bg-gray-50 border border-gray-200 rounded-lg px-3.5 py-3 cursor-pointer">
+                                                <input type="checkbox" name="restricted_access" value="1" class="restricted-access-checkbox mt-0.5 rounded border-gray-300 text-gold focus:ring-gold focus:ring-offset-0"
+                                                       {{ $admin->restricted_access ? 'checked' : '' }} data-panel="modal-permissions-fields-{{ $admin->id }}">
+                                                <span>
+                                                    <span class="block text-sm font-semibold text-navy">Restrict this admin's access</span>
+                                                    <span class="block text-xs text-gray-400 mt-0.5">Off = full access to every section (default). On = only the pages checked below.</span>
+                                                </span>
+                                            </label>
+
+                                            <div id="modal-permissions-fields-{{ $admin->id }}" class="{{ $admin->restricted_access ? '' : 'hidden' }} space-y-3">
+                                                <div class="flex items-center justify-end gap-3">
+                                                    <button type="button" class="select-all-permissions text-xs font-semibold text-gold-dark hover:underline" data-panel="modal-permissions-fields-{{ $admin->id }}">Select All</button>
+                                                    <span class="text-gray-300">|</span>
+                                                    <button type="button" class="select-none-permissions text-xs font-semibold text-gray-400 hover:underline" data-panel="modal-permissions-fields-{{ $admin->id }}">Select None</button>
+                                                </div>
+                                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                    @foreach ($sections as $key => $section)
+                                                        <label class="flex items-center gap-2 text-sm text-navy bg-white border border-gray-200 rounded-lg px-3 py-2 cursor-pointer transition-colors has-[:checked]:border-gold has-[:checked]:bg-gold/5 hover:border-gray-300">
+                                                            <input type="checkbox" name="permissions[]" value="{{ $key }}" class="rounded border-gray-300 text-gold focus:ring-gold focus:ring-offset-0"
+                                                                   {{ in_array($key, $modalAccessKeys, true) ? 'checked' : '' }}>
+                                                            {{ $section['label'] }}
+                                                        </label>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center gap-3 pt-1">
+                                                <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">Save Access</button>
+                                                <button type="button" class="access-modal-close text-xs font-semibold text-gray-400 hover:text-navy">Cancel</button>
+                                            </div>
+                                        </form>
+                                    @else
+                                        {{-- Read-only (super admins/owner always have full access, and non-super-admin viewers can't edit) --}}
+                                        @if ($modalFullAccess)
+                                            <div class="flex items-start gap-2 bg-teal-50 border border-teal-100 rounded-lg px-3.5 py-3">
+                                                <svg class="w-5 h-5 text-teal-dark shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                                <p class="text-sm text-navy">Full access to <span class="font-semibold">every</span> admin section.</p>
+                                            </div>
+                                        @elseif (count($modalAccessKeys) === 0)
+                                            <div class="bg-gray-50 border border-gray-200 rounded-lg px-3.5 py-3">
+                                                <p class="text-sm text-gray-500">No sections enabled — this member currently has no admin page access.</p>
+                                            </div>
+                                        @endif
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
+                                            @foreach ($sections as $key => $section)
+                                                @php $canAccess = $modalFullAccess || in_array($key, $modalAccessKeys, true); @endphp
+                                                <div class="flex items-center gap-2 text-sm rounded-lg border px-3 py-2 {{ $canAccess ? 'border-gold/40 bg-gold/5 text-navy' : 'border-gray-200 bg-white text-gray-400' }}">
+                                                    @if ($canAccess)
+                                                        <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                                    @else
+                                                        <svg class="w-4 h-4 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                    @endif
+                                                    {{ $section['label'] }}
+                                                </div>
+                                            @endforeach
                                         </div>
                                     @endif
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
-                                        @foreach ($sections as $key => $section)
-                                            @php $canAccess = $modalFullAccess || in_array($key, $modalAccessKeys, true); @endphp
-                                            <div class="flex items-center gap-2 text-sm rounded-lg border px-3 py-2 {{ $canAccess ? 'border-gold/40 bg-gold/5 text-navy' : 'border-gray-200 bg-white text-gray-400' }}">
-                                                @if ($canAccess)
-                                                    <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                                @else
-                                                    <svg class="w-4 h-4 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                                @endif
-                                                {{ $section['label'] }}
-                                            </div>
-                                        @endforeach
-                                    </div>
                                 </div>
                             </div>
                         </div>
