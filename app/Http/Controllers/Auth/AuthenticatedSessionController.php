@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\LoginActivity;
+use App\Support\AdminPermissions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -70,7 +71,9 @@ class AuthenticatedSessionController extends Controller
             $request->session()->put('show_payment_reminder', true);
         }
 
-        $destination = $request->user()->isAdmin() ? route('admin.dashboard') : route('portal.dashboard');
+        $destination = $request->user()->isAdmin()
+            ? AdminPermissions::adminLandingRoute($request->user())
+            : route('portal.dashboard');
 
         return redirect()->intended($destination);
     }
