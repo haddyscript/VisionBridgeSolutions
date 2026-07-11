@@ -87,6 +87,18 @@
                         @endif
                     </a>
                 @endif
+                @if (auth()->user()->canAccessAdminPage('developers'))
+                    <a href="{{ route('admin.developers.index') }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.developers.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 18.5v-1.25a3.25 3.25 0 00-3.25-3.25h-5.5A3.25 3.25 0 004 17.25v1.25M10.5 10.5a2.75 2.75 0 100-5.5 2.75 2.75 0 000 5.5zM20 18.5v-1a3 3 0 00-2.25-2.905M15.5 5.13a3 3 0 010 5.74"/>
+                        </svg>
+                        <span class="flex-1">Developers</span>
+                        @if ($unassignedWorkOrderCount > 0)
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500 text-white">{{ $unassignedWorkOrderCount }}</span>
+                        @endif
+                    </a>
+                @endif
                 @if (auth()->user()->canAccessAdminPage('clients'))
                     <a href="{{ route('admin.clients.index') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.clients.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">

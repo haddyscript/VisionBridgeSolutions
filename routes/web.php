@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\ConsultationController as AdminConsultationController;
 use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\DeveloperController as AdminDeveloperController;
 use App\Http\Controllers\Admin\EmailTemplateController as AdminEmailTemplateController;
 use App\Http\Controllers\Admin\IntakeSubmissionController as AdminIntakeSubmissionController;
 use App\Http\Controllers\Admin\MaintenancePlanController as AdminMaintenancePlanController;
@@ -263,10 +264,13 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::post('/intake-submissions/{intakeSubmission}/resend-welcome-email', [AdminIntakeSubmissionController::class, 'resendWelcomeEmail'])->name('intake-submissions.resend-welcome-email');
 
     Route::get('/work-orders', [AdminWorkOrderController::class, 'index'])->name('work-orders.index');
+    Route::get('/developers', [AdminDeveloperController::class, 'index'])->name('developers.index');
 
     Route::get('/project-requests', [AdminProjectRequestController::class, 'index'])->name('project-requests.index');
     Route::get('/project-requests/{projectRequest}', [AdminProjectRequestController::class, 'show'])->name('project-requests.show');
     Route::patch('/project-requests/{projectRequest}', [AdminProjectRequestController::class, 'update'])->name('project-requests.update');
+    Route::patch('/project-requests/{projectRequest}/assign-developer', [AdminProjectRequestController::class, 'assignDeveloper'])->name('project-requests.assign-developer');
+    Route::patch('/project-requests/{projectRequest}/developer-status', [AdminProjectRequestController::class, 'updateDeveloperStatus'])->name('project-requests.developer-status');
 
     Route::get('/refund-requests', [AdminRefundRequestController::class, 'index'])->name('refund-requests.index');
     Route::patch('/refund-requests/{refundRequest}', [AdminRefundRequestController::class, 'update'])->name('refund-requests.update');

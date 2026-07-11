@@ -33,6 +33,7 @@ class AdminPermissions
         'consultations' => ['label' => 'Consultations', 'routes' => ['admin.consultations.*'], 'index' => 'admin.consultations.index'],
         'intake-submissions' => ['label' => 'Intake Submissions', 'routes' => ['admin.intake-submissions.*'], 'index' => 'admin.intake-submissions.index'],
         'work-orders' => ['label' => 'My Work Orders', 'routes' => ['admin.work-orders.*'], 'index' => 'admin.work-orders.index'],
+        'developers' => ['label' => 'Developers', 'routes' => ['admin.developers.*'], 'index' => 'admin.developers.index'],
         'project-requests' => ['label' => 'Project Requests', 'routes' => ['admin.project-requests.*'], 'index' => 'admin.project-requests.index'],
         'recommendations' => ['label' => 'Recommendations', 'routes' => ['admin.recommendations.*'], 'index' => 'admin.recommendations.index'],
         'payments' => ['label' => 'Payments', 'routes' => ['admin.payments.*'], 'index' => 'admin.payments.index'],

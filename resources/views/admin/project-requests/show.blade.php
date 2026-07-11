@@ -23,6 +23,40 @@
     <p class="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-line">{{ $projectRequest->description }}</p>
 </div>
 
+<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Assign Developer (Work Order)</label>
+            <form method="POST" action="{{ route('admin.project-requests.assign-developer', $projectRequest) }}">
+                @csrf
+                @method('PATCH')
+                <select name="assigned_developer_id" onchange="this.form.requestSubmit()"
+                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    <option value="">Unassigned</option>
+                    @foreach (\App\Models\User::developers() as $developer)
+                        <option value="{{ $developer->id }}" {{ $projectRequest->assigned_developer_id === $developer->id ? 'selected' : '' }}>{{ $developer->name }}</option>
+                    @endforeach
+                </select>
+            </form>
+        </div>
+        @if ($projectRequest->assigned_developer_id)
+            <div>
+                <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Developer Status</label>
+                <form method="POST" action="{{ route('admin.project-requests.developer-status', $projectRequest) }}">
+                    @csrf
+                    @method('PATCH')
+                    <select name="developer_status" onchange="this.form.requestSubmit()"
+                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                        @foreach (\App\Models\ProjectRequest::DEVELOPER_STATUSES as $value => $label)
+                            <option value="{{ $value }}" {{ $projectRequest->developer_status === $value ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </form>
+            </div>
+        @endif
+    </div>
+</div>
+
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
     <form method="POST" action="{{ route('admin.project-requests.update', $projectRequest) }}" class="space-y-4">
         @csrf
@@ -34,26 +68,6 @@
                     <option value="{{ $value }}" {{ $projectRequest->status === $value ? 'selected' : '' }}>{{ $label }}</option>
                 @endforeach
             </select>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Assign Developer (Work Order)</label>
-                <select name="assigned_developer_id" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
-                    <option value="">Unassigned</option>
-                    @foreach (\App\Models\User::developers() as $developer)
-                        <option value="{{ $developer->id }}" {{ $projectRequest->assigned_developer_id === $developer->id ? 'selected' : '' }}>{{ $developer->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Developer Status</label>
-                <select name="developer_status" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
-                    <option value="">—</option>
-                    @foreach (\App\Models\ProjectRequest::DEVELOPER_STATUSES as $value => $label)
-                        <option value="{{ $value }}" {{ $projectRequest->developer_status === $value ? 'selected' : '' }}>{{ $label }}</option>
-                    @endforeach
-                </select>
-            </div>
         </div>
         <div>
             <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Internal Notes</label>

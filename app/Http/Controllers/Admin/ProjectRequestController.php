@@ -35,16 +35,23 @@ class ProjectRequestController extends Controller
         $validated = $request->validate([
             'status' => ['required', 'in:'.implode(',', array_keys(ProjectRequest::STATUSES))],
             'admin_notes' => ['nullable', 'string', 'max:5000'],
-            'assigned_developer_id' => ['nullable', 'exists:users,id'],
-            'developer_status' => ['nullable', 'in:'.implode(',', array_keys(ProjectRequest::DEVELOPER_STATUSES))],
         ]);
-
-        $wasAssignedTo = $projectRequest->assigned_developer_id;
-        $previousDeveloperStatus = $projectRequest->developer_status;
 
         $projectRequest->update($validated);
 
-        if (! empty($validated['assigned_developer_id']) && $validated['assigned_developer_id'] != $wasAssignedTo) {
+        return back()->with('status', 'Project request updated.');
+    }
+
+    /** Assign or unassign the developer responsible for this Work Order — mirrors Upload::assignDeveloper(). */
+    public function assignDeveloper(Request $request, ProjectRequest $projectRequest)
+    {
+        $validated = $request->validate([
+            'assigned_developer_id' => ['nullable', 'exists:users,id'],
+        ]);
+
+        $projectRequest->update($validated);
+
+        if (! empty($validated['assigned_developer_id'])) {
             $developer = User::find($validated['assigned_developer_id']);
 
             Mail::to($developer->email)->send(new WorkOrderAssignedMail(
@@ -56,11 +63,19 @@ class ProjectRequestController extends Controller
             ));
         }
 
-        if (
-            ! empty($validated['developer_status'])
-            && $validated['developer_status'] !== $previousDeveloperStatus
-            && in_array($validated['developer_status'], ['in_progress', 'completed'], true)
-        ) {
+        return back()->with('status', 'Developer assignment updated.');
+    }
+
+    /** Mirrors Upload::updateDeveloperStatus() — see that method for the client/developer status split rationale. */
+    public function updateDeveloperStatus(Request $request, ProjectRequest $projectRequest)
+    {
+        $validated = $request->validate([
+            'developer_status' => ['required', 'in:'.implode(',', array_keys(ProjectRequest::DEVELOPER_STATUSES))],
+        ]);
+
+        $projectRequest->update($validated);
+
+        if (in_array($validated['developer_status'], ['in_progress', 'completed'], true)) {
             Mail::to(config('mail.support_address'))->send(new WorkOrderInternalUpdateMail(
                 $projectRequest->title,
                 'new project request',
@@ -72,6 +87,6 @@ class ProjectRequestController extends Controller
             ));
         }
 
-        return back()->with('status', 'Project request updated.');
+        return back()->with('status', 'Developer status updated.');
     }
 }

@@ -62,6 +62,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with('unreadConsultationCount', Consultation::whereNull('read_at')->count());
             $view->with('gettingStartedTasks', $this->adminGettingStartedTasks());
             $view->with('myWorkOrderCount', $this->myWorkOrderCount());
+            $view->with('unassignedWorkOrderCount', $this->unassignedWorkOrderCount());
         });
 
         View::composer('layouts.portal', function ($view) {
@@ -86,6 +87,23 @@ class AppServiceProvider extends ServiceProvider
 
         return Upload::where('assigned_developer_id', $user->id)->where($notCompleted)->count()
             + ProjectRequest::where('assigned_developer_id', $user->id)->where($notCompleted)->count();
+    }
+
+    /**
+     * Open revision/content requests and project requests with no developer
+     * yet — deliberately excludes other Upload categories (photos, logos,
+     * documents) since those are client-provided assets, not dev work, and
+     * excludes completed/declined items since they no longer need one.
+     */
+    private function unassignedWorkOrderCount(): int
+    {
+        return Upload::whereIn('category', ['content', 'revision'])
+            ->whereNull('assigned_developer_id')
+            ->where('status', '!=', 'completed')
+            ->count()
+            + ProjectRequest::whereNull('assigned_developer_id')
+                ->where('status', '!=', 'declined')
+                ->count();
     }
 
     private function clientUpcomingConsultationCount(): int
