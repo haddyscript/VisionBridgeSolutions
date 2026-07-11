@@ -12,6 +12,7 @@ use App\Models\Project;
 use App\Models\ProjectRequest;
 use App\Models\Recommendation;
 use App\Models\RefundRequest;
+use App\Models\Upload;
 use App\Models\User;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Facades\Auth;
@@ -60,6 +61,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with('unreadContactCount', ContactMessage::whereNull('read_at')->count());
             $view->with('unreadConsultationCount', Consultation::whereNull('read_at')->count());
             $view->with('gettingStartedTasks', $this->adminGettingStartedTasks());
+            $view->with('myWorkOrderCount', $this->myWorkOrderCount());
         });
 
         View::composer('layouts.portal', function ($view) {
@@ -69,6 +71,21 @@ class AppServiceProvider extends ServiceProvider
             $view->with('unreadNotificationCount', $unreadNotificationCount);
             $view->with('upcomingConsultationCount', $this->clientUpcomingConsultationCount());
         });
+    }
+
+    /** Items assigned to the logged-in developer that aren't marked completed yet. */
+    private function myWorkOrderCount(): int
+    {
+        $user = Auth::user();
+
+        if (! $user || ! $user->isDeveloper()) {
+            return 0;
+        }
+
+        $notCompleted = fn ($q) => $q->whereNull('developer_status')->orWhere('developer_status', '!=', 'completed');
+
+        return Upload::where('assigned_developer_id', $user->id)->where($notCompleted)->count()
+            + ProjectRequest::where('assigned_developer_id', $user->id)->where($notCompleted)->count();
     }
 
     private function clientUpcomingConsultationCount(): int

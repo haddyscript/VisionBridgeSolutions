@@ -74,6 +74,19 @@
                         All Projects
                     </a>
                 @endif
+                @if (auth()->user()->isDeveloper() && auth()->user()->canAccessAdminPage('work-orders'))
+                    <a href="{{ route('admin.work-orders.index') }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.work-orders.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7a2 2 0 012-2h6.5L21 8.5V17a2 2 0 01-2 2H11a2 2 0 01-2-2z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h4m-4 3h4m-9-8v14"/>
+                        </svg>
+                        <span class="flex-1">My Work Orders</span>
+                        @if ($myWorkOrderCount > 0)
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500 text-white">{{ $myWorkOrderCount }}</span>
+                        @endif
+                    </a>
+                @endif
                 @if (auth()->user()->canAccessAdminPage('clients'))
                     <a href="{{ route('admin.clients.index') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.clients.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">

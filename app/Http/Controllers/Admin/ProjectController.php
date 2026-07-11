@@ -7,6 +7,7 @@ use App\Mail\ProjectQuoteReadyMail;
 use App\Models\ClientNotification;
 use App\Models\Project;
 use App\Models\SatisfactionSurvey;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -15,11 +16,12 @@ class ProjectController extends Controller
 {
     public function show(Project $project)
     {
-        $project->load('user', 'milestones', 'uploads.user', 'uploads.replies', 'payments', 'subscription', 'questionnaire', 'agreementSignature.template', 'carePlanAgreement.maintenancePlan', 'recommendations.submittedBy');
+        $project->load('user', 'milestones', 'uploads.user', 'uploads.replies', 'uploads.assignedDeveloper', 'payments', 'subscription', 'questionnaire', 'agreementSignature.template', 'carePlanAgreement.maintenancePlan', 'recommendations.submittedBy');
 
         return view('admin.projects.show', [
             'project' => $project,
             'uploadsByCategory' => $project->uploads->groupBy('category'),
+            'developers' => User::developers(),
         ]);
     }
 

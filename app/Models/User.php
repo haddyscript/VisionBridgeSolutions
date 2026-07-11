@@ -171,6 +171,22 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->isOwner() || ($this->isAdmin() && $this->is_super_admin);
     }
 
+    /**
+     * Whether this admin is a developer for Work Order purposes — purely the
+     * existing job_title field, no separate role/permission layer. See
+     * FEATURES.md for why this was chosen over a full `developer` role.
+     */
+    public function isDeveloper(): bool
+    {
+        return $this->isAdmin() && $this->job_title === 'Developer';
+    }
+
+    /** Every admin account tagged with the "Developer" job title, for assignment dropdowns. */
+    public static function developers()
+    {
+        return self::where('role', 'admin')->where('job_title', 'Developer')->orderBy('name')->get();
+    }
+
     public function adminPermissions()
     {
         return $this->hasMany(AdminPagePermission::class);

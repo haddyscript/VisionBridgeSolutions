@@ -112,6 +112,35 @@
                     </form>
                 </div>
 
+                {{-- Work Order: assign a developer (job_title = "Developer") and
+                     track their own internal status, independent of the
+                     client-facing status above. --}}
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                    <form method="POST" action="{{ route('admin.uploads.assign-developer', $item) }}" data-ajax-target="{{ $panelId ?? '' }}">
+                        @csrf
+                        @method('PATCH')
+                        <select name="assigned_developer_id" onchange="this.form.requestSubmit()"
+                                class="text-xs font-medium rounded-lg px-3 py-1.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold">
+                            <option value="">Unassigned</option>
+                            @foreach ($developers ?? [] as $developer)
+                                <option value="{{ $developer->id }}" {{ $item->assigned_developer_id === $developer->id ? 'selected' : '' }}>{{ $developer->name }}</option>
+                            @endforeach
+                        </select>
+                    </form>
+                    @if ($item->assigned_developer_id)
+                        <form method="POST" action="{{ route('admin.uploads.developer-status', $item) }}" data-ajax-target="{{ $panelId ?? '' }}">
+                            @csrf
+                            @method('PATCH')
+                            <select name="developer_status" onchange="this.form.requestSubmit()"
+                                    class="text-xs font-medium rounded-lg px-3 py-1.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold">
+                                @foreach (\App\Models\Upload::DEVELOPER_STATUSES as $value => $label)
+                                    <option value="{{ $value }}" {{ $item->developer_status === $value ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </form>
+                    @endif
+                </div>
+
                 @if ($cat === 'revision')
                     {{-- Internal only — never shown to the client. Lets an admin/dev
                          clarify or rewrite the client's raw request before work begins. --}}

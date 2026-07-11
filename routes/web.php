@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\ServiceAgreementController as AdminServiceAgreeme
 use App\Http\Controllers\Admin\PartnerPayoutController as AdminPartnerPayoutController;
 use App\Http\Controllers\Admin\TeamController as AdminTeamController;
 use App\Http\Controllers\Admin\UploadApprovalController;
+use App\Http\Controllers\Admin\WorkOrderController as AdminWorkOrderController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
@@ -261,6 +262,8 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::post('/intake-submissions/{intakeSubmission}/convert', [AdminIntakeSubmissionController::class, 'convert'])->name('intake-submissions.convert');
     Route::post('/intake-submissions/{intakeSubmission}/resend-welcome-email', [AdminIntakeSubmissionController::class, 'resendWelcomeEmail'])->name('intake-submissions.resend-welcome-email');
 
+    Route::get('/work-orders', [AdminWorkOrderController::class, 'index'])->name('work-orders.index');
+
     Route::get('/project-requests', [AdminProjectRequestController::class, 'index'])->name('project-requests.index');
     Route::get('/project-requests/{projectRequest}', [AdminProjectRequestController::class, 'show'])->name('project-requests.show');
     Route::patch('/project-requests/{projectRequest}', [AdminProjectRequestController::class, 'update'])->name('project-requests.update');
@@ -284,6 +287,8 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::patch('/uploads/{upload}/reply', [UploadApprovalController::class, 'reply'])->name('uploads.reply');
     Route::patch('/uploads/{upload}/dev-instructions', [UploadApprovalController::class, 'updateDevInstructions'])->name('uploads.dev-instructions');
     Route::post('/uploads/{upload}/read', [UploadApprovalController::class, 'markRead'])->name('uploads.read');
+    Route::patch('/uploads/{upload}/assign-developer', [UploadApprovalController::class, 'assignDeveloper'])->name('uploads.assign-developer');
+    Route::patch('/uploads/{upload}/developer-status', [UploadApprovalController::class, 'updateDeveloperStatus'])->name('uploads.developer-status');
 
     Route::get('/satisfaction-surveys', [AdminSatisfactionSurveyController::class, 'index'])->name('satisfaction-surveys.index');
 

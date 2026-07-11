@@ -35,6 +35,26 @@
                 @endforeach
             </select>
         </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Assign Developer (Work Order)</label>
+                <select name="assigned_developer_id" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    <option value="">Unassigned</option>
+                    @foreach (\App\Models\User::developers() as $developer)
+                        <option value="{{ $developer->id }}" {{ $projectRequest->assigned_developer_id === $developer->id ? 'selected' : '' }}>{{ $developer->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Developer Status</label>
+                <select name="developer_status" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    <option value="">—</option>
+                    @foreach (\App\Models\ProjectRequest::DEVELOPER_STATUSES as $value => $label)
+                        <option value="{{ $value }}" {{ $projectRequest->developer_status === $value ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
         <div>
             <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Internal Notes</label>
             <textarea name="admin_notes" rows="4" placeholder="Notes for setting this up as an actual project..."

@@ -18,6 +18,17 @@ class Upload extends Model
         'completed' => 'Completed',
     ];
 
+    /**
+     * Internal, developer-facing status — independent of the client-facing
+     * STATUSES above, so a developer marking their own work "In Progress"
+     * never overwrites what the client sees (e.g. "Waiting on Client").
+     */
+    public const DEVELOPER_STATUSES = [
+        'in_progress' => 'In Progress',
+        'waiting_on_visionbridge' => 'Waiting for VisionBridge',
+        'completed' => 'Completed',
+    ];
+
     protected $fillable = [
         'project_id',
         'user_id',
@@ -29,6 +40,8 @@ class Upload extends Model
         'approved_at',
         'status',
         'dev_instructions',
+        'assigned_developer_id',
+        'developer_status',
     ];
 
     protected function casts(): array
@@ -84,6 +97,11 @@ class Upload extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function assignedDeveloper()
+    {
+        return $this->belongsTo(User::class, 'assigned_developer_id');
     }
 
     public function replies()
