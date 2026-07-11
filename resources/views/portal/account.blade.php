@@ -188,17 +188,50 @@
                             @endforeach
                         </select>
                     </div>
-                    <div>
+                    <div class="relative" id="brand-colors-wrap">
                         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Brand Colors</label>
-                        <div class="flex items-center gap-2">
-                            <input type="text" name="brand_colors" id="brand-colors-input" value="{{ old('brand_colors', $questionnaire?->brand_colors) }}" placeholder="e.g. Navy #111D33, Gold #C9A84C"
-                                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
-                            <label class="relative shrink-0 w-9 h-9 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer overflow-hidden" title="Pick a color to add to the field">
-                                <input type="color" id="brand-color-picker" value="#C9A84C" class="absolute -top-2 -left-2 w-14 h-14 cursor-pointer">
-                            </label>
+                        <input type="hidden" name="brand_colors" id="brand-colors-input" value="{{ old('brand_colors', $questionnaire?->brand_colors) }}">
+
+                        <div id="brand-colors-tags" class="flex flex-wrap items-center gap-1.5 w-full rounded-lg border border-gray-300 dark:border-gray-600 px-2 py-1.5 focus-within:ring-2 focus-within:ring-gold focus-within:border-gold dark:bg-gray-900">
+                            <input type="text" id="brand-colors-tag-input" placeholder="Type a name, press Enter…"
+                                   class="flex-1 min-w-[140px] text-sm bg-transparent focus:outline-none dark:text-white py-1 px-1">
+                            <button type="button" id="brand-color-picker-toggle"
+                                    class="relative shrink-0 w-7 h-7 rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden hover:ring-2 hover:ring-slate-400 transition-all" title="Custom color picker">
+                                <span id="brand-color-picker-swatch" class="absolute inset-0" style="background:#C9A84C;"></span>
+                            </button>
                         </div>
-                        <div id="brand-colors-preview" class="flex flex-wrap items-center gap-1.5 mt-2"></div>
-                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Type color names and/or use the picker — each hex code you pick is added to the field above.</p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5">Type a color name and press Enter, or use the picker to add an exact hex color. Click any color circle to edit it.</p>
+
+                        {{-- Custom color picker popover — replaces the browser-native <input type="color"> overlay --}}
+                        <div id="brand-color-popover" class="hidden absolute z-20 mt-2 w-60 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl p-4">
+                            <div id="brand-color-popover-preview" class="w-full h-14 rounded-lg mb-3 border border-gray-100 dark:border-gray-700" style="background:#C9A84C;"></div>
+                            <div class="grid grid-cols-3 gap-2 mb-3">
+                                <div>
+                                    <label class="block text-[0.65rem] font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">R</label>
+                                    <input type="number" min="0" max="255" id="brand-color-r"
+                                           class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-2 py-1.5 text-sm text-center font-sans dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                </div>
+                                <div>
+                                    <label class="block text-[0.65rem] font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">G</label>
+                                    <input type="number" min="0" max="255" id="brand-color-g"
+                                           class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-2 py-1.5 text-sm text-center font-sans dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                </div>
+                                <div>
+                                    <label class="block text-[0.65rem] font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">B</label>
+                                    <input type="number" min="0" max="255" id="brand-color-b"
+                                           class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-2 py-1.5 text-sm text-center font-sans dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-[0.65rem] font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">Hex</label>
+                                <input type="text" id="brand-color-hex" maxlength="7"
+                                       class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-2 py-1.5 text-sm font-mono dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                            </div>
+                            <div class="flex items-center justify-end gap-2">
+                                <button type="button" id="brand-color-cancel" class="text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white px-3 py-1.5">Cancel</button>
+                                <button type="button" id="brand-color-add" class="text-xs font-semibold bg-gold hover:bg-gold-dark text-navy-dark px-3 py-1.5 rounded-lg transition-colors">Add Color</button>
+                            </div>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Mission Statement</label>
@@ -644,38 +677,193 @@
         submitAjaxForm(e.target);
     });
 
-    // Brand Colors stays a plain text field (it's just a string column, and
-    // clients often want to type a color name alongside a hex code, e.g.
-    // "Navy #111D33") — the picker just appends a hex code to it rather than
-    // replacing it, and the swatch row below is a live preview parsed from
-    // whatever hex codes currently appear in the text.
+    // Brand Colors renders as removable tag pills (not a plain text field) —
+    // brand_colors is still just a string column underneath, so tags are
+    // joined back into the hidden input's comma-separated value on every
+    // change. Non-hex tags (e.g. a typed color name) get a neutral dashed
+    // swatch instead of a real color, since there's no hex to render or edit.
     (function () {
-        const colorInput = document.getElementById('brand-colors-input');
-        const colorPicker = document.getElementById('brand-color-picker');
-        const preview = document.getElementById('brand-colors-preview');
-        if (!colorInput || !colorPicker || !preview) return;
+        const wrap = document.getElementById('brand-colors-wrap');
+        const tagsContainer = document.getElementById('brand-colors-tags');
+        const tagInput = document.getElementById('brand-colors-tag-input');
+        const hiddenInput = document.getElementById('brand-colors-input');
+        const pickerToggle = document.getElementById('brand-color-picker-toggle');
+        const pickerSwatch = document.getElementById('brand-color-picker-swatch');
+        const popover = document.getElementById('brand-color-popover');
+        const popoverPreview = document.getElementById('brand-color-popover-preview');
+        const rInput = document.getElementById('brand-color-r');
+        const gInput = document.getElementById('brand-color-g');
+        const bInput = document.getElementById('brand-color-b');
+        const hexInput = document.getElementById('brand-color-hex');
+        const addBtn = document.getElementById('brand-color-add');
+        const cancelBtn = document.getElementById('brand-color-cancel');
+        if (!wrap || !tagsContainer || !hiddenInput || !popover) return;
 
-        function renderPreview() {
-            const hexes = colorInput.value.match(/#(?:[0-9a-fA-F]{3}){1,2}\b/g) || [];
-            preview.innerHTML = '';
-            hexes.forEach(function (hex) {
-                const swatch = document.createElement('span');
-                swatch.className = 'inline-block w-5 h-5 rounded-full border border-gray-200 dark:border-gray-600';
-                swatch.style.background = hex;
-                swatch.title = hex;
-                preview.appendChild(swatch);
-            });
+        const HEX_RE = /^#(?:[0-9a-fA-F]{3}){1,2}$/;
+        let tags = hiddenInput.value.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        let editingIndex = null;
+
+        function hexToRgb(hex) {
+            let h = hex.replace('#', '');
+            if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join('');
+            const num = parseInt(h, 16);
+            return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
         }
 
-        colorPicker.addEventListener('input', function () {
-            const hex = colorPicker.value.toUpperCase();
-            const current = colorInput.value.trim();
-            colorInput.value = current ? current + ', ' + hex : hex;
-            renderPreview();
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(function (v) {
+                return Math.max(0, Math.min(255, parseInt(v) || 0)).toString(16).padStart(2, '0');
+            }).join('').toUpperCase();
+        }
+
+        function syncHiddenInput() {
+            hiddenInput.value = tags.join(', ');
+        }
+
+        function renderTags() {
+            tagsContainer.querySelectorAll('.brand-color-tag').forEach(function (el) { el.remove(); });
+
+            tags.forEach(function (value, index) {
+                const isHex = HEX_RE.test(value);
+
+                const tag = document.createElement('span');
+                tag.className = 'brand-color-tag inline-flex items-center gap-1.5 pl-1 pr-2 py-1 rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-navy dark:text-white';
+
+                const swatch = document.createElement('span');
+                swatch.className = 'w-4 h-4 rounded-full shrink-0 transition-all ' + (isHex
+                    ? 'border border-black/10 cursor-pointer hover:ring-2 hover:ring-slate-400 hover:scale-110'
+                    : 'border border-dashed border-gray-300 dark:border-gray-500');
+                if (isHex) {
+                    swatch.style.background = value;
+                    swatch.title = 'Click to edit';
+                    swatch.addEventListener('click', function () {
+                        openPopover(index, value, swatch);
+                    });
+                }
+
+                const label = document.createElement('span');
+                label.className = isHex ? 'font-mono text-xs' : 'text-xs';
+                label.textContent = value;
+
+                const remove = document.createElement('button');
+                remove.type = 'button';
+                remove.className = 'text-gray-400 hover:text-red-500 ml-0.5 leading-none';
+                remove.setAttribute('aria-label', 'Remove ' + value);
+                remove.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>';
+                remove.addEventListener('click', function () {
+                    tags.splice(index, 1);
+                    syncHiddenInput();
+                    renderTags();
+                });
+
+                tag.appendChild(swatch);
+                tag.appendChild(label);
+                tag.appendChild(remove);
+                tagsContainer.insertBefore(tag, tagInput);
+            });
+
+            syncHiddenInput();
+        }
+
+        function addTag(value) {
+            value = value.trim();
+            if (!value) return;
+            tags.push(value);
+            renderTags();
+        }
+
+        tagInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                addTag(tagInput.value);
+                tagInput.value = '';
+            } else if (e.key === 'Backspace' && tagInput.value === '' && tags.length) {
+                tags.pop();
+                renderTags();
+            }
         });
 
-        colorInput.addEventListener('input', renderPreview);
-        renderPreview();
+        tagInput.addEventListener('blur', function () {
+            if (tagInput.value.trim()) {
+                addTag(tagInput.value);
+                tagInput.value = '';
+            }
+        });
+
+        function setRgbFields(hex) {
+            const rgb = hexToRgb(hex);
+            rInput.value = rgb.r;
+            gInput.value = rgb.g;
+            bInput.value = rgb.b;
+            hexInput.value = hex.toUpperCase();
+            popoverPreview.style.background = hex;
+        }
+
+        function openPopover(index, hex, anchorEl) {
+            editingIndex = index;
+            setRgbFields(hex || '#C9A84C');
+            popover.classList.remove('hidden');
+
+            const anchor = anchorEl || pickerToggle;
+            const rect = anchor.getBoundingClientRect();
+            const wrapRect = wrap.getBoundingClientRect();
+            popover.style.top = (rect.bottom - wrapRect.top + 8) + 'px';
+            popover.style.left = Math.max(0, rect.left - wrapRect.left - 90) + 'px';
+            addBtn.textContent = editingIndex !== null ? 'Update Color' : 'Add Color';
+        }
+
+        function closePopover() {
+            popover.classList.add('hidden');
+            editingIndex = null;
+        }
+
+        pickerToggle.addEventListener('click', function () {
+            if (!popover.classList.contains('hidden') && editingIndex === null) {
+                closePopover();
+            } else {
+                openPopover(null, hexInput.value || '#C9A84C', pickerToggle);
+            }
+        });
+
+        [rInput, gInput, bInput].forEach(function (input) {
+            input.addEventListener('input', function () {
+                const hex = rgbToHex(rInput.value, gInput.value, bInput.value);
+                hexInput.value = hex;
+                popoverPreview.style.background = hex;
+            });
+        });
+
+        hexInput.addEventListener('input', function () {
+            let val = hexInput.value.trim();
+            if (!val.startsWith('#')) val = '#' + val;
+            if (HEX_RE.test(val)) setRgbFields(val);
+        });
+
+        addBtn.addEventListener('click', function () {
+            let hex = hexInput.value.trim();
+            if (!hex.startsWith('#')) hex = '#' + hex;
+            if (!HEX_RE.test(hex)) return;
+            hex = hex.toUpperCase();
+
+            if (editingIndex !== null) {
+                tags[editingIndex] = hex;
+            } else {
+                tags.push(hex);
+            }
+            renderTags();
+            closePopover();
+            pickerSwatch.style.background = hex;
+        });
+
+        cancelBtn.addEventListener('click', closePopover);
+
+        document.addEventListener('click', function (e) {
+            if (!popover.classList.contains('hidden') && !popover.contains(e.target) && e.target !== pickerToggle && !pickerToggle.contains(e.target)) {
+                closePopover();
+            }
+        });
+
+        renderTags();
     })();
 
     document.getElementById('password-form')?.addEventListener('submit', function (e) {
