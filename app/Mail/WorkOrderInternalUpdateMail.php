@@ -20,7 +20,7 @@ class WorkOrderInternalUpdateMail extends Mailable
         public string $clientName,
         public string $developerName,
         public string $eventLabel,
-        public ?string $message,
+        public ?string $note,
         public string $url,
     ) {
     }

@@ -28,8 +28,8 @@
 
                             <h2 style="font-size:15px; color:#111D33; margin:0 0 10px;">{{ $itemTitle }}</h2>
 
-                            @if ($message)
-                                <p style="font-size:14px; color:#374151; margin:0 0 20px; white-space:pre-line;">{{ $message }}</p>
+                            @if ($note)
+                                <p style="font-size:14px; color:#374151; margin:0 0 20px; white-space:pre-line;">{{ $note }}</p>
                             @endif
 
                             <a href="{{ $url }}"
