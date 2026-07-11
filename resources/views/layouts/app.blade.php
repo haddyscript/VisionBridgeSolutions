@@ -214,6 +214,91 @@
         .portfolio-badge-3 { bottom:8%; left:3%;  animation:float-b 6s   ease-in-out infinite 1.2s; }
         .portfolio-badge-4 { bottom:6%; right:3%; animation:float-a 5.5s ease-in-out infinite 1.8s; }
 
+        /* ─── Portfolio project cards — premium agency showcase ─── */
+        .portfolio-filter-btn {
+            padding:10px 22px; border-radius:9999px; font-size:0.85rem; font-weight:600;
+            letter-spacing:0.02em; color:rgba(21,32,44,0.62);
+            background:rgba(255,255,255,0.7); border:1.5px solid rgba(21,32,44,0.10);
+            cursor:pointer; transition:background .28s ease, color .28s ease, border-color .28s ease;
+        }
+        .portfolio-filter-btn:hover { border-color:rgba(201,168,76,0.45); color:#15202C; }
+        .portfolio-filter-btn.is-active {
+            background:#15202C; color:#C9A84C; border-color:#15202C;
+            box-shadow:0 8px 20px rgba(21,32,44,0.18);
+        }
+
+        .portfolio-hidden { display:none !important; }
+
+        .portfolio-card-inner {
+            display:flex; flex-direction:column; height:100%;
+            background:#FFFFFF; border-radius:22px; overflow:hidden;
+            border:1px solid rgba(21,32,44,0.08);
+            box-shadow:0 4px 20px rgba(21,32,44,0.06);
+            transition:transform .4s cubic-bezier(.34,1.56,.64,1), box-shadow .4s ease, border-color .4s ease;
+        }
+        .portfolio-card:hover .portfolio-card-inner {
+            transform:translateY(-8px);
+            box-shadow:0 28px 60px rgba(21,32,44,0.16), 0 8px 24px rgba(201,168,76,0.12);
+            border-color:rgba(201,168,76,0.35);
+        }
+        .portfolio-card-inner-cta { background:linear-gradient(155deg,#15202C 0%,#2F3A45 100%); border-color:rgba(201,168,76,0.30); }
+
+        .portfolio-card-media { position:relative; aspect-ratio:16/10; overflow:hidden; background:#EEF2F5; flex-shrink:0; }
+        .portfolio-card-media img {
+            width:100%; height:100%; object-fit:cover; object-position:top center;
+            transition:transform .6s cubic-bezier(.22,1,.36,1);
+        }
+        .portfolio-card:hover .portfolio-card-media img { transform:scale(1.06); }
+        .portfolio-card-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(155deg,#F7F3EA 0%,#EDE6D4 100%); }
+        .portfolio-card-placeholder-cta { background:linear-gradient(155deg,#1B2530 0%,#2F3A45 100%); }
+
+        .portfolio-industry-badge {
+            position:absolute; top:14px; left:14px; z-index:2;
+            background:rgba(255,255,255,0.94); color:#15202C;
+            font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+            padding:6px 14px; border-radius:9999px; box-shadow:0 4px 14px rgba(21,32,44,0.16);
+        }
+        .portfolio-status-pill {
+            position:absolute; top:14px; right:14px; z-index:2;
+            background:#C9A84C; color:#15202C;
+            font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+            padding:6px 14px; border-radius:9999px; box-shadow:0 4px 14px rgba(201,168,76,0.38);
+        }
+
+        .portfolio-card-body { display:flex; flex-direction:column; flex:1; padding:26px 26px 24px; position:relative; }
+        .portfolio-card-num {
+            position:absolute; top:14px; right:22px; font-family:'Playfair Display',serif;
+            font-size:2.4rem; font-weight:800; color:rgba(21,32,44,0.05); line-height:1; user-select:none; z-index:0;
+        }
+        .portfolio-card-inner-cta .portfolio-card-num { color:rgba(255,255,255,0.06); }
+        .portfolio-card-title { position:relative; z-index:1; font-size:1.25rem; font-weight:800; color:#15202C; margin-bottom:5px; line-height:1.28; }
+        .portfolio-card-inner-cta .portfolio-card-title { color:#FFFFFF; }
+        .portfolio-card-tagline { position:relative; z-index:1; font-size:0.9rem; font-weight:700; color:#A8872E; margin-bottom:12px; line-height:1.4; }
+        .portfolio-card-inner-cta .portfolio-card-tagline { color:#C9A84C; }
+        .portfolio-card-desc { position:relative; z-index:1; font-size:0.94rem; font-weight:500; color:rgba(21,32,44,0.72); line-height:1.65; margin-bottom:16px; }
+        .portfolio-card-inner-cta .portfolio-card-desc { color:rgba(255,255,255,0.78); }
+
+        .portfolio-card-features { position:relative; z-index:1; display:flex; flex-wrap:wrap; gap:8px; margin:0 0 8px; padding:0; }
+        .portfolio-card-features li {
+            list-style:none; font-size:0.72rem; font-weight:600; color:#1F7A78;
+            background:rgba(42,157,143,0.09); border:1px solid rgba(42,157,143,0.20);
+            padding:5px 12px; border-radius:9999px;
+        }
+
+        .portfolio-card-btn-wrap { position:relative; z-index:1; margin-top:auto; padding-top:18px; }
+        .portfolio-card-btn {
+            display:inline-flex; align-items:center; gap:8px; font-size:0.88rem; font-weight:700;
+            color:#15202C; padding:12px 22px; border-radius:9999px;
+            background:transparent; border:1.5px solid rgba(21,32,44,0.16);
+            transition:background .3s ease, color .3s ease, border-color .3s ease;
+        }
+        .portfolio-card-btn svg { transition:transform .3s ease; }
+        .portfolio-card-btn:hover { background:#15202C; color:#C9A84C; border-color:#15202C; }
+        .portfolio-card-btn:hover svg { transform:translateX(3px); }
+        .portfolio-card-btn-gold { background:#C9A84C; color:#15202C; border-color:#C9A84C; }
+        .portfolio-card-btn-gold:hover { background:#FFFFFF; color:#15202C; border-color:#FFFFFF; }
+        .portfolio-card-btn-disabled { opacity:0.55; cursor:default; pointer-events:none; border-style:dashed; }
+
         /* ─── Atmospheric orbs ─── */
         .hero-orb { position:absolute; border-radius:50%; pointer-events:none; will-change:transform; }
         @keyframes orb-drift {

@@ -871,16 +871,53 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
         @php
         $portfolioProjects = [
-            ['num'=>'01','title'=>'Johnny Davis Global Missions','category'=>'Ministry',   'domain'=>'johnnydavisglobalmissions.org','icon'=>'globe',    'image'=>'image/johnnydavisglobalmission.png','url'=>'https://johnnydavisglobalmissions.org/','live'=>true, 'desc'=>'Empowering global ministry with a professional online presence that connects communities worldwide through faith, outreach, and digital innovation.','tags'=>['Ministry','Custom Design','WordPress']],
-            ['num'=>'02','title'=>'Johnny Davis Ministries',     'category'=>'Ministry',   'domain'=>'johnnydavisministries.org',    'icon'=>'book-open','image'=>'image/johnnydavisministries.png',   'url'=>'https://johnnydavisministries.org/',   'live'=>true, 'desc'=>'Daily devotionals, sermons, and ministry resources reaching thousands of believers worldwide through the power of purposeful digital outreach.','tags'=>['Ministry','WordPress']],
-            ['num'=>'03','title'=>'Future VisionBridge Projects','category'=>'Coming Soon','domain'=>'visionbridgesolutions.com',     'icon'=>'sparkles', 'soon'=>true,                                                                                              'desc'=>'Exciting new projects are on the horizon. Stay tuned as VisionBridge continues to grow and serve more ministries and organizations.','tags'=>['Future Project']],
+            [
+                'num'      => '01',
+                'title'    => 'Johnny Davis Global Missions',
+                'tagline'  => 'Bringing Hope to the Nations Through Compassion.',
+                'desc'     => 'A global missions platform designed to inspire generosity, connect supporters, and mobilize life-changing outreach around the world.',
+                'industry' => 'Ministry',
+                'filter'   => 'ministries',
+                'image'    => 'image/johnnydavisglobalmission.png',
+                'url'      => 'https://johnnydavisglobalmissions.org/',
+                'status'   => 'live',
+                'features' => ['Donation Platform', 'Disaster Relief Campaigns', 'Mission Updates', 'Volunteer Opportunities'],
+            ],
+            [
+                'num'      => '02',
+                'title'    => 'Johnny Davis Ministries',
+                'tagline'  => 'Transforming Lives. Equipping Believers. Inspiring Faith.',
+                'desc'     => 'A ministry website created to share biblical teaching, prayer resources, leadership development, and Christ-centered content that impacts lives worldwide.',
+                'industry' => 'Ministry',
+                'filter'   => 'ministries',
+                'image'    => 'image/johnnydavisministries.png',
+                'url'      => 'https://johnnydavisministries.org/',
+                'status'   => 'live',
+                'features' => ['Ministry Resources', 'Virtual Prayer Community', 'Leadership Training', 'Media Library'],
+            ],
+            [
+                'num'      => '03',
+                'title'    => 'Mercy City Church',
+                'tagline'  => 'A Church Website Designed to Welcome Before Visitors Arrive.',
+                'desc'     => 'A modern church platform designed to connect people with the church, communicate its vision, and serve the surrounding community.',
+                'industry' => 'Church',
+                'filter'   => 'churches',
+                'icon'     => 'building',
+                'status'   => 'soon',
+            ],
+            [
+                'num'      => '04',
+                'title'    => 'Your Project Could Be Next',
+                'tagline'  => 'Your Vision. Our Expertise. One Powerful Website.',
+                'desc'     => "Whether you're a church, nonprofit, ministry, or growing business, VisionBridge Solutions builds websites that expand your reach and strengthen your online presence.",
+                'icon'     => 'sparkles',
+                'status'   => 'cta',
+            ],
         ];
         @endphp
 
         {{-- Glass panel — a looping showcase reel plays behind a soft
-             white/cream overlay so heading text and badges stay legible;
-             heading sits on top, project cards float over the bottom edge
-             (overlap via negative margin on the card grid below). --}}
+             white/cream overlay so heading text and badges stay legible. --}}
         <div id="portfolio-panel" class="rounded-3xl relative text-center overflow-hidden px-6 sm:px-12 pt-16 pb-16" style="border:1px solid rgba(201,168,76,0.25);box-shadow:0 20px 50px rgba(21,32,44,0.08);">
             {{-- Background video loop — removed via JS for visitors with
                  prefers-reduced-motion set, leaving just the section's own
@@ -919,8 +956,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
             <div class="relative" style="z-index:2;">
                 <span id="portfolio-kicker" class="inline-block text-sm font-semibold tracking-widest uppercase mb-3" style="color:#2A9D8F;text-shadow:0 1px 16px rgba(255,255,255,0.9);">Our Work</span>
-                <h2 id="portfolio-heading" class="font-display font-bold" style="color:#15202C;font-size:clamp(1.875rem,4vw,2.75rem);text-shadow:0 2px 20px rgba(255,255,255,0.9);">We Build Websites That Grow Your Mission</h2>
-                <p id="portfolio-subtitle" class="text-base mt-3 max-w-xl mx-auto" style="color:rgba(21,32,44,0.75);text-shadow:0 1px 14px rgba(255,255,255,0.9);">Because a lasting online presence isn't built by chance — it's shaped with purpose, one mission at a time.</p>
+                <h2 id="portfolio-heading" class="font-display font-bold" style="color:#15202C;font-size:clamp(1.875rem,4vw,2.75rem);text-shadow:0 2px 20px rgba(255,255,255,0.9);">Websites Built with Purpose. Designed for Results.</h2>
+                <p id="portfolio-subtitle" class="text-base mt-3 max-w-xl mx-auto" style="color:rgba(21,32,44,0.75);text-shadow:0 1px 14px rgba(255,255,255,0.9);">Every website we create tells a story, strengthens a brand, and helps our clients reach more people. Explore a few of the organizations we've had the privilege to serve.</p>
 
                 {{-- Mobile fallback for the 4 floating service badges, which
                      are desktop-only (hidden lg:flex) — otherwise this list
@@ -939,26 +976,105 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     @endforeach
                 </div>
             </div>
+        </div>
 
-            {{-- Project names as plain floating text over the video — no
-                 card/image, so the video stays the section's real visual. --}}
-            <div class="relative grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto mt-14" style="z-index:2;">
-                @foreach ($portfolioProjects as $project)
-                    @php $hasLink = !empty($project['url']); @endphp
-                    <div class="portfolio-card text-center">
-                        <span class="text-xs font-semibold tracking-widest uppercase" style="color:#C9A84C;text-shadow:0 1px 12px rgba(255,255,255,0.9);">{{ $project['num'] }}</span>
-                        <h4 class="font-bold text-lg mt-1">
-                            @if ($hasLink)
-                                <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="hover:underline text-[#15202C] hover:text-[#C9A84C] transition-colors" style="text-shadow:0 1px 12px rgba(255,255,255,0.9);">{{ $project['title'] }}</a>
+        {{-- Filter bar — future-proofed for growth; categories with no
+             live projects yet simply surface the "Your Project Could Be
+             Next" card until real projects land there. --}}
+        <div id="portfolio-filters" class="flex flex-wrap justify-center gap-3 mt-14 mb-10">
+            @foreach ([
+                ['key' => 'all',        'label' => 'All'],
+                ['key' => 'churches',   'label' => 'Churches'],
+                ['key' => 'ministries', 'label' => 'Ministries'],
+                ['key' => 'nonprofits', 'label' => 'Nonprofits'],
+                ['key' => 'businesses', 'label' => 'Businesses'],
+            ] as $i => $f)
+                <button type="button" class="portfolio-filter-btn{{ $i === 0 ? ' is-active' : '' }}" data-filter="{{ $f['key'] }}">{{ $f['label'] }}</button>
+            @endforeach
+        </div>
+
+        {{-- Portfolio cards — homepage screenshot, industry badge, tagline,
+             description, feature chips, and a CTA button. Uniform height via
+             flex + margin-top:auto on the button so a short vs. long
+             description never changes the card's footprint. --}}
+        <div id="portfolio-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            @foreach ($portfolioProjects as $project)
+                <div class="portfolio-card" data-category="{{ $project['status'] === 'cta' ? 'evergreen' : $project['filter'] }}">
+                    <div class="portfolio-card-inner{{ $project['status'] === 'cta' ? ' portfolio-card-inner-cta' : '' }}">
+
+                        <div class="portfolio-card-media">
+                            @if ($project['status'] === 'live')
+                                <img src="@assetv($project['image'])" alt="{{ $project['title'] }} homepage preview" loading="lazy" decoding="async">
+                                <span class="portfolio-industry-badge">{{ $project['industry'] }}</span>
+                            @elseif ($project['status'] === 'soon')
+                                <div class="portfolio-card-placeholder">
+                                    <svg class="w-12 h-12 text-navy" style="opacity:0.22;" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
+                                </div>
+                                <span class="portfolio-industry-badge">{{ $project['industry'] }}</span>
+                                <span class="portfolio-status-pill">Coming Soon</span>
                             @else
-                                <span style="color:#15202C;text-shadow:0 1px 12px rgba(255,255,255,0.9);">{{ $project['title'] }}</span>
+                                <div class="portfolio-card-placeholder portfolio-card-placeholder-cta">
+                                    <svg class="w-12 h-12 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
+                                </div>
                             @endif
-                        </h4>
-                        <p class="text-sm mt-0.5" style="color:rgba(21,32,44,0.7);text-shadow:0 1px 10px rgba(255,255,255,0.85);">{{ $project['category'] }}</p>
-                    </div>
-                @endforeach
-            </div>
+                        </div>
 
+                        <div class="portfolio-card-body">
+                            <span class="portfolio-card-num">{{ $project['num'] }}</span>
+                            <h3 class="portfolio-card-title">{{ $project['title'] }}</h3>
+                            <p class="portfolio-card-tagline">{{ $project['tagline'] }}</p>
+                            <p class="portfolio-card-desc">{{ $project['desc'] }}</p>
+
+                            @if (!empty($project['features']))
+                                <ul class="portfolio-card-features">
+                                    @foreach ($project['features'] as $feature)
+                                        <li>{{ $feature }}</li>
+                                    @endforeach
+                                </ul>
+                            @endif
+
+                            <div class="portfolio-card-btn-wrap">
+                                @if ($project['status'] === 'live')
+                                    <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="portfolio-card-btn">
+                                        View Project
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                    </a>
+                                @elseif ($project['status'] === 'soon')
+                                    <span class="portfolio-card-btn portfolio-card-btn-disabled">Coming Soon</span>
+                                @else
+                                    <a href="{{ route('register') }}" class="portfolio-card-btn portfolio-card-btn-gold">
+                                        Start Your Project
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        {{-- Closing CTA panel --}}
+        <div id="portfolio-cta-panel" class="mt-20 rounded-3xl relative overflow-hidden text-center py-16 px-6 sm:px-12" style="background:linear-gradient(155deg,#15202C 0%,#2F3A45 100%);">
+            <div class="hero-orb" style="width:460px;height:460px;top:-140px;left:-100px;background:radial-gradient(circle,rgba(201,168,76,0.14) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 22s ease-in-out infinite;"></div>
+            <div class="hero-orb" style="width:380px;height:380px;bottom:-110px;right:-90px;background:radial-gradient(circle,rgba(42,157,143,0.12) 0%,transparent 70%);filter:blur(54px);animation:orb-drift 18s ease-in-out infinite reverse 3s;"></div>
+            <div class="relative max-w-2xl mx-auto" style="z-index:1;">
+                <h3 class="font-display font-bold text-white" style="font-size:clamp(1.6rem,3.4vw,2.4rem);line-height:1.25;">Your Website Should Do More Than Look Good. It Should Work for You.</h3>
+                <p class="text-white/75 mt-5" style="font-size:1.05rem;line-height:1.75;">From churches and nonprofits to businesses and organizations, VisionBridge Solutions builds websites that inspire trust, engage visitors, and help our clients grow with confidence.</p>
+                <div class="glow-line" style="margin:22px auto;"></div>
+                <span class="inline-block text-gold text-xs font-semibold tracking-widest uppercase mb-8">Building Websites. Expanding Reach.</span>
+                <div>
+                    <a href="{{ route('register') }}" class="hero-btn-primary">
+                        <span class="hero-btn-fill" aria-hidden="true"></span>
+                        <span class="hero-btn-content">
+                            Start Your Project Today
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </span>
+                    </a>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -2067,6 +2183,29 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
             const portfolioSection = document.getElementById('portfolio');
             if (portfolioSection) io.observe(portfolioSection);
+        })();
+
+        // ============================================================
+        //  PORTFOLIO — category filter bar (All / Churches / Ministries /
+        //  Nonprofits / Businesses). The "Your Project Could Be Next" CTA
+        //  card is tagged data-category="evergreen" so it stays visible
+        //  no matter which filter is active.
+        // ============================================================
+        (function() {
+            const filterBtns = document.querySelectorAll('.portfolio-filter-btn');
+            const cards = document.querySelectorAll('#portfolio-grid .portfolio-card');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const filter = btn.dataset.filter;
+                    filterBtns.forEach(b => b.classList.toggle('is-active', b === btn));
+                    cards.forEach(card => {
+                        const category = card.dataset.category;
+                        const match = filter === 'all' || category === filter || category === 'evergreen';
+                        card.classList.toggle('portfolio-hidden', !match);
+                    });
+                });
+            });
         })();
 
         // Portfolio numbered switcher: tap-to-activate, handled by
