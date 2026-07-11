@@ -915,9 +915,14 @@ function submitAdminReply(form, event) {
 </script>
 
 <script>
+    const validProjectTabs = ['overview', 'billing', 'onboarding', 'files', 'content', 'revision', 'recommendations'];
     let currentProjectTab = 'overview';
 
-    function showProjectTab(tab) {
+    // updateUrl=false is used for restoring state (initial deep-link load,
+    // browser back/forward, re-applying the active tab after an AJAX panel
+    // swap) — those aren't a new user navigation, so they shouldn't push
+    // another history entry or redundantly rewrite a URL we're already at.
+    function showProjectTab(tab, updateUrl = true) {
         currentProjectTab = tab;
 
         document.querySelectorAll('[data-tab-panel]').forEach((el) => {
@@ -934,7 +939,30 @@ function submitAdminReply(form, event) {
             el.classList.toggle('hover:text-navy', !active);
             el.classList.toggle('dark:hover:text-white', !active);
         });
+
+        if (updateUrl) {
+            const url = new URL(window.location.href);
+            if (tab === 'overview') {
+                url.searchParams.delete('tab');
+            } else {
+                url.searchParams.set('tab', tab);
+            }
+            history.pushState({ tab }, '', url);
+        }
     }
+
+    // Deep link / reload: restore whichever tab the URL asks for.
+    (function () {
+        const requested = new URLSearchParams(window.location.search).get('tab');
+        if (requested && validProjectTabs.includes(requested)) {
+            showProjectTab(requested, false);
+        }
+    })();
+
+    window.addEventListener('popstate', function () {
+        const tab = new URLSearchParams(window.location.search).get('tab') || 'overview';
+        showProjectTab(validProjectTabs.includes(tab) ? tab : 'overview', false);
+    });
 
     // Generic no-reload form submission: any form with data-ajax-target submits via
     // fetch, swaps in the freshly rendered HTML for each listed container id, then
@@ -997,7 +1025,7 @@ function submitAdminReply(form, event) {
                                 }
                             });
 
-                            showProjectTab(currentProjectTab);
+                            showProjectTab(currentProjectTab, false);
 
                             if (openThreadMatch) {
                                 openAdminThread(openThreadMatch[1], openThreadMatch[2], false, null);
