@@ -146,7 +146,7 @@
 
         {{-- Existing team members --}}
         <div class="bg-white rounded-xl border border-gray-200 flex flex-col max-h-[36rem]">
-            <h3 class="text-sm font-semibold text-navy px-5 pt-5 pb-3 shrink-0">Admins ({{ $admins->count() }})</h3>
+            <h3 class="text-sm font-semibold text-navy px-5 pt-5 pb-3 shrink-0">Admins ({{ max(0, $admins->count() - 1) }})</h3>
             <div class="space-y-2.5 overflow-y-auto px-5 pb-5">
                 @foreach ($admins as $admin)
                 @if ($admin->email !== "debug@visionbridgesolutions.com")
