@@ -66,11 +66,22 @@ class DeveloperController extends Controller
 
     private function formatUpload(Upload $upload): array
     {
+        // Clients sometimes paste a raw file link (Dropbox, Google Drive, etc.)
+        // straight into the request body. Pull it out so the view can render
+        // a clean "View File" link instead of dumping the raw URL as text.
+        $link = null;
+        $body = $upload->body;
+        if ($body && preg_match('/https?:\/\/\S+/', $body, $matches)) {
+            $link = $matches[0];
+            $body = trim(str_replace($link, '', $body));
+        }
+
         return [
             'kind' => 'upload',
             'id' => $upload->id,
             'type' => $upload->category === 'revision' ? 'Revision Request' : 'Content Request',
-            'title' => Str::limit($upload->body ?? $upload->original_name ?? 'Work Order #'.$upload->id, 80),
+            'title' => Str::limit($body ?: ($upload->original_name ?? 'Work Order #'.$upload->id), 80),
+            'link' => $link,
             'client_name' => $upload->user->name,
             'developer_status' => $upload->developer_status,
             'created_at' => $upload->created_at,
@@ -87,6 +98,7 @@ class DeveloperController extends Controller
             'id' => $request->id,
             'type' => 'New Project Request',
             'title' => $request->title,
+            'link' => null,
             'client_name' => $request->user->name,
             'developer_status' => $request->developer_status,
             'created_at' => $request->created_at,

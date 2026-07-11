@@ -11,145 +11,146 @@
         'waiting_on_visionbridge' => 'bg-purple-50 dark:bg-purple-500/10 text-purple-500',
         'completed' => 'bg-teal/10 text-teal-dark',
     ];
+
+    // Workload stat boxes — muted gray when 0, richer tint + darker type when >0.
+    $statBoxes = [
+        'not_started' => ['label' => 'Not Started', 'activeBg' => 'bg-gray-200 dark:bg-gray-600', 'activeText' => 'text-navy dark:text-white'],
+        'in_progress' => ['label' => 'In Progress', 'activeBg' => 'bg-gold/25', 'activeText' => 'text-gold-dark'],
+        'waiting_on_visionbridge' => ['label' => 'Waiting on VB', 'activeBg' => 'bg-purple-100 dark:bg-purple-500/20', 'activeText' => 'text-purple-700 dark:text-purple-300'],
+        'completed' => ['label' => 'Completed', 'activeBg' => 'bg-teal/25', 'activeText' => 'text-teal-dark dark:text-teal-300'],
+    ];
 @endphp
 
 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Every "Developer" job-title account, their current workload, and any Work Orders still waiting for a developer.</p>
 
-@if ($developers->isEmpty())
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center mb-6">
-        <p class="text-gray-500 dark:text-gray-400">No team members have the "Developer" job title yet — set one on the Team Members page.</p>
+{{-- Global controls --}}
+<div class="flex flex-col sm:flex-row gap-3 mb-6">
+    <div class="relative flex-1 max-w-sm">
+        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input type="text" id="developer-search" placeholder="Search developers by name…"
+               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
     </div>
-@else
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        @foreach ($roster as $row)
-            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-                <div class="flex items-center justify-between gap-4 mb-4">
-                    <div class="flex items-center gap-3">
-                        <span class="w-10 h-10 rounded-full bg-navy text-gold text-sm font-bold flex items-center justify-center shrink-0">
-                            {{ strtoupper(substr($row['developer']->name, 0, 1)) }}
-                        </span>
-                        <div>
-                            <p class="font-semibold text-navy dark:text-white">{{ $row['developer']->name }}</p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $row['developer']->email }}</p>
-                        </div>
-                    </div>
-                    @if ($row['developer']->is_active ?? true)
-                        <span class="text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-teal/10 text-teal-dark">Active</span>
-                    @else
-                        <span class="text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-red-50 text-red-500">Inactive</span>
-                    @endif
-                </div>
+    <select id="developer-workload-filter"
+            class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold">
+        <option value="all">All Developers</option>
+        <option value="active">Has Active Work</option>
+        <option value="idle">Idle (No Active Work)</option>
+    </select>
+</div>
 
-                {{-- Workload breakdown --}}
-                <div class="grid grid-cols-4 gap-2 mb-4">
-                    <div class="text-center rounded-lg bg-gray-50 dark:bg-gray-900 py-2.5">
-                        <p class="text-lg font-bold text-navy dark:text-white">{{ $row['counts']['not_started'] }}</p>
-                        <p class="text-[0.65rem] uppercase tracking-wide text-gray-400 dark:text-gray-500">Not Started</p>
-                    </div>
-                    <div class="text-center rounded-lg bg-gold/10 py-2.5">
-                        <p class="text-lg font-bold text-gold-dark">{{ $row['counts']['in_progress'] }}</p>
-                        <p class="text-[0.65rem] uppercase tracking-wide text-gray-400 dark:text-gray-500">In Progress</p>
-                    </div>
-                    <div class="text-center rounded-lg bg-purple-50 dark:bg-purple-500/10 py-2.5">
-                        <p class="text-lg font-bold text-purple-500">{{ $row['counts']['waiting_on_visionbridge'] }}</p>
-                        <p class="text-[0.65rem] uppercase tracking-wide text-gray-400 dark:text-gray-500">Waiting on VB</p>
-                    </div>
-                    <div class="text-center rounded-lg bg-teal/10 py-2.5">
-                        <p class="text-lg font-bold text-teal-dark">{{ $row['counts']['completed'] }}</p>
-                        <p class="text-[0.65rem] uppercase tracking-wide text-gray-400 dark:text-gray-500">Completed</p>
-                    </div>
-                </div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
-                {{-- Active assigned items --}}
-                @if ($row['activeItems']->isEmpty())
-                    <p class="text-sm text-gray-400 dark:text-gray-500">No active Work Orders right now.</p>
-                @else
-                    <div class="space-y-1.5 max-h-56 overflow-y-auto pr-1">
-                        @foreach ($row['activeItems'] as $item)
-                            <a href="{{ $item['url'] }}" class="flex items-center justify-between gap-3 rounded-lg px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                <div class="min-w-0">
-                                    <p class="text-sm text-navy dark:text-white truncate">{{ $item['title'] }}</p>
-                                    <p class="text-xs text-gray-400 dark:text-gray-500">{{ $item['type'] }} &middot; {{ $item['client_name'] }}</p>
-                                </div>
-                                <span class="shrink-0 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $statusColors[$item['developer_status']] ?? 'bg-gray-100 text-gray-500' }}">
-                                    {{ \App\Models\Upload::DEVELOPER_STATUSES[$item['developer_status']] ?? 'Not Started' }}
-                                </span>
-                            </a>
-                        @endforeach
-                    </div>
-                @endif
-
-                {{-- History — completed items, collapsed by default --}}
-                @if ($row['completedItems']->isNotEmpty())
-                    <button type="button" class="developer-history-toggle mt-4 inline-flex items-center gap-1 text-xs font-semibold text-navy dark:text-white hover:text-gold-dark" data-target="developer-history-{{ $row['developer']->id }}">
-                        History ({{ $row['completedItems']->count() }})
-                        <svg class="w-3 h-3 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </button>
-                    <div id="developer-history-{{ $row['developer']->id }}" class="hidden mt-2 space-y-1.5 max-h-56 overflow-y-auto pr-1 border-t border-gray-100 dark:border-gray-700 pt-2">
-                        @foreach ($row['completedItems'] as $item)
-                            <a href="{{ $item['url'] }}" class="flex items-center justify-between gap-3 rounded-lg px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                <div class="min-w-0">
-                                    <p class="text-sm text-navy dark:text-white truncate">{{ $item['title'] }}</p>
-                                    <p class="text-xs text-gray-400 dark:text-gray-500">{{ $item['type'] }} &middot; {{ $item['client_name'] }} &middot; Completed {{ $item['updated_at']->format('M j, Y') }}</p>
-                                </div>
-                                <span class="shrink-0 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $statusColors['completed'] }}">Completed</span>
-                            </a>
-                        @endforeach
-                    </div>
-                @endif
+    {{-- Left: developer workload cards — wraps into 2 columns at xl as more developers are added --}}
+    <div class="lg:col-span-2">
+        @if ($developers->isEmpty())
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+                <p class="text-gray-500 dark:text-gray-400">No team members have the "Developer" job title yet — set one on the Team Members page.</p>
             </div>
-        @endforeach
-    </div>
-@endif
+        @else
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                @foreach ($roster as $row)
+                    @php $hasActiveWork = $row['activeItems']->isNotEmpty(); @endphp
+                    <div class="developer-card bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6"
+                         data-name="{{ strtolower($row['developer']->name) }}" data-has-active="{{ $hasActiveWork ? '1' : '0' }}">
+                        <div class="flex items-center justify-between gap-4 mb-4">
+                            <div class="flex items-center gap-3">
+                                <span class="w-10 h-10 rounded-full bg-navy text-gold text-sm font-bold flex items-center justify-center shrink-0">
+                                    {{ strtoupper(substr($row['developer']->name, 0, 1)) }}
+                                </span>
+                                <div>
+                                    <p class="font-semibold text-navy dark:text-white">{{ $row['developer']->name }}</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500">{{ $row['developer']->email }}</p>
+                                </div>
+                            </div>
+                            @if ($row['developer']->is_active ?? true)
+                                <span class="text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-teal/10 text-teal-dark">Active</span>
+                            @else
+                                <span class="text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-red-50 text-red-500">Inactive</span>
+                            @endif
+                        </div>
 
-<h3 class="font-semibold text-navy dark:text-white mb-3">Unassigned — Needs a Developer</h3>
+                        {{-- Workload breakdown --}}
+                        <div class="grid grid-cols-4 gap-2 mb-4">
+                            @foreach ($statBoxes as $key => $box)
+                                @php $count = $row['counts'][$key]; @endphp
+                                <div class="text-center rounded-lg py-2.5 {{ $count > 0 ? $box['activeBg'] : 'bg-gray-50 dark:bg-gray-900' }}">
+                                    <p class="text-lg font-bold {{ $count > 0 ? $box['activeText'] : 'text-gray-300 dark:text-gray-600' }}">{{ $count }}</p>
+                                    <p class="text-[0.65rem] uppercase tracking-wide {{ $count > 0 ? 'text-gray-500 dark:text-gray-400' : 'text-gray-300 dark:text-gray-600' }}">{{ $box['label'] }}</p>
+                                </div>
+                            @endforeach
+                        </div>
 
-@if ($unassigned->isEmpty())
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
-        <p class="text-gray-500 dark:text-gray-400">Everything is assigned. Nice.</p>
-    </div>
-@else
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <table class="w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
-                <tr>
-                    <th class="px-5 py-3">Client</th>
-                    <th class="px-5 py-3">Type</th>
-                    <th class="px-5 py-3">Item</th>
-                    <th class="px-5 py-3">Submitted</th>
-                    <th class="px-5 py-3">Assign</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                @foreach ($unassigned as $item)
-                    <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-700/30">
-                        <td class="px-5 py-3.5">
-                            <p class="font-medium text-navy dark:text-white">{{ $item['client_name'] }}</p>
-                        </td>
-                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $item['type'] }}</td>
-                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">
-                            <a href="{{ $item['url'] }}" class="hover:underline">{{ $item['title'] }}</a>
-                        </td>
-                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $item['created_at']->format('M j, Y') }}</td>
-                        <td class="px-5 py-3.5">
-                            <form method="POST" action="{{ $item['assign_url'] }}">
-                                @csrf
-                                @method('PATCH')
-                                <select name="assigned_developer_id" onchange="this.form.requestSubmit()"
-                                        class="text-xs font-medium rounded-lg px-3 py-1.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold">
-                                    <option value="">Assign to…</option>
-                                    @foreach ($developers as $developer)
-                                        <option value="{{ $developer->id }}">{{ $developer->name }}</option>
-                                    @endforeach
-                                </select>
-                            </form>
-                        </td>
-                    </tr>
+                        {{-- Active assigned items --}}
+                        @if ($row['activeItems']->isEmpty())
+                            <p class="text-sm text-gray-400 dark:text-gray-500">No active Work Orders right now.</p>
+                        @else
+                            <div class="divide-y divide-gray-100 dark:divide-gray-700 max-h-56 overflow-y-auto pr-1">
+                                @foreach ($row['activeItems'] as $item)
+                                    @include('admin.developers._item-row', ['item' => $item, 'statusColors' => $statusColors])
+                                @endforeach
+                            </div>
+                        @endif
+
+                        {{-- History — completed items, collapsed by default --}}
+                        @if ($row['completedItems']->isNotEmpty())
+                            <button type="button" class="developer-history-toggle mt-4 inline-flex items-center gap-1 text-xs font-semibold text-navy dark:text-white hover:text-gold-dark" data-target="developer-history-{{ $row['developer']->id }}">
+                                History ({{ $row['completedItems']->count() }})
+                                <svg class="w-3 h-3 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+                            <div id="developer-history-{{ $row['developer']->id }}" class="hidden mt-2 divide-y divide-gray-100 dark:divide-gray-700 max-h-56 overflow-y-auto pr-1 border-t border-gray-100 dark:border-gray-700 pt-2">
+                                @foreach ($row['completedItems'] as $item)
+                                    @include('admin.developers._item-row', ['item' => $item, 'statusColors' => $statusColors, 'completed' => true])
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
                 @endforeach
-            </tbody>
-        </table>
+            </div>
+            <p id="developer-empty-state" class="hidden text-sm text-gray-400 dark:text-gray-500 text-center py-10">No developers match your search.</p>
+        @endif
     </div>
-@endif
+
+    {{-- Right: unassigned, side-by-side with developer availability --}}
+    <div class="lg:col-span-1 lg:sticky lg:top-6">
+        <h3 class="font-semibold text-navy dark:text-white mb-3">Unassigned — Needs a Developer</h3>
+
+        @if ($unassigned->isEmpty())
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Everything is assigned. Nice.</p>
+            </div>
+        @else
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700 max-h-[calc(100vh-220px)] overflow-y-auto">
+                @foreach ($unassigned as $item)
+                    <div class="p-4">
+                        <div class="flex items-center justify-between gap-2 mb-1">
+                            <p class="text-sm font-semibold text-navy dark:text-white">{{ $item['client_name'] }}</p>
+                            <span class="text-[0.65rem] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 shrink-0">{{ $item['created_at']->format('M j') }}</span>
+                        </div>
+                        <p class="text-xs text-gray-400 dark:text-gray-500 mb-1.5">{{ $item['type'] }}</p>
+                        <a href="{{ $item['url'] }}" class="text-sm text-gray-600 dark:text-gray-300 hover:underline block mb-1">{{ $item['title'] }}</a>
+                        @if ($item['link'])
+                            <a href="{{ $item['link'] }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-xs font-semibold text-gold-dark hover:underline mb-2">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                                View File
+                            </a>
+                        @endif
+                        <form method="POST" action="{{ $item['assign_url'] }}" class="mt-1.5">
+                            @csrf
+                            @method('PATCH')
+                            <select name="assigned_developer_id" onchange="this.form.requestSubmit()"
+                                    class="w-full text-xs font-medium rounded-lg px-3 py-1.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold">
+                                <option value="">Assign to…</option>
+                                @foreach ($developers as $developer)
+                                    <option value="{{ $developer->id }}">{{ $developer->name }}</option>
+                                @endforeach
+                            </select>
+                        </form>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
+</div>
 
 <script>
     document.querySelectorAll('.developer-history-toggle').forEach((btn) => {
@@ -160,6 +161,35 @@
             btn.querySelector('svg').classList.toggle('rotate-90');
         });
     });
+
+    (function () {
+        const searchInput = document.getElementById('developer-search');
+        const workloadFilter = document.getElementById('developer-workload-filter');
+        const cards = document.querySelectorAll('.developer-card');
+        const emptyState = document.getElementById('developer-empty-state');
+
+        function applyFilters() {
+            const query = (searchInput?.value || '').trim().toLowerCase();
+            const workload = workloadFilter?.value || 'all';
+            let visibleCount = 0;
+
+            cards.forEach((card) => {
+                const matchesName = !query || card.dataset.name.includes(query);
+                const matchesWorkload = workload === 'all'
+                    || (workload === 'active' && card.dataset.hasActive === '1')
+                    || (workload === 'idle' && card.dataset.hasActive === '0');
+
+                const visible = matchesName && matchesWorkload;
+                card.classList.toggle('hidden', !visible);
+                if (visible) visibleCount++;
+            });
+
+            if (emptyState) emptyState.classList.toggle('hidden', visibleCount !== 0);
+        }
+
+        searchInput?.addEventListener('input', applyFilters);
+        workloadFilter?.addEventListener('change', applyFilters);
+    })();
 </script>
 
 @endsection
