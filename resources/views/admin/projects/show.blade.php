@@ -459,12 +459,27 @@
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <h3 class="font-semibold text-navy dark:text-white mb-4">Service Agreement</h3>
         @if ($project->agreementSignature)
-            <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
                 Signed by <strong class="text-navy dark:text-white">{{ $project->agreementSignature->signer_name }}</strong>
                 on {{ $project->agreementSignature->signed_at->format('M j, Y \a\t g:i A') }}
                 (v{{ $project->agreementSignature->template->version }})
             </p>
-            <a href="{{ route('portal.agreement.download', $project->agreementSignature) }}" class="text-sm text-gold-dark font-semibold hover:underline">Download signed PDF</a>
+            <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+                <a href="{{ route('portal.agreement.preview', $project->agreementSignature) }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-sm text-gold-dark font-semibold hover:underline">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    Preview
+                </a>
+                <a href="{{ route('portal.agreement.download', $project->agreementSignature) }}" class="inline-flex items-center gap-1.5 text-sm text-gold-dark font-semibold hover:underline">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+                    Download signed PDF
+                </a>
+                @if ($project->agreementSignature->filled_pdf_path)
+                    <a href="{{ route('portal.agreement.filled', $project->agreementSignature) }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-sm text-navy dark:text-white font-semibold hover:underline" title="The complete filled-in agreement (Care Plan + signature block), not just the signature certificate">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        View Full Signed Agreement
+                    </a>
+                @endif
+            </div>
         @else
             <p class="text-sm text-gray-400 dark:text-gray-500">Not signed yet.</p>
         @endif
