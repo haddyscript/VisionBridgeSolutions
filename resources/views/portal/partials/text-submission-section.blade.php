@@ -18,19 +18,13 @@
                 <div class="upload-attach">
                     <div class="flex flex-wrap items-center gap-2">
                         <label class="inline-flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 hover:border-gold hover:bg-gold/5 px-3.5 py-2 text-sm font-medium text-navy dark:text-white transition-colors">
-                            <input type="file" name="file" class="attach-input sr-only">
+                            <input type="file" name="files[]" multiple class="attach-input sr-only">
                             <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 10-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                            <span>Attach a file</span>
+                            <span>Attach files</span>
                         </label>
-                        <span class="attach-filename hidden items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 rounded-lg bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-700 px-2.5 py-1.5">
-                            <svg class="w-3.5 h-3.5 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                            <span class="attach-name truncate max-w-[180px]"></span>
-                            <button type="button" class="attach-clear text-gray-400 hover:text-red-500 transition-colors" title="Remove">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                            </button>
-                        </span>
+                        <span class="attach-filelist flex flex-wrap items-center gap-2"></span>
                     </div>
-                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5">Optional — attach a document or image (up to 50MB).</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5">Optional — attach documents or images (up to 50MB each).</p>
                 </div>
                 <div class="flex justify-end">
                     <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
@@ -145,16 +139,20 @@
                                         <button type="button" class="message-toggle hidden text-xs font-semibold text-navy dark:text-white hover:text-gold-dark mt-1">See more</button>
                                     @endif
                                     @if ($item->path)
-                                        <a href="{{ $item->url() }}" target="_blank" rel="noopener"
-                                           class="inline-flex items-center gap-2 text-sm text-navy dark:text-white hover:text-gold-dark transition-colors {{ $item->body ? 'mt-2' : '' }}">
-                                            <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 10-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
-                                            </svg>
-                                            <span class="truncate max-w-[200px]">{{ $item->original_name }}</span>
-                                            @if ($item->formattedSize())
-                                                <span class="text-xs text-gray-400 dark:text-gray-500">({{ $item->formattedSize() }})</span>
-                                            @endif
-                                        </a>
+                                        <div class="{{ $item->body ? 'mt-2' : '' }} space-y-1.5">
+                                            @foreach ($item->allAttachments() as $attachment)
+                                                <a href="{{ $attachment->url }}" target="_blank" rel="noopener"
+                                                   class="flex items-center gap-2 text-sm text-navy dark:text-white hover:text-gold-dark transition-colors">
+                                                    <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 10-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                                                    </svg>
+                                                    <span class="truncate max-w-[200px]">{{ $attachment->original_name }}</span>
+                                                    @if ($attachment->formattedSize)
+                                                        <span class="text-xs text-gray-400 dark:text-gray-500">({{ $attachment->formattedSize }})</span>
+                                                    @endif
+                                                </a>
+                                            @endforeach
+                                        </div>
                                     @endif
                                 </div>
                             </div>
@@ -292,25 +290,48 @@
 
     initMessageToggles();
 
-    // New-request file attachment: show the chosen filename with a clear button.
+    // New-request file attachment: lets a client pick files across multiple
+    // dialog openings (each pick would otherwise replace the previous
+    // selection) and remove any one of them individually, by keeping our own
+    // running list and re-syncing it onto the real <input> via DataTransfer
+    // before each submit.
     const attachInput = document.querySelector('.upload-attach .attach-input');
     if (attachInput) {
         const wrap = attachInput.closest('.upload-attach');
-        const nameWrap = wrap.querySelector('.attach-filename');
-        const nameEl = wrap.querySelector('.attach-name');
-        const clearBtn = wrap.querySelector('.attach-clear');
+        const listEl = wrap.querySelector('.attach-filelist');
+        let selectedFiles = [];
+
+        function syncInputFiles() {
+            const dt = new DataTransfer();
+            selectedFiles.forEach(function (file) { dt.items.add(file); });
+            attachInput.files = dt.files;
+        }
+
+        function renderFileList() {
+            listEl.innerHTML = '';
+            selectedFiles.forEach(function (file, index) {
+                const chip = document.createElement('span');
+                chip.className = 'inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 rounded-lg bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-700 px-2.5 py-1.5';
+                chip.innerHTML =
+                    '<svg class="w-3.5 h-3.5 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>' +
+                    '<span class="truncate max-w-[160px]"></span>' +
+                    '<button type="button" class="attach-remove text-gray-400 hover:text-red-500 transition-colors" title="Remove">' +
+                        '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>' +
+                    '</button>';
+                chip.querySelector('span.truncate').textContent = file.name;
+                chip.querySelector('.attach-remove').addEventListener('click', function () {
+                    selectedFiles.splice(index, 1);
+                    syncInputFiles();
+                    renderFileList();
+                });
+                listEl.appendChild(chip);
+            });
+        }
 
         attachInput.addEventListener('change', function () {
-            if (attachInput.files.length) {
-                nameEl.textContent = attachInput.files[0].name;
-                nameWrap.classList.remove('hidden');
-                nameWrap.classList.add('inline-flex');
-            }
-        });
-        clearBtn.addEventListener('click', function () {
-            attachInput.value = '';
-            nameWrap.classList.add('hidden');
-            nameWrap.classList.remove('inline-flex');
+            selectedFiles = selectedFiles.concat(Array.from(attachInput.files));
+            syncInputFiles();
+            renderFileList();
         });
     }
 

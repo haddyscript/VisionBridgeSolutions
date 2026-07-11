@@ -109,6 +109,37 @@ class Upload extends Model
         return $this->hasMany(UploadReply::class)->oldest();
     }
 
+    /** Files beyond the first — see UploadAttachment's docblock for why the first stays on this model's own columns. */
+    public function attachments()
+    {
+        return $this->hasMany(UploadAttachment::class);
+    }
+
+    /**
+     * Every file on this submission as one flat list, regardless of whether
+     * it's the legacy single path/original_name/size (pre-multi-file rows,
+     * and still the first file on every row) or additional UploadAttachment
+     * rows. Lets the UI render one loop either way.
+     */
+    public function allAttachments()
+    {
+        $first = collect();
+
+        if ($this->path) {
+            $first->push((object) [
+                'url' => $this->url(),
+                'original_name' => $this->original_name,
+                'formattedSize' => $this->formattedSize(),
+            ]);
+        }
+
+        return $first->concat($this->attachments->map(fn (UploadAttachment $attachment) => (object) [
+            'url' => $attachment->url(),
+            'original_name' => $attachment->original_name,
+            'formattedSize' => $attachment->formattedSize(),
+        ]));
+    }
+
     /** Replies from our team the client hasn't opened this thread to see yet. */
     public function unreadRepliesCount(): int
     {

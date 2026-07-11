@@ -24,26 +24,39 @@ class UploadController extends Controller
         $validated = $request->validate([
             'category' => ['required', 'in:image,video,logo,document,marketing,content,revision'],
             'file' => ['nullable', 'file', 'max:51200'],
+            'files' => ['nullable', 'array'],
+            'files.*' => ['file', 'max:51200'],
             'body' => ['nullable', 'string', 'max:5000'],
         ]);
 
-        if (in_array($validated['category'], self::FILE_CATEGORIES, true) && ! $request->hasFile('file')) {
+        // "file" (singular) is the original field, still used by the file-category
+        // uploaders (image/video/logo/document/marketing — each row is its own
+        // gallery item there, so one-at-a-time is correct). "files[]" is the newer
+        // field the content/revision composer uses to let a client attach several
+        // files to one message. Both are accepted here since they share this
+        // endpoint; a submission never sends both at once.
+        $hasAnyFile = $request->hasFile('file') || $request->hasFile('files');
+
+        if (in_array($validated['category'], self::FILE_CATEGORIES, true) && ! $hasAnyFile) {
             return $this->errorResponse($request, 'file', 'Please choose a file to upload.');
         }
 
         if (in_array($validated['category'], self::TEXT_CATEGORIES, true)
-            && ! $request->hasFile('file') && empty($validated['body'])) {
+            && ! $hasAnyFile && empty($validated['body'])) {
             return $this->errorResponse($request, 'body', 'Please add a message or attach a file.');
         }
 
-        $path = null;
-        $originalName = null;
-        $size = null;
-
+        $incomingFiles = collect();
         if ($request->hasFile('file')) {
-            $file = $request->file('file');
+            $incomingFiles->push($request->file('file'));
+        }
+        if ($request->hasFile('files')) {
+            $incomingFiles = $incomingFiles->concat($request->file('files'));
+        }
+
+        $storedFiles = [];
+        foreach ($incomingFiles as $file) {
             $originalName = $file->getClientOriginalName();
-            $size = $file->getSize();
             $path = $file->store("projects/{$project->id}/{$validated['category']}", 'client_uploads');
 
             if ($path === false) {
@@ -66,16 +79,32 @@ class UploadController extends Controller
 
                 return $this->errorResponse($request, 'file', 'Something went wrong saving your file. Please try again or contact support.');
             }
+
+            $storedFiles[] = [
+                'path' => $path,
+                'original_name' => $originalName,
+                'size' => $file->getSize(),
+            ];
         }
+
+        // The first file keeps using this model's own path/original_name/size
+        // columns (backward compatible with every row created before
+        // multi-file support existed); any further files become their own
+        // UploadAttachment rows. See Upload::allAttachments().
+        $firstFile = $storedFiles[0] ?? null;
 
         $upload = $project->uploads()->create([
             'user_id' => $request->user()->id,
             'category' => $validated['category'],
-            'original_name' => $originalName,
-            'path' => $path,
-            'size' => $size,
+            'original_name' => $firstFile['original_name'] ?? null,
+            'path' => $firstFile['path'] ?? null,
+            'size' => $firstFile['size'] ?? null,
             'body' => $validated['body'] ?? null,
         ]);
+
+        foreach (array_slice($storedFiles, 1) as $extraFile) {
+            $upload->attachments()->create($extraFile);
+        }
 
         $upload->setRelation('project', $project);
         $upload->setRelation('user', $request->user());

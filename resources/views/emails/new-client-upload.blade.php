@@ -36,11 +36,17 @@
                             <p style="font-size:14px; color:#374151; margin:0;">{{ ucfirst($upload->category) }}</p>
 
                             @if ($upload->original_name)
-                                <h2 style="font-size:15px; color:#111D33; margin:20px 0 10px;">File</h2>
+                                <h2 style="font-size:15px; color:#111D33; margin:20px 0 10px;">File{{ $upload->attachments->isNotEmpty() ? 's' : '' }}</h2>
                                 <p style="font-size:14px; margin:0;">
                                     <a href="{{ $upload->url() }}" style="color:#A8872E;">{{ $upload->original_name }}</a>
                                     @if ($upload->formattedSize()) ({{ $upload->formattedSize() }}) @endif
                                 </p>
+                                @foreach ($upload->attachments as $attachment)
+                                    <p style="font-size:14px; margin:4px 0 0;">
+                                        <a href="{{ $attachment->url() }}" style="color:#A8872E;">{{ $attachment->original_name }}</a>
+                                        @if ($attachment->formattedSize()) ({{ $attachment->formattedSize() }}) @endif
+                                    </p>
+                                @endforeach
                             @endif
 
                             @if ($upload->body)

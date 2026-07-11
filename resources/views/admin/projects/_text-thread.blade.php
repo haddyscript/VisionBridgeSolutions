@@ -168,9 +168,16 @@
                                 <button type="button" onclick="toggleAdminMessage(this)" class="message-toggle hidden text-xs font-semibold text-navy dark:text-white hover:text-gold-dark mt-1">See more</button>
                             @endif
                             @if ($item->path)
-                                <a href="{{ $item->url() }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 text-sm text-gold-dark hover:underline {{ $item->body ? 'mt-2' : '' }}">
-                                    {{ $item->original_name }}
-                                </a>
+                                <div class="{{ $item->body ? 'mt-2' : '' }} space-y-1">
+                                    @foreach ($item->allAttachments() as $attachment)
+                                        <a href="{{ $attachment->url }}" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm text-gold-dark hover:underline">
+                                            {{ $attachment->original_name }}
+                                            @if ($attachment->formattedSize)
+                                                <span class="text-xs text-gray-400 dark:text-gray-500">({{ $attachment->formattedSize }})</span>
+                                            @endif
+                                        </a>
+                                    @endforeach
+                                </div>
                             @endif
                         </div>
                     </div>
