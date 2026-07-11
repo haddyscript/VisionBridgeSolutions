@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\AccountEmailChangedMail;
 use App\Mail\AccountPasswordChangedMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
@@ -88,6 +89,26 @@ class AccountController extends Controller
         ]);
 
         return back()->with('status', 'Notification preferences updated.');
+    }
+
+    /**
+     * Invalidates every other session for this account (any device/browser
+     * other than the one submitting this form) — relies on the
+     * AuthenticateSession middleware being applied to the 'web' group so it
+     * takes effect regardless of session driver.
+     */
+    public function logoutOtherDevices(Request $request)
+    {
+        // Named error bag — this page also has Profile/Password forms with
+        // their own "current_password" field; without a bag, a failed
+        // validation here would incorrectly also appear to fail those.
+        $validated = $request->validateWithBag('logoutOtherDevices', [
+            'current_password' => ['required', 'current_password'],
+        ]);
+
+        Auth::guard('web')->logoutOtherDevices($validated['current_password']);
+
+        return back()->with('status', 'You\'ve been logged out of all other devices.');
     }
 
     public function requestClosure(Request $request)

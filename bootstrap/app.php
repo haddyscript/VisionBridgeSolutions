@@ -26,6 +26,12 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(append: [
             \App\Http\Middleware\UpdateLastSeen::class,
+            // Required for Auth::logoutOtherDevices() (Account Settings' "Log
+            // Out of All Other Devices") to actually take effect — it works
+            // by checking each session's stored password hash against the
+            // user's current one on every request, session-driver agnostic
+            // (no DB sessions table needed). No-ops for guests.
+            \Illuminate\Session\Middleware\AuthenticateSession::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [

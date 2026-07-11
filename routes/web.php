@@ -201,6 +201,7 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
     Route::patch('/portal/account/profile', [PortalAccountController::class, 'updateProfile'])->name('portal.account.profile.update');
     Route::patch('/portal/account/password', [PortalAccountController::class, 'updatePassword'])->name('portal.account.password.update');
     Route::patch('/portal/account/notifications', [PortalAccountController::class, 'updateNotifications'])->name('portal.account.notifications.update');
+    Route::post('/portal/account/logout-other-devices', [PortalAccountController::class, 'logoutOtherDevices'])->name('portal.account.logout-other-devices');
     Route::post('/portal/account/closure-request', [PortalAccountController::class, 'requestClosure'])->name('portal.account.closure-request');
 
     Route::get('/portal/two-factor', [PortalTwoFactorController::class, 'show'])->name('portal.two-factor.show');

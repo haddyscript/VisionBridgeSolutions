@@ -131,6 +131,17 @@
                         <input type="email" name="email" value="{{ old('email', $user->email) }}" required
                             class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
                         @error('email') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+                        @unless ($user->hasVerifiedEmail())
+                            <div class="flex items-center justify-between gap-3 mt-2 rounded-lg border border-amber-200 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/10 px-3 py-2">
+                                <p class="text-xs text-amber-700 dark:text-amber-400">Your email address is not verified.</p>
+                                <form method="POST" action="{{ route('verification.send') }}">
+                                    @csrf
+                                    <button type="submit" class="text-xs font-semibold text-amber-700 dark:text-amber-400 hover:underline whitespace-nowrap">
+                                        Resend Verification Email
+                                    </button>
+                                </form>
+                            </div>
+                        @endunless
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Phone Number <span class="text-gray-400">(optional)</span></label>
@@ -294,6 +305,23 @@
                     </ul>
                     <p class="text-xs text-gray-400 dark:text-gray-500 mt-4">If you don't recognize a sign-in, change your password immediately.</p>
                 @endif
+
+                <div class="mt-6 pt-5 border-t border-gray-100 dark:border-gray-700 max-w-md">
+                    <p class="text-sm font-semibold text-navy dark:text-white mb-1">Log Out of All Other Devices</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-3">This won't log out your current session here — just every other device or browser signed in as you.</p>
+                    <form method="POST" action="{{ route('portal.account.logout-other-devices') }}" class="flex items-start gap-2">
+                        @csrf
+                        <div class="flex-1">
+                            <input type="password" name="current_password" required placeholder="Current password"
+                                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                            @error('current_password', 'logoutOtherDevices') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+                        </div>
+                        <button type="submit" class="settings-action-btn is-navy shrink-0 bg-navy text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                            <span class="btn-fill"></span>
+                            <span class="btn-label">Log Out Others</span>
+                        </button>
+                    </form>
+                </div>
             </div>
 
         </div>
@@ -403,7 +431,9 @@
     // shared by both the profile and password forms — when it's the only
     // error present there's no way to tell which form it came from, so it
     // defaults to the profile tab (matches this page's original behavior).
-    @if ($errors->has('name') || $errors->has('email') || ($errors->has('current_password') && ! $errors->has('password')))
+    @if ($errors->getBag('logoutOtherDevices')->any())
+        switchSettingsTab('logins');
+    @elseif ($errors->has('name') || $errors->has('email') || ($errors->has('current_password') && ! $errors->has('password')))
         switchSettingsTab('profile');
     @elseif ($errors->has('password') || $errors->has('current_password'))
         switchSettingsTab('password');
