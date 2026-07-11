@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\EmailTemplateController as AdminEmailTemplateCont
 use App\Http\Controllers\Admin\IntakeSubmissionController as AdminIntakeSubmissionController;
 use App\Http\Controllers\Admin\MaintenancePlanController as AdminMaintenancePlanController;
 use App\Http\Controllers\Admin\MilestoneController as AdminMilestoneController;
+use App\Http\Controllers\Admin\OnboardingPreviewController as AdminOnboardingPreviewController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
 use App\Http\Controllers\Admin\ProjectRequestController as AdminProjectRequestController;
@@ -282,6 +283,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::patch('/projects/{project}', [AdminProjectController::class, 'update'])->name('projects.update');
     Route::post('/projects/{project}/reset-client-password', [AdminProjectController::class, 'resetClientPassword'])->name('projects.reset-client-password');
     Route::post('/projects/{project}/restore-access', [AdminProjectController::class, 'restoreAccess'])->name('projects.restore-access');
+    Route::get('/projects/{project}/onboarding-preview/{step?}', [AdminOnboardingPreviewController::class, 'show'])->name('projects.onboarding-preview');
 
     Route::post('/projects/{project}/milestones', [AdminMilestoneController::class, 'store'])->name('milestones.store');
     Route::patch('/milestones/{milestone}', [AdminMilestoneController::class, 'update'])->name('milestones.update');
