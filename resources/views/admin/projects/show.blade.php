@@ -300,7 +300,7 @@
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
     <h3 class="font-semibold text-navy dark:text-white mb-4">Payments</h3>
 
-    <div class="space-y-2 mb-5">
+    <div class="space-y-2 mb-5 pb-5 border-b border-gray-100 dark:border-gray-700">
         @foreach ($project->payments as $payment)
             <div class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2.5">
                 <div>
@@ -317,7 +317,7 @@
                         <form method="POST" action="{{ route('admin.payments.destroy', $payment) }}" data-confirm="Remove this payment request?" data-ajax-target="panel-billing tabbtn-billing">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
+                            <button type="submit" title="Remove this payment request" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 flex items-center justify-center transition-colors">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
                         </form>
@@ -330,15 +330,27 @@
         @endif
     </div>
 
-    <form method="POST" action="{{ route('admin.payments.store', $project) }}" class="flex items-center gap-3" data-ajax-target="panel-billing tabbtn-billing">
+    <form method="POST" action="{{ route('admin.payments.store', $project) }}" class="space-y-3 max-w-lg" data-ajax-target="panel-billing tabbtn-billing">
         @csrf
-        <input type="text" name="description" placeholder="What's this payment for..." required
-               class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-        <input type="number" name="amount" step="0.01" min="1" placeholder="Amount (USD)" required
-               class="w-40 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-        <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-            Request
-        </button>
+        <div>
+            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Description</label>
+            <input type="text" name="description" placeholder="What's this payment for..." required
+                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+        </div>
+        <div class="flex items-end gap-3">
+            <div class="w-44">
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Amount</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 dark:text-gray-500 pointer-events-none">$</span>
+                    <input type="number" name="amount" step="0.01" min="1" placeholder="0.00" required
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-6 pr-12 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 dark:text-gray-500 pointer-events-none">USD</span>
+                </div>
+            </div>
+            <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors">
+                Request
+            </button>
+        </div>
     </form>
 </div>
 
@@ -385,7 +397,7 @@
                 <form method="POST" action="{{ route('admin.subscriptions.destroy', $currentSubscription) }}" data-confirm="Cancel this care plan?" data-ajax-target="panel-billing">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
+                    <button type="submit" title="Cancel this care plan" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 flex items-center justify-center transition-colors">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </form>
@@ -399,15 +411,27 @@
                 Overview tab first (or it'll happen automatically once the final payment clears and the client has approved).
             </p>
         @else
-            <form method="POST" action="{{ route('admin.subscriptions.store', $project) }}" class="flex items-center gap-3" data-ajax-target="panel-billing">
+            <form method="POST" action="{{ route('admin.subscriptions.store', $project) }}" class="space-y-3 max-w-lg" data-ajax-target="panel-billing">
                 @csrf
-                <input type="text" name="description" placeholder="e.g. Monthly Website Care" required
-                       class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                <input type="number" name="amount" step="0.01" min="1" placeholder="Amount / month (USD)" required
-                       class="w-48 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-                    Request
-                </button>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Description</label>
+                    <input type="text" name="description" placeholder="e.g. Monthly Website Care" required
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                </div>
+                <div class="flex items-end gap-3">
+                    <div class="w-44">
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Amount / Month</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 dark:text-gray-500 pointer-events-none">$</span>
+                            <input type="number" name="amount" step="0.01" min="1" placeholder="0.00" required
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-6 pr-12 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 dark:text-gray-500 pointer-events-none">USD</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors">
+                        Request
+                    </button>
+                </div>
             </form>
         @endif
     @endif
