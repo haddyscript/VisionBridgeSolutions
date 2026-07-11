@@ -145,8 +145,9 @@
                             class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
                         @error('current_password') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                     </div>
-                    <button type="submit" class="bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
-                        Save Profile
+                    <button type="submit" class="settings-action-btn bg-gold text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                        <span class="btn-fill"></span>
+                        <span class="btn-label">Save Profile</span>
                     </button>
                 </form>
             </div>
@@ -192,8 +193,9 @@
                             </button>
                         </div>
                     </div>
-                    <button type="submit" class="bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
-                        Update Password
+                    <button type="submit" class="settings-action-btn bg-gold text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                        <span class="btn-fill"></span>
+                        <span class="btn-label">Update Password</span>
                     </button>
                 </form>
             </div>
@@ -216,8 +218,9 @@
                         <span class="text-sm text-gray-600 dark:text-gray-300">Email me about consultation confirmations, reschedules, or cancellations</span>
                     </label>
                     <div class="pt-1">
-                        <button type="submit" class="bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
-                            Save Preferences
+                        <button type="submit" class="settings-action-btn bg-gold text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                            <span class="btn-fill"></span>
+                            <span class="btn-label">Save Preferences</span>
                         </button>
                     </div>
                 </form>
@@ -240,8 +243,9 @@
                             {{ $twoFactorEnabled ? 'Manage recovery codes or disable it below.' : 'Add an extra layer of security to your account.' }}
                         </p>
                     </div>
-                    <a href="{{ route('portal.two-factor.show') }}" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors">
-                        {{ $twoFactorEnabled ? 'Manage' : 'Set Up' }}
+                    <a href="{{ route('portal.two-factor.show') }}" class="settings-action-btn is-navy shrink-0 bg-navy text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors">
+                        <span class="btn-fill"></span>
+                        <span class="btn-label">{{ $twoFactorEnabled ? 'Manage' : 'Set Up' }}</span>
                     </a>
                 </div>
             </div>
@@ -316,11 +320,14 @@
             @csrf
             <button type="submit"
                 onclick="return confirm('Are you sure you want to request account closure? Our team will follow up before anything is deleted.')"
-                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-                Request Closure
+                class="settings-action-btn is-red px-5 py-2.5 rounded-lg bg-red-600 text-white text-sm font-semibold transition-colors">
+                <span class="btn-fill"></span>
+                <span class="btn-label">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Request Closure
+                </span>
             </button>
         </form>
     </div>
@@ -337,6 +344,25 @@
     .settings-tab-btn.is-active { background: rgba(201,168,76,0.08); border-left-color: #C9A84C; }
     .settings-tab-btn.is-active .settings-tab-icon { background: rgba(201,168,76,0.18); color: #A8872E; }
     .settings-tab-btn.is-active .settings-tab-label { color: #A8872E; }
+
+    /* Every action button on this page: white fill sweeps in from the left on hover. */
+    .settings-action-btn { position: relative; overflow: hidden; isolation: isolate; }
+    .settings-action-btn .btn-fill {
+        position: absolute; inset: 0; background: #ffffff;
+        transform: scaleX(0); transform-origin: left;
+        transition: transform .4s cubic-bezier(.65,0,.35,1);
+        z-index: 0;
+    }
+    .settings-action-btn .btn-label {
+        position: relative; z-index: 1;
+        display: inline-flex; align-items: center; gap: 8px;
+        transition: color .3s ease;
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .settings-action-btn:hover .btn-fill { transform: scaleX(1); }
+        .settings-action-btn.is-navy:hover .btn-label { color: #1B2A4A; }
+        .settings-action-btn.is-red:hover .btn-label { color: #DC2626; }
+    }
 </style>
 
 <script>
