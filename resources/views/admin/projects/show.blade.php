@@ -474,50 +474,69 @@
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
         <h3 class="font-semibold text-navy dark:text-white mb-4">Onboarding Questionnaire</h3>
         @if ($project->questionnaire?->isCompleted())
-            @php $q = $project->questionnaire; @endphp
-            <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Submitted {{ $q->completed_at->format('M j, Y \a\t g:i A') }}</p>
-            <dl class="space-y-4 text-sm">
+            @php
+                $q = $project->questionnaire;
+                $isBlank = fn ($v) => empty($v) || strtolower(trim((string) $v)) === 'none';
+                $longFormFields = [
+                    ['label' => 'Mission Statement', 'value' => $q->mission_statement],
+                    ['label' => 'Vision Statement', 'value' => $q->vision_statement],
+                    ['label' => 'Requested Pages / Requirements', 'value' => $q->requested_pages],
+                    ['label' => 'Additional Notes', 'value' => $q->additional_notes],
+                ];
+            @endphp
+            <p class="text-xs text-gray-400 dark:text-gray-500 mb-5">Submitted {{ $q->completed_at->format('M j, Y \a\t g:i A') }}</p>
+
+            {{-- Short metadata --}}
+            <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-5 mb-6">
                 <div>
-                    <dt class="font-semibold text-navy dark:text-white">Organization Type</dt>
-                    <dd class="text-gray-600 dark:text-gray-300">{{ $q->organization_type ?: '—' }}</dd>
+                    <dt class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">Organization Type</dt>
+                    <dd class="text-base font-medium text-navy dark:text-white">{{ $q->organization_type ?: '—' }}</dd>
                 </div>
                 <div>
-                    <dt class="font-semibold text-navy dark:text-white">Brand Colors</dt>
-                    <dd class="text-gray-600 dark:text-gray-300">{{ $q->brand_colors ?: '—' }}</dd>
+                    <dt class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">Brand Colors</dt>
+                    <dd class="text-base font-medium text-navy dark:text-white">{{ $q->brand_colors ?: '—' }}</dd>
                 </div>
                 <div>
-                    <dt class="font-semibold text-navy dark:text-white">Mission Statement</dt>
-                    <dd class="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{{ $q->mission_statement ?: '—' }}</dd>
-                </div>
-                <div>
-                    <dt class="font-semibold text-navy dark:text-white">Vision Statement</dt>
-                    <dd class="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{{ $q->vision_statement ?: '—' }}</dd>
-                </div>
-                <div>
-                    <dt class="font-semibold text-navy dark:text-white">Services Interested In</dt>
-                    <dd class="text-gray-600 dark:text-gray-300">{{ !empty($q->services) ? implode(', ', $q->services) : '—' }}</dd>
-                </div>
-                <div>
-                    <dt class="font-semibold text-navy dark:text-white">Requested Pages / Requirements</dt>
-                    <dd class="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{{ $q->requested_pages ?: '—' }}</dd>
-                </div>
-                <div>
-                    <dt class="font-semibold text-navy dark:text-white">Social Links</dt>
-                    <dd class="text-gray-600 dark:text-gray-300">
-                        @if (!empty($q->social_links))
-                            @foreach ($q->social_links as $platform => $url)
-                                <span class="block">{{ ucfirst($platform) }}: {{ $url }}</span>
-                            @endforeach
-                        @else
-                            —
-                        @endif
-                    </dd>
-                </div>
-                <div>
-                    <dt class="font-semibold text-navy dark:text-white">Additional Notes</dt>
-                    <dd class="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{{ $q->additional_notes ?: '—' }}</dd>
+                    <dt class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">Services Interested In</dt>
+                    <dd class="text-base font-medium text-navy dark:text-white">{{ !empty($q->services) ? implode(', ', $q->services) : '—' }}</dd>
                 </div>
             </dl>
+
+            {{-- Social Links — consolidated pills; "none"/empty values read as muted, not a wall of "none" text --}}
+            <div class="mb-6">
+                <p class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Social Links</p>
+                @if (!empty($q->social_links))
+                    <div class="flex flex-wrap gap-2">
+                        @foreach ($q->social_links as $platform => $url)
+                            @if ($isBlank($url))
+                                <span class="inline-flex items-center text-xs font-medium text-gray-300 dark:text-gray-600 bg-gray-50 dark:bg-gray-900/40 border border-gray-100 dark:border-gray-700 rounded-full px-3 py-1.5">
+                                    {{ ucfirst($platform) }}
+                                </span>
+                            @elseif (filter_var($url, FILTER_VALIDATE_URL) !== false)
+                                <a href="{{ $url }}" target="_blank" rel="noopener" class="inline-flex items-center text-sm font-medium text-navy dark:text-white bg-gold/10 border border-gold/25 hover:bg-gold/15 rounded-full px-3 py-1.5 transition-colors">
+                                    {{ ucfirst($platform) }}
+                                </a>
+                            @else
+                                <span title="{{ $url }}" class="inline-flex items-center text-sm font-medium text-navy dark:text-white bg-gold/10 border border-gold/25 rounded-full px-3 py-1.5">
+                                    {{ ucfirst($platform) }}
+                                </span>
+                            @endif
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-base font-medium text-navy dark:text-white">—</p>
+                @endif
+            </div>
+
+            {{-- Long-form fields — own card each, isolated from the short metadata above --}}
+            <div class="space-y-3">
+                @foreach ($longFormFields as $field)
+                    <div class="bg-gray-50/50 dark:bg-gray-900/30 border border-gray-100 dark:border-gray-700 rounded-lg p-4">
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">{{ $field['label'] }}</p>
+                        <p class="text-base font-medium text-navy dark:text-white whitespace-pre-wrap">{{ $field['value'] ?: '—' }}</p>
+                    </div>
+                @endforeach
+            </div>
         @else
             <p class="text-sm text-gray-400 dark:text-gray-500">Not submitted yet.</p>
         @endif
