@@ -200,7 +200,7 @@
     <button type="button" data-tab-button="onboarding" onclick="showProjectTab('onboarding')"
             class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
         Onboarding
-        @if (! $project->hasAgreedToCarePlan() || ! $project->hasSignedCurrentAgreement() || ! $project->hasCompletedQuestionnaire() || ! $project->website_type)
+        @if (! $project->hasAgreedToCarePlan() || ! $project->hasSignedCurrentAgreement() || ! $project->hasCompletedQuestionnaire())
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">Pending</span>
         @endif
     </button>
@@ -441,31 +441,53 @@
 
 <div id="panel-onboarding" data-tab-panel="onboarding" class="hidden">
 
-    <p class="text-xs text-gray-400 dark:text-gray-500 mb-5">
-        Read-only preview of the client's 5-step onboarding wizard — nothing here can be changed from the admin side.
-    </p>
-
-    @php
-        $onboardingSteps = [
-            ['n' => 1, 'label' => 'Business Information', 'done' => $project->hasCompletedQuestionnaire()],
-            ['n' => 2, 'label' => 'Website Type', 'done' => (bool) $project->website_type],
-            ['n' => 3, 'label' => 'Website Care Plan', 'done' => $project->hasAgreedToCarePlan()],
-            ['n' => 4, 'label' => 'Agreement Summary', 'done' => ($project->user->onboarding_step ?? 1) >= 10 || $project->hasSignedCurrentAgreement()],
-            ['n' => 5, 'label' => 'Sign Service Agreement', 'done' => $project->hasSignedCurrentAgreement()],
-        ];
-    @endphp
-
-    {{-- Step 1: Business Information (Questionnaire) --}}
+    {{-- Care Plan Agreement --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <div class="flex items-center gap-3 mb-4">
-            <span class="shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold {{ $onboardingSteps[0]['done'] ? 'bg-teal/15 text-teal-dark' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500' }}">1</span>
-            <h3 class="font-semibold text-navy dark:text-white">Business Information</h3>
-            @if ($onboardingSteps[0]['done'])
-                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-teal/15 text-teal-dark">Completed</span>
-            @else
-                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500">Not reached</span>
-            @endif
-        </div>
+        <h3 class="font-semibold text-navy dark:text-white mb-4">Care Plan Agreement</h3>
+        @if ($project->carePlanAgreement)
+            <p class="text-sm text-gray-600 dark:text-gray-300">
+                Agreed to <strong class="text-navy dark:text-white">{{ $project->carePlanAgreement->maintenancePlan->name }}</strong>
+                ({{ $project->carePlanAgreement->maintenancePlan->formattedPrice() }}/{{ $project->carePlanAgreement->maintenancePlan->interval }})
+                on {{ $project->carePlanAgreement->agreed_at->format('M j, Y \a\t g:i A') }}
+            </p>
+        @else
+            <p class="text-sm text-gray-400 dark:text-gray-500">Not selected yet.</p>
+        @endif
+    </div>
+
+    {{-- Service Agreement --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <h3 class="font-semibold text-navy dark:text-white mb-4">Service Agreement</h3>
+        @if ($project->agreementSignature)
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                Signed by <strong class="text-navy dark:text-white">{{ $project->agreementSignature->signer_name }}</strong>
+                on {{ $project->agreementSignature->signed_at->format('M j, Y \a\t g:i A') }}
+                (v{{ $project->agreementSignature->template->version }})
+            </p>
+            <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+                <a href="{{ route('portal.agreement.preview', $project->agreementSignature) }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-sm text-gold-dark font-semibold hover:underline">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    Preview
+                </a>
+                <a href="{{ route('portal.agreement.download', $project->agreementSignature) }}" class="inline-flex items-center gap-1.5 text-sm text-gold-dark font-semibold hover:underline">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+                    Download signed PDF
+                </a>
+                @if ($project->agreementSignature->filled_pdf_path)
+                    <a href="{{ route('portal.agreement.filled', $project->agreementSignature) }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-sm text-navy dark:text-white font-semibold hover:underline" title="The complete filled-in agreement (Care Plan + signature block), not just the signature certificate">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        View Full Signed Agreement
+                    </a>
+                @endif
+            </div>
+        @else
+            <p class="text-sm text-gray-400 dark:text-gray-500">Not signed yet.</p>
+        @endif
+    </div>
+
+    {{-- Onboarding Questionnaire --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <h3 class="font-semibold text-navy dark:text-white mb-4">Onboarding Questionnaire</h3>
         @if ($project->questionnaire?->isCompleted())
             @php
                 $q = $project->questionnaire;
@@ -532,104 +554,6 @@
             </div>
         @else
             <p class="text-sm text-gray-400 dark:text-gray-500">Not submitted yet.</p>
-        @endif
-    </div>
-
-    {{-- Step 2: Website Type --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <div class="flex items-center gap-3 mb-4">
-            <span class="shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold {{ $onboardingSteps[1]['done'] ? 'bg-teal/15 text-teal-dark' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500' }}">2</span>
-            <h3 class="font-semibold text-navy dark:text-white">Website Type</h3>
-            @if ($onboardingSteps[1]['done'])
-                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-teal/15 text-teal-dark">Completed</span>
-            @else
-                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500">Not reached</span>
-            @endif
-        </div>
-        @if ($project->website_type)
-            <p class="text-sm text-gray-600 dark:text-gray-300">
-                Selected <strong class="text-navy dark:text-white">{{ $project->website_type }}</strong>
-            </p>
-        @else
-            <p class="text-sm text-gray-400 dark:text-gray-500">Not selected yet.</p>
-        @endif
-    </div>
-
-    {{-- Step 3: Website Care Plan --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <div class="flex items-center gap-3 mb-4">
-            <span class="shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold {{ $onboardingSteps[2]['done'] ? 'bg-teal/15 text-teal-dark' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500' }}">3</span>
-            <h3 class="font-semibold text-navy dark:text-white">Website Care Plan</h3>
-            @if ($onboardingSteps[2]['done'])
-                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-teal/15 text-teal-dark">Completed</span>
-            @else
-                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500">Not reached</span>
-            @endif
-        </div>
-        @if ($project->carePlanAgreement)
-            <p class="text-sm text-gray-600 dark:text-gray-300">
-                Agreed to <strong class="text-navy dark:text-white">{{ $project->carePlanAgreement->maintenancePlan->name }}</strong>
-                ({{ $project->carePlanAgreement->maintenancePlan->formattedPrice() }}/{{ $project->carePlanAgreement->maintenancePlan->interval }})
-                on {{ $project->carePlanAgreement->agreed_at->format('M j, Y \a\t g:i A') }}
-            </p>
-        @else
-            <p class="text-sm text-gray-400 dark:text-gray-500">Not selected yet.</p>
-        @endif
-    </div>
-
-    {{-- Step 4: Agreement Summary — a confirmation checkpoint only, no data of its own to preview --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <div class="flex items-center gap-3 mb-4">
-            <span class="shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold {{ $onboardingSteps[3]['done'] ? 'bg-teal/15 text-teal-dark' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500' }}">4</span>
-            <h3 class="font-semibold text-navy dark:text-white">Agreement Summary</h3>
-            @if ($onboardingSteps[3]['done'])
-                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-teal/15 text-teal-dark">Completed</span>
-            @else
-                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500">Not reached</span>
-            @endif
-        </div>
-        @if ($onboardingSteps[3]['done'])
-            <p class="text-sm text-gray-600 dark:text-gray-300">Client reviewed and confirmed the Care Plan + Agreement summary before signing.</p>
-        @else
-            <p class="text-sm text-gray-400 dark:text-gray-500">Not confirmed yet.</p>
-        @endif
-    </div>
-
-    {{-- Step 5: Sign Service Agreement --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <div class="flex items-center gap-3 mb-4">
-            <span class="shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold {{ $onboardingSteps[4]['done'] ? 'bg-teal/15 text-teal-dark' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500' }}">5</span>
-            <h3 class="font-semibold text-navy dark:text-white">Sign Service Agreement</h3>
-            @if ($onboardingSteps[4]['done'])
-                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-teal/15 text-teal-dark">Completed</span>
-            @else
-                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500">Not reached</span>
-            @endif
-        </div>
-        @if ($project->agreementSignature)
-            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                Signed by <strong class="text-navy dark:text-white">{{ $project->agreementSignature->signer_name }}</strong>
-                on {{ $project->agreementSignature->signed_at->format('M j, Y \a\t g:i A') }}
-                (v{{ $project->agreementSignature->template->version }})
-            </p>
-            <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-                <a href="{{ route('portal.agreement.preview', $project->agreementSignature) }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-sm text-gold-dark font-semibold hover:underline">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                    Preview
-                </a>
-                <a href="{{ route('portal.agreement.download', $project->agreementSignature) }}" class="inline-flex items-center gap-1.5 text-sm text-gold-dark font-semibold hover:underline">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
-                    Download signed PDF
-                </a>
-                @if ($project->agreementSignature->filled_pdf_path)
-                    <a href="{{ route('portal.agreement.filled', $project->agreementSignature) }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-sm text-navy dark:text-white font-semibold hover:underline" title="The complete filled-in agreement (Care Plan + signature block), not just the signature certificate">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        View Full Signed Agreement
-                    </a>
-                @endif
-            </div>
-        @else
-            <p class="text-sm text-gray-400 dark:text-gray-500">Not signed yet.</p>
         @endif
     </div>
 
