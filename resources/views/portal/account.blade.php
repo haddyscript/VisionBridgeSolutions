@@ -190,8 +190,15 @@
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Brand Colors</label>
-                        <input type="text" name="brand_colors" value="{{ old('brand_colors', $questionnaire?->brand_colors) }}" placeholder="e.g. Navy #111D33, Gold #C9A84C"
-                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                        <div class="flex items-center gap-2">
+                            <input type="text" name="brand_colors" id="brand-colors-input" value="{{ old('brand_colors', $questionnaire?->brand_colors) }}" placeholder="e.g. Navy #111D33, Gold #C9A84C"
+                                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                            <label class="relative shrink-0 w-9 h-9 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer overflow-hidden" title="Pick a color to add to the field">
+                                <input type="color" id="brand-color-picker" value="#C9A84C" class="absolute -top-2 -left-2 w-14 h-14 cursor-pointer">
+                            </label>
+                        </div>
+                        <div id="brand-colors-preview" class="flex flex-wrap items-center gap-1.5 mt-2"></div>
+                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Type color names and/or use the picker — each hex code you pick is added to the field above.</p>
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Mission Statement</label>
@@ -636,6 +643,40 @@
         e.preventDefault();
         submitAjaxForm(e.target);
     });
+
+    // Brand Colors stays a plain text field (it's just a string column, and
+    // clients often want to type a color name alongside a hex code, e.g.
+    // "Navy #111D33") — the picker just appends a hex code to it rather than
+    // replacing it, and the swatch row below is a live preview parsed from
+    // whatever hex codes currently appear in the text.
+    (function () {
+        const colorInput = document.getElementById('brand-colors-input');
+        const colorPicker = document.getElementById('brand-color-picker');
+        const preview = document.getElementById('brand-colors-preview');
+        if (!colorInput || !colorPicker || !preview) return;
+
+        function renderPreview() {
+            const hexes = colorInput.value.match(/#(?:[0-9a-fA-F]{3}){1,2}\b/g) || [];
+            preview.innerHTML = '';
+            hexes.forEach(function (hex) {
+                const swatch = document.createElement('span');
+                swatch.className = 'inline-block w-5 h-5 rounded-full border border-gray-200 dark:border-gray-600';
+                swatch.style.background = hex;
+                swatch.title = hex;
+                preview.appendChild(swatch);
+            });
+        }
+
+        colorPicker.addEventListener('input', function () {
+            const hex = colorPicker.value.toUpperCase();
+            const current = colorInput.value.trim();
+            colorInput.value = current ? current + ', ' + hex : hex;
+            renderPreview();
+        });
+
+        colorInput.addEventListener('input', renderPreview);
+        renderPreview();
+    })();
 
     document.getElementById('password-form')?.addEventListener('submit', function (e) {
         e.preventDefault();
