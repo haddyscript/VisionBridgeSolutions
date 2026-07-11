@@ -8,6 +8,16 @@ use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
+    /** Full paginated history — the header dropdown only ever shows the 8 most recent. */
+    public function index(Request $request)
+    {
+        return view('portal.notifications', [
+            'notifications' => ClientNotification::where('user_id', $request->user()->id)
+                ->latest()
+                ->paginate(20),
+        ]);
+    }
+
     /**
      * Explicit "mark all as read" — only fired by the dropdown's own "Mark
      * all as read" button, never automatically just from opening the bell

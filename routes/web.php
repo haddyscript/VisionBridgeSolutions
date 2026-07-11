@@ -155,6 +155,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // onboarding progress too.
     Route::post('/portal/notifications/read', [PortalNotificationController::class, 'markRead'])->name('portal.notifications.read');
     Route::post('/portal/notifications/{notification}/read', [PortalNotificationController::class, 'markOneRead'])->name('portal.notifications.read-one');
+    Route::get('/portal/notifications', [PortalNotificationController::class, 'index'])->name('portal.notifications.index');
     Route::post('/portal/tour/complete', [PortalTourController::class, 'complete'])->name('portal.tour.complete');
 
     // Reachable while impersonating (i.e. authenticated *as the client*, not

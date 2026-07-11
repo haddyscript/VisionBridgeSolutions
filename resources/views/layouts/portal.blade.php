@@ -437,8 +437,8 @@
                         @endif
                     </button>
 
-                    <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-30 max-h-96 overflow-y-auto">
-                        <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                    <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-30 flex flex-col max-h-[28rem]">
+                        <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between shrink-0">
                             <p class="text-sm font-bold text-navy dark:text-white">Notifications</p>
                             @if ($unreadNotificationCount > 0)
                                 <button type="button" id="notifications-mark-all-read" class="text-xs font-semibold text-gold-dark hover:underline">Mark all as read</button>
@@ -455,33 +455,40 @@
                                     'quote_ready' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M9 7h6m0 0v6m0-6L4 21'],
                                     'consultation_update' => ['bg' => 'bg-teal/10', 'text' => 'text-teal-dark', 'path' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
                                     'recommendation' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M13 10V3L4 14h7v7l9-11h-7z'],
+                                    'security' => ['bg' => 'bg-amber-50 dark:bg-amber-500/10', 'text' => 'text-amber-600 dark:text-amber-400', 'path' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'],
                                 ];
                             @endphp
-                            <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+                            <ul class="divide-y divide-gray-100 dark:divide-gray-700 overflow-y-auto">
                                 @foreach ($notifications as $notification)
                                     @php $icon = $notificationIcons[$notification->type] ?? $notificationIcons['milestone_completed']; @endphp
                                     <li class="js-notification-item flex items-start gap-3 px-4 py-3 cursor-pointer {{ $notification->read_at ? '' : 'bg-gold/5' }}"
                                         data-id="{{ $notification->id }}" data-unread="{{ $notification->read_at ? '0' : '1' }}"
                                         data-mark-read-url="{{ route('portal.notifications.read-one', $notification) }}"
                                         @if ($notification->url) data-url="{{ $notification->url }}" @endif>
-                                        <span class="w-8 h-8 rounded-full {{ $icon['bg'] }} flex items-center justify-center shrink-0">
+                                        <span class="relative w-8 h-8 rounded-full {{ $icon['bg'] }} flex items-center justify-center shrink-0">
                                             <svg class="w-4 h-4 {{ $icon['text'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon['path'] }}"/></svg>
+                                            @unless ($notification->read_at)
+                                                <span class="notification-unread-dot absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-blue-600 ring-2 ring-white dark:ring-gray-800"></span>
+                                            @endunless
                                         </span>
-                                        <div class="min-w-0">
+                                        <div class="min-w-0 flex-1">
                                             @if ($notification->url)
                                                 <a href="{{ $notification->url }}" class="text-sm font-medium text-navy dark:text-white hover:underline">{{ $notification->title }}</a>
                                             @else
                                                 <p class="text-sm font-medium text-navy dark:text-white">{{ $notification->title }}</p>
                                             @endif
                                             @if ($notification->description)
-                                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $notification->description }}</p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 leading-snug mt-0.5">{{ $notification->description }}</p>
                                             @endif
-                                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $notification->created_at->diffForHumans() }}</p>
+                                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
                                         </div>
                                     </li>
                                 @endforeach
                             </ul>
                         @endif
+                        <a href="{{ route('portal.notifications.index') }}" class="shrink-0 block text-center text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white border-t border-gray-100 dark:border-gray-700 px-4 py-2.5 transition-colors">
+                            View all notifications
+                        </a>
                     </div>
                 </div>
 
@@ -600,6 +607,7 @@
                 if (item.dataset.unread === '1') {
                     item.dataset.unread = '0';
                     item.classList.remove('bg-gold/5');
+                    item.querySelector('.notification-unread-dot')?.remove();
                     unreadCount = Math.max(0, unreadCount - 1);
                     updateBadge();
 
@@ -622,6 +630,7 @@
             document.querySelectorAll('.js-notification-item[data-unread="1"]').forEach(function (item) {
                 item.dataset.unread = '0';
                 item.classList.remove('bg-gold/5');
+                item.querySelector('.notification-unread-dot')?.remove();
             });
             unreadCount = 0;
             updateBadge();
