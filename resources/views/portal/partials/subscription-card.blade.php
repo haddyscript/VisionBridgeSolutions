@@ -40,7 +40,20 @@
             </span>
             <div>
                 <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-0.5">Care Plan</p>
-                <p class="font-display text-lg font-bold text-navy dark:text-white">{{ $subscription->description }}</p>
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <p class="font-display text-lg font-bold text-navy dark:text-white">{{ $subscription->description }}</p>
+                    @if ($subscription->cancel_at_period_end && $subscription->isActive())
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">
+                            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                            Cancels {{ $subscription->current_period_end?->format('M j') }}
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1 rounded-full {{ $statusColors[$subscription->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ $statusDots[$subscription->status] ?? 'bg-gray-400' }}"></span>
+                            {{ $subscription->status === 'past_due' ? 'Past Due' : ucfirst($subscription->status) }}
+                        </span>
+                    @endif
+                </div>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
                     @if ($subscription->isCanceled() && $subscription->canceled_at)
                         You canceled this plan on {{ $subscription->canceled_at->format('M j, Y') }}.
@@ -55,17 +68,6 @@
             </div>
         </div>
         <div class="flex items-center gap-3">
-            @if ($subscription->cancel_at_period_end && $subscription->isActive())
-                <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">
-                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                    Cancels {{ $subscription->current_period_end?->format('M j') }}
-                </span>
-            @else
-                <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full {{ $statusColors[$subscription->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
-                    <span class="w-1.5 h-1.5 rounded-full {{ $statusDots[$subscription->status] ?? 'bg-gray-400' }}"></span>
-                    {{ $subscription->status === 'past_due' ? 'Past Due' : ucfirst($subscription->status) }}
-                </span>
-            @endif
             @if ($subscription->isCanceled())
                 <form method="POST" action="{{ route('portal.subscriptions.restart', $subscription) }}" onclick="event.stopPropagation()">
                     @csrf

@@ -49,6 +49,17 @@
         $totalDue = $payments->where('status', 'pending')->sum('amount');
         $totalPaid = $payments->where('status', 'paid')->sum('amount')
             + ($subscription ? $subscription->payments->sum('amount_paid') : 0);
+
+        // Unified Payment History — one-time payments and Care Plan invoice
+        // payments merged into a single chronological list (view-level only;
+        // Portal\PaymentController and the Stripe-facing checkout/receipt/
+        // statement logic are untouched) so clients see one history instead
+        // of two separately-counted cards.
+        $paymentItems = $payments->map(fn ($payment) => ['kind' => 'payment', 'date' => $payment->created_at, 'model' => $payment]);
+        $subscriptionPaymentItems = $subscription
+            ? $subscription->payments->map(fn ($sp) => ['kind' => 'subscription_payment', 'date' => $sp->paid_at, 'model' => $sp])
+            : collect();
+        $allPaymentItems = $paymentItems->concat($subscriptionPaymentItems)->sortByDesc('date')->values();
     @endphp
 
     {{-- Billing Overview hero --}}
@@ -62,19 +73,19 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="rounded-xl px-5 py-4" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);">
-                    <p class="text-xs font-medium uppercase tracking-wide text-white/40 mb-1.5">Amount Due</p>
-                    <p class="font-display text-2xl font-bold text-white">${{ number_format($totalDue / 100, 2) }}</p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-white/75 mb-1.5">Amount Due</p>
+                    <p class="font-sans text-2xl font-extrabold tracking-tight text-white">${{ number_format($totalDue / 100, 2) }}</p>
                 </div>
                 <div class="rounded-xl px-5 py-4" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);">
-                    <p class="text-xs font-medium uppercase tracking-wide text-white/40 mb-1.5">Total Paid</p>
-                    <p class="font-display text-2xl font-bold text-white">${{ number_format($totalPaid / 100, 2) }}</p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-white/75 mb-1.5">Total Paid</p>
+                    <p class="font-sans text-2xl font-extrabold tracking-tight text-white">${{ number_format($totalPaid / 100, 2) }}</p>
                 </div>
                 <div class="rounded-xl px-5 py-4" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);">
-                    <p class="text-xs font-medium uppercase tracking-wide text-white/40 mb-1.5">Care Plan</p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-white/75 mb-1.5">Care Plan</p>
                     @if ($subscription)
-                        <p class="font-display text-2xl font-bold {{ $subscription->isCanceled() ? 'text-white/40' : 'text-white' }}">{{ $subscription->status === 'past_due' ? 'Past Due' : ucfirst($subscription->status) }}</p>
+                        <p class="font-sans text-2xl font-extrabold tracking-tight {{ $subscription->isCanceled() ? 'text-white/50' : 'text-white' }}">{{ $subscription->status === 'past_due' ? 'Past Due' : ucfirst($subscription->status) }}</p>
                     @else
-                        <p class="font-display text-2xl font-bold text-white/40">None</p>
+                        <p class="font-sans text-2xl font-extrabold tracking-tight text-white/50">None</p>
                     @endif
                 </div>
             </div>
@@ -86,11 +97,11 @@
         @include('portal.partials.subscription-card', ['subscription' => $subscription])
     @endif
 
-    {{-- One-Time Payments --}}
+    {{-- Payment History — one-time payments and Care Plan invoices, unified --}}
     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
             <button type="button" id="payment-history-toggle" aria-expanded="true" aria-controls="payment-history-body" class="group inline-flex items-center gap-2 text-left">
-                <h3 class="font-display text-lg font-bold text-navy dark:text-white">Payment History <span class="text-gray-400 dark:text-gray-500 font-normal">({{ $payments->count() }})</span></h3>
+                <h3 class="font-display text-lg font-bold text-navy dark:text-white">Payment History <span class="text-gray-400 dark:text-gray-500 font-normal">({{ $allPaymentItems->count() }})</span></h3>
                 <svg id="payment-history-chevron" class="w-4 h-4 text-gray-400 group-hover:text-navy dark:group-hover:text-white transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </button>
             <div class="flex items-center gap-4">
@@ -110,7 +121,7 @@
         </div>
 
         <div id="payment-history-body">
-        @if ($payments->isEmpty())
+        @if ($allPaymentItems->isEmpty())
             <div class="text-center py-10">
                 <div class="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
                     <svg class="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h5M5 6h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>
@@ -136,53 +147,86 @@
 
             <p id="payment-empty-state" class="hidden text-sm text-gray-400 dark:text-gray-500 text-center py-6">No payments match your search.</p>
 
-            @foreach ($payments->groupBy(fn ($p) => $p->created_at->format('F Y')) as $monthLabel => $monthPayments)
+            @foreach ($allPaymentItems->groupBy(fn ($entry) => $entry['date']->format('F Y')) as $monthLabel => $monthItems)
                 <div class="payment-month-group">
                     <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mt-5 mb-2.5">{{ $monthLabel }}</p>
                     <div class="space-y-3">
-                        @foreach ($monthPayments as $payment)
-                            <div class="payment-row group relative flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-100 dark:border-gray-700/60 px-5 py-4 cursor-pointer transition-all hover:border-gold/40 hover:shadow-lg hover:-translate-y-0.5"
-                                 data-search="{{ strtolower($payment->description) }}"
-                                 data-description="{{ $payment->description }}"
-                                 data-amount="{{ $payment->formattedAmount() }}"
-                                 data-status="{{ $payment->status }}"
-                                 data-status-label="{{ $payment->status === 'past_due' ? 'Past Due' : ucfirst($payment->status) }}"
-                                 data-currency="{{ strtoupper($payment->currency) }}"
-                                 data-created="{{ $payment->created_at->format('M j, Y \a\t g:i A') }}"
-                                 data-paid-at="{{ $payment->paid_at?->format('M j, Y \a\t g:i A') }}"
-                                 data-intent="{{ $payment->stripe_payment_intent_id }}"
-                                 data-session="{{ $payment->stripe_checkout_session_id }}"
-                                 data-checkout-url="{{ $payment->isPending() ? route('portal.payments.checkout', $payment) : '' }}"
-                                 data-receipt-url="{{ $payment->isPaid() ? route('portal.payments.receipt', $payment) : '' }}"
-                                 data-refund-request-url="{{ $payment->isRefundRequestable() ? route('portal.payments.refund-request', $payment) : '' }}">
-                                <span class="absolute left-0 top-3 bottom-3 w-1 rounded-full {{ $statusDots[$payment->status] ?? 'bg-gray-400' }} opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                                <div class="flex items-center gap-4">
-                                    <span class="w-10 h-10 rounded-lg bg-navy/5 dark:bg-white/5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
-                                        <svg class="w-[1.125rem] h-[1.125rem] text-navy dark:text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 0v6m0-6L4 21"/></svg>
-                                    </span>
-                                    <div>
-                                        <p class="font-medium text-navy dark:text-white">{{ $payment->description }}</p>
-                                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $payment->created_at->format('M j, Y') }}</p>
+                        @foreach ($monthItems as $entry)
+                            @if ($entry['kind'] === 'payment')
+                                @php $payment = $entry['model']; @endphp
+                                <div class="payment-row group relative flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-100 dark:border-gray-700/60 px-5 py-4 cursor-pointer transition-all hover:border-gold/40 hover:shadow-lg hover:-translate-y-0.5"
+                                     data-kind="payment"
+                                     data-search="{{ strtolower($payment->description) }}"
+                                     data-description="{{ $payment->description }}"
+                                     data-amount="{{ $payment->formattedAmount() }}"
+                                     data-status="{{ $payment->status }}"
+                                     data-status-label="{{ $payment->status === 'past_due' ? 'Past Due' : ucfirst($payment->status) }}"
+                                     data-currency="{{ strtoupper($payment->currency) }}"
+                                     data-created="{{ $payment->created_at->format('M j, Y \a\t g:i A') }}"
+                                     data-paid-at="{{ $payment->paid_at?->format('M j, Y \a\t g:i A') }}"
+                                     data-intent="{{ $payment->stripe_payment_intent_id }}"
+                                     data-session="{{ $payment->stripe_checkout_session_id }}"
+                                     data-checkout-url="{{ $payment->isPending() ? route('portal.payments.checkout', $payment) : '' }}"
+                                     data-receipt-url="{{ $payment->isPaid() ? route('portal.payments.receipt', $payment) : '' }}"
+                                     data-refund-request-url="{{ $payment->isRefundRequestable() ? route('portal.payments.refund-request', $payment) : '' }}">
+                                    <span class="absolute left-0 top-3 bottom-3 w-1 rounded-full {{ $statusDots[$payment->status] ?? 'bg-gray-400' }} opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                    <div class="flex items-center gap-4">
+                                        <span class="w-10 h-10 rounded-lg bg-navy/5 dark:bg-white/5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
+                                            <svg class="w-[1.125rem] h-[1.125rem] text-navy dark:text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 0v6m0-6L4 21"/></svg>
+                                        </span>
+                                        <div>
+                                            <p class="font-medium text-navy dark:text-white">{{ $payment->description }}</p>
+                                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $payment->created_at->format('M j, Y') }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="font-sans font-extrabold text-lg text-navy dark:text-white">{{ $payment->formattedAmount() }}</span>
+                                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full {{ $statusColors[$payment->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
+                                            <span class="w-1.5 h-1.5 rounded-full {{ $statusDots[$payment->status] ?? 'bg-gray-400' }}"></span>
+                                            {{ ucfirst($payment->status) }}
+                                        </span>
+                                        @if ($payment->isPending())
+                                            <form method="POST" action="{{ route('portal.payments.checkout', $payment) }}" onclick="event.stopPropagation()" class="js-payment-checkout-form">
+                                                @csrf
+                                                <input type="hidden" name="timezone" class="js-timezone-input">
+                                                <button type="submit" class="bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                                                    Pay Now
+                                                </button>
+                                            </form>
+                                        @endif
+                                        <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gold transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-4">
-                                    <span class="font-display text-lg font-bold text-navy dark:text-white">{{ $payment->formattedAmount() }}</span>
-                                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full {{ $statusColors[$payment->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
-                                        <span class="w-1.5 h-1.5 rounded-full {{ $statusDots[$payment->status] ?? 'bg-gray-400' }}"></span>
-                                        {{ ucfirst($payment->status) }}
-                                    </span>
-                                    @if ($payment->isPending())
-                                        <form method="POST" action="{{ route('portal.payments.checkout', $payment) }}" onclick="event.stopPropagation()" class="js-payment-checkout-form">
-                                            @csrf
-                                            <input type="hidden" name="timezone" class="js-timezone-input">
-                                            <button type="submit" class="bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
-                                                Pay Now
-                                            </button>
-                                        </form>
-                                    @endif
-                                    <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gold transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                </div>
-                            </div>
+                            @else
+                                @php $subscriptionPayment = $entry['model']; @endphp
+                                <a href="{{ route('portal.subscription-payments.receipt', $subscriptionPayment) }}" target="_blank" rel="noopener"
+                                   class="payment-row group relative flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-100 dark:border-gray-700/60 px-5 py-4 transition-all hover:border-gold/40 hover:shadow-lg hover:-translate-y-0.5"
+                                   data-kind="subscription_payment"
+                                   data-search="{{ strtolower($subscription->description) }}"
+                                   data-status="paid">
+                                    <span class="absolute left-0 top-3 bottom-3 w-1 rounded-full bg-teal opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                    <div class="flex items-center gap-4">
+                                        <span class="w-10 h-10 rounded-lg bg-navy/5 dark:bg-white/5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
+                                            <svg class="w-[1.125rem] h-[1.125rem] text-navy dark:text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                        </span>
+                                        <div>
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <p class="font-medium text-navy dark:text-white">{{ $subscription->description }}</p>
+                                                <span class="text-[0.65rem] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-teal/10 text-teal-dark">Care Plan</span>
+                                            </div>
+                                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $subscriptionPayment->paid_at->format('M j, Y') }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="font-sans font-extrabold text-lg text-navy dark:text-white">{{ $subscriptionPayment->formattedAmountPaid() }}</span>
+                                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full bg-teal/15 text-teal-dark">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-teal"></span>
+                                            Paid
+                                        </span>
+                                        <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gold transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </div>
+                                </a>
+                            @endif
                         @endforeach
                     </div>
                 </div>
@@ -214,44 +258,6 @@
             });
         })();
     </script>
-
-    {{-- Care Plan Payment History --}}
-    @if ($subscription && $subscription->payments->isNotEmpty())
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 mt-6">
-            <h3 class="font-display text-lg font-bold text-navy dark:text-white mb-5">Care Plan Payment History <span class="text-gray-400 dark:text-gray-500 font-normal">({{ $subscription->payments->count() }})</span></h3>
-
-            @foreach ($subscription->payments->groupBy(fn ($p) => $p->paid_at->format('F Y')) as $monthLabel => $monthPayments)
-                <div>
-                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mt-5 mb-2.5">{{ $monthLabel }}</p>
-                    <div class="space-y-3">
-                        @foreach ($monthPayments as $subscriptionPayment)
-                            <a href="{{ route('portal.subscription-payments.receipt', $subscriptionPayment) }}" target="_blank" rel="noopener"
-                               class="group relative flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-100 dark:border-gray-700/60 px-5 py-4 transition-all hover:border-gold/40 hover:shadow-lg hover:-translate-y-0.5">
-                                <span class="absolute left-0 top-3 bottom-3 w-1 rounded-full bg-teal opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                                <div class="flex items-center gap-4">
-                                    <span class="w-10 h-10 rounded-lg bg-navy/5 dark:bg-white/5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
-                                        <svg class="w-[1.125rem] h-[1.125rem] text-navy dark:text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                                    </span>
-                                    <div>
-                                        <p class="font-medium text-navy dark:text-white">{{ $subscription->description }}</p>
-                                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $subscriptionPayment->paid_at->format('M j, Y') }}</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-4">
-                                    <span class="font-display text-lg font-bold text-navy dark:text-white">{{ $subscriptionPayment->formattedAmountPaid() }}</span>
-                                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full bg-teal/15 text-teal-dark">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-teal"></span>
-                                        Paid
-                                    </span>
-                                    <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gold transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                </div>
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    @endif
 
     {{-- Transaction Detail Modal --}}
     <div id="payment-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
@@ -743,6 +749,11 @@
         statusFilter?.addEventListener('change', applyPaymentFilters);
 
         document.querySelectorAll('.payment-row').forEach(function (row) {
+            // Care Plan invoice rows are plain links to their own receipt
+            // page (no refund/pay affordances to show), so they skip the
+            // transaction detail modal built for one-time Payment rows.
+            if (row.dataset.kind === 'subscription_payment') return;
+
             row.addEventListener('click', function () {
                 window.openPaymentModal(row);
             });
