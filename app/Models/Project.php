@@ -212,8 +212,11 @@ class Project extends Model
                 $activity->push([
                     'icon' => 'milestone',
                     'title' => 'Milestone completed',
+                    'highlight' => null,
                     'description' => $milestone->title,
                     'at' => $milestone->completed_at,
+                    // Already fully shown right here on the Overview page — nothing further to link to.
+                    'url' => null,
                 ]);
             }
         }
@@ -223,8 +226,10 @@ class Project extends Model
                 $activity->push([
                     'icon' => 'approved',
                     'title' => 'File approved',
+                    'highlight' => null,
                     'description' => $upload->original_name,
                     'at' => $upload->approved_at,
+                    'url' => route('portal.category', $upload->category),
                 ]);
             }
 
@@ -237,9 +242,11 @@ class Project extends Model
 
                 $activity->push([
                     'icon' => 'reply',
-                    'title' => 'VisionBridge replied to your '.$label,
+                    'title' => 'VisionBridge replied to your',
+                    'highlight' => $label,
                     'description' => $reply->body,
                     'at' => $reply->created_at,
+                    'url' => route('portal.category', $upload->category),
                 ]);
             }
         }
@@ -249,8 +256,10 @@ class Project extends Model
                 $activity->push([
                     'icon' => 'payment',
                     'title' => 'Payment received',
+                    'highlight' => null,
                     'description' => $payment->description.' — '.$payment->formattedAmount(),
                     'at' => $payment->paid_at,
+                    'url' => route('portal.payments.index'),
                 ]);
             }
         }

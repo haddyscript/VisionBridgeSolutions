@@ -821,23 +821,49 @@
         @endphp
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
             <h3 class="font-display text-base font-bold text-navy dark:text-white mb-4">Recent Activity</h3>
-            <ul class="space-y-4">
-                @foreach ($activity as $event)
-                    @php $icon = $activityIcons[$event['icon']] ?? $activityIcons['milestone']; @endphp
-                    <li class="flex items-start gap-3">
-                        <span class="w-8 h-8 rounded-full {{ $icon['bg'] }} flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4 {{ $icon['text'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon['path'] }}"/></svg>
-                        </span>
-                        <div class="min-w-0">
-                            <p class="text-sm font-medium text-navy dark:text-white">{{ $event['title'] }}</p>
-                            @if ($event['description'])
-                                <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ $event['description'] }}</p>
-                            @endif
-                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $event['at']->diffForHumans() }}</p>
-                        </div>
-                    </li>
-                @endforeach
-            </ul>
+            <div class="relative">
+                {{-- Timeline track — icons "punch through" it via their own ring-4 ring-white matching the card background --}}
+                <div class="absolute left-4 top-2 bottom-2 border-l-2 border-slate-100 dark:border-gray-700"></div>
+
+                <ul class="relative space-y-1">
+                    @foreach ($activity as $event)
+                        @php $icon = $activityIcons[$event['icon']] ?? $activityIcons['milestone']; @endphp
+                        <li>
+                            <div class="flex items-start gap-3 rounded-lg -mx-2 px-2 py-2.5 transition-colors {{ $event['url'] ? 'hover:bg-slate-50/80 dark:hover:bg-gray-700/40 cursor-pointer' : '' }}"
+                                 @if ($event['url']) onclick="window.location='{{ $event['url'] }}'" @endif>
+                                <span class="relative z-10 w-8 h-8 rounded-full {{ $icon['bg'] }} ring-4 ring-white dark:ring-gray-800 flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4 {{ $icon['text'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon['path'] }}"/></svg>
+                                </span>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <p class="text-sm font-medium text-navy dark:text-white">
+                                            {{ $event['title'] }}
+                                            @if ($event['highlight'])
+                                                <span class="font-bold text-gold-dark">{{ $event['highlight'] }}</span>
+                                            @endif
+                                        </p>
+                                        <div class="flex items-center gap-1.5 shrink-0">
+                                            <span class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">{{ $event['at']->diffForHumans() }}</span>
+                                            @if ($event['url'])
+                                                <svg class="w-3.5 h-3.5 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @if ($event['description'])
+                                        @if ($event['icon'] === 'reply')
+                                            <blockquote class="mt-1.5 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-900/50 border-l-2 border-gold/40 rounded-r-lg px-3 py-2 truncate">
+                                                {{ $event['description'] }}
+                                            </blockquote>
+                                        @else
+                                            <p class="text-sm text-gray-500 dark:text-gray-400 truncate mt-0.5">{{ $event['description'] }}</p>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
         </div>
     @endif
 
