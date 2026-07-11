@@ -78,6 +78,25 @@
                         @endforeach
                     </div>
                 @endif
+
+                {{-- History — completed items, collapsed by default --}}
+                @if ($row['completedItems']->isNotEmpty())
+                    <button type="button" class="developer-history-toggle mt-4 inline-flex items-center gap-1 text-xs font-semibold text-navy dark:text-white hover:text-gold-dark" data-target="developer-history-{{ $row['developer']->id }}">
+                        History ({{ $row['completedItems']->count() }})
+                        <svg class="w-3 h-3 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                    <div id="developer-history-{{ $row['developer']->id }}" class="hidden mt-2 space-y-1.5 max-h-56 overflow-y-auto pr-1 border-t border-gray-100 dark:border-gray-700 pt-2">
+                        @foreach ($row['completedItems'] as $item)
+                            <a href="{{ $item['url'] }}" class="flex items-center justify-between gap-3 rounded-lg px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                <div class="min-w-0">
+                                    <p class="text-sm text-navy dark:text-white truncate">{{ $item['title'] }}</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500">{{ $item['type'] }} &middot; {{ $item['client_name'] }} &middot; Completed {{ $item['updated_at']->format('M j, Y') }}</p>
+                                </div>
+                                <span class="shrink-0 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $statusColors['completed'] }}">Completed</span>
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
             </div>
         @endforeach
     </div>
@@ -131,5 +150,16 @@
         </table>
     </div>
 @endif
+
+<script>
+    document.querySelectorAll('.developer-history-toggle').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const panel = document.getElementById(btn.dataset.target);
+            if (!panel) return;
+            panel.classList.toggle('hidden');
+            btn.querySelector('svg').classList.toggle('rotate-90');
+        });
+    });
+</script>
 
 @endsection

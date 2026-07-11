@@ -37,6 +37,7 @@ class DeveloperController extends Controller
                     'not_started' => $items->whereNull('developer_status')->count(),
                 ],
                 'activeItems' => $items->where('developer_status', '!=', 'completed')->sortByDesc('created_at')->values(),
+                'completedItems' => $items->where('developer_status', 'completed')->sortByDesc('updated_at')->values(),
             ];
         });
 
@@ -73,6 +74,7 @@ class DeveloperController extends Controller
             'client_name' => $upload->user->name,
             'developer_status' => $upload->developer_status,
             'created_at' => $upload->created_at,
+            'updated_at' => $upload->updated_at,
             'url' => route('admin.projects.show', $upload->project),
             'assign_url' => route('admin.uploads.assign-developer', $upload),
         ];
@@ -88,6 +90,7 @@ class DeveloperController extends Controller
             'client_name' => $request->user->name,
             'developer_status' => $request->developer_status,
             'created_at' => $request->created_at,
+            'updated_at' => $request->updated_at,
             'url' => route('admin.project-requests.show', $request),
             'assign_url' => route('admin.project-requests.assign-developer', $request),
         ];
