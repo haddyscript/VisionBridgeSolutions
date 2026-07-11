@@ -87,6 +87,10 @@ class ProjectRequestController extends Controller
             ));
         }
 
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Developer status updated.']);
+        }
+
         return back()->with('status', 'Developer status updated.');
     }
 }

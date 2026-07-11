@@ -46,17 +46,14 @@
                             @endif
                         </td>
                         <td class="px-5 py-3.5">
-                            <form method="POST" action="{{ $item['status_url'] }}">
-                                @csrf
-                                @method('PATCH')
-                                <select name="developer_status" onchange="this.form.requestSubmit()"
-                                        class="text-xs font-semibold rounded-full px-3 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-gold {{ $statusColors[$item['developer_status']] ?? 'bg-gray-100 text-gray-500' }}">
-                                    <option value="" disabled {{ $item['developer_status'] ? '' : 'selected' }}>Not Started</option>
-                                    @foreach (\App\Models\Upload::DEVELOPER_STATUSES as $value => $label)
-                                        <option value="{{ $value }}" {{ $item['developer_status'] === $value ? 'selected' : '' }}>{{ $label }}</option>
-                                    @endforeach
-                                </select>
-                            </form>
+                            <select onchange="updateWorkOrderStatus(this, '{{ $item['status_url'] }}')"
+                                    data-current="{{ $item['developer_status'] }}"
+                                    class="work-order-status-select text-xs font-semibold rounded-full px-3 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-gold {{ $statusColors[$item['developer_status']] ?? 'bg-gray-100 text-gray-500' }}">
+                                <option value="" disabled {{ $item['developer_status'] ? '' : 'selected' }}>Not Started</option>
+                                @foreach (\App\Models\Upload::DEVELOPER_STATUSES as $value => $label)
+                                    <option value="{{ $value }}" {{ $item['developer_status'] === $value ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $item['created_at']->format('M j, Y') }}</td>
                         <td class="px-5 py-3.5 text-right">
@@ -68,5 +65,41 @@
         </table>
     </div>
 @endif
+
+<script>
+    const workOrderStatusColors = {
+        in_progress: 'bg-gold/15 text-gold-dark',
+        waiting_on_visionbridge: 'bg-purple-50 dark:bg-purple-500/10 text-purple-500',
+        completed: 'bg-teal/10 text-teal-dark',
+    };
+    const workOrderStatusColorTokens = [...new Set(Object.values(workOrderStatusColors).flatMap(c => c.split(' ')))];
+
+    function updateWorkOrderStatus(select, url) {
+        const value = select.value;
+        const previousValue = select.dataset.current || '';
+
+        fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            },
+            body: JSON.stringify({ developer_status: value }),
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('Failed to update status');
+
+            select.classList.remove(...workOrderStatusColorTokens, 'bg-gray-100', 'text-gray-500');
+            select.classList.add(...(workOrderStatusColors[value] || 'bg-gray-100 text-gray-500').split(' '));
+            select.dataset.current = value;
+            select.querySelector('option[value=""]')?.remove();
+        })
+        .catch(() => {
+            select.value = previousValue;
+            alert('Could not update status. Please try again.');
+        });
+    }
+</script>
 
 @endsection
