@@ -28,6 +28,8 @@ class ProjectRequest extends Model
         'admin_notes',
         'assigned_developer_id',
         'developer_status',
+        'attachment_path',
+        'attachment_original_name',
     ];
 
     protected static function booted(): void
@@ -45,5 +47,10 @@ class ProjectRequest extends Model
     public function assignedDeveloper()
     {
         return $this->belongsTo(User::class, 'assigned_developer_id');
+    }
+
+    public function attachmentUrl(): ?string
+    {
+        return $this->attachment_path ? asset('client-uploads/'.$this->attachment_path) : null;
     }
 }

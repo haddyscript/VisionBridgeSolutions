@@ -21,7 +21,15 @@ class ProjectRequestController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:5000'],
+            'attachment' => ['nullable', 'file', 'max:25600'],
         ]);
+
+        if ($request->hasFile('attachment')) {
+            $file = $request->file('attachment');
+            $validated['attachment_original_name'] = $file->getClientOriginalName();
+            $validated['attachment_path'] = $file->store("project-requests/{$request->user()->id}", 'client_uploads');
+            unset($validated['attachment']);
+        }
 
         $projectRequest = $request->user()->projectRequests()->create($validated);
 
