@@ -295,6 +295,9 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::patch('/uploads/{upload}/developer-status', [UploadApprovalController::class, 'updateDeveloperStatus'])->name('uploads.developer-status');
 
     Route::get('/satisfaction-surveys', [AdminSatisfactionSurveyController::class, 'index'])->name('satisfaction-surveys.index');
+    Route::patch('/satisfaction-surveys/{satisfactionSurvey}/archive', [AdminSatisfactionSurveyController::class, 'archive'])->name('satisfaction-surveys.archive');
+    Route::patch('/satisfaction-surveys/{satisfactionSurvey}/feature', [AdminSatisfactionSurveyController::class, 'feature'])->name('satisfaction-surveys.feature');
+    Route::delete('/satisfaction-surveys/{satisfactionSurvey}', [AdminSatisfactionSurveyController::class, 'destroy'])->name('satisfaction-surveys.destroy');
 
     Route::get('/recommendations', [AdminRecommendationController::class, 'index'])->name('recommendations.index');
     Route::post('/projects/{project}/recommendations', [AdminRecommendationController::class, 'store'])->name('recommendations.store');

@@ -12,18 +12,32 @@ class SatisfactionSurvey extends Model
         'rating',
         'feedback',
         'submitted_at',
+        'archived_at',
+        'featured_at',
     ];
 
     protected function casts(): array
     {
         return [
             'submitted_at' => 'datetime',
+            'archived_at' => 'datetime',
+            'featured_at' => 'datetime',
         ];
     }
 
     public function isSubmitted(): bool
     {
         return $this->submitted_at !== null;
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->archived_at !== null;
+    }
+
+    public function isFeatured(): bool
+    {
+        return $this->featured_at !== null;
     }
 
     public function project()
