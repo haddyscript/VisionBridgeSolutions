@@ -202,9 +202,16 @@
                         </div>
                         <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5">Type a color name and press Enter, or use the picker to add an exact hex color. Click any color circle to edit it.</p>
 
-                        {{-- Custom color picker popover — replaces the browser-native <input type="color"> overlay --}}
-                        <div id="brand-color-popover" class="hidden absolute z-20 mt-2 w-60 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl p-4">
-                            <div id="brand-color-popover-preview" class="w-full h-14 rounded-lg mb-3 border border-gray-100 dark:border-gray-700" style="background:#C9A84C;"></div>
+                        {{-- Custom color picker popover — styled to match the app, but the actual
+                             visual color selection still happens through the native OS color
+                             wheel (triggered by the preview swatch below); the R/G/B/Hex fields
+                             are for precise typed adjustment, not the only way to pick a color. --}}
+                        <div id="brand-color-popover" class="hidden absolute z-20 right-0 mt-2 w-60 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl p-4">
+                            <label class="relative block w-full h-14 rounded-lg mb-1 border border-gray-100 dark:border-gray-700 cursor-pointer overflow-hidden" title="Click to pick a color visually">
+                                <input type="color" id="brand-color-native-picker" class="absolute -top-4 -left-4 w-[calc(100%+2rem)] h-[calc(100%+2rem)] cursor-pointer">
+                                <div id="brand-color-popover-preview" class="absolute inset-0 pointer-events-none" style="background:#C9A84C;"></div>
+                            </label>
+                            <p class="text-[0.65rem] text-gray-400 dark:text-gray-500 mb-3">Click the swatch above to pick a color visually, or fine-tune the exact values below.</p>
                             <div class="grid grid-cols-3 gap-2 mb-3">
                                 <div>
                                     <label class="block text-[0.65rem] font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">R</label>
@@ -691,6 +698,7 @@
         const pickerSwatch = document.getElementById('brand-color-picker-swatch');
         const popover = document.getElementById('brand-color-popover');
         const popoverPreview = document.getElementById('brand-color-popover-preview');
+        const nativePicker = document.getElementById('brand-color-native-picker');
         const rInput = document.getElementById('brand-color-r');
         const gInput = document.getElementById('brand-color-g');
         const bInput = document.getElementById('brand-color-b');
@@ -797,8 +805,12 @@
             bInput.value = rgb.b;
             hexInput.value = hex.toUpperCase();
             popoverPreview.style.background = hex;
+            if (nativePicker) nativePicker.value = hex;
         }
 
+        // Anchored via the `right-0` class (always flush with the tag input's
+        // right edge) so it can never overflow sideways regardless of viewport
+        // width — only the vertical offset needs computing here.
         function openPopover(index, hex, anchorEl) {
             editingIndex = index;
             setRgbFields(hex || '#C9A84C');
@@ -808,7 +820,6 @@
             const rect = anchor.getBoundingClientRect();
             const wrapRect = wrap.getBoundingClientRect();
             popover.style.top = (rect.bottom - wrapRect.top + 8) + 'px';
-            popover.style.left = Math.max(0, rect.left - wrapRect.left - 90) + 'px';
             addBtn.textContent = editingIndex !== null ? 'Update Color' : 'Add Color';
         }
 
@@ -825,11 +836,18 @@
             }
         });
 
+        if (nativePicker) {
+            nativePicker.addEventListener('input', function () {
+                setRgbFields(nativePicker.value.toUpperCase());
+            });
+        }
+
         [rInput, gInput, bInput].forEach(function (input) {
             input.addEventListener('input', function () {
                 const hex = rgbToHex(rInput.value, gInput.value, bInput.value);
                 hexInput.value = hex;
                 popoverPreview.style.background = hex;
+                if (nativePicker) nativePicker.value = hex;
             });
         });
 
