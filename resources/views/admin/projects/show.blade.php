@@ -62,7 +62,7 @@
                 </div>
             </div>
             <button type="button" onclick="openResetPasswordModal()"
-                class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:text-navy dark:hover:text-white bg-white dark:bg-gray-800 px-3 py-1.5 rounded-lg transition-colors">
+                class="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-500/40 hover:bg-amber-50 dark:hover:bg-amber-500/10 hover:border-amber-400 dark:hover:border-amber-400/60 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-lg transition-colors">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                 </svg>
@@ -78,7 +78,8 @@
                 <form method="POST" action="{{ route('admin.projects.update', $project) }}" data-ajax-target="header-card">
                     @csrf
                     @method('PATCH')
-                    <select name="status" onchange="this.form.requestSubmit()"
+                    <label for="project-status-select" class="block text-[0.65rem] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1 text-right">Project Status</label>
+                    <select id="project-status-select" name="status" onchange="this.form.requestSubmit()"
                         class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
                         @foreach ($statusLabels as $value => $label)
                             <option value="{{ $value }}" {{ $project->status === $value ? 'selected' : '' }}>{{ $label }}</option>
@@ -107,13 +108,18 @@
                     <input type="number" name="total_price" step="0.01" min="1" placeholder="e.g. 2500.00"
                         value="{{ old('total_price', $project->total_price !== null ? $project->total_price / 100 : '') }}"
                         class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                        @if ($project->total_price === null)
-                            Setting this for the first time creates the initial 50% deposit request and emails the client their quote.
-                        @elseif ($project->depositPayment())
+                    @if ($project->total_price === null)
+                        <div class="flex items-start gap-1.5 mt-1.5 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-lg px-2.5 py-2">
+                            <svg class="w-3.5 h-3.5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                            <span>Setting this for the first time creates the initial 50% deposit request and <strong>emails the client their quote</strong>.</span>
+                        </div>
+                    @elseif ($project->depositPayment())
+                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
                             Deposit: <strong>{{ $project->depositPayment()->formattedAmount() }}</strong> — {{ $project->depositPayment()->isPaid() ? 'paid' : 'pending' }}.
-                        @endif
-                    </p>
+                        </p>
+                    @endif
                 </div>
 
                 {{-- Progress bar + override, grouped together --}}
@@ -132,18 +138,18 @@
                     <div class="w-full h-3 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden mb-3">
                         <div class="h-full bg-gold rounded-full transition-all duration-500" style="width: {{ $project->progressPercent() }}%"></div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <div class="relative flex-1">
-                            <input type="number" name="progress_override" min="0" max="100"
-                                placeholder="Auto (from milestones)"
-                                value="{{ old('progress_override', $project->progress_override) }}"
-                                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                        </div>
+                    <div class="flex items-stretch">
+                        <input type="number" name="progress_override" min="0" max="100"
+                            placeholder="Auto (from milestones)"
+                            value="{{ old('progress_override', $project->progress_override) }}"
+                            class="w-full min-w-0 {{ $project->isProgressOverridden() ? 'rounded-l-lg' : 'rounded-lg' }} border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold focus:z-10 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
                         @if ($project->isProgressOverridden())
                             <button type="button"
                                 onclick="document.getElementById('clear-override-form').requestSubmit()"
-                                class="shrink-0 text-xs font-medium text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 border border-gray-200 dark:border-gray-600 px-3 py-2 rounded-lg transition-colors">
-                                Clear override
+                                title="Clear override"
+                                class="shrink-0 inline-flex items-center gap-1 text-xs font-medium text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 border border-l-0 border-gray-300 dark:border-gray-600 px-3 rounded-r-lg transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                Clear
                             </button>
                         @endif
                     </div>
@@ -178,36 +184,36 @@
     $pendingPaymentCount = $project->payments->where('status', 'pending')->count();
 @endphp
 
-{{-- Tabs --}}
-<div class="flex items-center gap-1 border-b border-gray-200 dark:border-gray-700 mb-6">
+{{-- Tabs — high-contrast pill segmented control --}}
+<div class="inline-flex flex-wrap items-center gap-1 bg-gray-100 dark:bg-gray-900 rounded-full p-1 mb-6">
     <button type="button" data-tab-button="overview" onclick="showProjectTab('overview')"
-            class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-gold text-navy dark:text-white">
+            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-colors bg-navy text-white dark:bg-gold dark:text-navy">
         Overview
     </button>
     <button id="tabbtn-billing" type="button" data-tab-button="billing" onclick="showProjectTab('billing')"
-            class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
+            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
         Billing
         @if ($pendingPaymentCount > 0)
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">{{ $pendingPaymentCount }}</span>
         @endif
     </button>
     <button type="button" data-tab-button="onboarding" onclick="showProjectTab('onboarding')"
-            class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
+            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
         Onboarding
         @if (! $project->hasAgreedToCarePlan() || ! $project->hasSignedCurrentAgreement() || ! $project->hasCompletedQuestionnaire())
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">Pending</span>
         @endif
     </button>
     <button type="button" data-tab-button="files" onclick="showProjectTab('files')"
-            class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
+            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
         Files
     </button>
     <button type="button" data-tab-button="content" onclick="showProjectTab('content')"
-            class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
+            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
         Website Content
     </button>
     <button id="tabbtn-revision" type="button" data-tab-button="revision" onclick="showProjectTab('revision')"
-            class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
+            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
         Revisions
         @php $openRevisionCount = $uploadsByCategory->get('revision', $empty)->where('status', '!=', 'completed')->count(); @endphp
         @if ($openRevisionCount > 0)
@@ -215,7 +221,7 @@
         @endif
     </button>
     <button type="button" data-tab-button="recommendations" onclick="showProjectTab('recommendations')"
-            class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
+            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
         Recommendations
         @if ($project->recommendations->where('status', 'pending_review')->isNotEmpty())
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">{{ $project->recommendations->where('status', 'pending_review')->count() }}</span>
@@ -861,12 +867,14 @@ function submitAdminReply(form, event) {
         });
         document.querySelectorAll('[data-tab-button]').forEach((el) => {
             const active = el.dataset.tabButton === tab;
-            el.classList.toggle('border-gold', active);
-            el.classList.toggle('text-navy', active);
-            el.classList.toggle('dark:text-white', active);
-            el.classList.toggle('border-transparent', !active);
-            el.classList.toggle('text-gray-400', !active);
-            el.classList.toggle('dark:text-gray-500', !active);
+            el.classList.toggle('bg-navy', active);
+            el.classList.toggle('text-white', active);
+            el.classList.toggle('dark:bg-gold', active);
+            el.classList.toggle('dark:text-navy', active);
+            el.classList.toggle('text-gray-500', !active);
+            el.classList.toggle('dark:text-gray-400', !active);
+            el.classList.toggle('hover:text-navy', !active);
+            el.classList.toggle('dark:hover:text-white', !active);
         });
     }
 
