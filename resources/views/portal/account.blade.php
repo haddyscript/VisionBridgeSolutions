@@ -14,12 +14,12 @@
 <div class="rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-6">
     <div class="px-6 py-6" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
         <div class="flex items-center gap-5">
-            <div class="w-16 h-16 rounded-full bg-gold/20 text-gold flex items-center justify-center shrink-0 text-xl font-bold font-display">
+            <div id="account-header-initials" class="w-16 h-16 rounded-full bg-gold/20 text-gold flex items-center justify-center shrink-0 text-xl font-bold font-display">
                 {{ strtoupper(substr($user->name, 0, 1)) }}{{ strtoupper(substr(strstr($user->name, ' '), 1, 1)) }}
             </div>
             <div class="min-w-0">
-                <p class="font-sans text-xl font-extrabold tracking-tight text-white truncate">{{ $user->name }}</p>
-                <p class="text-sm text-white/60 truncate">{{ $user->email }}</p>
+                <p id="account-header-name" class="font-sans text-xl font-extrabold tracking-tight text-white truncate">{{ $user->name }}</p>
+                <p id="account-header-email" class="text-sm text-white/60 truncate">{{ $user->email }}</p>
                 <span class="mt-1.5 inline-block text-xs font-bold uppercase tracking-widest text-gray-100">Client</span>
             </div>
         </div>
@@ -107,7 +107,7 @@
             {{-- Profile Information --}}
             <div data-settings-panel="profile" class="settings-panel">
                 <h3 class="font-display text-lg font-bold text-navy dark:text-white mb-5">Profile Information</h3>
-                <form method="POST" action="{{ route('portal.account.profile.update') }}" class="space-y-4 max-w-md">
+                <form id="profile-form" method="POST" action="{{ route('portal.account.profile.update') }}" class="space-y-4 max-w-md">
                     @csrf
                     @method('PATCH')
                     <div>
@@ -156,7 +156,7 @@
             {{-- Password & Security --}}
             <div data-settings-panel="password" class="settings-panel hidden">
                 <h3 class="font-display text-lg font-bold text-navy dark:text-white mb-5">Password &amp; Security</h3>
-                <form method="POST" action="{{ route('portal.account.password.update') }}" class="space-y-4 max-w-md">
+                <form id="password-form" method="POST" action="{{ route('portal.account.password.update') }}" class="space-y-4 max-w-md">
                     @csrf
                     @method('PATCH')
                     <div>
@@ -205,7 +205,7 @@
             <div data-settings-panel="notifications" class="settings-panel hidden">
                 <h3 class="font-display text-lg font-bold text-navy dark:text-white mb-1">Notification Preferences</h3>
                 <p class="text-xs text-gray-400 dark:text-gray-500 mb-5">Payment receipts and security alerts always send — these can't be turned off.</p>
-                <form method="POST" action="{{ route('portal.account.notifications.update') }}" class="space-y-3 max-w-md">
+                <form id="notifications-form" method="POST" action="{{ route('portal.account.notifications.update') }}" class="space-y-3 max-w-md">
                     @csrf
                     @method('PATCH')
                     <label class="flex items-start gap-3 cursor-pointer">
@@ -299,7 +299,7 @@
                 <div class="mt-6 pt-5 border-t border-gray-100 dark:border-gray-700 max-w-md">
                     <p class="text-sm font-semibold text-navy dark:text-white mb-1">Log Out of All Other Devices</p>
                     <p class="text-xs text-gray-400 dark:text-gray-500 mb-3">This won't log out your current session here — just every other device or browser signed in as you.</p>
-                    <form method="POST" action="{{ route('portal.account.logout-other-devices') }}" class="flex items-start gap-2">
+                    <form id="logout-other-devices-form" method="POST" action="{{ route('portal.account.logout-other-devices') }}" class="flex items-start gap-2">
                         @csrf
                         <div class="flex-1">
                             <input type="password" name="current_password" required placeholder="Current password"
@@ -334,7 +334,7 @@
             Submitting this request notifies our team. We will review your request and follow up within 1–2 business days.
             Your account and project data will not be deleted until we confirm with you directly.
         </p>
-        <form method="POST" action="{{ route('portal.account.closure-request') }}">
+        <form id="closure-form" method="POST" action="{{ route('portal.account.closure-request') }}">
             @csrf
             <button type="submit"
                 onclick="return confirm('Are you sure you want to request account closure? Our team will follow up before anything is deleted.')"
@@ -348,6 +348,14 @@
                 </span>
             </button>
         </form>
+    </div>
+</div>
+
+{{-- Transient toast for no-reload form submissions on this page --}}
+<div id="toast" class="fixed bottom-6 right-6 z-50 max-w-sm transform translate-y-2 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="flex items-center gap-2.5 text-sm font-medium text-teal-dark dark:text-teal-light bg-white dark:bg-gray-800 border border-teal/30 shadow-lg rounded-lg px-4 py-3">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        <span id="toast-message"></span>
     </div>
 </div>
 
@@ -421,6 +429,8 @@
     // shared by both the profile and password forms — when it's the only
     // error present there's no way to tell which form it came from, so it
     // defaults to the profile tab (matches this page's original behavior).
+    // Only matters as a no-JS fallback now — the AJAX path below handles
+    // its own tab-switching without ever reloading the page.
     @if ($errors->getBag('logoutOtherDevices')->any())
         switchSettingsTab('logins');
     @elseif ($errors->has('name') || $errors->has('email') || ($errors->has('current_password') && ! $errors->has('password')))
@@ -428,6 +438,133 @@
     @elseif ($errors->has('password') || $errors->has('current_password'))
         switchSettingsTab('password');
     @endif
+})();
+</script>
+
+<script>
+(function () {
+    let toastTimeout;
+    window.showToast = function (message) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-message').textContent = message;
+        clearTimeout(toastTimeout);
+        toast.classList.remove('translate-y-2', 'opacity-0');
+        toastTimeout = setTimeout(function () {
+            toast.classList.add('translate-y-2', 'opacity-0');
+        }, 3000);
+    };
+
+    // Every form on this page submits via fetch instead of a full page
+    // reload. Validation errors render inline next to the field they belong
+    // to (Laravel returns them as JSON when the request declares
+    // Accept: application/json); success shows the toast above instead of
+    // relying on a reloaded page to display the flashed session status.
+    function submitAjaxForm(form, onSuccess) {
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        form.querySelectorAll('.ajax-field-error').forEach(function (el) { el.remove(); });
+
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.6';
+            submitBtn.style.cursor = 'wait';
+        }
+
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: new FormData(form),
+        })
+            .then(function (response) {
+                return response.json().catch(function () { return {}; }).then(function (data) {
+                    return { ok: response.ok, status: response.status, data: data };
+                });
+            })
+            .then(function (result) {
+                if (result.ok) {
+                    window.showToast(result.data.message || 'Saved.');
+                    if (onSuccess) onSuccess(result.data);
+                } else if (result.status === 422 && result.data.errors) {
+                    Object.keys(result.data.errors).forEach(function (field) {
+                        const input = form.querySelector('[name="' + field + '"]');
+                        if (!input) return;
+                        const p = document.createElement('p');
+                        p.className = 'ajax-field-error text-xs text-red-500 mt-1';
+                        p.textContent = result.data.errors[field][0];
+                        input.closest('div').appendChild(p);
+                    });
+                } else {
+                    window.showToast(result.data.message || 'Something went wrong. Please try again.');
+                }
+            })
+            .catch(function () {
+                window.showToast('Something went wrong. Please try again.');
+            })
+            .finally(function () {
+                // onSuccess callbacks (e.g. the closure form) can opt out of
+                // having their button state restored, by setting this flag,
+                // when they intentionally want it to stay disabled.
+                if (submitBtn && submitBtn.dataset.keepDisabled !== '1') {
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '';
+                    submitBtn.style.cursor = '';
+                }
+            });
+    }
+
+    document.getElementById('profile-form')?.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const form = e.target;
+        submitAjaxForm(form, function () {
+            const name = form.querySelector('[name="name"]').value;
+            const email = form.querySelector('[name="email"]').value;
+            document.getElementById('account-header-name').textContent = name;
+            document.getElementById('account-header-email').textContent = email;
+            const initials = (name.trim().split(/\s+/).map(function (w) { return w[0]; }).join('') || '').slice(0, 2).toUpperCase();
+            document.getElementById('account-header-initials').textContent = initials;
+            form.querySelector('[name="current_password"]').value = '';
+        });
+    });
+
+    document.getElementById('password-form')?.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const form = e.target;
+        submitAjaxForm(form, function () {
+            form.reset();
+        });
+    });
+
+    document.getElementById('notifications-form')?.addEventListener('submit', function (e) {
+        e.preventDefault();
+        submitAjaxForm(e.target);
+    });
+
+    document.getElementById('logout-other-devices-form')?.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const form = e.target;
+        submitAjaxForm(form, function () {
+            form.querySelector('[name="current_password"]').value = '';
+        });
+    });
+
+    document.getElementById('closure-form')?.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const form = e.target;
+        submitAjaxForm(form, function () {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const label = submitBtn?.querySelector('.btn-label');
+            if (label) label.textContent = 'Request Sent';
+            if (submitBtn) {
+                submitBtn.dataset.keepDisabled = '1';
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.6';
+                submitBtn.style.cursor = 'not-allowed';
+            }
+        });
+    });
 })();
 </script>
 

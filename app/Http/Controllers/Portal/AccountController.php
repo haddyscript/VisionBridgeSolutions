@@ -58,6 +58,10 @@ class AccountController extends Controller
             })->afterResponse();
         }
 
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Profile updated.']);
+        }
+
         return back()->with('status', 'Profile updated.');
     }
 
@@ -78,6 +82,10 @@ class AccountController extends Controller
             Mail::to($user->email)->send(new AccountPasswordChangedMail($user));
         })->afterResponse();
 
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Password updated.']);
+        }
+
         return back()->with('status', 'Password updated.');
     }
 
@@ -87,6 +95,10 @@ class AccountController extends Controller
             'notify_on_replies' => $request->boolean('notify_on_replies'),
             'notify_on_consultations' => $request->boolean('notify_on_consultations'),
         ]);
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Notification preferences updated.']);
+        }
 
         return back()->with('status', 'Notification preferences updated.');
     }
@@ -108,6 +120,10 @@ class AccountController extends Controller
 
         Auth::guard('web')->logoutOtherDevices($validated['current_password']);
 
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'You\'ve been logged out of all other devices.']);
+        }
+
         return back()->with('status', 'You\'ve been logged out of all other devices.');
     }
 
@@ -121,6 +137,10 @@ class AccountController extends Controller
                 fn ($m) => $m->to(config('mail.johnny_address'))->subject('Account Closure Request — ' . $user->name)
             );
         })->afterResponse();
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Your closure request has been received. Our team will follow up within 1–2 business days.']);
+        }
 
         return back()->with('status', 'Your closure request has been received. Our team will follow up within 1–2 business days.');
     }
