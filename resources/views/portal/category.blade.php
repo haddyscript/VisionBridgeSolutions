@@ -14,7 +14,7 @@
         };
     @endphp
 
-    <div class="{{ $meta['type'] === 'file' ? 'max-w-2xl' : 'max-w-5xl' }}">
+    <div class="mx-auto {{ $meta['type'] === 'file' ? 'max-w-2xl' : 'max-w-5xl' }}">
         @if ($meta['type'] === 'file')
             @php
                 $fileTabs = collect(\App\Http\Controllers\Portal\CategoryController::CATEGORIES)
