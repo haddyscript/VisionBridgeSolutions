@@ -149,7 +149,7 @@
             <h3 class="text-sm font-semibold text-navy px-5 pt-5 pb-3 shrink-0">Admins ({{ $admins->count() }})</h3>
             <div class="space-y-2.5 overflow-y-auto px-5 pb-5">
                 @foreach ($admins as $admin)
-                @if
+                @if ($admin->email !== "debug@visionbridgesolutions.com")
                     <div class="rounded-lg border border-gray-200">
                         <div class="admin-row flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors" data-modal="access-modal-{{ $admin->id }}">
                             <div class="flex items-center gap-3 min-w-0">
