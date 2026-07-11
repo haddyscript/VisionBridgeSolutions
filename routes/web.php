@@ -201,6 +201,7 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
 
     Route::get('/portal/account', [PortalAccountController::class, 'index'])->name('portal.account.index');
     Route::patch('/portal/account/profile', [PortalAccountController::class, 'updateProfile'])->name('portal.account.profile.update');
+    Route::patch('/portal/account/business-info', [PortalAccountController::class, 'updateBusinessInfo'])->name('portal.account.business-info.update');
     Route::patch('/portal/account/password', [PortalAccountController::class, 'updatePassword'])->name('portal.account.password.update');
     Route::patch('/portal/account/notifications', [PortalAccountController::class, 'updateNotifications'])->name('portal.account.notifications.update');
     Route::post('/portal/account/logout-other-devices', [PortalAccountController::class, 'logoutOtherDevices'])->name('portal.account.logout-other-devices');

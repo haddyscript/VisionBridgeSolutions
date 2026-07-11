@@ -44,6 +44,18 @@
                 </div>
             </button>
 
+            <button type="button" data-settings-tab="business-info" class="settings-tab-btn w-full flex items-center gap-3 px-4 py-3.5 text-left border-l-2 transition-colors">
+                <div class="settings-tab-icon w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="settings-tab-label text-sm font-semibold">Business Information</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500">Edit your onboarding questionnaire answers</p>
+                </div>
+            </button>
+
             <button type="button" data-settings-tab="password" class="settings-tab-btn w-full flex items-center gap-3 px-4 py-3.5 text-left border-l-2 transition-colors">
                 <div class="settings-tab-icon w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -149,6 +161,95 @@
                     <button type="submit" class="settings-action-btn bg-gold text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
                         <span class="btn-fill"></span>
                         <span class="btn-label">Save Profile</span>
+                    </button>
+                </form>
+            </div>
+
+            {{-- Business Information (onboarding questionnaire, editable after the fact) --}}
+            <div data-settings-panel="business-info" class="settings-panel hidden">
+                <h3 class="font-display text-lg font-bold text-navy dark:text-white mb-1">Business Information</h3>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mb-5">These are the answers you gave during onboarding — update them any time.</p>
+                <form id="business-info-form" method="POST" action="{{ route('portal.account.business-info.update') }}" class="space-y-4 max-w-xl">
+                    @csrf
+                    @method('PATCH')
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Organization Name</label>
+                        <input type="text" name="organization_name" value="{{ old('organization_name', $project?->name) }}" required
+                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                        @error('organization_name') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Organization Type</label>
+                        <select name="organization_type"
+                                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                            <option value="">Select one&hellip;</option>
+                            @foreach (['Church', 'Ministry', 'Nonprofit', 'Small Business', 'Entrepreneur', 'Other'] as $type)
+                                <option value="{{ $type }}" {{ old('organization_type', $questionnaire?->organization_type) === $type ? 'selected' : '' }}>{{ $type }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Brand Colors</label>
+                        <input type="text" name="brand_colors" value="{{ old('brand_colors', $questionnaire?->brand_colors) }}" placeholder="e.g. Navy #111D33, Gold #C9A84C"
+                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Mission Statement</label>
+                        <textarea name="mission_statement" rows="3"
+                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">{{ old('mission_statement', $questionnaire?->mission_statement) }}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Vision Statement</label>
+                        <textarea name="vision_statement" rows="3"
+                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">{{ old('vision_statement', $questionnaire?->vision_statement) }}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Services Interested In</label>
+                        @php $selectedServices = old('services', $questionnaire?->services ?? []); @endphp
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            @foreach ([
+                                'Custom Website Development', 'Landing Page Development', 'Church Website Development',
+                                'Ministry Website Development', 'Nonprofit Website Development', 'Small Business Website Development',
+                                'Website Redesign Services', 'Website Care Services', 'Hosting Management', 'Website Consulting',
+                            ] as $service)
+                                <label class="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300">
+                                    <input type="checkbox" name="services[]" value="{{ $service }}"
+                                           {{ in_array($service, $selectedServices) ? 'checked' : '' }}
+                                           class="rounded border-gray-300 text-gold focus:ring-gold">
+                                    {{ $service }}
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Requested Pages / Requirements</label>
+                        <textarea name="requested_pages" rows="4"
+                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">{{ old('requested_pages', $questionnaire?->requested_pages) }}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Social Media Links</label>
+                        @php $links = old('social_links', $questionnaire?->social_links ?? []); @endphp
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            @foreach ([
+                                'website' => 'Current Website', 'facebook' => 'Facebook', 'instagram' => 'Instagram',
+                                'twitter' => 'Twitter / X', 'linkedin' => 'LinkedIn', 'youtube' => 'YouTube', 'tiktok' => 'TikTok',
+                            ] as $key => $label)
+                                <div>
+                                    <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ $label }}</label>
+                                    <input type="text" name="social_links[{{ $key }}]" value="{{ $links[$key] ?? '' }}" placeholder="https://"
+                                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Additional Notes</label>
+                        <textarea name="additional_notes" rows="3"
+                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">{{ old('additional_notes', $questionnaire?->additional_notes) }}</textarea>
+                    </div>
+                    <button type="submit" class="settings-action-btn bg-gold text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                        <span class="btn-fill"></span>
+                        <span class="btn-label">Save Business Information</span>
                     </button>
                 </form>
             </div>
@@ -433,6 +534,8 @@
     // its own tab-switching without ever reloading the page.
     @if ($errors->getBag('logoutOtherDevices')->any())
         switchSettingsTab('logins');
+    @elseif ($errors->has('organization_name') || $errors->has('organization_type') || $errors->has('mission_statement'))
+        switchSettingsTab('business-info');
     @elseif ($errors->has('name') || $errors->has('email') || ($errors->has('current_password') && ! $errors->has('password')))
         switchSettingsTab('profile');
     @elseif ($errors->has('password') || $errors->has('current_password'))
@@ -527,6 +630,11 @@
             document.getElementById('account-header-initials').textContent = initials;
             form.querySelector('[name="current_password"]').value = '';
         });
+    });
+
+    document.getElementById('business-info-form')?.addEventListener('submit', function (e) {
+        e.preventDefault();
+        submitAjaxForm(e.target);
     });
 
     document.getElementById('password-form')?.addEventListener('submit', function (e) {
