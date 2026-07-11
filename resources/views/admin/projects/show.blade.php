@@ -890,6 +890,16 @@ function submitAdminReply(form, event) {
 
                     const targetIds = form.dataset.ajaxTarget.split(' ').filter(Boolean);
                     const submitBtns = form.querySelectorAll('button[type="submit"]');
+
+                    // If this form lives inside an open Website Content/Revisions
+                    // thread, remember which one -- a full panel swap below
+                    // resets to the closed list view by default, which otherwise
+                    // makes something like a status change look like it "reloaded"
+                    // and kicked the admin back out of the thread they were on.
+                    const openThread = form.closest('.admin-thread');
+                    const openThreadMatch = openThread && !openThread.classList.contains('hidden')
+                        ? openThread.id.match(/^thread-(.+)-(\d+)$/)
+                        : null;
                     submitBtns.forEach((b) => {
                         b.dataset.originalHtml = b.innerHTML;
                         b.disabled = true;
@@ -922,6 +932,10 @@ function submitAdminReply(form, event) {
                             });
 
                             showProjectTab(currentProjectTab);
+
+                            if (openThreadMatch) {
+                                openAdminThread(openThreadMatch[1], openThreadMatch[2], false, null);
+                            }
                         })
                         .catch(() => {
                             alert('Something went wrong. Please try again.');
