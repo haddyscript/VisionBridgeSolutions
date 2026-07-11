@@ -10,16 +10,6 @@
     $twoFactorEnabled = $user->hasTwoFactorEnabled();
 @endphp
 
-{{-- Status flash --}}
-@if (session('status'))
-    <div class="mb-6 flex items-center gap-3 rounded-xl border border-teal/30 bg-teal/10 px-4 py-3">
-        <svg class="w-4 h-4 text-teal-dark dark:text-teal-light shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-        </svg>
-        <p class="text-sm font-medium text-teal-dark dark:text-teal-light">{{ session('status') }}</p>
-    </div>
-@endif
-
 {{-- Overview card --}}
 <div class="rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-6">
     <div class="px-6 py-6" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
