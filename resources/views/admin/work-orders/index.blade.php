@@ -13,7 +13,7 @@
     ];
 @endphp
 
-<p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Everything currently assigned to you — revision/content requests and new project requests. Update the developer status directly on each item's own page.</p>
+<p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Everything currently assigned to you — revision/content requests and new project requests. Update your status right from this list, or open an item to reply/see full details.</p>
 
 @if ($workOrders->isEmpty())
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
@@ -46,13 +46,17 @@
                             @endif
                         </td>
                         <td class="px-5 py-3.5">
-                            @if ($item['developer_status'])
-                                <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $statusColors[$item['developer_status']] ?? 'bg-gray-100 text-gray-500' }}">
-                                    {{ \App\Models\Upload::DEVELOPER_STATUSES[$item['developer_status']] ?? $item['developer_status'] }}
-                                </span>
-                            @else
-                                <span class="text-xs text-gray-400 dark:text-gray-500">Not started</span>
-                            @endif
+                            <form method="POST" action="{{ $item['status_url'] }}">
+                                @csrf
+                                @method('PATCH')
+                                <select name="developer_status" onchange="this.form.requestSubmit()"
+                                        class="text-xs font-semibold rounded-full px-3 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-gold {{ $statusColors[$item['developer_status']] ?? 'bg-gray-100 text-gray-500' }}">
+                                    <option value="" disabled {{ $item['developer_status'] ? '' : 'selected' }}>Not Started</option>
+                                    @foreach (\App\Models\Upload::DEVELOPER_STATUSES as $value => $label)
+                                        <option value="{{ $value }}" {{ $item['developer_status'] === $value ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </form>
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $item['created_at']->format('M j, Y') }}</td>
                         <td class="px-5 py-3.5 text-right">

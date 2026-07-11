@@ -29,6 +29,7 @@ class WorkOrderController extends Controller
                 'developer_status' => $upload->developer_status,
                 'created_at' => $upload->created_at,
                 'url' => route('admin.projects.show', $upload->project),
+                'status_url' => route('admin.uploads.developer-status', $upload),
                 'unread' => $upload->unreadClientRepliesCount(),
             ]);
 
@@ -42,6 +43,7 @@ class WorkOrderController extends Controller
                 'developer_status' => $request->developer_status,
                 'created_at' => $request->created_at,
                 'url' => route('admin.project-requests.show', $request),
+                'status_url' => route('admin.project-requests.developer-status', $request),
                 'unread' => 0,
             ]);
 
