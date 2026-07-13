@@ -200,7 +200,7 @@
                     </svg>
                     Account Settings
                 </a>
-                @php($unreadAnnouncementCount = \App\Models\Announcement::unacknowledgedCountFor(auth()->user()))
+                @php($unreadAnnouncementCount = \App\Models\Announcement::unacknowledgedCountFor(auth()->user())) @endphp
                 <a href="{{ route('portal.announcements.index') }}"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.announcements.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
