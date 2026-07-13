@@ -47,6 +47,17 @@ class DeployerController extends Controller
             }
         }
 
+        // `artisan view:clear` above runs as a spawned CLI subprocess, which
+        // has its own OPcache separate from PHP-FPM's — regenerating the
+        // compiled view file on disk doesn't stop FPM from serving the old
+        // cached bytecode for that same path. This request, in contrast, IS
+        // running inside an FPM worker, so opcache_reset() here actually
+        // clears the cache real traffic is served from.
+        if (function_exists('opcache_reset') && opcache_reset()) {
+            $output[] = '$ opcache_reset() (in-process, FPM)';
+            $output[] = 'ok';
+        }
+
         $log = implode("\n", $output);
         Log::channel('single')->info("Deployer run:\n{$log}");
 
