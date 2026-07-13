@@ -109,7 +109,7 @@
             @else
                 <div class="space-y-2.5 max-h-[68vh] overflow-y-auto pr-1 -mr-1">
                     @foreach ($announcements as $announcement)
-                        <div class="rounded-lg border {{ $announcement->is_active ? 'border-gold/40 bg-gold/5' : 'border-gray-200' }} px-4 py-3">
+                        <div id="ann-card-{{ $announcement->id }}" class="rounded-lg border {{ $announcement->is_active ? 'border-gold/40 bg-gold/5' : 'border-gray-200' }} px-4 py-3">
                             <div class="flex items-start justify-between gap-4">
                                 <button type="button" onclick="toggleAnnouncement({{ $announcement->id }})"
                                         class="min-w-0 flex-1 flex items-start gap-2 text-left group">
@@ -119,11 +119,9 @@
                                     <span class="min-w-0">
                                         <span class="flex items-center flex-wrap gap-2 mb-0.5">
                                             <span class="text-sm font-semibold text-navy">{{ $announcement->title }}</span>
-                                            @if ($announcement->is_active)
-                                                <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">Active</span>
-                                            @else
-                                                <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gray-100 text-gray-400">Draft</span>
-                                            @endif
+                                            <span id="ann-status-{{ $announcement->id }}" class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $announcement->is_active ? 'bg-gold/15 text-gold-dark' : 'bg-gray-100 text-gray-400' }}">
+                                                {{ $announcement->is_active ? 'Active' : 'Draft' }}
+                                            </span>
                                             @foreach ($announcement->audienceLabels() as $label)
                                                 <span class="text-[11px] font-medium px-1.5 py-0.5 rounded bg-navy/5 text-navy/70">{{ $label }}</span>
                                             @endforeach
@@ -137,14 +135,12 @@
                                             class="text-xs font-semibold text-navy bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full transition-colors">
                                         Edit
                                     </button>
-                                    <form method="POST" action="{{ route('admin.announcements.toggle', $announcement) }}">
-                                        @csrf
-                                        @method('PATCH')
-                                        <input type="hidden" name="is_active" value="{{ $announcement->is_active ? '0' : '1' }}">
-                                        <button type="submit" class="text-xs font-semibold text-navy bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full transition-colors">
-                                            {{ $announcement->is_active ? 'Deactivate' : 'Activate' }}
-                                        </button>
-                                    </form>
+                                    <button type="button" id="ann-toggle-{{ $announcement->id }}"
+                                            data-url="{{ route('admin.announcements.toggle', $announcement) }}"
+                                            onclick="toggleAnnouncementActive({{ $announcement->id }}, {{ $announcement->is_active ? 'false' : 'true' }})"
+                                            class="text-xs font-semibold text-navy bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full transition-colors">
+                                        {{ $announcement->is_active ? 'Deactivate' : 'Activate' }}
+                                    </button>
                                     <form method="POST" action="{{ route('admin.announcements.destroy', $announcement) }}" onsubmit="return confirm('Delete this announcement?')">
                                         @csrf
                                         @method('DELETE')
@@ -265,6 +261,48 @@
         const open = body.classList.toggle('hidden') === false;
         chevron?.classList.toggle('rotate-90', open);
         preview?.classList.toggle('hidden', open);
+    }
+
+    // Activate/Deactivate without a full page reload. Activating can also
+    // deactivate other announcements that share an audience (server-side
+    // dedup) — the JSON response tells us which ones so their rows update too.
+    function toggleAnnouncementActive(id, activate) {
+        const btn = document.getElementById('ann-toggle-' + id);
+        if (!btn) return;
+
+        fetch(btn.dataset.url, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            },
+            body: JSON.stringify({ is_active: activate }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                applyAnnouncementActiveState(data.id, data.is_active);
+                (data.deactivated || []).forEach(otherId => applyAnnouncementActiveState(otherId, false));
+            });
+    }
+
+    function applyAnnouncementActiveState(id, isActive) {
+        const card = document.getElementById('ann-card-' + id);
+        const badge = document.getElementById('ann-status-' + id);
+        const btn = document.getElementById('ann-toggle-' + id);
+
+        card?.classList.toggle('border-gold/40', isActive);
+        card?.classList.toggle('bg-gold/5', isActive);
+        card?.classList.toggle('border-gray-200', !isActive);
+
+        if (badge) {
+            badge.textContent = isActive ? 'Active' : 'Draft';
+            badge.className = 'text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ' + (isActive ? 'bg-gold/15 text-gold-dark' : 'bg-gray-100 text-gray-400');
+        }
+        if (btn) {
+            btn.textContent = isActive ? 'Deactivate' : 'Activate';
+            btn.setAttribute('onclick', 'toggleAnnouncementActive(' + id + ', ' + (!isActive) + ')');
+        }
     }
 
     // Live preview mirrors the message textarea, preserving line breaks.

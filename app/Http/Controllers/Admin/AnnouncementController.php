@@ -94,11 +94,21 @@ class AnnouncementController extends Controller
             'is_active' => ['required', 'boolean'],
         ]);
 
+        $deactivatedIds = [];
+
         if ($validated['is_active']) {
-            $this->deactivateOverlapping($announcement);
+            $deactivatedIds = $this->deactivateOverlapping($announcement)->pluck('id')->all();
         }
 
         $announcement->update($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'id' => $announcement->id,
+                'is_active' => $announcement->is_active,
+                'deactivated' => $deactivatedIds,
+            ]);
+        }
 
         return back()->with('status', $validated['is_active'] ? 'Announcement activated.' : 'Announcement deactivated.');
     }
@@ -107,17 +117,21 @@ class AnnouncementController extends Controller
      * Deactivate other active announcements that share an audience with the
      * given one, so each audience only shows a single banner at a time — while
      * still allowing, say, a Client banner and a Developer banner to coexist.
+     * Returns the announcements that were deactivated.
      */
-    protected function deactivateOverlapping(Announcement $announcement): void
+    protected function deactivateOverlapping(Announcement $announcement): \Illuminate\Support\Collection
     {
-        Announcement::where('is_active', true)
+        $overlapping = Announcement::where('is_active', true)
             ->where('id', '!=', $announcement->id)
             ->get()
             ->filter(fn (Announcement $other) => array_intersect(
                 $other->audiences ?? [],
                 $announcement->audiences ?? []
-            ))
-            ->each->update(['is_active' => false]);
+            ));
+
+        $overlapping->each->update(['is_active' => false]);
+
+        return $overlapping;
     }
 
     public function destroy(Announcement $announcement)
