@@ -17,8 +17,21 @@ class SubscriptionController extends Controller
     {
         $subscriptions = Subscription::with('project.user')->latest()->get();
 
+        $activeSubscriptions = $subscriptions->filter->isActive();
+
+        // Normalize to a monthly figure — a yearly plan counts as 1/12th of
+        // its amount toward MRR. Amounts are stored in cents.
+        $monthlyRecurringRevenue = $activeSubscriptions->sum(
+            fn (Subscription $subscription) => $subscription->interval === 'year'
+                ? $subscription->amount / 12
+                : $subscription->amount
+        );
+
         return view('admin.subscriptions.index', [
             'subscriptions' => $subscriptions,
+            'monthlyRecurringRevenue' => $monthlyRecurringRevenue,
+            'activeCount' => $activeSubscriptions->count(),
+            'pendingCount' => $subscriptions->filter->isPending()->count(),
         ]);
     }
 
