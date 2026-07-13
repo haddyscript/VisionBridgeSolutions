@@ -45,7 +45,18 @@ class DeployerController extends Controller
             $steps[] = ['php', 'artisan', 'migrate', '--force'];
         }
 
-        $output = [];
+        // Diagnostic only — lets us tell whether two domains hitting this
+        // endpoint are actually the same physical directory/process (shared
+        // hosting can point multiple domains at one folder, or split them
+        // into separate ones) rather than inferring it from the deploy log,
+        // which always shows the same commit hash for both regardless.
+        $output = [
+            'host: '.$request->getHost(),
+            'base_path: '.base_path(),
+            'hostname: '.gethostname(),
+            'pid: '.getmypid(),
+            '',
+        ];
 
         foreach ($steps as $command) {
             $result = Process::path(base_path())->timeout(120)->run($command);
