@@ -98,6 +98,21 @@ class Announcement extends Model
     }
 
     /**
+     * How many announcements (active or past) targeting this user's audience
+     * they haven't acknowledged yet — the same set the "Announcements"
+     * history page marks Unacknowledged, not just the one currently nagging
+     * them via activeFor(), so the sidebar badge count and the history page
+     * never disagree with each other.
+     */
+    public static function unacknowledgedCountFor(User $user): int
+    {
+        return static::whereDoesntHave('dismissals', fn ($q) => $q->where('user_id', $user->id))
+            ->get(['id', 'audiences'])
+            ->filter(fn (self $announcement) => $announcement->isVisibleTo($user))
+            ->count();
+    }
+
+    /**
      * Human-readable audience labels for display (e.g. ['Clients', 'Team']).
      */
     public function audienceLabels(): array
