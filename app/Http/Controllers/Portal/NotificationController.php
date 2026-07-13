@@ -14,7 +14,7 @@ class NotificationController extends Controller
         return view('portal.notifications', [
             'notifications' => ClientNotification::where('user_id', $request->user()->id)
                 ->latest()
-                ->paginate(20),
+                ->paginate(15),
         ]);
     }
 
