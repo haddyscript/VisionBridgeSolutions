@@ -41,7 +41,35 @@
             'content' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z',
             'revision' => 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15',
         ];
+        $unreadAnnouncementCount = \App\Models\Announcement::unacknowledgedCountFor(auth()->user());
+        $hdrProject = auth()->user()->projects()->first();
+        $hdrStatusLabels = [
+            'onboarding' => 'Onboarding',
+            'in_progress' => 'In Development',
+            'review' => 'Under Review',
+            'launched' => 'Launched',
+            'maintenance' => 'Care Plan',
+        ];
+        $hdrStatusColors = [
+            'onboarding' => 'bg-gold/10 text-gold-dark',
+            'in_progress' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300',
+            'review' => 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-300',
+            'launched' => 'bg-teal/10 text-teal-dark',
+            'maintenance' => 'bg-teal/10 text-teal-dark',
+        ];
+        $fileCategories = ['image', 'video', 'logo', 'document', 'marketing'];
+        $notificationIcons = [
+            'milestone_completed' => ['bg' => 'bg-teal/10', 'text' => 'text-teal-dark', 'path' => 'M5 13l4 4L19 7'],
+            'file_approved' => ['bg' => 'bg-teal/10', 'text' => 'text-teal-dark', 'path' => 'M5 13l4 4L19 7'],
+            'revision_reply' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z'],
+            'quote_ready' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M9 7h6m0 0v6m0-6L4 21'],
+            'consultation_update' => ['bg' => 'bg-teal/10', 'text' => 'text-teal-dark', 'path' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
+            'recommendation' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M13 10V3L4 14h7v7l9-11h-7z'],
+            'security' => ['bg' => 'bg-amber-50 dark:bg-amber-500/10', 'text' => 'text-amber-600 dark:text-amber-400', 'path' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'],
+        ];
+        $icon = $notificationIcons[$notification->type] ?? $notificationIcons['milestone_completed'];
     @endphp
+
 
     {{-- Gold sidebar scrollbar --}}
     <style>
@@ -157,9 +185,6 @@
                     @endif
                 </a>
 
-                @php
-                    $fileCategories = ['image', 'video', 'logo', 'document', 'marketing'];
-                @endphp
                 <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mt-5 mb-2">Project Files</p>
                 <a href="{{ route('portal.category', 'image') }}" data-tour="files"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.category') && in_array(request()->route('category'), $fileCategories, true) ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
@@ -200,7 +225,6 @@
                     </svg>
                     Account Settings
                 </a>
-                @php($unreadAnnouncementCount = \App\Models\Announcement::unacknowledgedCountFor(auth()->user())) @endphp
                 <a href="{{ route('portal.announcements.index') }}"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.announcements.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -358,23 +382,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
-                @php
-                    $hdrProject = auth()->user()->projects()->first();
-                    $hdrStatusLabels = [
-                        'onboarding' => 'Onboarding',
-                        'in_progress' => 'In Development',
-                        'review' => 'Under Review',
-                        'launched' => 'Launched',
-                        'maintenance' => 'Care Plan',
-                    ];
-                    $hdrStatusColors = [
-                        'onboarding' => 'bg-gold/10 text-gold-dark',
-                        'in_progress' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300',
-                        'review' => 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-300',
-                        'launched' => 'bg-teal/10 text-teal-dark',
-                        'maintenance' => 'bg-teal/10 text-teal-dark',
-                    ];
-                @endphp
                 <div class="flex items-center gap-2.5 flex-1 min-w-0">
                     <h1 class="font-display text-lg font-bold text-navy dark:text-white truncate">@yield('page-title', 'Client Portal')</h1>
                     @if (isset($hdrProject) && $hdrProject)
@@ -458,20 +465,8 @@
                         @if ($notifications->isEmpty())
                             <p class="text-sm text-gray-400 dark:text-gray-500 text-center py-8 px-4">No updates yet.</p>
                         @else
-                            @php
-                                $notificationIcons = [
-                                    'milestone_completed' => ['bg' => 'bg-teal/10', 'text' => 'text-teal-dark', 'path' => 'M5 13l4 4L19 7'],
-                                    'file_approved' => ['bg' => 'bg-teal/10', 'text' => 'text-teal-dark', 'path' => 'M5 13l4 4L19 7'],
-                                    'revision_reply' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z'],
-                                    'quote_ready' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M9 7h6m0 0v6m0-6L4 21'],
-                                    'consultation_update' => ['bg' => 'bg-teal/10', 'text' => 'text-teal-dark', 'path' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
-                                    'recommendation' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M13 10V3L4 14h7v7l9-11h-7z'],
-                                    'security' => ['bg' => 'bg-amber-50 dark:bg-amber-500/10', 'text' => 'text-amber-600 dark:text-amber-400', 'path' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'],
-                                ];
-                            @endphp
                             <ul class="divide-y divide-gray-100 dark:divide-gray-700 overflow-y-auto">
                                 @foreach ($notifications as $notification)
-                                    @php $icon = $notificationIcons[$notification->type] ?? $notificationIcons['milestone_completed']; @endphp
                                     <li class="js-notification-item flex items-start gap-3 px-4 py-3 cursor-pointer {{ $notification->read_at ? '' : 'bg-gold/5' }}"
                                         data-id="{{ $notification->id }}" data-unread="{{ $notification->read_at ? '0' : '1' }}"
                                         data-mark-read-url="{{ route('portal.notifications.read-one', $notification) }}"
