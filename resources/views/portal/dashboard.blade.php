@@ -670,19 +670,23 @@
             @endif
         </div>
 
-        {{-- Progress: label promoted to an eyebrow, % promoted to a hero number --}}
+        {{-- Progress: label promoted to an eyebrow, % promoted to a hero number.
+             Sans-serif (not font-display) so it reads as data, not a headline,
+             and sits on the label's baseline instead of floating above it. --}}
         <div class="mb-6">
-            <div class="flex items-end justify-between gap-3 mb-2.5">
+            <div class="flex items-baseline justify-between gap-3 mb-2.5">
                 <div>
                     <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Project Progress</p>
                     @if ($project->milestones->isNotEmpty() && ! $project->isProgressOverridden())
                         <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $project->milestones->where('status', 'completed')->count() }} of {{ $project->milestones->count() }} milestones</p>
                     @endif
                 </div>
-                <span class="progress-bar-value font-display text-3xl font-bold text-navy dark:text-white leading-none shrink-0" data-pct="{{ $project->progressPercent() }}">0%</span>
+                <span class="inline-flex items-baseline font-sans leading-none shrink-0" data-pct="{{ $project->progressPercent() }}">
+                    <span class="progress-bar-value-num text-3xl font-extrabold tracking-tight text-navy dark:text-white">0</span><span class="text-base font-semibold text-gray-400 dark:text-gray-500 ml-0.5">%</span>
+                </span>
             </div>
-            <div class="w-full h-2.5 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
-                <div class="progress-bar-fill h-full bg-gold rounded-full" style="width: 0%" data-pct="{{ $project->progressPercent() }}"></div>
+            <div class="w-full h-3 rounded-md bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                <div class="progress-bar-fill h-full bg-gold rounded-md" style="width: 0%" data-pct="{{ $project->progressPercent() }}"></div>
             </div>
         </div>
         <style>
@@ -693,13 +697,13 @@
             (function () {
                 const clamp = (n) => Math.max(0, Math.min(100, parseInt(n, 10) || 0));
                 const fill = document.querySelector('.progress-bar-fill');
-                const val = document.querySelector('.progress-bar-value');
+                const val = document.querySelector('.progress-bar-value-num');
                 if (!fill) return;
                 const target = clamp(fill.dataset.pct);
 
                 if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
                     fill.style.width = target + '%';
-                    if (val) val.textContent = target + '%';
+                    if (val) val.textContent = target;
                     return;
                 }
 
@@ -709,7 +713,7 @@
                     const duration = 2400, start = performance.now();
                     (function tick(now) {
                         const t = Math.min(1, (now - start) / duration);
-                        val.textContent = Math.round(target * (1 - Math.pow(1 - t, 3))) + '%';
+                        val.textContent = Math.round(target * (1 - Math.pow(1 - t, 3)));
                         if (t < 1) requestAnimationFrame(tick);
                     })(start);
                 }
@@ -720,8 +724,8 @@
              always sits next to the text that justifies it. --}}
         @php $nextMilestone = $project->nextMilestone(); @endphp
         @if ($nextMilestone)
-            <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-gray-50 dark:bg-gray-900/40 px-4 py-3.5 mb-6">
-                <div class="flex items-center gap-2.5 min-w-0">
+            <div class="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-gray-50 dark:bg-gray-900/40 px-5 py-4 mb-6">
+                <div class="flex items-center gap-3 min-w-0">
                     <span class="w-7 h-7 rounded-full bg-gold/15 text-gold-dark flex items-center justify-center shrink-0">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     </span>
@@ -735,20 +739,26 @@
                     </p>
                 </div>
                 @if ($project->preview_url)
-                    <a href="{{ $project->preview_url }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-dark bg-gold hover:bg-gold-dark px-4 py-2 rounded-lg transition-colors shrink-0">
+                    <a href="{{ $project->preview_url }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-dark bg-gold hover:bg-gold-dark px-5 py-2.5 rounded-lg transition-colors shrink-0">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                         View Live Preview
                     </a>
                 @endif
             </div>
         @elseif (in_array($project->status, ['launched', 'maintenance'], true))
-            <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-teal/10 border border-teal/20 px-4 py-3.5 mb-6">
-                <p class="text-sm font-semibold text-teal-dark flex items-center gap-2">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                    All milestones complete — your site is live!
-                </p>
+            {{-- Themed off the gold accent (not a separate green wash) so it
+                 reads as one family with the card and its button; the teal
+                 check badge alone carries the "success" cue, matching the
+                 same badge used in the milestone list below. --}}
+            <div class="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-gold/8 border border-gold/25 px-5 py-4 mb-6">
+                <div class="flex items-center gap-3 min-w-0">
+                    <span class="w-7 h-7 rounded-full bg-teal flex items-center justify-center shrink-0">
+                        <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                    </span>
+                    <p class="text-sm font-semibold text-navy dark:text-white">All milestones complete — your site is live!</p>
+                </div>
                 @if ($project->preview_url)
-                    <a href="{{ $project->preview_url }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-dark bg-gold hover:bg-gold-dark px-4 py-2 rounded-lg transition-colors shrink-0">
+                    <a href="{{ $project->preview_url }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-dark bg-gold hover:bg-gold-dark px-5 py-2.5 rounded-lg transition-colors shrink-0">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                         View Live Preview
                     </a>
@@ -756,38 +766,63 @@
             </div>
         @endif
 
-        {{-- Milestones: completed state uses a filled check + muted color,
+        {{-- Milestones: collapsed by default — once progress is visible up
+             top, the full history is reference material, not primary
+             content. Completed state uses a filled check + muted color,
              never a literal strikethrough (reads as "cancelled", not "done"). --}}
         @if ($project->milestones->isNotEmpty())
-            <div>
-                <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Milestones</p>
-                <ul class="space-y-2.5">
-                    @foreach ($project->milestones as $milestone)
-                        <li class="flex items-center gap-2.5 text-sm">
-                            @if ($milestone->status === 'completed')
-                                <span class="w-4 h-4 rounded-full bg-teal flex items-center justify-center shrink-0">
-                                    <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                                </span>
-                                <span class="text-gray-400 dark:text-gray-500">{{ $milestone->title }}</span>
-                                @if ($milestone->completed_at)
-                                    <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Completed {{ $milestone->completed_at->format('M j, Y') }}</span>
+            <div class="border-t border-gray-100 dark:border-gray-700 pt-5">
+                <button type="button" id="milestones-toggle" aria-expanded="false" aria-controls="milestones-panel"
+                        class="w-full flex items-center justify-between text-left group">
+                    <span class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 group-hover:text-navy dark:group-hover:text-white transition-colors">
+                        View Past Milestones <span class="text-gray-300 dark:text-gray-600 normal-case tracking-normal">({{ $project->milestones->count() }})</span>
+                    </span>
+                    <svg id="milestones-chevron" class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div id="milestones-panel" class="hidden mt-4">
+                    <ul class="space-y-2.5">
+                        @foreach ($project->milestones as $milestone)
+                            <li class="flex items-center gap-2.5 text-sm">
+                                @if ($milestone->status === 'completed')
+                                    <span class="w-4 h-4 rounded-full bg-teal flex items-center justify-center shrink-0">
+                                        <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    </span>
+                                    <span class="text-gray-400 dark:text-gray-500">{{ $milestone->title }}</span>
+                                    @if ($milestone->completed_at)
+                                        <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Completed {{ $milestone->completed_at->format('M j, Y') }}</span>
+                                    @endif
+                                @elseif ($milestone->status === 'in_progress')
+                                    <span class="w-4 h-4 rounded-full border-2 border-gold shrink-0"></span>
+                                    <span class="text-navy dark:text-white font-medium">{{ $milestone->title }}</span>
+                                    @if ($milestone->due_date)
+                                        <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
+                                    @endif
+                                @else
+                                    <span class="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-600 shrink-0"></span>
+                                    <span class="text-gray-500 dark:text-gray-400">{{ $milestone->title }}</span>
+                                    @if ($milestone->due_date)
+                                        <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
+                                    @endif
                                 @endif
-                            @elseif ($milestone->status === 'in_progress')
-                                <span class="w-4 h-4 rounded-full border-2 border-gold shrink-0"></span>
-                                <span class="text-navy dark:text-white font-medium">{{ $milestone->title }}</span>
-                                @if ($milestone->due_date)
-                                    <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
-                                @endif
-                            @else
-                                <span class="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-600 shrink-0"></span>
-                                <span class="text-gray-500 dark:text-gray-400">{{ $milestone->title }}</span>
-                                @if ($milestone->due_date)
-                                    <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
-                                @endif
-                            @endif
-                        </li>
-                    @endforeach
-                </ul>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+                <script>
+                    (function () {
+                        const btn = document.getElementById('milestones-toggle');
+                        const panel = document.getElementById('milestones-panel');
+                        const chevron = document.getElementById('milestones-chevron');
+                        if (!btn || !panel) return;
+
+                        btn.addEventListener('click', function () {
+                            const open = panel.classList.contains('hidden');
+                            panel.classList.toggle('hidden', !open);
+                            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                            if (chevron) chevron.style.transform = open ? 'rotate(180deg)' : '';
+                        });
+                    })();
+                </script>
             </div>
         @endif
     </div>
