@@ -24,9 +24,19 @@ class AnnouncementController extends Controller
             'audiences.*' => ['in:' . implode(',', array_keys(Announcement::AUDIENCES))],
         ]);
 
-        Announcement::create($validated + ['created_by' => $request->user()->id]);
+        // "Publish Live" activates immediately; "Save as Draft" leaves it inactive.
+        $publish = $request->boolean('publish');
 
-        return back()->with('status', 'Announcement created.');
+        $announcement = Announcement::create($validated + [
+            'created_by' => $request->user()->id,
+            'is_active' => $publish,
+        ]);
+
+        if ($publish) {
+            $this->deactivateOverlapping($announcement);
+        }
+
+        return back()->with('status', $publish ? 'Announcement published.' : 'Announcement saved as draft.');
     }
 
     public function update(Request $request, Announcement $announcement)
