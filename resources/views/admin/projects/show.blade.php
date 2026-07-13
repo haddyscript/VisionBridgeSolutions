@@ -17,6 +17,23 @@
         'canceled'    => 'Canceled',
     ];
     $milestoneStatuses = ['pending' => 'Pending', 'in_progress' => 'In Progress', 'completed' => 'Completed'];
+    // Drives both the row's left-accent/tint and the status select's own
+    // badge coloring — one source of truth for "what does this state look
+    // like," instead of scattered ad-hoc classes per status.
+    $milestoneStateStyles = [
+        'completed' => [
+            'card' => 'border-l-4 border-l-teal border-teal/20 bg-teal/[0.04] dark:bg-teal/[0.06]',
+            'badge' => 'bg-teal/15 text-teal-dark border-teal/30',
+        ],
+        'in_progress' => [
+            'card' => 'border-l-4 border-l-gold border-gold/20 bg-gold/[0.04] dark:bg-gold/[0.06]',
+            'badge' => 'bg-gold/15 text-gold-dark border-gold/30',
+        ],
+        'pending' => [
+            'card' => 'border-l-4 border-l-gray-300 dark:border-l-gray-600 border-gray-200 dark:border-gray-700',
+            'badge' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 border-gray-200 dark:border-gray-600',
+        ],
+    ];
     $empty = collect();
 @endphp
 
@@ -235,55 +252,65 @@
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
     <h3 class="font-semibold text-navy dark:text-white mb-4">Milestones</h3>
 
-    <div class="space-y-2 mb-5">
+    <div class="space-y-3 mb-6">
         @foreach ($project->milestones as $milestone)
-            <div class="rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2.5">
-                <div class="flex flex-wrap items-start gap-2">
-                    {{-- Title + description + due date — editable now, explicit Save (checkmark) --}}
-                    <form method="POST" action="{{ route('admin.milestones.update', $milestone) }}" data-ajax-target="header-card panel-overview" class="flex flex-1 flex-col gap-2 min-w-[10rem]">
+            @php $state = $milestoneStateStyles[$milestone->status] ?? $milestoneStateStyles['pending']; @endphp
+            <div class="rounded-lg border {{ $state['card'] }} px-4 py-3.5">
+                <div class="flex flex-wrap items-start gap-4">
+                    {{-- Title + due date + description — editable, explicit Save --}}
+                    <form method="POST" action="{{ route('admin.milestones.update', $milestone) }}" data-ajax-target="header-card panel-overview" class="flex flex-1 flex-col gap-2.5 min-w-[14rem]">
                         @csrf
                         @method('PATCH')
                         <input type="hidden" name="status" value="{{ $milestone->status }}">
-                        <div class="flex flex-wrap items-center gap-2">
+                        <div class="flex flex-wrap items-center gap-2.5">
                             <input type="text" name="title" value="{{ $milestone->title }}" required
-                                   class="flex-1 min-w-[10rem] rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                                   class="flex-1 min-w-[14rem] rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
                             <input type="date" name="due_date" value="{{ $milestone->due_date?->format('Y-m-d') }}"
-                                   class="w-36 shrink-0 rounded-lg border border-gray-300 dark:border-gray-600 px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
-                            <button type="submit" title="Save changes" class="shrink-0 w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-teal/10 hover:text-teal-dark flex items-center justify-center transition-colors">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                   class="w-40 shrink-0 rounded-lg border border-gray-300 dark:border-gray-600 px-2.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                            <button type="submit" title="Save title, due date &amp; details" class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 hover:bg-navy hover:text-white dark:hover:bg-navy px-3 py-2 rounded-lg transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+                                Save
                             </button>
                         </div>
                         <textarea name="description" rows="2" placeholder="Add details for this milestone (optional)..."
-                                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">{{ $milestone->description }}</textarea>
+                                  class="w-full min-h-[4.5rem] resize-y rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">{{ $milestone->description }}</textarea>
                     </form>
 
-                    {{-- Status — unchanged, still auto-submits on change --}}
-                    <form method="POST" action="{{ route('admin.milestones.update', $milestone) }}" data-ajax-target="header-card panel-overview" class="shrink-0">
-                        @csrf
-                        @method('PATCH')
-                        <input type="hidden" name="title" value="{{ $milestone->title }}">
-                        <input type="hidden" name="description" value="{{ $milestone->description }}">
-                        <input type="hidden" name="due_date" value="{{ $milestone->due_date?->format('Y-m-d') }}">
-                        <select name="status" onchange="this.form.requestSubmit()"
-                                class="rounded-lg border border-gray-300 dark:border-gray-600 px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                            @foreach ($milestoneStatuses as $value => $label)
-                                <option value="{{ $value }}" {{ $milestone->status === $value ? 'selected' : '' }}>{{ $label }}</option>
-                            @endforeach
-                        </select>
-                    </form>
+                    {{-- Status (itself the color-coded badge) + delete — grouped as
+                         one "state" column, set off from the edit form by a
+                         divider so a Save click can't be mistaken for Delete. --}}
+                    <div class="flex items-start gap-2 shrink-0 pl-4 ml-1 border-l border-gray-200 dark:border-gray-700 self-stretch">
+                        <div class="flex flex-col items-start gap-1.5">
+                            <form method="POST" action="{{ route('admin.milestones.update', $milestone) }}" data-ajax-target="header-card panel-overview">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="title" value="{{ $milestone->title }}">
+                                <input type="hidden" name="description" value="{{ $milestone->description }}">
+                                <input type="hidden" name="due_date" value="{{ $milestone->due_date?->format('Y-m-d') }}">
+                                <select name="status" onchange="this.form.requestSubmit()"
+                                        class="rounded-full border {{ $state['badge'] }} pl-3 pr-7 py-1.5 text-xs font-semibold uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-gold appearance-none bg-no-repeat bg-[right_0.5rem_center] bg-[length:0.85rem]"
+                                        style="background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 24 24%27 stroke=%27currentColor%27%3E%3Cpath stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272.5%27 d=%27M19 9l-7 7-7-7%27/%3E%3C/svg%3E');">
+                                    @foreach ($milestoneStatuses as $value => $label)
+                                        <option value="{{ $value }}" {{ $milestone->status === $value ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </form>
+                            @if ($milestone->status === 'completed' && $milestone->completed_at)
+                                <p class="text-[0.65rem] text-teal-dark px-1">{{ $milestone->completed_at->format('M j, Y') }}</p>
+                            @elseif ($milestone->due_date)
+                                <p class="text-[0.65rem] text-gray-400 dark:text-gray-500 px-1">Due {{ $milestone->due_date->format('M j, Y') }}</p>
+                            @endif
+                        </div>
 
-                    {{-- Delete — unchanged --}}
-                    <form method="POST" action="{{ route('admin.milestones.destroy', $milestone) }}" data-confirm="Remove this milestone?" data-ajax-target="header-card panel-overview" class="shrink-0">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                    </form>
+                        <form method="POST" action="{{ route('admin.milestones.destroy', $milestone) }}" data-confirm="Remove this milestone?" data-ajax-target="header-card panel-overview" class="ml-1">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" title="Delete milestone" class="w-8 h-8 rounded-full text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 flex items-center justify-center transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </form>
+                    </div>
                 </div>
-                @if ($milestone->status === 'completed' && $milestone->completed_at)
-                    <p class="text-xs text-teal-dark mt-1.5">Completed {{ $milestone->completed_at->format('M j, Y') }}</p>
-                @endif
             </div>
         @endforeach
         @if ($project->milestones->isEmpty())
@@ -291,20 +318,29 @@
         @endif
     </div>
 
-    <form method="POST" action="{{ route('admin.milestones.store', $project) }}" class="space-y-2" data-ajax-target="header-card panel-overview">
-        @csrf
-        <div class="flex items-center gap-3">
-            <input type="text" name="title" placeholder="Add a milestone..." required
-                   class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-            <input type="date" name="due_date"
-                   class="w-44 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
-            <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-                Add
-            </button>
-        </div>
-        <textarea name="description" rows="2" placeholder="Add details for this milestone (optional)..."
-                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
-    </form>
+    {{-- Distinct "create" zone — dashed border sets it apart from the solid,
+         state-tinted cards above so it never reads as just another row. --}}
+    <div class="rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50/60 dark:bg-gray-900/20 p-4">
+        <p class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+            Add a New Milestone
+        </p>
+        <form method="POST" action="{{ route('admin.milestones.store', $project) }}" class="space-y-2.5" data-ajax-target="header-card panel-overview">
+            @csrf
+            <div class="flex flex-wrap items-center gap-2.5">
+                <input type="text" name="title" placeholder="Milestone title..." required
+                       class="flex-1 min-w-[14rem] rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                <input type="date" name="due_date"
+                       class="w-44 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                <button type="submit" class="shrink-0 inline-flex items-center gap-1.5 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    Add
+                </button>
+            </div>
+            <textarea name="description" rows="2" placeholder="Add details for this milestone (optional)..."
+                      class="w-full min-h-[4rem] resize-y rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
+        </form>
+    </div>
 </div>
 
 </div>
