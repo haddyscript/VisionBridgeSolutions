@@ -48,6 +48,7 @@ use App\Http\Controllers\Portal\CategoryController;
 use App\Http\Controllers\Portal\ConsultationController as PortalConsultationController;
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\DocumentController as PortalDocumentController;
+use App\Http\Controllers\Portal\MilestoneController as PortalMilestoneController;
 use App\Http\Controllers\Portal\FaqFeedbackController;
 use App\Http\Controllers\Portal\NotificationController as PortalNotificationController;
 use App\Http\Controllers\Portal\TourController as PortalTourController;
@@ -169,6 +170,7 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
     Route::get('/portal/suspended', [PortalSuspendedController::class, 'show'])->name('portal.suspended');
 
     Route::get('/portal', DashboardController::class)->name('portal.dashboard');
+    Route::get('/portal/milestones', [PortalMilestoneController::class, 'index'])->name('portal.milestones.index');
     Route::get('/portal/documents', [PortalDocumentController::class, 'index'])->name('portal.documents.index');
     Route::get('/portal/project-requests', [PortalProjectRequestController::class, 'show'])->name('portal.project-requests.show');
     Route::post('/portal/project-requests', [PortalProjectRequestController::class, 'store'])->name('portal.project-requests.store');

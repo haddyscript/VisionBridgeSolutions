@@ -784,78 +784,53 @@
             </div>
         @endif
 
-        {{-- Milestones: collapsed by default — once progress is visible up
-             top, the full history is reference material, not primary
-             content. Completed state uses a filled check + muted color,
-             never a literal strikethrough (reads as "cancelled", not "done"). --}}
+        {{-- Milestones: a short teaser only — the full timeline (with a
+             status filter) lives on its own page now, so this card doesn't
+             duplicate it wholesale. Completed state uses a filled check +
+             muted color, never a literal strikethrough (reads as
+             "cancelled", not "done"). --}}
         @if ($project->milestones->isNotEmpty())
             <div class="border-t border-gray-100 dark:border-gray-700 pt-5">
-                <button type="button" id="milestones-toggle" aria-expanded="false" aria-controls="milestones-panel"
-                        class="w-full flex items-center justify-between text-left group">
-                    <span class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 group-hover:text-navy dark:group-hover:text-white transition-colors">
-                        View Past Milestones <span class="text-gray-300 dark:text-gray-600 normal-case tracking-normal">({{ $project->milestones->count() }})</span>
-                    </span>
-                    <svg id="milestones-chevron" class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </button>
-                <div id="milestones-panel" class="hidden mt-4">
-                    <ul class="space-y-3">
-                        @foreach ($project->milestones as $milestone)
-                            <li class="flex items-start gap-2.5 text-sm">
-                                @if ($milestone->status === 'completed')
-                                    <span class="w-4 h-4 rounded-full bg-teal flex items-center justify-center shrink-0 mt-0.5">
-                                        <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                                    </span>
-                                    <div class="min-w-0">
-                                        <span class="text-gray-400 dark:text-gray-500">{{ $milestone->title }}</span>
-                                        @if ($milestone->completed_at)
-                                            <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Completed {{ $milestone->completed_at->format('M j, Y') }}</span>
-                                        @endif
-                                        @if ($milestone->description)
-                                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $milestone->description }}</p>
-                                        @endif
-                                    </div>
-                                @elseif ($milestone->status === 'in_progress')
-                                    <span class="w-4 h-4 rounded-full border-2 border-gold shrink-0 mt-0.5"></span>
-                                    <div class="min-w-0">
-                                        <span class="text-navy dark:text-white font-medium">{{ $milestone->title }}</span>
-                                        @if ($milestone->due_date)
-                                            <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
-                                        @endif
-                                        @if ($milestone->description)
-                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $milestone->description }}</p>
-                                        @endif
-                                    </div>
-                                @else
-                                    <span class="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-600 shrink-0 mt-0.5"></span>
-                                    <div class="min-w-0">
-                                        <span class="text-gray-500 dark:text-gray-400">{{ $milestone->title }}</span>
-                                        @if ($milestone->due_date)
-                                            <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
-                                        @endif
-                                        @if ($milestone->description)
-                                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $milestone->description }}</p>
-                                        @endif
-                                    </div>
-                                @endif
-                            </li>
-                        @endforeach
-                    </ul>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Recent Milestones</span>
+                    <a href="{{ route('portal.milestones.index') }}" class="inline-flex items-center gap-1 text-xs font-semibold text-gold-dark hover:underline shrink-0">
+                        View Full Timeline
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
                 </div>
-                <script>
-                    (function () {
-                        const btn = document.getElementById('milestones-toggle');
-                        const panel = document.getElementById('milestones-panel');
-                        const chevron = document.getElementById('milestones-chevron');
-                        if (!btn || !panel) return;
-
-                        btn.addEventListener('click', function () {
-                            const open = panel.classList.contains('hidden');
-                            panel.classList.toggle('hidden', !open);
-                            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-                            if (chevron) chevron.style.transform = open ? 'rotate(180deg)' : '';
-                        });
-                    })();
-                </script>
+                <ul class="space-y-3">
+                    @foreach ($project->milestones->take(-3) as $milestone)
+                        <li class="flex items-start gap-2.5 text-sm">
+                            @if ($milestone->status === 'completed')
+                                <span class="w-4 h-4 rounded-full bg-teal flex items-center justify-center shrink-0 mt-0.5">
+                                    <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                                <div class="min-w-0">
+                                    <span class="text-gray-400 dark:text-gray-500">{{ $milestone->title }}</span>
+                                    @if ($milestone->completed_at)
+                                        <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Completed {{ $milestone->completed_at->format('M j, Y') }}</span>
+                                    @endif
+                                </div>
+                            @elseif ($milestone->status === 'in_progress')
+                                <span class="w-4 h-4 rounded-full border-2 border-gold shrink-0 mt-0.5"></span>
+                                <div class="min-w-0">
+                                    <span class="text-navy dark:text-white font-medium">{{ $milestone->title }}</span>
+                                    @if ($milestone->due_date)
+                                        <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
+                                    @endif
+                                </div>
+                            @else
+                                <span class="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-600 shrink-0 mt-0.5"></span>
+                                <div class="min-w-0">
+                                    <span class="text-gray-500 dark:text-gray-400">{{ $milestone->title }}</span>
+                                    @if ($milestone->due_date)
+                                        <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
+                                    @endif
+                                </div>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
             </div>
         @endif
     </div>
