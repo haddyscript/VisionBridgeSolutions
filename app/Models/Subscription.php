@@ -107,6 +107,21 @@ class Subscription extends Model
             && (! $this->renewal_reminder_period_end || ! $this->renewal_reminder_period_end->equalTo($this->current_period_end));
     }
 
+    /**
+     * True whenever the current period is inside the renewal-reminder
+     * window — drives an in-portal banner. Unlike needsRenewalReminder(),
+     * this deliberately ignores renewal_reminder_period_end (which only
+     * tracks whether the *email* already went out for this period) so the
+     * portal badge stays visible for the whole window, not just one day.
+     */
+    public function isRenewingSoon(): bool
+    {
+        return $this->isActive()
+            && $this->current_period_end !== null
+            && $this->current_period_end->isFuture()
+            && $this->current_period_end->lte(now()->addDays(self::RENEWAL_REMINDER_DAYS));
+    }
+
     public function formattedAmount(): string
     {
         return '$'.number_format($this->amount / 100, 2).'/'.$this->interval;

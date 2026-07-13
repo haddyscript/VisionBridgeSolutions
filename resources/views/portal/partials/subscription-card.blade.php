@@ -53,6 +53,12 @@
                             {{ $subscription->status === 'past_due' ? 'Past Due' : ucfirst($subscription->status) }}
                         </span>
                     @endif
+                    @if (! $subscription->cancel_at_period_end && $subscription->isRenewingSoon())
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1 rounded-full bg-gold/15 text-gold-dark">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gold"></span>
+                            Renews {{ $subscription->current_period_end->diffForHumans(['parts' => 1]) }}
+                        </span>
+                    @endif
                 </div>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
                     @if ($subscription->isCanceled() && $subscription->canceled_at)
