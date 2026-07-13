@@ -31,40 +31,49 @@
 
 {{-- Stats --}}
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4">
-        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1">Total Clients</p>
-        <p class="font-display text-2xl font-bold text-navy dark:text-white">{{ $total }}</p>
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4 flex flex-col justify-center">
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1.5">Total Clients</p>
+        <p class="text-2xl font-bold leading-tight text-navy dark:text-white">{{ $total }}</p>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4">
-        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1">Online Now</p>
-        <p class="font-display text-2xl font-bold text-green-600 dark:text-green-400">{{ $online }}</p>
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4 flex flex-col justify-center">
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1.5">Online Now</p>
+        <p class="text-2xl font-bold leading-tight text-green-600 dark:text-green-400">{{ $online }}</p>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4">
-        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1">Verified</p>
-        <p class="font-display text-2xl font-bold text-navy dark:text-white">{{ $verified }}</p>
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4 flex flex-col justify-center">
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1.5">Verified</p>
+        <p class="text-2xl font-bold leading-tight text-navy dark:text-white">{{ $verified }}</p>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4">
-        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1">No Project Yet</p>
-        <p class="font-display text-2xl font-bold text-gold">{{ $noProject }}</p>
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4 flex flex-col justify-center">
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1.5">No Project Yet</p>
+        <p class="text-2xl font-bold leading-tight text-gold">{{ $noProject }}</p>
     </div>
 </div>
 
-{{-- Search --}}
+{{-- Search + Add Client --}}
 <div class="mb-4">
-    <form method="GET" action="{{ route('admin.clients.index') }}" class="flex gap-2">
-        <input type="text" name="search" value="{{ $search }}" placeholder="Search by name or email…"
-            class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-800 dark:text-white">
-        <button type="submit"
-            class="px-4 py-2 bg-navy text-white text-sm font-semibold rounded-lg hover:bg-navy-light transition-colors">
-            Search
+    <div class="flex flex-col sm:flex-row gap-2">
+        <form method="GET" action="{{ route('admin.clients.index') }}" class="flex flex-1 gap-2">
+            <input type="text" name="search" value="{{ $search }}" placeholder="Search by name or email…"
+                class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-800 dark:text-white">
+            <button type="submit"
+                class="px-4 py-2 bg-navy text-white text-sm font-semibold rounded-lg hover:bg-navy-light transition-colors">
+                Search
+            </button>
+            @if ($search)
+                <a href="{{ route('admin.clients.index') }}"
+                    class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                    Clear
+                </a>
+            @endif
+        </form>
+        <button type="button" onclick="openAddClientModal()"
+            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-gold hover:bg-gold-dark text-navy text-sm font-semibold rounded-lg transition-colors shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Client
         </button>
-        @if ($search)
-            <a href="{{ route('admin.clients.index') }}"
-                class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                Clear
-            </a>
-        @endif
-    </form>
+    </div>
 </div>
 
 {{-- Table --}}
@@ -95,7 +104,7 @@
 
                             {{-- Client identity --}}
                             <td class="px-5 py-4">
-                                <div class="flex items-center gap-3">
+                                <div class="flex items-center gap-4">
                                     <div class="relative shrink-0">
                                         <div class="w-9 h-9 rounded-full bg-navy/10 dark:bg-white/10 text-navy dark:text-white flex items-center justify-center text-sm font-bold">
                                             {{ strtoupper(substr($client->name, 0, 1)) }}
@@ -149,14 +158,6 @@
                             {{-- Actions --}}
                             <td class="px-5 py-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
-                                    <button type="button"
-                                        onclick="openEditModal({{ $client->id }}, '{{ addslashes($client->name) }}', '{{ addslashes($client->email) }}', '{{ addslashes($client->phone ?? '') }}')"
-                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-xs font-medium hover:border-gray-300 dark:hover:border-gray-500 hover:text-navy dark:hover:text-white transition-colors">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                        </svg>
-                                        Edit
-                                    </button>
                                     @if ($project)
                                         <a href="{{ route('admin.projects.show', $project) }}"
                                             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-navy text-white text-xs font-semibold hover:bg-navy-light transition-colors">
@@ -175,8 +176,13 @@
                                             </svg>
                                         </button>
                                         <div x-show="open" x-transition
-                                            class="fixed w-48 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg z-50 py-1">
-                                            <p class="px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-gray-400">Account Info</p>
+                                            class="fixed w-52 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg z-50 py-1">
+                                            <button type="button"
+                                                onclick="openEditModal({{ $client->id }}, '{{ addslashes($client->name) }}', '{{ addslashes($client->email) }}', '{{ addslashes($client->phone ?? '') }}')"
+                                                class="w-full text-left px-3 py-2 text-xs text-navy dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                                Edit Client Info
+                                            </button>
+                                            <p class="px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-gray-400 border-t border-gray-100 dark:border-gray-700 mt-1">Account Info</p>
                                             <div class="px-3 py-2 border-t border-gray-100 dark:border-gray-700 space-y-1">
                                                 <p class="text-xs text-gray-500 dark:text-gray-400">
                                                     <span class="font-medium text-navy dark:text-white">Verified:</span>
@@ -295,7 +301,70 @@
     </div>
 </div>
 
+{{-- Add Client Modal --}}
+<div id="add-client-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 hidden">
+    <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+
+        <div class="px-6 pt-6 pb-5" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
+            <button type="button" onclick="closeAddClientModal()" class="absolute top-4 right-4 text-white/40 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+            <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Admin</p>
+            <h2 class="font-display text-xl font-bold text-white">Add Client</h2>
+        </div>
+
+        <form id="add-client-form" method="POST" action="{{ route('admin.clients.store') }}" class="px-6 py-6 space-y-4">
+            @csrf
+
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Full Name</label>
+                <input type="text" name="name" required
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Email Address</label>
+                <input type="email" name="email" required
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Phone Number <span class="text-gray-400">(optional)</span></label>
+                <input type="tel" name="phone"
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white"
+                    placeholder="(000) 000-0000">
+            </div>
+            <p class="text-xs text-gray-400 dark:text-gray-500">
+                Creates the account right away and emails them a password-setup link. No project is attached yet — add one from their row afterward.
+            </p>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" onclick="closeAddClientModal()"
+                    class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="px-5 py-2 rounded-lg bg-gold hover:bg-gold-dark text-navy text-sm font-semibold transition-colors">
+                    Create Client
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    function openAddClientModal() {
+        document.getElementById('add-client-modal').classList.remove('hidden');
+    }
+
+    function closeAddClientModal() {
+        document.getElementById('add-client-modal').classList.add('hidden');
+    }
+
+    document.getElementById('add-client-modal').addEventListener('click', function (e) {
+        if (e.target === this) closeAddClientModal();
+    });
+
     const baseUrl = '{{ url('/admin/clients') }}';
 
     function openEditModal(id, name, email, phone) {

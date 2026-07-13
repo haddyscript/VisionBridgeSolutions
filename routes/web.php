@@ -248,6 +248,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
 
     // ─── Clients ─────────────────────────────────────────────────────────────
     Route::get('/clients', [AdminClientController::class, 'index'])->name('clients.index');
+    Route::post('/clients', [AdminClientController::class, 'store'])->name('clients.store');
     Route::patch('/clients/{client}', [AdminClientController::class, 'update'])->name('clients.update');
     Route::delete('/clients/{client}', [AdminClientController::class, 'destroy'])->name('clients.destroy');
     Route::post('/clients/{client}/impersonate', [AdminClientController::class, 'impersonate'])->name('clients.impersonate');

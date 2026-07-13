@@ -3,18 +3,56 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\WelcomeClientMail;
 use App\Models\LoginActivity;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Stripe;
 
 class ClientController extends Controller
 {
+    /**
+     * Admin "quick add" — creates a client account directly (name/email/
+     * phone only, no project yet) for cases that don't go through the
+     * Intake Submission flow. Mirrors IntakeSubmissionController::convert()'s
+     * account-creation shape: a random password, auto-verified email (an
+     * admin manually creating the account is itself the verification), and
+     * the same welcome/password-setup email so the client can log in.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'phone' => ['nullable', 'string', 'max:30'],
+        ]);
+
+        $client = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
+            'password' => Str::random(40),
+            'role' => 'client',
+            'email_verified_at' => now(),
+        ]);
+
+        $resetToken = Password::createToken($client);
+        $resetUrl = route('password.reset', ['token' => $resetToken, 'email' => $client->email]);
+
+        Mail::to($client->email)->send(new WelcomeClientMail($client, $resetUrl));
+
+        return redirect()->route('admin.clients.index')
+            ->with('status', "{$client->name}'s account has been created. A password-setup email has been sent.");
+    }
+
     /**
      * "Login as client" — lets an admin see the portal exactly as the client
      * sees it, without ever needing the client's password (e.g. to reproduce
