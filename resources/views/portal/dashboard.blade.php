@@ -655,38 +655,35 @@
     </div>
 
     {{-- Project header --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6 sm:mb-8">
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <div>
-                <h2 class="font-display text-2xl font-bold text-navy dark:text-white">{{ $project->name }}</h2>
-                @if ($project->description)
-                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">{{ $project->description }}</p>
-                @endif
-            </div>
-            <div class="flex items-center gap-2 shrink-0">
-                @if ($project->preview_url)
-                    <a href="{{ $project->preview_url }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy dark:text-white bg-gold/15 hover:bg-gold/25 px-4 py-2 rounded-lg transition-colors">
-                        <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                        View Live Preview
-                    </a>
-                @endif
-                <span class="inline-block text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full bg-gold/15 text-gold-dark">
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 sm:p-7 mb-6 sm:mb-8">
+
+        {{-- Identity: title + status badge live together --}}
+        <div class="mb-6">
+            <div class="flex flex-wrap items-center gap-2.5">
+                <h2 class="font-display text-xl sm:text-2xl font-bold text-navy dark:text-white">{{ $project->name }}</h2>
+                <span class="inline-flex items-center text-[0.65rem] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-navy text-white shrink-0">
                     {{ $statusLabels[$project->status] ?? $project->status }}
                 </span>
             </div>
+            @if ($project->description)
+                <p class="text-gray-500 dark:text-gray-400 text-sm mt-1.5">{{ $project->description }}</p>
+            @endif
         </div>
 
-        <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">
-            <span>
-                Project Progress
-                @if ($project->milestones->isNotEmpty() && ! $project->isProgressOverridden())
-                    <span class="text-xs text-gray-400 dark:text-gray-500">({{ $project->milestones->where('status', 'completed')->count() }} of {{ $project->milestones->count() }} milestones)</span>
-                @endif
-            </span>
-            <span class="progress-bar-value font-semibold text-navy dark:text-white" data-pct="{{ $project->progressPercent() }}">0%</span>
-        </div>
-        <div class="w-full h-2 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
-            <div class="progress-bar-fill h-full bg-gold rounded-full" style="width: 0%" data-pct="{{ $project->progressPercent() }}"></div>
+        {{-- Progress: label promoted to an eyebrow, % promoted to a hero number --}}
+        <div class="mb-6">
+            <div class="flex items-end justify-between gap-3 mb-2.5">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Project Progress</p>
+                    @if ($project->milestones->isNotEmpty() && ! $project->isProgressOverridden())
+                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $project->milestones->where('status', 'completed')->count() }} of {{ $project->milestones->count() }} milestones</p>
+                    @endif
+                </div>
+                <span class="progress-bar-value font-display text-3xl font-bold text-navy dark:text-white leading-none shrink-0" data-pct="{{ $project->progressPercent() }}">0%</span>
+            </div>
+            <div class="w-full h-2.5 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                <div class="progress-bar-fill h-full bg-gold rounded-full" style="width: 0%" data-pct="{{ $project->progressPercent() }}"></div>
+            </div>
         </div>
         <style>
             .progress-bar-fill { transition: width 2.4s cubic-bezier(0.33, 1, 0.68, 1); }
@@ -719,56 +716,79 @@
             })();
         </script>
 
+        {{-- Contextual status + its action, grouped in one bar so the CTA
+             always sits next to the text that justifies it. --}}
         @php $nextMilestone = $project->nextMilestone(); @endphp
         @if ($nextMilestone)
-            <div class="flex items-center gap-2.5 mt-4 text-sm">
-                <span class="w-7 h-7 rounded-full bg-gold/15 text-gold-dark flex items-center justify-center shrink-0">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                </span>
-                <p class="text-gray-600 dark:text-gray-300">
-                    <span class="font-semibold text-navy dark:text-white">Next: {{ $nextMilestone->title }}</span>
-                    @if ($nextMilestone->due_date->isPast())
-                        <span class="text-red-500 font-medium">&middot; Overdue since {{ $nextMilestone->due_date->format('M j, Y') }}</span>
-                    @else
-                        <span class="text-gray-400 dark:text-gray-500">&middot; Due {{ $nextMilestone->due_date->format('M j, Y') }} ({{ $nextMilestone->due_date->diffForHumans() }})</span>
-                    @endif
-                </p>
+            <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-gray-50 dark:bg-gray-900/40 px-4 py-3.5 mb-6">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <span class="w-7 h-7 rounded-full bg-gold/15 text-gold-dark flex items-center justify-center shrink-0">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </span>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 min-w-0">
+                        <span class="font-semibold text-navy dark:text-white">Next: {{ $nextMilestone->title }}</span>
+                        @if ($nextMilestone->due_date->isPast())
+                            <span class="text-red-500 font-medium">&middot; Overdue since {{ $nextMilestone->due_date->format('M j, Y') }}</span>
+                        @else
+                            <span class="text-gray-400 dark:text-gray-500">&middot; Due {{ $nextMilestone->due_date->format('M j, Y') }} ({{ $nextMilestone->due_date->diffForHumans() }})</span>
+                        @endif
+                    </p>
+                </div>
+                @if ($project->preview_url)
+                    <a href="{{ $project->preview_url }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-dark bg-gold hover:bg-gold-dark px-4 py-2 rounded-lg transition-colors shrink-0">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        View Live Preview
+                    </a>
+                @endif
             </div>
         @elseif (in_array($project->status, ['launched', 'maintenance'], true))
-            <p class="text-sm text-teal-dark mt-4 flex items-center gap-2">
-                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                All milestones complete — your site is live!
-            </p>
+            <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-teal/10 border border-teal/20 px-4 py-3.5 mb-6">
+                <p class="text-sm font-semibold text-teal-dark flex items-center gap-2">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    All milestones complete — your site is live!
+                </p>
+                @if ($project->preview_url)
+                    <a href="{{ $project->preview_url }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-dark bg-gold hover:bg-gold-dark px-4 py-2 rounded-lg transition-colors shrink-0">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        View Live Preview
+                    </a>
+                @endif
+            </div>
         @endif
 
+        {{-- Milestones: completed state uses a filled check + muted color,
+             never a literal strikethrough (reads as "cancelled", not "done"). --}}
         @if ($project->milestones->isNotEmpty())
-            <ul class="mt-5 space-y-2">
-                @foreach ($project->milestones as $milestone)
-                    <li class="flex items-center gap-2.5 text-sm">
-                        @if ($milestone->status === 'completed')
-                            <span class="w-4 h-4 rounded-full bg-teal flex items-center justify-center shrink-0">
-                                <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                            </span>
-                            <span class="text-gray-400 dark:text-gray-500 line-through">{{ $milestone->title }}</span>
-                            @if ($milestone->completed_at)
-                                <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Completed {{ $milestone->completed_at->format('M j, Y') }}</span>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Milestones</p>
+                <ul class="space-y-2.5">
+                    @foreach ($project->milestones as $milestone)
+                        <li class="flex items-center gap-2.5 text-sm">
+                            @if ($milestone->status === 'completed')
+                                <span class="w-4 h-4 rounded-full bg-teal flex items-center justify-center shrink-0">
+                                    <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                                <span class="text-gray-400 dark:text-gray-500">{{ $milestone->title }}</span>
+                                @if ($milestone->completed_at)
+                                    <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Completed {{ $milestone->completed_at->format('M j, Y') }}</span>
+                                @endif
+                            @elseif ($milestone->status === 'in_progress')
+                                <span class="w-4 h-4 rounded-full border-2 border-gold shrink-0"></span>
+                                <span class="text-navy dark:text-white font-medium">{{ $milestone->title }}</span>
+                                @if ($milestone->due_date)
+                                    <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
+                                @endif
+                            @else
+                                <span class="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-600 shrink-0"></span>
+                                <span class="text-gray-500 dark:text-gray-400">{{ $milestone->title }}</span>
+                                @if ($milestone->due_date)
+                                    <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
+                                @endif
                             @endif
-                        @elseif ($milestone->status === 'in_progress')
-                            <span class="w-4 h-4 rounded-full border-2 border-gold shrink-0"></span>
-                            <span class="text-navy dark:text-white font-medium">{{ $milestone->title }}</span>
-                            @if ($milestone->due_date)
-                                <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
-                            @endif
-                        @else
-                            <span class="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-600 shrink-0"></span>
-                            <span class="text-gray-500 dark:text-gray-400">{{ $milestone->title }}</span>
-                            @if ($milestone->due_date)
-                                <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
-                            @endif
-                        @endif
-                    </li>
-                @endforeach
-            </ul>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
         @endif
     </div>
 
