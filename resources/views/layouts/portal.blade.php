@@ -377,7 +377,7 @@
                 @endphp
                 <div class="flex items-center gap-2.5 flex-1 min-w-0">
                     <h1 class="font-display text-lg font-bold text-navy dark:text-white truncate">@yield('page-title', 'Client Portal')</h1>
-                    @if ($hdrProject)
+                    @if (isset($hdrProject) && $hdrProject)
                         <span class="hidden sm:inline-flex items-center gap-1.5 shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full {{ $hdrStatusColors[$hdrProject->status] ?? 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-300' }}">
                             <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
                             {{ $hdrStatusLabels[$hdrProject->status] ?? ucfirst($hdrProject->status) }}
