@@ -112,7 +112,7 @@
                                     </span>
                                 </button>
                                 <div class="flex items-center gap-2 shrink-0">
-                                    <button type="button" onclick="toggleEditPanel({{ $announcement->id }})"
+                                    <button type="button" onclick="openEditModal({{ $announcement->id }})"
                                             class="text-xs font-semibold text-navy bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full transition-colors">
                                         Edit
                                     </button>
@@ -140,45 +140,55 @@
                                 </p>
                             </div>
 
-                            {{-- Collapsible edit form — pre-filled with current values --}}
-                            <div id="edit-panel-{{ $announcement->id }}" class="hidden mt-3 pt-3 border-t border-gray-200">
-                                <form method="POST" action="{{ route('admin.announcements.update', $announcement) }}" class="space-y-3">
-                                    @csrf
-                                    @method('PATCH')
-                                    <div>
-                                        <label class="block text-xs font-medium text-navy mb-1">Title</label>
-                                        <input type="text" name="title" value="{{ $announcement->title }}" required
-                                               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                            {{-- Edit modal — pre-filled with current values --}}
+                            <div id="edit-modal-{{ $announcement->id }}" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
+                                <div class="absolute inset-0 bg-black/50" onclick="closeEditModal({{ $announcement->id }})"></div>
+                                <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                                    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200 sticky top-0 bg-white rounded-t-xl">
+                                        <h3 class="text-sm font-semibold text-navy">Edit Announcement</h3>
+                                        <button type="button" onclick="closeEditModal({{ $announcement->id }})" aria-label="Close"
+                                                class="text-gray-400 hover:text-navy transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        </button>
                                     </div>
-                                    <div>
-                                        <label class="block text-xs font-medium text-navy mb-1">Message</label>
-                                        <textarea name="body" rows="5" required
-                                                  class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ $announcement->body }}</textarea>
-                                        <p class="text-xs text-gray-400 mt-1">Line breaks and blank lines are preserved.</p>
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-medium text-navy mb-1.5">Audience</label>
-                                        <div class="flex flex-wrap gap-4">
-                                            @foreach (\App\Models\Announcement::AUDIENCES as $value => $label)
-                                                <label class="inline-flex items-center gap-2 text-sm text-navy cursor-pointer">
-                                                    <input type="checkbox" name="audiences[]" value="{{ $value }}"
-                                                           {{ in_array($value, $announcement->audiences ?? []) ? 'checked' : '' }}
-                                                           class="rounded border-gray-300 text-gold focus:ring-gold">
-                                                    {{ $label }}
-                                                </label>
-                                            @endforeach
+                                    <form method="POST" action="{{ route('admin.announcements.update', $announcement) }}" class="p-5 space-y-4">
+                                        @csrf
+                                        @method('PATCH')
+                                        <div>
+                                            <label class="block text-xs font-medium text-navy mb-1">Title</label>
+                                            <input type="text" name="title" value="{{ $announcement->title }}" required
+                                                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                                         </div>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-                                            Save Changes
-                                        </button>
-                                        <button type="button" onclick="toggleEditPanel({{ $announcement->id }})"
-                                                class="text-sm font-semibold text-gray-500 hover:text-navy px-3 py-2 transition-colors">
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </form>
+                                        <div>
+                                            <label class="block text-xs font-medium text-navy mb-1">Message</label>
+                                            <textarea name="body" rows="6" required
+                                                      class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ $announcement->body }}</textarea>
+                                            <p class="text-xs text-gray-400 mt-1">Line breaks and blank lines are preserved.</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-medium text-navy mb-1.5">Audience</label>
+                                            <div class="flex flex-wrap gap-4">
+                                                @foreach (\App\Models\Announcement::AUDIENCES as $value => $label)
+                                                    <label class="inline-flex items-center gap-2 text-sm text-navy cursor-pointer">
+                                                        <input type="checkbox" name="audiences[]" value="{{ $value }}"
+                                                               {{ in_array($value, $announcement->audiences ?? []) ? 'checked' : '' }}
+                                                               class="rounded border-gray-300 text-gold focus:ring-gold">
+                                                        {{ $label }}
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-2 pt-1">
+                                            <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                                                Save Changes
+                                            </button>
+                                            <button type="button" onclick="closeEditModal({{ $announcement->id }})"
+                                                    class="text-sm font-semibold text-gray-500 hover:text-navy px-3 py-2 transition-colors">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     @endforeach
@@ -192,9 +202,20 @@
 </div>
 
 <script>
-    function toggleEditPanel(id) {
-        document.getElementById('edit-panel-' + id)?.classList.toggle('hidden');
+    function openEditModal(id) {
+        document.getElementById('edit-modal-' + id)?.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
     }
+    function closeEditModal(id) {
+        document.getElementById('edit-modal-' + id)?.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+    // Escape closes any open edit modal.
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        document.querySelectorAll('[id^="edit-modal-"]').forEach(m => m.classList.add('hidden'));
+        document.body.style.overflow = '';
+    });
 
     // Each announcement collapses to just its title + a one-line preview;
     // expand to read the full message. Collapsed by default.
