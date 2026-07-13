@@ -68,7 +68,11 @@
                                 </p>
                             </div>
                             <div class="flex items-center gap-2 shrink-0">
-                                <form method="POST" action="{{ route('admin.announcements.update', $announcement) }}">
+                                <button type="button" onclick="toggleEditPanel({{ $announcement->id }})"
+                                        class="text-xs font-semibold text-navy bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full transition-colors">
+                                    Edit
+                                </button>
+                                <form method="POST" action="{{ route('admin.announcements.toggle', $announcement) }}">
                                     @csrf
                                     @method('PATCH')
                                     <input type="hidden" name="is_active" value="{{ $announcement->is_active ? '0' : '1' }}">
@@ -83,6 +87,46 @@
                                 </form>
                             </div>
                         </div>
+
+                        {{-- Collapsible edit form — pre-filled with current values --}}
+                        <div id="edit-panel-{{ $announcement->id }}" class="hidden mt-3 pt-3 border-t border-gray-200">
+                            <form method="POST" action="{{ route('admin.announcements.update', $announcement) }}" class="space-y-3">
+                                @csrf
+                                @method('PATCH')
+                                <div>
+                                    <label class="block text-xs font-medium text-navy mb-1">Title</label>
+                                    <input type="text" name="title" value="{{ $announcement->title }}" required
+                                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-navy mb-1">Message</label>
+                                    <textarea name="body" rows="4" required
+                                              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ $announcement->body }}</textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-navy mb-1.5">Audience</label>
+                                    <div class="flex flex-wrap gap-4">
+                                        @foreach (\App\Models\Announcement::AUDIENCES as $value => $label)
+                                            <label class="inline-flex items-center gap-2 text-sm text-navy cursor-pointer">
+                                                <input type="checkbox" name="audiences[]" value="{{ $value }}"
+                                                       {{ in_array($value, $announcement->audiences ?? []) ? 'checked' : '' }}
+                                                       class="rounded border-gray-300 text-gold focus:ring-gold">
+                                                {{ $label }}
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                                        Save Changes
+                                    </button>
+                                    <button type="button" onclick="toggleEditPanel({{ $announcement->id }})"
+                                            class="text-sm font-semibold text-gray-500 hover:text-navy px-3 py-2 transition-colors">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -92,5 +136,11 @@
     </div>
 
 </div>
+
+<script>
+    function toggleEditPanel(id) {
+        document.getElementById('edit-panel-' + id)?.classList.toggle('hidden');
+    }
+</script>
 
 @endsection

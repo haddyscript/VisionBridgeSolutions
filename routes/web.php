@@ -240,6 +240,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     // management permission, so this route opts out of admin-page-access.
     Route::post('/announcements/{announcement}/dismiss', [AdminAnnouncementController::class, 'dismiss'])->name('announcements.dismiss')->withoutMiddleware('admin-page-access');
     Route::patch('/announcements/{announcement}', [AdminAnnouncementController::class, 'update'])->name('announcements.update');
+    Route::patch('/announcements/{announcement}/toggle', [AdminAnnouncementController::class, 'toggle'])->name('announcements.toggle');
     Route::delete('/announcements/{announcement}', [AdminAnnouncementController::class, 'destroy'])->name('announcements.destroy');
 
     // ─── Clients ─────────────────────────────────────────────────────────────
