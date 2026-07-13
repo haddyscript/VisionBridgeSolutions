@@ -68,6 +68,23 @@
                 </div>
             </button>
 
+            <button type="button" data-settings-tab="billing" class="settings-tab-btn w-full flex items-center gap-3 px-4 py-3.5 text-left border-l-2 transition-colors">
+                <div class="settings-tab-icon w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                        <p class="settings-tab-label text-sm font-semibold">Billing</p>
+                        @if ($subscription && ! $subscription->cancel_at_period_end && $subscription->isRenewingSoon())
+                            <span class="inline-block text-[0.65rem] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">Renews Soon</span>
+                        @endif
+                    </div>
+                    <p class="text-xs text-gray-400 dark:text-gray-500">Your Care Plan &amp; payment details</p>
+                </div>
+            </button>
+
             <button type="button" data-settings-tab="notifications" class="settings-tab-btn w-full flex items-center gap-3 px-4 py-3.5 text-left border-l-2 transition-colors">
                 <div class="settings-tab-icon w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -347,6 +364,70 @@
                         <span class="btn-label">Update Password</span>
                     </button>
                 </form>
+            </div>
+
+            {{-- Billing — read-only summary sourced from local data only (no
+                 live Stripe call on every Account Settings page load); card
+                 details and any changes stay on the dedicated Manage Billing
+                 page, which already handles that. --}}
+            <div data-settings-panel="billing" class="settings-panel hidden">
+                <h3 class="font-display text-lg font-bold text-navy dark:text-white mb-1">Billing</h3>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mb-5">Your Care Plan status at a glance — manage your card or cancel from Manage Billing.</p>
+
+                @if ($subscription)
+                    @php
+                        $billingStatusColors = [
+                            'pending' => 'bg-gold/15 text-gold-dark',
+                            'active' => 'bg-teal/15 text-teal-dark',
+                            'past_due' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
+                            'canceled' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400',
+                        ];
+                    @endphp
+                    <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-5 max-w-lg">
+                        <div class="flex items-start justify-between gap-3 mb-1">
+                            <p class="font-semibold text-navy dark:text-white">{{ $subscription->description }}</p>
+                            <span class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $billingStatusColors[$subscription->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
+                                {{ $subscription->status === 'past_due' ? 'Past Due' : ucfirst($subscription->status) }}
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{{ $subscription->formattedAmount() }}</p>
+
+                        <dl class="space-y-2 text-sm border-t border-gray-100 dark:border-gray-700 pt-4">
+                            @if ($subscription->isCanceled() && $subscription->canceled_at)
+                                <div class="flex justify-between gap-3">
+                                    <dt class="text-gray-400 dark:text-gray-500">Canceled</dt>
+                                    <dd class="text-navy dark:text-white font-medium">{{ $subscription->canceled_at->format('M j, Y') }}</dd>
+                                </div>
+                            @elseif ($subscription->cancel_at_period_end && $subscription->current_period_end)
+                                <div class="flex justify-between gap-3">
+                                    <dt class="text-gray-400 dark:text-gray-500">Plan ends</dt>
+                                    <dd class="text-red-500 font-medium">{{ $subscription->current_period_end->format('M j, Y') }}</dd>
+                                </div>
+                            @elseif ($subscription->current_period_end)
+                                <div class="flex justify-between gap-3">
+                                    <dt class="text-gray-400 dark:text-gray-500">Next renewal</dt>
+                                    <dd class="{{ $subscription->isRenewingSoon() ? 'text-gold-dark' : 'text-navy dark:text-white' }} font-medium">
+                                        {{ $subscription->current_period_end->format('M j, Y') }}
+                                        @if ($subscription->isRenewingSoon()) (soon) @endif
+                                    </dd>
+                                </div>
+                            @endif
+                        </dl>
+
+                        <a href="{{ route('portal.billing.show') }}" class="settings-action-btn is-navy inline-flex mt-5 bg-navy text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors">
+                            <span class="btn-fill"></span>
+                            <span class="btn-label">Manage Billing</span>
+                        </a>
+                    </div>
+                @else
+                    <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-5 max-w-lg">
+                        <p class="text-sm text-gray-400 dark:text-gray-500 mb-4">No Care Plan on this account yet.</p>
+                        <a href="{{ route('portal.payments.index') }}" class="settings-action-btn is-navy inline-flex bg-navy text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors">
+                            <span class="btn-fill"></span>
+                            <span class="btn-label">View Payments</span>
+                        </a>
+                    </div>
+                @endif
             </div>
 
             {{-- Notification Preferences --}}

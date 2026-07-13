@@ -31,6 +31,12 @@ class AccountController extends Controller
                 ->get(),
             'project' => $project,
             'questionnaire' => $project?->questionnaire,
+            // Local fields only (status/amount/renewal date) — deliberately
+            // no live Stripe call here (unlike manageBilling()'s card
+            // lookup), since every tab on this page renders on every visit
+            // regardless of which one the client actually opens. Card
+            // details/updates stay on the dedicated Manage Billing page.
+            'subscription' => $project?->subscription,
         ]);
     }
 
