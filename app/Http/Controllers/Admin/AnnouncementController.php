@@ -15,6 +15,29 @@ class AnnouncementController extends Controller
         ]);
     }
 
+    /**
+     * Read-only announcement history for admins who don't hold the
+     * "Announcements" management permission (Developer, Project Manager,
+     * Sales Rep, CSR, Administrative Staff, etc.) — every announcement ever
+     * targeted at their audience, past or present, with whether they've
+     * acknowledged each one. Admins who do hold the management permission
+     * use the full /admin/announcements page instead, which already shows
+     * everyone's history.
+     */
+    public function history(Request $request)
+    {
+        $user = $request->user();
+
+        $announcements = Announcement::with('createdBy')
+            ->withCount(['dismissals as acknowledged_count' => fn ($q) => $q->where('user_id', $user->id)])
+            ->latest()
+            ->get()
+            ->filter(fn (Announcement $a) => $a->isVisibleTo($user))
+            ->values();
+
+        return view('admin.announcements.history', compact('announcements'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
