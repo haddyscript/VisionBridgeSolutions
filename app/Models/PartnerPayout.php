@@ -105,9 +105,32 @@ class PartnerPayout extends Model
         return $this->created_at->copy()->addDays(self::VERIFICATION_DAYS);
     }
 
-    public function daysUntilReady(): int
+    /**
+     * Human-friendly remaining time in the verification window — drops from
+     * days to hours to minutes as it closes, since "0d left" stops being
+     * informative once under a day remains.
+     */
+    public function timeUntilReady(): string
     {
-        return max(0, self::VERIFICATION_DAYS - $this->created_at->diffInDays(now()));
+        $secondsLeft = $this->verifiesAt()->getTimestamp() - now()->getTimestamp();
+
+        if ($secondsLeft <= 0) {
+            return 'Ready';
+        }
+
+        $days = intdiv($secondsLeft, 86400);
+        if ($days >= 1) {
+            return "{$days}d left";
+        }
+
+        $hours = intdiv($secondsLeft, 3600);
+        if ($hours >= 1) {
+            return "{$hours}h left";
+        }
+
+        $minutes = max(1, intdiv($secondsLeft, 60));
+
+        return "{$minutes}m left";
     }
 
     public function formattedFaithstackAmount(): string

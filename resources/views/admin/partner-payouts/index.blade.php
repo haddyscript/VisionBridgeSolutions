@@ -129,7 +129,7 @@
                                 </span>
                             @else
                                 <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-gold/15 text-gold-dark">
-                                    Verifying — {{ $payout->daysUntilReady() }}d left
+                                    Verifying — {{ $payout->timeUntilReady() }}
                                 </span>
                             @endif
                         </td>
