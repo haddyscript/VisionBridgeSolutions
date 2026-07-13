@@ -67,7 +67,6 @@
             'recommendation' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M13 10V3L4 14h7v7l9-11h-7z'],
             'security' => ['bg' => 'bg-amber-50 dark:bg-amber-500/10', 'text' => 'text-amber-600 dark:text-amber-400', 'path' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'],
         ];
-        $icon = $notificationIcons[$notification->type] ?? $notificationIcons['milestone_completed'];
     @endphp
 
 
@@ -467,6 +466,7 @@
                         @else
                             <ul class="divide-y divide-gray-100 dark:divide-gray-700 overflow-y-auto">
                                 @foreach ($notifications as $notification)
+                                    @php $icon = $notificationIcons[$notification->type] ?? $notificationIcons['milestone_completed']; @endphp
                                     <li class="js-notification-item flex items-start gap-3 px-4 py-3 cursor-pointer {{ $notification->read_at ? '' : 'bg-gold/5' }}"
                                         data-id="{{ $notification->id }}" data-unread="{{ $notification->read_at ? '0' : '1' }}"
                                         data-mark-read-url="{{ route('portal.notifications.read-one', $notification) }}"
