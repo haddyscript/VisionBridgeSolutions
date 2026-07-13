@@ -189,8 +189,8 @@
 @endif
 
 @if ($firstVisit)
-    <div id="welcome-banner" class="relative overflow-hidden rounded-2xl mb-8 shadow-lg">
-        <div class="px-8 py-8 md:py-10" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
+    <div id="welcome-banner" class="relative overflow-hidden rounded-2xl mb-6 sm:mb-8 shadow-lg">
+        <div class="px-5 py-6 sm:px-8 sm:py-8 md:py-10" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
 
             <button type="button" id="welcome-banner-close" aria-label="Dismiss"
                 class="absolute top-4 right-4 text-white/40 hover:text-white transition-colors">
@@ -199,7 +199,7 @@
                 </svg>
             </button>
 
-            <div class="flex items-start gap-5">
+            <div class="flex flex-col sm:flex-row items-start gap-4 sm:gap-5">
                 <div class="shrink-0 w-12 h-12 rounded-full bg-gold/15 text-gold flex items-center justify-center mt-0.5">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -293,7 +293,7 @@
     @endphp
 
     @if ($project->status === 'onboarding' && $project->total_price === null)
-        <div class="rounded-xl p-6 mb-8 border border-gold/20 dark:border-gold/10" style="background:linear-gradient(135deg,rgba(201,168,76,0.10),rgba(42,157,143,0.08));">
+        <div class="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 border border-gold/20 dark:border-gold/10" style="background:linear-gradient(135deg,rgba(201,168,76,0.10),rgba(42,157,143,0.08));">
             <p class="text-xs font-semibold uppercase tracking-widest text-gold-dark mb-2">Hey {{ explode(' ', auth()->user()->name)[0] }} 👋</p>
             <h2 class="font-display text-xl font-bold text-navy dark:text-white mb-2">We're preparing your project quote</h2>
             <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 max-w-2xl">
@@ -308,7 +308,7 @@
             </a>
         </div>
     @elseif ($project->status === 'onboarding')
-        <div class="rounded-xl p-6 mb-8 border border-gold/20 dark:border-gold/10" style="background:linear-gradient(135deg,rgba(201,168,76,0.10),rgba(42,157,143,0.08));">
+        <div class="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 border border-gold/20 dark:border-gold/10" style="background:linear-gradient(135deg,rgba(201,168,76,0.10),rgba(42,157,143,0.08));">
             <p class="text-xs font-semibold uppercase tracking-widest text-gold-dark mb-2">Hey {{ explode(' ', auth()->user()->name)[0] }} 👋</p>
             <h2 class="font-display text-xl font-bold text-navy dark:text-white mb-2">Glad to have you here — let's get started</h2>
             <p class="text-sm text-gray-600 dark:text-gray-300 mb-5 max-w-2xl">
@@ -339,7 +339,7 @@
     @endif
 
     @if ($pendingPayment)
-        <a href="{{ route('portal.payments.index') }}" class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 px-5 py-4 mb-8 hover:border-red-300 dark:hover:border-red-500/50 transition-colors">
+        <a href="{{ route('portal.payments.index') }}" class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 px-4 py-4 sm:px-5 mb-6 sm:mb-8 hover:border-red-300 dark:hover:border-red-500/50 transition-colors">
             <div class="flex items-center gap-3">
                 <span class="w-9 h-9 rounded-full bg-red-500/15 text-red-500 flex items-center justify-center shrink-0">
                     <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14.18A1 1 0 003 19.5h18a1 1 0 00.86-1.46L13.71 3.86a1 1 0 00-1.72 0z"/></svg>
@@ -354,7 +354,7 @@
     @endif
 
     @if ($project->status === 'review')
-        <div class="rounded-xl p-6 mb-8 border border-teal/20 dark:border-teal/10" style="background:linear-gradient(135deg,rgba(42,157,143,0.10),rgba(201,168,76,0.08));">
+        <div class="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 border border-teal/20 dark:border-teal/10" style="background:linear-gradient(135deg,rgba(42,157,143,0.10),rgba(201,168,76,0.08));">
             @if ($errors->has('cancel'))
                 <p class="text-sm font-medium text-red-600 mb-4">{{ $errors->first('cancel') }}</p>
             @endif
@@ -409,7 +409,7 @@
 
     {{-- Launch feedback + What's Next — side by side (stack on mobile) --}}
     @if ($pendingSurvey || $whatsNext)
-        <div class="grid grid-cols-1 {{ ($pendingSurvey && $whatsNext) ? 'lg:grid-cols-2' : '' }} gap-6 mb-8 items-stretch">
+        <div class="grid grid-cols-1 {{ ($pendingSurvey && $whatsNext) ? 'lg:grid-cols-2' : '' }} gap-4 sm:gap-6 mb-6 sm:mb-8 items-stretch">
 
             @if ($pendingSurvey)
                 {{-- Feedback card — teal accent --}}
@@ -482,8 +482,8 @@
             ['label' => 'Payments', 'sub' => $totalDue > 0 ? 'Paid to date' : 'Nothing due', 'percent' => $paymentPercent, 'color' => '#22C55E'],
         ];
     @endphp
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 flex flex-col">
         <h2 class="font-display text-lg font-bold text-navy dark:text-white mb-5">Progress Tracker</h2>
         <div class="flex-1 flex flex-col justify-center gap-8">
             {{-- Content by section (horizontal bar chart) --}}
@@ -494,7 +494,7 @@
                     <div class="space-y-2.5">
                         @foreach ($counts as $cat)
                             <div class="flex items-center gap-3">
-                                <span class="w-36 shrink-0 text-xs text-gray-500 dark:text-gray-400 leading-tight">{{ $cat['label'] }}</span>
+                                <span class="w-24 sm:w-36 shrink-0 text-xs text-gray-500 dark:text-gray-400 leading-tight">{{ $cat['label'] }}</span>
                                 <div class="flex-1 h-2.5 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
                                     <div class="h-full rounded-full bg-gold" style="width: {{ $cat['count'] > 0 ? max(round($cat['count'] / $maxCount * 100), 5) : 0 }}%"></div>
                                 </div>
@@ -565,7 +565,7 @@
         {{-- Right column: Notifications above Refer a Friend --}}
         <div class="space-y-6">
         {{-- Notifications recap --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
             <div class="flex items-center gap-2 mb-4">
                 <h2 class="font-display text-lg font-bold text-navy dark:text-white">Notifications</h2>
                 @if (($unreadNotificationCount ?? 0) > 0)
@@ -595,7 +595,7 @@
         </div>
 
         {{-- Refer-A-Friend --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 flex flex-col">
             <div class="flex items-center gap-2 mb-1">
                 <h2 class="font-display text-lg font-bold text-navy dark:text-white">Refer a Friend</h2>
                 @if ($referralCount > 0)
@@ -655,7 +655,7 @@
     </div>
 
     {{-- Project header --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6 sm:mb-8">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div>
                 <h2 class="font-display text-2xl font-bold text-navy dark:text-white">{{ $project->name }}</h2>
@@ -774,7 +774,7 @@
 
     {{-- Growth Opportunities — improvement ideas the team has approved to share --}}
     @if ($recommendations->isNotEmpty())
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6 sm:mb-8">
             <h3 class="font-display text-base font-bold text-navy dark:text-white mb-1">Growth Opportunities</h3>
             <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Improvements our team thinks could help your website perform even better.</p>
             <div class="space-y-3">
@@ -801,7 +801,7 @@
                 'payment' => ['bg' => 'bg-gold/15', 'text' => 'text-gold-dark', 'path' => 'M9 7h6m0 0v6m0-6L4 21'],
             ];
         @endphp
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6 sm:mb-8">
             <h3 class="font-display text-base font-bold text-navy dark:text-white mb-4">Recent Activity</h3>
             <div class="relative">
                 {{-- Timeline track — icons "punch through" it via their own ring-4 ring-white matching the card background --}}
