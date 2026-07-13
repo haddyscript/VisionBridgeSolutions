@@ -77,18 +77,12 @@
     {{-- ── Right column: feed log ────────────────────────────────────────── --}}
     <div class="lg:col-span-3">
         <div class="bg-white rounded-xl border border-gray-200 p-5">
-            <button type="button" onclick="toggleAnnouncementsFeed()"
-                    class="w-full flex items-center justify-between gap-3 text-left group">
-                <span class="flex items-center gap-2">
-                    <h3 class="text-sm font-semibold text-navy">All Announcements</h3>
-                    <span class="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-navy/5 text-navy/60">{{ $announcements->total() }}</span>
-                </span>
-                <svg id="announcements-chevron" class="w-4 h-4 text-gray-400 group-hover:text-navy transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-                </svg>
-            </button>
+            <div class="flex items-center gap-2 mb-3">
+                <h3 class="text-sm font-semibold text-navy">All Announcements</h3>
+                <span class="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-navy/5 text-navy/60">{{ $announcements->total() }}</span>
+                <span class="ml-auto text-xs text-gray-400">Tap a title to expand</span>
+            </div>
 
-            <div id="announcements-body" class="hidden mt-4">
             @if ($announcements->isEmpty())
                 <p class="text-sm text-gray-400 text-center py-6">No announcements yet.</p>
             @else
@@ -96,23 +90,27 @@
                     @foreach ($announcements as $announcement)
                         <div class="rounded-lg border {{ $announcement->is_active ? 'border-gold/40 bg-gold/5' : 'border-gray-200' }} px-4 py-3">
                             <div class="flex items-start justify-between gap-4">
-                                <div class="min-w-0">
-                                    <div class="flex items-center flex-wrap gap-2 mb-0.5">
-                                        <p class="text-sm font-semibold text-navy">{{ $announcement->title }}</p>
-                                        @if ($announcement->is_active)
-                                            <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">Active</span>
-                                        @else
-                                            <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gray-100 text-gray-400">Draft</span>
-                                        @endif
-                                        @foreach ($announcement->audienceLabels() as $label)
-                                            <span class="text-[11px] font-medium px-1.5 py-0.5 rounded bg-navy/5 text-navy/70">{{ $label }}</span>
-                                        @endforeach
-                                    </div>
-                                    <p class="text-sm text-gray-500 whitespace-pre-wrap break-words">{{ $announcement->body }}</p>
-                                    <p class="text-xs text-gray-400 mt-1">
-                                        By {{ $announcement->createdBy->name }} — {{ $announcement->created_at->format('M j, Y') }}
-                                    </p>
-                                </div>
+                                <button type="button" onclick="toggleAnnouncement({{ $announcement->id }})"
+                                        class="min-w-0 flex-1 flex items-start gap-2 text-left group">
+                                    <svg id="ann-chevron-{{ $announcement->id }}" class="w-4 h-4 mt-0.5 shrink-0 text-gray-400 group-hover:text-navy transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                    <span class="min-w-0">
+                                        <span class="flex items-center flex-wrap gap-2 mb-0.5">
+                                            <span class="text-sm font-semibold text-navy">{{ $announcement->title }}</span>
+                                            @if ($announcement->is_active)
+                                                <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">Active</span>
+                                            @else
+                                                <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gray-100 text-gray-400">Draft</span>
+                                            @endif
+                                            @foreach ($announcement->audienceLabels() as $label)
+                                                <span class="text-[11px] font-medium px-1.5 py-0.5 rounded bg-navy/5 text-navy/70">{{ $label }}</span>
+                                            @endforeach
+                                        </span>
+                                        {{-- One-line preview shown only while collapsed --}}
+                                        <span id="ann-preview-{{ $announcement->id }}" class="block text-sm text-gray-400 truncate">{{ \Illuminate\Support\Str::limit($announcement->body, 70) }}</span>
+                                    </span>
+                                </button>
                                 <div class="flex items-center gap-2 shrink-0">
                                     <button type="button" onclick="toggleEditPanel({{ $announcement->id }})"
                                             class="text-xs font-semibold text-navy bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full transition-colors">
@@ -132,6 +130,14 @@
                                         <button type="submit" class="text-xs font-semibold text-red-400 hover:text-red-600">Delete</button>
                                     </form>
                                 </div>
+                            </div>
+
+                            {{-- Expandable full message — collapsed by default --}}
+                            <div id="ann-body-{{ $announcement->id }}" class="hidden mt-2 pl-6">
+                                <p class="text-sm text-gray-500 whitespace-pre-wrap break-words">{{ $announcement->body }}</p>
+                                <p class="text-xs text-gray-400 mt-1">
+                                    By {{ $announcement->createdBy->name }} — {{ $announcement->created_at->format('M j, Y') }}
+                                </p>
                             </div>
 
                             {{-- Collapsible edit form — pre-filled with current values --}}
@@ -180,7 +186,6 @@
 
                 <div class="mt-4">{{ $announcements->links() }}</div>
             @endif
-            </div>{{-- /#announcements-body --}}
         </div>
     </div>
 
@@ -191,27 +196,17 @@
         document.getElementById('edit-panel-' + id)?.classList.toggle('hidden');
     }
 
-    // Collapsible "All Announcements" feed — default collapsed, choice
-    // remembered so paginating (a page reload) keeps it open.
-    function setAnnouncementsFeed(open) {
-        const body = document.getElementById('announcements-body');
-        const chevron = document.getElementById('announcements-chevron');
+    // Each announcement collapses to just its title + a one-line preview;
+    // expand to read the full message. Collapsed by default.
+    function toggleAnnouncement(id) {
+        const body = document.getElementById('ann-body-' + id);
+        const preview = document.getElementById('ann-preview-' + id);
+        const chevron = document.getElementById('ann-chevron-' + id);
         if (!body) return;
-        body.classList.toggle('hidden', !open);
-        chevron?.classList.toggle('rotate-180', open);
-        localStorage.setItem('admin-announcements-open', open ? '1' : '0');
+        const open = body.classList.toggle('hidden') === false;
+        chevron?.classList.toggle('rotate-90', open);
+        preview?.classList.toggle('hidden', open);
     }
-    function toggleAnnouncementsFeed() {
-        const isHidden = document.getElementById('announcements-body')?.classList.contains('hidden');
-        setAnnouncementsFeed(isHidden);
-    }
-    // Auto-open on load if the admin left it open, OR if they just landed on a
-    // deeper pagination page (?page=2+) — otherwise the page links would be hidden.
-    (function () {
-        const remembered = localStorage.getItem('admin-announcements-open') === '1';
-        const onDeepPage = parseInt(new URLSearchParams(location.search).get('page') || '1', 10) > 1;
-        if (remembered || onDeepPage) setAnnouncementsFeed(true);
-    })();
 
     // Live preview mirrors the message textarea, preserving line breaks.
     function syncAnnouncementPreview() {
