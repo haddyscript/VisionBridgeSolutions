@@ -238,19 +238,23 @@
     <div class="space-y-2 mb-5">
         @foreach ($project->milestones as $milestone)
             <div class="rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2.5">
-                <div class="flex flex-wrap items-center gap-2">
-                    {{-- Title + due date — editable now, explicit Save (checkmark) --}}
-                    <form method="POST" action="{{ route('admin.milestones.update', $milestone) }}" data-ajax-target="header-card panel-overview" class="flex flex-1 flex-wrap items-center gap-2 min-w-0">
+                <div class="flex flex-wrap items-start gap-2">
+                    {{-- Title + description + due date — editable now, explicit Save (checkmark) --}}
+                    <form method="POST" action="{{ route('admin.milestones.update', $milestone) }}" data-ajax-target="header-card panel-overview" class="flex flex-1 flex-col gap-2 min-w-[10rem]">
                         @csrf
                         @method('PATCH')
                         <input type="hidden" name="status" value="{{ $milestone->status }}">
-                        <input type="text" name="title" value="{{ $milestone->title }}" required
-                               class="flex-1 min-w-[10rem] rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
-                        <input type="date" name="due_date" value="{{ $milestone->due_date?->format('Y-m-d') }}"
-                               class="w-36 shrink-0 rounded-lg border border-gray-300 dark:border-gray-600 px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
-                        <button type="submit" title="Save title/due date" class="shrink-0 w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-teal/10 hover:text-teal-dark flex items-center justify-center transition-colors">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                        </button>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <input type="text" name="title" value="{{ $milestone->title }}" required
+                                   class="flex-1 min-w-[10rem] rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                            <input type="date" name="due_date" value="{{ $milestone->due_date?->format('Y-m-d') }}"
+                                   class="w-36 shrink-0 rounded-lg border border-gray-300 dark:border-gray-600 px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                            <button type="submit" title="Save changes" class="shrink-0 w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-teal/10 hover:text-teal-dark flex items-center justify-center transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                        </div>
+                        <textarea name="description" rows="2" placeholder="Add details for this milestone (optional)..."
+                                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">{{ $milestone->description }}</textarea>
                     </form>
 
                     {{-- Status — unchanged, still auto-submits on change --}}
@@ -258,6 +262,7 @@
                         @csrf
                         @method('PATCH')
                         <input type="hidden" name="title" value="{{ $milestone->title }}">
+                        <input type="hidden" name="description" value="{{ $milestone->description }}">
                         <input type="hidden" name="due_date" value="{{ $milestone->due_date?->format('Y-m-d') }}">
                         <select name="status" onchange="this.form.requestSubmit()"
                                 class="rounded-lg border border-gray-300 dark:border-gray-600 px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
@@ -286,15 +291,19 @@
         @endif
     </div>
 
-    <form method="POST" action="{{ route('admin.milestones.store', $project) }}" class="flex items-center gap-3" data-ajax-target="header-card panel-overview">
+    <form method="POST" action="{{ route('admin.milestones.store', $project) }}" class="space-y-2" data-ajax-target="header-card panel-overview">
         @csrf
-        <input type="text" name="title" placeholder="Add a milestone..." required
-               class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-        <input type="date" name="due_date"
-               class="w-44 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
-        <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-            Add
-        </button>
+        <div class="flex items-center gap-3">
+            <input type="text" name="title" placeholder="Add a milestone..." required
+                   class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+            <input type="date" name="due_date"
+                   class="w-44 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+            <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                Add
+            </button>
+        </div>
+        <textarea name="description" rows="2" placeholder="Add details for this milestone (optional)..."
+                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
     </form>
 </div>
 

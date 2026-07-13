@@ -798,29 +798,44 @@
                     <svg id="milestones-chevron" class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
                 <div id="milestones-panel" class="hidden mt-4">
-                    <ul class="space-y-2.5">
+                    <ul class="space-y-3">
                         @foreach ($project->milestones as $milestone)
-                            <li class="flex items-center gap-2.5 text-sm">
+                            <li class="flex items-start gap-2.5 text-sm">
                                 @if ($milestone->status === 'completed')
-                                    <span class="w-4 h-4 rounded-full bg-teal flex items-center justify-center shrink-0">
+                                    <span class="w-4 h-4 rounded-full bg-teal flex items-center justify-center shrink-0 mt-0.5">
                                         <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                                     </span>
-                                    <span class="text-gray-400 dark:text-gray-500">{{ $milestone->title }}</span>
-                                    @if ($milestone->completed_at)
-                                        <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Completed {{ $milestone->completed_at->format('M j, Y') }}</span>
-                                    @endif
+                                    <div class="min-w-0">
+                                        <span class="text-gray-400 dark:text-gray-500">{{ $milestone->title }}</span>
+                                        @if ($milestone->completed_at)
+                                            <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Completed {{ $milestone->completed_at->format('M j, Y') }}</span>
+                                        @endif
+                                        @if ($milestone->description)
+                                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $milestone->description }}</p>
+                                        @endif
+                                    </div>
                                 @elseif ($milestone->status === 'in_progress')
-                                    <span class="w-4 h-4 rounded-full border-2 border-gold shrink-0"></span>
-                                    <span class="text-navy dark:text-white font-medium">{{ $milestone->title }}</span>
-                                    @if ($milestone->due_date)
-                                        <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
-                                    @endif
+                                    <span class="w-4 h-4 rounded-full border-2 border-gold shrink-0 mt-0.5"></span>
+                                    <div class="min-w-0">
+                                        <span class="text-navy dark:text-white font-medium">{{ $milestone->title }}</span>
+                                        @if ($milestone->due_date)
+                                            <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
+                                        @endif
+                                        @if ($milestone->description)
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $milestone->description }}</p>
+                                        @endif
+                                    </div>
                                 @else
-                                    <span class="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-600 shrink-0"></span>
-                                    <span class="text-gray-500 dark:text-gray-400">{{ $milestone->title }}</span>
-                                    @if ($milestone->due_date)
-                                        <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
-                                    @endif
+                                    <span class="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-600 shrink-0 mt-0.5"></span>
+                                    <div class="min-w-0">
+                                        <span class="text-gray-500 dark:text-gray-400">{{ $milestone->title }}</span>
+                                        @if ($milestone->due_date)
+                                            <span class="text-xs text-gray-400 dark:text-gray-500">&middot; Due {{ $milestone->due_date->format('M j, Y') }}</span>
+                                        @endif
+                                        @if ($milestone->description)
+                                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $milestone->description }}</p>
+                                        @endif
+                                    </div>
                                 @endif
                             </li>
                         @endforeach

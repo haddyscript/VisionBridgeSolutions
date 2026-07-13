@@ -9,6 +9,7 @@ class Milestone extends Model
     protected $fillable = [
         'project_id',
         'title',
+        'description',
         'status',
         'due_date',
         'completed_at',

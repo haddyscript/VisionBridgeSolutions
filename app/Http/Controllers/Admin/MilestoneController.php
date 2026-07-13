@@ -14,11 +14,13 @@ class MilestoneController extends Controller
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:2000'],
             'due_date' => ['nullable', 'date'],
         ]);
 
         $project->milestones()->create([
             'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
             'status' => 'pending',
             'due_date' => $validated['due_date'] ?? null,
             'position' => $project->milestones()->max('position') + 1,
@@ -31,6 +33,7 @@ class MilestoneController extends Controller
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:2000'],
             'due_date' => ['nullable', 'date'],
             'status' => ['required', 'in:pending,in_progress,completed'],
         ]);
