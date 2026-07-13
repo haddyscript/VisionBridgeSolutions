@@ -23,6 +23,18 @@ class DeployerController extends Controller
             ['php', 'artisan', 'config:clear'],
             ['php', 'artisan', 'view:clear'],
             ['php', 'artisan', 'route:clear'],
+            // Without this, every deploy left views uncompiled — the FIRST
+            // live requests after each deploy were the ones triggering
+            // on-demand Blade compilation, writing the compiled file to disk
+            // while concurrent real traffic could be reading/writing that
+            // same path at the same time. That race produced a corrupted
+            // compiled file (part valid PHP, part raw unexecuted Blade
+            // source spliced in) — which is what was actually causing the
+            // "Undefined variable $hdrProject" errors and raw source leaking
+            // onto the page, not a caching-staleness issue. Compiling here,
+            // once, single-threaded, before any live traffic can race
+            // against it, removes the write-contention window entirely.
+            ['php', 'artisan', 'view:cache'],
         ];
 
         if (config('app.deployer_run_composer')) {
