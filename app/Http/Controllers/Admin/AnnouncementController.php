@@ -11,7 +11,7 @@ class AnnouncementController extends Controller
     public function index()
     {
         return view('admin.announcements.index', [
-            'announcements' => Announcement::with('createdBy')->latest()->paginate(15),
+            'announcements' => Announcement::with('createdBy')->latest()->paginate(5),
         ]);
     }
 

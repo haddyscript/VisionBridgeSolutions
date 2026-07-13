@@ -77,8 +77,18 @@
     {{-- ── Right column: feed log ────────────────────────────────────────── --}}
     <div class="lg:col-span-3">
         <div class="bg-white rounded-xl border border-gray-200 p-5">
-            <h3 class="text-sm font-semibold text-navy mb-3">All Announcements</h3>
+            <button type="button" onclick="toggleAnnouncementsFeed()"
+                    class="w-full flex items-center justify-between gap-3 text-left group">
+                <span class="flex items-center gap-2">
+                    <h3 class="text-sm font-semibold text-navy">All Announcements</h3>
+                    <span class="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-navy/5 text-navy/60">{{ $announcements->total() }}</span>
+                </span>
+                <svg id="announcements-chevron" class="w-4 h-4 text-gray-400 group-hover:text-navy transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
 
+            <div id="announcements-body" class="hidden mt-4">
             @if ($announcements->isEmpty())
                 <p class="text-sm text-gray-400 text-center py-6">No announcements yet.</p>
             @else
@@ -170,6 +180,7 @@
 
                 <div class="mt-4">{{ $announcements->links() }}</div>
             @endif
+            </div>{{-- /#announcements-body --}}
         </div>
     </div>
 
@@ -179,6 +190,28 @@
     function toggleEditPanel(id) {
         document.getElementById('edit-panel-' + id)?.classList.toggle('hidden');
     }
+
+    // Collapsible "All Announcements" feed — default collapsed, choice
+    // remembered so paginating (a page reload) keeps it open.
+    function setAnnouncementsFeed(open) {
+        const body = document.getElementById('announcements-body');
+        const chevron = document.getElementById('announcements-chevron');
+        if (!body) return;
+        body.classList.toggle('hidden', !open);
+        chevron?.classList.toggle('rotate-180', open);
+        localStorage.setItem('admin-announcements-open', open ? '1' : '0');
+    }
+    function toggleAnnouncementsFeed() {
+        const isHidden = document.getElementById('announcements-body')?.classList.contains('hidden');
+        setAnnouncementsFeed(isHidden);
+    }
+    // Auto-open on load if the admin left it open, OR if they just landed on a
+    // deeper pagination page (?page=2+) — otherwise the page links would be hidden.
+    (function () {
+        const remembered = localStorage.getItem('admin-announcements-open') === '1';
+        const onDeepPage = parseInt(new URLSearchParams(location.search).get('page') || '1', 10) > 1;
+        if (remembered || onDeepPage) setAnnouncementsFeed(true);
+    })();
 
     // Live preview mirrors the message textarea, preserving line breaks.
     function syncAnnouncementPreview() {
