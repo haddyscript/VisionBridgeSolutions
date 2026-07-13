@@ -70,9 +70,13 @@
                 {!! $bodyHtml !!}
             </div>
 
-            <div class="flex justify-end mt-6 pt-4 border-t border-gray-100 dark:border-white/10">
+            <div class="flex flex-wrap items-center justify-between gap-3 mt-6 pt-4 border-t border-gray-100 dark:border-white/10">
+                <p class="inline-flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/></svg>
+                    This will keep reappearing until you click Acknowledge below.
+                </p>
                 <button type="button" id="{{ $domId }}-acknowledge"
-                        class="inline-flex items-center gap-1.5 bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                        class="inline-flex items-center gap-1.5 bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors shrink-0">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                     Acknowledge
                 </button>
