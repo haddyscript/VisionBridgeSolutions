@@ -119,7 +119,7 @@
             {{-- Profile Information --}}
             <div data-settings-panel="profile" class="settings-panel">
                 <h3 class="font-display text-lg font-bold text-navy dark:text-white mb-5">Profile Information</h3>
-                <form id="profile-form" method="POST" action="{{ route('portal.account.profile.update') }}" class="space-y-4 max-w-md">
+                <form id="profile-form" method="POST" action="{{ route('portal.account.profile.update') }}" class="space-y-4 max-w-md" data-no-loading-overlay>
                     @csrf
                     @method('PATCH')
                     <div>
@@ -169,7 +169,7 @@
             <div data-settings-panel="business-info" class="settings-panel hidden">
                 <h3 class="font-display text-lg font-bold text-navy dark:text-white mb-1">Business Information</h3>
                 <p class="text-xs text-gray-400 dark:text-gray-500 mb-5">These are the answers you gave during onboarding — update them any time.</p>
-                <form id="business-info-form" method="POST" action="{{ route('portal.account.business-info.update') }}" class="space-y-4 max-w-xl">
+                <form id="business-info-form" method="POST" action="{{ route('portal.account.business-info.update') }}" class="space-y-4 max-w-xl" data-no-loading-overlay>
                     @csrf
                     @method('PATCH')
                     <div>
@@ -304,7 +304,7 @@
             {{-- Password & Security --}}
             <div data-settings-panel="password" class="settings-panel hidden">
                 <h3 class="font-display text-lg font-bold text-navy dark:text-white mb-5">Password &amp; Security</h3>
-                <form id="password-form" method="POST" action="{{ route('portal.account.password.update') }}" class="space-y-4 max-w-md">
+                <form id="password-form" method="POST" action="{{ route('portal.account.password.update') }}" class="space-y-4 max-w-md" data-no-loading-overlay>
                     @csrf
                     @method('PATCH')
                     <div>
@@ -353,7 +353,7 @@
             <div data-settings-panel="notifications" class="settings-panel hidden">
                 <h3 class="font-display text-lg font-bold text-navy dark:text-white mb-1">Notification Preferences</h3>
                 <p class="text-xs text-gray-400 dark:text-gray-500 mb-5">Payment receipts and security alerts always send — these can't be turned off.</p>
-                <form id="notifications-form" method="POST" action="{{ route('portal.account.notifications.update') }}" class="space-y-3 max-w-md">
+                <form id="notifications-form" method="POST" action="{{ route('portal.account.notifications.update') }}" class="space-y-3 max-w-md" data-no-loading-overlay>
                     @csrf
                     @method('PATCH')
                     <label class="flex items-start gap-3 cursor-pointer">
@@ -447,7 +447,7 @@
                 <div class="mt-6 pt-5 border-t border-gray-100 dark:border-gray-700 max-w-md">
                     <p class="text-sm font-semibold text-navy dark:text-white mb-1">Log Out of All Other Devices</p>
                     <p class="text-xs text-gray-400 dark:text-gray-500 mb-3">This won't log out your current session here — just every other device or browser signed in as you.</p>
-                    <form id="logout-other-devices-form" method="POST" action="{{ route('portal.account.logout-other-devices') }}" class="flex items-start gap-2">
+                    <form id="logout-other-devices-form" method="POST" action="{{ route('portal.account.logout-other-devices') }}" class="flex items-start gap-2" data-no-loading-overlay>
                         @csrf
                         <div class="flex-1">
                             <input type="password" name="current_password" required placeholder="Current password"
@@ -482,7 +482,7 @@
             Submitting this request notifies our team. We will review your request and follow up within 1–2 business days.
             Your account and project data will not be deleted until we confirm with you directly.
         </p>
-        <form id="closure-form" method="POST" action="{{ route('portal.account.closure-request') }}">
+        <form id="closure-form" method="POST" action="{{ route('portal.account.closure-request') }}" data-no-loading-overlay>
             @csrf
             <button type="submit"
                 onclick="return confirm('Are you sure you want to request account closure? Our team will follow up before anything is deleted.')"
