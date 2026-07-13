@@ -199,6 +199,17 @@ class Project extends Model
     }
 
     /**
+     * The due date of the project's final milestone (by position) — gives
+     * the client a rough completion estimate. Null if that milestone has no
+     * due date set, so callers can skip rendering rather than show nothing
+     * useful.
+     */
+    public function estimatedCompletionDate(): ?\Illuminate\Support\Carbon
+    {
+        return $this->milestones->sortBy('position')->last()?->due_date;
+    }
+
+    /**
      * Builds the project's activity feed (admin replies, approvals, completed
      * milestones, received payments), newest first. Assumes milestones,
      * uploads.replies, and payments are already eager loaded.

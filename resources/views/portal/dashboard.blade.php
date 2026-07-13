@@ -673,12 +673,25 @@
         {{-- Progress: label promoted to an eyebrow, % promoted to a hero number.
              Sans-serif (not font-display) so it reads as data, not a headline,
              and sits on the label's baseline instead of floating above it. --}}
+        @php
+            $nextMilestone = $project->nextMilestone();
+            // Only meaningful while work remains — once launched, the "site
+            // is live" banner below already covers it. Silently skipped
+            // (never a fallback string) if the final milestone has no due
+            // date set, since a guessed date would be worse than none.
+            $estimatedCompletion = $nextMilestone ? $project->estimatedCompletionDate() : null;
+        @endphp
         <div class="mb-6">
             <div class="flex items-baseline justify-between gap-3 mb-2.5">
                 <div>
                     <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Project Progress</p>
                     @if ($project->milestones->isNotEmpty() && ! $project->isProgressOverridden())
                         <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $project->milestones->where('status', 'completed')->count() }} of {{ $project->milestones->count() }} milestones</p>
+                    @endif
+                    @if ($estimatedCompletion)
+                        <p class="text-xs {{ $estimatedCompletion->isPast() ? 'text-red-500 font-medium' : 'text-gray-400 dark:text-gray-500' }} mt-0.5">
+                            {{ $estimatedCompletion->isPast() ? 'Behind schedule' : 'Est. completion' }} &middot; {{ $estimatedCompletion->format('M j, Y') }}
+                        </p>
                     @endif
                 </div>
                 <span class="inline-flex items-baseline font-sans leading-none shrink-0" data-pct="{{ $project->progressPercent() }}">
@@ -722,7 +735,6 @@
 
         {{-- Contextual status + its action, grouped in one bar so the CTA
              always sits next to the text that justifies it. --}}
-        @php $nextMilestone = $project->nextMilestone(); @endphp
         @if ($nextMilestone)
             <div class="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-gray-50 dark:bg-gray-900/40 px-5 py-4 mb-6">
                 <div class="flex items-center gap-3 min-w-0">
