@@ -105,6 +105,23 @@
         @media (max-width: 767px) { #sidebar-tooltip { display: none !important; } }
     </style>
 </head>
+@php
+                    $hdrProject = auth()->user()->projects()->first();
+                    $hdrStatusLabels = [
+                        'onboarding' => 'Onboarding',
+                        'in_progress' => 'In Development',
+                        'review' => 'Under Review',
+                        'launched' => 'Launched',
+                        'maintenance' => 'Care Plan',
+                    ];
+                    $hdrStatusColors = [
+                        'onboarding' => 'bg-gold/10 text-gold-dark',
+                        'in_progress' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300',
+                        'review' => 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-300',
+                        'launched' => 'bg-teal/10 text-teal-dark',
+                        'maintenance' => 'bg-teal/10 text-teal-dark',
+                    ];
+                @endphp
 <body class="font-sans antialiased text-gray-800 dark:text-gray-100 bg-gray-50 dark:bg-gray-900 min-h-screen">
 <script>if (localStorage.getItem('portalSidebarCollapsed') === 'true') document.body.classList.add('sidebar-collapsed');</script>
 
@@ -358,23 +375,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
-                @php
-                    $hdrProject = auth()->user()->projects()->first();
-                    $hdrStatusLabels = [
-                        'onboarding' => 'Onboarding',
-                        'in_progress' => 'In Development',
-                        'review' => 'Under Review',
-                        'launched' => 'Launched',
-                        'maintenance' => 'Care Plan',
-                    ];
-                    $hdrStatusColors = [
-                        'onboarding' => 'bg-gold/10 text-gold-dark',
-                        'in_progress' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300',
-                        'review' => 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-300',
-                        'launched' => 'bg-teal/10 text-teal-dark',
-                        'maintenance' => 'bg-teal/10 text-teal-dark',
-                    ];
-                @endphp
+                
                 <div class="flex items-center gap-2.5 flex-1 min-w-0">
                     <h1 class="font-display text-lg font-bold text-navy dark:text-white truncate">@yield('page-title', 'Client Portal')</h1>
                     @if ($hdrProject)
