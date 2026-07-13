@@ -30,6 +30,8 @@ class MilestoneController extends Controller
     public function update(Request $request, Milestone $milestone)
     {
         $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'due_date' => ['nullable', 'date'],
             'status' => ['required', 'in:pending,in_progress,completed'],
         ]);
 

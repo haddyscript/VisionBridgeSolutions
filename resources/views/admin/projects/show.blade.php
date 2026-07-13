@@ -237,19 +237,28 @@
 
     <div class="space-y-2 mb-5">
         @foreach ($project->milestones as $milestone)
-            <div class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2.5">
-                <div>
-                    <span class="text-sm text-navy dark:text-white">{{ $milestone->title }}</span>
-                    @if ($milestone->status === 'completed' && $milestone->completed_at)
-                        <span class="block text-xs text-teal-dark mt-0.5">Completed {{ $milestone->completed_at->format('M j, Y') }}</span>
-                    @elseif ($milestone->due_date)
-                        <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">Due {{ $milestone->due_date->format('M j, Y') }}</span>
-                    @endif
-                </div>
-                <div class="flex items-center gap-2">
-                    <form method="POST" action="{{ route('admin.milestones.update', $milestone) }}" data-ajax-target="header-card panel-overview">
+            <div class="rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2.5">
+                <div class="flex flex-wrap items-center gap-2">
+                    {{-- Title + due date — editable now, explicit Save (checkmark) --}}
+                    <form method="POST" action="{{ route('admin.milestones.update', $milestone) }}" data-ajax-target="header-card panel-overview" class="flex flex-1 flex-wrap items-center gap-2 min-w-0">
                         @csrf
                         @method('PATCH')
+                        <input type="hidden" name="status" value="{{ $milestone->status }}">
+                        <input type="text" name="title" value="{{ $milestone->title }}" required
+                               class="flex-1 min-w-[10rem] rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                        <input type="date" name="due_date" value="{{ $milestone->due_date?->format('Y-m-d') }}"
+                               class="w-36 shrink-0 rounded-lg border border-gray-300 dark:border-gray-600 px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                        <button type="submit" title="Save title/due date" class="shrink-0 w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-teal/10 hover:text-teal-dark flex items-center justify-center transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        </button>
+                    </form>
+
+                    {{-- Status — unchanged, still auto-submits on change --}}
+                    <form method="POST" action="{{ route('admin.milestones.update', $milestone) }}" data-ajax-target="header-card panel-overview" class="shrink-0">
+                        @csrf
+                        @method('PATCH')
+                        <input type="hidden" name="title" value="{{ $milestone->title }}">
+                        <input type="hidden" name="due_date" value="{{ $milestone->due_date?->format('Y-m-d') }}">
                         <select name="status" onchange="this.form.requestSubmit()"
                                 class="rounded-lg border border-gray-300 dark:border-gray-600 px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
                             @foreach ($milestoneStatuses as $value => $label)
@@ -257,7 +266,9 @@
                             @endforeach
                         </select>
                     </form>
-                    <form method="POST" action="{{ route('admin.milestones.destroy', $milestone) }}" data-confirm="Remove this milestone?" data-ajax-target="header-card panel-overview">
+
+                    {{-- Delete — unchanged --}}
+                    <form method="POST" action="{{ route('admin.milestones.destroy', $milestone) }}" data-confirm="Remove this milestone?" data-ajax-target="header-card panel-overview" class="shrink-0">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
@@ -265,6 +276,9 @@
                         </button>
                     </form>
                 </div>
+                @if ($milestone->status === 'completed' && $milestone->completed_at)
+                    <p class="text-xs text-teal-dark mt-1.5">Completed {{ $milestone->completed_at->format('M j, Y') }}</p>
+                @endif
             </div>
         @endforeach
         @if ($project->milestones->isEmpty())
