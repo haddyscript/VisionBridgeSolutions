@@ -14,7 +14,12 @@
 @else
 
     @php
-        $milestones = $project->milestones;
+        // Newest first on this dedicated timeline page — the reverse of the
+        // relationship's default ascending order, which other views (admin
+        // edit list, the Overview "last 3" teaser, the Next Milestone bar)
+        // still rely on staying oldest-first, so this only reorders the
+        // collection here, not the relationship itself.
+        $milestones = $project->milestones->sortByDesc('position')->values();
         $total = $milestones->count();
         $completed = $milestones->where('status', 'completed')->count();
         $percent = $total > 0 ? (int) round($completed / $total * 100) : $project->progressPercent();
