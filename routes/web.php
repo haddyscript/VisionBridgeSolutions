@@ -218,6 +218,7 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
     Route::post('/portal/review/approve', [PortalProjectReviewController::class, 'approve'])->name('portal.review.approve');
     Route::post('/portal/review/cancel', [PortalProjectReviewController::class, 'cancel'])->name('portal.review.cancel');
 
+    Route::get('/portal/announcements', [PortalAnnouncementController::class, 'index'])->name('portal.announcements.index');
     Route::post('/portal/announcements/{announcement}/dismiss', [PortalAnnouncementController::class, 'dismiss'])->name('portal.announcements.dismiss');
     Route::get('/portal/search', [PortalSearchController::class, 'index'])->name('portal.search');
 
