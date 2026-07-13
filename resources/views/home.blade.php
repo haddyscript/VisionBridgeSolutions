@@ -1086,6 +1086,94 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 </div>
 
 {{-- ============================================================
+     MARKETING SPOTLIGHT SECTION — dark gallery frame for the
+     printed promo poster (Johnny Davis Global Missions campaign).
+     Dark navy backdrop makes the mostly-white poster pop, echoing
+     the "Our Team plaque" gold-on-dark aesthetic used above.
+     ============================================================ --}}
+<section id="spotlight" class="py-28 relative overflow-hidden" style="background:linear-gradient(155deg,#0A0D11 0%,#171B21 40%,#0A0D11 72%,#15191F 100%);">
+    {{-- Ambient orbs --}}
+    <div class="hero-orb" style="width:560px;height:560px;top:-160px;left:-140px;background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,transparent 70%);filter:blur(70px);animation:orb-drift 22s ease-in-out infinite;"></div>
+    <div class="hero-orb" style="width:460px;height:460px;bottom:-120px;right:-100px;background:radial-gradient(circle,rgba(42,157,143,0.10) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 18s ease-in-out infinite reverse 4s;"></div>
+    <div class="absolute inset-0 pointer-events-none" style="opacity:0.6;background-image:radial-gradient(circle,rgba(255,255,255,0.035) 1px,transparent 1px);background-size:28px 28px;"></div>
+    {{-- Faint bridge watermark — signature motif --}}
+    <div class="absolute pointer-events-none text-white" style="width:900px;max-width:90%;height:220px;bottom:-10px;left:-60px;opacity:0.05;">
+        {!! $bridgeSilhouette !!}
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+
+            {{-- Left: the poster in a matte gallery frame --}}
+            <div class="lg:col-span-6 flex justify-center">
+                <div class="spotlight-frame relative rounded-2xl overflow-hidden" style="max-width:440px;background:#FFFFFF;padding:10px;box-shadow:0 0 0 1px rgba(201,168,76,0.30),0 40px 90px rgba(0,0,0,0.55),0 12px 32px rgba(0,0,0,0.4);">
+                    {{-- "Real client campaign" badge --}}
+                    <div class="absolute z-10 flex items-center gap-1.5 text-xs font-semibold tracking-wide px-3 py-1.5 rounded-full" style="top:20px;left:20px;background:rgba(15,19,25,0.82);color:#DFC06A;backdrop-filter:blur(6px);border:1px solid rgba(201,168,76,0.35);">
+                        <span class="live-dot"></span>
+                        Real Client Campaign
+                    </div>
+                    <img src="@assetv('image/marketing/JDGM-marketing.jpeg')"
+                         alt="VisionBridge Solutions marketing poster — Johnny Davis Global Missions website campaign"
+                         loading="lazy" decoding="async"
+                         class="w-full h-auto rounded-xl block">
+                </div>
+            </div>
+
+            {{-- Right: supporting copy + CTAs --}}
+            <div class="lg:col-span-6 text-center lg:text-left">
+                <span class="inline-block text-sm font-semibold tracking-widest uppercase mb-3" style="color:#2A9D8F;">In The Spotlight</span>
+                <h2 class="font-display font-bold text-white leading-tight mb-5" style="font-size:clamp(1.9rem,4vw,2.9rem);">
+                    Websites That <span class="shimmer-gold">Grow Your Mission</span> or Business
+                </h2>
+                <p class="text-white/80 text-lg leading-relaxed mb-5" style="max-width:34rem;">
+                    Professional websites that look amazing, work flawlessly, and help you reach
+                    more people online — built and maintained by VisionBridge Solutions.
+                </p>
+                <p class="text-white/60 text-base leading-relaxed mb-8" style="max-width:34rem;">
+                    This campaign poster showcases our work for <span class="text-gold font-semibold">Johnny Davis Global Missions</span> —
+                    one of the ministries we've helped expand their reach online.
+                </p>
+
+                {{-- Feature checklist --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 mb-10 max-w-lg mx-auto lg:mx-0 text-left">
+                    @foreach ([
+                        'Modern & Responsive Design',
+                        'Mobile Friendly',
+                        'SEO Optimized',
+                        'Secure & Reliable',
+                        'Easy to Manage',
+                        'Ongoing Support',
+                    ] as $feature)
+                        <div class="flex items-center gap-3">
+                            <span class="shrink-0 w-6 h-6 rounded-full flex items-center justify-center" style="background:rgba(201,168,76,0.16);border:1px solid rgba(201,168,76,0.35);">
+                                <svg class="w-3.5 h-3.5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </span>
+                            <span class="text-white/85 text-sm font-medium">{{ $feature }}</span>
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- CTAs --}}
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <a href="https://johnnydavisglobalmissions.org/" target="_blank" rel="noopener"
+                       class="spotlight-cta-primary inline-flex items-center justify-center gap-2 font-bold px-8 py-4 rounded-lg"
+                       style="background:#C9A84C;color:#15202C;">
+                        View The Live Site
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
+                    <a href="{{ route('consultation.create') }}"
+                       class="spotlight-cta-outline inline-flex items-center justify-center gap-2 font-semibold px-8 py-4 rounded-lg"
+                       style="border:1.5px solid rgba(255,255,255,0.28);color:#FFFFFF;">
+                        Book A Free Consultation
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{{-- ============================================================
      OUR TEAM SECTION (shorter version, above Contact)
      ============================================================ --}}
 <section id="partnership" class="py-20 bg-white relative overflow-hidden">

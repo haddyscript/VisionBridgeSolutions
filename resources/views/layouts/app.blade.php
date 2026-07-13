@@ -1059,6 +1059,35 @@
         .portfolio-card { transition: transform 0.32s ease; }
         .portfolio-card:hover { transform: translateY(-4px); }
 
+        /* ── Marketing Spotlight section ── */
+        .spotlight-frame {
+            transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.45s ease;
+            will-change: transform;
+        }
+        .spotlight-frame:hover {
+            transform: translateY(-6px) rotate(-0.6deg);
+            box-shadow: 0 0 0 1px rgba(201,168,76,0.55), 0 48px 110px rgba(0,0,0,0.6), 0 16px 40px rgba(0,0,0,0.45) !important;
+        }
+        .spotlight-cta-primary {
+            transition: transform 0.24s ease, box-shadow 0.24s ease, background 0.24s ease;
+            box-shadow: 0 10px 28px rgba(201,168,76,0.28);
+            will-change: transform;
+        }
+        .spotlight-cta-primary:hover {
+            background: #DFC06A;
+            transform: translateY(-3px);
+            box-shadow: 0 16px 38px rgba(201,168,76,0.5);
+        }
+        .spotlight-cta-outline {
+            transition: transform 0.24s ease, border-color 0.24s ease, background 0.24s ease;
+            will-change: transform;
+        }
+        .spotlight-cta-outline:hover {
+            transform: translateY(-3px);
+            border-color: rgba(201,168,76,0.65) !important;
+            background: rgba(201,168,76,0.10);
+        }
+
         /* ── Services section ── */
         /* Gold accent line drawn by GSAP on scroll-in */
         #services-accent-line {
