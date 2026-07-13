@@ -19,7 +19,10 @@ class AnnouncementController extends Controller
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'subtitle' => ['nullable', 'string', 'max:500'],
             'body' => ['required', 'string', 'max:2000'],
+            'event_date' => ['nullable', 'date'],
+            'event_time' => ['nullable', 'string', 'max:100'],
             'audiences' => ['required', 'array', 'min:1'],
             'audiences.*' => ['in:' . implode(',', array_keys(Announcement::AUDIENCES))],
         ]);
@@ -43,7 +46,10 @@ class AnnouncementController extends Controller
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'subtitle' => ['nullable', 'string', 'max:500'],
             'body' => ['required', 'string', 'max:2000'],
+            'event_date' => ['nullable', 'date'],
+            'event_time' => ['nullable', 'string', 'max:100'],
             'audiences' => ['required', 'array', 'min:1'],
             'audiences.*' => ['in:' . implode(',', array_keys(Announcement::AUDIENCES))],
         ]);

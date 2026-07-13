@@ -20,7 +20,10 @@ class Announcement extends Model
 
     protected $fillable = [
         'title',
+        'subtitle',
         'body',
+        'event_date',
+        'event_time',
         'audiences',
         'is_active',
         'created_by',
@@ -31,6 +34,7 @@ class Announcement extends Model
         return [
             'is_active' => 'boolean',
             'audiences' => 'array',
+            'event_date' => 'date',
         ];
     }
 

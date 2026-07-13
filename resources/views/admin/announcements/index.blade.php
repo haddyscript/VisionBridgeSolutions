@@ -20,16 +20,37 @@
                 </div>
 
                 <div>
+                    <label class="block text-xs font-medium text-navy mb-1">Subtitle <span class="text-gray-400 font-normal">(optional)</span></label>
+                    <textarea name="subtitle" rows="2"
+                              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('subtitle') }}</textarea>
+                    <p class="text-xs text-gray-400 mt-1">Shown under the title in the banner header, e.g. company/meeting name.</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-navy mb-1">Date <span class="text-gray-400 font-normal">(optional)</span></label>
+                        <input type="date" name="event_date" value="{{ old('event_date') }}"
+                               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-navy mb-1">Time <span class="text-gray-400 font-normal">(optional)</span></label>
+                        <input type="text" name="event_time" value="{{ old('event_time') }}" placeholder="9:00–10:00 PM (PHT)"
+                               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                    </div>
+                </div>
+
+                <div>
                     <label class="block text-xs font-medium text-navy mb-1">Message</label>
                     <textarea id="announcement-body" name="body" rows="6" required oninput="syncAnnouncementPreview()"
                               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('body') }}</textarea>
 
                     {{-- Formatting guidelines --}}
                     <div class="mt-2 rounded-lg bg-gray-50 border border-gray-200 px-3 py-2">
-                        <p class="text-[11px] font-semibold text-navy/70 uppercase tracking-wide mb-1">Formatting tips</p>
+                        <p class="text-[11px] font-semibold text-navy/70 uppercase tracking-wide mb-1">Formatting tips (Markdown)</p>
                         <ul class="text-xs text-gray-500 space-y-0.5 list-disc list-inside">
-                            <li>Line breaks and blank lines are kept as you type them.</li>
-                            <li>Start a line with <code class="bg-gray-200 px-1 rounded">•</code> or <code class="bg-gray-200 px-1 rounded">-</code> for a bullet.</li>
+                            <li>Use <code class="bg-gray-200 px-1 rounded"># </code>, <code class="bg-gray-200 px-1 rounded">## </code> for section headings.</li>
+                            <li>Numbered agenda items: <code class="bg-gray-200 px-1 rounded">1. </code>, <code class="bg-gray-200 px-1 rounded">2. </code> etc.</li>
+                            <li>Indent a line with <code class="bg-gray-200 px-1 rounded">   - </code> under a numbered item for a nested bullet.</li>
                             <li>Use a blank line between paragraphs for spacing.</li>
                         </ul>
                     </div>
@@ -160,10 +181,27 @@
                                                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                                         </div>
                                         <div>
-                                            <label class="block text-xs font-medium text-navy mb-1">Message</label>
+                                            <label class="block text-xs font-medium text-navy mb-1">Subtitle <span class="text-gray-400 font-normal">(optional)</span></label>
+                                            <textarea name="subtitle" rows="2"
+                                                      class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ $announcement->subtitle }}</textarea>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-xs font-medium text-navy mb-1">Date <span class="text-gray-400 font-normal">(optional)</span></label>
+                                                <input type="date" name="event_date" value="{{ optional($announcement->event_date)->format('Y-m-d') }}"
+                                                       class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-medium text-navy mb-1">Time <span class="text-gray-400 font-normal">(optional)</span></label>
+                                                <input type="text" name="event_time" value="{{ $announcement->event_time }}" placeholder="9:00–10:00 PM (PHT)"
+                                                       class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-medium text-navy mb-1">Message (Markdown)</label>
                                             <textarea name="body" rows="6" required
                                                       class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ $announcement->body }}</textarea>
-                                            <p class="text-xs text-gray-400 mt-1">Line breaks and blank lines are preserved.</p>
+                                            <p class="text-xs text-gray-400 mt-1">Headings (#), numbered lists (1.), and indented bullets (   -) are supported.</p>
                                         </div>
                                         <div>
                                             <label class="block text-xs font-medium text-navy mb-1.5">Audience</label>
