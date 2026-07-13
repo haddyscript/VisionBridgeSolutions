@@ -739,7 +739,7 @@
                     </p>
                 </div>
                 @if ($project->preview_url)
-                    <a href="{{ $project->preview_url }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-dark bg-gold hover:bg-gold-dark px-5 py-2.5 rounded-lg transition-colors shrink-0">
+                    <a href="{{ $project->preview_url }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-dark bg-gold hover:bg-gold-dark px-5 py-2.5 rounded-lg shadow-sm hover:shadow-lg hover:shadow-gold/25 hover:-translate-y-0.5 transition-all duration-300 ease-out shrink-0">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                         View Live Preview
                     </a>
@@ -758,7 +758,7 @@
                     <p class="text-sm font-semibold text-navy dark:text-white">All milestones complete — your site is live!</p>
                 </div>
                 @if ($project->preview_url)
-                    <a href="{{ $project->preview_url }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-dark bg-gold hover:bg-gold-dark px-5 py-2.5 rounded-lg transition-colors shrink-0">
+                    <a href="{{ $project->preview_url }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-dark bg-gold hover:bg-gold-dark px-5 py-2.5 rounded-lg shadow-sm hover:shadow-lg hover:shadow-gold/25 hover:-translate-y-0.5 transition-all duration-300 ease-out shrink-0">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                         View Live Preview
                     </a>
