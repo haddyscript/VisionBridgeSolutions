@@ -21,7 +21,21 @@
                 <textarea name="body" rows="3" required
                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('body') }}</textarea>
             </div>
-            <p class="text-xs text-gray-400">Created as a draft — activate it below when ready. Activating deactivates any currently active announcement.</p>
+            <div>
+                <label class="block text-xs font-medium text-navy mb-1.5">Audience</label>
+                <div class="flex flex-wrap gap-4">
+                    @foreach (\App\Models\Announcement::AUDIENCES as $value => $label)
+                        <label class="inline-flex items-center gap-2 text-sm text-navy cursor-pointer">
+                            <input type="checkbox" name="audiences[]" value="{{ $value }}"
+                                   {{ in_array($value, old('audiences', ['client'])) ? 'checked' : '' }}
+                                   class="rounded border-gray-300 text-gold focus:ring-gold">
+                            {{ $label }}
+                        </label>
+                    @endforeach
+                </div>
+                <p class="text-xs text-gray-400 mt-1.5">Choose who sees this — clients, team, and/or developers.</p>
+            </div>
+            <p class="text-xs text-gray-400">Created as a draft — activate it below when ready. Activating deactivates any active announcement that shares an audience.</p>
             <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
                 Create Announcement
             </button>
@@ -39,11 +53,14 @@
                     <div class="rounded-lg border {{ $announcement->is_active ? 'border-gold/40 bg-gold/5' : 'border-gray-200' }} px-4 py-3">
                         <div class="flex items-start justify-between gap-4">
                             <div class="min-w-0">
-                                <div class="flex items-center gap-2 mb-0.5">
+                                <div class="flex items-center flex-wrap gap-2 mb-0.5">
                                     <p class="text-sm font-semibold text-navy">{{ $announcement->title }}</p>
                                     @if ($announcement->is_active)
                                         <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">Active</span>
                                     @endif
+                                    @foreach ($announcement->audienceLabels() as $label)
+                                        <span class="text-[11px] font-medium px-1.5 py-0.5 rounded bg-navy/5 text-navy/70">{{ $label }}</span>
+                                    @endforeach
                                 </div>
                                 <p class="text-sm text-gray-500">{{ $announcement->body }}</p>
                                 <p class="text-xs text-gray-400 mt-1">

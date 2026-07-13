@@ -20,6 +20,8 @@ class AnnouncementController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'body' => ['required', 'string', 'max:2000'],
+            'audiences' => ['required', 'array', 'min:1'],
+            'audiences.*' => ['in:' . implode(',', array_keys(Announcement::AUDIENCES))],
         ]);
 
         Announcement::create($validated + ['created_by' => $request->user()->id]);
@@ -34,7 +36,17 @@ class AnnouncementController extends Controller
         ]);
 
         if ($validated['is_active']) {
-            Announcement::where('is_active', true)->update(['is_active' => false]);
+            // Deactivate only other active announcements that share an audience,
+            // so each audience shows one banner at a time — but a client banner
+            // and a developer banner can still be active simultaneously.
+            Announcement::where('is_active', true)
+                ->where('id', '!=', $announcement->id)
+                ->get()
+                ->filter(fn (Announcement $other) => array_intersect(
+                    $other->audiences ?? [],
+                    $announcement->audiences ?? []
+                ))
+                ->each->update(['is_active' => false]);
         }
 
         $announcement->update($validated);
@@ -47,5 +59,19 @@ class AnnouncementController extends Controller
         $announcement->delete();
 
         return back()->with('status', 'Announcement deleted.');
+    }
+
+    /**
+     * Dismiss the banner for the current admin (team/developer side) — the
+     * client portal has its own dismiss route behind portal-only middleware.
+     */
+    public function dismiss(Request $request, Announcement $announcement)
+    {
+        $announcement->dismissals()->firstOrCreate(
+            ['user_id' => $request->user()->id],
+            ['dismissed_at' => now()],
+        );
+
+        return response()->noContent();
     }
 }

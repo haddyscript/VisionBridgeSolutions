@@ -236,6 +236,9 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     // ─── Announcements ───────────────────────────────────────────────────────
     Route::get('/announcements', [AdminAnnouncementController::class, 'index'])->name('announcements.index');
     Route::post('/announcements', [AdminAnnouncementController::class, 'store'])->name('announcements.store');
+    // Dismissing a banner you can see shouldn't require the "Announcements"
+    // management permission, so this route opts out of admin-page-access.
+    Route::post('/announcements/{announcement}/dismiss', [AdminAnnouncementController::class, 'dismiss'])->name('announcements.dismiss')->withoutMiddleware('admin-page-access');
     Route::patch('/announcements/{announcement}', [AdminAnnouncementController::class, 'update'])->name('announcements.update');
     Route::delete('/announcements/{announcement}', [AdminAnnouncementController::class, 'destroy'])->name('announcements.destroy');
 

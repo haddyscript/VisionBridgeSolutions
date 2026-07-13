@@ -20,9 +20,7 @@ class DashboardController extends Controller
             ? $project->satisfactionSurvey
             : null;
 
-        $announcement = Announcement::where('is_active', true)
-            ->whereDoesntHave('dismissals', fn ($q) => $q->where('user_id', $user->id))
-            ->first();
+        $announcement = Announcement::activeFor($user);
 
         $recommendations = $project?->recommendations->filter(fn ($r) => $r->isVisibleToClient()) ?? collect();
 

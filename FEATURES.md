@@ -308,13 +308,14 @@ A sidebar walkthrough for new clients — spotlights one nav item at a time (Ove
 
 ## 15e. In-Portal Announcements Banner (2026-07-03)
 
-An admin-postable notice (maintenance windows, holiday closures, policy changes) shown to every client on Overview, dismissible per-client — closes the gap where the only way to reach every client at once was a one-off manual email.
+An admin-postable notice (maintenance windows, holiday closures, policy changes) shown to a chosen audience — clients, team, and/or developers — dismissible per-user, closing the gap where the only way to reach everyone at once was a one-off manual email.
 
-- New `announcements` (`title`, `body`, `is_active`, `created_by`) and `announcement_dismissals` (`announcement_id`, `user_id`, `dismissed_at`, unique together) tables. Only one announcement can be `is_active` at a time — enforced in `Admin\AnnouncementController::update()`, which deactivates any other active row before activating the one requested — not a DB constraint, since past announcements stay around as history.
-- Admin page at `/admin/announcements` — create (as a draft, not auto-activated), activate/deactivate, delete.
-- The active, not-yet-dismissed-by-this-user announcement renders as a banner on Overview, above the first-visit welcome banner (`Portal\DashboardController` queries it via `whereDoesntHave('dismissals', ...)`). Dismissing POSTs to `portal.announcements.dismiss`, which is per-announcement — dismissing #5 doesn't hide a later #6.
+- New `announcements` (`title`, `body`, `audiences`, `is_active`, `created_by`) and `announcement_dismissals` (`announcement_id`, `user_id`, `dismissed_at`, unique together) tables. `audiences` is a JSON list of any of `client` / `team` / `developer`, chosen via multi-select checkboxes on create (defaults to Clients). Audience membership: `client` = non-admin users, `team` = all admins, `developer` = admins with the "Developer" job title — so a developer (being an admin) also sees Team announcements, but non-developer admins and clients never see a Developer-only one. Legacy rows with no audiences are treated as visible to everyone.
+- Instead of one global active announcement, **each audience shows one banner at a time**: activating an announcement deactivates only other active ones that *share* an audience (`Admin\AnnouncementController::update()`), so a Client banner and a Developer banner can be active simultaneously. Past announcements stay around as history.
+- Admin page at `/admin/announcements` — create (as a draft, not auto-activated) with audience checkboxes, activate/deactivate, delete; the list shows each announcement's audience badges.
+- `Announcement::activeFor($user)` returns the most recent active, not-dismissed announcement targeting that user. Clients see it on Overview above the first-visit welcome banner (`Portal\DashboardController`); team/developers now see the same banner on **every admin page** (rendered in `layouts.admin`). Client dismissals POST to `portal.announcements.dismiss`; admin dismissals POST to `admin.announcements.dismiss` (the portal route sits behind portal-only middleware). Dismissing is per-announcement.
 
-**Full spec — data model, admin flow, known limitations (no scheduling, portal-wide only) — lives in [specs/PORTAL_ANNOUNCEMENTS.md](specs/PORTAL_ANNOUNCEMENTS.md).**
+**Full spec — data model, admin flow, known limitations (no scheduling) — lives in [specs/PORTAL_ANNOUNCEMENTS.md](specs/PORTAL_ANNOUNCEMENTS.md).**
 
 ## 15f. Global Portal Search (2026-07-03)
 
