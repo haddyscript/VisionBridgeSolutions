@@ -283,7 +283,6 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::get('/project-requests', [AdminProjectRequestController::class, 'index'])->name('project-requests.index');
     Route::get('/project-requests/{projectRequest}', [AdminProjectRequestController::class, 'show'])->name('project-requests.show');
     Route::patch('/project-requests/{projectRequest}', [AdminProjectRequestController::class, 'update'])->name('project-requests.update');
-    Route::patch('/project-requests/{projectRequest}/proposal', [AdminProjectRequestController::class, 'updateProposal'])->name('project-requests.proposal');
     Route::patch('/project-requests/{projectRequest}/assign-developer', [AdminProjectRequestController::class, 'assignDeveloper'])->name('project-requests.assign-developer');
     Route::patch('/project-requests/{projectRequest}/developer-status', [AdminProjectRequestController::class, 'updateDeveloperStatus'])->name('project-requests.developer-status');
 

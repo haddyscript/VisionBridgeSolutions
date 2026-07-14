@@ -11,10 +11,15 @@
       $selected    current value (nullable)
       $placeholder optional first "no selection" entry, e.g. "Unassigned" / "None"
       $autoSubmit  bool — submit the enclosing form immediately on selection (default false)
+      $formId      optional id of a <form> elsewhere in the DOM to submit with
+                    (HTML5 form="" attribute) — for fields rendered outside
+                    their owning form, e.g. a sidebar field for a form that
+                    visually wraps a different column
 --}}
 @php
     $autoSubmit = $autoSubmit ?? false;
     $placeholder = $placeholder ?? null;
+    $formId = $formId ?? null;
     $hasMatch = collect($options)->contains(fn ($o) => (string) $o['value'] === (string) $selected);
     // No placeholder and nothing matches (e.g. status defaults before a first
     // save) → fall back to the first option, mirroring how a native <select>
@@ -23,7 +28,7 @@
     $selectedOption = collect($options)->first(fn ($o) => (string) $o['value'] === (string) $effectiveSelected);
 @endphp
 <div class="relative" data-custom-select id="{{ $domId }}-wrap" data-auto-submit="{{ $autoSubmit ? '1' : '0' }}">
-    <input type="hidden" name="{{ $name }}" id="{{ $domId }}-input" value="{{ $effectiveSelected }}">
+    <input type="hidden" name="{{ $name }}" id="{{ $domId }}-input" value="{{ $effectiveSelected }}" @if ($formId) form="{{ $formId }}" @endif>
 
     <button type="button" id="{{ $domId }}-toggle" aria-haspopup="listbox" aria-expanded="false"
             class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
