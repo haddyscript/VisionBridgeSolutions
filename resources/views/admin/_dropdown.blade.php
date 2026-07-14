@@ -156,7 +156,7 @@
     }
 
     // @once only emits this <script> once, at the position of the *first*
-    // @include('admin._dropdown', ...) on the page — any dropdowns that
+    // @include('admin._dropdown' ...) on the page — any dropdowns that
     // appear later in the HTML (e.g. inside a loop further down the page)
     // haven't been parsed into the DOM yet at that point. Deferring to
     // DOMContentLoaded guarantees every instance exists before we query for
