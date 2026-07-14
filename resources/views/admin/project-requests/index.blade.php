@@ -17,6 +17,7 @@
                     <th class="px-5 py-3">Client</th>
                     <th class="px-5 py-3">Title</th>
                     <th class="px-5 py-3">Status</th>
+                    <th class="px-5 py-3">Proposal</th>
                     <th class="px-5 py-3">Submitted</th>
                     <th class="px-5 py-3"></th>
                 </tr>
@@ -33,6 +34,15 @@
                             <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $item->status === 'converted' ? 'bg-teal/10 text-teal-dark' : ($item->status === 'declined' ? 'bg-red-50 text-red-500' : 'bg-gold/15 text-gold-dark') }}">
                                 {{ \App\Models\ProjectRequest::STATUSES[$item->status] ?? $item->status }}
                             </span>
+                        </td>
+                        <td class="px-5 py-3.5">
+                            @if ($item->proposal_status)
+                                <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $item->proposal_status === 'accepted' ? 'bg-teal/10 text-teal-dark' : ($item->proposal_status === 'declined' ? 'bg-red-50 text-red-500' : 'bg-gold/15 text-gold-dark') }}">
+                                    {{ \App\Models\ProjectRequest::PROPOSAL_STATUSES[$item->proposal_status] ?? $item->proposal_status }}
+                                </span>
+                            @else
+                                <span class="text-xs text-gray-400 dark:text-gray-500">&mdash;</span>
+                            @endif
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $item->created_at->format('M j, Y') }}</td>
                         <td class="px-5 py-3.5 text-right">

@@ -9,6 +9,7 @@ use App\Models\ProjectRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 
 class ProjectRequestController extends Controller
 {
@@ -40,6 +41,41 @@ class ProjectRequestController extends Controller
         $projectRequest->update($validated);
 
         return back()->with('status', 'Project request updated.');
+    }
+
+    /**
+     * Advance the proposal (Draft/Sent/Under Review/Accepted/Declined), optionally attaching
+     * a proposal document and recommended care plan. `estimated_value` is silently dropped for
+     * non-super-admins server-side — the field is hidden in the view, but that alone isn't a
+     * real access control, so it's enforced here too.
+     */
+    public function updateProposal(Request $request, ProjectRequest $projectRequest)
+    {
+        $validated = $request->validate([
+            'proposal_status' => ['required', Rule::in(array_keys(ProjectRequest::PROPOSAL_STATUSES))],
+            'estimated_value' => ['nullable', 'numeric', 'min:0'],
+            'recommended_care_plan_id' => ['nullable', 'exists:maintenance_plans,id'],
+            'proposal_document' => ['nullable', 'file', 'max:25600'],
+        ]);
+
+        if ($request->user()->isSuperAdmin()) {
+            $validated['estimated_value'] = isset($validated['estimated_value'])
+                ? (int) round($validated['estimated_value'] * 100)
+                : null;
+        } else {
+            unset($validated['estimated_value']);
+        }
+
+        if ($request->hasFile('proposal_document')) {
+            $file = $request->file('proposal_document');
+            $validated['proposal_document_original_name'] = $file->getClientOriginalName();
+            $validated['proposal_document_path'] = $file->store("project-requests/{$projectRequest->id}/proposal", 'client_uploads');
+        }
+        unset($validated['proposal_document']);
+
+        $projectRequest->update($validated);
+
+        return back()->with('status', 'Proposal updated.');
     }
 
     /** Assign or unassign the developer responsible for this Work Order — mirrors Upload::assignDeveloper(). */
