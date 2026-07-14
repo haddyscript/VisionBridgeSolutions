@@ -354,6 +354,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
         Route::post('/team', [AdminTeamController::class, 'store'])->name('team.store');
         Route::patch('/team/{user}/super-admin', [AdminTeamController::class, 'toggleSuperAdmin'])->name('team.toggle-super-admin');
         Route::patch('/team/{user}/permissions', [AdminTeamController::class, 'updatePermissions'])->name('team.permissions.update');
+        Route::patch('/team/{user}/name', [AdminTeamController::class, 'updateName'])->name('team.name.update');
         Route::patch('/team/{user}/job-title', [AdminTeamController::class, 'updateJobTitle'])->name('team.job-title.update');
         Route::delete('/team/{user}', [AdminTeamController::class, 'destroy'])->name('team.destroy');
     });

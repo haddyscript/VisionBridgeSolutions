@@ -143,6 +143,20 @@ class TeamController extends Controller
         return back()->with('status', 'Access updated for '.$user->name.'.');
     }
 
+    /** Super-admin editing another team member's name — separate from updateProfile(), which only ever edits the logged-in admin's own account. */
+    public function updateName(Request $request, User $user)
+    {
+        abort_unless($user->isAdmin(), 404);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $user->update(['name' => $validated['name']]);
+
+        return back()->with('status', 'Name updated for '.$user->name.'.');
+    }
+
     public function updateJobTitle(Request $request, User $user)
     {
         abort_unless($user->isAdmin(), 404);

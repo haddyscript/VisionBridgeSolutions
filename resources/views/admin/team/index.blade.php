@@ -194,6 +194,9 @@
                                             </svg>
                                         </button>
                                         <div x-show="open" x-transition class="fixed w-52 bg-white rounded-xl border border-gray-200 shadow-lg z-50 py-1">
+                                            <button type="button" class="permissions-toggle w-full text-left px-3 py-2 text-xs text-navy hover:bg-gray-50 transition-colors" data-target="edit-name-{{ $admin->id }}">
+                                                Edit Name
+                                            </button>
                                             <button type="button" class="permissions-toggle w-full text-left px-3 py-2 text-xs text-navy hover:bg-gray-50 transition-colors" data-target="job-title-{{ $admin->id }}">
                                                 Set Job Title
                                             </button>
@@ -242,6 +245,23 @@
                         </div>
 
                         @if (auth()->user()->isSuperAdmin())
+                            <div id="edit-name-{{ $admin->id }}" class="hidden border-t border-gray-200 bg-gray-50 px-5 py-5">
+                                <form method="POST" action="{{ route('admin.team.name.update', $admin) }}" class="space-y-3">
+                                    @csrf
+                                    @method('PATCH')
+                                    <div>
+                                        <label class="block text-xs font-medium text-navy mb-1">Full Name</label>
+                                        <input type="text" name="name" value="{{ $admin->name }}" required
+                                               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                                            Save Name
+                                        </button>
+                                        <button type="button" class="permissions-toggle text-xs font-semibold text-gray-400 hover:text-navy" data-target="edit-name-{{ $admin->id }}">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
                             <div id="job-title-{{ $admin->id }}" class="hidden border-t border-gray-200 bg-gray-50 px-5 py-5">
                                 <form method="POST" action="{{ route('admin.team.job-title.update', $admin) }}" class="space-y-3">
                                     @csrf
