@@ -471,9 +471,6 @@
                     <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-30 flex flex-col max-h-[28rem]">
                         <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between shrink-0">
                             <p class="text-sm font-bold text-navy dark:text-white">Notifications</p>
-                            @if ($unreadNotificationCount > 0)
-                                <button type="button" id="notifications-mark-all-read" class="text-xs font-semibold text-gold-dark hover:underline">Mark all as read</button>
-                            @endif
                         </div>
                         @if ($notifications->isEmpty())
                             <p class="text-sm text-gray-400 dark:text-gray-500 text-center py-8 px-4">No updates yet.</p>
@@ -597,9 +594,11 @@
             });
         });
 
-        // Notification bell — a notification is only ever marked read when
-        // the client actually clicks it (or explicitly hits "Mark all as
-        // read"), never just by opening the dropdown or visiting a page.
+        // Notification bell — opening the dropdown now immediately marks
+        // every notification read and clears the badge (boss's call,
+        // 2026-07-14; previously this required an explicit click per item
+        // or a separate "Mark all as read" button, which is why that button
+        // was removed above — it would be unreachable UI now).
         const bellToggle = document.getElementById('notification-bell-toggle');
         const bellDropdown = document.getElementById('notification-dropdown');
         let bellBadge = document.getElementById('notification-bell-badge');
@@ -617,9 +616,29 @@
             }
         }
 
+        function markAllNotificationsRead() {
+            if (unreadCount <= 0) return;
+
+            document.querySelectorAll('.js-notification-item[data-unread="1"]').forEach(function (item) {
+                item.dataset.unread = '0';
+                item.classList.remove('bg-gold/5');
+                item.querySelector('.notification-unread-dot')?.remove();
+            });
+            unreadCount = 0;
+            updateBadge();
+
+            fetch('{{ route('portal.notifications.read') }}', {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrfToken },
+                keepalive: true,
+            });
+        }
+
         bellToggle?.addEventListener('click', function (e) {
             e.stopPropagation();
+            const opening = bellDropdown.classList.contains('hidden');
             bellDropdown.classList.toggle('hidden');
+            if (opening) markAllNotificationsRead();
         });
 
         document.querySelectorAll('.js-notification-item').forEach(function (item) {
@@ -641,25 +660,6 @@
                 if (item.dataset.url) {
                     window.location.href = item.dataset.url;
                 }
-            });
-        });
-
-        document.getElementById('notifications-mark-all-read')?.addEventListener('click', function (e) {
-            e.stopPropagation();
-
-            document.querySelectorAll('.js-notification-item[data-unread="1"]').forEach(function (item) {
-                item.dataset.unread = '0';
-                item.classList.remove('bg-gold/5');
-                item.querySelector('.notification-unread-dot')?.remove();
-            });
-            unreadCount = 0;
-            updateBadge();
-            this.remove();
-
-            fetch('{{ route('portal.notifications.read') }}', {
-                method: 'POST',
-                headers: { 'X-CSRF-TOKEN': csrfToken },
-                keepalive: true,
             });
         });
 
