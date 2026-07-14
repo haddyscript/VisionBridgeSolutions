@@ -1,0 +1,3 @@
+If you need to search through the project, please give me the exact terminal commands and I'll run them locally. This is usually much faster than having you do the search remotely.
+
+For example, if you need commands such as `grep`, `find`, `ls`, `tree`, `cat`, `head`, `tail`, `wc`, `sort`, `uniq`, or any other shell command, just provide the command exactly as you want it executed. I'll run it, paste the complete output back here, and you can continue from there.

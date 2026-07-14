@@ -195,15 +195,42 @@
                             class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
                         @error('organization_name') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                     </div>
-                    <div>
+                    @php
+                        $orgTypeColors = ['Church' => 'bg-indigo-400', 'Ministry' => 'bg-teal', 'Nonprofit' => 'bg-blue-400', 'Small Business' => 'bg-gold', 'Entrepreneur' => 'bg-purple-400', 'Other' => 'bg-gray-400'];
+                        $currentOrgType = old('organization_type', $questionnaire?->organization_type);
+                    @endphp
+                    <div class="relative" id="org-type-wrap">
                         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Organization Type</label>
-                        <select name="organization_type"
-                                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
-                            <option value="">Select one&hellip;</option>
+                        <input type="hidden" name="organization_type" id="org-type-input" value="{{ $currentOrgType }}">
+
+                        <button type="button" id="org-type-toggle" aria-haspopup="listbox" aria-expanded="false"
+                                class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+                            <span id="org-type-label" class="flex items-center gap-2 min-w-0 truncate {{ $currentOrgType ? 'text-navy dark:text-white' : 'text-gray-400' }}">
+                                @if ($currentOrgType)
+                                    <span class="w-2 h-2 rounded-full shrink-0 {{ $orgTypeColors[$currentOrgType] ?? 'bg-gray-400' }}"></span>
+                                @endif
+                                <span id="org-type-label-text">{{ $currentOrgType ?: 'Select one…' }}</span>
+                            </span>
+                            <svg id="org-type-chevron" class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+
+                        <div id="org-type-menu" class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                             @foreach (['Church', 'Ministry', 'Nonprofit', 'Small Business', 'Entrepreneur', 'Other'] as $type)
-                                <option value="{{ $type }}" {{ old('organization_type', $questionnaire?->organization_type) === $type ? 'selected' : '' }}>{{ $type }}</option>
+                                <button type="button" data-org-type-option="{{ $type }}" role="option" aria-selected="{{ $currentOrgType === $type ? 'true' : 'false' }}"
+                                        class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $currentOrgType === $type ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
+                                    <span class="flex items-center gap-2">
+                                        <span class="w-2 h-2 rounded-full shrink-0 {{ $orgTypeColors[$type] ?? 'bg-gray-400' }}"></span>
+                                        {{ $type }}
+                                    </span>
+                                    <svg class="w-4 h-4 text-gold-dark {{ $currentOrgType === $type ? '' : 'invisible' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </button>
                             @endforeach
-                        </select>
+                        </div>
+                        @error('organization_type') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div class="relative" id="brand-colors-wrap">
                         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Brand Colors</label>
@@ -764,6 +791,80 @@
         e.preventDefault();
         submitAjaxForm(e.target);
     });
+
+    // Organization Type — custom-styled dropdown instead of a native <select>,
+    // since native option-list chrome can't be restyled to match the app
+    // (visible as an unstyled gray browser overlay otherwise).
+    (function () {
+        const wrap = document.getElementById('org-type-wrap');
+        const toggle = document.getElementById('org-type-toggle');
+        const menu = document.getElementById('org-type-menu');
+        const chevron = document.getElementById('org-type-chevron');
+        const hiddenInput = document.getElementById('org-type-input');
+        const label = document.getElementById('org-type-label');
+        const labelText = document.getElementById('org-type-label-text');
+        if (!wrap || !toggle || !menu || !hiddenInput || !label) return;
+
+        const dotColors = {
+            'Church': 'bg-indigo-400', 'Ministry': 'bg-teal', 'Nonprofit': 'bg-blue-400',
+            'Small Business': 'bg-gold', 'Entrepreneur': 'bg-purple-400', 'Other': 'bg-gray-400',
+        };
+
+        function closeMenu() {
+            menu.classList.add('hidden');
+            toggle.setAttribute('aria-expanded', 'false');
+            chevron.style.transform = '';
+        }
+
+        function openMenu() {
+            menu.classList.remove('hidden');
+            toggle.setAttribute('aria-expanded', 'true');
+            chevron.style.transform = 'rotate(180deg)';
+        }
+
+        toggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            menu.classList.contains('hidden') ? openMenu() : closeMenu();
+        });
+
+        menu.querySelectorAll('[data-org-type-option]').forEach(function (option) {
+            option.addEventListener('click', function () {
+                const value = option.dataset.orgTypeOption;
+                hiddenInput.value = value;
+                labelText.textContent = value;
+                label.classList.remove('text-gray-400');
+                label.classList.add('text-navy', 'dark:text-white');
+
+                let dot = label.querySelector('span.w-2');
+                if (!dot) {
+                    dot = document.createElement('span');
+                    dot.className = 'w-2 h-2 rounded-full shrink-0';
+                    label.insertBefore(dot, labelText);
+                }
+                dot.className = 'w-2 h-2 rounded-full shrink-0 ' + (dotColors[value] || 'bg-gray-400');
+
+                menu.querySelectorAll('[data-org-type-option]').forEach(function (opt) {
+                    const isSelected = opt === option;
+                    opt.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+                    opt.classList.toggle('text-gold-dark', isSelected);
+                    opt.classList.toggle('font-semibold', isSelected);
+                    opt.classList.toggle('text-gray-700', !isSelected);
+                    opt.classList.toggle('dark:text-gray-300', !isSelected);
+                    opt.querySelector('svg').classList.toggle('invisible', !isSelected);
+                });
+
+                closeMenu();
+            });
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!wrap.contains(e.target)) closeMenu();
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeMenu();
+        });
+    })();
 
     // Brand Colors renders as removable tag pills (not a plain text field) —
     // brand_colors is still just a string column underneath, so tags are
