@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\SatisfactionSurveyController as AdminSatisfaction
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
 use App\Http\Controllers\Admin\ServiceAgreementController as AdminServiceAgreementController;
 use App\Http\Controllers\Admin\PartnerPayoutController as AdminPartnerPayoutController;
+use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\Admin\TeamController as AdminTeamController;
 use App\Http\Controllers\Admin\UploadApprovalController;
 use App\Http\Controllers\Admin\WorkOrderController as AdminWorkOrderController;
@@ -63,6 +64,7 @@ use App\Http\Controllers\Portal\ServiceAgreementController as PortalServiceAgree
 use App\Http\Controllers\Portal\TwoFactorController as PortalTwoFactorController;
 use App\Http\Controllers\Portal\WebsiteTypeController as PortalWebsiteTypeController;
 use App\Http\Controllers\Portal\SubscriptionController as PortalSubscriptionController;
+use App\Http\Controllers\Portal\SupportTicketController as PortalSupportTicketController;
 use App\Http\Controllers\Portal\SuspendedController as PortalSuspendedController;
 use App\Http\Controllers\Portal\UploadController;
 use App\Http\Controllers\StripeWebhookController;
@@ -171,11 +173,18 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
 
     Route::get('/portal', DashboardController::class)->name('portal.dashboard');
     Route::get('/portal/milestones', [PortalMilestoneController::class, 'index'])->name('portal.milestones.index');
+    Route::get('/portal/milestones/{milestone}/ics', [PortalMilestoneController::class, 'ics'])->name('portal.milestones.ics');
     Route::get('/portal/documents', [PortalDocumentController::class, 'index'])->name('portal.documents.index');
+    Route::get('/portal/documents/handoff-package', [PortalDocumentController::class, 'handoffPackage'])->name('portal.documents.handoff-package');
+    Route::get('/portal/support-tickets', [PortalSupportTicketController::class, 'index'])->name('portal.support-tickets.index');
+    Route::post('/portal/support-tickets', [PortalSupportTicketController::class, 'store'])->name('portal.support-tickets.store');
+    Route::get('/portal/support-tickets/{ticket}', [PortalSupportTicketController::class, 'show'])->name('portal.support-tickets.show');
+    Route::post('/portal/support-tickets/{ticket}/reply', [PortalSupportTicketController::class, 'reply'])->name('portal.support-tickets.reply');
     Route::get('/portal/project-requests', [PortalProjectRequestController::class, 'show'])->name('portal.project-requests.show');
     Route::post('/portal/project-requests', [PortalProjectRequestController::class, 'store'])->name('portal.project-requests.store');
     Route::get('/portal/consultation', [PortalConsultationController::class, 'create'])->name('portal.consultation.create');
     Route::post('/portal/consultation', [PortalConsultationController::class, 'store'])->name('portal.consultation.store');
+    Route::get('/portal/consultation/{consultation}/ics', [PortalConsultationController::class, 'ics'])->name('portal.consultation.ics');
     Route::get('/portal/files/{category}', [CategoryController::class, 'show'])->name('portal.category');
     Route::get('/portal/files/{category}/download', [CategoryController::class, 'downloadAll'])->name('portal.category.download');
     Route::post('/portal/projects/{project}/uploads', [UploadController::class, 'store'])->name('portal.uploads.store');
@@ -288,6 +297,11 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
 
     Route::get('/refund-requests', [AdminRefundRequestController::class, 'index'])->name('refund-requests.index');
     Route::patch('/refund-requests/{refundRequest}', [AdminRefundRequestController::class, 'update'])->name('refund-requests.update');
+
+    Route::get('/support-tickets', [AdminSupportTicketController::class, 'index'])->name('support-tickets.index');
+    Route::get('/support-tickets/{ticket}', [AdminSupportTicketController::class, 'show'])->name('support-tickets.show');
+    Route::post('/support-tickets/{ticket}/reply', [AdminSupportTicketController::class, 'reply'])->name('support-tickets.reply');
+    Route::patch('/support-tickets/{ticket}/status', [AdminSupportTicketController::class, 'updateStatus'])->name('support-tickets.status');
 
     // ─── Projects & Milestones ───────────────────────────────────────────────
     Route::get('/projects/{project}', [AdminProjectController::class, 'show'])->name('projects.show');

@@ -56,6 +56,7 @@ VisionBridgeSolutions/
 │   │   │   │   ├── DashboardController.php
 │   │   │   │   ├── DocumentController.php
 │   │   │   │   ├── FaqFeedbackController.php
+│   │   │   │   ├── MilestoneController.php
 │   │   │   │   ├── NotificationController.php
 │   │   │   │   ├── PaymentController.php
 │   │   │   │   ├── ProjectQuestionnaireController.php
@@ -287,8 +288,10 @@ VisionBridgeSolutions/
 │   │   ├── 2026_07_11_000002_add_archived_and_featured_to_satisfaction_surveys_table.php
 │   │   ├── 2026_07_11_000003_add_attachment_to_project_requests_table.php
 │   │   ├── 2026_07_11_000004_create_upload_attachments_table.php
+│   │   ├── 2026_07_13_000001_add_description_to_milestones_table.php
 │   │   ├── 2026_07_13_100000_add_audiences_to_announcements_table.php
-│   │   └── 2026_07_13_120000_add_metadata_to_announcements_table.php
+│   │   ├── 2026_07_13_120000_add_metadata_to_announcements_table.php
+│   │   └── 2026_07_14_000001_add_proposal_fields_to_project_requests_table.php
 │   ├── seeders/
 │   │   ├── DatabaseSeeder.php
 │   │   ├── MaintenancePlanSeeder.php
@@ -414,6 +417,7 @@ VisionBridgeSolutions/
 │       │   ├── payments/
 │       │   │   └── index.blade.php
 │       │   ├── project-requests/
+│       │   │   ├── _dropdown.blade.php
 │       │   │   ├── index.blade.php
 │       │   │   └── show.blade.php
 │       │   ├── projects/
@@ -440,6 +444,7 @@ VisionBridgeSolutions/
 │       │   │   └── index.blade.php
 │       │   ├── work-orders/
 │       │   │   └── index.blade.php
+│       │   ├── _dropdown.blade.php
 │       │   ├── dashboard.blade.php
 │       │   └── faq.blade.php
 │       ├── auth/
@@ -530,6 +535,7 @@ VisionBridgeSolutions/
 │       │   ├── dashboard.blade.php
 │       │   ├── documents.blade.php
 │       │   ├── faq.blade.php
+│       │   ├── milestones.blade.php
 │       │   ├── notifications.blade.php
 │       │   ├── payment-checkout.blade.php
 │       │   ├── payment-receipt.blade.php
@@ -616,7 +622,9 @@ VisionBridgeSolutions/
 ├── Dockerfile
 ├── docket-setup-inside-my-terminal.txt
 ├── FEATURES.md
+├── grep-prompt.txt
 ├── Maintenance_Plan.txt
+├── MILESTONES.md
 ├── package.json
 ├── Phase2.txt
 ├── phpunit.xml

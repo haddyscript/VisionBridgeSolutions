@@ -76,6 +76,10 @@
                                 @elseif ($milestone->due_date)
                                     <p class="text-xs {{ $milestone->due_date->isPast() ? 'text-red-500 font-medium' : 'text-gray-400 dark:text-gray-500' }} mt-1.5">
                                         {{ $milestone->due_date->isPast() ? 'Overdue since' : 'Due' }} {{ $milestone->due_date->format('M j, Y') }}
+                                        <a href="{{ route('portal.milestones.ics', $milestone) }}" class="inline-flex items-center gap-1 ml-2 text-gold-dark hover:underline font-medium">
+                                            <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                            Add to Calendar
+                                        </a>
                                     </p>
                                 @endif
                             </div>

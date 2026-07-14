@@ -7,6 +7,7 @@ use App\Mail\ConsultationReceivedMail;
 use App\Mail\NewConsultationMail;
 use App\Models\Consultation;
 use App\Models\Project;
+use App\Support\IcsCalendar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -114,6 +115,26 @@ class ConsultationController extends Controller
         }
 
         return redirect(route('portal.consultation.create'))->with('status', 'consultation_sent');
+    }
+
+    /** Consultation has no user_id — matched by email, same limitation the rest of this controller already has. */
+    public function ics(Request $request, Consultation $consultation)
+    {
+        abort_unless($consultation->email === $request->user()->email, 403);
+        abort_unless($consultation->preferred_at, 404);
+
+        $ics = IcsCalendar::event(
+            uid: "consultation-{$consultation->id}@visionbridgesolutions.com",
+            title: 'VisionBridge Solutions — Consultation',
+            description: $consultation->message,
+            start: $consultation->preferred_at,
+            location: $consultation->meeting_link,
+        );
+
+        return response($ics, 200, [
+            'Content-Type' => 'text/calendar; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="visionbridge-consultation.ics"',
+        ]);
     }
 
     private function hasUploadedFile(?Project $project): bool

@@ -67,6 +67,11 @@ class Project extends Model
         return $this->hasMany(Recommendation::class)->latest();
     }
 
+    public function supportTickets()
+    {
+        return $this->hasMany(SupportTicket::class)->latest();
+    }
+
     public function payments()
     {
         return $this->hasMany(Payment::class)->latest();

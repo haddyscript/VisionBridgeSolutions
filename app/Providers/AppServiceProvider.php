@@ -12,6 +12,7 @@ use App\Models\Project;
 use App\Models\ProjectRequest;
 use App\Models\Recommendation;
 use App\Models\RefundRequest;
+use App\Models\SupportTicket;
 use App\Models\Upload;
 use App\Models\User;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
@@ -58,6 +59,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with('pendingProjectRequestCount', ProjectRequest::where('status', 'pending')->count());
             $view->with('pendingRecommendationCount', Recommendation::where('status', 'pending_review')->count());
             $view->with('pendingRefundRequestCount', RefundRequest::where('status', 'pending')->count());
+            $view->with('openSupportTicketCount', SupportTicket::where('status', 'open')->count());
             $view->with('unreadContactCount', ContactMessage::whereNull('read_at')->count());
             $view->with('unreadConsultationCount', Consultation::whereNull('read_at')->count());
             $view->with('gettingStartedTasks', $this->adminGettingStartedTasks());
