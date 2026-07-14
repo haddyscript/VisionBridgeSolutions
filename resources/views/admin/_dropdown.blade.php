@@ -155,7 +155,15 @@
         });
     }
 
-    document.querySelectorAll('[data-custom-select]').forEach(wireUp);
+    // @once only emits this <script> once, at the position of the *first*
+    // @include('admin._dropdown', ...) on the page — any dropdowns that
+    // appear later in the HTML (e.g. inside a loop further down the page)
+    // haven't been parsed into the DOM yet at that point. Deferring to
+    // DOMContentLoaded guarantees every instance exists before we query for
+    // them, regardless of where in the page the first one happened to sit.
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[data-custom-select]').forEach(wireUp);
+    });
 
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
