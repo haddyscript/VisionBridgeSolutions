@@ -44,7 +44,11 @@
         </svg>
     </button>
 
-    <div id="{{ $domId }}-menu" class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1 max-h-64 overflow-y-auto" role="listbox">
+    {{-- position: fixed + JS-computed coordinates (see the driver script below), not
+         CSS absolute — this dropdown is used inside scrollable containers (e.g. the
+         Developers page's Unassigned list), and an absolutely-positioned menu gets
+         clipped by an ancestor's overflow:auto instead of floating above everything. --}}
+    <div id="{{ $domId }}-menu" class="hidden fixed z-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1 max-h-64 overflow-y-auto" role="listbox">
         @if ($placeholder !== null)
             <button type="button" data-select-option="" data-select-label="{{ $placeholder }}" role="option" aria-selected="{{ $effectiveSelected === '' ? 'true' : 'false' }}"
                     class="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $effectiveSelected === '' ? 'text-gold-dark font-semibold' : 'text-gray-500 dark:text-gray-400' }}">
@@ -94,7 +98,23 @@
                 if (otherWrap === wrap) return;
                 document.getElementById(otherWrap.id.replace(/-wrap$/, '') + '-menu')?.classList.add('hidden');
             });
+
+            // Fixed positioning is computed from the toggle button's viewport
+            // coordinates, not CSS, so the menu escapes any scrollable/clipped
+            // ancestor. Flips above the toggle if there isn't room below.
+            const rect = toggle.getBoundingClientRect();
+            menu.style.left = rect.left + 'px';
+            menu.style.width = rect.width + 'px';
             menu.classList.remove('hidden');
+
+            const menuHeight = menu.offsetHeight;
+            const spaceBelow = window.innerHeight - rect.bottom;
+            if (spaceBelow < menuHeight + 12 && rect.top > menuHeight + 12) {
+                menu.style.top = (rect.top - menuHeight - 6) + 'px';
+            } else {
+                menu.style.top = (rect.bottom + 6) + 'px';
+            }
+
             toggle.setAttribute('aria-expanded', 'true');
             if (chevron) chevron.style.transform = 'rotate(180deg)';
         }
@@ -153,6 +173,15 @@
         document.addEventListener('click', function (e) {
             if (!wrap.contains(e.target)) closeMenu();
         });
+
+        // Fixed-position coordinates are computed once, on open — closing on
+        // scroll (capture: true, since scrolling inside a nested scrollable
+        // container like the Unassigned list doesn't bubble a 'scroll' event
+        // to document otherwise) avoids the menu staying frozen in place
+        // while the button it's anchored to moves out from under it.
+        document.addEventListener('scroll', function () {
+            if (!menu.classList.contains('hidden')) closeMenu();
+        }, true);
     }
 
     // Blade's @@once only emits this <script> once, at the position of the
