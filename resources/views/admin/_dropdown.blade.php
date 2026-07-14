@@ -37,7 +37,7 @@
             @if ($selectedOption && ($selectedOption['dot'] ?? null))
                 <span class="w-2 h-2 rounded-full shrink-0 {{ $selectedOption['dot'] }}"></span>
             @endif
-            <span id="{{ $domId }}-label-text">{{ $selectedOption['label'] ?? ($placeholder ?? 'Select one…') }}</span>
+            <span id="{{ $domId }}-label-text">{{ $selectedOption['label'] ?? ($placeholder ?? 'Select one...') }}</span>
         </span>
         <svg class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>

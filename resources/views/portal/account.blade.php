@@ -209,7 +209,7 @@
                                 @if ($currentOrgType)
                                     <span class="w-2 h-2 rounded-full shrink-0 {{ $orgTypeColors[$currentOrgType] ?? 'bg-gray-400' }}"></span>
                                 @endif
-                                <span id="org-type-label-text">{{ $currentOrgType ?: 'Select one…' }}</span>
+                                <span id="org-type-label-text">{{ $currentOrgType ?: 'Select one...' }}</span>
                             </span>
                             <svg id="org-type-chevron" class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
