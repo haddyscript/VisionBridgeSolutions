@@ -30,12 +30,18 @@
         <input type="text" id="developer-search" placeholder="Search developers by name…"
                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
     </div>
-    <select id="developer-workload-filter"
-            class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold">
-        <option value="all">All Developers</option>
-        <option value="active">Has Active Work</option>
-        <option value="idle">Idle (No Active Work)</option>
-    </select>
+    <div class="w-full sm:w-56">
+        @include('admin._dropdown', [
+            'name' => 'workload_filter',
+            'domId' => 'workload-filter',
+            'options' => [
+                ['value' => 'all', 'label' => 'All Developers'],
+                ['value' => 'active', 'label' => 'Has Active Work', 'dot' => 'bg-gold'],
+                ['value' => 'idle', 'label' => 'Idle (No Active Work)', 'dot' => 'bg-gray-400'],
+            ],
+            'selected' => 'all',
+        ])
+    </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -154,13 +160,14 @@
                         <form method="POST" action="{{ $item['assign_url'] }}" class="mt-1.5">
                             @csrf
                             @method('PATCH')
-                            <select name="assigned_developer_id" onchange="this.form.requestSubmit()"
-                                    class="w-full text-xs font-medium rounded-lg px-3 py-1.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold">
-                                <option value="">Assign to…</option>
-                                @foreach ($developers as $developer)
-                                    <option value="{{ $developer->id }}">{{ $developer->name }}</option>
-                                @endforeach
-                            </select>
+                            @include('admin._dropdown', [
+                                'name' => 'assigned_developer_id',
+                                'domId' => 'unassigned-assign-'.$loop->index,
+                                'options' => $developers->map(fn ($d) => ['value' => $d->id, 'label' => $d->name])->all(),
+                                'selected' => null,
+                                'placeholder' => 'Assign to…',
+                                'autoSubmit' => true,
+                            ])
                         </form>
                     </div>
                 @endforeach
@@ -181,7 +188,7 @@
 
     (function () {
         const searchInput = document.getElementById('developer-search');
-        const workloadFilter = document.getElementById('developer-workload-filter');
+        const workloadFilter = document.getElementById('workload-filter-input');
         const cards = document.querySelectorAll('.developer-card');
         const emptyState = document.getElementById('developer-empty-state');
 

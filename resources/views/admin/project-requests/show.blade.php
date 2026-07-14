@@ -50,7 +50,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Proposal Status</label>
-                        @include('admin.project-requests._dropdown', [
+                        @include('admin._dropdown', [
                             'name' => 'proposal_status',
                             'domId' => 'proposal-status',
                             'options' => collect(\App\Models\ProjectRequest::PROPOSAL_STATUSES)->map(fn ($label, $value) => [
@@ -63,7 +63,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Recommended Care Plan</label>
-                        @include('admin.project-requests._dropdown', [
+                        @include('admin._dropdown', [
                             'name' => 'recommended_care_plan_id',
                             'domId' => 'recommended-care-plan',
                             'options' => \App\Models\MaintenancePlan::orderBy('sort_order')->get()->map(fn ($plan) => ['value' => $plan->id, 'label' => $plan->name])->all(),
@@ -132,7 +132,7 @@
                     <form method="POST" action="{{ route('admin.project-requests.assign-developer', $projectRequest) }}">
                         @csrf
                         @method('PATCH')
-                        @include('admin.project-requests._dropdown', [
+                        @include('admin._dropdown', [
                             'name' => 'assigned_developer_id',
                             'domId' => 'assigned-developer',
                             'options' => \App\Models\User::developers()->map(fn ($d) => ['value' => $d->id, 'label' => $d->name])->all(),
@@ -148,7 +148,7 @@
                         <form method="POST" action="{{ route('admin.project-requests.developer-status', $projectRequest) }}">
                             @csrf
                             @method('PATCH')
-                            @include('admin.project-requests._dropdown', [
+                            @include('admin._dropdown', [
                                 'name' => 'developer_status',
                                 'domId' => 'developer-status',
                                 'options' => collect(\App\Models\ProjectRequest::DEVELOPER_STATUSES)->map(fn ($label, $value) => [
@@ -167,7 +167,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Status</label>
-                    @include('admin.project-requests._dropdown', [
+                    @include('admin._dropdown', [
                         'name' => 'status',
                         'domId' => 'intake-status',
                         'options' => collect(\App\Models\ProjectRequest::STATUSES)->map(fn ($label, $value) => [
@@ -189,95 +189,9 @@
     </div>
 </form>
 
-{{-- Drives every custom dropdown from the partial above — one shared handler
-     instead of per-instance JS, since all dropdowns on this page behave
-     identically except for the auto-submit flag. --}}
+{{-- Custom-dropdown behavior is wired up automatically by admin/_dropdown.blade.php (@once script). --}}
 <script>
 (function () {
-    document.querySelectorAll('[data-custom-select]').forEach(function (wrap) {
-        const domId = wrap.id.replace(/-wrap$/, '');
-        const toggle = document.getElementById(domId + '-toggle');
-        const menu = document.getElementById(domId + '-menu');
-        const chevron = toggle?.querySelector('svg');
-        const hiddenInput = document.getElementById(domId + '-input');
-        const label = document.getElementById(domId + '-label');
-        const labelText = document.getElementById(domId + '-label-text');
-        const autoSubmit = wrap.dataset.autoSubmit === '1';
-        if (!toggle || !menu || !hiddenInput || !label || !labelText) return;
-
-        function closeMenu() {
-            menu.classList.add('hidden');
-            toggle.setAttribute('aria-expanded', 'false');
-            if (chevron) chevron.style.transform = '';
-        }
-
-        function openMenu() {
-            document.querySelectorAll('[data-custom-select]').forEach(function (otherWrap) {
-                if (otherWrap === wrap) return;
-                document.getElementById(otherWrap.id.replace(/-wrap$/, '') + '-menu')?.classList.add('hidden');
-            });
-            menu.classList.remove('hidden');
-            toggle.setAttribute('aria-expanded', 'true');
-            if (chevron) chevron.style.transform = 'rotate(180deg)';
-        }
-
-        toggle.addEventListener('click', function (e) {
-            e.stopPropagation();
-            menu.classList.contains('hidden') ? openMenu() : closeMenu();
-        });
-
-        menu.querySelectorAll('[data-select-option]').forEach(function (option) {
-            option.addEventListener('click', function () {
-                const value = option.dataset.selectOption;
-                const optLabel = option.dataset.selectLabel;
-                const dot = option.dataset.selectDot || '';
-
-                hiddenInput.value = value;
-                labelText.textContent = optLabel;
-                label.classList.remove('text-gray-400');
-                label.classList.add('text-navy', 'dark:text-white');
-
-                let dotEl = label.querySelector('span.w-2');
-                if (dot) {
-                    if (!dotEl) {
-                        dotEl = document.createElement('span');
-                        label.insertBefore(dotEl, labelText);
-                    }
-                    dotEl.className = 'w-2 h-2 rounded-full shrink-0 ' + dot;
-                } else if (dotEl) {
-                    dotEl.remove();
-                }
-
-                menu.querySelectorAll('[data-select-option]').forEach(function (opt) {
-                    const isSelected = opt === option;
-                    opt.setAttribute('aria-selected', isSelected ? 'true' : 'false');
-                    opt.classList.toggle('text-gold-dark', isSelected);
-                    opt.classList.toggle('font-semibold', isSelected);
-                    opt.classList.toggle('text-gray-700', !isSelected);
-                    opt.classList.toggle('dark:text-gray-300', !isSelected);
-                    const check = opt.querySelector('svg');
-                    if (check) check.classList.toggle('invisible', !isSelected);
-                });
-
-                closeMenu();
-
-                if (autoSubmit && hiddenInput.form) {
-                    hiddenInput.form.requestSubmit();
-                }
-            });
-        });
-
-        document.addEventListener('click', function (e) {
-            if (!wrap.contains(e.target)) closeMenu();
-        });
-    });
-
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-            document.querySelectorAll('[id$="-menu"]').forEach(function (m) { m.classList.add('hidden'); });
-        }
-    });
-
     // Proposal document dropzone — click-to-browse (native label/for
     // behavior) plus real drag-and-drop, with the filename swapped in once
     // a file is picked either way.
