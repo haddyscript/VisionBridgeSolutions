@@ -135,14 +135,34 @@
                     <input type="text" id="payment-search" placeholder="Search payments..."
                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
                 </div>
-                <select id="payment-status-filter"
-                        class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
-                    <option value="">All Statuses</option>
-                    <option value="pending">Pending</option>
-                    <option value="paid">Paid</option>
-                    <option value="failed">Failed</option>
-                    <option value="canceled">Canceled</option>
-                </select>
+                <div class="relative w-full sm:w-48" id="payment-status-filter-wrap">
+                    <input type="hidden" id="payment-status-filter" value="">
+
+                    <button type="button" id="payment-status-filter-toggle" aria-haspopup="listbox" aria-expanded="false"
+                            class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+                        <span id="payment-status-filter-label" class="flex items-center gap-2 min-w-0 truncate text-navy dark:text-white">All Statuses</span>
+                        <svg id="payment-status-filter-chevron" class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    <div id="payment-status-filter-menu" class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                        @foreach (['' => 'All Statuses', 'pending' => 'Pending', 'paid' => 'Paid', 'failed' => 'Failed', 'canceled' => 'Canceled'] as $value => $label)
+                            <button type="button" data-status-option="{{ $value }}" role="option" aria-selected="{{ $value === '' ? 'true' : 'false' }}"
+                                    class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $value === '' ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
+                                <span class="flex items-center gap-2">
+                                    @if ($value)
+                                        <span class="w-2 h-2 rounded-full shrink-0 {{ $statusDots[$value] ?? 'bg-gray-400' }}"></span>
+                                    @endif
+                                    {{ $label }}
+                                </span>
+                                <svg class="w-4 h-4 text-gold-dark shrink-0 {{ $value === '' ? '' : 'invisible' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
             </div>
 
             <p id="payment-empty-state" class="hidden text-sm text-gray-400 dark:text-gray-500 text-center py-6">No payments match your search.</p>
@@ -712,6 +732,65 @@
                 setTimeout(function () { textEl.textContent = original; }, 1200);
             });
         };
+
+        // Status filter — custom-styled dropdown instead of a native <select>,
+        // whose browser-drawn option list can't be restyled to match the page.
+        // Dispatches a real 'change' event on the hidden input so the existing
+        // filter logic below (applyPaymentFilters) needs zero changes.
+        (function () {
+            const wrap = document.getElementById('payment-status-filter-wrap');
+            const toggle = document.getElementById('payment-status-filter-toggle');
+            const menu = document.getElementById('payment-status-filter-menu');
+            const chevron = document.getElementById('payment-status-filter-chevron');
+            const hiddenInput = document.getElementById('payment-status-filter');
+            const label = document.getElementById('payment-status-filter-label');
+            if (!wrap || !toggle || !menu || !hiddenInput || !label) return;
+
+            function closeMenu() {
+                menu.classList.add('hidden');
+                toggle.setAttribute('aria-expanded', 'false');
+                chevron.style.transform = '';
+            }
+
+            function openMenu() {
+                menu.classList.remove('hidden');
+                toggle.setAttribute('aria-expanded', 'true');
+                chevron.style.transform = 'rotate(180deg)';
+            }
+
+            toggle.addEventListener('click', function (e) {
+                e.stopPropagation();
+                menu.classList.contains('hidden') ? openMenu() : closeMenu();
+            });
+
+            menu.querySelectorAll('[data-status-option]').forEach(function (option) {
+                option.addEventListener('click', function () {
+                    hiddenInput.value = option.dataset.statusOption;
+                    label.textContent = option.textContent.trim();
+
+                    menu.querySelectorAll('[data-status-option]').forEach(function (opt) {
+                        const isSelected = opt === option;
+                        opt.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+                        opt.classList.toggle('text-gold-dark', isSelected);
+                        opt.classList.toggle('font-semibold', isSelected);
+                        opt.classList.toggle('text-gray-700', !isSelected);
+                        opt.classList.toggle('dark:text-gray-300', !isSelected);
+                        opt.querySelector('svg').classList.toggle('invisible', !isSelected);
+                    });
+
+                    closeMenu();
+                    hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!wrap.contains(e.target)) closeMenu();
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeMenu();
+            });
+        })();
 
         const searchInput = document.getElementById('payment-search');
         const statusFilter = document.getElementById('payment-status-filter');
