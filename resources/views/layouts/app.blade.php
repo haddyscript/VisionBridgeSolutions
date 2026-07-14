@@ -1352,7 +1352,7 @@
             {{-- Desktop CTA --}}
             <div class="hidden md:flex items-center gap-4">
                 <a id="nav-login" href="{{ route('login') }}" class="nav-link relative z-10 opacity-0">Client Login</a>
-                <a id="nav-cta" href="{{ $homeAnchor }}#contact"
+                <a id="nav-cta" href="{{ route('intake.create') }}"
                    class="nav-cta-btn inline-flex items-center gap-2 bg-gold hover:bg-gold-light text-navy font-bold text-base px-6 py-2.5 rounded-lg opacity-0 transition-colors duration-200">
                     Get Started
                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1378,7 +1378,7 @@
                 <a href="{{ $homeAnchor }}#plans"     class="mobile-menu-link text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Plans</a>
                 <a href="{{ $homeAnchor }}#portfolio" class="mobile-menu-link text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Portfolio</a>
                 <a href="{{ route('login') }}" class="mobile-menu-link text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Client Login</a>
-                <a id="mobile-menu-cta" href="{{ $homeAnchor }}#contact"   class="mt-2 bg-gold text-navy font-bold text-base text-center px-4 py-3 rounded-xl">Get Started</a>
+                <a id="mobile-menu-cta" href="{{ route('intake.create') }}"   class="mt-2 bg-gold text-navy font-bold text-base text-center px-4 py-3 rounded-xl">Get Started</a>
             </div>
         </div>
     </nav>
