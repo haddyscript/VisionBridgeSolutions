@@ -110,16 +110,33 @@
         @endif
     </div>
 
-    {{-- Right: unassigned, side-by-side with developer availability --}}
+    {{-- Right: unassigned, side-by-side with developer availability. Made
+         deliberately loud (red badge + icon + bordered card, not a plain
+         heading) — this list is easy to overlook otherwise, and it's the
+         one thing on this page that always needs a human to act on it. --}}
     <div class="lg:col-span-1 lg:sticky lg:top-6">
-        <h3 class="font-semibold text-navy dark:text-white mb-3">Unassigned — Needs a Developer</h3>
+        <div class="flex items-center gap-2 mb-3">
+            @if ($unassigned->isNotEmpty())
+                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-red-100 dark:bg-red-500/15 shrink-0">
+                    <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a1 1 0 00.86 1.5h18.64a1 1 0 00.86-1.5L13.71 3.86a1 1 0 00-1.42 0z"/></svg>
+                </span>
+            @endif
+            <h3 class="font-bold text-base text-navy dark:text-white">Unassigned — Needs a Developer</h3>
+            @if ($unassigned->isNotEmpty())
+                <span class="flex items-center justify-center min-w-[1.75rem] h-7 px-2 rounded-full bg-red-500 text-white text-sm font-bold shrink-0">{{ $unassigned->count() }}</span>
+            @endif
+        </div>
 
         @if ($unassigned->isEmpty())
             <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
+                <svg class="w-8 h-8 text-teal-dark mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 <p class="text-sm text-gray-500 dark:text-gray-400">Everything is assigned. Nice.</p>
             </div>
         @else
-            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700 max-h-[calc(100vh-220px)] overflow-y-auto">
+            <div class="bg-white dark:bg-gray-800 rounded-xl border-2 border-red-200 dark:border-red-500/30 divide-y divide-gray-100 dark:divide-gray-700 max-h-[calc(100vh-220px)] overflow-y-auto">
+                <div class="sticky top-0 bg-red-50 dark:bg-red-500/10 px-4 py-2.5 border-b border-red-200 dark:border-red-500/30">
+                    <p class="text-xs font-bold uppercase tracking-wide text-red-700 dark:text-red-400">{{ $unassigned->count() }} {{ $unassigned->count() === 1 ? 'item' : 'items' }} waiting for assignment</p>
+                </div>
                 @foreach ($unassigned as $item)
                     <div class="p-4">
                         <div class="flex items-center justify-between gap-2 mb-1">
