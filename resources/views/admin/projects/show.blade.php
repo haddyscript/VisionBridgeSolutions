@@ -207,7 +207,11 @@
 </div>
 
 @php
-    $pendingPaymentCount = $project->payments->where('status', 'pending')->count();
+    // Includes the Care Plan subscription (if still pending) alongside
+    // one-time payments, so the badge reflects everything awaiting the
+    // client's action, not just one-time invoices.
+    $pendingPaymentCount = $project->payments->where('status', 'pending')->count()
+        + ($project->subscription && $project->subscription->status === 'pending' ? 1 : 0);
 @endphp
 
 {{-- Tabs — high-contrast pill segmented control --}}
