@@ -125,6 +125,10 @@
                         </div>
                         <div class="flex items-center gap-4">
                             <span class="font-sans font-extrabold text-lg text-navy dark:text-white">{{ $payment->formattedAmount() }}</span>
+                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                Payment Needed
+                            </span>
                             <form method="POST" action="{{ route('portal.payments.checkout', $payment) }}" class="js-payment-checkout-form">
                                 @csrf
                                 <input type="hidden" name="timezone" class="js-timezone-input">
