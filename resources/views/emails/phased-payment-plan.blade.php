@@ -81,11 +81,12 @@
                                             One more thing &mdash; your Growth Care Plan
                                         </p>
                                         <p style="font-size:14px; line-height:1.6; color:#4b5563; margin:0;">
-                                            Your ${{ number_format($carePlanAmount / 100, 2) }}/month Care Plan
-                                            won't be activated or charged during development &mdash; you won't pay
-                                            a cent toward it until your site is actually live. Once your final
-                                            phase is complete and launched, we'll activate it and process your
-                                            first payment. From there, it renews automatically every 30 days, so
+                                            Your Growth Care Plan won't be activated or charged during
+                                            development. We'll activate your
+                                            ${{ number_format($carePlanAmount / 100, 2) }}/month Growth Care Plan
+                                            after your website has been completed, approved, and officially
+                                            launched. Your first monthly payment will then be processed, and your
+                                            subscription will renew automatically every 30 days after that, so
                                             your site stays maintained without you having to think about it.
                                         </p>
                                     </td>
