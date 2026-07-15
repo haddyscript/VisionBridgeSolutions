@@ -336,7 +336,7 @@
             </a>
         </div>
     @elseif ($project->status === 'onboarding')
-        <img src="{{ asset('image/lets-get-started.png') }}" alt="Get Started" class="h-40 w-auto -mb-13">
+        <img src="{{ asset('image/lets-get-started.png') }}" alt="Get Started" class="h-40 w-auto -mb-16">
         <div class="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 border border-gold/20 dark:border-gold/10" style="background:linear-gradient(135deg,rgba(201,168,76,0.10),rgba(42,157,143,0.08));">
             <p class="text-xs font-semibold uppercase tracking-widest text-gold-dark mb-2">Hey {{ explode(' ', auth()->user()->name)[0] }} 👋</p>
             <h2 class="font-display text-xl font-bold text-navy dark:text-white mb-2">Glad to have you here — let's get started</h2>
