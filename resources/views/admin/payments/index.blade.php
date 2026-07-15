@@ -41,6 +41,12 @@
         'past_due' => 'Past Due',
         'canceled' => 'Canceled',
     ];
+    $subscriptionStatusDots = [
+        'pending' => 'bg-gold',
+        'active' => 'bg-teal',
+        'past_due' => 'bg-red-500',
+        'canceled' => 'bg-gray-400',
+    ];
     $pendingSubscriptionCount = $subscriptions->where('status', 'pending')->count();
 @endphp
 
@@ -209,21 +215,81 @@
         <p class="text-gray-500 dark:text-gray-400">No care plans yet.</p>
     </div>
 @else
+    {{-- Search + status filter toolbar --}}
+    <div class="flex flex-wrap items-center gap-3 mb-4">
+        <div class="relative flex-1 min-w-[200px]">
+            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+            <input type="text" id="care-plan-search" placeholder="Search by client or project name..."
+                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+        </div>
+        <div class="relative w-full sm:w-48" id="care-plan-status-filter-wrap">
+            <input type="hidden" id="care-plan-status-filter" value="">
+
+            <button type="button" id="care-plan-status-filter-toggle" aria-haspopup="listbox" aria-expanded="false"
+                    class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+                <span id="care-plan-status-filter-label" class="flex items-center gap-2 min-w-0 truncate text-navy dark:text-white">All Statuses</span>
+                <svg id="care-plan-status-filter-chevron" class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+
+            <div id="care-plan-status-filter-menu" class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                @foreach (['' => 'All Statuses'] + $subscriptionStatusLabels as $value => $label)
+                    <button type="button" data-status-option="{{ $value }}" role="option" aria-selected="{{ $value === '' ? 'true' : 'false' }}"
+                            class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $value === '' ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
+                        <span class="flex items-center gap-2">
+                            @if ($value)
+                                <span class="w-2 h-2 rounded-full shrink-0 {{ $subscriptionStatusDots[$value] ?? 'bg-gray-400' }}"></span>
+                            @endif
+                            {{ $label }}
+                        </span>
+                        <svg class="w-4 h-4 text-gold-dark shrink-0 {{ $value === '' ? '' : 'invisible' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </button>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
+    <p id="care-plan-empty-state" class="hidden text-sm text-gray-400 dark:text-gray-500 text-center py-6">No care plans match your search.</p>
+
     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <table class="w-full text-sm">
             <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
                 <tr>
-                    <th class="px-5 py-3">Client</th>
+                    <th class="px-5 py-3">
+                        <button type="button" data-sort-key="client" class="care-plan-sort-btn inline-flex items-center gap-1 hover:text-navy dark:hover:text-white transition-colors">
+                            Client
+                            <svg class="w-3 h-3 sort-icon opacity-30 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                    </th>
                     <th class="px-5 py-3">Description</th>
-                    <th class="px-5 py-3">Amount</th>
+                    <th class="px-5 py-3">
+                        <button type="button" data-sort-key="amount" class="care-plan-sort-btn inline-flex items-center gap-1 hover:text-navy dark:hover:text-white transition-colors">
+                            Amount
+                            <svg class="w-3 h-3 sort-icon opacity-30 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                    </th>
                     <th class="px-5 py-3">Status</th>
-                    <th class="px-5 py-3">Renews</th>
+                    <th class="px-5 py-3">
+                        <button type="button" data-sort-key="renews" class="care-plan-sort-btn inline-flex items-center gap-1 hover:text-navy dark:hover:text-white transition-colors">
+                            Renews
+                            <svg class="w-3 h-3 sort-icon opacity-30 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                    </th>
                     <th class="px-5 py-3"></th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+            <tbody id="care-plan-tbody" class="divide-y divide-gray-100 dark:divide-gray-700">
                 @foreach ($subscriptions as $subscription)
-                    <tr class="hover:bg-gray-50/60">
+                    <tr class="care-plan-row hover:bg-gray-50/60 dark:hover:bg-white/[0.03]"
+                        data-group="sub-{{ $subscription->id }}"
+                        data-client="{{ strtolower($subscription->project->user->name) }}"
+                        data-project="{{ strtolower($subscription->project->name) }}"
+                        data-status="{{ $subscription->status }}"
+                        data-amount="{{ $subscription->amount }}"
+                        data-renews="{{ $subscription->current_period_end?->timestamp ?? 0 }}">
                         <td class="px-5 py-3.5">
                             <p class="font-medium text-navy dark:text-white">{{ $subscription->project->user->name }}</p>
                             <p class="text-xs text-gray-400 dark:text-gray-500">{{ $subscription->project->name }}</p>
@@ -253,7 +319,7 @@
                         </td>
                     </tr>
                     @if ($subscription->payments->isNotEmpty())
-                        <tr id="subscription-history-{{ $subscription->id }}" class="subscription-history-row hidden bg-gray-50/60 dark:bg-gray-900/40">
+                        <tr id="subscription-history-{{ $subscription->id }}" class="subscription-history-row hidden bg-gray-50/60 dark:bg-gray-900/40" data-group="sub-{{ $subscription->id }}">
                             <td colspan="6" class="px-5 py-4">
                                 <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">Payment History</p>
                                 <div class="space-y-1.5">
@@ -304,6 +370,147 @@
             btn.querySelector('svg').classList.toggle('rotate-90');
         });
     });
+
+    // Care Plans: search, status filter, and sortable columns. Each main row
+    // and its optional (collapsed-by-default) payment-history row share a
+    // data-group value so sorting can move them together as a pair, and
+    // filtering hides/collapses the history row whenever its parent is hidden.
+    (function () {
+        const tbody = document.getElementById('care-plan-tbody');
+        if (!tbody) return;
+
+        const searchInput = document.getElementById('care-plan-search');
+        const statusFilter = document.getElementById('care-plan-status-filter');
+        const emptyState = document.getElementById('care-plan-empty-state');
+
+        function applyCarePlanFilters() {
+            const query = (searchInput?.value || '').trim().toLowerCase();
+            const status = statusFilter?.value || '';
+            let visibleCount = 0;
+
+            tbody.querySelectorAll('.care-plan-row').forEach((row) => {
+                const matchesQuery = !query || row.dataset.client.includes(query) || row.dataset.project.includes(query);
+                const matchesStatus = !status || row.dataset.status === status;
+                const visible = matchesQuery && matchesStatus;
+
+                row.classList.toggle('hidden', !visible);
+                if (visible) visibleCount++;
+
+                const historyRow = tbody.querySelector('.subscription-history-row[data-group="' + row.dataset.group + '"]');
+                if (historyRow && !visible) {
+                    historyRow.classList.add('hidden');
+                    const toggleBtn = tbody.querySelector('.subscription-history-toggle[data-target="' + historyRow.id + '"]');
+                    toggleBtn?.querySelector('svg')?.classList.remove('rotate-90');
+                }
+            });
+
+            if (emptyState) emptyState.classList.toggle('hidden', visibleCount > 0);
+        }
+
+        searchInput?.addEventListener('input', applyCarePlanFilters);
+
+        // Status filter dropdown — same custom toggle/menu pattern used for
+        // the client-portal Payment History status filter, for consistency.
+        (function () {
+            const wrap = document.getElementById('care-plan-status-filter-wrap');
+            const toggle = document.getElementById('care-plan-status-filter-toggle');
+            const menu = document.getElementById('care-plan-status-filter-menu');
+            const chevron = document.getElementById('care-plan-status-filter-chevron');
+            const hiddenInput = document.getElementById('care-plan-status-filter');
+            const label = document.getElementById('care-plan-status-filter-label');
+            if (!wrap || !toggle || !menu || !hiddenInput || !label) return;
+
+            function closeMenu() {
+                menu.classList.add('hidden');
+                toggle.setAttribute('aria-expanded', 'false');
+                chevron.style.transform = '';
+            }
+
+            function openMenu() {
+                menu.classList.remove('hidden');
+                toggle.setAttribute('aria-expanded', 'true');
+                chevron.style.transform = 'rotate(180deg)';
+            }
+
+            toggle.addEventListener('click', function (e) {
+                e.stopPropagation();
+                menu.classList.contains('hidden') ? openMenu() : closeMenu();
+            });
+
+            menu.querySelectorAll('[data-status-option]').forEach(function (option) {
+                option.addEventListener('click', function () {
+                    hiddenInput.value = option.dataset.statusOption;
+                    label.textContent = option.textContent.trim();
+
+                    menu.querySelectorAll('[data-status-option]').forEach(function (opt) {
+                        const isSelected = opt === option;
+                        opt.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+                        opt.classList.toggle('text-gold-dark', isSelected);
+                        opt.classList.toggle('font-semibold', isSelected);
+                        opt.classList.toggle('text-gray-700', !isSelected);
+                        opt.classList.toggle('dark:text-gray-300', !isSelected);
+                        opt.querySelector('svg').classList.toggle('invisible', !isSelected);
+                    });
+
+                    closeMenu();
+                    applyCarePlanFilters();
+                });
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!wrap.contains(e.target)) closeMenu();
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeMenu();
+            });
+        })();
+
+        // Sorting — groups each main row with its history row (if any) so
+        // they always move together, then re-appends every group in order.
+        let currentSort = { key: null, dir: 1 };
+
+        function sortCarePlansBy(key) {
+            currentSort = currentSort.key === key ? { key: key, dir: -currentSort.dir } : { key: key, dir: 1 };
+
+            const groups = new Map();
+            tbody.querySelectorAll('.care-plan-row').forEach((row) => {
+                groups.set(row.dataset.group, { main: row, history: null });
+            });
+            tbody.querySelectorAll('.subscription-history-row').forEach((row) => {
+                const group = groups.get(row.dataset.group);
+                if (group) group.history = row;
+            });
+
+            const isNumeric = key === 'amount' || key === 'renews';
+            const sorted = Array.from(groups.values()).sort((a, b) => {
+                const valA = isNumeric ? Number(a.main.dataset[key]) : a.main.dataset[key];
+                const valB = isNumeric ? Number(b.main.dataset[key]) : b.main.dataset[key];
+                if (valA < valB) return -1 * currentSort.dir;
+                if (valA > valB) return 1 * currentSort.dir;
+                return 0;
+            });
+
+            sorted.forEach(function (group) {
+                tbody.appendChild(group.main);
+                if (group.history) tbody.appendChild(group.history);
+            });
+
+            document.querySelectorAll('.care-plan-sort-btn .sort-icon').forEach((icon) => {
+                icon.classList.add('opacity-30');
+                icon.classList.remove('rotate-180');
+            });
+            const activeBtn = document.querySelector('.care-plan-sort-btn[data-sort-key="' + key + '"] .sort-icon');
+            if (activeBtn) {
+                activeBtn.classList.remove('opacity-30');
+                activeBtn.classList.toggle('rotate-180', currentSort.dir === -1);
+            }
+        }
+
+        document.querySelectorAll('.care-plan-sort-btn').forEach((btn) => {
+            btn.addEventListener('click', () => sortCarePlansBy(btn.dataset.sortKey));
+        });
+    })();
 </script>
 
 {{-- Transaction Detail Modal --}}
