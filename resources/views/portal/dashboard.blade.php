@@ -368,8 +368,19 @@
     @endif
 
     @if ($pendingItemsCount > 0)
+        @php
+            // A single, unambiguous pending one-time payment gets a direct
+            // "Pay {title} — {amount}" button right in the banner (skips the
+            // extra click through to /portal/payments); multiple items or a
+            // Care Plan mixed in falls back to a plain link, since one button
+            // can't check out several different things at once.
+            $singlePendingPayment = ($pendingItemsCount === 1 && ! $pendingCarePlan) ? $pendingPayments->first() : null;
+            $singlePendingTitle = $singlePendingPayment
+                ? (preg_split('/\s+[\x{2013}\x{2014}]\s+/u', $singlePendingPayment->description, 2)[0] ?? $singlePendingPayment->description)
+                : null;
+        @endphp
         <img src="{{ asset('image/reminder-word-icon.png') }}" alt="Reminder" class="h-40 w-auto -mb-14">
-        <a href="{{ route('portal.payments.index') }}" class="group flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-4 sm:px-5 mb-6 sm:mb-8 transition-all duration-200 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-md hover:-translate-y-0.5">
+        <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-4 sm:px-5 mb-6 sm:mb-8">
             <div class="flex items-center gap-3">
                 <span class="relative w-9 h-9 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
                     {{-- Slow, low-opacity "ping" behind the icon only — a quiet
@@ -378,24 +389,49 @@
                     <span class="payment-due-pulse-ring absolute inset-0 rounded-full bg-amber-500/40" aria-hidden="true"></span>
                     <svg class="relative w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                 </span>
-                <p class="text-sm text-amber-800 dark:text-amber-200">
-                    <span class="font-semibold">Hi {{ explode(' ', auth()->user()->name)[0] }}, just a friendly reminder —</span>
-                    ${{ number_format($pendingPayments->sum('amount') / 100, 2) }}
-                    @if ($pendingItemsCount > 1)
-                        is waiting across {{ $pendingItemsCount }} items{{ $pendingCarePlan ? ' (including your Care Plan)' : '' }}
-                    @elseif ($pendingCarePlan)
-                        is waiting for your Care Plan
-                    @else
-                        has been waiting since {{ $pendingPayments->first()->created_at->format('M j, Y') }}
+                <div>
+                    <p class="text-sm text-amber-800 dark:text-amber-200">
+                        <span class="font-semibold">Hi {{ explode(' ', auth()->user()->name)[0] }}, just a friendly reminder —</span>
+                        ${{ number_format($pendingPayments->sum('amount') / 100, 2) }}
+                        @if ($pendingItemsCount > 1)
+                            is waiting across {{ $pendingItemsCount }} items{{ $pendingCarePlan ? ' (including your Care Plan)' : '' }}
+                        @elseif ($pendingCarePlan)
+                            is waiting for your Care Plan
+                        @else
+                            has been waiting since {{ $pendingPayments->first()->created_at->format('M j, Y') }}
+                        @endif
+                        — no rush, just take care of it whenever works for you.
+                    </p>
+                    @if ($singlePendingPayment)
+                        <p class="text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400 mt-1">Awaiting {{ $singlePendingTitle }} Payment</p>
                     @endif
-                    — no rush, just take care of it whenever works for you.
-                </p>
+                </div>
             </div>
-            <span class="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-300 shrink-0">
-                Take Care of It
-                <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-            </span>
-        </a>
+
+            @if ($singlePendingPayment)
+                <form method="POST" action="{{ route('portal.payments.checkout', $singlePendingPayment) }}" class="js-payment-checkout-form shrink-0">
+                    @csrf
+                    <input type="hidden" name="timezone" class="js-timezone-input">
+                    <button type="submit" class="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-amber-700 hover:bg-amber-800 px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                        Pay {{ $singlePendingTitle }} — {{ $singlePendingPayment->formattedAmount() }}
+                    </button>
+                </form>
+            @else
+                <a href="{{ route('portal.payments.index') }}" class="group inline-flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-300 shrink-0 hover:underline">
+                    Take Care of It
+                    <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            @endif
+        </div>
+
+        <script>
+            (function () {
+                const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                document.querySelectorAll('.js-timezone-input').forEach(function (input) {
+                    input.value = timezone;
+                });
+            })();
+        </script>
 
         <style>
             @keyframes payment-due-pulse-ring {
