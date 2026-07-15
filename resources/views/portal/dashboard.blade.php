@@ -350,10 +350,14 @@
     @endif
 
     @if ($pendingPayments->isNotEmpty())
-        <a href="{{ route('portal.payments.index') }}" class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 px-4 py-4 sm:px-5 mb-6 sm:mb-8 hover:border-red-300 dark:hover:border-red-500/50 transition-colors">
+        <a href="{{ route('portal.payments.index') }}" class="group flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 px-4 py-4 sm:px-5 mb-6 sm:mb-8 transition-all duration-200 hover:border-red-300 dark:hover:border-red-500/50 hover:shadow-md hover:-translate-y-0.5">
             <div class="flex items-center gap-3">
-                <span class="w-9 h-9 rounded-full bg-red-500/15 text-red-500 flex items-center justify-center shrink-0">
-                    <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14.18A1 1 0 003 19.5h18a1 1 0 00.86-1.46L13.71 3.86a1 1 0 00-1.72 0z"/></svg>
+                <span class="relative w-9 h-9 rounded-full bg-red-500/15 text-red-500 flex items-center justify-center shrink-0">
+                    {{-- Slow, low-opacity "ping" behind the icon only — a quiet
+                    ambient cue, not a flashing banner — and off entirely for
+                    anyone who's asked their OS to reduce motion. --}}
+                    <span class="payment-due-pulse-ring absolute inset-0 rounded-full bg-red-500/40" aria-hidden="true"></span>
+                    <svg class="relative w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14.18A1 1 0 003 19.5h18a1 1 0 00.86-1.46L13.71 3.86a1 1 0 00-1.72 0z"/></svg>
                 </span>
                 <p class="text-sm text-red-700 dark:text-red-300">
                     <span class="font-semibold">Payment due: ${{ number_format($pendingPayments->sum('amount') / 100, 2) }}</span>
@@ -364,8 +368,24 @@
                     @endif
                 </p>
             </div>
-            <span class="text-xs font-semibold uppercase tracking-wide text-red-600 dark:text-red-400 shrink-0">View &amp; Pay &rarr;</span>
+            <span class="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-red-600 dark:text-red-400 shrink-0">
+                View &amp; Pay
+                <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </span>
         </a>
+
+        <style>
+            @keyframes payment-due-pulse-ring {
+                0% { transform: scale(0.9); opacity: 0.55; }
+                70%, 100% { transform: scale(1.8); opacity: 0; }
+            }
+            .payment-due-pulse-ring {
+                animation: payment-due-pulse-ring 2.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .payment-due-pulse-ring { animation: none; }
+            }
+        </style>
     @endif
 
     @if ($project->status === 'review')
