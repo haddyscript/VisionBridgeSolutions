@@ -553,9 +553,26 @@
                             <circle class="progress-ring-arc" cx="18" cy="18" r="15.915" fill="none" stroke="{{ $ring['color'] }}" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="0 100" data-pct="{{ $pct }}"/>
                         </svg>
                         <span class="progress-ring-value absolute inset-0 flex items-center justify-center font-display text-2xl font-bold text-navy dark:text-white" data-pct="{{ $pct }}">0%</span>
+
+                        {{-- Surfaces pending payments directly on the ring itself
+                        (not just the percentage), since 0% paid alone doesn't
+                        tell the client how many invoices are actually waiting
+                        on them or that any action is needed. --}}
+                        @if ($ring['label'] === 'Payments' && $pendingPayments->isNotEmpty())
+                            <span class="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-500 text-white text-[0.65rem] font-bold flex items-center justify-center shadow ring-2 ring-white dark:ring-gray-800"
+                                  title="{{ $pendingPayments->count() }} payment{{ $pendingPayments->count() > 1 ? 's' : '' }} pending">
+                                {{ $pendingPayments->count() }}
+                            </span>
+                        @endif
                     </div>
                     <p class="mt-3 text-sm font-semibold text-navy dark:text-white">{{ $ring['label'] }}</p>
                     <p class="text-xs text-gray-400 dark:text-gray-500">{{ $ring['sub'] }}</p>
+                    @if ($ring['label'] === 'Payments' && $pendingPayments->isNotEmpty())
+                        <p class="mt-1 inline-flex items-center gap-1 text-[0.7rem] font-semibold text-amber-600 dark:text-amber-400">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+                            {{ $pendingPayments->count() }} payment{{ $pendingPayments->count() > 1 ? 's' : '' }} pending
+                        </p>
+                    @endif
                 </div>
             @endforeach
             </div>
