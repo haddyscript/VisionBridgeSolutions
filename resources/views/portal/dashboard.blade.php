@@ -492,7 +492,7 @@
 
             @if ($whatsNext)
                 {{-- What's Next — subtle action card --}}
-                <img src="{{ asset('image/whats-next.png') }}" alt="What's Next" style="height: 6rem; width: auto; margin-bottom: -2rem;">
+                <img src="{{ asset('image/whats-next.png') }}" alt="What's Next" style="height: 6rem; width: auto; margin-bottom: -15px;">
                 <div class="flex flex-col h-full">
                     <div class="flex flex-col flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-5">
                         <div class="flex items-center gap-2.5 mb-3">
