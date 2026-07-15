@@ -367,7 +367,7 @@
     @endif
 
     @if ($pendingItemsCount > 0)
-        <img src="{{ asset('image/reminder-word-icon.png') }}" alt="Reminder" class="h-40 w-auto mb-3">
+        <img src="{{ asset('image/reminder-word-icon.png') }}" alt="Reminder" class="h-40 w-auto -mb-14">
         <a href="{{ route('portal.payments.index') }}" class="group flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-4 sm:px-5 mb-6 sm:mb-8 transition-all duration-200 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-md hover:-translate-y-0.5">
             <div class="flex items-center gap-3">
                 <span class="relative w-9 h-9 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
