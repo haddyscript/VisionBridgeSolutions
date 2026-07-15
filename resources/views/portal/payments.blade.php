@@ -31,7 +31,10 @@
 
     @php
         $statusColors = [
-            'pending' => 'bg-gold/15 text-gold-dark',
+            // Amber (not the brand gold used for buttons/accents everywhere
+            // else on this page) so an unpaid invoice actually stands out as
+            // something the client needs to act on, not just a neutral status.
+            'pending' => 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400',
             'paid' => 'bg-teal/15 text-teal-dark',
             'active' => 'bg-teal/15 text-teal-dark',
             'past_due' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
@@ -39,13 +42,18 @@
             'canceled' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400',
         ];
         $statusDots = [
-            'pending' => 'bg-gold',
+            'pending' => 'bg-amber-500',
             'paid' => 'bg-teal',
             'active' => 'bg-teal',
             'past_due' => 'bg-red-500',
             'failed' => 'bg-red-500',
             'canceled' => 'bg-gray-400',
         ];
+        // Non-technical clients read "Pending" as "someone else is handling
+        // this," not "I need to pay this." Only the one-time Payment rows
+        // get the clearer label — Care Plan status keeps "Pending" since it
+        // means "not started yet," a different action (Start Plan).
+        $paymentStatusLabel = fn ($payment) => $payment->status === 'pending' ? 'Payment Needed' : ucfirst($payment->status);
         $totalDue = $payments->where('status', 'pending')->sum('amount');
         $totalPaid = $payments->where('status', 'paid')->sum('amount')
             + ($subscription ? $subscription->payments->sum('amount_paid') : 0);
@@ -147,7 +155,7 @@
                     </button>
 
                     <div id="payment-status-filter-menu" class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
-                        @foreach (['' => 'All Statuses', 'pending' => 'Pending', 'paid' => 'Paid', 'failed' => 'Failed', 'canceled' => 'Canceled'] as $value => $label)
+                        @foreach (['' => 'All Statuses', 'pending' => 'Payment Needed', 'paid' => 'Paid', 'failed' => 'Failed', 'canceled' => 'Canceled'] as $value => $label)
                             <button type="button" data-status-option="{{ $value }}" role="option" aria-selected="{{ $value === '' ? 'true' : 'false' }}"
                                     class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $value === '' ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
                                 <span class="flex items-center gap-2">
@@ -180,7 +188,7 @@
                                      data-description="{{ $payment->description }}"
                                      data-amount="{{ $payment->formattedAmount() }}"
                                      data-status="{{ $payment->status }}"
-                                     data-status-label="{{ $payment->status === 'past_due' ? 'Past Due' : ucfirst($payment->status) }}"
+                                     data-status-label="{{ $payment->status === 'past_due' ? 'Past Due' : $paymentStatusLabel($payment) }}"
                                      data-currency="{{ strtoupper($payment->currency) }}"
                                      data-created="{{ $payment->created_at->format('M j, Y \a\t g:i A') }}"
                                      data-paid-at="{{ $payment->paid_at?->format('M j, Y \a\t g:i A') }}"
@@ -203,7 +211,7 @@
                                         <span class="font-sans font-extrabold text-lg text-navy dark:text-white">{{ $payment->formattedAmount() }}</span>
                                         <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full {{ $statusColors[$payment->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
                                             <span class="w-1.5 h-1.5 rounded-full {{ $statusDots[$payment->status] ?? 'bg-gray-400' }}"></span>
-                                            {{ ucfirst($payment->status) }}
+                                            {{ $paymentStatusLabel($payment) }}
                                         </span>
                                         @if ($payment->isPending())
                                             <form method="POST" action="{{ route('portal.payments.checkout', $payment) }}" onclick="event.stopPropagation()" class="js-payment-checkout-form">
@@ -507,13 +515,24 @@
             document.getElementById('modal-currency').textContent = d.currency;
             document.getElementById('modal-created').textContent = d.created;
 
+            // Payment rows use a distinct amber treatment for "pending" (see
+            // the matching PHP-side comment) so it reads as "you need to pay
+            // this" — kept as a local override rather than editing the
+            // shared statusColors/statusDots/statusIcon* objects above,
+            // since those are also used by the Care Plan modal where
+            // "pending" means something else (not started yet).
+            const badgeColorClass = d.status === 'pending' ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400' : (statusColors[d.status] || 'bg-gray-100 text-gray-500');
+            const badgeDotClass = d.status === 'pending' ? 'bg-amber-500' : (statusDots[d.status] || 'bg-gray-400');
+            const iconBgClass = d.status === 'pending' ? 'bg-amber-500/15' : (statusIconBg[d.status] || 'bg-white/10');
+            const iconColorClass = d.status === 'pending' ? 'text-amber-400' : (statusIconColor[d.status] || 'text-white/50');
+
             const badge = document.getElementById('modal-status-badge');
-            badge.className = 'inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full ' + (statusColors[d.status] || 'bg-gray-100 text-gray-500');
-            badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full ' + (statusDots[d.status] || 'bg-gray-400') + '"></span>' + d.statusLabel;
+            badge.className = 'inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full ' + badgeColorClass;
+            badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full ' + badgeDotClass + '"></span>' + d.statusLabel;
 
             const icon = document.getElementById('modal-status-icon');
-            icon.className = 'w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center ' + (statusIconBg[d.status] || 'bg-white/10');
-            icon.innerHTML = '<svg class="w-7 h-7 ' + (statusIconColor[d.status] || 'text-white/50') + '" fill="none" stroke="currentColor" viewBox="0 0 24 24">' + (statusIconPath[d.status] || statusIconPath.canceled) + '</svg>';
+            icon.className = 'w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center ' + iconBgClass;
+            icon.innerHTML = '<svg class="w-7 h-7 ' + iconColorClass + '" fill="none" stroke="currentColor" viewBox="0 0 24 24">' + (statusIconPath[d.status] || statusIconPath.canceled) + '</svg>';
 
             const paidRow = document.getElementById('modal-paid-row');
             if (d.paidAt) {
