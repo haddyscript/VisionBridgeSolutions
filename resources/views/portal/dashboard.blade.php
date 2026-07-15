@@ -21,8 +21,13 @@
     // payments (matches the admin Billing tab's pending count) — surfaced in
     // the banner and Progress Tracker ring below, but kept out of the dollar
     // total, since a not-yet-started subscription has no fixed amount due
-    // the way an invoiced one-time payment does.
-    $pendingCarePlan = $project?->subscription && $project->subscription->status === 'pending'
+    // the way an invoiced one-time payment does. Only counts once the
+    // project has actually launched, though — before that, Start Plan is
+    // disabled (Portal\SubscriptionController::checkout()'s launch gate), so
+    // reminding the client about it here would be a dead end.
+    $pendingCarePlan = $project?->subscription
+        && $project->subscription->status === 'pending'
+        && in_array($project->status, ['launched', 'maintenance'], true)
         ? $project->subscription
         : null;
     $pendingItemsCount = $pendingPayments->count() + ($pendingCarePlan ? 1 : 0);
