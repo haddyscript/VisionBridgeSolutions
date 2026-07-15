@@ -325,9 +325,51 @@
         @foreach ($project->milestones as $milestone)
             @php $state = $milestoneStateStyles[$milestone->status] ?? $milestoneStateStyles['pending']; @endphp
             <div class="rounded-lg border {{ $state['card'] }} px-4 py-3.5">
-                <div class="flex flex-wrap items-start gap-4">
-                    {{-- Title + due date + description — editable, explicit Save --}}
-                    <form method="POST" action="{{ route('admin.milestones.update', $milestone) }}" data-ajax-target="header-card panel-overview" class="flex flex-1 flex-col gap-2.5 min-w-[14rem]">
+                {{-- Collapsed summary row — always visible; expand to edit
+                     title/due date/description. Starts collapsed so a project
+                     with many milestones doesn't turn this into a huge wall
+                     of open forms. --}}
+                <div class="flex flex-wrap items-center gap-3">
+                    <button type="button" class="milestone-toggle shrink-0 w-6 h-6 rounded-full text-gray-400 dark:text-gray-500 hover:bg-black/5 dark:hover:bg-white/10 flex items-center justify-center transition-colors" data-target="milestone-body-{{ $milestone->id }}" aria-expanded="false" title="Expand to edit">
+                        <svg class="milestone-toggle-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                    <button type="button" class="milestone-toggle flex-1 min-w-[10rem] text-left text-sm font-medium text-navy dark:text-white truncate" data-target="milestone-body-{{ $milestone->id }}">
+                        {{ $milestone->title }}
+                    </button>
+
+                    <div class="flex items-center gap-2 shrink-0">
+                        <form method="POST" action="{{ route('admin.milestones.update', $milestone) }}" data-ajax-target="header-card panel-overview" onclick="event.stopPropagation()">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="title" value="{{ $milestone->title }}">
+                            <input type="hidden" name="description" value="{{ $milestone->description }}">
+                            <input type="hidden" name="due_date" value="{{ $milestone->due_date?->format('Y-m-d') }}">
+                            <select name="status" onchange="this.form.requestSubmit()"
+                                    class="rounded-full border {{ $state['badge'] }} pl-3 pr-7 py-1.5 text-xs font-semibold uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-gold appearance-none bg-no-repeat bg-[right_0.5rem_center] bg-[length:0.85rem]"
+                                    style="background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 24 24%27 stroke=%27currentColor%27%3E%3Cpath stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272.5%27 d=%27M19 9l-7 7-7-7%27/%3E%3C/svg%3E');">
+                                @foreach ($milestoneStatuses as $value => $label)
+                                    <option value="{{ $value }}" {{ $milestone->status === $value ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </form>
+                        @if ($milestone->status === 'completed' && $milestone->completed_at)
+                            <p class="text-[0.65rem] text-teal-dark px-1 whitespace-nowrap">{{ $milestone->completed_at->format('M j, Y') }}</p>
+                        @elseif ($milestone->due_date)
+                            <p class="text-[0.65rem] text-gray-400 dark:text-gray-500 px-1 whitespace-nowrap">Due {{ $milestone->due_date->format('M j, Y') }}</p>
+                        @endif
+                        <form method="POST" action="{{ route('admin.milestones.destroy', $milestone) }}" data-confirm="Remove this milestone?" data-ajax-target="header-card panel-overview">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" title="Delete milestone" class="w-8 h-8 rounded-full text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 flex items-center justify-center transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                {{-- Expanded edit form — hidden until the row above is clicked --}}
+                <div id="milestone-body-{{ $milestone->id }}" class="milestone-body hidden mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+                    <form method="POST" action="{{ route('admin.milestones.update', $milestone) }}" data-ajax-target="header-card panel-overview" class="flex flex-col gap-2.5">
                         @csrf
                         @method('PATCH')
                         <input type="hidden" name="status" value="{{ $milestone->status }}">
@@ -344,41 +386,6 @@
                         <textarea name="description" rows="2" placeholder="Add details for this milestone (optional)..."
                                   class="w-full min-h-[4.5rem] resize-y rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">{{ $milestone->description }}</textarea>
                     </form>
-
-                    {{-- Status (itself the color-coded badge) + delete — grouped as
-                         one "state" column, set off from the edit form by a
-                         divider so a Save click can't be mistaken for Delete. --}}
-                    <div class="flex items-start gap-2 shrink-0 pl-4 ml-1 border-l border-gray-200 dark:border-gray-700 self-stretch">
-                        <div class="flex flex-col items-start gap-1.5">
-                            <form method="POST" action="{{ route('admin.milestones.update', $milestone) }}" data-ajax-target="header-card panel-overview">
-                                @csrf
-                                @method('PATCH')
-                                <input type="hidden" name="title" value="{{ $milestone->title }}">
-                                <input type="hidden" name="description" value="{{ $milestone->description }}">
-                                <input type="hidden" name="due_date" value="{{ $milestone->due_date?->format('Y-m-d') }}">
-                                <select name="status" onchange="this.form.requestSubmit()"
-                                        class="rounded-full border {{ $state['badge'] }} pl-3 pr-7 py-1.5 text-xs font-semibold uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-gold appearance-none bg-no-repeat bg-[right_0.5rem_center] bg-[length:0.85rem]"
-                                        style="background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 24 24%27 stroke=%27currentColor%27%3E%3Cpath stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272.5%27 d=%27M19 9l-7 7-7-7%27/%3E%3C/svg%3E');">
-                                    @foreach ($milestoneStatuses as $value => $label)
-                                        <option value="{{ $value }}" {{ $milestone->status === $value ? 'selected' : '' }}>{{ $label }}</option>
-                                    @endforeach
-                                </select>
-                            </form>
-                            @if ($milestone->status === 'completed' && $milestone->completed_at)
-                                <p class="text-[0.65rem] text-teal-dark px-1">{{ $milestone->completed_at->format('M j, Y') }}</p>
-                            @elseif ($milestone->due_date)
-                                <p class="text-[0.65rem] text-gray-400 dark:text-gray-500 px-1">Due {{ $milestone->due_date->format('M j, Y') }}</p>
-                            @endif
-                        </div>
-
-                        <form method="POST" action="{{ route('admin.milestones.destroy', $milestone) }}" data-confirm="Remove this milestone?" data-ajax-target="header-card panel-overview" class="ml-1">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" title="Delete milestone" class="w-8 h-8 rounded-full text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 flex items-center justify-center transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                            </button>
-                        </form>
-                    </div>
                 </div>
             </div>
         @endforeach
@@ -1324,6 +1331,35 @@ function submitAdminReply(form, event) {
         bind(document);
     })();
 
+    // Milestone collapse/expand — each item starts collapsed to a summary
+    // row; clicking the chevron or title reveals the full edit form.
+    (function () {
+        function bind(root) {
+            root.querySelectorAll('.milestone-toggle').forEach((btn) => {
+                if (btn.dataset.bound) return;
+                btn.dataset.bound = '1';
+
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const body = document.getElementById(btn.dataset.target);
+                    if (!body) return;
+
+                    const isHidden = body.classList.contains('hidden');
+                    body.classList.toggle('hidden', !isHidden);
+
+                    document.querySelectorAll('.milestone-toggle[data-target="' + btn.dataset.target + '"]').forEach((peer) => {
+                        peer.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+                        const chevron = peer.querySelector('.milestone-toggle-chevron');
+                        if (chevron) chevron.style.transform = isHidden ? 'rotate(90deg)' : '';
+                    });
+                });
+            });
+        }
+
+        window.bindMilestoneToggles = bind;
+        bind(document);
+    })();
+
     // Generic no-reload form submission: any form with data-ajax-target submits via
     // fetch, swaps in the freshly rendered HTML for each listed container id, then
     // reapplies the current tab's visibility/styling since swapped-in markup reflects
@@ -1389,6 +1425,7 @@ function submitAdminReply(form, event) {
                                     window.bindStatusDropdown?.(freshEl);
                                     window.bindDiscountCalculator?.(freshEl);
                                     window.bindPaymentCategoryDropdown?.(freshEl);
+                                    window.bindMilestoneToggles?.(freshEl);
                                 }
                             });
 
