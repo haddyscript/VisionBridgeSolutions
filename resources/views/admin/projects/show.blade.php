@@ -16,6 +16,16 @@
         'maintenance' => 'Care',
         'canceled'    => 'Canceled',
     ];
+    // Color-codes the Project Status dropdown so each stage is recognizable
+    // at a glance instead of reading as plain text.
+    $projectStatusDots = [
+        'onboarding'  => 'bg-gray-400',
+        'in_progress' => 'bg-gold',
+        'review'      => 'bg-amber-500',
+        'launched'    => 'bg-teal',
+        'maintenance' => 'bg-blue-500',
+        'canceled'    => 'bg-red-500',
+    ];
     $milestoneStatuses = ['pending' => 'Pending', 'in_progress' => 'In Progress', 'completed' => 'Completed'];
     // Drives both the row's left-accent/tint and the status select's own
     // badge coloring — one source of truth for "what does this state look
@@ -95,13 +105,36 @@
                 <form method="POST" action="{{ route('admin.projects.update', $project) }}" data-ajax-target="header-card">
                     @csrf
                     @method('PATCH')
-                    <label for="project-status-select" class="block text-[0.65rem] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1 text-right">Project Status</label>
-                    <select id="project-status-select" name="status" onchange="this.form.requestSubmit()"
-                        class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
-                        @foreach ($statusLabels as $value => $label)
-                            <option value="{{ $value }}" {{ $project->status === $value ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
+                    <label class="block text-[0.65rem] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1 text-right">Project Status</label>
+                    <input type="hidden" name="status" value="{{ $project->status }}">
+
+                    <div class="relative" data-status-dropdown>
+                        <button type="button" data-status-toggle aria-haspopup="listbox" aria-expanded="false"
+                                class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 pl-3 pr-2.5 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+                            <span data-status-toggle-label class="flex items-center gap-2 text-navy dark:text-white">
+                                <span class="w-2 h-2 rounded-full shrink-0 {{ $projectStatusDots[$project->status] ?? 'bg-gray-400' }}"></span>
+                                {{ $statusLabels[$project->status] ?? ucfirst($project->status) }}
+                            </span>
+                            <svg data-status-toggle-chevron class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+
+                        <div data-status-menu class="hidden absolute z-20 right-0 mt-1.5 w-44 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                            @foreach ($statusLabels as $value => $label)
+                                <button type="button" data-status-option="{{ $value }}" role="option" aria-selected="{{ $project->status === $value ? 'true' : 'false' }}"
+                                        class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $project->status === $value ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
+                                    <span class="flex items-center gap-2">
+                                        <span class="w-2 h-2 rounded-full shrink-0 {{ $projectStatusDots[$value] ?? 'bg-gray-400' }}"></span>
+                                        {{ $label }}
+                                    </span>
+                                    <svg class="w-4 h-4 text-gold-dark shrink-0 {{ $project->status === $value ? '' : 'invisible' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
                 </form>
             </div>
 
@@ -1047,6 +1080,66 @@ function submitAdminReply(form, event) {
         showProjectTab(validProjectTabs.includes(tab) ? tab : 'overview', false);
     });
 
+    // Custom-styled Project Status dropdown (replaces a native <select>) so the
+    // current stage renders as a color-coded pill instead of plain text.
+    // Picking an option auto-submits via the same no-reload flow as every
+    // other form on this page (see bindAjaxForms below).
+    (function () {
+        function bind(root) {
+            root.querySelectorAll('[data-status-dropdown]').forEach((wrap) => {
+                if (wrap.dataset.bound) return;
+                wrap.dataset.bound = '1';
+
+                const toggle = wrap.querySelector('[data-status-toggle]');
+                const menu = wrap.querySelector('[data-status-menu]');
+                const chevron = wrap.querySelector('[data-status-toggle-chevron]');
+                const label = wrap.querySelector('[data-status-toggle-label]');
+                const hiddenInput = wrap.closest('form').querySelector('input[name="status"]');
+                if (!toggle || !menu || !hiddenInput) return;
+
+                function closeMenu() {
+                    menu.classList.add('hidden');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    chevron.style.transform = '';
+                }
+
+                function openMenu() {
+                    menu.classList.remove('hidden');
+                    toggle.setAttribute('aria-expanded', 'true');
+                    chevron.style.transform = 'rotate(180deg)';
+                }
+
+                toggle.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    menu.classList.contains('hidden') ? openMenu() : closeMenu();
+                });
+
+                menu.querySelectorAll('[data-status-option]').forEach(function (option) {
+                    option.addEventListener('click', function () {
+                        const value = option.dataset.statusOption;
+                        closeMenu();
+                        if (hiddenInput.value === value) return;
+
+                        hiddenInput.value = value;
+                        label.innerHTML = option.querySelector('span').innerHTML;
+                        hiddenInput.form.requestSubmit();
+                    });
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!wrap.contains(e.target)) closeMenu();
+                });
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') closeMenu();
+                });
+            });
+        }
+
+        window.bindStatusDropdown = bind;
+        bind(document);
+    })();
+
     // Generic no-reload form submission: any form with data-ajax-target submits via
     // fetch, swaps in the freshly rendered HTML for each listed container id, then
     // reapplies the current tab's visibility/styling since swapped-in markup reflects
@@ -1066,7 +1159,11 @@ function submitAdminReply(form, event) {
                     }
 
                     const targetIds = form.dataset.ajaxTarget.split(' ').filter(Boolean);
-                    const submitBtns = form.querySelectorAll('button[type="submit"]');
+                    // Also covers the Project Status dropdown's toggle button
+                    // (type="button", not "submit" — it opens/closes a menu
+                    // rather than submitting directly), so it gets the same
+                    // spinner + auto re-enable-on-error as every submit button.
+                    const submitBtns = form.querySelectorAll('button[type="submit"], [data-status-toggle]');
 
                     // If this form lives inside an open Website Content/Revisions
                     // thread, remember which one -- a full panel swap below
@@ -1105,6 +1202,7 @@ function submitAdminReply(form, event) {
                                 if (freshEl && liveEl) {
                                     liveEl.replaceWith(freshEl);
                                     bindAjaxForms(freshEl);
+                                    window.bindStatusDropdown?.(freshEl);
                                 }
                             });
 
