@@ -97,11 +97,13 @@ class PaymentController extends Controller
         $validated = $request->validate([
             'description' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'min:1'],
+            'category' => ['nullable', 'string', 'in:phase,deposit,final,one_time,other'],
         ]);
 
         $project->payments()->create([
             'description' => $validated['description'],
             'amount' => (int) round($validated['amount'] * 100),
+            'category' => $validated['category'] ?? null,
         ]);
 
         return back()->with('status', 'Payment request created. Use "Send Email" below to invoice the client.');

@@ -13,6 +13,7 @@ class Payment extends Model
         'project_id',
         'description',
         'kind',
+        'category',
         'amount',
         'currency',
         'status',
@@ -96,6 +97,18 @@ class Payment extends Model
     public function formattedAmount(): string
     {
         return '$'.number_format($this->amount / 100, 2);
+    }
+
+    public function categoryLabel(): ?string
+    {
+        return match ($this->category) {
+            'phase' => 'Phase',
+            'deposit' => 'Deposit',
+            'final' => 'Final Payment',
+            'one_time' => 'One-Time Payment',
+            'other' => 'Other',
+            default => null,
+        };
     }
 
     public function formattedRefundedAmount(): ?string

@@ -447,6 +447,9 @@
         @foreach ($project->payments as $payment)
             <div class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2.5">
                 <div>
+                    @if ($payment->categoryLabel())
+                        <span class="inline-block text-[0.65rem] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-navy/5 dark:bg-white/10 text-navy dark:text-white mr-2 align-middle">{{ $payment->categoryLabel() }}</span>
+                    @endif
                     <span class="text-sm text-navy dark:text-white">{{ $payment->description }}</span>
                     <span class="text-sm text-gray-400 dark:text-gray-500 ml-2">{{ $payment->formattedAmount() }}</span>
                 </div>
@@ -486,6 +489,32 @@
             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Description</label>
             <input type="text" name="description" placeholder="What's this payment for..." required
                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+        </div>
+        <div class="w-56">
+            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Category</label>
+            <input type="hidden" name="category" id="payment-category-input" value="">
+
+            <div class="relative" data-payment-category-dropdown>
+                <button type="button" data-payment-category-toggle aria-haspopup="listbox" aria-expanded="false"
+                        class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+                    <span data-payment-category-label class="text-gray-400 dark:text-gray-500">No category</span>
+                    <svg data-payment-category-chevron class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+
+                <div data-payment-category-menu class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                    @foreach (['' => 'No category', 'phase' => 'Phase', 'one_time' => 'One-Time Payment', 'deposit' => 'Deposit', 'final' => 'Final Payment', 'other' => 'Other'] as $value => $label)
+                        <button type="button" data-payment-category-option="{{ $value }}" role="option" aria-selected="{{ $value === '' ? 'true' : 'false' }}"
+                                class="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $value === '' ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
+                            {{ $label }}
+                            <svg class="w-4 h-4 text-gold-dark shrink-0 {{ $value === '' ? '' : 'invisible' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </button>
+                    @endforeach
+                </div>
+            </div>
         </div>
         <div class="flex items-end gap-3">
             <div class="w-44">
@@ -1226,6 +1255,75 @@ function submitAdminReply(form, event) {
         bind(document);
     })();
 
+    // Category dropdown on the "Request Payment" form — same custom
+    // toggle/menu pattern as the Project Status dropdown above.
+    (function () {
+        function bind(root) {
+            root.querySelectorAll('[data-payment-category-dropdown]').forEach((wrap) => {
+                if (wrap.dataset.bound) return;
+                wrap.dataset.bound = '1';
+
+                const toggle = wrap.querySelector('[data-payment-category-toggle]');
+                const menu = wrap.querySelector('[data-payment-category-menu]');
+                const chevron = wrap.querySelector('[data-payment-category-chevron]');
+                const label = wrap.querySelector('[data-payment-category-label]');
+                const hiddenInput = wrap.closest('form').querySelector('#payment-category-input');
+                if (!toggle || !menu || !hiddenInput) return;
+
+                function closeMenu() {
+                    menu.classList.add('hidden');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    chevron.style.transform = '';
+                }
+
+                function openMenu() {
+                    menu.classList.remove('hidden');
+                    toggle.setAttribute('aria-expanded', 'true');
+                    chevron.style.transform = 'rotate(180deg)';
+                }
+
+                toggle.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    menu.classList.contains('hidden') ? openMenu() : closeMenu();
+                });
+
+                menu.querySelectorAll('[data-payment-category-option]').forEach(function (option) {
+                    option.addEventListener('click', function () {
+                        hiddenInput.value = option.dataset.paymentCategoryOption;
+                        label.textContent = option.textContent.trim();
+                        label.classList.toggle('text-gray-400', option.dataset.paymentCategoryOption === '');
+                        label.classList.toggle('dark:text-gray-500', option.dataset.paymentCategoryOption === '');
+                        label.classList.toggle('text-navy', option.dataset.paymentCategoryOption !== '');
+                        label.classList.toggle('dark:text-white', option.dataset.paymentCategoryOption !== '');
+
+                        menu.querySelectorAll('[data-payment-category-option]').forEach(function (opt) {
+                            const isSelected = opt === option;
+                            opt.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+                            opt.classList.toggle('text-gold-dark', isSelected);
+                            opt.classList.toggle('font-semibold', isSelected);
+                            opt.classList.toggle('text-gray-700', !isSelected);
+                            opt.classList.toggle('dark:text-gray-300', !isSelected);
+                            opt.querySelector('svg').classList.toggle('invisible', !isSelected);
+                        });
+
+                        closeMenu();
+                    });
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!wrap.contains(e.target)) closeMenu();
+                });
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') closeMenu();
+                });
+            });
+        }
+
+        window.bindPaymentCategoryDropdown = bind;
+        bind(document);
+    })();
+
     // Generic no-reload form submission: any form with data-ajax-target submits via
     // fetch, swaps in the freshly rendered HTML for each listed container id, then
     // reapplies the current tab's visibility/styling since swapped-in markup reflects
@@ -1290,6 +1388,7 @@ function submitAdminReply(form, event) {
                                     bindAjaxForms(freshEl);
                                     window.bindStatusDropdown?.(freshEl);
                                     window.bindDiscountCalculator?.(freshEl);
+                                    window.bindPaymentCategoryDropdown?.(freshEl);
                                 }
                             });
 
