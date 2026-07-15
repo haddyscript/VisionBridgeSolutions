@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\PhasedPaymentPlanMail;
 use App\Mail\ProjectQuoteReadyMail;
 use App\Models\ClientNotification;
 use App\Models\Project;
@@ -85,6 +86,27 @@ class ProjectController extends Controller
         }
 
         return back()->with('status', 'Project updated.');
+    }
+
+    /**
+     * One-off action for Unity Auto Group's (project #7) special phased
+     * payment arrangement — sends the explanatory email covering the
+     * 3-phase schedule and Care Plan timing. Hardcoded to this one project
+     * rather than built as a general per-project "phases" feature, since
+     * this is a special case, not the standard 50%-deposit flow every
+     * other project uses.
+     */
+    public function sendPaymentInstructions(Project $project)
+    {
+        abort_unless($project->id === 7, 404);
+
+        Mail::to($project->user->email)->send(new PhasedPaymentPlanMail($project, [
+            ['label' => 'Phase 1: Landing Page', 'amount' => 60000],
+            ['label' => 'Phase 2: Website Development', 'amount' => 80000],
+            ['label' => 'Phase 3: Advanced Configuration & Automation', 'amount' => 80000],
+        ], 14900));
+
+        return back()->with('status', 'Payment instructions emailed to '.$project->user->name.'.');
     }
 
     public function resetClientPassword(Project $project)

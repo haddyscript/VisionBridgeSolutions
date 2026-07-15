@@ -426,7 +426,22 @@
     ];
 @endphp
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
-    <h3 class="font-semibold text-navy dark:text-white mb-4">Payments</h3>
+    <div class="flex items-center justify-between gap-3 mb-4">
+        <h3 class="font-semibold text-navy dark:text-white">Payments</h3>
+
+        {{-- One-off for Unity Auto Group's special phased payment plan (see
+        AdminProjectController::sendPaymentInstructions) — not a general
+        per-project feature, so intentionally scoped to just this project. --}}
+        @if ($project->id === 7)
+            <form method="POST" action="{{ route('admin.projects.payment-instructions', $project) }}" data-confirm="Email the phased payment plan instructions to {{ $project->user->name }}?">
+                @csrf
+                <button type="submit" class="inline-flex items-center gap-1.5 text-xs font-semibold text-gold-dark border border-gold/40 hover:bg-gold/10 px-3 py-1.5 rounded-full transition-colors">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    Payment Instruction
+                </button>
+            </form>
+        @endif
+    </div>
 
     <div class="space-y-2 mb-5 pb-5 border-b border-gray-100 dark:border-gray-700">
         @foreach ($project->payments as $payment)

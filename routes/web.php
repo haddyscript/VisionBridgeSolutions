@@ -308,6 +308,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::patch('/projects/{project}', [AdminProjectController::class, 'update'])->name('projects.update');
     Route::post('/projects/{project}/reset-client-password', [AdminProjectController::class, 'resetClientPassword'])->name('projects.reset-client-password');
     Route::post('/projects/{project}/restore-access', [AdminProjectController::class, 'restoreAccess'])->name('projects.restore-access');
+    Route::post('/projects/{project}/payment-instructions', [AdminProjectController::class, 'sendPaymentInstructions'])->name('projects.payment-instructions');
     Route::get('/projects/{project}/onboarding-preview/{step?}', [AdminOnboardingPreviewController::class, 'show'])->name('projects.onboarding-preview');
 
     Route::post('/projects/{project}/milestones', [AdminMilestoneController::class, 'store'])->name('milestones.store');
