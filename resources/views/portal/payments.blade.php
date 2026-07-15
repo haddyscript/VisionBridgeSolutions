@@ -103,36 +103,49 @@
     @endif
 
     {{-- Payments Needed — unpaid one-time payments, surfaced right after Care
-    Plan (instead of buried in Payment History) so they're impossible to miss. --}}
+    Plan (instead of buried in Payment History) so they're impossible to miss.
+    Single elegant card with a left accent stripe rather than nested boxes —
+    each item's description is split from its title on a " – "/" — " dash if
+    the admin wrote one (e.g. "Phase 1 (Landing Page) – Design and..."),
+    falling back to a title-only line when there's no dash to split on. --}}
     @if ($pendingPayments->isNotEmpty())
-        <div class="rounded-2xl border border-amber-200 dark:border-amber-500/25 bg-amber-50/60 dark:bg-amber-500/[0.06] p-6 mb-8">
-            <div class="flex items-center gap-3 mb-5">
-                <span class="w-10 h-10 rounded-full bg-amber-500/15 flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+        <div class="relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 pl-7 pr-6 sm:pr-8 py-7 sm:py-8 mb-8">
+            <span class="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-500" aria-hidden="true"></span>
+
+            <div class="flex items-start gap-4 mb-7">
+                <span class="w-11 h-11 rounded-full bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </span>
                 <div>
-                    <h3 class="font-display text-lg font-bold text-navy dark:text-white">Payment{{ $pendingPayments->count() > 1 ? 's' : '' }} Needed</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-300">{{ $pendingPayments->count() }} payment{{ $pendingPayments->count() > 1 ? 's' : '' }} totaling <strong>${{ number_format($pendingPayments->sum('amount') / 100, 2) }}</strong> — pay securely below to keep your project moving.</p>
+                    <h3 class="font-semibold text-xl text-navy dark:text-white">Payment{{ $pendingPayments->count() > 1 ? 's' : '' }} Needed</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ $pendingPayments->count() }} payment{{ $pendingPayments->count() > 1 ? 's' : '' }} totaling <strong class="text-navy dark:text-white">${{ number_format($pendingPayments->sum('amount') / 100, 2) }}</strong> — pay securely below to keep your project moving.</p>
                 </div>
             </div>
 
-            <div class="space-y-3">
+            <div class="divide-y divide-gray-100 dark:divide-gray-700">
                 @foreach ($pendingPayments as $payment)
-                    <div class="flex flex-wrap items-center justify-between gap-4 rounded-xl bg-white dark:bg-gray-800 border border-amber-200/70 dark:border-amber-500/20 px-5 py-4">
-                        <div>
-                            <p class="font-medium text-navy dark:text-white">{{ $payment->description }}</p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Requested {{ $payment->created_at->format('M j, Y') }}</p>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="font-sans font-extrabold text-lg text-navy dark:text-white">{{ $payment->formattedAmount() }}</span>
-                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                                Payment Needed
-                            </span>
+                    @php
+                        [$phaseTitle, $phaseDescription] = preg_split('/\s+[\x{2013}\x{2014}]\s+/u', $payment->description, 2) + [null, null];
+                    @endphp
+                    <div class="{{ $loop->first ? '' : 'pt-6' }} {{ $loop->last ? '' : 'pb-6' }}">
+                        <p class="text-base font-medium text-navy dark:text-white">{{ $phaseTitle }}</p>
+                        @if ($phaseDescription)
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{{ $phaseDescription }}</p>
+                        @endif
+                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">Requested {{ $payment->created_at->format('M j, Y') }}</p>
+
+                        <div class="flex flex-wrap items-center justify-between gap-4 mt-4">
+                            <div class="flex items-center gap-3">
+                                <span class="font-sans font-bold text-[1.375rem] text-navy dark:text-white">{{ $payment->formattedAmount() }}</span>
+                                <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-amber-400">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                    Payment Needed
+                                </span>
+                            </div>
                             <form method="POST" action="{{ route('portal.payments.checkout', $payment) }}" class="js-payment-checkout-form">
                                 @csrf
                                 <input type="hidden" name="timezone" class="js-timezone-input">
-                                <button type="submit" class="bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                                <button type="submit" class="bg-amber-700 hover:bg-amber-800 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
                                     Pay Now
                                 </button>
                             </form>
