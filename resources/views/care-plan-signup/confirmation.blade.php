@@ -12,19 +12,19 @@
             </svg>
         </div>
 
-        <h1 class="font-display text-3xl font-extrabold text-navy mb-3">Thank you for joining the VisionBridge Website Care Plan!</h1>
+        <h1 class="font-display text-3xl font-extrabold text-navy mb-3">Thank you for choosing the VisionBridge Website Care Plan!</h1>
 
         @if ($subscription?->maintenancePlan)
             <p class="text-gray-700 text-lg font-medium mb-6">
-                You're all set with the <strong class="text-navy">{{ $subscription->maintenancePlan->name }}</strong> plan.
+                You're signed up for the <strong class="text-navy">{{ $subscription->maintenancePlan->name }}</strong> plan.
             </p>
         @endif
 
         <p class="text-gray-700 text-base font-medium leading-relaxed mb-6">
-            Our team will be in touch shortly to get your website care started. You'll also receive a confirmation
-            email with your receipt and billing details, plus a separate email shortly with a link to set up your
-            Client Portal password &mdash; that's where you'll upload content, submit revision requests, and track
-            everything going forward.
+            Our team will be in touch shortly to get your project started. Check your inbox for an email with a
+            link to set up your Client Portal password &mdash; that's where you'll upload content, submit revision
+            requests, and track everything going forward. Your Care Plan won't be charged during development; billing
+            starts automatically once your website is complete and officially launched.
         </p>
 
         <a href="{{ route('home') }}" class="inline-block bg-gold hover:bg-gold-dark text-navy font-bold text-lg px-8 py-3.5 rounded-lg transition-colors shadow">
@@ -33,11 +33,8 @@
     </div>
 </section>
 
-{{-- Next-step pop-up: payment happens before the agreement in this flow only
-     (every other onboarding path signs the agreement before charging the
-     card), so this is the one place a "sign your agreement next" prompt
-     belongs. Only shown when we actually matched a subscription from the
-     Stripe session — otherwise there's no "payment received" to confirm. --}}
+{{-- Next-step pop-up, shown only when we actually matched the subscription
+     created moments ago. --}}
 @if ($subscription)
 <div id="next-step-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm"></div>
@@ -54,12 +51,12 @@
                 <div class="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center bg-gold/15">
                     <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 </div>
-                <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Payment Received</p>
+                <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">You're Almost In</p>
                 <h2 class="font-display text-2xl font-bold text-white mb-3">One More Step</h2>
                 <p class="text-sm text-white/70 leading-relaxed">
                     Check your email for a link to set up your Client Portal password. Once you're in, the next
-                    step is signing your Website Care Plan &amp; Service Agreement &mdash; that's what officially
-                    kicks off your project.
+                    step is signing your Service Agreement &mdash; that's what officially kicks off your project.
+                    Your Care Plan won't be charged until your website is complete and live.
                 </p>
             </div>
 

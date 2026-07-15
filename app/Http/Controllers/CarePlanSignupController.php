@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\FaithStackNewClientMail;
+use App\Mail\WelcomeClientMail;
 use App\Models\MaintenancePlan;
 use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
-use Stripe\Checkout\Session as CheckoutSession;
-use Stripe\Stripe;
 
 class CarePlanSignupController extends Controller
 {
@@ -67,12 +69,21 @@ class CarePlanSignupController extends Controller
                 'status' => 'onboarding',
             ]);
 
+            // Billing is deferred until launch, same as every other onboarding
+            // path (Portal\CarePlanAgreementController::store()) — this used
+            // to go straight to Stripe Checkout and charge immediately, which
+            // contradicted the "no Care Plan charges during development"
+            // policy for anyone using this as their entry point for a new
+            // build rather than an existing site. The account still gets
+            // created and the client still gets a portal invite right away;
+            // only the actual charge moves to launch time.
             return $project->subscriptions()->create([
                 'maintenance_plan_id' => $maintenancePlan->id,
                 'description' => $maintenancePlan->name,
                 'amount' => $maintenancePlan->price,
                 'currency' => 'usd',
                 'interval' => $maintenancePlan->interval,
+                'status' => 'pending',
                 'client_phone' => $validated['phone'],
                 'domain' => $validated['domain'] ?? null,
                 'hosting_provider' => $validated['hosting_provider'] ?? null,
@@ -81,61 +92,31 @@ class CarePlanSignupController extends Controller
             ]);
         });
 
-        $subscription->load('project.user');
+        $subscription->load('project.user', 'maintenancePlan');
 
-        Stripe::setApiKey(config('services.stripe.secret'));
+        // Moved here from StripeWebhookController::welcomeNewCarePlanClient(),
+        // which used to fire this only once Stripe confirmed payment — now
+        // that there's no immediate charge, account creation itself is the
+        // trigger instead.
+        $user = $subscription->project->user;
+        $resetToken = Password::createToken($user);
+        $resetUrl = route('password.reset', ['token' => $resetToken, 'email' => $user->email]);
 
-        // Use the real Stripe product/price the boss set up in the dashboard
-        // whenever one's on file, so subscribers land against the actual
-        // Care Plan products (reporting, tax category, etc. all tied to it) —
-        // fall back to building a price on the fly only if a plan hasn't had
-        // its Stripe Price ID entered yet in the admin Care Plan Pricing page.
-        $lineItem = $maintenancePlan->stripe_price_id
-            ? ['price' => $maintenancePlan->stripe_price_id, 'quantity' => 1]
-            : [
-                'quantity' => 1,
-                'price_data' => [
-                    'currency' => $subscription->currency,
-                    'unit_amount' => $subscription->amount,
-                    'recurring' => ['interval' => $subscription->interval],
-                    'product_data' => [
-                        'name' => $maintenancePlan->name.' — Website Care Plan',
-                    ],
-                ],
-            ];
+        dispatch(function () use ($user, $resetUrl, $subscription) {
+            Mail::to($user->email)->send(new WelcomeClientMail($user, $resetUrl));
+            Mail::to(config('mail.faithstack_address'))->send(new FaithStackNewClientMail($subscription));
+        })->afterResponse();
 
-        $session = CheckoutSession::create([
-            'mode' => 'subscription',
-            'payment_method_types' => ['card'],
-            'customer' => $subscription->project->user->getOrCreateStripeCustomerId(),
-            'line_items' => [$lineItem],
-            // Stripe renders its own promo code field on the hosted Checkout
-            // page and handles validation/discount math entirely itself —
-            // coupons/promotion codes are created directly in the Stripe
-            // Dashboard, no app code needed for that part.
-            'allow_promotion_codes' => true,
-            'success_url' => route('care-plan-signup.confirmation').'?session_id={CHECKOUT_SESSION_ID}',
-            'cancel_url' => route('care-plan-signup.create', $maintenancePlan).'?checkout=cancel',
-            'metadata' => [
-                'subscription_id' => $subscription->id,
-            ],
-            'subscription_data' => [
-                'metadata' => [
-                    'subscription_id' => $subscription->id,
-                ],
-            ],
-        ]);
-
-        $subscription->update(['stripe_checkout_session_id' => $session->id]);
-
-        return redirect()->away($session->url);
+        return redirect()->route('care-plan-signup.confirmation', ['subscription' => $subscription->id]);
     }
 
     public function confirmation(Request $request)
     {
         $subscription = null;
 
-        if ($sessionId = $request->query('session_id')) {
+        if ($subscriptionId = $request->query('subscription')) {
+            $subscription = Subscription::with('maintenancePlan')->find($subscriptionId);
+        } elseif ($sessionId = $request->query('session_id')) {
             $subscription = Subscription::with('maintenancePlan')
                 ->where('stripe_checkout_session_id', $sessionId)
                 ->first();
