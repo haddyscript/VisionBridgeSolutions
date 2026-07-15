@@ -15,7 +15,7 @@ class DashboardController extends Controller
     public function __invoke(Request $request)
     {
         $user = $request->user();
-        $project = $user->projects()->with('milestones', 'uploads.replies', 'payments', 'recommendations', 'satisfactionSurvey')->first();
+        $project = $user->projects()->with('milestones', 'uploads.replies', 'payments', 'recommendations', 'satisfactionSurvey', 'subscription')->first();
         $pendingSurvey = $project?->satisfactionSurvey && ! $project->satisfactionSurvey->isSubmitted()
             ? $project->satisfactionSurvey
             : null;

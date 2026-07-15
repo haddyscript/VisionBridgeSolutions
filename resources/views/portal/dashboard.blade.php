@@ -16,6 +16,18 @@
 {{-- The launch feedback card is rendered side-by-side with "What's Next" below
      (inside the project section) — see the two-column grid there. --}}
 
+@php
+    // The Care Plan counts as a third "pending" item alongside one-time
+    // payments (matches the admin Billing tab's pending count) — surfaced in
+    // the banner and Progress Tracker ring below, but kept out of the dollar
+    // total, since a not-yet-started subscription has no fixed amount due
+    // the way an invoiced one-time payment does.
+    $pendingCarePlan = $project?->subscription && $project->subscription->status === 'pending'
+        ? $project->subscription
+        : null;
+    $pendingItemsCount = $pendingPayments->count() + ($pendingCarePlan ? 1 : 0);
+@endphp
+
 @if ($showPaymentReminder)
     <div id="payment-reminder-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 opacity-0 transition-opacity duration-200">
         <div id="payment-reminder-card" class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden scale-95 transition-transform duration-200">
@@ -349,7 +361,7 @@
         </div>
     @endif
 
-    @if ($pendingPayments->isNotEmpty())
+    @if ($pendingItemsCount > 0)
         <a href="{{ route('portal.payments.index') }}" class="group flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 px-4 py-4 sm:px-5 mb-6 sm:mb-8 transition-all duration-200 hover:border-red-300 dark:hover:border-red-500/50 hover:shadow-md hover:-translate-y-0.5">
             <div class="flex items-center gap-3">
                 <span class="relative w-9 h-9 rounded-full bg-red-500/15 text-red-500 flex items-center justify-center shrink-0">
@@ -361,8 +373,10 @@
                 </span>
                 <p class="text-sm text-red-700 dark:text-red-300">
                     <span class="font-semibold">Payment due: ${{ number_format($pendingPayments->sum('amount') / 100, 2) }}</span>
-                    @if ($pendingPayments->count() > 1)
-                        &middot; {{ $pendingPayments->count() }} payments pending
+                    @if ($pendingItemsCount > 1)
+                        &middot; {{ $pendingItemsCount }} pending{{ $pendingCarePlan ? ' (incl. Care Plan)' : '' }}
+                    @elseif ($pendingCarePlan)
+                        &middot; Care Plan pending
                     @else
                         &middot; Pending since {{ $pendingPayments->first()->created_at->format('M j, Y') }}
                     @endif
@@ -558,19 +572,19 @@
                         (not just the percentage), since 0% paid alone doesn't
                         tell the client how many invoices are actually waiting
                         on them or that any action is needed. --}}
-                        @if ($ring['label'] === 'Payments' && $pendingPayments->isNotEmpty())
+                        @if ($ring['label'] === 'Payments' && $pendingItemsCount > 0)
                             <span class="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-500 text-white text-[0.65rem] font-bold flex items-center justify-center shadow ring-2 ring-white dark:ring-gray-800"
-                                  title="{{ $pendingPayments->count() }} payment{{ $pendingPayments->count() > 1 ? 's' : '' }} pending">
-                                {{ $pendingPayments->count() }}
+                                  title="{{ $pendingItemsCount }} pending{{ $pendingCarePlan ? ' (incl. Care Plan)' : '' }}">
+                                {{ $pendingItemsCount }}
                             </span>
                         @endif
                     </div>
                     <p class="mt-3 text-sm font-semibold text-navy dark:text-white">{{ $ring['label'] }}</p>
                     <p class="text-xs text-gray-400 dark:text-gray-500">{{ $ring['sub'] }}</p>
-                    @if ($ring['label'] === 'Payments' && $pendingPayments->isNotEmpty())
+                    @if ($ring['label'] === 'Payments' && $pendingItemsCount > 0)
                         <p class="mt-1 inline-flex items-center gap-1 text-[0.7rem] font-semibold text-amber-600 dark:text-amber-400">
                             <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
-                            {{ $pendingPayments->count() }} payment{{ $pendingPayments->count() > 1 ? 's' : '' }} pending
+                            {{ $pendingItemsCount }} pending{{ $pendingCarePlan ? ' (incl. Care Plan)' : '' }}
                         </p>
                     @endif
                 </div>
