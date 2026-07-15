@@ -362,28 +362,30 @@
     @endif
 
     @if ($pendingItemsCount > 0)
-        <a href="{{ route('portal.payments.index') }}" class="group flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 px-4 py-4 sm:px-5 mb-6 sm:mb-8 transition-all duration-200 hover:border-red-300 dark:hover:border-red-500/50 hover:shadow-md hover:-translate-y-0.5">
+        <a href="{{ route('portal.payments.index') }}" class="group flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-4 sm:px-5 mb-6 sm:mb-8 transition-all duration-200 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-md hover:-translate-y-0.5">
             <div class="flex items-center gap-3">
-                <span class="relative w-9 h-9 rounded-full bg-red-500/15 text-red-500 flex items-center justify-center shrink-0">
+                <span class="relative w-9 h-9 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
                     {{-- Slow, low-opacity "ping" behind the icon only — a quiet
                     ambient cue, not a flashing banner — and off entirely for
                     anyone who's asked their OS to reduce motion. --}}
-                    <span class="payment-due-pulse-ring absolute inset-0 rounded-full bg-red-500/40" aria-hidden="true"></span>
-                    <svg class="relative w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14.18A1 1 0 003 19.5h18a1 1 0 00.86-1.46L13.71 3.86a1 1 0 00-1.72 0z"/></svg>
+                    <span class="payment-due-pulse-ring absolute inset-0 rounded-full bg-amber-500/40" aria-hidden="true"></span>
+                    <svg class="relative w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                 </span>
-                <p class="text-sm text-red-700 dark:text-red-300">
-                    <span class="font-semibold">Payment due: ${{ number_format($pendingPayments->sum('amount') / 100, 2) }}</span>
+                <p class="text-sm text-amber-800 dark:text-amber-200">
+                    <span class="font-semibold">Hi {{ explode(' ', auth()->user()->name)[0] }}, just a friendly reminder —</span>
+                    ${{ number_format($pendingPayments->sum('amount') / 100, 2) }}
                     @if ($pendingItemsCount > 1)
-                        &middot; {{ $pendingItemsCount }} pending{{ $pendingCarePlan ? ' (incl. Care Plan)' : '' }}
+                        is waiting across {{ $pendingItemsCount }} items{{ $pendingCarePlan ? ' (including your Care Plan)' : '' }}
                     @elseif ($pendingCarePlan)
-                        &middot; Care Plan pending
+                        is waiting for your Care Plan
                     @else
-                        &middot; Pending since {{ $pendingPayments->first()->created_at->format('M j, Y') }}
+                        has been waiting since {{ $pendingPayments->first()->created_at->format('M j, Y') }}
                     @endif
+                    — no rush, just take care of it whenever works for you.
                 </p>
             </div>
-            <span class="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-red-600 dark:text-red-400 shrink-0">
-                View &amp; Pay
+            <span class="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-300 shrink-0">
+                Take Care of It
                 <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </span>
         </a>
