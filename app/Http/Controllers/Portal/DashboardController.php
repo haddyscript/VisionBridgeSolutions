@@ -34,8 +34,20 @@ class DashboardController extends Controller
 
         $pendingPayments = $project?->payments->where('status', 'pending') ?? collect();
 
+        // A friendly nudge, not a nag: the login flag alone would re-show
+        // this on every single login (e.g. several times in one day), even
+        // seconds after the client dismissed it. Cap it to once every 24
+        // hours regardless of how often they log back in.
+        $reminderThrottled = $user->payment_reminder_shown_at
+            && $user->payment_reminder_shown_at->gt(now()->subDay());
+
         $showPaymentReminder = $request->session()->pull('show_payment_reminder', false)
-            && $pendingPayments->isNotEmpty();
+            && $pendingPayments->isNotEmpty()
+            && ! $reminderThrottled;
+
+        if ($showPaymentReminder) {
+            $user->update(['payment_reminder_shown_at' => now()]);
+        }
 
         // Survey prompt modal — once per login, only if the survey is still
         // pending (hidden once submitted), and never stacked on top of the
