@@ -502,6 +502,15 @@
                 <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $subscriptionStatusColors[$currentSubscription->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
                     {{ $subscriptionStatusLabels[$currentSubscription->status] ?? $currentSubscription->status }}
                 </span>
+                @if ($currentSubscription->isPending())
+                    <form method="POST" action="{{ route('admin.subscriptions.send-reminder', $currentSubscription) }}" data-confirm="Send a payment reminder email to {{ $project->user->name }}?" data-ajax-target="panel-billing">
+                        @csrf
+                        <button type="submit" title="Send payment reminder email" class="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-full text-xs font-semibold text-gold-dark border border-gold/40 hover:bg-gold/10 transition-colors">
+                            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            Send Email Reminder
+                        </button>
+                    </form>
+                @endif
                 <form method="POST" action="{{ route('admin.subscriptions.sync', $currentSubscription) }}" data-ajax-target="panel-billing">
                     @csrf
                     <button type="submit" title="Refresh status from Stripe" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-navy dark:hover:text-white flex items-center justify-center transition-colors">

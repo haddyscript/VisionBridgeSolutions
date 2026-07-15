@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\CarePlanPaymentReminderMail;
 use App\Models\Project;
 use App\Models\Subscription;
 use App\Services\SubscriptionReconciler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Stripe;
 
@@ -93,5 +95,20 @@ class SubscriptionController extends Controller
     public function sync(Subscription $subscription, SubscriptionReconciler $reconciler)
     {
         return back()->with('status', $reconciler->reconcile($subscription));
+    }
+
+    /**
+     * On-demand nudge for a client who hasn't started their Care Plan yet —
+     * mirrors "Resend Welcome Email" / consultation "Notify Client" elsewhere
+     * in the admin: a manually-triggered, one-off email rather than an
+     * automated campaign.
+     */
+    public function sendReminder(Subscription $subscription)
+    {
+        abort_unless($subscription->isPending(), 422, 'This care plan is not pending.');
+
+        Mail::to($subscription->project->user->email)->send(new CarePlanPaymentReminderMail($subscription));
+
+        return back()->with('status', 'Reminder email sent to '.$subscription->project->user->name.'.');
     }
 }

@@ -342,6 +342,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::post('/projects/{project}/subscriptions', [AdminSubscriptionController::class, 'store'])->name('subscriptions.store');
     Route::delete('/subscriptions/{subscription}', [AdminSubscriptionController::class, 'destroy'])->name('subscriptions.destroy');
     Route::post('/subscriptions/{subscription}/sync', [AdminSubscriptionController::class, 'sync'])->name('subscriptions.sync');
+    Route::post('/subscriptions/{subscription}/send-reminder', [AdminSubscriptionController::class, 'sendReminder'])->name('subscriptions.send-reminder');
 
     Route::get('/partner-payouts', [AdminPartnerPayoutController::class, 'index'])->name('partner-payouts.index');
     Route::post('/partner-payouts/rate', [AdminPartnerPayoutController::class, 'setRate'])->name('partner-payouts.set-rate');
