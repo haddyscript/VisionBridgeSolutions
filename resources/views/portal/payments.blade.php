@@ -31,10 +31,6 @@
 
     @php
         $statusColors = [
-            // Amber (not the brand gold used for buttons/accents everywhere
-            // else on this page) so an unpaid invoice actually stands out as
-            // something the client needs to act on, not just a neutral status.
-            'pending' => 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400',
             'paid' => 'bg-teal/15 text-teal-dark',
             'active' => 'bg-teal/15 text-teal-dark',
             'past_due' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
@@ -42,28 +38,29 @@
             'canceled' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400',
         ];
         $statusDots = [
-            'pending' => 'bg-amber-500',
             'paid' => 'bg-teal',
             'active' => 'bg-teal',
             'past_due' => 'bg-red-500',
             'failed' => 'bg-red-500',
             'canceled' => 'bg-gray-400',
         ];
-        // Non-technical clients read "Pending" as "someone else is handling
-        // this," not "I need to pay this." Only the one-time Payment rows
-        // get the clearer label — Care Plan status keeps "Pending" since it
-        // means "not started yet," a different action (Start Plan).
-        $paymentStatusLabel = fn ($payment) => $payment->status === 'pending' ? 'Payment Needed' : ucfirst($payment->status);
         $totalDue = $payments->where('status', 'pending')->sum('amount');
         $totalPaid = $payments->where('status', 'paid')->sum('amount')
             + ($subscription ? $subscription->payments->sum('amount_paid') : 0);
 
-        // Unified Payment History — one-time payments and Care Plan invoice
+        // Pulled out of Payment History entirely (not just relabeled) so a
+        // non-technical client can't miss an unpaid invoice by scrolling past
+        // a collapsed history list — it's its own card, right after Care Plan.
+        $pendingPayments = $payments->where('status', 'pending');
+
+        // Unified Payment History — one-time payments (excluding pending,
+        // which live in the Payments Needed card above) and Care Plan invoice
         // payments merged into a single chronological list (view-level only;
         // Portal\PaymentController and the Stripe-facing checkout/receipt/
         // statement logic are untouched) so clients see one history instead
         // of two separately-counted cards.
-        $paymentItems = $payments->map(fn ($payment) => ['kind' => 'payment', 'date' => $payment->created_at, 'model' => $payment]);
+        $paymentItems = $payments->reject(fn ($payment) => $payment->status === 'pending')
+            ->map(fn ($payment) => ['kind' => 'payment', 'date' => $payment->created_at, 'model' => $payment]);
         $subscriptionPaymentItems = $subscription
             ? $subscription->payments->map(fn ($sp) => ['kind' => 'subscription_payment', 'date' => $sp->paid_at, 'model' => $sp])
             : collect();
@@ -105,6 +102,43 @@
         @include('portal.partials.subscription-card', ['subscription' => $subscription])
     @endif
 
+    {{-- Payments Needed — unpaid one-time payments, surfaced right after Care
+    Plan (instead of buried in Payment History) so they're impossible to miss. --}}
+    @if ($pendingPayments->isNotEmpty())
+        <div class="rounded-2xl border border-amber-200 dark:border-amber-500/25 bg-amber-50/60 dark:bg-amber-500/[0.06] p-6 mb-8">
+            <div class="flex items-center gap-3 mb-5">
+                <span class="w-10 h-10 rounded-full bg-amber-500/15 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                </span>
+                <div>
+                    <h3 class="font-display text-lg font-bold text-navy dark:text-white">Payment{{ $pendingPayments->count() > 1 ? 's' : '' }} Needed</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">{{ $pendingPayments->count() }} payment{{ $pendingPayments->count() > 1 ? 's' : '' }} totaling <strong>${{ number_format($pendingPayments->sum('amount') / 100, 2) }}</strong> — pay securely below to keep your project moving.</p>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                @foreach ($pendingPayments as $payment)
+                    <div class="flex flex-wrap items-center justify-between gap-4 rounded-xl bg-white dark:bg-gray-800 border border-amber-200/70 dark:border-amber-500/20 px-5 py-4">
+                        <div>
+                            <p class="font-medium text-navy dark:text-white">{{ $payment->description }}</p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Requested {{ $payment->created_at->format('M j, Y') }}</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="font-sans font-extrabold text-lg text-navy dark:text-white">{{ $payment->formattedAmount() }}</span>
+                            <form method="POST" action="{{ route('portal.payments.checkout', $payment) }}" class="js-payment-checkout-form">
+                                @csrf
+                                <input type="hidden" name="timezone" class="js-timezone-input">
+                                <button type="submit" class="bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                                    Pay Now
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     {{-- Payment History — one-time payments and Care Plan invoices, unified --}}
     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
@@ -134,7 +168,13 @@
                 <div class="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
                     <svg class="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h5M5 6h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>
                 </div>
-                <p class="text-sm text-gray-400 dark:text-gray-500">No payment requests yet. Your VisionBridge representative will let you know when one is ready.</p>
+                <p class="text-sm text-gray-400 dark:text-gray-500">
+                    @if ($pendingPayments->isNotEmpty())
+                        Nothing paid yet — see "Payment{{ $pendingPayments->count() > 1 ? 's' : '' }} Needed" above to complete your outstanding {{ $pendingPayments->count() > 1 ? 'payments' : 'payment' }}.
+                    @else
+                        No payment requests yet. Your VisionBridge representative will let you know when one is ready.
+                    @endif
+                </p>
             </div>
         @else
             <div class="flex flex-wrap items-center gap-3 mb-4">
@@ -155,7 +195,7 @@
                     </button>
 
                     <div id="payment-status-filter-menu" class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
-                        @foreach (['' => 'All Statuses', 'pending' => 'Payment Needed', 'paid' => 'Paid', 'failed' => 'Failed', 'canceled' => 'Canceled'] as $value => $label)
+                        @foreach (['' => 'All Statuses', 'paid' => 'Paid', 'failed' => 'Failed', 'canceled' => 'Canceled'] as $value => $label)
                             <button type="button" data-status-option="{{ $value }}" role="option" aria-selected="{{ $value === '' ? 'true' : 'false' }}"
                                     class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $value === '' ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
                                 <span class="flex items-center gap-2">
@@ -188,13 +228,12 @@
                                      data-description="{{ $payment->description }}"
                                      data-amount="{{ $payment->formattedAmount() }}"
                                      data-status="{{ $payment->status }}"
-                                     data-status-label="{{ $payment->status === 'past_due' ? 'Past Due' : $paymentStatusLabel($payment) }}"
+                                     data-status-label="{{ $payment->status === 'past_due' ? 'Past Due' : ucfirst($payment->status) }}"
                                      data-currency="{{ strtoupper($payment->currency) }}"
                                      data-created="{{ $payment->created_at->format('M j, Y \a\t g:i A') }}"
                                      data-paid-at="{{ $payment->paid_at?->format('M j, Y \a\t g:i A') }}"
                                      data-intent="{{ $payment->stripe_payment_intent_id }}"
                                      data-session="{{ $payment->stripe_checkout_session_id }}"
-                                     data-checkout-url="{{ $payment->isPending() ? route('portal.payments.checkout', $payment) : '' }}"
                                      data-receipt-url="{{ $payment->isPaid() ? route('portal.payments.receipt', $payment) : '' }}"
                                      data-refund-request-url="{{ $payment->isRefundRequestable() ? route('portal.payments.refund-request', $payment) : '' }}">
                                     <span class="absolute left-0 top-3 bottom-3 w-1 rounded-full {{ $statusDots[$payment->status] ?? 'bg-gray-400' }} opacity-0 group-hover:opacity-100 transition-opacity"></span>
@@ -211,17 +250,8 @@
                                         <span class="font-sans font-extrabold text-lg text-navy dark:text-white">{{ $payment->formattedAmount() }}</span>
                                         <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full {{ $statusColors[$payment->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
                                             <span class="w-1.5 h-1.5 rounded-full {{ $statusDots[$payment->status] ?? 'bg-gray-400' }}"></span>
-                                            {{ $paymentStatusLabel($payment) }}
+                                            {{ ucfirst($payment->status) }}
                                         </span>
-                                        @if ($payment->isPending())
-                                            <form method="POST" action="{{ route('portal.payments.checkout', $payment) }}" onclick="event.stopPropagation()" class="js-payment-checkout-form">
-                                                @csrf
-                                                <input type="hidden" name="timezone" class="js-timezone-input">
-                                                <button type="submit" class="bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
-                                                    Pay Now
-                                                </button>
-                                            </form>
-                                        @endif
                                         <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gold transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                     </div>
                                 </div>
@@ -334,16 +364,6 @@
                             <span id="modal-intent-text" class="truncate max-w-[160px]"></span>
                             <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                         </button>
-                    </div>
-
-                    <div id="modal-pay-action" class="hidden pt-2">
-                        <form id="modal-pay-form" method="POST" action="#" class="js-payment-checkout-form">
-                            @csrf
-                            <input type="hidden" name="timezone" class="js-timezone-input">
-                            <button type="submit" class="block w-full text-center bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-3 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
-                                Pay Now
-                            </button>
-                        </form>
                     </div>
 
                     <div id="modal-receipt-action" class="hidden pt-2">
@@ -515,24 +535,13 @@
             document.getElementById('modal-currency').textContent = d.currency;
             document.getElementById('modal-created').textContent = d.created;
 
-            // Payment rows use a distinct amber treatment for "pending" (see
-            // the matching PHP-side comment) so it reads as "you need to pay
-            // this" — kept as a local override rather than editing the
-            // shared statusColors/statusDots/statusIcon* objects above,
-            // since those are also used by the Care Plan modal where
-            // "pending" means something else (not started yet).
-            const badgeColorClass = d.status === 'pending' ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400' : (statusColors[d.status] || 'bg-gray-100 text-gray-500');
-            const badgeDotClass = d.status === 'pending' ? 'bg-amber-500' : (statusDots[d.status] || 'bg-gray-400');
-            const iconBgClass = d.status === 'pending' ? 'bg-amber-500/15' : (statusIconBg[d.status] || 'bg-white/10');
-            const iconColorClass = d.status === 'pending' ? 'text-amber-400' : (statusIconColor[d.status] || 'text-white/50');
-
             const badge = document.getElementById('modal-status-badge');
-            badge.className = 'inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full ' + badgeColorClass;
-            badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full ' + badgeDotClass + '"></span>' + d.statusLabel;
+            badge.className = 'inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full ' + (statusColors[d.status] || 'bg-gray-100 text-gray-500');
+            badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full ' + (statusDots[d.status] || 'bg-gray-400') + '"></span>' + d.statusLabel;
 
             const icon = document.getElementById('modal-status-icon');
-            icon.className = 'w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center ' + iconBgClass;
-            icon.innerHTML = '<svg class="w-7 h-7 ' + iconColorClass + '" fill="none" stroke="currentColor" viewBox="0 0 24 24">' + (statusIconPath[d.status] || statusIconPath.canceled) + '</svg>';
+            icon.className = 'w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center ' + (statusIconBg[d.status] || 'bg-white/10');
+            icon.innerHTML = '<svg class="w-7 h-7 ' + (statusIconColor[d.status] || 'text-white/50') + '" fill="none" stroke="currentColor" viewBox="0 0 24 24">' + (statusIconPath[d.status] || statusIconPath.canceled) + '</svg>';
 
             const paidRow = document.getElementById('modal-paid-row');
             if (d.paidAt) {
@@ -550,14 +559,6 @@
                 intentRow.classList.remove('hidden');
             } else {
                 intentRow.classList.add('hidden');
-            }
-
-            const payAction = document.getElementById('modal-pay-action');
-            if (d.checkoutUrl) {
-                document.getElementById('modal-pay-form').action = d.checkoutUrl;
-                payAction.classList.remove('hidden');
-            } else {
-                payAction.classList.add('hidden');
             }
 
             const receiptAction = document.getElementById('modal-receipt-action');
