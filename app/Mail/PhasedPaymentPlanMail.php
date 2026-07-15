@@ -12,7 +12,7 @@ class PhasedPaymentPlanMail extends Mailable
     use Queueable, SerializesModels;
 
     /**
-     * @param  array<int, array{label: string, amount: int}>  $phases  amounts in cents
+     * @param  array<int, array{label: string, description?: string, amount: int}>  $phases  amounts in cents
      * @param  int  $carePlanAmount  monthly Care Plan amount in cents
      */
     public function __construct(

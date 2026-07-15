@@ -101,9 +101,21 @@ class ProjectController extends Controller
         abort_unless($project->id === 7, 404);
 
         Mail::to($project->user->email)->send(new PhasedPaymentPlanMail($project, [
-            ['label' => 'Phase 1: Landing Page', 'amount' => 60000],
-            ['label' => 'Phase 2: Website Development', 'amount' => 80000],
-            ['label' => 'Phase 3: Advanced Configuration & Automation', 'amount' => 80000],
+            [
+                'label' => 'Phase 1: Landing Page',
+                'description' => 'A polished, ready-to-launch landing page so you have something live and working right away.',
+                'amount' => 60000,
+            ],
+            [
+                'label' => 'Phase 2: Website Development',
+                'description' => 'The full site build-out — every page, all your content, and the complete design brought to life.',
+                'amount' => 80000,
+            ],
+            [
+                'label' => 'Phase 3: Advanced Configuration & Automation',
+                'description' => 'Integrations, automations, and final configuration to get everything running smoothly behind the scenes.',
+                'amount' => 80000,
+            ],
         ], 14900));
 
         return back()->with('status', 'Payment instructions emailed to '.$project->user->name.'.');
