@@ -18,6 +18,7 @@ class Project extends Model
         'status',
         'progress_override',
         'total_price',
+        'discount_percent',
         'review_started_at',
         'client_approved_at',
         'suspended_at',
@@ -26,6 +27,7 @@ class Project extends Model
     protected function casts(): array
     {
         return [
+            'discount_percent' => 'decimal:2',
             'review_started_at' => 'datetime',
             'client_approved_at' => 'datetime',
             'suspended_at' => 'datetime',
@@ -126,6 +128,27 @@ class Project extends Model
     public function formattedTotalPrice(): ?string
     {
         return $this->total_price !== null ? '$'.number_format($this->total_price / 100, 2) : null;
+    }
+
+    /** Total price in cents after the discount percentage is applied, or null if no price is set. */
+    public function discountedTotalPrice(): ?int
+    {
+        if ($this->total_price === null) {
+            return null;
+        }
+
+        if (! $this->discount_percent) {
+            return $this->total_price;
+        }
+
+        return (int) round($this->total_price * (1 - $this->discount_percent / 100));
+    }
+
+    public function formattedDiscountedTotalPrice(): ?string
+    {
+        $price = $this->discountedTotalPrice();
+
+        return $price !== null ? '$'.number_format($price / 100, 2) : null;
     }
 
     public function reviewDeadline(): ?\Illuminate\Support\Carbon

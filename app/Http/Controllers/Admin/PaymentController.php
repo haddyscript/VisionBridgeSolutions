@@ -86,6 +86,12 @@ class PaymentController extends Controller
         return [$from, $to, $range];
     }
 
+    /**
+     * Creates the payment request only — sending the invoice email is now a
+     * separate, explicit action (see sendEmail() below) so multi-phase
+     * projects can have every phase's request queued up in the portal ahead
+     * of time without emailing the client about phases that aren't due yet.
+     */
     public function store(Request $request, Project $project)
     {
         $validated = $request->validate([
@@ -93,14 +99,26 @@ class PaymentController extends Controller
             'amount' => ['required', 'numeric', 'min:1'],
         ]);
 
-        $payment = $project->payments()->create([
+        $project->payments()->create([
             'description' => $validated['description'],
             'amount' => (int) round($validated['amount'] * 100),
         ]);
 
-        Mail::to($project->user->email)->send(new InvoiceSentMail($payment->load('project.user')));
+        return back()->with('status', 'Payment request created. Use "Send Email" below to invoice the client.');
+    }
 
-        return back()->with('status', 'Payment request created.');
+    /**
+     * On-demand invoice email — the only way a one-time payment request now
+     * gets emailed (see store() above). Also doubles as a manual resend if a
+     * client says they never received it.
+     */
+    public function sendEmail(Payment $payment)
+    {
+        abort_unless($payment->isPending(), 422, 'Only pending payment requests can be emailed.');
+
+        Mail::to($payment->project->user->email)->send(new InvoiceSentMail($payment->load('project.user')));
+
+        return back()->with('status', 'Invoice emailed to '.$payment->project->user->name.'.');
     }
 
     public function destroy(Payment $payment)

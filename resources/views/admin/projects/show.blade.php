@@ -164,7 +164,7 @@
                 {{-- Total Project Price --}}
                 <div>
                     <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Total Project Price ($)</label>
-                    <input type="number" name="total_price" step="0.01" min="1" placeholder="e.g. 2500.00"
+                    <input type="number" id="total-price-input" name="total_price" step="0.01" min="1" placeholder="e.g. 2500.00"
                         value="{{ old('total_price', $project->total_price !== null ? $project->total_price / 100 : '') }}"
                         class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
                     @if ($project->total_price === null)
@@ -188,6 +188,20 @@
                             </div>
                         @endif
                     @endif
+                </div>
+
+                {{-- Discount --}}
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Discount (%)</label>
+                    <div class="relative">
+                        <input type="number" id="discount-percent-input" name="discount_percent" step="0.01" min="0" max="100" placeholder="e.g. 10"
+                            value="{{ old('discount_percent', $project->discount_percent) }}"
+                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-3 pr-9 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 dark:text-gray-500 pointer-events-none">%</span>
+                    </div>
+                    <p id="discounted-total-preview" class="text-xs text-gray-400 dark:text-gray-500 mt-1 {{ $project->discount_percent ? '' : 'hidden' }}">
+                        Discounted total: <strong id="discounted-total-value" class="text-navy dark:text-white">{{ $project->formattedDiscountedTotalPrice() }}</strong>
+                    </p>
                 </div>
 
                 {{-- Progress bar + override, grouped together --}}
@@ -428,6 +442,13 @@
                     @if ($payment->isPending() && $payment->stripe_checkout_session_id)
                         <span class="text-xs text-gray-400 dark:text-gray-500" title="A Stripe checkout session is in progress for this payment — sync or wait before removing.">Checkout in progress</span>
                     @elseif ($payment->isPending())
+                        <form method="POST" action="{{ route('admin.payments.send-email', $payment) }}" data-confirm="Email this ${{ number_format($payment->amount / 100, 2) }} invoice to {{ $project->user->name }} now?" data-ajax-target="panel-billing tabbtn-billing">
+                            @csrf
+                            <button type="submit" title="Send invoice email" class="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-full text-xs font-semibold text-gold-dark border border-gold/40 hover:bg-gold/10 transition-colors">
+                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                Send Email
+                            </button>
+                        </form>
                         <form method="POST" action="{{ route('admin.payments.destroy', $payment) }}" data-confirm="Remove this payment request?" data-ajax-target="panel-billing tabbtn-billing">
                             @csrf
                             @method('DELETE')
@@ -1158,6 +1179,38 @@ function submitAdminReply(form, event) {
         bind(document);
     })();
 
+    // Live-recalculates the discounted total as either the price or discount
+    // % field changes — purely a preview; the actual figure is computed
+    // server-side (Project::discountedTotalPrice()) on save.
+    (function () {
+        function bind(root) {
+            const priceInput = root.querySelector ? root.querySelector('#total-price-input') : null;
+            const discountInput = root.querySelector ? root.querySelector('#discount-percent-input') : null;
+            const preview = root.querySelector ? root.querySelector('#discounted-total-preview') : null;
+            const previewValue = root.querySelector ? root.querySelector('#discounted-total-value') : null;
+            if (!priceInput || !discountInput || !preview || !previewValue || priceInput.dataset.discountBound) return;
+            priceInput.dataset.discountBound = '1';
+
+            function recalc() {
+                const price = parseFloat(priceInput.value);
+                const discount = parseFloat(discountInput.value);
+
+                if (!isNaN(price) && price > 0 && !isNaN(discount) && discount > 0) {
+                    previewValue.textContent = '$' + (price * (1 - discount / 100)).toFixed(2);
+                    preview.classList.remove('hidden');
+                } else {
+                    preview.classList.add('hidden');
+                }
+            }
+
+            priceInput.addEventListener('input', recalc);
+            discountInput.addEventListener('input', recalc);
+        }
+
+        window.bindDiscountCalculator = bind;
+        bind(document);
+    })();
+
     // Generic no-reload form submission: any form with data-ajax-target submits via
     // fetch, swaps in the freshly rendered HTML for each listed container id, then
     // reapplies the current tab's visibility/styling since swapped-in markup reflects
@@ -1221,6 +1274,7 @@ function submitAdminReply(form, event) {
                                     liveEl.replaceWith(freshEl);
                                     bindAjaxForms(freshEl);
                                     window.bindStatusDropdown?.(freshEl);
+                                    window.bindDiscountCalculator?.(freshEl);
                                 }
                             });
 

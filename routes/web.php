@@ -337,6 +337,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::post('/projects/{project}/payments', [AdminPaymentController::class, 'store'])->name('payments.store');
     Route::delete('/payments/{payment}', [AdminPaymentController::class, 'destroy'])->name('payments.destroy');
     Route::post('/payments/{payment}/sync', [AdminPaymentController::class, 'sync'])->name('payments.sync');
+    Route::post('/payments/{payment}/send-email', [AdminPaymentController::class, 'sendEmail'])->name('payments.send-email');
 
     Route::get('/subscriptions', [AdminSubscriptionController::class, 'index'])->name('subscriptions.index');
     Route::post('/projects/{project}/subscriptions', [AdminSubscriptionController::class, 'store'])->name('subscriptions.store');

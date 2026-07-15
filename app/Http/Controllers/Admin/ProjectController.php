@@ -32,6 +32,7 @@ class ProjectController extends Controller
             'preview_url' => ['sometimes', 'nullable', 'url', 'max:255'],
             'progress_override' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:100'],
             'total_price' => ['sometimes', 'nullable', 'numeric', 'min:1'],
+            'discount_percent' => ['sometimes', 'nullable', 'numeric', 'min:0', 'max:100'],
         ]);
 
         $settingPriceForFirstTime = array_key_exists('total_price', $validated)
