@@ -31,7 +31,7 @@
      data-started="{{ $subscription->created_at->format('M j, Y') }}"
      data-period-end="{{ $subscription->current_period_end?->format('M j, Y') }}"
      data-cancel-at-period-end="{{ $subscription->cancel_at_period_end ? '1' : '0' }}"
-     data-checkout-url="{{ $subscription->isPending() ? route('portal.subscriptions.checkout', $subscription) : '' }}"
+     data-checkout-url="{{ $subscription->isPending() && in_array($subscription->project->status, ['launched', 'maintenance'], true) ? route('portal.subscriptions.checkout', $subscription) : '' }}"
      data-billing-portal-url="{{ ! $subscription->isPending() && ! $subscription->isCanceled() ? route('portal.billing.show') : '' }}">
     <div class="flex flex-wrap items-center justify-between gap-5">
         <div class="flex items-center gap-4">
@@ -91,12 +91,20 @@
                         </button>
                     </form>
                 @endif
-                <form method="POST" action="{{ route('portal.subscriptions.checkout', $subscription) }}" onclick="event.stopPropagation()">
-                    @csrf
-                    <button type="submit" class="bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
-                        Start Plan
-                    </button>
-                </form>
+                @if (in_array($subscription->project->status, ['launched', 'maintenance'], true))
+                    <form method="POST" action="{{ route('portal.subscriptions.checkout', $subscription) }}" onclick="event.stopPropagation()">
+                        @csrf
+                        <button type="submit" class="bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                            Start Plan
+                        </button>
+                    </form>
+                @else
+                    {{-- Billing isn't meant to start during development — see
+                    Portal\SubscriptionController::checkout()'s matching gate. --}}
+                    <span class="text-xs text-gray-400 dark:text-gray-500 text-right max-w-[9rem]" title="Your Care Plan activates automatically once your website launches">
+                        Available once your site launches
+                    </span>
+                @endif
             @else
                 <form method="POST" action="{{ route('portal.subscriptions.refresh', $subscription) }}" onclick="event.stopPropagation()" data-ajax-target="maintenance-plan-card" data-no-loading-overlay>
                     @csrf

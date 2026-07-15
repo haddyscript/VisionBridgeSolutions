@@ -31,6 +31,13 @@ class SubscriptionController extends Controller
 
         abort_unless($project && $subscription->project_id === $project->id, 403);
         abort_unless($subscription->isPending(), 422, 'This care plan has already been processed.');
+        // Care Plan billing isn't meant to start during development — matches
+        // the same 'launched'/'maintenance' gate Admin\SubscriptionController
+        // already enforces when *we* create a plan. Without this, a client
+        // could click "Start Plan" and begin real billing mid-build, since
+        // the plan itself already exists (agreed to during onboarding) with
+        // nothing else blocking checkout.
+        abort_unless(in_array($project->status, ['launched', 'maintenance'], true), 422, 'Your Care Plan will be available to start once your website has launched.');
 
         $this->configureStripe();
 
