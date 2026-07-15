@@ -33,22 +33,33 @@
                     </svg>
                 </div>
                 <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Payment Reminder</p>
-                <h2 class="font-display text-xl font-bold text-white">You have a pending payment</h2>
+                <h2 class="font-display text-xl font-bold text-white">You have {{ $pendingPayments->count() > 1 ? $pendingPayments->count().' pending payments' : 'a pending payment' }}</h2>
             </div>
 
             <div class="px-6 py-6">
-                @if ($pendingPayment)
-                    <div class="flex items-center justify-between rounded-xl border border-gray-200 dark:border-gray-700 px-4 py-3 mb-5">
-                        <div class="min-w-0 pr-3">
-                            <p class="text-sm font-medium text-navy dark:text-white truncate">{{ $pendingPayment->description }}</p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Pending</p>
-                        </div>
-                        <p class="font-display text-lg font-bold text-navy dark:text-white shrink-0">{{ $pendingPayment->formattedAmount() }}</p>
+                @if ($pendingPayments->isNotEmpty())
+                    <div class="space-y-2.5 mb-5">
+                        @foreach ($pendingPayments as $payment)
+                            <div class="flex items-center justify-between rounded-xl border border-gray-200 dark:border-gray-700 px-4 py-3">
+                                <div class="min-w-0 pr-3">
+                                    <p class="text-sm font-medium text-navy dark:text-white truncate">{{ $payment->description }}</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Pending</p>
+                                </div>
+                                <p class="font-display text-lg font-bold text-navy dark:text-white shrink-0">{{ $payment->formattedAmount() }}</p>
+                            </div>
+                        @endforeach
+
+                        @if ($pendingPayments->count() > 1)
+                            <div class="flex items-center justify-between px-4 pt-1">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Total Due</p>
+                                <p class="text-sm font-bold text-navy dark:text-white">${{ number_format($pendingPayments->sum('amount') / 100, 2) }}</p>
+                            </div>
+                        @endif
                     </div>
                 @endif
 
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                    Please complete this payment to keep your project moving forward without delay.
+                    Please complete {{ $pendingPayments->count() > 1 ? 'these payments' : 'this payment' }} to keep your project moving forward without delay.
                 </p>
 
                 <div class="flex flex-col sm:flex-row sm:justify-end gap-2.5">
@@ -338,15 +349,19 @@
         </div>
     @endif
 
-    @if ($pendingPayment)
+    @if ($pendingPayments->isNotEmpty())
         <a href="{{ route('portal.payments.index') }}" class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 px-4 py-4 sm:px-5 mb-6 sm:mb-8 hover:border-red-300 dark:hover:border-red-500/50 transition-colors">
             <div class="flex items-center gap-3">
                 <span class="w-9 h-9 rounded-full bg-red-500/15 text-red-500 flex items-center justify-center shrink-0">
                     <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14.18A1 1 0 003 19.5h18a1 1 0 00.86-1.46L13.71 3.86a1 1 0 00-1.72 0z"/></svg>
                 </span>
                 <p class="text-sm text-red-700 dark:text-red-300">
-                    <span class="font-semibold">Payment due: {{ $pendingPayment->formattedAmount() }}</span>
-                    &middot; Pending since {{ $pendingPayment->created_at->format('M j, Y') }}
+                    <span class="font-semibold">Payment due: ${{ number_format($pendingPayments->sum('amount') / 100, 2) }}</span>
+                    @if ($pendingPayments->count() > 1)
+                        &middot; {{ $pendingPayments->count() }} payments pending
+                    @else
+                        &middot; Pending since {{ $pendingPayments->first()->created_at->format('M j, Y') }}
+                    @endif
                 </p>
             </div>
             <span class="text-xs font-semibold uppercase tracking-wide text-red-600 dark:text-red-400 shrink-0">View &amp; Pay &rarr;</span>

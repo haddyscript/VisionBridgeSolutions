@@ -32,10 +32,10 @@ class DashboardController extends Controller
                 'count' => $project ? $project->uploads->where('category', $category)->count() : 0,
             ]);
 
-        $pendingPayment = $project?->payments->firstWhere('status', 'pending');
+        $pendingPayments = $project?->payments->where('status', 'pending') ?? collect();
 
         $showPaymentReminder = $request->session()->pull('show_payment_reminder', false)
-            && $pendingPayment !== null;
+            && $pendingPayments->isNotEmpty();
 
         // Survey prompt modal — once per login, only if the survey is still
         // pending (hidden once submitted), and never stacked on top of the
@@ -66,7 +66,7 @@ class DashboardController extends Controller
             'project' => $project,
             'counts' => $counts,
             'showPaymentReminder' => $showPaymentReminder,
-            'pendingPayment' => $pendingPayment,
+            'pendingPayments' => $pendingPayments,
             'activity' => $project ? $project->recentActivity()->take(8) : collect(),
             'recommendations' => $recommendations,
             'firstVisit' => $firstVisit,
