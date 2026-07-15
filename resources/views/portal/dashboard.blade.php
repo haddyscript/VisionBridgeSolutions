@@ -336,7 +336,7 @@
             </a>
         </div>
     @elseif ($project->status === 'onboarding')
-        <img src="{{ asset('image/lets-get-started.png') }}" alt="Get Started" class="h-40 w-auto -mb-14">
+        <img src="{{ asset('image/lets-get-started.png') }}" alt="Get Started" class="h-40 w-auto -mb-13">
         <div class="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 border border-gold/20 dark:border-gold/10" style="background:linear-gradient(135deg,rgba(201,168,76,0.10),rgba(42,157,143,0.08));">
             <p class="text-xs font-semibold uppercase tracking-widest text-gold-dark mb-2">Hey {{ explode(' ', auth()->user()->name)[0] }} 👋</p>
             <h2 class="font-display text-xl font-bold text-navy dark:text-white mb-2">Glad to have you here — let's get started</h2>
@@ -492,24 +492,27 @@
 
             @if ($whatsNext)
                 {{-- What's Next — subtle action card --}}
-                <div class="flex flex-col rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-5">
-                    <div class="flex items-center gap-2.5 mb-3">
-                        <span class="w-9 h-9 rounded-full {{ $whatsNext['actionable'] ? 'bg-gold/15 text-gold-dark' : 'bg-teal/10 text-teal-dark' }} flex items-center justify-center shrink-0">
-                            @if ($whatsNext['actionable'])
-                                <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                            @else
-                                <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            @endif
-                        </span>
-                        <p class="text-xs font-semibold uppercase tracking-widest {{ $whatsNext['actionable'] ? 'text-gold-dark' : 'text-teal-dark' }}">What's Next</p>
+                <div class="flex flex-col h-full">
+                    <img src="{{ asset('image/whats-next.png') }}" alt="What's Next" class="h-24 w-auto -mb-8 shrink-0">
+                    <div class="flex flex-col flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-5">
+                        <div class="flex items-center gap-2.5 mb-3">
+                            <span class="w-9 h-9 rounded-full {{ $whatsNext['actionable'] ? 'bg-gold/15 text-gold-dark' : 'bg-teal/10 text-teal-dark' }} flex items-center justify-center shrink-0">
+                                @if ($whatsNext['actionable'])
+                                    <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                @else
+                                    <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                @endif
+                            </span>
+                            <p class="text-xs font-semibold uppercase tracking-widest {{ $whatsNext['actionable'] ? 'text-gold-dark' : 'text-teal-dark' }}">What's Next</p>
+                        </div>
+                        <p class="text-base font-bold text-navy dark:text-white mb-1">{{ $whatsNext['title'] }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{{ $whatsNext['description'] }}</p>
+                        @if ($whatsNext['url'])
+                            <a href="{{ $whatsNext['url'] }}" class="mt-auto self-start px-4 py-2.5 rounded-lg text-sm font-semibold bg-gold text-navy hover:bg-gold-dark transition-colors">
+                                {{ $whatsNext['actionLabel'] }}
+                            </a>
+                        @endif
                     </div>
-                    <p class="text-base font-bold text-navy dark:text-white mb-1">{{ $whatsNext['title'] }}</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{{ $whatsNext['description'] }}</p>
-                    @if ($whatsNext['url'])
-                        <a href="{{ $whatsNext['url'] }}" class="mt-auto self-start px-4 py-2.5 rounded-lg text-sm font-semibold bg-gold text-navy hover:bg-gold-dark transition-colors">
-                            {{ $whatsNext['actionLabel'] }}
-                        </a>
-                    @endif
                 </div>
             @endif
 
