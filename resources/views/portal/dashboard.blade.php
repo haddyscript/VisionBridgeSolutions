@@ -367,14 +367,15 @@
     @endif
 
     @if ($pendingItemsCount > 0)
+        <img src="{{ asset('image/reminder-word-icon.png') }}" alt="Reminder" class="h-12 w-auto mb-2">
         <a href="{{ route('portal.payments.index') }}" class="group flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-4 sm:px-5 mb-6 sm:mb-8 transition-all duration-200 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-md hover:-translate-y-0.5">
             <div class="flex items-center gap-3">
-                <span class="relative w-11 h-11 rounded-lg overflow-hidden shrink-0 shadow-sm">
+                <span class="relative w-9 h-9 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
                     {{-- Slow, low-opacity "ping" behind the icon only — a quiet
                     ambient cue, not a flashing banner — and off entirely for
                     anyone who's asked their OS to reduce motion. --}}
-                    <span class="payment-due-pulse-ring absolute inset-0 rounded-lg bg-amber-500/40" aria-hidden="true"></span>
-                    <img src="{{ asset('image/reminder-word-icon.png') }}" alt="" class="relative w-full h-full object-cover">
+                    <span class="payment-due-pulse-ring absolute inset-0 rounded-full bg-amber-500/40" aria-hidden="true"></span>
+                    <svg class="relative w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                 </span>
                 <p class="text-sm text-amber-800 dark:text-amber-200">
                     <span class="font-semibold">Hi {{ explode(' ', auth()->user()->name)[0] }}, just a friendly reminder —</span>
