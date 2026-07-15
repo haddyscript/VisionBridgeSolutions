@@ -113,6 +113,7 @@ class EmailPreviewStub implements \ArrayAccess, \IteratorAggregate, \Countable
             'category' => 'document',
             'message' => 'This is a sample message body used for previewing this email.',
             'phone' => '(555) 123-4567',
+            'timezone' => 'America/New_York',
             'version' => 1,
             'body' => 'Sample agreement body text.',
             'ip_address' => '127.0.0.1',
