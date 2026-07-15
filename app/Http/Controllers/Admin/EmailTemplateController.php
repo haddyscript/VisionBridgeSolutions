@@ -35,7 +35,18 @@ class EmailTemplateController extends Controller
                 return response(view('emails.'.$template, $data)->render());
             } catch (\Throwable $e) {
                 if (preg_match('/Undefined variable \$(\w+)/', $e->getMessage(), $matches)) {
-                    $data[$matches[1]] = new EmailPreviewStub($matches[1]);
+                    $name = $matches[1];
+
+                    // A raw scalar passed alongside a model (e.g. PaymentFailedMail's
+                    // int $amountDue) can't resolve itself the way a model-shaped
+                    // EmailPreviewStub property access can — a template doing
+                    // arithmetic directly on it (`$amountDue / 100`) needs a real
+                    // number here, not a stub object. Mirrors the same $249.00
+                    // convention EmailPreviewStub::resolve() uses for "amount"-like
+                    // property names, so the preview stays consistent either way.
+                    $data[$name] = preg_match('/(amount|price|total|fee|count|quantity|qty)/i', $name)
+                        ? 24900
+                        : new EmailPreviewStub($name);
                     continue;
                 }
 
