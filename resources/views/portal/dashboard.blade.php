@@ -496,14 +496,6 @@
                     <div class="flex flex-col flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-5">
                         <div class="flex items-center gap-2.5 mb-3">
                             <img src="{{ asset('image/whats-next.png') }}" alt="What's Next" style="height: 6rem; width: auto; margin-bottom: -15px;">
-                            <span class="w-9 h-9 rounded-full {{ $whatsNext['actionable'] ? 'bg-gold/15 text-gold-dark' : 'bg-teal/10 text-teal-dark' }} flex items-center justify-center shrink-0">
-                                @if ($whatsNext['actionable'])
-                                    <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                                @else
-                                    <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                @endif
-                            </span>
-                            <p class="text-xs font-semibold uppercase tracking-widest {{ $whatsNext['actionable'] ? 'text-gold-dark' : 'text-teal-dark' }}">What's Next</p>
                         </div>
                         <p class="text-base font-bold text-navy dark:text-white mb-1">{{ $whatsNext['title'] }}</p>
                         <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{{ $whatsNext['description'] }}</p>
