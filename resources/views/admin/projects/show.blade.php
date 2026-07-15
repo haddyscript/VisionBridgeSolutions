@@ -145,7 +145,16 @@
 
                 {{-- Preview URL --}}
                 <div>
-                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Preview URL</label>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">Preview URL</label>
+                        @if ($project->preview_url)
+                            <a href="{{ $project->preview_url }}" target="_blank" rel="noopener noreferrer"
+                               class="inline-flex items-center gap-1 text-xs font-semibold text-gold-dark hover:underline">
+                                Open
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            </a>
+                        @endif
+                    </div>
                     <input type="url" name="preview_url" value="{{ old('preview_url', $project->preview_url) }}"
                         placeholder="https://staging.example.com"
                         class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
