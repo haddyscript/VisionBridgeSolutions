@@ -492,8 +492,8 @@
 
             @if ($whatsNext)
                 {{-- What's Next — subtle action card --}}
+                <img src="{{ asset('image/whats-next.png') }}" alt="What's Next" class="h-8 w-auto max-w-full -mb-2 shrink-0">
                 <div class="flex flex-col h-full">
-                    <img src="{{ asset('image/whats-next.png') }}" alt="What's Next" class="h-8 w-auto max-w-full -mb-2 shrink-0">
                     <div class="flex flex-col flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-5">
                         <div class="flex items-center gap-2.5 mb-3">
                             <span class="w-9 h-9 rounded-full {{ $whatsNext['actionable'] ? 'bg-gold/15 text-gold-dark' : 'bg-teal/10 text-teal-dark' }} flex items-center justify-center shrink-0">
