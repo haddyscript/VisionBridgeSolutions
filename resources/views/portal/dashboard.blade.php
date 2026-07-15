@@ -13,6 +13,17 @@
     ])
 @endif
 
+{{-- Admin-set status banner — free text, manually controlled from the
+     project's admin page rather than triggered by any automatic event. --}}
+@if ($project->status_message)
+    <div class="flex items-center gap-3 rounded-xl border border-teal/30 bg-teal/10 px-4 py-4 sm:px-5 mb-6 sm:mb-8">
+        <span class="w-9 h-9 rounded-full bg-teal/20 text-teal-dark flex items-center justify-center shrink-0">
+            <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        </span>
+        <p class="text-sm font-semibold text-teal-dark">{{ $project->status_message }}</p>
+    </div>
+@endif
+
 {{-- The launch feedback card is rendered side-by-side with "What's Next" below
      (inside the project section) — see the two-column grid there. --}}
 

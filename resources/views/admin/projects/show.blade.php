@@ -143,6 +143,20 @@
                 @csrf
                 @method('PATCH')
 
+                {{-- Status Message — free-text banner shown to the client on
+                     their Overview page. Manual, not tied to any automatic
+                     event, so you control exactly when/what it says (e.g.
+                     "Payment Received — your project is now in development"
+                     right after confirming a phase payment cleared). --}}
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Status Message (shown to client)</label>
+                    <input type="text" name="status_message" value="{{ old('status_message', $project->status_message) }}"
+                        placeholder="e.g. Payment Received — your project is now in development"
+                        maxlength="255"
+                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Shows as a banner on the client's Overview page. Leave blank to hide it.</p>
+                </div>
+
                 {{-- Preview URL --}}
                 <div>
                     <div class="flex items-center justify-between mb-1">

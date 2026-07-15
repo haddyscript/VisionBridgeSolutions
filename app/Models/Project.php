@@ -16,6 +16,7 @@ class Project extends Model
         'website_type',
         'preview_url',
         'status',
+        'status_message',
         'progress_override',
         'total_price',
         'discount_percent',

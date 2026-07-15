@@ -30,6 +30,7 @@ class ProjectController extends Controller
     {
         $validated = $request->validate([
             'status' => ['sometimes', 'required', 'in:onboarding,in_progress,review,launched,maintenance,canceled'],
+            'status_message' => ['sometimes', 'nullable', 'string', 'max:255'],
             'preview_url' => ['sometimes', 'nullable', 'url', 'max:255'],
             'progress_override' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:100'],
             'total_price' => ['sometimes', 'nullable', 'numeric', 'min:1'],
