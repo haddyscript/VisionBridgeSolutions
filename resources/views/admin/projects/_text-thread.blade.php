@@ -1,17 +1,4 @@
-{{--
-    $cat: machine value (content, revision)
-    $meta: category metadata array (label, type, etc.)
-    $panelId: the wrapping panel's DOM id (e.g. panel-revision) — used as the
-        data-ajax-target for status/dev-instructions forms.
-    Expects $uploadsByCategory and $empty from the parent view's scope.
 
-    Interactivity here uses inline onclick/onsubmit attributes calling global
-    functions defined in show.blade.php's persistent <script> block, NOT
-    addEventListener in a <script> tag inside this partial — the page's
-    data-ajax-target mechanism swaps in raw HTML via DOMParser, and injected
-    <script> tags never re-execute. Inline event attributes are part of the
-    element itself, so they keep working after every swap.
---}}
 @php
     $items = $uploadsByCategory->get($cat, $empty);
     $statusColors = [
@@ -21,6 +8,7 @@
         'waiting_on_client' => 'bg-purple-50 dark:bg-purple-500/10 text-purple-500',
         'needs_approval' => 'bg-orange-50 dark:bg-orange-500/10 text-orange-500',
         'completed' => 'bg-teal/10 text-teal-dark',
+        'closed' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400',
     ];
     $borderColors = [
         'request_received' => 'border-l-red-400',
@@ -29,6 +17,13 @@
         'waiting_on_client' => 'border-l-purple-400',
         'needs_approval' => 'border-l-orange-400',
         'completed' => 'border-l-teal',
+        'closed' => 'border-l-gray-400',
+    ];
+    $priorityColors = [
+        'low' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400',
+        'medium' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-500',
+        'high' => 'bg-gold/15 text-gold-dark',
+        'urgent' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
     ];
 @endphp
 
@@ -36,8 +31,8 @@
     <div class="flex items-center justify-between mb-4">
         <h3 class="font-semibold text-navy dark:text-white">
             {{ $meta['label'] }}
-            @if ($cat === 'revision' && $items->where('status', '!=', 'completed')->isNotEmpty())
-                <span class="ml-2 inline-block text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">{{ $items->where('status', '!=', 'completed')->count() }} open</span>
+            @if ($cat === 'revision' && $items->whereNotIn('status', \App\Models\Upload::CLOSED_STATUSES)->isNotEmpty())
+                <span class="ml-2 inline-block text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">{{ $items->whereNotIn('status', \App\Models\Upload::CLOSED_STATUSES)->count() }} open</span>
             @endif
         </h3>
         <span class="text-xs text-gray-400 dark:text-gray-500">{{ $items->count() }} item{{ $items->count() === 1 ? '' : 's' }}</span>
@@ -57,7 +52,7 @@
                 @endphp
                 <button type="button"
                         onclick="openAdminThread('{{ $cat }}', {{ $item->id }}, {{ $unreadCount > 0 ? 'true' : 'false' }}, '{{ route('admin.uploads.read', $item) }}')"
-                        class="thread-list-item w-full text-left flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 border-l-4 {{ $borderColors[$item->status] ?? 'border-l-red-400' }} px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors {{ $item->isCompleted() ? 'opacity-60' : '' }}">
+                        class="thread-list-item w-full text-left flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 border-l-4 {{ $borderColors[$item->status] ?? 'border-l-red-400' }} px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors {{ $item->isResolved() ? 'opacity-60' : '' }}">
                     <span class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold flex items-center justify-center shrink-0">
                         {{ strtoupper(substr($item->user->name, 0, 1)) }}
                     </span>
@@ -74,6 +69,9 @@
                                 @endif
                                 {{ \App\Models\Upload::STATUSES[$item->status] ?? $item->status }}
                             </span>
+                            @if ($cat === 'revision')
+                                <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full shrink-0 {{ $priorityColors[$item->priority] ?? $priorityColors['medium'] }}">{{ \App\Models\Upload::PRIORITIES[$item->priority] ?? ucfirst($item->priority) }}</span>
+                            @endif
                             @if ($cat === 'revision' && $item->isOverdue())
                                 <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400">Overdue</span>
                             @endif
@@ -103,14 +101,25 @@
                     <form method="POST" action="{{ route('admin.uploads.status', $item) }}" class="shrink-0" data-ajax-target="{{ $panelId ?? '' }} {{ $cat === 'revision' ? 'tabbtn-revision' : '' }}">
                         @csrf
                         @method('PATCH')
-                        <select name="status" onchange="this.form.requestSubmit()"
+                        <select name="status" onchange="handleRevisionStatusChange(this)"
                                 class="text-xs font-semibold rounded-full px-3 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-gold {{ $statusColors[$item->status] ?? 'bg-gray-100 text-gray-500' }}">
                             @foreach (\App\Models\Upload::STATUSES as $value => $label)
                                 <option value="{{ $value }}" {{ $item->status === $value ? 'selected' : '' }}>{{ $label }}</option>
                             @endforeach
                         </select>
+                        {{-- Hidden until "Closed" is picked — a reason is required before that
+                             submit actually goes through (see handleRevisionStatusChange). --}}
+                        <div class="closed-reason-wrap hidden mt-2 flex items-center gap-1.5">
+                            <input type="text" name="closed_reason" placeholder="Reason for closing (required)" required
+                                   class="text-xs rounded-lg border border-gray-300 dark:border-gray-600 px-2 py-1 w-48 focus:outline-none focus:ring-2 focus:ring-gold dark:bg-gray-900 dark:text-white">
+                            <button type="submit" class="text-xs font-semibold text-red-600 hover:underline whitespace-nowrap">Confirm Close</button>
+                        </div>
                     </form>
                 </div>
+
+                @if ($item->isClosed() && $item->closed_reason)
+                    <p class="text-xs text-gray-500 dark:text-gray-400 italic mb-3">Closed: {{ $item->closed_reason }}</p>
+                @endif
 
                 {{-- Work Order: assign a developer (job_title = "Developer") and
                      track their own internal status, independent of the
@@ -137,6 +146,21 @@
                                     <option value="{{ $value }}" {{ $item->developer_status === $value ? 'selected' : '' }}>{{ $label }}</option>
                                 @endforeach
                             </select>
+                        </form>
+                    @endif
+                    @if ($cat === 'revision')
+                        <form method="POST" action="{{ route('admin.uploads.details', $item) }}" data-ajax-target="{{ $panelId ?? '' }}" class="flex items-center gap-2">
+                            @csrf
+                            @method('PATCH')
+                            <select name="priority" onchange="this.form.requestSubmit()" title="Priority (internal only)"
+                                    class="text-xs font-medium rounded-lg px-3 py-1.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold">
+                                @foreach (\App\Models\Upload::PRIORITIES as $value => $label)
+                                    <option value="{{ $value }}" {{ $item->priority === $value ? 'selected' : '' }}>{{ $label }} Priority</option>
+                                @endforeach
+                            </select>
+                            <input type="date" name="estimated_completion_date" value="{{ $item->estimated_completion_date?->format('Y-m-d') }}"
+                                   onchange="this.form.requestSubmit()" title="Estimated completion date (visible to client)"
+                                   class="text-xs font-medium rounded-lg px-3 py-1.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold">
                         </form>
                     @endif
                 </div>

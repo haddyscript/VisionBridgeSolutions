@@ -946,6 +946,25 @@ function closeAdminThread(cat) {
     if (list) list.classList.remove('hidden');
 }
 
+// Picking "Closed" reveals a required reason field instead of auto-submitting
+// immediately (every other status still submits right away on change) — see
+// the .closed-reason-wrap markup in _text-thread.blade.php.
+function handleRevisionStatusChange(select) {
+    const wrap = select.closest('form').querySelector('.closed-reason-wrap');
+    if (!wrap) {
+        select.form.requestSubmit();
+        return;
+    }
+
+    if (select.value === 'closed') {
+        wrap.classList.remove('hidden');
+        wrap.querySelector('input[name="closed_reason"]')?.focus();
+    } else {
+        wrap.classList.add('hidden');
+        select.form.requestSubmit();
+    }
+}
+
 function toggleAdminMessage(btn) {
     const el = btn.previousElementSibling;
     if (!el || !el.classList.contains('message-text')) return;

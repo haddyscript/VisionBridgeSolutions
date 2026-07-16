@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Portal\CategoryController;
+use App\Mail\RevisionStatusChangedMail;
 use App\Mail\UploadRepliedMail;
 use App\Mail\WorkOrderAssignedMail;
 use App\Mail\WorkOrderInstructionsMail;
@@ -43,11 +44,65 @@ class UploadApprovalController extends Controller
     {
         $validated = $request->validate([
             'status' => ['required', 'in:'.implode(',', array_keys(Upload::STATUSES))],
+            'closed_reason' => ['required_if:status,closed', 'nullable', 'string', 'max:1000'],
         ]);
+
+        // Only meaningful (and only ever collected) when actually closing —
+        // clear it out if the status is later moved somewhere else, so a
+        // stale reason from a past closure never resurfaces.
+        $validated['closed_reason'] = $validated['status'] === 'closed'
+            ? $validated['closed_reason']
+            : null;
+
+        $previousStatus = $upload->status;
 
         $upload->update($validated);
 
+        if ($validated['status'] !== $previousStatus) {
+            $this->notifyClientOfStatusChange($upload);
+        }
+
         return back()->with('status', 'Status updated.');
+    }
+
+    /**
+     * Every status change notifies the client — both a portal notification
+     * and (if they haven't opted out of reply emails) an email — so neither
+     * side has to manually follow up to find out something moved.
+     */
+    private function notifyClientOfStatusChange(Upload $upload): void
+    {
+        $label = CategoryController::CATEGORIES[$upload->category]['label'] ?? 'submission';
+        $statusLabel = Upload::STATUSES[$upload->status] ?? $upload->status;
+
+        ClientNotification::send(
+            $upload->user,
+            'revision_status_changed',
+            "Your {$label} is now \"{$statusLabel}\"",
+            $upload->isClosed() && $upload->closed_reason
+                ? $upload->closed_reason
+                : "We've updated the status on your {$label}.",
+            route('portal.category', $upload->category),
+        );
+
+        if ($upload->user->notify_on_replies) {
+            Mail::to($upload->user->email)->send(new RevisionStatusChangedMail($upload));
+        }
+    }
+
+    /** Priority and estimated completion date — priority is internal-only triage; the estimated date is shown to the client. */
+    public function updateDetails(Request $request, Upload $upload)
+    {
+        $validated = $request->validate([
+            'priority' => ['required', 'in:'.implode(',', array_keys(Upload::PRIORITIES))],
+            'estimated_completion_date' => ['nullable', 'date'],
+        ]);
+
+        $validated['estimated_completion_date'] = $validated['estimated_completion_date'] ?: null;
+
+        $upload->update($validated);
+
+        return back()->with('status', 'Details updated.');
     }
 
     public function updateDevInstructions(Request $request, Upload $upload)

@@ -318,6 +318,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     // ─── Files, Content & Revisions ──────────────────────────────────────────
     Route::patch('/uploads/{upload}/approve', [UploadApprovalController::class, 'toggle'])->name('uploads.approve');
     Route::patch('/uploads/{upload}/status', [UploadApprovalController::class, 'updateStatus'])->name('uploads.status');
+    Route::patch('/uploads/{upload}/details', [UploadApprovalController::class, 'updateDetails'])->name('uploads.details');
     Route::patch('/uploads/{upload}/reply', [UploadApprovalController::class, 'reply'])->name('uploads.reply');
     Route::patch('/uploads/{upload}/dev-instructions', [UploadApprovalController::class, 'updateDevInstructions'])->name('uploads.dev-instructions');
     Route::post('/uploads/{upload}/read', [UploadApprovalController::class, 'markRead'])->name('uploads.read');

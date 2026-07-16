@@ -11,11 +11,22 @@ class Upload extends Model
 
     public const STATUSES = [
         'request_received' => 'Request Received',
-        'under_review' => 'Under Review',
+        'under_review' => 'In Review',
         'in_progress' => 'In Progress',
         'waiting_on_client' => 'Waiting on Client',
         'needs_approval' => 'Needs VisionBridge Approval',
         'completed' => 'Completed',
+        'closed' => 'Closed',
+    ];
+
+    /** Statuses that mean a revision/content request is no longer active — used to filter "open" counts and badges. */
+    public const CLOSED_STATUSES = ['completed', 'closed'];
+
+    public const PRIORITIES = [
+        'low' => 'Low',
+        'medium' => 'Medium',
+        'high' => 'High',
+        'urgent' => 'Urgent',
     ];
 
     /**
@@ -39,6 +50,9 @@ class Upload extends Model
         'body',
         'approved_at',
         'status',
+        'priority',
+        'estimated_completion_date',
+        'closed_reason',
         'dev_instructions',
         'assigned_developer_id',
         'developer_status',
@@ -48,6 +62,7 @@ class Upload extends Model
     {
         return [
             'approved_at' => 'datetime',
+            'estimated_completion_date' => 'date',
         ];
     }
 
@@ -55,6 +70,7 @@ class Upload extends Model
     {
         static::creating(function (Upload $upload) {
             $upload->status ??= 'request_received';
+            $upload->priority ??= 'medium';
         });
     }
 
@@ -66,6 +82,17 @@ class Upload extends Model
     public function isCompleted(): bool
     {
         return $this->status === 'completed';
+    }
+
+    public function isClosed(): bool
+    {
+        return $this->status === 'closed';
+    }
+
+    /** Whether this revision/content request is done (completed or closed) — no longer "open." */
+    public function isResolved(): bool
+    {
+        return in_array($this->status, self::CLOSED_STATUSES, true);
     }
 
     /**
@@ -85,7 +112,7 @@ class Upload extends Model
     public function isOverdue(): bool
     {
         return $this->category === 'revision'
-            && ! $this->isCompleted()
+            && ! $this->isResolved()
             && $this->created_at->lt(now()->subHours(self::SLA_HOURS));
     }
 

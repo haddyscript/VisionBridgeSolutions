@@ -89,6 +89,7 @@
                     @php
                         $borderColor = match ($item->status) {
                             'completed' => 'border-l-teal',
+                            'closed' => 'border-l-gray-400',
                             'in_progress' => 'border-l-gold',
                             'waiting_on_client' => 'border-l-purple-400',
                             'needs_approval' => 'border-l-orange-400',
@@ -97,6 +98,7 @@
                         };
                         $statusBadgeColor = [
                             'completed' => 'bg-teal/10 text-teal-dark',
+                            'closed' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400',
                             'in_progress' => 'bg-gold/15 text-gold-dark',
                             'waiting_on_client' => 'bg-purple-50 dark:bg-purple-500/10 text-purple-500',
                             'needs_approval' => 'bg-orange-50 dark:bg-orange-500/10 text-orange-500',
@@ -129,6 +131,14 @@
                                 </form>
                             @endif
                         </div>
+
+                        @if ($item->estimated_completion_date)
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Estimated completion: <span class="font-medium text-navy dark:text-white">{{ $item->estimated_completion_date->format('M j, Y') }}</span></p>
+                        @endif
+
+                        @if ($item->isClosed() && $item->closed_reason)
+                            <p class="text-xs text-gray-500 dark:text-gray-400 italic mb-3">Closed: {{ $item->closed_reason }}</p>
+                        @endif
 
                         <div id="revision-thread-messages-{{ $item->id }}" class="thread-scroll space-y-2.5 lg:max-h-[calc(100vh-420px)] lg:overflow-y-auto lg:pr-1">
                             {{-- Your message bubble --}}
