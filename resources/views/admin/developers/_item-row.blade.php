@@ -1,18 +1,35 @@
 {{--
-    $item: formatted work-order array (title, type, client_name, developer_status, link, url, updated_at, assign_url)
+    $item: formatted work-order array (title, type, client_name, priority, developer_status, link, url, updated_at, assign_url)
     $statusColors: developer_status => Tailwind classes map
     $completed (optional bool): true when rendered from the History panel — shows the completion date
     $developers / $assignedDeveloperId (optional): when given, super admins get a
     reassign/unassign dropdown on active (non-completed) items — everyone else
     still just sees the read-only status badge.
 --}}
+@php
+    // Only revision/content requests (Uploads) carry a priority — same
+    // color language as the project page's revision thread pills.
+    $priorityColors = [
+        'low' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400',
+        'medium' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-500',
+        'high' => 'bg-gold/15 text-gold-dark',
+        'urgent' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
+    ];
+@endphp
 <div class="flex items-center justify-between gap-3 px-1 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
     <div class="min-w-0">
         <a href="{{ $item['url'] }}" class="text-sm text-navy dark:text-white truncate hover:underline block">{{ $item['title'] }}</a>
-        <p class="text-xs text-gray-400 dark:text-gray-500">
-            {{ $item['type'] }} &middot; {{ $item['client_name'] }}
-            @if (! empty($completed))
-                &middot; Completed {{ $item['updated_at']->format('M j, Y') }}
+        <p class="text-xs text-gray-400 dark:text-gray-500 flex flex-wrap items-center gap-x-1.5 gap-y-1 mt-0.5">
+            <span>
+                {{ $item['type'] }} &middot; {{ $item['client_name'] }}
+                @if (! empty($completed))
+                    &middot; Completed {{ $item['updated_at']->format('M j, Y') }}
+                @endif
+            </span>
+            @if (! empty($item['priority']))
+                <span class="text-[0.65rem] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full {{ $priorityColors[$item['priority']] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
+                    {{ \App\Models\Upload::PRIORITIES[$item['priority']] ?? ucfirst($item['priority']) }}
+                </span>
             @endif
         </p>
         @if ($item['link'])

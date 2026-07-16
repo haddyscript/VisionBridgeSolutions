@@ -12,6 +12,15 @@
         'completed' => 'bg-teal/10 text-teal-dark',
     ];
 
+    // Only revision/content requests (Uploads) carry a priority — same color
+    // language as the project page's revision thread pills.
+    $priorityColors = [
+        'low' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400',
+        'medium' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-500',
+        'high' => 'bg-gold/15 text-gold-dark',
+        'urgent' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
+    ];
+
     // Workload stat boxes — muted gray when 0, richer tint + darker type when >0.
     $statBoxes = [
         'not_started' => ['label' => 'Not Started', 'activeBg' => 'bg-gray-200 dark:bg-gray-600', 'activeText' => 'text-navy dark:text-white'],
@@ -149,7 +158,14 @@
                             <p class="text-sm font-semibold text-navy dark:text-white">{{ $item['client_name'] }}</p>
                             <span class="text-[0.65rem] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 shrink-0">{{ $item['created_at']->format('M j') }}</span>
                         </div>
-                        <p class="text-xs text-gray-400 dark:text-gray-500 mb-1.5">{{ $item['type'] }}</p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500 mb-1.5 flex flex-wrap items-center gap-1.5">
+                            <span>{{ $item['type'] }}</span>
+                            @if (! empty($item['priority']))
+                                <span class="text-[0.65rem] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full {{ $priorityColors[$item['priority']] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
+                                    {{ \App\Models\Upload::PRIORITIES[$item['priority']] ?? ucfirst($item['priority']) }}
+                                </span>
+                            @endif
+                        </p>
                         <a href="{{ $item['url'] }}" class="text-sm text-gray-600 dark:text-gray-300 hover:underline block mb-1">{{ $item['title'] }}</a>
                         @if ($item['link'])
                             <a href="{{ $item['link'] }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-xs font-semibold text-gold-dark hover:underline mb-2">
