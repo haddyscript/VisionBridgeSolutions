@@ -504,15 +504,19 @@ class StripeWebhookController extends Controller
         // below holds it if a dispute/refund comes in first. The actual transfer
         // to FaithStack is still a manual step (see partnership agreement — Stripe
         // can't pay out to the Philippines, so full automation isn't possible yet).
+        // faithstack_amount auto-fills from the plan's flat per-cycle payout (set
+        // on the Care Plan Pricing page) when there is one — otherwise the row is
+        // still logged (never silently dropped), just left "TBD" for manual entry,
+        // same as one-time project payments.
         // stripe_invoice_id is unique, so a duplicate webhook delivery is a no-op.
-        if ($subscription->maintenance_plan_id && $subscription->maintenancePlan?->faithstack_compensation) {
+        if ($subscription->maintenance_plan_id) {
             PartnerPayout::firstOrCreate(
                 ['stripe_invoice_id' => $invoice->id],
                 [
                     'payable_type' => Subscription::class,
                     'payable_id' => $subscription->id,
                     'client_amount' => $invoice->amount_paid,
-                    'faithstack_amount' => $subscription->maintenancePlan->faithstack_compensation,
+                    'faithstack_amount' => $subscription->maintenancePlan?->faithstack_compensation,
                 ]
             );
         }

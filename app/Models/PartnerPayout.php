@@ -34,18 +34,6 @@ class PartnerPayout extends Model
         ];
     }
 
-    protected static function booted(): void
-    {
-        static::creating(function (self $payout) {
-            if ($payout->faithstack_amount === null) {
-                $rate = (float) AppSetting::get('faithstack_percentage', 0);
-                if ($rate > 0) {
-                    $payout->faithstack_amount = (int) round($payout->client_amount * $rate / 100);
-                }
-            }
-        });
-    }
-
     public function payable()
     {
         return $this->morphTo();

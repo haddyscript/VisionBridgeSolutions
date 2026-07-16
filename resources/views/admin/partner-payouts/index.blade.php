@@ -12,60 +12,39 @@
     mark a row paid once you've sent it.
 </p>
 
-{{-- FaithStack Payout Rate --}}
+{{-- FaithStack Payout — Per Care Plan --}}
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
     <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">FaithStack Payout Rate</p>
-            @if ($faithstackRate > 0)
-                <p class="font-display text-2xl font-bold text-navy dark:text-white">{{ $faithstackRate }}%</p>
-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Applied automatically to every new payment row.</p>
+            <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2">FaithStack Payout — Per Care Plan</p>
+            @if ($carePlans->isEmpty())
+                <p class="text-sm text-gold-dark font-medium">No Care Plans configured yet.</p>
             @else
-                <p class="text-sm text-gold-dark font-medium">No rate set — amounts entered manually per row.</p>
-            @endif
-        </div>
-        <div class="flex flex-wrap items-end gap-3">
-            <form method="POST" action="{{ route('admin.partner-payouts.set-rate') }}" class="flex flex-wrap items-end gap-3">
-                @csrf
-                <div>
-                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Set Rate (%)</label>
-                    <div class="flex items-center gap-1.5">
-                        <input type="number" name="faithstack_percentage" step="0.01" min="0" max="100"
-                            value="{{ old('faithstack_percentage', $faithstackRate ?: '') }}"
-                            placeholder="e.g. 27"
-                            class="w-28 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
-                        <span class="text-sm text-gray-400">%</span>
-                    </div>
+                <div class="flex flex-wrap gap-x-6 gap-y-1">
+                    @foreach ($carePlans as $plan)
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            <span class="font-semibold text-navy dark:text-white">{{ $plan->name }}</span>
+                            — {{ $plan->faithstack_compensation !== null ? $plan->formattedFaithstackCompensation() : 'not set' }}
+                        </p>
+                    @endforeach
                 </div>
-                <div class="flex flex-col gap-2">
-                    <label class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 cursor-pointer">
-                        <input type="checkbox" name="apply_to_existing" value="1"
-                            class="rounded border-gray-300 dark:border-gray-600 text-gold focus:ring-gold">
-                        Apply to existing rows with no amount set
-                    </label>
-                    <button type="submit"
-                        class="inline-flex items-center gap-1.5 px-4 py-2 bg-navy hover:bg-navy-light text-white text-sm font-semibold rounded-lg transition-colors">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                        Save Rate
-                    </button>
-                </div>
-            </form>
-            @if ($faithstackRate > 0)
-                <form method="POST" action="{{ route('admin.partner-payouts.recalculate') }}" class="self-end"
-                      onsubmit="return confirm('This will recalculate FaithStack amounts for all rows still verifying, using the current {{ $faithstackRate }}% rate. Continue?')">
-                    @csrf
-                    <button type="submit"
-                        class="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-gold hover:text-gold text-sm font-semibold rounded-lg transition-colors">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                        </svg>
-                        Recalculate All
-                    </button>
-                </form>
             @endif
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                Set per plan on the <a href="{{ route('admin.care-plans.index') }}" class="text-gold-dark hover:underline">Care Plan Pricing</a> page —
+                auto-fills the FaithStack Owed amount on every new recurring payout going forward. One-time project payments are always entered manually below.
+            </p>
         </div>
+        <form method="POST" action="{{ route('admin.partner-payouts.recalculate') }}" class="self-end"
+              onsubmit="return confirm('This will fill in the FaithStack amount for every still-verifying Care Plan row using each plan\'s current payout amount. Continue?')">
+            @csrf
+            <button type="submit"
+                class="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-gold hover:text-gold text-sm font-semibold rounded-lg transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                Recalculate Care Plan Rows
+            </button>
+        </form>
     </div>
 </div>
 

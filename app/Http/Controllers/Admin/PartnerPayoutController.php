@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
+use App\Models\MaintenancePlan;
 use App\Models\PartnerPayout;
 use App\Models\Payment;
 use App\Models\Subscription;
@@ -31,7 +32,7 @@ class PartnerPayoutController extends Controller
             'totalVerifying'     => $payouts->where('status', 'pending')->sum('faithstack_amount'),
             'totalReady'         => $payouts->where('status', 'ready')->sum('faithstack_amount'),
             'totalUndecided'     => $payouts->whereNull('faithstack_amount')->count(),
-            'faithstackRate'     => (float) AppSetting::get('faithstack_percentage', 0),
+            'carePlans'          => MaintenancePlan::orderBy('sort_order')->get(),
             'faithstackDueDay'      => AppSetting::get('faithstack_payment_due_day'),
             'faithstackReminderEmail' => AppSetting::get('faithstack_reminder_email', 'johnnydavis45@yahoo.com,hadrianevarula@gmail.com'),
         ]);
@@ -63,43 +64,35 @@ class PartnerPayoutController extends Controller
         return back()->with('status', 'FaithStack payment reminder settings updated.');
     }
 
-    public function setRate(Request $request)
-    {
-        $validated = $request->validate([
-            'faithstack_percentage' => ['required', 'numeric', 'min:0', 'max:100'],
-            'apply_to_existing'     => ['nullable', 'boolean'],
-        ]);
-
-        $rate = (float) $validated['faithstack_percentage'];
-        AppSetting::set('faithstack_percentage', $rate);
-
-        if ($request->boolean('apply_to_existing') && $rate > 0) {
-            PartnerPayout::whereNull('faithstack_amount')
-                ->each(function (PartnerPayout $payout) use ($rate) {
-                    $payout->update([
-                        'faithstack_amount' => (int) round($payout->client_amount * $rate / 100),
-                    ]);
-                });
-        }
-
-        return back()->with('status', 'FaithStack payout rate updated.');
-    }
-
+    /**
+     * Refreshes still-verifying Care Plan payout rows to match each plan's
+     * current flat per-cycle payout amount (set on the Care Plan Pricing
+     * page) — for backfilling rows created/changed before a plan's rate was
+     * set, or picking up a rate change. One-time project payments are never
+     * touched here; those stay manually entered.
+     */
     public function recalculateAll()
     {
-        $rate = (float) AppSetting::get('faithstack_percentage', 0);
-
-        if ($rate <= 0) {
-            return back()->with('error', 'No FaithStack rate set — set a rate first before recalculating.');
-        }
-
         $count = 0;
-        PartnerPayout::where('status', 'pending')->each(function (PartnerPayout $payout) use ($rate, &$count) {
-            $payout->update([
-                'faithstack_amount' => (int) round($payout->client_amount * $rate / 100),
-            ]);
-            $count++;
-        });
+
+        PartnerPayout::where('status', 'pending')
+            ->where('payable_type', Subscription::class)
+            ->with('payable.maintenancePlan')
+            ->get()
+            ->each(function (PartnerPayout $payout) use (&$count) {
+                $compensation = $payout->payable?->maintenancePlan?->faithstack_compensation;
+
+                if ($compensation === null) {
+                    return;
+                }
+
+                $payout->update(['faithstack_amount' => $compensation]);
+                $count++;
+            });
+
+        if ($count === 0) {
+            return back()->with('error', 'Nothing to recalculate — set a payout amount on a Care Plan first.');
+        }
 
         return back()->with('status', "Recalculated FaithStack amount for {$count} ".($count === 1 ? 'row' : 'rows').'.');
     }
