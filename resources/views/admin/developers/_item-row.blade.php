@@ -1,7 +1,10 @@
 {{--
-    $item: formatted work-order array (title, type, client_name, developer_status, link, url, updated_at)
+    $item: formatted work-order array (title, type, client_name, developer_status, link, url, updated_at, assign_url)
     $statusColors: developer_status => Tailwind classes map
     $completed (optional bool): true when rendered from the History panel — shows the completion date
+    $developers / $assignedDeveloperId (optional): when given, super admins get a
+    reassign/unassign dropdown on active (non-completed) items — everyone else
+    still just sees the read-only status badge.
 --}}
 <div class="flex items-center justify-between gap-3 px-1 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
     <div class="min-w-0">
@@ -19,7 +22,28 @@
             </a>
         @endif
     </div>
-    <a href="{{ $item['url'] }}" class="shrink-0 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $statusColors[$item['developer_status']] ?? 'bg-gray-100 text-gray-500' }}">
-        {{ \App\Models\Upload::DEVELOPER_STATUSES[$item['developer_status']] ?? 'Not Started' }}
-    </a>
+
+    @if (empty($completed) && isset($developers) && auth()->user()->isSuperAdmin())
+        <div class="shrink-0 w-40 flex flex-col items-end gap-1.5">
+            <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $statusColors[$item['developer_status']] ?? 'bg-gray-100 text-gray-500' }}">
+                {{ \App\Models\Upload::DEVELOPER_STATUSES[$item['developer_status']] ?? 'Not Started' }}
+            </span>
+            <form method="POST" action="{{ $item['assign_url'] }}" class="assign-developer-form w-full">
+                @csrf
+                @method('PATCH')
+                @include('admin._dropdown', [
+                    'name' => 'assigned_developer_id',
+                    'domId' => 'reassign-'.$item['kind'].'-'.$item['id'],
+                    'options' => $developers->map(fn ($d) => ['value' => $d->id, 'label' => $d->name])->all(),
+                    'selected' => $assignedDeveloperId,
+                    'placeholder' => 'Unassign',
+                    'autoSubmit' => true,
+                ])
+            </form>
+        </div>
+    @else
+        <a href="{{ $item['url'] }}" class="shrink-0 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $statusColors[$item['developer_status']] ?? 'bg-gray-100 text-gray-500' }}">
+            {{ \App\Models\Upload::DEVELOPER_STATUSES[$item['developer_status']] ?? 'Not Started' }}
+        </a>
+    @endif
 </div>

@@ -129,12 +129,20 @@ class UploadApprovalController extends Controller
         return back()->with('status', 'Dev instructions saved.');
     }
 
-    /** Assign or unassign the developer responsible for this Work Order. */
+    /**
+     * Assign or unassign the developer responsible for this Work Order.
+     * Reassigning/unassigning one that already has a developer is
+     * super-admin-only — regular admins can still make the initial
+     * assignment from the Unassigned pool (that's not gated here since the
+     * dropdown for it is a separate view that doesn't check isSuperAdmin()).
+     */
     public function assignDeveloper(Request $request, Upload $upload)
     {
         $validated = $request->validate([
             'assigned_developer_id' => ['nullable', 'exists:users,id'],
         ]);
+
+        abort_unless($upload->assigned_developer_id === null || $request->user()->isSuperAdmin(), 403);
 
         $upload->update($validated);
 

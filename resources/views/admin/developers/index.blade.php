@@ -92,7 +92,7 @@
                         @else
                             <div class="divide-y divide-gray-100 dark:divide-gray-700 max-h-56 overflow-y-auto pr-1">
                                 @foreach ($row['activeItems'] as $item)
-                                    @include('admin.developers._item-row', ['item' => $item, 'statusColors' => $statusColors])
+                                    @include('admin.developers._item-row', ['item' => $item, 'statusColors' => $statusColors, 'developers' => $developers, 'assignedDeveloperId' => $row['developer']->id])
                                 @endforeach
                             </div>
                         @endif

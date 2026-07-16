@@ -70,12 +70,18 @@ class ProjectRequestController extends Controller
         return back()->with('status', 'Project request updated.');
     }
 
-    /** Assign or unassign the developer responsible for this Work Order — mirrors Upload::assignDeveloper(). */
+    /**
+     * Assign or unassign the developer responsible for this Work Order —
+     * mirrors Upload::assignDeveloper(), including the same super-admin-only
+     * restriction on reassigning/unassigning an already-assigned one.
+     */
     public function assignDeveloper(Request $request, ProjectRequest $projectRequest)
     {
         $validated = $request->validate([
             'assigned_developer_id' => ['nullable', 'exists:users,id'],
         ]);
+
+        abort_unless($projectRequest->assigned_developer_id === null || $request->user()->isSuperAdmin(), 403);
 
         $projectRequest->update($validated);
 
