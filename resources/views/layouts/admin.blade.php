@@ -64,7 +64,7 @@
 
             <p class="px-6 pt-4 pb-2 text-xs font-bold uppercase tracking-widest text-gold shrink-0 border-b border-white/10">{{ auth()->user()->name }} Portal</p>
 
-            <nav class="flex-1 overflow-y-auto gold-scrollbar py-5 px-3 space-y-0.5">
+            <nav id="admin-sidebar-nav" class="flex-1 overflow-y-auto gold-scrollbar py-5 px-3 space-y-0.5">
                 @if (auth()->user()->canAccessAdminPage('dashboard'))
                     <a href="{{ route('admin.dashboard') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.dashboard') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
@@ -411,6 +411,23 @@
 
         toggle?.addEventListener('click', openSidebar);
         overlay?.addEventListener('click', closeSidebar);
+
+        // Sidebar scroll position — every nav link is a normal full-page
+        // reload (this admin area isn't an SPA), which otherwise snaps a
+        // scrolled sidebar back to the top on every click. Persisted per
+        // browser so navigating to something further down the list (e.g.
+        // "FAQ & Help Guide") doesn't force scrolling back down again after
+        // the page loads.
+        const sidebarNav = document.getElementById('admin-sidebar-nav');
+        if (sidebarNav) {
+            const savedScroll = parseInt(localStorage.getItem('admin-sidebar-scroll'), 10);
+            if (!isNaN(savedScroll)) {
+                sidebarNav.scrollTop = savedScroll;
+            }
+            sidebarNav.addEventListener('scroll', function () {
+                localStorage.setItem('admin-sidebar-scroll', sidebarNav.scrollTop);
+            });
+        }
 
         // Theme toggle
         const themeToggle = document.getElementById('theme-toggle');
