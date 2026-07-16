@@ -351,24 +351,40 @@
                     syncIcon();
                 });
 
-                // Hover tooltips — only meaningful while collapsed on desktop.
+                // Shared branded tooltip — one floating element reused by both
+                // the collapsed sidebar rail (labels shown to the right) and
+                // any header icon-only button carrying data-tooltip (shown
+                // below). Exposed on window so the header's own script,
+                // further down the page, can trigger it without redeclaring
+                // the element or its styling.
                 const tip = document.createElement('div');
                 tip.id = 'sidebar-tooltip';
                 document.body.appendChild(tip);
+
+                window.showAppTooltip = function (el, text, placement) {
+                    if (!text) return;
+                    tip.textContent = text;
+                    const rect = el.getBoundingClientRect();
+                    if (placement === 'bottom') {
+                        tip.style.top = (rect.bottom + 8) + 'px';
+                        tip.style.left = (rect.left + rect.width / 2) + 'px';
+                        tip.style.transform = 'translateX(-50%)';
+                    } else {
+                        tip.style.top = (rect.top + rect.height / 2) + 'px';
+                        tip.style.left = (rect.right + 12) + 'px';
+                        tip.style.transform = 'translateY(-50%)';
+                    }
+                    tip.classList.add('visible');
+                };
+                window.hideAppTooltip = function () { tip.classList.remove('visible'); };
 
                 document.querySelectorAll('#portal-sidebar nav a, #portal-sidebar .sidebar-signout').forEach(function (el) {
                     el.addEventListener('mouseenter', function () {
                         if (!document.body.classList.contains('sidebar-collapsed') || window.innerWidth < 768) return;
                         const label = (el.querySelector('span')?.textContent || el.textContent || '').trim();
-                        if (!label) return;
-                        tip.textContent = label;
-                        const rect = el.getBoundingClientRect();
-                        tip.style.top = (rect.top + rect.height / 2) + 'px';
-                        tip.style.left = (rect.right + 12) + 'px';
-                        tip.style.transform = 'translateY(-50%)';
-                        tip.classList.add('visible');
+                        window.showAppTooltip(el, label, 'right');
                     });
-                    el.addEventListener('mouseleave', function () { tip.classList.remove('visible'); });
+                    el.addEventListener('mouseleave', function () { window.hideAppTooltip(); });
                 });
 
                 // The sidebar resets to the top on every full page reload — bring
@@ -465,7 +481,13 @@
                      grouping at all. --}}
                 <div class="hidden sm:block w-px h-6 bg-gray-200 dark:bg-gray-700 shrink-0"></div>
 
-                <a href="{{ route('portal.faq') }}" title="Help &amp; Support" aria-label="Help &amp; Support"
+                {{-- data-tooltip (not title) on these four — a shared JS-driven
+                     tooltip below replaces the browser's native title tooltip
+                     (slow to appear, inconsistently styled per OS) with the
+                     same branded look already used for the collapsed sidebar
+                     rail's icon labels. aria-label carries the accessible
+                     name either way. --}}
+                <a href="{{ route('portal.faq') }}" data-tooltip="Help &amp; Support" aria-label="Help &amp; Support"
                    class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -477,7 +499,7 @@
                      external-link icon below matches what it actually does
                      (same icon already used for "Open" links elsewhere, e.g.
                      the admin project page's Preview URL). --}}
-                <a href="https://visionbridgesolutions.com" target="_blank" rel="noopener noreferrer" title="Visit VisionBridgeSolutions.com (opens in a new tab)" aria-label="Visit VisionBridgeSolutions.com (opens in a new tab)"
+                <a href="https://visionbridgesolutions.com" target="_blank" rel="noopener noreferrer" data-tooltip="Visit VisionBridgeSolutions.com (opens in a new tab)" aria-label="Visit VisionBridgeSolutions.com (opens in a new tab)"
                    class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
@@ -485,7 +507,7 @@
                 </a>
 
                 <div class="relative">
-                    <button id="notification-bell-toggle" type="button" title="Notifications" data-tour="notification-bell"
+                    <button id="notification-bell-toggle" type="button" data-tooltip="Notifications" aria-label="Notifications" aria-haspopup="true" aria-expanded="false" data-tour="notification-bell"
                             class="relative w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
@@ -536,12 +558,12 @@
                     </div>
                 </div>
 
-                <button id="theme-toggle" type="button" title="Toggle dark mode"
+                <button id="theme-toggle" type="button" data-tooltip="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false"
                         class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                    <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg id="theme-icon-light" class="w-5 h-5 hidden transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
-                    <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg id="theme-icon-dark" class="w-5 h-5 hidden transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                     </svg>
                 </button>
@@ -640,12 +662,14 @@
             const isDark = document.documentElement.classList.contains('dark');
             iconLight.classList.toggle('hidden', !isDark);
             iconDark.classList.toggle('hidden', isDark);
+            themeToggle?.setAttribute('aria-pressed', isDark ? 'true' : 'false');
         }
         syncThemeIcon();
 
         themeToggle?.addEventListener('click', function () {
             const isDark = document.documentElement.classList.toggle('dark');
             syncThemeIcon();
+            window.hideAppTooltip?.();
 
             fetch('{{ route('theme.update') }}', {
                 method: 'PATCH',
@@ -656,6 +680,17 @@
                 },
                 body: JSON.stringify({ theme: isDark ? 'dark' : 'light' }),
             });
+        });
+
+        // Header icon tooltips — same shared tooltip the collapsed sidebar
+        // rail uses (see window.showAppTooltip in the sidebar's script),
+        // just anchored below instead of to the right.
+        document.querySelectorAll('[data-tooltip]').forEach(function (el) {
+            el.addEventListener('mouseenter', function () {
+                window.showAppTooltip?.(el, el.dataset.tooltip, 'bottom');
+            });
+            el.addEventListener('mouseleave', function () { window.hideAppTooltip?.(); });
+            el.addEventListener('click', function () { window.hideAppTooltip?.(); });
         });
 
         // Notification bell — opening the dropdown now immediately marks
@@ -702,6 +737,10 @@
             e.stopPropagation();
             const opening = bellDropdown.classList.contains('hidden');
             bellDropdown.classList.toggle('hidden');
+            bellToggle.setAttribute('aria-expanded', opening ? 'true' : 'false');
+            bellToggle.classList.toggle('bg-gray-100', opening);
+            bellToggle.classList.toggle('dark:bg-gray-700', opening);
+            window.hideAppTooltip?.();
             if (opening) markAllNotificationsRead();
         });
 
@@ -730,6 +769,8 @@
         document.addEventListener('click', function (e) {
             if (bellDropdown && !bellDropdown.classList.contains('hidden') && !bellDropdown.contains(e.target) && e.target !== bellToggle) {
                 bellDropdown.classList.add('hidden');
+                bellToggle?.setAttribute('aria-expanded', 'false');
+                bellToggle?.classList.remove('bg-gray-100', 'dark:bg-gray-700');
             }
         });
 
