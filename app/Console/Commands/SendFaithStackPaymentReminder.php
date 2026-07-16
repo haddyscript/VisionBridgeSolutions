@@ -34,12 +34,20 @@ class SendFaithStackPaymentReminder extends Command
 
         $daysUntilDue = today()->diffInDays($dueDate);
 
+        $this->line("Due day is set to {$dueDay}. Next due date: {$dueDate->format('M j, Y')} ({$daysUntilDue} day(s) from today).");
+
         if (! in_array($daysUntilDue, [5, 0], true)) {
+            $this->line('Not 5 days out or on the due date — skipping reminder for today.');
+
             return self::SUCCESS;
         }
 
+        $this->line("On schedule to remind today ({$daysUntilDue} day(s) until due) — checking ready-to-send payouts...");
+
         $readyPayouts = PartnerPayout::where('status', 'ready')->get();
         $amountDue = (int) $readyPayouts->sum('faithstack_amount');
+
+        $this->line("Found {$readyPayouts->count()} ready payout(s) totaling $".number_format($amountDue / 100, 2).'.');
 
         if ($amountDue <= 0) {
             $this->info('Nothing ready to send FaithStack yet — skipping reminder.');
@@ -51,6 +59,8 @@ class SendFaithStackPaymentReminder extends Command
             'trim',
             explode(',', AppSetting::get('faithstack_reminder_email', 'johnnydavis45@yahoo.com,hadrianevarula@gmail.com'))
         ));
+
+        $this->line('Sending reminder to: '.implode(', ', $emails).'...');
 
         Mail::to($emails)->send(new FaithStackPaymentReminderMail(
             dueDate: $dueDate,

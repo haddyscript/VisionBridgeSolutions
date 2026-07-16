@@ -16,20 +16,35 @@ class SuspendOverdueProjects extends Command
 
     public function handle(): int
     {
-        $subscriptions = Subscription::with('project.user')
+        $this->line('Checking past_due subscriptions with a past_due_at timestamp...');
+
+        $candidates = Subscription::with('project.user')
             ->where('status', 'past_due')
             ->whereNotNull('past_due_at')
-            ->get()
-            ->filter(fn (Subscription $subscription) => $subscription->isPastDueBeyondGrace());
+            ->get();
+
+        $this->line("Found {$candidates->count()} past_due subscription(s) to check.");
+
+        $subscriptions = $candidates->filter(fn (Subscription $subscription) => $subscription->isPastDueBeyondGrace());
+
+        $this->line("{$subscriptions->count()} of those are beyond the ".Subscription::GRACE_PERIOD_DAYS."-day grace period.");
 
         $suspended = 0;
 
         foreach ($subscriptions as $subscription) {
             $project = $subscription->project;
 
-            if (! $project || $project->isSuspended()) {
+            if (! $project) {
+                $this->warn("Subscription #{$subscription->id} -> no associated project found, skipping.");
                 continue;
             }
+
+            if ($project->isSuspended()) {
+                $this->line("Project \"{$project->name}\" -> already suspended, skipping.");
+                continue;
+            }
+
+            $this->line("Project \"{$project->name}\" ({$project->user->name}) -> suspending for non-payment (past due since {$subscription->past_due_at->format('M j, Y')}).");
 
             $project->update(['suspended_at' => now()]);
 

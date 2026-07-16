@@ -25,27 +25,35 @@ class CancelDuplicateCarePlanSubscriptions extends Command
 
     public function handle(): int
     {
-        $canceled = 0;
+        $this->line('Checking for orphaned pending Care Plan subscriptions (no stripe_subscription_id)...');
 
-        Subscription::where('status', 'pending')
+        $pendingSubscriptions = Subscription::where('status', 'pending')
             ->whereNotNull('maintenance_plan_id')
             ->whereNull('stripe_subscription_id')
-            ->get()
-            ->each(function (Subscription $pending) use (&$canceled) {
-                $hasActiveSibling = Subscription::where('project_id', $pending->project_id)
-                    ->where('id', '!=', $pending->id)
-                    ->where('status', 'active')
-                    ->exists();
+            ->get();
 
-                if (! $hasActiveSibling) {
-                    return;
-                }
+        $this->line("Found {$pendingSubscriptions->count()} pending Care Plan subscription(s) with no Stripe ID to check.");
 
-                $pending->update(['status' => 'canceled', 'canceled_at' => now()]);
-                $canceled++;
+        $canceled = 0;
 
-                $this->info("Canceled duplicate pending subscription {$pending->id} on project {$pending->project_id}.");
-            });
+        $pendingSubscriptions->each(function (Subscription $pending) use (&$canceled) {
+            $this->line("Subscription #{$pending->id} on project #{$pending->project_id} -> checking for an active sibling...");
+
+            $hasActiveSibling = Subscription::where('project_id', $pending->project_id)
+                ->where('id', '!=', $pending->id)
+                ->where('status', 'active')
+                ->exists();
+
+            if (! $hasActiveSibling) {
+                $this->line("Subscription #{$pending->id} -> no active sibling found, leaving as-is.");
+                return;
+            }
+
+            $pending->update(['status' => 'canceled', 'canceled_at' => now()]);
+            $canceled++;
+
+            $this->info("Canceled duplicate pending subscription {$pending->id} on project {$pending->project_id}.");
+        });
 
         $this->info("Canceled {$canceled} orphaned duplicate subscription(s) total.");
 

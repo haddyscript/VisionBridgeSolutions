@@ -14,12 +14,17 @@ class VerifyPartnerPayouts extends Command
     public function handle(): int
     {
         $cutoff = now()->subDays(PartnerPayout::VERIFICATION_DAYS);
+        $this->line("Checking for pending payouts created on or before {$cutoff->format('M j, Y g:ia')}...");
 
         $payouts = PartnerPayout::where('status', 'pending')
             ->where('created_at', '<=', $cutoff)
             ->get();
 
+        $this->line("Found {$payouts->count()} pending payout(s) past their verification window.");
+
         foreach ($payouts as $payout) {
+            $this->line("Payout #{$payout->id} (created {$payout->created_at->format('M j, Y')}) -> marking ready to send.");
+
             $payout->update([
                 'status' => 'ready',
                 'ready_at' => now(),

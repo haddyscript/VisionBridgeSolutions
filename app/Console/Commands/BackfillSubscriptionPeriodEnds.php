@@ -29,15 +29,21 @@ class BackfillSubscriptionPeriodEnds extends Command
     {
         Stripe::setApiKey(config('services.stripe.secret'));
 
+        $this->line('Checking active subscriptions with a Stripe subscription ID but no current_period_end...');
+
         $subscriptions = Subscription::where('status', 'active')
             ->whereNotNull('stripe_subscription_id')
             ->whereNull('current_period_end')
             ->get();
 
+        $this->line("Found {$subscriptions->count()} subscription(s) missing current_period_end.");
+
         $fixed = 0;
         $failed = 0;
 
         foreach ($subscriptions as $subscription) {
+            $this->line("Subscription #{$subscription->id} (Stripe: {$subscription->stripe_subscription_id}) -> fetching from Stripe...");
+
             try {
                 $stripeSubscription = \Stripe\Subscription::retrieve($subscription->stripe_subscription_id);
 
@@ -50,8 +56,11 @@ class BackfillSubscriptionPeriodEnds extends Command
                 }
 
                 $subscription->update(['current_period_end' => Carbon::createFromTimestamp($periodEnd)]);
+                $this->info("Subscription #{$subscription->id} -> backfilled current_period_end to ".Carbon::createFromTimestamp($periodEnd)->format('M j, Y').'.');
                 $fixed++;
             } catch (ApiErrorException $e) {
+                $this->warn("Subscription #{$subscription->id} -> failed to reach Stripe: {$e->getMessage()}");
+
                 Log::warning('Could not backfill current_period_end.', [
                     'subscription_id' => $subscription->id,
                     'error' => $e->getMessage(),
