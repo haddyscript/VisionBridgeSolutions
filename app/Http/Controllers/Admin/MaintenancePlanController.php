@@ -50,6 +50,7 @@ class MaintenancePlanController extends Controller
             'description' => ['nullable', 'string', 'max:255'],
             'price' => ['nullable', 'numeric', 'min:0'],
             'stripe_price_id' => ['nullable', 'string', 'max:255'],
+            'faithstack_compensation' => ['nullable', 'numeric', 'min:0'],
             'badge' => ['nullable', 'string', 'max:255'],
             'icon' => ['nullable', 'string', 'max:255'],
             'response_time' => ['nullable', 'string', 'max:255'],
@@ -62,6 +63,10 @@ class MaintenancePlanController extends Controller
 
         $validated['price'] = $validated['price'] !== null && $validated['price'] !== ''
             ? (int) round($validated['price'] * 100)
+            : null;
+
+        $validated['faithstack_compensation'] = $validated['faithstack_compensation'] !== null && $validated['faithstack_compensation'] !== ''
+            ? (int) round($validated['faithstack_compensation'] * 100)
             : null;
 
         $validated['stripe_price_id'] = $validated['stripe_price_id'] !== '' ? $validated['stripe_price_id'] : null;

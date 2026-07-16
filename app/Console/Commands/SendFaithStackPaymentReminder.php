@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Mail\FaithStackPaymentReminderMail;
 use App\Models\AppSetting;
 use App\Models\PartnerPayout;
+use App\Models\Payment;
 use App\Models\Subscription;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
@@ -59,6 +60,15 @@ class SendFaithStackPaymentReminder extends Command
             return self::SUCCESS;
         }
 
+        // Recurring Care Plan cycles never use the global rate% — their amount is
+        // always set directly from the plan's fixed FaithStack Compensation at
+        // creation time (see StripeWebhookController::handleInvoicePaymentSucceeded).
+        // The rate% only ever applies to one-time project payments, so the email
+        // needs to describe these two buckets separately rather than assuming
+        // one formula covers the whole ready total.
+        $recurringPayoutCount = $readyPayouts->where('payable_type', Subscription::class)->count();
+        $oneTimePayoutCount = $readyPayouts->where('payable_type', Payment::class)->count();
+
         $emails = array_filter(array_map(
             'trim',
             explode(',', AppSetting::get('faithstack_reminder_email', 'johnnydavis45@yahoo.com,hadrianevarula@gmail.com'))
@@ -70,7 +80,8 @@ class SendFaithStackPaymentReminder extends Command
             dueDate: $dueDate,
             amountDue: $amountDue,
             activeSubscriptionCount: Subscription::where('status', 'active')->count(),
-            readyPayoutCount: $readyPayouts->count(),
+            recurringPayoutCount: $recurringPayoutCount,
+            oneTimePayoutCount: $oneTimePayoutCount,
             rate: (float) AppSetting::get('faithstack_percentage', 0),
             daysUntilDue: $daysUntilDue,
         ));

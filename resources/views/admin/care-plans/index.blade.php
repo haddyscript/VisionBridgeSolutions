@@ -59,6 +59,12 @@
                                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
                         </div>
                         <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">FaithStack Compensation / cycle (USD, blank = enter manually per payout)</label>
+                            <input type="number" name="faithstack_compensation" step="0.01" min="0" value="{{ $plan->faithstack_compensation !== null ? $plan->faithstack_compensation / 100 : '' }}"
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Auto-fills the FaithStack Owed amount on every recurring payout for this plan going forward — no manual entry needed each cycle.</p>
+                        </div>
+                        <div class="sm:col-span-2">
                             <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Stripe Price ID (from your Stripe product's Pricing section, starts with "price_")</label>
                             <input type="text" name="stripe_price_id" value="{{ $plan->stripe_price_id }}" placeholder="price_..."
                                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
@@ -158,6 +164,12 @@
                     <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Badge</label>
                     <input type="text" name="badge" placeholder="e.g. Most Popular"
                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">FaithStack Compensation / cycle (USD, blank = enter manually per payout)</label>
+                    <input type="number" name="faithstack_compensation" step="0.01" min="0" placeholder="20.00"
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Auto-fills the FaithStack Owed amount on every recurring payout for this plan going forward — no manual entry needed each cycle.</p>
                 </div>
                 <div class="sm:col-span-2">
                     <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Stripe Price ID (from your Stripe product's Pricing section, starts with "price_")</label>

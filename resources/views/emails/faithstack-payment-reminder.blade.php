@@ -39,10 +39,12 @@
                             </p>
                             <p style="font-size:15px; line-height:1.7; color:#4b5563; margin:0 0 22px;">
                                 <strong>How this was calculated:</strong>
-                                @if ($rate > 0)
-                                    {{ $rate }}% of {{ $readyPayoutCount }} client payment(s) that have finished their 7-day verification window and are ready to send.
+                                @if ($recurringPayoutCount > 0 && $oneTimePayoutCount > 0)
+                                    {{ $recurringPayoutCount }} recurring Care Plan cycle{{ $recurringPayoutCount === 1 ? '' : 's' }} at each plan's fixed FaithStack Compensation amount, plus {{ $oneTimePayoutCount }} one-time project payment{{ $oneTimePayoutCount === 1 ? '' : 's' }}{{ $rate > 0 ? " calculated at {$rate}%" : ' (amount entered manually)' }} — all past their 7-day verification window and ready to send.
+                                @elseif ($recurringPayoutCount > 0)
+                                    {{ $recurringPayoutCount }} recurring Care Plan cycle{{ $recurringPayoutCount === 1 ? '' : 's' }}, each at that plan's fixed FaithStack Compensation amount — past the 7-day verification window and ready to send.
                                 @else
-                                    Total of {{ $readyPayoutCount }} client payment(s) that have finished their 7-day verification window and are ready to send. No FaithStack rate is currently set, so these amounts were entered manually per payout.
+                                    {{ $oneTimePayoutCount }} one-time project payment{{ $oneTimePayoutCount === 1 ? '' : 's' }}{{ $rate > 0 ? " calculated at {$rate}%" : ' (amount entered manually per payout)' }} — past the 7-day verification window and ready to send.
                                 @endif
                             </p>
                             <a href="{{ route('admin.partner-payouts.index') }}"

@@ -15,7 +15,8 @@ class FaithStackPaymentReminderMail extends Mailable
         public Carbon $dueDate,
         public int $amountDue,
         public int $activeSubscriptionCount,
-        public int $readyPayoutCount,
+        public int $recurringPayoutCount,
+        public int $oneTimePayoutCount,
         public float $rate,
         public int $daysUntilDue,
     ) {
