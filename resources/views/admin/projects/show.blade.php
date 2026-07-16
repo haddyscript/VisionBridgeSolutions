@@ -344,6 +344,32 @@
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
     <h3 class="font-semibold text-navy dark:text-white mb-4">Milestones</h3>
 
+    {{-- Distinct "create" zone — dashed border sets it apart from the solid,
+         state-tinted cards below so it never reads as just another row.
+         Shown first so adding a milestone doesn't require scrolling past
+         every existing one first. --}}
+    <div class="rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50/60 dark:bg-gray-900/20 p-4 mb-6">
+        <p class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+            Add a New Milestone
+        </p>
+        <form method="POST" action="{{ route('admin.milestones.store', $project) }}" class="space-y-2.5" data-ajax-target="header-card panel-overview">
+            @csrf
+            <div class="flex flex-wrap items-center gap-2.5">
+                <input type="text" name="title" placeholder="Milestone title..." required
+                       class="flex-1 min-w-[14rem] rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                <input type="date" name="due_date"
+                       class="w-44 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                <button type="submit" class="shrink-0 inline-flex items-center gap-1.5 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    Add
+                </button>
+            </div>
+            <textarea name="description" rows="2" placeholder="Add details for this milestone (optional)..."
+                      class="w-full min-h-[4rem] resize-y rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
+        </form>
+    </div>
+
     <div class="space-y-3 mb-6">
         @foreach ($project->milestones as $milestone)
             @php $state = $milestoneStateStyles[$milestone->status] ?? $milestoneStateStyles['pending']; @endphp
@@ -415,30 +441,6 @@
         @if ($project->milestones->isEmpty())
             <p class="text-sm text-gray-400 dark:text-gray-500">No milestones yet.</p>
         @endif
-    </div>
-
-    {{-- Distinct "create" zone — dashed border sets it apart from the solid,
-         state-tinted cards above so it never reads as just another row. --}}
-    <div class="rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50/60 dark:bg-gray-900/20 p-4">
-        <p class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-            Add a New Milestone
-        </p>
-        <form method="POST" action="{{ route('admin.milestones.store', $project) }}" class="space-y-2.5" data-ajax-target="header-card panel-overview">
-            @csrf
-            <div class="flex flex-wrap items-center gap-2.5">
-                <input type="text" name="title" placeholder="Milestone title..." required
-                       class="flex-1 min-w-[14rem] rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                <input type="date" name="due_date"
-                       class="w-44 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
-                <button type="submit" class="shrink-0 inline-flex items-center gap-1.5 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                    Add
-                </button>
-            </div>
-            <textarea name="description" rows="2" placeholder="Add details for this milestone (optional)..."
-                      class="w-full min-h-[4rem] resize-y rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
-        </form>
     </div>
 </div>
 
