@@ -27,22 +27,26 @@ class SendFaithStackPaymentReminder extends Command
 
         // Due day is restricted to 1-28 in the settings form so this never
         // overflows into the wrong month regardless of how short a month is.
+        // Deliberately NOT rolled forward to next month once it's passed — an
+        // unpaid ready balance should keep nagging daily until it's cleared,
+        // not go quiet for weeks just because the calendar date slipped by.
+        // (It does still go quiet once the *next* month's due date arrives —
+        // see the class docblock... i.e. no carry-over past a full cycle.)
+        $today = today();
         $dueDate = today()->day($dueDay);
-        if ($dueDate->lt(today())) {
-            $dueDate = $dueDate->addMonthNoOverflow();
-        }
+        $daysUntilDue = (int) round(($dueDate->timestamp - $today->timestamp) / 86400);
 
-        $daysUntilDue = today()->diffInDays($dueDate);
+        $this->line("Due day is set to {$dueDay}. This cycle's due date: {$dueDate->format('M j, Y')} ({$daysUntilDue} day(s) from today).");
 
-        $this->line("Due day is set to {$dueDay}. Next due date: {$dueDate->format('M j, Y')} ({$daysUntilDue} day(s) from today).");
-
-        if (! in_array($daysUntilDue, [5, 0], true)) {
-            $this->line('Not 5 days out or on the due date — skipping reminder for today.');
+        if ($daysUntilDue > 0 && $daysUntilDue !== 5) {
+            $this->line('Not 5 days out yet, and not on/past the due date — skipping reminder for today.');
 
             return self::SUCCESS;
         }
 
-        $this->line("On schedule to remind today ({$daysUntilDue} day(s) until due) — checking ready-to-send payouts...");
+        $this->line($daysUntilDue < 0
+            ? 'Overdue by '.abs($daysUntilDue)." day(s) — checking ready-to-send payouts..."
+            : 'On schedule to remind today — checking ready-to-send payouts...');
 
         $readyPayouts = PartnerPayout::where('status', 'ready')->get();
         $amountDue = (int) $readyPayouts->sum('faithstack_amount');
@@ -71,7 +75,9 @@ class SendFaithStackPaymentReminder extends Command
             daysUntilDue: $daysUntilDue,
         ));
 
-        $this->info("Sent FaithStack payment reminder ({$daysUntilDue} day(s) until due).");
+        $this->info($daysUntilDue < 0
+            ? 'Sent FaithStack payment reminder (overdue by '.abs($daysUntilDue).' day(s)).'
+            : "Sent FaithStack payment reminder ({$daysUntilDue} day(s) until due).");
 
         return self::SUCCESS;
     }

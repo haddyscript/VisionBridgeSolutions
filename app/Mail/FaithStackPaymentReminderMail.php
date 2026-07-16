@@ -23,9 +23,11 @@ class FaithStackPaymentReminderMail extends Mailable
 
     public function build()
     {
-        $subject = $this->daysUntilDue === 0
-            ? 'FaithStack Payment Due Today'
-            : "FaithStack Payment Due in {$this->daysUntilDue} Days";
+        $subject = match (true) {
+            $this->daysUntilDue > 0 => "FaithStack Payment Due in {$this->daysUntilDue} Days",
+            $this->daysUntilDue === 0 => 'FaithStack Payment Due Today',
+            default => 'FaithStack Payment Overdue — '.abs($this->daysUntilDue).' Day(s) Past Due',
+        };
 
         return $this->subject($subject)
             ->view('emails.faithstack-payment-reminder');

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>FaithStack Payment {{ $daysUntilDue === 0 ? 'Due Today' : 'Reminder' }}</title>
+    <title>FaithStack Payment {{ $daysUntilDue < 0 ? 'Overdue' : ($daysUntilDue === 0 ? 'Due Today' : 'Reminder') }}</title>
 </head>
 <body style="margin:0; padding:0; background-color:#f3f4f6; font-family:Helvetica, Arial, sans-serif;">
 
@@ -19,11 +19,13 @@
 
                     <tr>
                         <td style="padding:40px;">
-                            <p style="font-size:13px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#C9A84C; margin:0 0 12px;">
-                                {{ $daysUntilDue === 0 ? 'Due Today' : 'Upcoming Payment' }}
+                            <p style="font-size:13px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:{{ $daysUntilDue < 0 ? '#DC2626' : '#C9A84C' }}; margin:0 0 12px;">
+                                {{ $daysUntilDue < 0 ? 'Overdue' : ($daysUntilDue === 0 ? 'Due Today' : 'Upcoming Payment') }}
                             </p>
                             <h1 style="font-size:22px; font-weight:800; color:#111D33; margin:0 0 18px; line-height:1.3;">
-                                @if ($daysUntilDue === 0)
+                                @if ($daysUntilDue < 0)
+                                    FaithStack's payment is {{ abs($daysUntilDue) }} day{{ abs($daysUntilDue) === 1 ? '' : 's' }} overdue — was due {{ $dueDate->format('F j, Y') }}
+                                @elseif ($daysUntilDue === 0)
                                     FaithStack's payment is due today, {{ $dueDate->format('F j, Y') }}
                                 @else
                                     FaithStack's payment is due in {{ $daysUntilDue }} days — {{ $dueDate->format('F j, Y') }}

@@ -76,7 +76,7 @@
             <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">Payment Reminders</p>
             @if ($faithstackDueDay)
                 <p class="font-display text-2xl font-bold text-navy dark:text-white">Day {{ $faithstackDueDay }} of each month</p>
-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Emails {{ str_replace(',', ', ', $faithstackReminderEmail) }} 5 days before and again on the due date, whenever there's a ready-to-send balance.</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Emails {{ str_replace(',', ', ', $faithstackReminderEmail) }} 5 days before, on the due date, and then every day it stays unpaid — whenever there's a ready-to-send balance.</p>
             @else
                 <p class="text-sm text-gold-dark font-medium">No due day set — automatic reminders are off.</p>
             @endif
