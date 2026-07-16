@@ -451,11 +451,19 @@
 {{-- Payments --}}
 @php
     $paymentStatusColors = [
-        'pending' => 'bg-gold/15 text-gold-dark',
-        'paid' => 'bg-teal/15 text-teal-dark',
-        'failed' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
-        'canceled' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400',
+        'pending' => 'bg-gold/15 text-gold-dark border-gold/30',
+        'paid' => 'bg-teal/15 text-teal-dark border-teal/30',
+        'failed' => 'bg-red-50 dark:bg-red-500/10 text-red-500 border-red-200 dark:border-red-500/30',
+        'refunded' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600',
+        'canceled' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600',
     ];
+    // "Invoiced"/"Paid"/"Balance Due" only count payments that actually
+    // happened or are still owed — a canceled request was rescinded before
+    // billing, so it shouldn't inflate the ledger totals.
+    $billablePayments = $project->payments->where('status', '!=', 'canceled');
+    $invoicedTotal = $billablePayments->sum('amount');
+    $paidTotal = $billablePayments->where('status', 'paid')->sum('amount');
+    $balanceDue = $invoicedTotal - $paidTotal;
 @endphp
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
     <div class="flex items-center justify-between gap-3 mb-4">
@@ -475,103 +483,151 @@
         @endif
     </div>
 
-    <div class="space-y-2 mb-5 pb-5 border-b border-gray-100 dark:border-gray-700">
-        @foreach ($project->payments as $payment)
-            <div class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2.5">
-                <div>
-                    @if ($payment->categoryLabel())
-                        <span class="inline-block text-[0.65rem] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-navy/5 dark:bg-white/10 text-navy dark:text-white mr-2 align-middle">{{ $payment->categoryLabel() }}</span>
-                    @endif
-                    <span class="text-sm text-navy dark:text-white">{{ $payment->description }}</span>
-                    <span class="text-sm text-gray-400 dark:text-gray-500 ml-2">{{ $payment->formattedAmount() }}</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $paymentStatusColors[$payment->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
-                        {{ ucfirst($payment->status) }}
-                    </span>
-                    @if ($payment->isPending() && $payment->stripe_checkout_session_id)
-                        <span class="text-xs text-gray-400 dark:text-gray-500" title="A Stripe checkout session is in progress for this payment — sync or wait before removing.">Checkout in progress</span>
-                    @elseif ($payment->isPending())
-                        <form method="POST" action="{{ route('admin.payments.send-email', $payment) }}" data-confirm="Email this ${{ number_format($payment->amount / 100, 2) }} invoice to {{ $project->user->name }} now?" data-ajax-target="panel-billing tabbtn-billing">
-                            @csrf
-                            <button type="submit" title="Send invoice email" class="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-full text-xs font-semibold text-gold-dark border border-gold/40 hover:bg-gold/10 transition-colors">
-                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                                Send Email
-                            </button>
-                        </form>
-                        <form method="POST" action="{{ route('admin.payments.destroy', $payment) }}" data-confirm="Remove this payment request?" data-ajax-target="panel-billing tabbtn-billing">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" title="Remove this payment request" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 flex items-center justify-center transition-colors">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                            </button>
-                        </form>
-                    @endif
-                </div>
-            </div>
-        @endforeach
-        @if ($project->payments->isEmpty())
-            <p class="text-sm text-gray-400 dark:text-gray-500">No payment requests yet.</p>
-        @endif
+    {{-- Line-item ledger table --}}
+    <div class="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden mb-4">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                    <tr>
+                        <th class="px-4 py-3">Line Item</th>
+                        <th class="px-4 py-3">Category</th>
+                        <th class="px-4 py-3 text-right">Amount</th>
+                        <th class="px-4 py-3">Status</th>
+                        <th class="px-4 py-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    @forelse ($project->payments as $payment)
+                        <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-900/30 transition-colors">
+                            <td class="px-4 py-3.5 align-top max-w-sm">
+                                <p class="text-sm text-navy dark:text-white">{{ $payment->description }}</p>
+                            </td>
+                            <td class="px-4 py-3.5 align-top whitespace-nowrap">
+                                @if ($payment->categoryLabel())
+                                    <span class="inline-block text-[0.65rem] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-navy/5 dark:bg-white/10 text-navy dark:text-white">{{ $payment->categoryLabel() }}</span>
+                                @else
+                                    <span class="text-xs text-gray-300 dark:text-gray-600">—</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3.5 align-top text-right font-semibold text-navy dark:text-white whitespace-nowrap">{{ $payment->formattedAmount() }}</td>
+                            <td class="px-4 py-3.5 align-top whitespace-nowrap">
+                                <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full border {{ $paymentStatusColors[$payment->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600' }}">
+                                    {{ ucfirst($payment->status) }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3.5 align-top text-right">
+                                <div class="flex items-center justify-end gap-1">
+                                    @if ($payment->isPending() && $payment->stripe_checkout_session_id)
+                                        <span class="text-xs text-gray-400 dark:text-gray-500" title="A Stripe checkout session is in progress for this payment — sync or wait before removing.">Checkout in progress</span>
+                                    @elseif ($payment->isPending())
+                                        <form method="POST" action="{{ route('admin.payments.send-email', $payment) }}" data-confirm="Email this ${{ number_format($payment->amount / 100, 2) }} invoice to {{ $project->user->name }} now?" data-ajax-target="panel-billing tabbtn-billing">
+                                            @csrf
+                                            <button type="submit" title="Send invoice email" class="w-8 h-8 rounded-full text-gold-dark hover:bg-gold/10 flex items-center justify-center transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ route('admin.payments.destroy', $payment) }}" data-confirm="Remove this payment request?" data-ajax-target="panel-billing tabbtn-billing">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" title="Remove this payment request" class="w-8 h-8 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 flex items-center justify-center transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="text-xs text-gray-300 dark:text-gray-600">—</span>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-400 dark:text-gray-500">No payment requests yet.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <form method="POST" action="{{ route('admin.payments.store', $project) }}" class="space-y-3 max-w-lg" data-ajax-target="panel-billing tabbtn-billing">
-        @csrf
-        <div>
-            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Description</label>
-            <input type="text" name="description" placeholder="What's this payment for..." required
-                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-        </div>
-        <div class="w-56">
-            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Category</label>
-            <input type="hidden" name="category" id="payment-category-input" value="">
-
-            <div class="relative" data-payment-category-dropdown>
-                <button type="button" data-payment-category-toggle aria-haspopup="listbox" aria-expanded="false"
-                        class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
-                    <span data-payment-category-label class="text-gray-400 dark:text-gray-500">No category</span>
-                    <svg data-payment-category-chevron class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </button>
-
-                <div data-payment-category-menu class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
-                    @foreach (['' => 'No category', 'phase' => 'Phase', 'one_time' => 'One-Time Payment', 'deposit' => 'Deposit', 'final' => 'Final Payment', 'other' => 'Other'] as $value => $label)
-                        <button type="button" data-payment-category-option="{{ $value }}" role="option" aria-selected="{{ $value === '' ? 'true' : 'false' }}"
-                                class="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $value === '' ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
-                            {{ $label }}
-                            <svg class="w-4 h-4 text-gold-dark shrink-0 {{ $value === '' ? '' : 'invisible' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        </button>
-                    @endforeach
+    {{-- Financial summary --}}
+    @if ($project->payments->isNotEmpty())
+        <div class="flex justify-end mb-6">
+            <div class="w-full sm:w-72 space-y-1.5">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">Subtotal (Invoiced)</span>
+                    <span class="text-navy dark:text-white font-medium">${{ number_format($invoicedTotal / 100, 2) }}</span>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">Paid to Date</span>
+                    <span class="text-teal-dark font-medium">${{ number_format($paidTotal / 100, 2) }}</span>
+                </div>
+                <div class="flex items-center justify-between pt-2 mt-1 border-t border-gray-200 dark:border-gray-700">
+                    <span class="text-sm font-semibold text-navy dark:text-white">Balance Due</span>
+                    <span class="text-xl font-bold {{ $balanceDue > 0 ? 'text-gold-dark' : 'text-teal-dark' }}">${{ number_format($balanceDue / 100, 2) }}</span>
                 </div>
             </div>
         </div>
-        <div class="flex items-end gap-3">
-            <div class="w-44">
+    @endif
+
+    {{-- Compact "Add Line Item" row --}}
+    <div class="pt-5 border-t border-gray-100 dark:border-gray-700">
+        <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Add New Line Item</p>
+        <form method="POST" action="{{ route('admin.payments.store', $project) }}" class="flex flex-wrap items-end gap-3" data-ajax-target="panel-billing tabbtn-billing">
+            @csrf
+            <div class="flex-1 min-w-[14rem]">
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Description</label>
+                <input type="text" name="description" placeholder="What's this payment for..." required
+                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+            </div>
+            <div class="w-44 shrink-0">
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Category</label>
+                <input type="hidden" name="category" id="payment-category-input" value="">
+
+                <div class="relative" data-payment-category-dropdown>
+                    <button type="button" data-payment-category-toggle aria-haspopup="listbox" aria-expanded="false"
+                            class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+                        <span data-payment-category-label class="text-gray-400 dark:text-gray-500 truncate">No category</span>
+                        <svg data-payment-category-chevron class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    <div data-payment-category-menu class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                        @foreach (['' => 'No category', 'phase' => 'Phase', 'one_time' => 'One-Time Payment', 'deposit' => 'Deposit', 'final' => 'Final Payment', 'other' => 'Other'] as $value => $label)
+                            <button type="button" data-payment-category-option="{{ $value }}" role="option" aria-selected="{{ $value === '' ? 'true' : 'false' }}"
+                                    class="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $value === '' ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
+                                {{ $label }}
+                                <svg class="w-4 h-4 text-gold-dark shrink-0 {{ $value === '' ? '' : 'invisible' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            <div class="w-36 shrink-0">
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Amount</label>
                 <div class="relative">
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 dark:text-gray-500 pointer-events-none">$</span>
                     <input type="number" name="amount" step="0.01" min="1" placeholder="0.00" required
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-6 pr-12 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 dark:text-gray-500 pointer-events-none">USD</span>
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-6 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
                 </div>
             </div>
-            <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors">
-                Request
+            <button type="submit" class="shrink-0 inline-flex items-center gap-1.5 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                Add Item
             </button>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
 {{-- Maintenance Plan --}}
 @php
     $subscriptionStatusColors = [
-        'pending' => 'bg-gold/15 text-gold-dark',
-        'active' => 'bg-teal/15 text-teal-dark',
-        'past_due' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
-        'canceled' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400',
+        'pending' => 'bg-gold/15 text-gold-dark border-gold/30',
+        'active' => 'bg-teal/15 text-teal-dark border-teal/30',
+        'past_due' => 'bg-red-50 dark:bg-red-500/10 text-red-500 border-red-200 dark:border-red-500/30',
+        'canceled' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600',
     ];
     $subscriptionStatusLabels = [
         'pending' => 'Pending',
@@ -585,40 +641,44 @@
     <h3 class="font-semibold text-navy dark:text-white mb-4">Care Plan</h3>
 
     @if ($currentSubscription && ! $currentSubscription->isCanceled())
-        <div class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2.5">
-            <div>
-                <span class="text-sm text-navy dark:text-white">{{ $currentSubscription->description }}</span>
-                <span class="text-sm text-gray-400 dark:text-gray-500 ml-2">{{ $currentSubscription->formattedAmount() }}</span>
-                @if ($currentSubscription->cancel_at_period_end && $currentSubscription->current_period_end)
-                    <span class="text-xs text-red-500 ml-2">cancels {{ $currentSubscription->current_period_end->format('M j, Y') }}</span>
-                @elseif ($currentSubscription->current_period_end)
-                    <span class="text-xs text-gray-400 dark:text-gray-500 ml-2">renews {{ $currentSubscription->current_period_end->format('M j, Y') }}</span>
-                @endif
+        <div class="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50/60 dark:bg-gray-900/20 px-5 py-4">
+            <div class="flex flex-wrap items-center gap-4">
+                <div>
+                    <p class="text-sm font-semibold text-navy dark:text-white">{{ $currentSubscription->description }}</p>
+                    @if ($currentSubscription->cancel_at_period_end && $currentSubscription->current_period_end)
+                        <p class="text-xs text-red-500 mt-0.5">Cancels {{ $currentSubscription->current_period_end->format('M j, Y') }}</p>
+                    @elseif ($currentSubscription->current_period_end)
+                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Renews {{ $currentSubscription->current_period_end->format('M j, Y') }}</p>
+                    @endif
+                </div>
+                <div class="pl-4 border-l border-gray-200 dark:border-gray-700">
+                    <span class="font-display text-xl font-bold text-navy dark:text-white">${{ number_format($currentSubscription->amount / 100, 2) }}</span>
+                    <span class="text-xs text-gray-400 dark:text-gray-500">/{{ $currentSubscription->interval }}</span>
+                </div>
             </div>
             <div class="flex items-center gap-2">
-                <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $subscriptionStatusColors[$currentSubscription->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
+                <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full border {{ $subscriptionStatusColors[$currentSubscription->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600' }}">
                     {{ $subscriptionStatusLabels[$currentSubscription->status] ?? $currentSubscription->status }}
                 </span>
                 @if ($currentSubscription->isPending())
                     <form method="POST" action="{{ route('admin.subscriptions.send-reminder', $currentSubscription) }}" data-confirm="Send a payment reminder email to {{ $project->user->name }}?" data-ajax-target="panel-billing">
                         @csrf
-                        <button type="submit" title="Send payment reminder email" class="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-full text-xs font-semibold text-gold-dark border border-gold/40 hover:bg-gold/10 transition-colors">
-                            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                            Send Email Reminder
+                        <button type="submit" title="Send email reminder" class="w-8 h-8 rounded-full text-gold-dark hover:bg-gold/10 flex items-center justify-center transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         </button>
                     </form>
                 @endif
                 <form method="POST" action="{{ route('admin.subscriptions.sync', $currentSubscription) }}" data-ajax-target="panel-billing">
                     @csrf
-                    <button type="submit" title="Refresh status from Stripe" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-navy dark:hover:text-white flex items-center justify-center transition-colors">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    <button type="submit" title="Refresh status from Stripe" class="w-8 h-8 rounded-full text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-navy dark:hover:text-white flex items-center justify-center transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                     </button>
                 </form>
                 <form method="POST" action="{{ route('admin.subscriptions.destroy', $currentSubscription) }}" data-confirm="Cancel this care plan?" data-ajax-target="panel-billing">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" title="Cancel this care plan" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 flex items-center justify-center transition-colors">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <button type="submit" title="Cancel this care plan" class="w-8 h-8 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 flex items-center justify-center transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </form>
             </div>
