@@ -90,6 +90,11 @@ class AuthenticatedSessionController extends Controller
             'logged_in_at' => now(),
         ]);
 
+        // Genuine login only — impersonation goes through Auth::login()
+        // directly in Admin\ClientController::impersonate() and never calls
+        // finishLogin(), so it never touches this column.
+        $user->update(['last_login_at' => now()]);
+
         if ($unrecognizedLogin) {
             ClientNotification::send(
                 $user,

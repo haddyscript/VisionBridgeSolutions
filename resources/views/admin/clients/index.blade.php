@@ -193,6 +193,10 @@
                                                     {{ $client->last_seen_at ? $client->last_seen_at->diffForHumans() : 'Never' }}
                                                 </p>
                                                 <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                    <span class="font-medium text-navy dark:text-white">Last login:</span>
+                                                    {{ $client->last_login_at ? $client->last_login_at->diffForHumans() : 'Never' }}
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">
                                                     <span class="font-medium text-navy dark:text-white">Phone:</span>
                                                     {{ $client->phone ?: 'Not provided' }}
                                                 </p>
