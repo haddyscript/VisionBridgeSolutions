@@ -157,7 +157,7 @@
                                 View File
                             </a>
                         @endif
-                        <form method="POST" action="{{ $item['assign_url'] }}" class="mt-1.5">
+                        <form method="POST" action="{{ $item['assign_url'] }}" class="mt-1.5 assign-developer-form">
                             @csrf
                             @method('PATCH')
                             @include('admin._dropdown', [
@@ -176,7 +176,26 @@
     </div>
 </div>
 
+{{-- Full-page reload still happens on assign (see the form below) — this
+     overlay just covers the wait with a spinner instead of the dropdown
+     appearing to do nothing until the new page arrives. --}}
+<div id="assign-loading-overlay" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
+    <div class="bg-white dark:bg-gray-800 rounded-xl px-6 py-5 flex items-center gap-3 shadow-lg">
+        <svg class="w-5 h-5 animate-spin text-gold" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+        <span class="text-sm font-semibold text-navy dark:text-white">Assigning developer…</span>
+    </div>
+</div>
+
 <script>
+    document.querySelectorAll('.assign-developer-form').forEach((form) => {
+        form.addEventListener('submit', () => {
+            document.getElementById('assign-loading-overlay')?.classList.remove('hidden');
+        });
+    });
+
     document.querySelectorAll('.developer-history-toggle').forEach((btn) => {
         btn.addEventListener('click', () => {
             const panel = document.getElementById(btn.dataset.target);
