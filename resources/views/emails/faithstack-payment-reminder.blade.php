@@ -38,7 +38,12 @@
                                 <strong>Active Website Care Plan subscriptions:</strong> {{ $activeSubscriptionCount }}
                             </p>
                             <p style="font-size:15px; line-height:1.7; color:#4b5563; margin:0 0 22px;">
-                                <strong>How this was calculated:</strong> {{ $rate }}% of {{ $readyPayoutCount }} client payment(s) that have finished their 7-day verification window and are ready to send.
+                                <strong>How this was calculated:</strong>
+                                @if ($rate > 0)
+                                    {{ $rate }}% of {{ $readyPayoutCount }} client payment(s) that have finished their 7-day verification window and are ready to send.
+                                @else
+                                    Total of {{ $readyPayoutCount }} client payment(s) that have finished their 7-day verification window and are ready to send. No FaithStack rate is currently set, so these amounts were entered manually per payout.
+                                @endif
                             </p>
                             <a href="{{ route('admin.partner-payouts.index') }}"
                                style="display:inline-block; background-color:#C9A84C; color:#111D33; font-weight:700; font-size:14px; padding:12px 22px; border-radius:8px; text-decoration:none;">
