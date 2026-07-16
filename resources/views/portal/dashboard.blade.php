@@ -13,9 +13,37 @@
     ])
 @endif
 
+@php
+    // The Care Plan counts as a third "pending" item alongside one-time
+    // payments (matches the admin Billing tab's pending count) — surfaced in
+    // the banner and Progress Tracker ring below, but kept out of the dollar
+    // total, since a not-yet-started subscription has no fixed amount due
+    // the way an invoiced one-time payment does. Only counts once the
+    // project has actually launched, though — before that, Start Plan is
+    // disabled (Portal\SubscriptionController::checkout()'s launch gate), so
+    // reminding the client about it here would be a dead end.
+    //
+    // Computed here (ahead of the status banner below) so that banner can
+    // check it: an admin-authored status_message is very often exactly
+    // "waiting on payment," which used to stack a teal, checkmark-styled
+    // banner (reads as "done") directly above the amber "you still owe us"
+    // reminder — same open item, twice, with a misleadingly positive icon on
+    // the first one. A pending payment already gets its own clear, correctly
+    // colored, actionable banner below, so the generic status message steps
+    // aside whenever one exists instead of competing with it.
+    $pendingCarePlan = $project?->subscription
+        && $project->subscription->status === 'pending'
+        && in_array($project->status, ['launched', 'maintenance'], true)
+        ? $project->subscription
+        : null;
+    $pendingItemsCount = $pendingPayments->count() + ($pendingCarePlan ? 1 : 0);
+@endphp
+
 {{-- Admin-set status banner — free text, manually controlled from the
-     project's admin page rather than triggered by any automatic event. --}}
-@if ($project->status_message)
+     project's admin page rather than triggered by any automatic event.
+     Suppressed while a payment is actually due — see $pendingItemsCount
+     above for why. --}}
+@if ($project->status_message && $pendingItemsCount === 0)
     <div class="flex items-center gap-3 rounded-xl border border-teal/30 bg-teal/10 px-4 py-4 sm:px-5 mb-6 sm:mb-8">
         <span class="w-9 h-9 rounded-full bg-teal/20 text-teal-dark flex items-center justify-center shrink-0">
             <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
@@ -26,23 +54,6 @@
 
 {{-- The launch feedback card is rendered side-by-side with "What's Next" below
      (inside the project section) — see the two-column grid there. --}}
-
-@php
-    // The Care Plan counts as a third "pending" item alongside one-time
-    // payments (matches the admin Billing tab's pending count) — surfaced in
-    // the banner and Progress Tracker ring below, but kept out of the dollar
-    // total, since a not-yet-started subscription has no fixed amount due
-    // the way an invoiced one-time payment does. Only counts once the
-    // project has actually launched, though — before that, Start Plan is
-    // disabled (Portal\SubscriptionController::checkout()'s launch gate), so
-    // reminding the client about it here would be a dead end.
-    $pendingCarePlan = $project?->subscription
-        && $project->subscription->status === 'pending'
-        && in_array($project->status, ['launched', 'maintenance'], true)
-        ? $project->subscription
-        : null;
-    $pendingItemsCount = $pendingPayments->count() + ($pendingCarePlan ? 1 : 0);
-@endphp
 
 @if ($showPaymentReminder)
     <div id="payment-reminder-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 opacity-0 transition-opacity duration-200">
@@ -331,53 +342,9 @@
         ];
     @endphp
 
-    @if ($project->status === 'onboarding' && $project->total_price === null)
-        <div class="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 border border-gold/20 dark:border-gold/10" style="background:linear-gradient(135deg,rgba(201,168,76,0.10),rgba(42,157,143,0.08));">
-            <p class="text-xs font-semibold uppercase tracking-widest text-gold-dark mb-2">Hey {{ explode(' ', auth()->user()->name)[0] }} 👋</p>
-            <h2 class="font-display text-xl font-bold text-navy dark:text-white mb-2">We're preparing your project quote</h2>
-            <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 max-w-2xl">
-                Thanks for completing your agreement and questionnaire — our team is now putting together your
-                custom project quote. You'll get an email the moment it's ready, and can pay your initial 50%
-                deposit here to kick off development. In the meantime, feel free to start uploading your logo,
-                photos, and content below — no need to wait.
-            </p>
-            <a href="{{ route('portal.faq') }}#file-formats" class="inline-flex items-center gap-1.5 text-sm text-gold-dark hover:underline">
-                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                What file formats should I upload?
-            </a>
-        </div>
-    @elseif ($project->status === 'onboarding')
-        <img src="{{ asset('image/lets-get-started.png') }}" alt="Get Started" class="h-40 w-auto -mb-16">
-        <div class="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 border border-gold/20 dark:border-gold/10" style="background:linear-gradient(135deg,rgba(201,168,76,0.10),rgba(42,157,143,0.08));">
-            <p class="text-xs font-semibold uppercase tracking-widest text-gold-dark mb-2">Hey {{ explode(' ', auth()->user()->name)[0] }} 👋</p>
-            <h2 class="font-display text-xl font-bold text-navy dark:text-white mb-2">Glad to have you here — let's get started</h2>
-            <p class="text-sm text-gray-600 dark:text-gray-300 mb-5 max-w-2xl">
-                Drop your logo, photos, and any content you'd like on the site below, and we'll take it from there.
-                You can check back here anytime to see how things are coming along.
-            </p>
-            <div class="flex flex-col sm:flex-row sm:items-start gap-3">
-                @php $steps = [
-                    'Add your logo, photos, and docs',
-                    'Tell us what you want the site to say',
-                    'Watch the progress bar move as we build',
-                ]; @endphp
-                @foreach ($steps as $i => $step)
-                    <div class="flex items-start gap-2.5 flex-1">
-                        <span class="w-5 h-5 rounded-full bg-gold/20 text-gold-dark text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{{ $i + 1 }}</span>
-                        <span class="text-sm text-navy/70 dark:text-white/80">{{ $step }}</span>
-                    </div>
-                    @if (! $loop->last)
-                        <svg class="hidden sm:block w-4 h-4 text-navy/20 dark:text-white/25 shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    @endif
-                @endforeach
-            </div>
-            <a href="{{ route('portal.faq') }}#file-formats" class="inline-flex items-center gap-1.5 text-sm text-gold-dark hover:underline mt-4">
-                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                What file formats should I upload?
-            </a>
-        </div>
-    @endif
-
+    {{-- Rendered ahead of the onboarding cards below — an actual amount owed
+         is the most actionable thing on this page and shouldn't be buried
+         under a "let's get started" card first. --}}
     @if ($pendingItemsCount > 0)
         @php
             // A single, unambiguous pending one-time payment gets a direct
@@ -456,6 +423,53 @@
                 .payment-due-pulse-ring { animation: none; }
             }
         </style>
+    @endif
+
+    @if ($project->status === 'onboarding' && $project->total_price === null)
+        <div class="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 border border-gold/20 dark:border-gold/10" style="background:linear-gradient(135deg,rgba(201,168,76,0.10),rgba(42,157,143,0.08));">
+            <p class="text-xs font-semibold uppercase tracking-widest text-gold-dark mb-2">Hey {{ explode(' ', auth()->user()->name)[0] }} 👋</p>
+            <h2 class="font-display text-xl font-bold text-navy dark:text-white mb-2">We're preparing your project quote</h2>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 max-w-2xl">
+                Thanks for completing your agreement and questionnaire — our team is now putting together your
+                custom project quote. You'll get an email the moment it's ready, and can pay your initial 50%
+                deposit here to kick off development. In the meantime, feel free to start uploading your logo,
+                photos, and content below — no need to wait.
+            </p>
+            <a href="{{ route('portal.faq') }}#file-formats" class="inline-flex items-center gap-1.5 text-sm text-gold-dark hover:underline">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                What file formats should I upload?
+            </a>
+        </div>
+    @elseif ($project->status === 'onboarding')
+        <img src="{{ asset('image/lets-get-started.png') }}" alt="Get Started" class="h-40 w-auto -mb-16">
+        <div class="rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 border border-gold/20 dark:border-gold/10" style="background:linear-gradient(135deg,rgba(201,168,76,0.10),rgba(42,157,143,0.08));">
+            <p class="text-xs font-semibold uppercase tracking-widest text-gold-dark mb-2">Hey {{ explode(' ', auth()->user()->name)[0] }} 👋</p>
+            <h2 class="font-display text-xl font-bold text-navy dark:text-white mb-2">Glad to have you here — let's get started</h2>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-5 max-w-2xl">
+                Drop your logo, photos, and any content you'd like on the site below, and we'll take it from there.
+                You can check back here anytime to see how things are coming along.
+            </p>
+            <div class="flex flex-col sm:flex-row sm:items-start gap-3">
+                @php $steps = [
+                    'Add your logo, photos, and docs',
+                    'Tell us what you want the site to say',
+                    'Watch the progress bar move as we build',
+                ]; @endphp
+                @foreach ($steps as $i => $step)
+                    <div class="flex items-start gap-2.5 flex-1">
+                        <span class="w-5 h-5 rounded-full bg-gold/20 text-gold-dark text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{{ $i + 1 }}</span>
+                        <span class="text-sm text-navy/70 dark:text-white/80">{{ $step }}</span>
+                    </div>
+                    @if (! $loop->last)
+                        <svg class="hidden sm:block w-4 h-4 text-navy/20 dark:text-white/25 shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    @endif
+                @endforeach
+            </div>
+            <a href="{{ route('portal.faq') }}#file-formats" class="inline-flex items-center gap-1.5 text-sm text-gold-dark hover:underline mt-4">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                What file formats should I upload?
+            </a>
+        </div>
     @endif
 
     @if ($project->status === 'review')
