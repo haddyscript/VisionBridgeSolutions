@@ -528,13 +528,50 @@
             </header>
 
             @if (session('impersonator_id'))
-                <div class="sticky top-16 z-20 bg-gold text-navy-dark text-sm font-semibold px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-3">
-                    <span>👁️ Viewing as {{ auth()->user()->name }} — any changes you make here are real.</span>
-                    <form method="POST" action="{{ route('impersonate.stop') }}">
-                        @csrf
-                        <button type="submit" class="underline hover:no-underline shrink-0">Return to Admin</button>
-                    </form>
+                {{-- Collapsed to a floating indicator by default — the old
+                     full-width sticky banner ate vertical space and made it
+                     hard to actually judge what the page looks like to the
+                     client. Click the eye to expand details / return to
+                     admin; bottom-left avoids the assistant chat bubble that
+                     already lives bottom-right. --}}
+                <div id="impersonation-indicator" class="fixed bottom-5 left-5 z-40">
+                    <div id="impersonation-popover" class="hidden absolute bottom-full left-0 mb-2 w-72 bg-white dark:bg-gray-800 border border-gold/40 rounded-xl shadow-xl p-4">
+                        <p class="text-sm font-semibold text-navy dark:text-white mb-1">👁️ Viewing as {{ auth()->user()->name }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Any changes you make here are real.</p>
+                        <form method="POST" action="{{ route('impersonate.stop') }}">
+                            @csrf
+                            <button type="submit" class="w-full bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                                Return to Admin
+                            </button>
+                        </form>
+                    </div>
+                    <button type="button" id="impersonation-toggle" title="Viewing as {{ auth()->user()->name }} — click for details"
+                            class="w-11 h-11 rounded-full bg-gold hover:bg-gold-dark text-navy-dark shadow-lg flex items-center justify-center transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                    </button>
                 </div>
+
+                <script>
+                    (function () {
+                        const toggle = document.getElementById('impersonation-toggle');
+                        const popover = document.getElementById('impersonation-popover');
+                        if (!toggle || !popover) return;
+
+                        toggle.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            popover.classList.toggle('hidden');
+                        });
+
+                        document.addEventListener('click', function (e) {
+                            if (!popover.classList.contains('hidden') && !popover.contains(e.target) && e.target !== toggle) {
+                                popover.classList.add('hidden');
+                            }
+                        });
+                    })();
+                </script>
             @endif
 
             <main class="px-4 sm:px-6 lg:px-8 py-8">
