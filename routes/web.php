@@ -349,6 +349,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::get('/partner-payouts', [AdminPartnerPayoutController::class, 'index'])->name('partner-payouts.index');
     Route::post('/partner-payouts/rate', [AdminPartnerPayoutController::class, 'setRate'])->name('partner-payouts.set-rate');
     Route::post('/partner-payouts/recalculate', [AdminPartnerPayoutController::class, 'recalculateAll'])->name('partner-payouts.recalculate');
+    Route::post('/partner-payouts/reminder-settings', [AdminPartnerPayoutController::class, 'setReminderSettings'])->name('partner-payouts.set-reminder-settings');
     Route::patch('/partner-payouts/{partnerPayout}', [AdminPartnerPayoutController::class, 'update'])->name('partner-payouts.update');
 
     // ─── Settings ────────────────────────────────────────────────────────────

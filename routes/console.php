@@ -9,6 +9,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('payouts:verify')->daily();
+Schedule::command('payouts:send-faithstack-reminder')->daily();
 Schedule::command('projects:suspend-overdue')->hourly();
 Schedule::command('subscriptions:send-renewal-reminders')->daily();
 // Manual run over SSH (also fires automatically twice a day via this

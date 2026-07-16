@@ -32,7 +32,35 @@ class PartnerPayoutController extends Controller
             'totalReady'         => $payouts->where('status', 'ready')->sum('faithstack_amount'),
             'totalUndecided'     => $payouts->whereNull('faithstack_amount')->count(),
             'faithstackRate'     => (float) AppSetting::get('faithstack_percentage', 0),
+            'faithstackDueDay'      => AppSetting::get('faithstack_payment_due_day'),
+            'faithstackReminderEmail' => AppSetting::get('faithstack_reminder_email', 'johnnydavis45@yahoo.com,hadrianevarula@gmail.com'),
         ]);
+    }
+
+    /**
+     * Configures the monthly FaithStack payment reminder — SendFaithStackPaymentReminder
+     * emails every address here (comma-separated) 5 days before and again on
+     * the due day, whenever there's a ready-to-send balance.
+     */
+    public function setReminderSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'faithstack_payment_due_day' => ['required', 'integer', 'min:1', 'max:28'],
+            'faithstack_reminder_email' => ['required', 'string', 'max:500'],
+        ]);
+
+        $emails = array_filter(array_map('trim', explode(',', $validated['faithstack_reminder_email'])));
+
+        foreach ($emails as $email) {
+            if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return back()->withErrors(['faithstack_reminder_email' => "\"{$email}\" is not a valid email address."])->withInput();
+            }
+        }
+
+        AppSetting::set('faithstack_payment_due_day', $validated['faithstack_payment_due_day']);
+        AppSetting::set('faithstack_reminder_email', implode(',', $emails));
+
+        return back()->with('status', 'FaithStack payment reminder settings updated.');
     }
 
     public function setRate(Request $request)

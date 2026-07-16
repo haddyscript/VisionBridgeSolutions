@@ -69,6 +69,48 @@
     </div>
 </div>
 
+{{-- FaithStack Payment Reminders --}}
+<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">Payment Reminders</p>
+            @if ($faithstackDueDay)
+                <p class="font-display text-2xl font-bold text-navy dark:text-white">Day {{ $faithstackDueDay }} of each month</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Emails {{ str_replace(',', ', ', $faithstackReminderEmail) }} 5 days before and again on the due date, whenever there's a ready-to-send balance.</p>
+            @else
+                <p class="text-sm text-gold-dark font-medium">No due day set — automatic reminders are off.</p>
+            @endif
+        </div>
+        <form method="POST" action="{{ route('admin.partner-payouts.set-reminder-settings') }}" class="flex flex-wrap items-end gap-3">
+            @csrf
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Due Day of Month</label>
+                <input type="number" name="faithstack_payment_due_day" min="1" max="28"
+                    value="{{ old('faithstack_payment_due_day', $faithstackDueDay ?: '') }}"
+                    placeholder="e.g. 5"
+                    class="w-24 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Reminder Email(s)</label>
+                <input type="text" name="faithstack_reminder_email"
+                    value="{{ old('faithstack_reminder_email', $faithstackReminderEmail) }}"
+                    placeholder="you@example.com, other@example.com"
+                    class="w-72 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                @error('faithstack_reminder_email')
+                    <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+            <button type="submit"
+                class="inline-flex items-center gap-1.5 px-4 py-2 bg-navy hover:bg-navy-light text-white text-sm font-semibold rounded-lg transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Save
+            </button>
+        </form>
+    </div>
+</div>
+
 <div class="grid sm:grid-cols-3 gap-4 mb-6">
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
         <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Still Verifying</p>
