@@ -407,10 +407,11 @@
 
                 {{-- Quick Action --}}
                 <div class="relative hidden md:block" id="quick-action-wrap">
-                    <button type="button" id="quick-action-toggle"
-                            class="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-gold hover:bg-gold-dark text-navy text-sm font-semibold transition-colors">
+                    <button type="button" id="quick-action-toggle" aria-haspopup="true" aria-expanded="false"
+                            class="inline-flex items-center gap-1.5 h-9 pl-3 pr-2.5 rounded-lg bg-gold hover:bg-gold-dark text-navy text-sm font-semibold transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                         Quick Action
+                        <svg id="quick-action-chevron" class="w-3.5 h-3.5 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div id="quick-action-menu" class="hidden absolute left-0 mt-2 w-52 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-30 py-1">
                         <a href="{{ route('portal.category', 'image') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-navy dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
@@ -431,12 +432,20 @@
                     (function () {
                         const toggle = document.getElementById('quick-action-toggle');
                         const menu = document.getElementById('quick-action-menu');
+                        const chevron = document.getElementById('quick-action-chevron');
                         if (!toggle || !menu) return;
+
+                        function setOpen(open) {
+                            menu.classList.toggle('hidden', !open);
+                            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                            if (chevron) chevron.style.transform = open ? 'rotate(180deg)' : '';
+                        }
+
                         toggle.addEventListener('click', function (e) {
                             e.stopPropagation();
-                            menu.classList.toggle('hidden');
+                            setOpen(menu.classList.contains('hidden'));
                         });
-                        document.addEventListener('click', function () { menu.classList.add('hidden'); });
+                        document.addEventListener('click', function () { setOpen(false); });
                     })();
                 </script>
 
@@ -445,10 +454,16 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
                     </svg>
                     <input type="text" id="portal-search-input" placeholder="Search your files, payments..." autocomplete="off"
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 pl-9 pr-12 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                    <kbd id="portal-search-shortcut-hint" class="hidden lg:inline-flex absolute right-2.5 top-1/2 -translate-y-1/2 items-center px-1.5 py-0.5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-[0.65rem] font-semibold text-gray-400 dark:text-gray-500 pointer-events-none">⌘K</kbd>
 
                     <div id="portal-search-results" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-30 max-h-96 overflow-y-auto"></div>
                 </div>
+
+                {{-- Separates "search" from the utility icon cluster — the
+                     nav previously packed everything together with no
+                     grouping at all. --}}
+                <div class="hidden sm:block w-px h-6 bg-gray-200 dark:bg-gray-700 shrink-0"></div>
 
                 <a href="{{ route('portal.faq') }}" title="Help &amp; Support" aria-label="Help &amp; Support"
                    class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
@@ -457,10 +472,15 @@
                     </svg>
                 </a>
 
-                <a href="https://visionbridgesolutions.com" target="_blank" rel="noopener noreferrer" title="Visit VisionBridgeSolutions.com" aria-label="Visit VisionBridgeSolutions.com"
+                {{-- Was a house/home glyph — read as "go to my portal home" and
+                     instead took clients off the portal entirely. The
+                     external-link icon below matches what it actually does
+                     (same icon already used for "Open" links elsewhere, e.g.
+                     the admin project page's Preview URL). --}}
+                <a href="https://visionbridgesolutions.com" target="_blank" rel="noopener noreferrer" title="Visit VisionBridgeSolutions.com (opens in a new tab)" aria-label="Visit VisionBridgeSolutions.com (opens in a new tab)"
                    class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                     </svg>
                 </a>
 
@@ -716,8 +736,36 @@
         // Global search
         const searchInput = document.getElementById('portal-search-input');
         const searchResults = document.getElementById('portal-search-results');
+        const searchShortcutHint = document.getElementById('portal-search-shortcut-hint');
         let searchDebounce = null;
         let searchRequestId = 0;
+
+        // ⌘K (Mac) / Ctrl+K (everyone else) jumps straight to search, matching
+        // the shortcut convention clients likely already know from Linear,
+        // Notion, Stripe, etc. The hint badge shows whichever key applies.
+        if (searchShortcutHint && /Mac|iPod|iPhone|iPad/.test(navigator.platform)) {
+            searchShortcutHint.textContent = '⌘K';
+        } else if (searchShortcutHint) {
+            searchShortcutHint.textContent = 'Ctrl K';
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                searchInput?.focus();
+            }
+        });
+
+        // Inline style (not classList) — the hint's own "hidden lg:inline-flex"
+        // classes already control whether it shows at all per breakpoint;
+        // an inline display:none/'' toggles visibility on top of that without
+        // fighting the responsive class for cascade priority.
+        searchInput?.addEventListener('focus', function () {
+            if (searchShortcutHint) searchShortcutHint.style.display = 'none';
+        });
+        searchInput?.addEventListener('blur', function () {
+            if (searchShortcutHint && !searchInput.value) searchShortcutHint.style.display = '';
+        });
 
         const SEARCH_GROUPS = [
             { key: 'files', label: 'Project Files' },
