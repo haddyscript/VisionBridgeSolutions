@@ -137,6 +137,7 @@
                 <tr>
                     <th class="px-5 py-3">Client</th>
                     <th class="px-5 py-3">For</th>
+                    <th class="px-5 py-3">Date</th>
                     <th class="px-5 py-3">Client Paid</th>
                     <th class="px-5 py-3">FaithStack Owed</th>
                     <th class="px-5 py-3">Status</th>
@@ -152,6 +153,7 @@
                             <p class="text-xs text-gray-400 dark:text-gray-500">{{ $project?->name ?? '—' }}</p>
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $payout->sourceLabel() }}</td>
+                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $payout->created_at->format('M j, Y') }}</td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $payout->formattedClientAmount() }}</td>
                         <td class="px-5 py-3.5 font-semibold {{ $payout->hasFaithstackAmount() ? 'text-navy dark:text-white' : 'text-gold-dark' }}">
                             {{ $payout->formattedFaithstackAmount() }}
