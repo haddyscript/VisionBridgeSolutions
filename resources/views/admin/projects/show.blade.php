@@ -946,25 +946,6 @@ function closeAdminThread(cat) {
     if (list) list.classList.remove('hidden');
 }
 
-// Picking "Closed" reveals a required reason field instead of auto-submitting
-// immediately (every other status still submits right away on change) — see
-// the .closed-reason-wrap markup in _text-thread.blade.php.
-function handleRevisionStatusChange(select) {
-    const wrap = select.closest('form').querySelector('.closed-reason-wrap');
-    if (!wrap) {
-        select.form.requestSubmit();
-        return;
-    }
-
-    if (select.value === 'closed') {
-        wrap.classList.remove('hidden');
-        wrap.querySelector('input[name="closed_reason"]')?.focus();
-    } else {
-        wrap.classList.add('hidden');
-        select.form.requestSubmit();
-    }
-}
-
 function toggleAdminMessage(btn) {
     const el = btn.previousElementSibling;
     if (!el || !el.classList.contains('message-text')) return;
@@ -1263,6 +1244,108 @@ function submitAdminReply(form, event) {
         bind(document);
     })();
 
+    // Generic reusable pill dropdown — same toggle/menu/keyboard-close pattern
+    // as the Project Status dropdown above, parameterized by a data-attribute
+    // prefix and the hidden input's field name so one function drives every
+    // revision-thread dropdown (Status, Priority, Assigned Developer,
+    // Developer Status) instead of four near-identical copies.
+    function bindPillDropdown(root, prefix, fieldName, onSelect) {
+        root.querySelectorAll('[data-' + prefix + '-dropdown]').forEach((wrap) => {
+            if (wrap.dataset.bound) return;
+            wrap.dataset.bound = '1';
+
+            const toggle = wrap.querySelector('[data-' + prefix + '-toggle]');
+            const menu = wrap.querySelector('[data-' + prefix + '-menu]');
+            const chevron = wrap.querySelector('[data-' + prefix + '-toggle-chevron]');
+            const label = wrap.querySelector('[data-' + prefix + '-toggle-label]');
+            const hiddenInput = wrap.closest('form')?.querySelector('input[name="' + fieldName + '"]');
+            if (!toggle || !menu || !hiddenInput) return;
+
+            function closeMenu() {
+                menu.classList.add('hidden');
+                toggle.setAttribute('aria-expanded', 'false');
+                if (chevron) chevron.style.transform = '';
+            }
+
+            function openMenu() {
+                menu.classList.remove('hidden');
+                toggle.setAttribute('aria-expanded', 'true');
+                if (chevron) chevron.style.transform = 'rotate(180deg)';
+            }
+
+            toggle.addEventListener('click', function (e) {
+                e.stopPropagation();
+                menu.classList.contains('hidden') ? openMenu() : closeMenu();
+            });
+
+            menu.querySelectorAll('[data-' + prefix + '-option]').forEach(function (option) {
+                option.addEventListener('click', function () {
+                    const value = option.getAttribute('data-' + prefix + '-option');
+                    const changed = hiddenInput.value !== value;
+                    closeMenu();
+
+                    hiddenInput.value = value;
+                    if (label) {
+                        const inner = option.querySelector('[data-option-label]');
+                        label.innerHTML = inner ? inner.innerHTML : option.textContent.trim();
+                    }
+                    if (toggle.dataset.colorClass) toggle.classList.remove(...toggle.dataset.colorClass.split(' '));
+                    const newColorClass = option.dataset.colorClass;
+                    if (newColorClass) {
+                        toggle.classList.add(...newColorClass.split(' '));
+                        toggle.dataset.colorClass = newColorClass;
+                    }
+
+                    menu.querySelectorAll('[data-' + prefix + '-option]').forEach(function (opt) {
+                        const isSelected = opt === option;
+                        opt.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+                        opt.classList.toggle('text-gold-dark', isSelected);
+                        opt.classList.toggle('font-semibold', isSelected);
+                        opt.classList.toggle('text-gray-700', !isSelected);
+                        opt.classList.toggle('dark:text-gray-300', !isSelected);
+                        const check = opt.querySelector('[data-option-check]');
+                        if (check) check.classList.toggle('invisible', !isSelected);
+                    });
+
+                    if (!changed) return;
+                    if (typeof onSelect === 'function' && onSelect(value, wrap, hiddenInput) === false) return;
+                    hiddenInput.form.requestSubmit();
+                });
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!wrap.contains(e.target)) closeMenu();
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeMenu();
+            });
+        });
+    }
+
+    // Revision-thread dropdowns — picking "Closed" reveals a required reason
+    // field instead of auto-submitting (every other status/field still
+    // submits right away on change).
+    function bindRevisionDropdowns(root) {
+        bindPillDropdown(root, 'revision-status', 'status', function (value, wrap) {
+            const reasonWrap = wrap.closest('form')?.querySelector('.closed-reason-wrap');
+            if (!reasonWrap) return;
+
+            if (value === 'closed') {
+                reasonWrap.classList.remove('hidden');
+                reasonWrap.querySelector('input[name="closed_reason"]')?.focus();
+                return false;
+            }
+
+            reasonWrap.classList.add('hidden');
+        });
+        bindPillDropdown(root, 'priority', 'priority');
+        bindPillDropdown(root, 'assigned-developer', 'assigned_developer_id');
+        bindPillDropdown(root, 'developer-status', 'developer_status');
+    }
+
+    window.bindRevisionDropdowns = bindRevisionDropdowns;
+    bindRevisionDropdowns(document);
+
     // Live-recalculates the discounted total as either the price or discount
     // % field changes — purely a preview; the actual figure is computed
     // server-side (Project::discountedTotalPrice()) on save.
@@ -1459,6 +1542,7 @@ function submitAdminReply(form, event) {
                                     window.bindDiscountCalculator?.(freshEl);
                                     window.bindPaymentCategoryDropdown?.(freshEl);
                                     window.bindMilestoneToggles?.(freshEl);
+                                    window.bindRevisionDropdowns?.(freshEl);
                                 }
                             });
 

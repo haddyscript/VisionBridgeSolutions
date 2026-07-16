@@ -25,6 +25,33 @@
         'high' => 'bg-gold/15 text-gold-dark',
         'urgent' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
     ];
+    // Dot indicators shown next to each option in the dropdown menus below —
+    // same visual language as the Project Status dropdown at the top of the page.
+    $statusDots = [
+        'request_received' => 'bg-red-400',
+        'under_review' => 'bg-blue-400',
+        'in_progress' => 'bg-gold',
+        'waiting_on_client' => 'bg-purple-400',
+        'needs_approval' => 'bg-orange-400',
+        'completed' => 'bg-teal',
+        'closed' => 'bg-gray-400',
+    ];
+    $priorityDots = [
+        'low' => 'bg-gray-400',
+        'medium' => 'bg-blue-400',
+        'high' => 'bg-gold',
+        'urgent' => 'bg-red-400',
+    ];
+    $developerStatusColors = [
+        'in_progress' => 'bg-gold/15 text-gold-dark',
+        'waiting_on_visionbridge' => 'bg-orange-50 dark:bg-orange-500/10 text-orange-500',
+        'completed' => 'bg-teal/10 text-teal-dark',
+    ];
+    $developerStatusDots = [
+        'in_progress' => 'bg-gold',
+        'waiting_on_visionbridge' => 'bg-orange-400',
+        'completed' => 'bg-teal',
+    ];
 @endphp
 
 <div id="{{ $panelId }}-inner" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
@@ -101,14 +128,33 @@
                     <form method="POST" action="{{ route('admin.uploads.status', $item) }}" class="shrink-0" data-ajax-target="{{ $panelId ?? '' }} {{ $cat === 'revision' ? 'tabbtn-revision' : '' }}">
                         @csrf
                         @method('PATCH')
-                        <select name="status" onchange="handleRevisionStatusChange(this)"
-                                class="text-xs font-semibold rounded-full px-3 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-gold {{ $statusColors[$item->status] ?? 'bg-gray-100 text-gray-500' }}">
-                            @foreach (\App\Models\Upload::STATUSES as $value => $label)
-                                <option value="{{ $value }}" {{ $item->status === $value ? 'selected' : '' }}>{{ $label }}</option>
-                            @endforeach
-                        </select>
+                        <input type="hidden" name="status" value="{{ $item->status }}">
+                        <div class="relative" data-revision-status-dropdown>
+                            <button type="button" data-revision-status-toggle data-color-class="{{ $statusColors[$item->status] ?? 'bg-gray-100 text-gray-500' }}"
+                                    aria-haspopup="listbox" aria-expanded="false"
+                                    class="inline-flex items-center gap-1.5 text-xs font-semibold rounded-full pl-3 pr-2 py-1 focus:outline-none focus:ring-2 focus:ring-gold transition-colors {{ $statusColors[$item->status] ?? 'bg-gray-100 text-gray-500' }}">
+                                <span data-revision-status-toggle-label>{{ \App\Models\Upload::STATUSES[$item->status] ?? $item->status }}</span>
+                                <svg data-revision-status-toggle-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div data-revision-status-menu class="hidden absolute z-20 right-0 mt-1.5 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                                @foreach (\App\Models\Upload::STATUSES as $value => $label)
+                                    <button type="button" data-revision-status-option="{{ $value }}" data-color-class="{{ $statusColors[$value] ?? 'bg-gray-100 text-gray-500' }}" role="option" aria-selected="{{ $item->status === $value ? 'true' : 'false' }}"
+                                            class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $item->status === $value ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
+                                        <span class="flex items-center gap-2" data-option-label>
+                                            <span class="w-2 h-2 rounded-full shrink-0 {{ $statusDots[$value] ?? 'bg-gray-400' }}"></span>
+                                            {{ $label }}
+                                        </span>
+                                        <svg data-option-check class="w-4 h-4 text-gold-dark shrink-0 {{ $item->status === $value ? '' : 'invisible' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
                         {{-- Hidden until "Closed" is picked — a reason is required before that
-                             submit actually goes through (see handleRevisionStatusChange). --}}
+                             submit actually goes through (see bindRevisionDropdowns in show.blade.php). --}}
                         <div class="closed-reason-wrap hidden mt-2 flex items-center gap-1.5">
                             <input type="text" name="closed_reason" placeholder="Reason for closing (required)" required
                                    class="text-xs rounded-lg border border-gray-300 dark:border-gray-600 px-2 py-1 w-48 focus:outline-none focus:ring-2 focus:ring-gold dark:bg-gray-900 dark:text-white">
@@ -128,39 +174,102 @@
                     <form method="POST" action="{{ route('admin.uploads.assign-developer', $item) }}" data-ajax-target="{{ $panelId ?? '' }}">
                         @csrf
                         @method('PATCH')
-                        <select name="assigned_developer_id" onchange="this.form.requestSubmit()"
-                                class="text-xs font-medium rounded-lg px-3 py-1.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold">
-                            <option value="">Unassigned</option>
-                            @foreach ($developers ?? [] as $developer)
-                                <option value="{{ $developer->id }}" {{ $item->assigned_developer_id === $developer->id ? 'selected' : '' }}>{{ $developer->name }}</option>
-                            @endforeach
-                        </select>
+                        <input type="hidden" name="assigned_developer_id" value="{{ $item->assigned_developer_id }}">
+                        <div class="relative" data-assigned-developer-dropdown>
+                            <button type="button" data-assigned-developer-toggle aria-haspopup="listbox" aria-expanded="false"
+                                    class="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg pl-2.5 pr-2 py-1.5 border focus:outline-none focus:ring-2 focus:ring-gold hover:border-gray-400 dark:hover:border-gray-500 transition-colors {{ $item->assigned_developer_id ? 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-navy dark:text-white' : 'border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-500' }}">
+                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                <span data-assigned-developer-toggle-label>{{ $item->assignedDeveloper->name ?? 'Unassigned' }}</span>
+                                <svg data-assigned-developer-toggle-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div data-assigned-developer-menu class="hidden absolute z-20 left-0 mt-1.5 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                                <button type="button" data-assigned-developer-option="" role="option" aria-selected="{{ ! $item->assigned_developer_id ? 'true' : 'false' }}"
+                                        class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ ! $item->assigned_developer_id ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
+                                    <span data-option-label>Unassigned</span>
+                                    <svg data-option-check class="w-4 h-4 text-gold-dark shrink-0 {{ ! $item->assigned_developer_id ? '' : 'invisible' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </button>
+                                @foreach ($developers ?? [] as $developer)
+                                    <button type="button" data-assigned-developer-option="{{ $developer->id }}" role="option" aria-selected="{{ $item->assigned_developer_id === $developer->id ? 'true' : 'false' }}"
+                                            class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $item->assigned_developer_id === $developer->id ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
+                                        <span data-option-label>{{ $developer->name }}</span>
+                                        <svg data-option-check class="w-4 h-4 text-gold-dark shrink-0 {{ $item->assigned_developer_id === $developer->id ? '' : 'invisible' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
                     </form>
                     @if ($item->assigned_developer_id)
                         <form method="POST" action="{{ route('admin.uploads.developer-status', $item) }}" data-ajax-target="{{ $panelId ?? '' }}">
                             @csrf
                             @method('PATCH')
-                            <select name="developer_status" onchange="this.form.requestSubmit()"
-                                    class="text-xs font-medium rounded-lg px-3 py-1.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold">
-                                @foreach (\App\Models\Upload::DEVELOPER_STATUSES as $value => $label)
-                                    <option value="{{ $value }}" {{ $item->developer_status === $value ? 'selected' : '' }}>{{ $label }}</option>
-                                @endforeach
-                            </select>
+                            <input type="hidden" name="developer_status" value="{{ $item->developer_status }}">
+                            <div class="relative" data-developer-status-dropdown>
+                                <button type="button" data-developer-status-toggle data-color-class="{{ $developerStatusColors[$item->developer_status] ?? 'bg-gray-100 text-gray-500' }}"
+                                        aria-haspopup="listbox" aria-expanded="false"
+                                        class="inline-flex items-center gap-1.5 text-xs font-medium rounded-full pl-3 pr-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-gold transition-colors {{ $developerStatusColors[$item->developer_status] ?? 'bg-gray-100 text-gray-500' }}">
+                                    <span data-developer-status-toggle-label>{{ \App\Models\Upload::DEVELOPER_STATUSES[$item->developer_status] ?? $item->developer_status }}</span>
+                                    <svg data-developer-status-toggle-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                <div data-developer-status-menu class="hidden absolute z-20 left-0 mt-1.5 w-52 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                                    @foreach (\App\Models\Upload::DEVELOPER_STATUSES as $value => $label)
+                                        <button type="button" data-developer-status-option="{{ $value }}" data-color-class="{{ $developerStatusColors[$value] ?? 'bg-gray-100 text-gray-500' }}" role="option" aria-selected="{{ $item->developer_status === $value ? 'true' : 'false' }}"
+                                                class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $item->developer_status === $value ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
+                                            <span class="flex items-center gap-2" data-option-label>
+                                                <span class="w-2 h-2 rounded-full shrink-0 {{ $developerStatusDots[$value] ?? 'bg-gray-400' }}"></span>
+                                                {{ $label }}
+                                            </span>
+                                            <svg data-option-check class="w-4 h-4 text-gold-dark shrink-0 {{ $item->developer_status === $value ? '' : 'invisible' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
                         </form>
                     @endif
                     @if ($cat === 'revision')
                         <form method="POST" action="{{ route('admin.uploads.details', $item) }}" data-ajax-target="{{ $panelId ?? '' }}" class="flex items-center gap-2">
                             @csrf
                             @method('PATCH')
-                            <select name="priority" onchange="this.form.requestSubmit()" title="Priority (internal only)"
-                                    class="text-xs font-medium rounded-lg px-3 py-1.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold">
-                                @foreach (\App\Models\Upload::PRIORITIES as $value => $label)
-                                    <option value="{{ $value }}" {{ $item->priority === $value ? 'selected' : '' }}>{{ $label }} Priority</option>
-                                @endforeach
-                            </select>
-                            <input type="date" name="estimated_completion_date" value="{{ $item->estimated_completion_date?->format('Y-m-d') }}"
-                                   onchange="this.form.requestSubmit()" title="Estimated completion date (visible to client)"
-                                   class="text-xs font-medium rounded-lg px-3 py-1.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold">
+                            <input type="hidden" name="priority" value="{{ $item->priority }}">
+                            <div class="relative" data-priority-dropdown>
+                                <button type="button" data-priority-toggle data-color-class="{{ $priorityColors[$item->priority] ?? $priorityColors['medium'] }}" title="Priority (internal only)"
+                                        aria-haspopup="listbox" aria-expanded="false"
+                                        class="inline-flex items-center gap-1.5 text-xs font-semibold rounded-full pl-3 pr-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-gold transition-colors {{ $priorityColors[$item->priority] ?? $priorityColors['medium'] }}">
+                                    <span data-priority-toggle-label>{{ \App\Models\Upload::PRIORITIES[$item->priority] ?? ucfirst($item->priority) }} Priority</span>
+                                    <svg data-priority-toggle-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                <div data-priority-menu class="hidden absolute z-20 left-0 mt-1.5 w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                                    @foreach (\App\Models\Upload::PRIORITIES as $value => $label)
+                                        <button type="button" data-priority-option="{{ $value }}" data-color-class="{{ $priorityColors[$value] }}" role="option" aria-selected="{{ $item->priority === $value ? 'true' : 'false' }}"
+                                                class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $item->priority === $value ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
+                                            <span class="flex items-center gap-2" data-option-label>
+                                                <span class="w-2 h-2 rounded-full shrink-0 {{ $priorityDots[$value] }}"></span>
+                                                {{ $label }}
+                                            </span>
+                                            <svg data-option-check class="w-4 h-4 text-gold-dark shrink-0 {{ $item->priority === $value ? '' : 'invisible' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <svg class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <input type="date" name="estimated_completion_date" value="{{ $item->estimated_completion_date?->format('Y-m-d') }}"
+                                       onchange="this.form.requestSubmit()" title="Estimated completion date (visible to client)"
+                                       class="text-xs font-medium rounded-lg pl-8 pr-2.5 py-1.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold">
+                            </div>
                         </form>
                     @endif
                 </div>
