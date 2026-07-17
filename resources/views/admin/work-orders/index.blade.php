@@ -67,6 +67,14 @@
             </tbody>
         </table>
         </div>
+
+        <div class="flex items-center justify-between gap-4 px-5 py-3 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-400 dark:text-gray-500">
+            <span>Showing {{ $workOrders->count() }} of {{ $workOrders->total() }} work order{{ $workOrders->total() === 1 ? '' : 's' }}</span>
+        </div>
+    </div>
+
+    <div class="mt-6">
+        {{ $workOrders->links() }}
     </div>
 @endif
 

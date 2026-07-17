@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ProjectRequest;
 use App\Models\Upload;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
 class WorkOrderController extends Controller
@@ -52,6 +53,17 @@ class WorkOrderController extends Controller
             ]);
 
         $workOrders = $uploads->concat($projectRequests)->sortByDesc('created_at')->values();
+
+        $perPage = 15;
+        $page = LengthAwarePaginator::resolveCurrentPage();
+
+        $workOrders = new LengthAwarePaginator(
+            $workOrders->forPage($page, $perPage),
+            $workOrders->count(),
+            $perPage,
+            $page,
+            ['path' => LengthAwarePaginator::resolveCurrentPath()],
+        );
 
         return view('admin.work-orders.index', [
             'workOrders' => $workOrders,
