@@ -58,6 +58,22 @@
         .nav-link:hover { color:#C9A84C; }
         .nav-link.is-active { color:#C9A84C !important; }
 
+        /* ─── Nav over a dark hero (homepage only, pre-scroll) ───
+             Once #nav-inner gets .nav-pill (solid white pill on scroll) the
+             default navy .nav-link color already reads fine again, so these
+             overrides are scoped to :not(.nav-pill). */
+        .nav-on-dark-hero #nav-inner:not(.nav-pill) .nav-link,
+        .nav-on-dark-hero #nav-inner:not(.nav-pill) #nav-login,
+        .nav-on-dark-hero #nav-inner:not(.nav-pill) #menu-btn {
+            color: rgba(255,255,255,.85);
+        }
+        .nav-on-dark-hero #nav-inner:not(.nav-pill) .hamburger-bar {
+            background-color: rgba(255,255,255,.85) !important;
+        }
+        .nav-on-dark-hero #nav-inner:not(.nav-pill) #nav-cursor {
+            background: rgba(255,255,255,.12) !important;
+        }
+
         /* ─── Re-usable buttons (outside hero) ─── */
         .btn-gold    { @apply inline-block bg-gold hover:bg-gold-dark text-navy font-bold text-lg px-9 py-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg; }
         .btn-outline { @apply inline-block border-2 border-navy text-navy hover:bg-navy hover:text-white font-bold text-lg px-9 py-4 rounded-lg transition-all duration-200; }
@@ -305,6 +321,226 @@
             0%,100% { transform:translate(0,0) scale(1); }
             33%      { transform:translate(28px,-22px) scale(1.05); }
             66%      { transform:translate(-18px,14px) scale(.96); }
+        }
+
+        /* ─── Hero background — ambient gradient drift ───
+             Large oversized gradient, background-position animated slowly;
+             low-contrast + slow (24s) enough that the paint cost stays cheap. */
+        .hero-gradient-shift {
+            background: linear-gradient(120deg,
+                rgba(44,166,164,.05) 0%,
+                rgba(201,168,76,.07) 35%,
+                rgba(47,58,69,.03) 60%,
+                rgba(44,166,164,.05) 100%);
+            background-size: 220% 220%;
+            animation: hero-gradient-drift 24s ease-in-out infinite;
+        }
+        @keyframes hero-gradient-drift {
+            0%,100% { background-position: 0% 30%; }
+            50%      { background-position: 100% 70%; }
+        }
+
+        /* ─── Hero background — very soft light rays ─── */
+        .hero-ray {
+            position:absolute; top:-30%; left:-20%; width:150%; height:200%;
+            background:linear-gradient(100deg, transparent 44%, rgba(255,255,255,.09) 50%, transparent 56%);
+            filter: blur(28px);
+            will-change: transform;
+        }
+        .hero-ray-1 { animation: hero-ray-sway 20s ease-in-out infinite; }
+        .hero-ray-2 { opacity:.6; animation: hero-ray-sway 26s ease-in-out infinite reverse; animation-delay:-6s; }
+        @keyframes hero-ray-sway {
+            0%,100% { transform: rotate(-14deg) translateX(0); }
+            50%      { transform: rotate(-9deg) translateX(26px); }
+        }
+
+        /* ─── Hero background — frosted glass depth pane behind the heading ─── */
+        .hero-glass-depth {
+            border-radius: 50%;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,.07) 0%, transparent 72%);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+        }
+
+        /* ─── Hero background — animated grain/noise texture ───
+             feTurbulence data-URI tile, translated in discrete steps (not
+             background-position) so the browser can composite it on the GPU
+             instead of repainting the gradient/turbulence each frame. */
+        .hero-noise {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            mix-blend-mode: overlay;
+            animation: hero-noise-drift 7s steps(8) infinite alternate;
+            will-change: transform;
+        }
+        @keyframes hero-noise-drift {
+            0%   { transform: translate3d(0,0,0); }
+            100% { transform: translate3d(-40px,-30px,0); }
+        }
+
+        /* ─── Hero background — floating gold particles (positioned/animated via GSAP in home.blade.php) ─── */
+        .hero-particle {
+            position:absolute; border-radius:50%; pointer-events:none;
+            background: radial-gradient(circle, rgba(223,192,106,.9) 0%, rgba(201,168,76,.35) 55%, transparent 75%);
+            will-change: transform, opacity;
+        }
+
+        /* Respect reduced-motion: the new hero layers go static instead of animating */
+        @media (prefers-reduced-motion: reduce) {
+            .hero-gradient-shift, .hero-ray, .hero-noise { animation: none !important; }
+        }
+
+        /* ════════════════════════════════════════════════════════════
+           HERO — dark theme redesign (homepage only, scoped under #hero)
+           ════════════════════════════════════════════════════════════ */
+
+        /* Starfield — same dot-grid technique as .hero-grid-dots, recolored
+           white/sparse so it reads as stars against the near-black hero bg */
+        #hero.hero-dark .hero-grid-dots {
+            background-image: radial-gradient(circle, rgba(255,255,255,.14) 1px, transparent 1px);
+            background-size: 3px 3px, 46px 46px;
+        }
+
+        /* Left-edge bridge photo — positioning/sizing lives inline on the
+           element itself (Tailwind utilities + style attribute) since it's a
+           plain <img>, not the old rotated SVG this rule used to style.
+           opacity driven entirely by the GSAP entrance timeline. */
+        @media (max-width: 767px) {
+            #hero-bridge-left { display: none; }
+        }
+
+        /* Hero badge's live-dot — hot gold instead of the shared teal
+           default, scoped to #hero-badge so .live-dot elsewhere (e.g.
+           online-status indicators) keeps its original color. */
+        #hero-badge .live-dot { background: #FFB627; }
+        #hero-badge .live-dot::after { border-color: rgba(255,182,39,.65); }
+
+        /* Hero heading glow — a brighter, wider radiant version of the
+           shared .glow-line divider, scoped by id so the base .glow-line
+           class (reused elsewhere on the page) is untouched. */
+        #hero-glow-line {
+            width: 220px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #FFB627 50%, transparent);
+        }
+        #hero-glow-line::after {
+            content: '';
+            position: absolute;
+            inset: -16px -32px;
+            background: radial-gradient(ellipse 60% 100% at center, rgba(255,152,20,.70) 0%, rgba(255,152,20,.25) 45%, transparent 75%);
+            filter: blur(11px);
+            opacity: 1;
+        }
+        #hero-glow-line::before {
+            content: '';
+            position: absolute;
+            left: 50%; top: -2px; transform: translateX(-50%);
+            width: 66px; height: 7px; border-radius: 50%;
+            background: #FFEFC2;
+            filter: blur(7px);
+            opacity: 1;
+        }
+
+        /* Orbit ring — a sparkling dashed arc continuously circling the
+           laptop mockup. Animates stroke-dashoffset along the fixed ellipse
+           path (NOT a CSS transform:rotate on the shape itself — rotating a
+           non-circular ellipse rigidly tilts/warps it through the spin
+           instead of sliding smoothly around a stationary ring). The
+           dasharray's dash+gap (110 + 1319 = 1429) matches the ellipse's
+           Ramanujan-approximated circumference (rx:272, ry:178) so the loop
+           repeats with no visible seam/jump. */
+        #hero-orbit-bloom, #hero-orbit-mid, #hero-orbit-glow {
+            animation: hero-orbit-travel 9s linear infinite;
+        }
+        /* Three stacked layers — wide soft amber bloom, mid gold glow, thin
+           white-hot core — read together as one bright burning beam (like
+           the light streak baked into the laptop photo) instead of a single
+           flat-colored line. All three share the same dash animation so
+           they move as one cohesive segment. */
+        #hero-orbit-bloom {
+            opacity: .6;
+            filter: blur(11px) drop-shadow(0 0 18px rgba(255,140,20,.6));
+        }
+        #hero-orbit-mid {
+            opacity: .9;
+            filter: blur(2px) drop-shadow(0 0 10px rgba(255,201,77,.75));
+        }
+        #hero-orbit-glow {
+            filter: drop-shadow(0 0 6px rgba(255,255,255,.95)) drop-shadow(0 0 16px rgba(255,180,60,.8));
+        }
+        @keyframes hero-orbit-travel {
+            from { stroke-dashoffset: 0; }
+            to   { stroke-dashoffset: -1429; }
+        }
+
+        /* Inner ring — smaller (rx:190, ry:124; dasharray 70+927=997 matches
+           its own circumference), spins the OPPOSITE direction at a
+           different speed than the outer ring. Two rings counter-rotating
+           at different depths/rates is what reads as a spiral/vortex rather
+           than a single flat circling line. */
+        #hero-orbit-inner-mid, #hero-orbit-inner-glow {
+            animation: hero-orbit-travel-reverse 6.5s linear infinite;
+        }
+        #hero-orbit-inner-mid {
+            opacity: .85;
+            filter: blur(1.5px) drop-shadow(0 0 8px rgba(255,157,46,.7));
+        }
+        #hero-orbit-inner-glow {
+            filter: drop-shadow(0 0 5px rgba(255,255,255,.9)) drop-shadow(0 0 12px rgba(255,157,46,.75));
+        }
+        @keyframes hero-orbit-travel-reverse {
+            from { stroke-dashoffset: 0; }
+            to   { stroke-dashoffset: 997; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #hero-orbit-bloom, #hero-orbit-mid, #hero-orbit-glow,
+            #hero-orbit-inner-mid, #hero-orbit-inner-glow { animation: none; }
+        }
+
+        /* Device mockup — a real image asset (public/image/laptop-tillted.png),
+           masked at the edges with a radial gradient so its own baked-in dark
+           background blends into the hero instead of showing a hard rectangle. */
+        #hero-device { width:100%; }
+
+        /* Dark-glass modifier for a .float-card sitting on the dark hero —
+           overrides the base opaque-white glass treatment with a translucent
+           tinted-dark version so it reads as glass against a dark backdrop
+           instead of a stray white box. */
+        .hero-glass-card {
+            background: rgba(20,26,36,.42) !important;
+            border-color: rgba(255,255,255,.16) !important;
+            box-shadow: 0 12px 32px rgba(0,0,0,.40) !important;
+        }
+
+        /* Rating cards — a horizontal row sitting just under the laptop */
+        .hero-rating-card {
+            flex:1 1 0%; pointer-events:none;
+            background:rgba(20,26,36,.85); border:1px solid rgba(201,168,76,.20);
+            box-shadow:0 12px 32px rgba(0,0,0,.45);
+            backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+            border-radius:14px; padding:14px 16px;
+            will-change:transform;
+        }
+        .hero-rating-stars { color:#DFC06A; font-size:.72rem; letter-spacing:1px; margin-bottom:4px; }
+        .hero-rating-quote { color:rgba(255,255,255,.88); font-size:.76rem; line-height:1.35; margin-bottom:4px; }
+        .hero-rating-attr { color:rgba(255,255,255,.45); font-size:.68rem; }
+
+        /* Hero CTA buttons — dark-hero variant of the secondary button
+           (transparent + light border instead of the frosted-white pill,
+           which would look like a stray white box on a near-black hero) */
+        #hero.hero-dark .hero-btn-secondary {
+            background: transparent;
+            border-color: rgba(255,255,255,.30);
+            color: rgba(255,255,255,.90);
+        }
+        #hero.hero-dark .hero-btn-secondary:hover {
+            border-color: rgba(255,255,255,.55);
+            box-shadow: 0 8px 28px rgba(0,0,0,.35);
+        }
+        @media (hover: hover) and (pointer: fine) {
+            #hero.hero-dark .hero-btn-secondary .hero-btn-fill {
+                background: rgba(255,255,255,.10);
+            }
         }
 
         /* ─── Off-screen animation pause (perf) ───
@@ -1326,7 +1562,7 @@
     @php $homeAnchor = request()->routeIs('home') ? '' : route('home'); @endphp
 
     <!-- Navigation -->
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50" style="padding:12px 16px 0;will-change:transform;">
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 @if(request()->routeIs('home')) nav-on-dark-hero @endif" style="padding:12px 16px 0;will-change:transform;">
 
         {{-- Floating pill inner wrapper --}}
         <div id="nav-inner" class="mx-auto flex items-center justify-between px-5 sm:px-7" style="height:60px;">
@@ -2031,6 +2267,8 @@
                 '.hero-orb', '#svc-toggle-btn', '.wave-teal', '.wave-main',
                 '.shimmer-gold', '.live-dot', '.float-card-1', '.float-card-2',
                 '.portfolio-badge', '#hscroll-edge-arrow', '.medallion-sweep',
+                '.hero-gradient-shift', '.hero-ray', '.hero-noise', '#hero-orbit-glow', '#hero-orbit-bloom', '#hero-orbit-mid',
+                '#hero-orbit-inner-mid', '#hero-orbit-inner-glow',
             ];
             const els = document.querySelectorAll(selectors.join(','));
             if (!els.length) return;

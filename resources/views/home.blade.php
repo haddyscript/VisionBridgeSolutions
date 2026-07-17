@@ -77,152 +77,178 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 @endphp
 
 {{-- ============================================================
-     HERO SECTION
+     HERO SECTION — dark theme
      ============================================================ --}}
-<section id="hero" class="relative min-h-screen flex items-center overflow-hidden" style="background:#EAF3F8;">
+<section id="hero" class="hero-dark relative min-h-screen flex items-center overflow-hidden" style="background:#0B0F17;">
 
-    {{-- Layer 0 — Hero background video (autoplay, muted, loop) --}}
-    {{-- Video has baked-in UI-mockup text/graphics; washed out + muted so it reads as soft motion, not legible content --}}
-    <video autoplay muted loop playsinline
-           style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;opacity:0.32;filter:saturate(0.4) brightness(1.3) blur(6px);">
-        <source src="@assetv('videos/Web_development_company_hero_video.mp4')" type="video/mp4">
-    </video>
-    {{-- Wash is strongest behind the heading (keeps "Building Websites.
-         Expanding Reach." legible) and fades out toward the edges so the
-         background video shows through more elsewhere. --}}
-    <div style="position:absolute;inset:0;pointer-events:none;
-         background:radial-gradient(ellipse 900px 480px at 50% 42%,
-             rgba(234,243,248,0.94) 0%,
-             rgba(234,243,248,0.55) 55%,
-             rgba(234,243,248,0.15) 100%);"></div>
+    {{-- Layer 0 — starfield (reuses the dot-grid texture, recolored via .hero-dark) --}}
+    <div class="hero-grid-dots absolute inset-0 pointer-events-none" style="z-index:0;"></div>
 
-    {{-- Layer 1 — dot-grid texture --}}
-    <div class="hero-grid-dots absolute inset-0 pointer-events-none" style="z-index:1;"></div>
+    {{-- Layer 0.5 — ambient gradient drift (very subtle color movement) --}}
+    <div class="hero-gradient-shift absolute inset-0 pointer-events-none" style="z-index:0;"></div>
+
+    {{-- Layer 1 — glowing bridge photo along the left edge, faded on its right side so it blends into the hero instead of showing a hard image edge --}}
+    <div id="hero-bridge-left" class="opacity-0 absolute inset-y-0 pointer-events-none hidden md:block" style="left:-300px;width:76%;max-width:1080px;z-index:1;
+         -webkit-mask-image:linear-gradient(to right, black 58%, transparent 87%);
+         mask-image:linear-gradient(to right, black 58%, transparent 97%);">
+        <img src="@assetv('image/landing-glowing-bridge.png')" alt="" class="w-full h-full object-cover" style="object-position:left 55%;">
+    </div>
+
+    {{-- Layer 1 — very soft light rays, kept off small screens (extra blur/paint cost not worth it there) --}}
+    <div class="absolute inset-0 overflow-hidden pointer-events-none hidden sm:block" style="z-index:1;">
+        <div class="hero-ray hero-ray-1"></div>
+        <div class="hero-ray hero-ray-2"></div>
+    </div>
+
+    {{-- Layer 1 — floating gold particles, populated + animated by GSAP (see @section('scripts') below) --}}
+    <div id="hero-particles" class="absolute inset-0 overflow-hidden pointer-events-none" style="z-index:1;"></div>
 
     {{-- Layer 1 — atmospheric CSS orbs (GPU-composed, zero CPU) --}}
     <div class="hero-orb" style="width:580px;height:580px;top:-120px;right:-120px;z-index:1;
-         background:radial-gradient(circle,rgba(44,166,164,.13) 0%,transparent 70%);
+         background:radial-gradient(circle,rgba(44,166,164,.16) 0%,transparent 70%);
          animation:orb-drift 16s ease-in-out infinite;"></div>
     <div class="hero-orb" style="width:420px;height:420px;bottom:-80px;left:-80px;z-index:1;
-         background:radial-gradient(circle,rgba(201,168,76,.10) 0%,transparent 70%);
+         background:radial-gradient(circle,rgba(201,168,76,.14) 0%,transparent 70%);
          animation:orb-drift 20s ease-in-out infinite reverse 3s;"></div>
     <div class="hero-orb" style="width:260px;height:260px;top:55%;left:58%;z-index:1;
-         background:radial-gradient(circle,rgba(44,166,164,.09) 0%,transparent 70%);
+         background:radial-gradient(circle,rgba(44,166,164,.11) 0%,transparent 70%);
          animation:orb-drift 11s ease-in-out infinite 1.5s;"></div>
 
-    {{-- Layer 2 — vignette to push eye to centre --}}
+    {{-- Layer 2 — vignette, weighted toward the left/text side --}}
     <div class="absolute inset-0 pointer-events-none" style="z-index:2;
-         background:radial-gradient(ellipse at 50% 46%,transparent 28%,rgba(186,206,219,.55) 100%);"></div>
+         background:radial-gradient(ellipse at 28% 46%,transparent 26%,rgba(0,0,0,.55) 100%);"></div>
 
-    {{-- Layer 2.5 — bottom darken, boosts contrast for the stats row + scroll
-         cue, which sit outside the central wash's coverage and were reading
-         as washed-out against the hazy video background --}}
-    <div class="absolute inset-0 pointer-events-none" style="z-index:2;
-         background:linear-gradient(to bottom, transparent 0%, transparent 52%, rgba(11,15,23,0.50) 78%, rgba(11,15,23,0.80) 100%);"></div>
+    {{-- Layer 2 — animated grain/noise texture, kept very faint so it reads as life/depth, not visible grain --}}
+    <div class="hero-noise absolute inset-0 pointer-events-none hidden sm:block" style="z-index:2;opacity:.035;"></div>
 
-    {{-- Layer 2.5 — faint bridge skyline silhouette, signature brand motif.
-         Light-colored now that this bottom strip sits on the darkened layer above. --}}
-    <div class="absolute bottom-0 left-0 right-0 overflow-hidden text-white" style="height:90px;max-height:90px;opacity:0.14;z-index:2;pointer-events:none;">
-        {!! $bridgeSilhouette !!}
-    </div>
+    {{-- Layer 4 — content: two-column grid (text left, device mockup right) --}}
+    <div class="relative w-full max-w-[92rem] mx-auto px-4 sm:px-6 lg:px-16 xl:px-28 pt-28 pb-20" style="z-index:4;">
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_1.35fr] gap-10 items-center">
 
-    {{-- Layer 3 — floating glassmorphism cards (desktop only) --}}
-    <div class="float-card float-card-1 hidden lg:flex items-center gap-3">
-        <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-             style="background:rgba(44,166,164,.18);">
-            <svg class="w-5 h-5 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-        </div>
-        <div>
-            <p class="text-navy text-xs font-semibold leading-none mb-0.5">Website Launched!</p>
-            <p class="text-navy/45 text-xs">Delivered on time</p>
-        </div>
-    </div>
-    <div class="float-card float-card-2 hidden lg:flex items-center gap-3">
-        <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-             style="background:rgba(201,168,76,.22);">
-            <svg class="w-5 h-5 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
-        </div>
-        <div>
-            <p class="text-navy text-xs font-semibold leading-none mb-0.5">5-Star Support</p>
-            <p class="text-navy/45 text-xs">Always available</p>
-        </div>
-    </div>
+            {{-- LEFT — copy --}}
+            <div class="text-left">
 
-    {{-- Layer 4 — content --}}
-    <div class="relative w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 text-center" style="z-index:4;">
+                {{-- Badge --}}
+                <div id="hero-badge" class="inline-flex items-center text-xs font-semibold tracking-widest uppercase px-5 py-2 rounded-full mb-8 opacity-0"
+                     style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.85);
+                     backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+                     box-shadow:0 8px 24px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.14);">
+                    <span class="live-dot"></span>
+                    Website Development &amp; Management
+                </div>
 
-        {{-- Badge --}}
-        <div id="hero-badge" class="inline-flex items-center text-xs font-semibold tracking-widest uppercase px-5 py-2 rounded-full mb-8 opacity-0"
-             style="background:rgba(255,255,255,.65);border:1px solid rgba(47,58,69,.10);color:rgba(47,58,69,.72);">
-            <span class="live-dot"></span>
-            Website Development &amp; Management
-        </div>
+                {{-- Heading --}}
+                <h1 id="hero-heading" class="font-display font-bold leading-tight mb-3"
+                    style="font-size:clamp(2.6rem,5.2vw,4.2rem);">
+                    <span style="white-space:nowrap;"><span class="word-wrap"><span class="hero-word text-white">Building</span></span><span class="word-wrap"><span class="hero-word text-white">Websites.</span></span></span><br>
+                    <span class="word-wrap"><span class="hero-word shimmer-gold">Expanding</span></span><span class="word-wrap"><span class="hero-word shimmer-gold">Reach.</span></span>
+                </h1>
 
-        {{-- Heading --}}
-        <h1 id="hero-heading" class="font-display font-bold leading-tight mb-3"
-            style="font-size:clamp(2.6rem,6vw,4.5rem);">
-            <span class="word-wrap"><span class="hero-word text-navy">Building</span></span><span class="word-wrap"><span class="hero-word text-navy">Websites.</span></span><br>
-            <span class="word-wrap"><span class="hero-word shimmer-gold">Expanding</span></span><span class="word-wrap"><span class="hero-word shimmer-gold">Reach.</span></span>
-        </h1>
+                {{-- Gold glow divider --}}
+                <div id="hero-glow-line" class="glow-line opacity-0" style="margin:18px 0;"></div>
 
-        {{-- Gold glow divider --}}
-        <div id="hero-glow-line" class="glow-line opacity-0"></div>
+                {{-- Subtext --}}
+                <p id="hero-subtext" class="text-lg sm:text-xl max-w-xl mb-8 leading-relaxed opacity-0" style="color:rgba(255,255,255,.68);">
+                    Custom websites designed to strengthen your brand, expand your reach, and protect your online presence.
+                </p>
 
-        {{-- Subtext --}}
-        <p id="hero-subtext" class="text-navy/70 text-lg sm:text-xl max-w-2xl mx-auto mb-8 leading-relaxed opacity-0">
-            Custom websites designed to strengthen your brand, expand your reach,<br class="hidden sm:block"> and protect your online presence.
-        </p>
+                {{-- CTA buttons --}}
+                <div id="hero-ctas" class="flex flex-col sm:flex-row gap-4 mb-10">
+                    <a href="{{ route('register') }}" class="hero-btn-primary opacity-0">
+                        <span class="hero-btn-fill" aria-hidden="true"></span>
+                        <span class="hero-btn-content">
+                            Let's Build Your Website
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </span>
+                    </a>
+                    <a href="{{ route('consultation.create') }}" class="hero-btn-secondary opacity-0">
+                        <span class="hero-btn-fill" aria-hidden="true"></span>
+                        <span class="hero-btn-content">
+                            <svg class="w-4 h-4 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            Book A Consultation
+                        </span>
+                    </a>
+                </div>
 
-        {{-- Social proof row --}}
-        <div id="hero-trust" class="flex items-center justify-center gap-3 mb-10 opacity-0">
-            <div id="hero-avatars" class="flex -space-x-2">
-                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#2CA6A4;border-color:#EAF3F8;">J</div>
-                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#465360;border-color:#EAF3F8;">M</div>
-                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold" style="background:#C9A84C;border-color:#EAF3F8;color:#2F3A45;">S</div>
-                <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#1F7A78;border-color:#EAF3F8;">A</div>
+                {{-- Social proof row --}}
+                <div id="hero-trust" class="flex items-center gap-3 opacity-0">
+                    <div id="hero-avatars" class="flex -space-x-2">
+                        <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#2CA6A4;border-color:#0B0F17;">J</div>
+                        <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#465360;border-color:#0B0F17;">M</div>
+                        <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold" style="background:#C9A84C;border-color:#0B0F17;color:#2F3A45;">S</div>
+                        <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold text-white" style="background:#1F7A78;border-color:#0B0F17;">A</div>
+                    </div>
+                    <div class="h-4 w-px" style="background:rgba(255,255,255,.18);"></div>
+                    <p class="text-sm" style="color:rgba(255,255,255,.55);">
+                        Trusted by <span style="color:rgba(255,255,255,.92);font-weight:600;">20+ organizations</span>
+                    </p>
+                </div>
             </div>
-            <div class="h-4 w-px" style="background:rgba(47,58,69,.18);"></div>
-            <p class="text-sm" style="color:rgba(47,58,69,.55);">
-                Trusted by <span style="color:rgba(47,58,69,.88);font-weight:600;">20+ organizations</span>
-            </p>
-        </div>
 
-        {{-- CTA buttons --}}
-        <div id="hero-ctas" class="flex flex-col sm:flex-row gap-4 justify-center mb-20">
-            <a href="{{ route('register') }}" class="hero-btn-primary opacity-0">
-                <span class="hero-btn-fill" aria-hidden="true"></span>
-                <span class="hero-btn-content">
-                    Start Your Project
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+            {{-- RIGHT — device mockup + rating row (desktop only) --}}
+            <div class="relative hidden lg:block" style="padding:24px 0 0;">
+                {{-- Frame carries the explicit aspect-ratio box that both the
+                     device image and the orbit ring anchor to — keeps the
+                     orbit's percentage sizing tied to the laptop itself
+                     instead of the much larger column wrapper around it. --}}
+                <div id="hero-device-frame" class="relative" style="aspect-ratio:4/3.3;transform:scale(1.12);transform-origin:center;">
+                    {{-- Orbit ring — sparkling arc continuously circling the laptop --}}
+                    <svg id="hero-orbit" viewBox="0 0 600 480" class="opacity-0" style="position:absolute;top:-16%;right:-18%;bottom:-16%;left:6%;pointer-events:none;z-index:0;">
+                        {{-- Outer ring --}}
+                        <ellipse cx="300" cy="240" rx="272" ry="178" fill="none" stroke="rgba(201,168,76,.16)" stroke-width="1.5"/>
+                        <ellipse id="hero-orbit-bloom" cx="300" cy="240" rx="272" ry="178" fill="none" stroke="#FF8C1A" stroke-width="9" stroke-linecap="round" stroke-dasharray="110 1319"/>
+                        <ellipse id="hero-orbit-mid" cx="300" cy="240" rx="272" ry="178" fill="none" stroke="#FFC94D" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="110 1319"/>
+                        <ellipse id="hero-orbit-glow" cx="300" cy="240" rx="272" ry="178" fill="none" stroke="#FFF6DC" stroke-width="1.25" stroke-linecap="round" stroke-dasharray="110 1319"/>
+                        {{-- Inner ring — smaller, counter-rotating at a different speed than
+                             the outer ring; two rings spinning opposite ways at different
+                             depths reads as a spiral/vortex instead of one flat circle. --}}
+                        <ellipse cx="300" cy="240" rx="190" ry="124" fill="none" stroke="rgba(201,168,76,.14)" stroke-width="1.2"/>
+                        <ellipse id="hero-orbit-inner-mid" cx="300" cy="240" rx="190" ry="124" fill="none" stroke="#FF9D2E" stroke-width="3" stroke-linecap="round" stroke-dasharray="70 927"/>
+                        <ellipse id="hero-orbit-inner-glow" cx="300" cy="240" rx="190" ry="124" fill="none" stroke="#FFF6DC" stroke-width="1" stroke-linecap="round" stroke-dasharray="70 927"/>
                     </svg>
-                </span>
-            </a>
-            <a href="{{ route('consultation.create') }}" class="hero-btn-secondary opacity-0">
-                <span class="hero-btn-fill" aria-hidden="true"></span>
-                <span class="hero-btn-content">
-                    <svg class="w-4 h-4 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    Book A Consultation
-                </span>
-            </a>
-        </div>
 
-        {{-- Stats --}}
-        <div id="hero-stats" class="grid grid-cols-3 gap-6 max-w-xl mx-auto pt-8"
-             style="border-top:1px solid rgba(255,255,255,.22);">
-            <div class="stat-item text-center opacity-0">
-                <div id="stat-pct" class="text-3xl font-bold text-gold">0%</div>
-                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(255,255,255,.80);">Client Ownership</div>
-            </div>
-            <div class="stat-item text-center opacity-0" style="border-left:1px solid rgba(255,255,255,.22);border-right:1px solid rgba(255,255,255,.22);">
-                <div class="text-3xl font-bold text-gold">Custom</div>
-                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(255,255,255,.80);">Every Project</div>
-            </div>
-            <div class="stat-item text-center opacity-0">
-                <div class="text-3xl font-bold text-gold">Long-Term</div>
-                <div class="text-xs mt-1 uppercase tracking-widest" style="color:rgba(255,255,255,.80);">Support</div>
+                    <div id="hero-device" class="opacity-0 absolute inset-0" style="border-radius:18px;overflow:hidden;
+                         -webkit-mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);
+                         mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);">
+                        <img src="@assetv('image/laptop-tillted.png')" alt="VisionBridge website preview on a laptop"
+                             class="absolute inset-0 w-full h-full object-cover" style="object-position:50% 40%;">
+                    </div>
+                </div>
+
+                <div class="float-card float-card-2 hero-glass-card opacity-0" id="hero-support-card" style="top:64%;right:-4%;width:148px;padding:16px 16px;">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:rgba(201,168,76,.22);">
+                            <svg class="w-5 h-5" style="color:#DFC06A;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold leading-none mb-0.5" style="color:rgba(255,255,255,.92);">5-Star Support</p>
+                            <p class="text-xs" style="color:rgba(255,255,255,.55);">Always available</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Rating row, sitting just under the laptop's base like the reference layout --}}
+                <div id="hero-rating-row" class="flex gap-4" style="margin-top:-2.5rem;position:relative;z-index:3;">
+                    <div class="hero-rating-card opacity-0" id="hero-rating-1">
+                        <div class="hero-rating-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                        <p class="hero-rating-quote">"Exceeded our expectations from day one."</p>
+                        <p class="hero-rating-attr">— Ministry Client</p>
+                    </div>
+                    <div class="hero-rating-card opacity-0" id="hero-rating-2">
+                        <div class="hero-rating-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                        <p class="hero-rating-quote">"Fast, responsive, and truly professional."</p>
+                        <p class="hero-rating-attr">— Nonprofit Partner</p>
+                    </div>
+                    <div class="hero-rating-card opacity-0" id="hero-rating-3">
+                        <div class="hero-rating-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                        <p class="hero-rating-quote">"A website that finally reflects who we are."</p>
+                        <p class="hero-rating-attr">— Small Business Owner</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1741,30 +1767,77 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.3, paused: true });
 
         heroTl
-            .fromTo('#hero-badge',      { opacity:0, y:22  }, { opacity:1, y:0, duration:0.65 })
+            .fromTo('#hero-bridge-left', { opacity:0 }, { opacity:0.55, duration:1.4, ease:'power2.out' }, 0)
+            .fromTo('#hero-badge',      { opacity:0, y:22  }, { opacity:1, y:0, duration:0.65 }, 0.15)
             .from ('.hero-word',        { y:'110%', opacity:0, duration:0.75, stagger:0.09 }, '-=0.30')
             .fromTo('#hero-glow-line',  { opacity:0, scaleX:0 }, { opacity:1, scaleX:1, duration:0.70, ease:'power2.out' }, '-=0.15')
             .fromTo('#hero-subtext',    { opacity:0, y:26  }, { opacity:1, y:0, duration:0.60 }, '-=0.35')
-            .fromTo('#hero-trust',      { opacity:0, y:18  }, { opacity:1, y:0, duration:0.50 }, '-=0.30')
-            .fromTo('#hero-ctas > a',   { opacity:0, y:22  }, { opacity:1, y:0, duration:0.50, stagger:0.13 }, '-=0.28')
-            .fromTo('.stat-item',       { opacity:0, y:20  }, { opacity:1, y:0, duration:0.50, stagger:0.10 }, '-=0.20')
-            // Counter is driven by a side-effect; it lives inside the hero so
-            // no ScrollTrigger — fire once as part of the page-load sequence
-            .call(() => {
-                const el = document.getElementById('stat-pct');
-                if (!el) return;
-                const o = { v: 0 };
-                gsap.to(o, { v:100, duration:2.5, ease:'power2.out',
-                    onUpdate() { el.textContent = Math.round(o.v) + '%'; }
-                });
-            })
-            .fromTo('#hero-scroll-cue', { opacity:0 }, { opacity:1, duration:0.70 }, '-=1.90');
+            .fromTo('#hero-ctas > a',   { opacity:0, y:22  }, { opacity:1, y:0, duration:0.50, stagger:0.13 }, '-=0.30')
+            .fromTo('#hero-trust',      { opacity:0, y:18  }, { opacity:1, y:0, duration:0.50 }, '-=0.20')
+            // Device mockup + its floating cards — a beat behind the copy so
+            // the eye lands on the heading first, matching the reference layout
+            .fromTo('#hero-device',     { opacity:0, y:30, scale:0.96 }, { opacity:1, y:0, scale:1, duration:0.85, ease:'power3.out' }, '-=0.55')
+            .fromTo('#hero-orbit',      { opacity:0 }, { opacity:1, duration:0.90 }, '-=0.60')
+            .fromTo('#hero-support-card', { opacity:0, y:-14 }, { opacity:1, y:0, duration:0.55 }, '-=0.45')
+            .fromTo('.hero-rating-card', { opacity:0, y:18 }, { opacity:1, y:0, duration:0.55, stagger:0.12 }, '-=0.35')
+            .fromTo('#hero-scroll-cue', { opacity:0 }, { opacity:1, duration:0.70 }, '-=1.60');
 
         if (document.getElementById('intro-overlay')) {
             window.addEventListener('intro:complete', () => heroTl.play(), { once: true });
         } else {
             heroTl.play(); // no intro overlay present — play immediately as before
         }
+
+        // ============================================================
+        //  HERO BACKGROUND — floating gold particles
+        //
+        //  Organic, non-repeating drift (each particle gets its own random
+        //  path/duration) rather than a single looping CSS keyframe, so the
+        //  background reads as alive instead of mechanically looping.
+        //  Skipped entirely for prefers-reduced-motion, and paused via
+        //  IntersectionObserver once the hero scrolls out of view.
+        // ============================================================
+        (function initHeroParticles() {
+            const container = document.getElementById('hero-particles');
+            if (!container) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            const count = window.innerWidth < 640 ? 7 : 16;
+            const tweens = [];
+
+            for (let i = 0; i < count; i++) {
+                const el = document.createElement('div');
+                el.className = 'hero-particle';
+                const size = 2 + Math.random() * 3.5;
+                el.style.width = size + 'px';
+                el.style.height = size + 'px';
+                el.style.left = Math.random() * 100 + '%';
+                el.style.top = Math.random() * 100 + '%';
+                el.style.opacity = 0;
+                container.appendChild(el);
+
+                gsap.set(el, { opacity: 0.15 + Math.random() * 0.35 });
+
+                tweens.push(gsap.to(el, {
+                    x: (Math.random() - 0.5) * 90,
+                    y: -40 - Math.random() * 70,
+                    duration: 9 + Math.random() * 9,
+                    delay: Math.random() * 6,
+                    ease: 'sine.inOut',
+                    repeat: -1,
+                    yoyo: true,
+                }));
+            }
+
+            const hero = document.getElementById('hero');
+            if (hero && 'IntersectionObserver' in window) {
+                new IntersectionObserver(entries => {
+                    entries.forEach(entry => {
+                        tweens.forEach(t => entry.isIntersecting ? t.play() : t.pause());
+                    });
+                }, { rootMargin: '150px 0px' }).observe(hero);
+            }
+        })();
 
         // ============================================================
         //  WELCOME / FOUNDER'S MESSAGE — bi-directional timeline
