@@ -15,11 +15,69 @@ class ProjectRequestController extends Controller
 {
     public function index()
     {
-        $requests = ProjectRequest::with('user')->latest()->paginate(15)->withQueryString();
+        $requests = ProjectRequest::with('user', 'createdByAdmin')->latest()->paginate(15)->withQueryString();
 
         return view('admin.project-requests.index', [
             'requests' => $requests,
+            'clients' => User::where(fn ($q) => $q->where('role', '!=', 'admin')->orWhereNull('role'))
+                ->orderBy('name')
+                ->get(['id', 'name', 'email']),
+            'developers' => User::developers(),
         ]);
+    }
+
+    /**
+     * Admin-created "internal work order" — the only other way a
+     * ProjectRequest can come into existence, alongside a client submitting
+     * one themselves through the portal. Tied to an existing client account
+     * (e.g. research/feasibility work for a current client like Unity Auto
+     * Group) but never touches the portal or notifies the client, since
+     * there's nothing for them to see or act on.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'user_id' => ['required', 'exists:users,id'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:5000'],
+            'priority' => ['nullable', Rule::in(array_keys(ProjectRequest::PRIORITIES))],
+            'due_date' => ['nullable', 'date'],
+            'assigned_developer_id' => ['nullable', 'exists:users,id'],
+            'proposal_document' => ['nullable', 'file', 'max:25600'],
+        ]);
+
+        $projectRequest = new ProjectRequest([
+            'user_id' => $validated['user_id'],
+            'created_by_admin_id' => $request->user()->id,
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'priority' => $validated['priority'] ?? null,
+            'due_date' => $validated['due_date'] ?? null,
+            'assigned_developer_id' => $validated['assigned_developer_id'] ?? null,
+        ]);
+
+        if ($request->hasFile('proposal_document')) {
+            $file = $request->file('proposal_document');
+            $projectRequest->proposal_document_original_name = $file->getClientOriginalName();
+            $projectRequest->proposal_document_path = $file->store('project-requests/manual/proposal', 'client_uploads');
+        }
+
+        $projectRequest->save();
+
+        if ($projectRequest->assigned_developer_id) {
+            $developer = User::find($projectRequest->assigned_developer_id);
+
+            Mail::to($developer->email)->send(new WorkOrderAssignedMail(
+                $developer,
+                $projectRequest->title,
+                'new project request',
+                $projectRequest->user->name,
+                route('admin.project-requests.show', $projectRequest),
+            ));
+        }
+
+        return redirect()->route('admin.project-requests.show', $projectRequest)
+            ->with('status', 'Internal work order created.');
     }
 
     public function show(ProjectRequest $projectRequest)
@@ -43,6 +101,8 @@ class ProjectRequestController extends Controller
     {
         $validated = $request->validate([
             'status' => ['required', 'in:'.implode(',', array_keys(ProjectRequest::STATUSES))],
+            'priority' => ['nullable', Rule::in(array_keys(ProjectRequest::PRIORITIES))],
+            'due_date' => ['nullable', 'date'],
             'admin_notes' => ['nullable', 'string', 'max:5000'],
             'proposal_status' => ['required', Rule::in(array_keys(ProjectRequest::PROPOSAL_STATUSES))],
             'estimated_value' => ['nullable', 'numeric', 'min:0'],

@@ -29,10 +29,21 @@ class ProjectRequest extends Model
         'completed' => 'Completed',
     ];
 
+    /** Mirrors Upload::PRIORITIES — internal-only, never shown to the client (this model has no client-facing view at all). */
+    public const PRIORITIES = [
+        'low' => 'Low',
+        'medium' => 'Medium',
+        'high' => 'High',
+        'urgent' => 'Urgent',
+    ];
+
     protected $fillable = [
         'user_id',
+        'created_by_admin_id',
         'title',
         'description',
+        'priority',
+        'due_date',
         'status',
         'admin_notes',
         'assigned_developer_id',
@@ -46,10 +57,18 @@ class ProjectRequest extends Model
         'proposal_document_original_name',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'due_date' => 'date',
+        ];
+    }
+
     protected static function booted(): void
     {
         static::creating(function (ProjectRequest $request) {
             $request->status ??= 'pending';
+            $request->priority ??= 'medium';
         });
     }
 
@@ -61,6 +80,17 @@ class ProjectRequest extends Model
     public function assignedDeveloper()
     {
         return $this->belongsTo(User::class, 'assigned_developer_id');
+    }
+
+    /** The admin who created this internally (e.g. a research/feasibility work order), null if a client submitted it themselves. */
+    public function createdByAdmin()
+    {
+        return $this->belongsTo(User::class, 'created_by_admin_id');
+    }
+
+    public function isInternal(): bool
+    {
+        return $this->created_by_admin_id !== null;
     }
 
     public function recommendedCarePlan()

@@ -31,7 +31,14 @@
                         <p class="font-semibold text-navy dark:text-white">{{ $projectRequest->user->name }}</p>
                         <p class="text-xs text-gray-400 dark:text-gray-500">{{ $projectRequest->user->email }}</p>
                     </div>
-                    <span class="text-xs text-gray-400 dark:text-gray-500 shrink-0">Submitted {{ $projectRequest->created_at->format('M j, Y \a\t g:ia') }}</span>
+                    <span class="text-xs text-gray-400 dark:text-gray-500 shrink-0 text-right">
+                        @if ($projectRequest->isInternal())
+                            <span class="inline-block text-[0.65rem] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-navy/10 dark:bg-white/10 text-navy dark:text-white mb-0.5">Internal</span><br>
+                            Created {{ $projectRequest->created_at->format('M j, Y') }} by {{ $projectRequest->createdByAdmin?->name ?? 'an admin' }}
+                        @else
+                            Submitted {{ $projectRequest->created_at->format('M j, Y \a\t g:ia') }}
+                        @endif
+                    </span>
                 </div>
 
                 <h3 class="font-semibold text-navy dark:text-white mb-1">{{ $projectRequest->title }}</h3>
@@ -42,6 +49,22 @@
                         {{ $projectRequest->attachment_original_name }}
                     </a>
                 @endif
+
+                <div class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                    <div>
+                        <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Priority</label>
+                        <select name="priority" form="request-form" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                            @foreach (\App\Models\ProjectRequest::PRIORITIES as $value => $label)
+                                <option value="{{ $value }}" {{ old('priority', $projectRequest->priority) === $value ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Due Date</label>
+                        <input type="date" name="due_date" form="request-form" value="{{ old('due_date', $projectRequest->due_date?->format('Y-m-d')) }}"
+                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    </div>
+                </div>
             </div>
 
             <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
