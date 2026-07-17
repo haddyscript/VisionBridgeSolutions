@@ -1401,13 +1401,20 @@ function submitAdminReply(form, event) {
             const reasonWrap = wrap.closest('form')?.querySelector('.closed-reason-wrap');
             if (!reasonWrap) return;
 
+            // required must track visibility — a hidden-but-required field
+            // makes the browser's native validation throw "not focusable"
+            // and silently block submission of every other status.
+            const reasonInput = reasonWrap.querySelector('input[name="closed_reason"]');
+
             if (value === 'closed') {
                 reasonWrap.classList.remove('hidden');
-                reasonWrap.querySelector('input[name="closed_reason"]')?.focus();
+                reasonInput?.setAttribute('required', 'required');
+                reasonInput?.focus();
                 return false;
             }
 
             reasonWrap.classList.add('hidden');
+            reasonInput?.removeAttribute('required');
         });
         bindPillDropdown(root, 'priority', 'priority');
         bindPillDropdown(root, 'assigned-developer', 'assigned_developer_id');

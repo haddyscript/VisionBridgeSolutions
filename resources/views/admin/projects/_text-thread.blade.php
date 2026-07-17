@@ -156,7 +156,7 @@
                         {{-- Hidden until "Closed" is picked — a reason is required before that
                              submit actually goes through (see bindRevisionDropdowns in show.blade.php). --}}
                         <div class="closed-reason-wrap hidden mt-2 flex items-center gap-1.5">
-                            <input type="text" name="closed_reason" placeholder="Reason for closing (required)" required
+                            <input type="text" name="closed_reason" placeholder="Reason for closing (required)"
                                    class="text-xs rounded-lg border border-gray-300 dark:border-gray-600 px-2 py-1 w-48 focus:outline-none focus:ring-2 focus:ring-gold dark:bg-gray-900 dark:text-white">
                             <button type="submit" class="text-xs font-semibold text-red-600 hover:underline whitespace-nowrap">Confirm Close</button>
                         </div>

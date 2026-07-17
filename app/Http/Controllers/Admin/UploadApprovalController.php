@@ -161,14 +161,35 @@ class UploadApprovalController extends Controller
         return back()->with('status', 'Developer assignment updated.');
     }
 
-    /** Developer-facing status (In Progress / Waiting for VisionBridge / Completed) — separate from the client-facing status. */
+    /**
+     * Maps a developer-facing status to its client-facing equivalent, so a
+     * developer's update on a Work Order also moves the status the client
+     * sees on the revision tab, instead of the two drifting apart.
+     */
+    private const DEVELOPER_TO_CLIENT_STATUS = [
+        'in_progress' => 'in_progress',
+        'waiting_on_visionbridge' => 'needs_approval',
+        'completed' => 'completed',
+    ];
+
+    /** Developer-facing status (In Progress / Waiting for VisionBridge / Completed) — drives the client-facing status via DEVELOPER_TO_CLIENT_STATUS. */
     public function updateDeveloperStatus(Request $request, Upload $upload)
     {
         $validated = $request->validate([
             'developer_status' => ['required', 'in:'.implode(',', array_keys(Upload::DEVELOPER_STATUSES))],
         ]);
 
+        $previousStatus = $upload->status;
+        $validated['status'] = self::DEVELOPER_TO_CLIENT_STATUS[$validated['developer_status']];
+        // A developer update is never a "closed" outcome, so any stale closed
+        // reason from a prior manual closure shouldn't resurface later.
+        $validated['closed_reason'] = null;
+
         $upload->update($validated);
+
+        if ($validated['status'] !== $previousStatus) {
+            $this->notifyClientOfStatusChange($upload);
+        }
 
         if (in_array($validated['developer_status'], ['in_progress', 'completed'], true)) {
             Mail::to(config('mail.support_address'))->send(new WorkOrderInternalUpdateMail(
