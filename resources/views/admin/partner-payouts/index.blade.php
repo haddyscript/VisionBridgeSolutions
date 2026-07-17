@@ -75,8 +75,8 @@
                 class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white"></textarea>
         </div>
         <div class="sm:col-span-2">
-            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Receipt (image or PDF, optional)</label>
-            <input type="file" name="receipt" accept=".jpg,.jpeg,.png,.pdf"
+            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Receipts (image or PDF, up to 3, optional)</label>
+            <input type="file" name="receipts[]" accept=".jpg,.jpeg,.png,.pdf" multiple
                 class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gold/15 file:text-gold-dark hover:file:bg-gold/25">
         </div>
         <div class="sm:col-span-2 flex justify-end">
@@ -231,7 +231,7 @@
             <tbody id="payout-tbody" class="divide-y divide-gray-100 dark:divide-gray-700">
                 @foreach ($payouts as $payout)
                     @php $project = $payout->project(); @endphp
-                    <tr class="payout-row hover:bg-gray-50/60"
+                    <tr class="payout-row hover:bg-gray-50/60 cursor-pointer" data-modal="payout-modal-{{ $payout->id }}"
                         data-client="{{ strtolower($project?->user->name ?? '') }}"
                         data-project="{{ strtolower($project?->name ?? '') }}"
                         data-status="{{ $payout->status }}"
@@ -244,12 +244,11 @@
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">
                             {{ $payout->sourceLabel() }}
-                            @if ($payout->hasReceipt())
-                                <a href="{{ route('admin.partner-payouts.receipt', $payout) }}" target="_blank"
-                                   class="inline-flex items-center gap-1 ml-1.5 text-xs text-gold-dark hover:underline align-middle">
+                            @if ($payout->hasReceipts())
+                                <span class="inline-flex items-center gap-1 ml-1.5 text-xs text-gray-400 dark:text-gray-500 align-middle">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                                    Receipt
-                                </a>
+                                    {{ $payout->receipts->count() }}
+                                </span>
                             @endif
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $payout->created_at->format('M j, Y') }}</td>
@@ -276,7 +275,7 @@
                                 </span>
                             @endif
                         </td>
-                        <td class="px-5 py-3.5 text-right">
+                        <td class="payout-row-actions px-5 py-3.5 text-right">
                             @if ($payout->isReady() || $payout->isFlagged())
                                 <form method="POST" action="{{ route('admin.partner-payouts.update', $payout) }}" enctype="multipart/form-data" class="flex flex-wrap items-center justify-end gap-2"
                                       onsubmit="return confirm('{{ $payout->isFlagged() ? 'This payout was flagged ('.$payout->flag_reason.'). Send FaithStack anyway?' : 'Confirm you have sent FaithStack this amount?' }}')">
@@ -286,7 +285,7 @@
                                         <input type="number" name="faithstack_amount" step="0.01" min="0" placeholder="Amount" required
                                                class="w-24 rounded-lg border border-gray-300 dark:border-gray-600 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
                                     @endunless
-                                    <input type="file" name="receipt" accept=".jpg,.jpeg,.png,.pdf" title="Attach a receipt (optional)"
+                                    <input type="file" name="receipts[]" accept=".jpg,.jpeg,.png,.pdf" multiple title="Attach up to 3 receipts (optional)"
                                            class="w-32 text-xs text-gray-500 dark:text-gray-400 file:mr-1.5 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-gold/15 file:text-gold-dark hover:file:bg-gold/25">
                                     <button type="submit" class="{{ $payout->isFlagged() ? 'text-red-500' : 'text-gold-dark' }} font-semibold hover:underline whitespace-nowrap">
                                         {{ $payout->isFlagged() ? 'Send Anyway' : 'Mark Paid' }}
@@ -299,6 +298,87 @@
             </tbody>
         </table>
     </div>
+
+    {{-- Payout detail modals — one per row, opened by clicking anywhere on the row except the actions cell. Same pattern as the admin Team page's access modal. --}}
+    @foreach ($payouts as $payout)
+        @php $modalProject = $payout->project(); @endphp
+        <div id="payout-modal-{{ $payout->id }}" class="payout-modal hidden fixed inset-0 z-[60] items-center justify-center bg-black/40 px-4">
+            <div class="payout-modal-panel bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
+                <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+                    <div>
+                        <p class="font-semibold text-navy dark:text-white">{{ $modalProject?->user->name ?? 'FaithStack (Direct)' }}</p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500">{{ $modalProject?->name ?? $payout->sourceLabel() }}</p>
+                    </div>
+                    <button type="button" class="payout-modal-close w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0" aria-label="Close">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <div class="p-5 space-y-4 text-sm">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">For</p>
+                            <p class="text-navy dark:text-white">{{ $payout->sourceLabel() }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Date</p>
+                            <p class="text-navy dark:text-white">{{ $payout->created_at->format('M j, Y') }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Client Paid</p>
+                            <p class="text-navy dark:text-white">{{ $payout->formattedClientAmount() }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">FaithStack Owed</p>
+                            <p class="text-navy dark:text-white">{{ $payout->formattedFaithstackAmount() }}</p>
+                        </div>
+                        <div class="col-span-2">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Status</p>
+                            <p class="text-navy dark:text-white">
+                                @if ($payout->isPaid())
+                                    Paid {{ $payout->paid_at?->format('M j, Y') }}
+                                @elseif ($payout->isFlagged())
+                                    Held — {{ $payout->flag_reason }}
+                                @elseif ($payout->isReady())
+                                    Ready to Send
+                                @else
+                                    Verifying — {{ $payout->timeUntilReady() }}
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+
+                    @if ($payout->notes)
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">Notes</p>
+                            <p class="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{{ $payout->notes }}</p>
+                        </div>
+                    @endif
+
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">Receipts</p>
+                        @if ($payout->receipts->isEmpty())
+                            <p class="text-gray-400 dark:text-gray-500 text-xs">No receipt uploaded.</p>
+                        @else
+                            <div class="grid grid-cols-3 gap-2">
+                                @foreach ($payout->receipts as $receipt)
+                                    <a href="{{ route('admin.partner-payouts.receipts.show', $receipt) }}" target="_blank"
+                                       class="block aspect-square rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-gold transition-colors">
+                                        @if ($receipt->isImage())
+                                            <img src="{{ route('admin.partner-payouts.receipts.show', $receipt) }}" class="w-full h-full object-cover" alt="Receipt">
+                                        @else
+                                            <div class="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-900 text-gray-400">
+                                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                            </div>
+                                        @endif
+                                    </a>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 @endif
 
 <script>
@@ -427,6 +507,38 @@
             btn.addEventListener('click', () => sortPayoutsBy(btn.dataset.sortKey));
         });
     })();
+
+    // Open a payout's detail modal when its row is clicked — but ignore
+    // clicks that land on the Mark Paid form (or anything inside it).
+    // Same pattern as the admin Team page's access modal.
+    document.querySelectorAll('.payout-row').forEach((row) => {
+        row.addEventListener('click', (e) => {
+            if (e.target.closest('.payout-row-actions')) return;
+            const modal = document.getElementById(row.dataset.modal);
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        });
+    });
+
+    function closePayoutModal(modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    document.querySelectorAll('.payout-modal').forEach((modal) => {
+        modal.addEventListener('click', (e) => {
+            if (!e.target.closest('.payout-modal-panel')) closePayoutModal(modal);
+        });
+        modal.querySelectorAll('.payout-modal-close').forEach((btn) => {
+            btn.addEventListener('click', () => closePayoutModal(modal));
+        });
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        document.querySelectorAll('.payout-modal:not(.hidden)').forEach(closePayoutModal);
+    });
 </script>
 
 @endsection

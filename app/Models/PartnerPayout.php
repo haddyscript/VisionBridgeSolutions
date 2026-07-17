@@ -24,7 +24,6 @@ class PartnerPayout extends Model
         'flag_reason',
         'paid_at',
         'notes',
-        'receipt_path',
     ];
 
     protected function casts(): array
@@ -65,9 +64,15 @@ class PartnerPayout extends Model
         return $this->description ?? 'Unknown';
     }
 
-    public function hasReceipt(): bool
+    /** Up to 3 proof-of-payment files (screenshots/PDFs) attached to this payout. */
+    public function receipts()
     {
-        return $this->receipt_path !== null;
+        return $this->hasMany(PartnerPayoutReceipt::class)->latest();
+    }
+
+    public function hasReceipts(): bool
+    {
+        return $this->receipts->isNotEmpty();
     }
 
     public function isPending(): bool

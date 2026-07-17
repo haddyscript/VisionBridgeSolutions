@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\MaintenancePlan;
 use App\Models\PartnerPayout;
+use App\Models\PartnerPayoutReceipt;
 use App\Models\Payment;
 use App\Models\Subscription;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -19,12 +20,15 @@ class PartnerPayoutController extends Controller
         // A plain with('payable.x') would fail — Subscription and Payment
         // don't share the same relations, so each morph type needs its own
         // eager-load list via morphWith().
-        $payouts = PartnerPayout::with(['payable' => function (MorphTo $morphTo) {
-                $morphTo->morphWith([
-                    Subscription::class => ['project.user', 'maintenancePlan'],
-                    Payment::class => ['project.user'],
-                ]);
-            }])
+        $payouts = PartnerPayout::with([
+                'payable' => function (MorphTo $morphTo) {
+                    $morphTo->morphWith([
+                        Subscription::class => ['project.user', 'maintenancePlan'],
+                        Payment::class => ['project.user'],
+                    ]);
+                },
+                'receipts',
+            ])
             ->latest()
             ->get();
 
@@ -107,7 +111,8 @@ class PartnerPayoutController extends Controller
         $validated = $request->validate([
             'faithstack_amount' => ['nullable', 'numeric', 'min:0'],
             'notes' => ['nullable', 'string', 'max:1000'],
-            'receipt' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:10240'],
+            'receipts' => ['nullable', 'array', 'max:3'],
+            'receipts.*' => ['file', 'mimes:jpg,jpeg,png,pdf', 'max:10240'],
         ]);
 
         abort_if(
@@ -122,10 +127,9 @@ class PartnerPayoutController extends Controller
             'status' => 'paid',
             'paid_at' => now(),
             'notes' => $validated['notes'] ?? $partnerPayout->notes,
-            'receipt_path' => $request->hasFile('receipt')
-                ? $request->file('receipt')->store('partner-payout-receipts', 'local')
-                : $partnerPayout->receipt_path,
         ]);
+
+        $this->storeReceipts($partnerPayout, $request->file('receipts', []));
 
         return back()->with('status', 'Marked as paid to FaithStack.');
     }
@@ -146,12 +150,9 @@ class PartnerPayoutController extends Controller
             'faithstack_amount' => ['nullable', 'numeric', 'min:0'],
             'paid_at' => ['required', 'date'],
             'notes' => ['nullable', 'string', 'max:1000'],
-            'receipt' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:10240'],
+            'receipts' => ['nullable', 'array', 'max:3'],
+            'receipts.*' => ['file', 'mimes:jpg,jpeg,png,pdf', 'max:10240'],
         ]);
-
-        $receiptPath = $request->hasFile('receipt')
-            ? $request->file('receipt')->store('partner-payout-receipts', 'local')
-            : null;
 
         $payout = new PartnerPayout([
             'description' => $validated['description'],
@@ -160,7 +161,6 @@ class PartnerPayoutController extends Controller
             'status' => 'paid',
             'paid_at' => $validated['paid_at'],
             'notes' => $validated['notes'] ?? null,
-            'receipt_path' => $receiptPath,
         ]);
 
         // Backdate created_at to the real payment date so the table's "Date"
@@ -170,13 +170,23 @@ class PartnerPayoutController extends Controller
         $payout->created_at = $validated['paid_at'];
         $payout->save();
 
+        $this->storeReceipts($payout, $request->file('receipts', []));
+
         return back()->with('status', 'Logged manual payment to FaithStack.');
     }
 
-    public function downloadReceipt(PartnerPayout $partnerPayout)
+    /** @param \Illuminate\Http\UploadedFile[] $files */
+    private function storeReceipts(PartnerPayout $payout, array $files): void
     {
-        abort_unless($partnerPayout->hasReceipt(), 404);
+        foreach ($files as $file) {
+            $payout->receipts()->create([
+                'path' => $file->store('partner-payout-receipts', 'local'),
+            ]);
+        }
+    }
 
-        return Storage::disk('local')->download($partnerPayout->receipt_path);
+    public function showReceipt(PartnerPayoutReceipt $partnerPayoutReceipt)
+    {
+        return Storage::disk('local')->response($partnerPayoutReceipt->path);
     }
 }
