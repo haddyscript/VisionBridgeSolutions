@@ -113,6 +113,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     {{-- Layer 1 — floating gold particles, populated + animated by GSAP (see @section('scripts') below) --}}
     <div id="hero-particles" class="absolute inset-0 overflow-hidden pointer-events-none" style="z-index:1;"></div>
 
+    {{-- Layer 1 — mouse-following ambient glow (desktop/pointer devices only — no mouse on touch, see @section('scripts')) --}}
+    <div id="hero-mouse-glow" class="absolute inset-0 pointer-events-none hidden md:block" style="z-index:1;"></div>
+
     {{-- Layer 1 — atmospheric CSS orbs (GPU-composed, zero CPU) --}}
     <div class="hero-orb" style="width:580px;height:580px;top:-120px;right:-120px;z-index:1;
          background:radial-gradient(circle,rgba(44,166,164,.16) 0%,transparent 70%);
@@ -1839,13 +1842,27 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 el.style.opacity = 0;
                 container.appendChild(el);
 
-                gsap.set(el, { opacity: 0.15 + Math.random() * 0.35 });
+                const baseOpacity = 0.15 + Math.random() * 0.35;
+                gsap.set(el, { opacity: baseOpacity });
 
                 tweens.push(gsap.to(el, {
                     x: (Math.random() - 0.5) * 90,
                     y: -40 - Math.random() * 70,
                     duration: 9 + Math.random() * 9,
                     delay: Math.random() * 6,
+                    ease: 'sine.inOut',
+                    repeat: -1,
+                    yoyo: true,
+                }));
+
+                // Twinkle — a separate opacity tween layered on top of the
+                // position drift (different property, so it runs independently
+                // without fighting the tween above). Randomized duration/delay
+                // per particle so they don't all flicker in unison.
+                tweens.push(gsap.to(el, {
+                    opacity: Math.min(1, baseOpacity + 0.45 + Math.random() * 0.25),
+                    duration: 1 + Math.random() * 1.6,
+                    delay: Math.random() * 4,
                     ease: 'sine.inOut',
                     repeat: -1,
                     yoyo: true,
@@ -1860,6 +1877,42 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     });
                 }, { rootMargin: '150px 0px' }).observe(hero);
             }
+        })();
+
+        // ============================================================
+        //  HERO BACKGROUND — mouse-following ambient glow
+        //
+        //  Desktop/pointer devices only (no mouse on touch screens) and
+        //  skipped for prefers-reduced-motion. GSAP eases the glow toward
+        //  the cursor each move rather than snapping instantly to it, so it
+        //  reads as a soft trailing light instead of a jittery cursor-lock.
+        // ============================================================
+        (function initHeroMouseGlow() {
+            const hero = document.getElementById('hero');
+            const glow = document.getElementById('hero-mouse-glow');
+            if (!hero || !glow) return;
+            if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            let isActive = false;
+
+            hero.addEventListener('mousemove', (e) => {
+                const rect = hero.getBoundingClientRect();
+                const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+                const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+
+                gsap.to(glow, { '--mx': xPct + '%', '--my': yPct + '%', duration: 0.6, ease: 'power2.out' });
+
+                if (!isActive) {
+                    isActive = true;
+                    gsap.to(glow, { opacity: 1, duration: 0.5 });
+                }
+            });
+
+            hero.addEventListener('mouseleave', () => {
+                isActive = false;
+                gsap.to(glow, { opacity: 0, duration: 0.6 });
+            });
         })();
 
         // ============================================================

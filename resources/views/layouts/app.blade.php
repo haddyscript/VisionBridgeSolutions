@@ -333,11 +333,35 @@
                 rgba(47,58,69,.03) 60%,
                 rgba(44,166,164,.05) 100%);
             background-size: 220% 220%;
-            animation: hero-gradient-drift 24s ease-in-out infinite;
+            /* Two independent animations on different properties — position
+               drift (existing) plus a slow opacity "breathe" pulse (new) —
+               run simultaneously without conflicting. */
+            animation: hero-gradient-drift 24s ease-in-out infinite,
+                       hero-bg-breathe 8s ease-in-out infinite;
         }
         @keyframes hero-gradient-drift {
             0%,100% { background-position: 0% 30%; }
             50%      { background-position: 100% 70%; }
+        }
+        @keyframes hero-bg-breathe {
+            0%,100% { opacity: 1; }
+            50%      { opacity: 0.7; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .hero-gradient-shift { animation: none; }
+        }
+
+        /* ─── Hero background — mouse-following ambient glow ───
+             Position driven by --mx/--my custom properties, animated via
+             GSAP on mousemove (see home.blade.php) rather than a CSS
+             transition — custom-property transitions need @property
+             registration for reliable cross-browser interpolation, which
+             GSAP's JS-driven approach doesn't need. */
+        #hero-mouse-glow {
+            --mx: 50%;
+            --my: 40%;
+            background: radial-gradient(560px circle at var(--mx) var(--my), rgba(223,192,106,.16), transparent 62%);
+            opacity: 0;
         }
 
         /* ─── Hero background — very soft light rays ─── */

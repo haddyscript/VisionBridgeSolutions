@@ -1,0 +1,18 @@
+My Recommended Hero Animation Stack
+
+If I were building VisionBridge as a premium agency website, I'd combine these effects:
+
+🌌 Animated gradient and breathing background - done
+✨ Twinkling gold particles - done
+💡 Mouse-following ambient glow
+🌉 Bridge with tiny moving traffic lights
+💻 Floating laptop with gentle tilt and auto-scrolling website preview
+🪐 Slowly rotating halo behind the laptop
+🌠 Gold light trails orbiting the laptop
+📄 Floating testimonial cards with independent motion
+✨ Glass reflection sweeps on cards and buttons
+📈 Count-up statistics on scroll
+🖱️ Mouse parallax for the bridge, laptop, and headline
+🎞️ Animated film grain/noise overlay
+🌟 Soft pulse on "Expanding Reach"
+🚀 GSAP ScrollTrigger reveals with blur and elevation
