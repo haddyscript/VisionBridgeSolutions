@@ -24,6 +24,8 @@ class PartnerPayout extends Model
         'flag_reason',
         'paid_at',
         'notes',
+        'edited_at',
+        'edited_by_id',
     ];
 
     protected function casts(): array
@@ -32,12 +34,24 @@ class PartnerPayout extends Model
             'ready_at' => 'datetime',
             'flagged_at' => 'datetime',
             'paid_at' => 'datetime',
+            'edited_at' => 'datetime',
         ];
     }
 
     public function payable()
     {
         return $this->morphTo();
+    }
+
+    /** The super admin who last edited this record after it was already marked paid, if any. */
+    public function editedBy()
+    {
+        return $this->belongsTo(User::class, 'edited_by_id');
+    }
+
+    public function wasEdited(): bool
+    {
+        return $this->edited_at !== null;
     }
 
     /** Convenience accessor: the client + project this payout traces back to, regardless of type. */

@@ -265,6 +265,11 @@
                                 <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-teal/15 text-teal-dark">
                                     Paid {{ $payout->paid_at?->format('M j, Y') }}
                                 </span>
+                                @if ($payout->wasEdited())
+                                    <span class="block text-[11px] text-gray-400 dark:text-gray-500 mt-1" title="{{ $payout->edited_at->format('M j, Y g:ia') }}">
+                                        Edited {{ $payout->edited_at->format('M j, Y') }}@if ($payout->editedBy) by {{ $payout->editedBy->name }} @endif
+                                    </span>
+                                @endif
                             @elseif ($payout->isFlagged())
                                 <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500" title="{{ $payout->flag_reason }}">
                                     Held — {{ $payout->flag_reason }}
@@ -284,6 +289,11 @@
                                 <button type="button" data-modal="mark-paid-modal-{{ $payout->id }}"
                                         class="modal-trigger {{ $payout->isFlagged() ? 'text-red-500' : 'text-gold-dark' }} font-semibold hover:underline whitespace-nowrap">
                                     {{ $payout->isFlagged() ? 'Send Anyway' : 'Mark Paid' }}
+                                </button>
+                            @elseif ($payout->isPaid() && auth()->user()->isSuperAdmin())
+                                <button type="button" data-modal="mark-paid-modal-{{ $payout->id }}"
+                                        class="modal-trigger text-gray-400 dark:text-gray-500 hover:text-gold-dark font-semibold hover:underline whitespace-nowrap">
+                                    Edit
                                 </button>
                             @endif
                         </td>
@@ -373,12 +383,13 @@
             </div>
         </div>
 
-        @if ($payout->isReady() || $payout->isFlagged())
-            {{-- Mark Paid modal — date paid, optional FaithStack amount (if not already set), and up to 3 receipts. --}}
+        @if ($payout->isReady() || $payout->isFlagged() || ($payout->isPaid() && auth()->user()->isSuperAdmin()))
+            @php $isEditingPaid = $payout->isPaid(); @endphp
+            {{-- Mark Paid / Edit modal — date paid, FaithStack amount, and up to 3 receipts. Editing an already-paid row is super-admin only. --}}
             <div id="mark-paid-modal-{{ $payout->id }}" class="payout-modal hidden fixed inset-0 z-[60] items-center justify-center bg-black/40 px-4">
                 <div class="payout-modal-panel bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl w-full max-w-md max-h-[85vh] overflow-y-auto">
                     <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
-                        <p class="font-semibold text-navy dark:text-white">{{ $payout->isFlagged() ? 'Send Anyway' : 'Mark Paid' }} — {{ $modalProject?->user->name ?? 'FaithStack (Direct)' }}</p>
+                        <p class="font-semibold text-navy dark:text-white">{{ $isEditingPaid ? 'Edit Payout' : ($payout->isFlagged() ? 'Send Anyway' : 'Mark Paid') }} — {{ $modalProject?->user->name ?? 'FaithStack (Direct)' }}</p>
                         <button type="button" class="payout-modal-close w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0" aria-label="Close">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
@@ -387,26 +398,49 @@
                         @csrf
                         @method('PATCH')
 
-                        @if ($payout->isFlagged())
+                        @if ($isEditingPaid)
+                            <p class="text-xs text-gold-dark bg-gold/10 rounded-lg px-3 py-2">This payout was already marked paid — changes here are recorded with an "edited" timestamp for the record.</p>
+                        @elseif ($payout->isFlagged())
                             <p class="text-xs text-red-500 bg-red-50 dark:bg-red-500/10 rounded-lg px-3 py-2">This payout was flagged — {{ $payout->flag_reason }}. Confirm you still want to send FaithStack this amount.</p>
                         @endif
 
-                        @unless ($payout->hasFaithstackAmount())
+                        @if ($isEditingPaid || ! $payout->hasFaithstackAmount())
                             <div>
                                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">FaithStack Amount (USD)</label>
                                 <input type="number" name="faithstack_amount" step="0.01" min="0" placeholder="Amount" required
+                                       value="{{ $payout->hasFaithstackAmount() ? number_format($payout->faithstack_amount / 100, 2, '.', '') : '' }}"
                                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
                             </div>
-                        @endunless
+                        @endif
 
                         <div>
                             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Date Paid</label>
-                            <input type="date" name="paid_at" required max="{{ now()->format('Y-m-d') }}" value="{{ now()->format('Y-m-d') }}"
+                            <input type="date" name="paid_at" required max="{{ now()->format('Y-m-d') }}" value="{{ $payout->paid_at?->format('Y-m-d') ?? now()->format('Y-m-d') }}"
                                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
                         </div>
 
+                        @if ($isEditingPaid && $payout->receipts->isNotEmpty())
+                            <div>
+                                <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Already Attached</p>
+                                <div class="grid grid-cols-4 gap-1.5">
+                                    @foreach ($payout->receipts as $receipt)
+                                        <a href="{{ route('admin.partner-payouts.receipts.show', $receipt) }}" target="_blank"
+                                           class="block aspect-square rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-gold transition-colors">
+                                            @if ($receipt->isImage())
+                                                <img src="{{ route('admin.partner-payouts.receipts.show', $receipt) }}" class="w-full h-full object-cover" alt="Receipt">
+                                            @else
+                                                <div class="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-900 text-gray-400">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                                </div>
+                                            @endif
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="receipts-field" data-max="3">
-                            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Receipts (image or PDF, up to 3, optional)</label>
+                            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ $isEditingPaid ? 'Add More Receipts (optional)' : 'Receipts (image or PDF, up to 3, optional)' }}</label>
                             <label class="inline-flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg bg-gold/15 text-gold-dark text-sm font-semibold hover:bg-gold/25 transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
                                 <span class="receipts-field-label">Choose Receipts</span>
@@ -420,7 +454,7 @@
                                 Cancel
                             </button>
                             <button type="submit" class="px-4 py-2 bg-navy hover:bg-navy-light text-white text-sm font-semibold rounded-lg transition-colors">
-                                {{ $payout->isFlagged() ? 'Send Anyway' : 'Mark Paid' }}
+                                {{ $isEditingPaid ? 'Save Changes' : ($payout->isFlagged() ? 'Send Anyway' : 'Mark Paid') }}
                             </button>
                         </div>
                     </form>

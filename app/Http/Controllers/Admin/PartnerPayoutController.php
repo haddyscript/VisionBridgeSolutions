@@ -28,6 +28,7 @@ class PartnerPayoutController extends Controller
                     ]);
                 },
                 'receipts',
+                'editedBy',
             ])
             ->latest()
             ->get();
@@ -108,6 +109,17 @@ class PartnerPayoutController extends Controller
         // someone forges the request, not just hide the button in the view.
         abort_if($partnerPayout->isPending(), 422, 'This payout is still in its 7-day verification window.');
 
+        // Re-editing a payout that's already settled (fixing the date, amount,
+        // or adding a receipt after the fact) is a change to a finalized
+        // financial record — restricted to super admins, unlike the initial
+        // mark-paid action which any admin with page access can do.
+        $wasAlreadyPaid = $partnerPayout->isPaid();
+        abort_if(
+            $wasAlreadyPaid && ! $request->user()->isSuperAdmin(),
+            403,
+            'Only a super admin can edit a payout that has already been marked paid.'
+        );
+
         $validated = $request->validate([
             'faithstack_amount' => ['nullable', 'numeric', 'min:0'],
             'paid_at' => ['required', 'date', 'before_or_equal:today'],
@@ -117,22 +129,25 @@ class PartnerPayoutController extends Controller
         ]);
 
         abort_if(
-            $partnerPayout->faithstack_amount === null && empty($validated['faithstack_amount']),
+            ! $wasAlreadyPaid && $partnerPayout->faithstack_amount === null && empty($validated['faithstack_amount']),
             422,
             "This payout doesn't have a FaithStack amount yet — enter one before marking it paid."
         );
 
         $partnerPayout->update([
-            'faithstack_amount' => $partnerPayout->faithstack_amount
-                ?? (int) round($validated['faithstack_amount'] * 100),
+            'faithstack_amount' => $wasAlreadyPaid
+                ? (int) round($validated['faithstack_amount'] * 100)
+                : ($partnerPayout->faithstack_amount ?? (int) round($validated['faithstack_amount'] * 100)),
             'status' => 'paid',
             'paid_at' => $validated['paid_at'],
             'notes' => $validated['notes'] ?? $partnerPayout->notes,
+            'edited_at' => $wasAlreadyPaid ? now() : $partnerPayout->edited_at,
+            'edited_by_id' => $wasAlreadyPaid ? $request->user()->id : $partnerPayout->edited_by_id,
         ]);
 
         $this->storeReceipts($partnerPayout, $request->file('receipts', []));
 
-        return back()->with('status', 'Marked as paid to FaithStack.');
+        return back()->with('status', $wasAlreadyPaid ? 'Payout record updated.' : 'Marked as paid to FaithStack.');
     }
 
     /**
