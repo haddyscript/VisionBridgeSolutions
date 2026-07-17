@@ -74,10 +74,14 @@
             <textarea name="notes" rows="2" placeholder="e.g. Ref #12345, paid via bank transfer to GCash, original amount ₱17,000 PHP"
                 class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white"></textarea>
         </div>
-        <div class="sm:col-span-2">
+        <div class="sm:col-span-2 receipts-field" data-max="3">
             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Receipts (image or PDF, up to 3, optional)</label>
-            <input type="file" name="receipts[]" accept=".jpg,.jpeg,.png,.pdf" multiple
-                class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gold/15 file:text-gold-dark hover:file:bg-gold/25">
+            <label class="inline-flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg bg-gold/15 text-gold-dark text-sm font-semibold hover:bg-gold/25 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                <span class="receipts-field-label">Choose Receipts</span>
+                <input type="file" name="receipts[]" accept=".jpg,.jpeg,.png,.pdf" multiple class="receipts-input hidden">
+            </label>
+            <div class="receipts-preview mt-2 flex flex-wrap gap-1.5"></div>
         </div>
         <div class="sm:col-span-2 flex justify-end">
             <button type="submit"
@@ -285,8 +289,14 @@
                                         <input type="number" name="faithstack_amount" step="0.01" min="0" placeholder="Amount" required
                                                class="w-24 rounded-lg border border-gray-300 dark:border-gray-600 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
                                     @endunless
-                                    <input type="file" name="receipts[]" accept=".jpg,.jpeg,.png,.pdf" multiple title="Attach up to 3 receipts (optional)"
-                                           class="w-32 text-xs text-gray-500 dark:text-gray-400 file:mr-1.5 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-gold/15 file:text-gold-dark hover:file:bg-gold/25">
+                                    <div class="receipts-field" data-max="3">
+                                        <label class="inline-flex items-center gap-1 cursor-pointer px-2 py-1 rounded-lg bg-gold/15 text-gold-dark text-xs font-semibold hover:bg-gold/25 transition-colors whitespace-nowrap">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                            <span class="receipts-field-label">Attach Receipts</span>
+                                            <input type="file" name="receipts[]" accept=".jpg,.jpeg,.png,.pdf" multiple class="receipts-input hidden">
+                                        </label>
+                                        <div class="receipts-preview mt-1 flex flex-wrap gap-1 justify-end"></div>
+                                    </div>
                                     <button type="submit" class="{{ $payout->isFlagged() ? 'text-red-500' : 'text-gold-dark' }} font-semibold hover:underline whitespace-nowrap">
                                         {{ $payout->isFlagged() ? 'Send Anyway' : 'Mark Paid' }}
                                     </button>
@@ -538,6 +548,64 @@
     document.addEventListener('keydown', (e) => {
         if (e.key !== 'Escape') return;
         document.querySelectorAll('.payout-modal:not(.hidden)').forEach(closePayoutModal);
+    });
+
+    // Receipt pickers (manual-payment form + each row's Mark Paid form) —
+    // the native multi-file input only shows a truncated "N files" label with
+    // no way to see what's actually selected, so this renders a removable
+    // filename chip per file plus a live "X of Y selected" count instead.
+    document.querySelectorAll('.receipts-field').forEach((field) => {
+        const input = field.querySelector('.receipts-input');
+        const preview = field.querySelector('.receipts-preview');
+        const label = field.querySelector('.receipts-field-label');
+        const max = Number(field.dataset.max || 3);
+        const defaultLabel = label ? label.textContent : '';
+
+        function render() {
+            const files = Array.from(input.files);
+            preview.innerHTML = '';
+
+            files.forEach((file, index) => {
+                const chip = document.createElement('span');
+                chip.className = 'inline-flex items-center gap-1 pl-2 pr-1 py-1 rounded-full bg-teal/15 text-teal-dark text-xs max-w-[9rem]';
+
+                const name = document.createElement('span');
+                name.className = 'truncate';
+                name.textContent = file.name;
+                chip.appendChild(name);
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'shrink-0 w-3.5 h-3.5 rounded-full flex items-center justify-center hover:bg-teal/30 leading-none';
+                removeBtn.setAttribute('aria-label', 'Remove ' + file.name);
+                removeBtn.textContent = '×';
+                removeBtn.addEventListener('click', () => {
+                    const dt = new DataTransfer();
+                    Array.from(input.files).forEach((f, i) => {
+                        if (i !== index) dt.items.add(f);
+                    });
+                    input.files = dt.files;
+                    render();
+                });
+                chip.appendChild(removeBtn);
+
+                preview.appendChild(chip);
+            });
+
+            if (label) {
+                label.textContent = files.length ? `${files.length} of ${max} selected` : defaultLabel;
+            }
+        }
+
+        input.addEventListener('change', () => {
+            if (input.files.length > max) {
+                window.alert(`You can attach up to ${max} receipts.`);
+                const dt = new DataTransfer();
+                Array.from(input.files).slice(0, max).forEach((f) => dt.items.add(f));
+                input.files = dt.files;
+            }
+            render();
+        });
     });
 </script>
 
