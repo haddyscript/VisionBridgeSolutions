@@ -405,7 +405,8 @@
         /* ─── Hero background — floating gold particles (positioned/animated via GSAP in home.blade.php) ─── */
         .hero-particle {
             position:absolute; border-radius:50%; pointer-events:none;
-            background: radial-gradient(circle, rgba(223,192,106,.9) 0%, rgba(201,168,76,.35) 55%, transparent 75%);
+            background: radial-gradient(circle, #FFF6DC 0%, rgba(223,192,106,.9) 45%, transparent 75%);
+            filter: drop-shadow(0 0 4px rgba(223,192,106,.85));
             will-change: transform, opacity;
         }
 

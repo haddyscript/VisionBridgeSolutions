@@ -1828,13 +1828,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             if (!container) return;
             if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-            const count = window.innerWidth < 640 ? 7 : 16;
+            const count = window.innerWidth < 640 ? 10 : 22;
             const tweens = [];
 
             for (let i = 0; i < count; i++) {
                 const el = document.createElement('div');
                 el.className = 'hero-particle';
-                const size = 2 + Math.random() * 3.5;
+                const size = 3 + Math.random() * 5;
                 el.style.width = size + 'px';
                 el.style.height = size + 'px';
                 el.style.left = Math.random() * 100 + '%';
@@ -1842,7 +1842,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 el.style.opacity = 0;
                 container.appendChild(el);
 
-                const baseOpacity = 0.15 + Math.random() * 0.35;
+                const baseOpacity = 0.35 + Math.random() * 0.35;
                 gsap.set(el, { opacity: baseOpacity });
 
                 tweens.push(gsap.to(el, {
@@ -1860,7 +1860,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 // without fighting the tween above). Randomized duration/delay
                 // per particle so they don't all flicker in unison.
                 tweens.push(gsap.to(el, {
-                    opacity: Math.min(1, baseOpacity + 0.45 + Math.random() * 0.25),
+                    opacity: 0.95 + Math.random() * 0.05,
                     duration: 1 + Math.random() * 1.6,
                     delay: Math.random() * 4,
                     ease: 'sine.inOut',
