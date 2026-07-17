@@ -28,6 +28,7 @@ class WorkOrderController extends Controller
                 'client_name' => $upload->user->name,
                 'developer_status' => $upload->developer_status,
                 'created_at' => $upload->created_at,
+                'completed_at' => $upload->developer_status === 'completed' ? $upload->completed_at : null,
                 'url' => route('admin.projects.show', $upload->project),
                 'status_url' => route('admin.uploads.developer-status', $upload),
                 'unread' => $upload->unreadClientRepliesCount(),
@@ -42,6 +43,9 @@ class WorkOrderController extends Controller
                 'client_name' => $request->user->name,
                 'developer_status' => $request->developer_status,
                 'created_at' => $request->created_at,
+                // ProjectRequest has no dedicated completed_at column, so
+                // updated_at is the closest proxy for when it was completed.
+                'completed_at' => $request->developer_status === 'completed' ? $request->updated_at : null,
                 'url' => route('admin.project-requests.show', $request),
                 'status_url' => route('admin.project-requests.developer-status', $request),
                 'unread' => 0,

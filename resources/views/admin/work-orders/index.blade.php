@@ -29,6 +29,7 @@
                     <th class="px-5 py-3">Item</th>
                     <th class="px-5 py-3">Your Status</th>
                     <th class="px-5 py-3">Assigned</th>
+                    <th class="px-5 py-3">Completed</th>
                     <th class="px-5 py-3"></th>
                 </tr>
             </thead>
@@ -56,6 +57,7 @@
                             </select>
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $item['created_at']->format('M j, Y') }}</td>
+                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $item['completed_at']?->format('M j, Y') ?? '—' }}</td>
                         <td class="px-5 py-3.5 text-right">
                             <a href="{{ $item['url'] }}" class="text-gold-dark font-semibold hover:underline">Open</a>
                         </td>
