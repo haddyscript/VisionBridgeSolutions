@@ -220,6 +220,23 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                      orbit's percentage sizing tied to the laptop itself
                      instead of the much larger column wrapper around it. --}}
                 <div id="hero-device-frame" class="relative" style="aspect-ratio:4/3.3;transform:scale(1.12);transform-origin:center;">
+                    {{-- Halo — soft diffuse glow disc slowly rotating behind the laptop,
+                         distinct from the thin sparkling orbit rings above it. A
+                         conic-gradient (not a uniform radial one) so the rotation is
+                         actually visible instead of looking static while spinning. --}}
+                    <div id="hero-halo" class="absolute opacity-0 pointer-events-none" style="
+                         width:150%;height:150%;top:50%;left:50%;transform:translate(-50%,-50%);
+                         border-radius:50%;z-index:-1;
+                         background:conic-gradient(from 0deg,
+                             rgba(201,168,76,0) 0%,
+                             rgba(201,168,76,.32) 12%,
+                             rgba(201,168,76,0) 30%,
+                             rgba(255,157,46,.24) 50%,
+                             rgba(201,168,76,0) 68%,
+                             rgba(223,192,106,.28) 85%,
+                             rgba(201,168,76,0) 100%);
+                         filter:blur(46px);"></div>
+
                     {{-- Orbit ring — sparkling arc continuously circling the laptop --}}
                     <svg id="hero-orbit" viewBox="0 0 600 480" class="opacity-0" style="position:absolute;top:-16%;right:-18%;bottom:-16%;left:6%;pointer-events:none;z-index:0;">
                         {{-- Outer ring --}}
@@ -1803,7 +1820,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             // the eye lands on the heading first, matching the reference layout
             .fromTo('#hero-device',     { opacity:0, y:30, scale:0.96 }, { opacity:1, y:0, scale:1, duration:0.85, ease:'power3.out' }, '-=0.55')
             .fromTo('#hero-device-mobile', { opacity:0, y:24, scale:0.96 }, { opacity:1, y:0, scale:1, duration:0.80, ease:'power3.out' }, '-=0.55')
-            .fromTo('#hero-orbit',      { opacity:0 }, { opacity:1, duration:0.90 }, '-=0.60')
+            .fromTo('#hero-halo',       { opacity:0 }, { opacity:1, duration:1.1 }, '-=0.60')
+            .fromTo('#hero-orbit',      { opacity:0 }, { opacity:1, duration:0.90 }, '-=0.95')
             .fromTo('#hero-support-card', { opacity:0, y:-14 }, { opacity:1, y:0, duration:0.55 }, '-=0.45')
             .fromTo('.hero-rating-card', { opacity:0, y:18 }, { opacity:1, y:0, duration:0.55, stagger:0.12 }, '-=0.35')
             .fromTo('#hero-scroll-cue', { opacity:0 }, { opacity:1, duration:0.70 }, '-=1.60');

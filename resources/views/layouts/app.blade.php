@@ -522,6 +522,22 @@
             #hero-orbit-inner-mid, #hero-orbit-inner-glow { animation: none; }
         }
 
+        /* Halo — soft diffuse glow disc slowly rotating behind the laptop,
+           sitting further back than the thin sparkling orbit rings above it.
+           A safe use of transform:rotate() (unlike the flat-ellipse orbit
+           rings) since it's radially symmetric — no non-circular shape to
+           visibly warp/tilt through the spin. */
+        #hero-halo {
+            animation: hero-halo-spin 55s linear infinite;
+        }
+        @keyframes hero-halo-spin {
+            from { transform: translate(-50%,-50%) rotate(0deg); }
+            to   { transform: translate(-50%,-50%) rotate(360deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #hero-halo { animation: none; }
+        }
+
         /* Device mockup — a real image asset (public/image/laptop-tillted.png),
            masked at the edges with a radial gradient so its own baked-in dark
            background blends into the hero instead of showing a hard rectangle. */
@@ -2293,7 +2309,7 @@
                 '.shimmer-gold', '.live-dot', '.float-card-1', '.float-card-2',
                 '.portfolio-badge', '#hscroll-edge-arrow', '.medallion-sweep',
                 '.hero-gradient-shift', '.hero-ray', '.hero-noise', '#hero-orbit-glow', '#hero-orbit-bloom', '#hero-orbit-mid',
-                '#hero-orbit-inner-mid', '#hero-orbit-inner-glow',
+                '#hero-orbit-inner-mid', '#hero-orbit-inner-glow', '#hero-halo',
             ];
             const els = document.querySelectorAll(selectors.join(','));
             if (!els.length) return;
