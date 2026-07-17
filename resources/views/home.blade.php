@@ -94,6 +94,16 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         <img src="@assetv('image/landing-glowing-bridge.png')" alt="" class="w-full h-full object-cover" style="object-position:left 55%;">
     </div>
 
+    {{-- Layer 1 — mobile-only bridge band: a shorter, full-width strip anchored
+         to the bottom of the hero (not the tall left silhouette used from md up,
+         which has no room to breathe in a single-column mobile layout), faded
+         on its top edge so it reads as ambient atmosphere behind the lower content --}}
+    <div id="hero-bridge-mobile" class="opacity-0 absolute inset-x-0 bottom-0 pointer-events-none block md:hidden" style="height:38%;z-index:1;
+         -webkit-mask-image:linear-gradient(to top, black 45%, transparent 92%);
+         mask-image:linear-gradient(to top, black 45%, transparent 92%);">
+        <img src="@assetv('image/landing-glowing-bridge.png')" alt="" class="w-full h-full object-cover" style="object-position:35% 60%;">
+    </div>
+
     {{-- Layer 1 — very soft light rays, kept off small screens (extra blur/paint cost not worth it there) --}}
     <div class="absolute inset-0 overflow-hidden pointer-events-none hidden sm:block" style="z-index:1;">
         <div class="hero-ray hero-ray-1"></div>
@@ -122,14 +132,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     <div class="hero-noise absolute inset-0 pointer-events-none hidden sm:block" style="z-index:2;opacity:.035;"></div>
 
     {{-- Layer 4 — content: two-column grid (text left, device mockup right) --}}
-    <div class="relative w-full max-w-[92rem] mx-auto px-4 sm:px-6 lg:px-16 xl:px-28 pt-28 pb-20" style="z-index:4;">
+    <div class="relative w-full max-w-[92rem] mx-auto px-5 sm:px-6 lg:px-16 xl:px-28 pt-20 sm:pt-24 lg:pt-28 pb-16 sm:pb-20" style="z-index:4;">
         <div class="grid grid-cols-1 lg:grid-cols-[1fr_1.35fr] gap-10 items-center">
 
             {{-- LEFT — copy --}}
             <div class="text-left">
 
                 {{-- Badge --}}
-                <div id="hero-badge" class="inline-flex items-center text-xs font-semibold tracking-widest uppercase px-5 py-2 rounded-full mb-8 opacity-0"
+                <div id="hero-badge" class="inline-flex items-center text-xs font-semibold tracking-widest uppercase px-5 py-2 rounded-full mb-6 sm:mb-8 opacity-0"
                      style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.85);
                      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
                      box-shadow:0 8px 24px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.14);">
@@ -148,12 +158,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <div id="hero-glow-line" class="glow-line opacity-0" style="margin:18px 0;"></div>
 
                 {{-- Subtext --}}
-                <p id="hero-subtext" class="text-lg sm:text-xl max-w-xl mb-8 leading-relaxed opacity-0" style="color:rgba(255,255,255,.68);">
+                <p id="hero-subtext" class="text-base sm:text-lg lg:text-xl max-w-xl mb-6 sm:mb-8 leading-relaxed opacity-0" style="color:rgba(255,255,255,.68);">
                     Custom websites designed to strengthen your brand, expand your reach, and protect your online presence.
                 </p>
 
                 {{-- CTA buttons --}}
-                <div id="hero-ctas" class="flex flex-col sm:flex-row gap-4 mb-10">
+                <div id="hero-ctas" class="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-10">
                     <a href="{{ route('register') }}" class="hero-btn-primary opacity-0">
                         <span class="hero-btn-fill" aria-hidden="true"></span>
                         <span class="hero-btn-content">
@@ -186,6 +196,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     <p class="text-sm" style="color:rgba(255,255,255,.55);">
                         Trusted by <span style="color:rgba(255,255,255,.92);font-weight:600;">20+ organizations</span>
                     </p>
+                </div>
+
+                {{-- Compact laptop image, mobile/tablet only — the full device-frame
+                     +orbit-rings treatment is desktop-only (sized/positioned relative
+                     to the wide right column), so this is a simpler standalone visual
+                     to keep the mobile hero from feeling empty below the fold. --}}
+                <div id="hero-device-mobile" class="relative mt-10 lg:hidden opacity-0 mx-auto" style="max-width:380px;aspect-ratio:4/3.3;border-radius:16px;overflow:hidden;
+                     -webkit-mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);
+                     mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);">
+                    <img src="@assetv('image/laptop-tillted.png')" alt="VisionBridge website preview on a laptop"
+                         class="absolute inset-0 w-full h-full object-cover" style="object-position:50% 40%;">
                 </div>
             </div>
 
@@ -1768,6 +1789,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
         heroTl
             .fromTo('#hero-bridge-left', { opacity:0 }, { opacity:0.55, duration:1.4, ease:'power2.out' }, 0)
+            .fromTo('#hero-bridge-mobile', { opacity:0 }, { opacity:0.6, duration:1.4, ease:'power2.out' }, 0)
             .fromTo('#hero-badge',      { opacity:0, y:22  }, { opacity:1, y:0, duration:0.65 }, 0.15)
             .from ('.hero-word',        { y:'110%', opacity:0, duration:0.75, stagger:0.09 }, '-=0.30')
             .fromTo('#hero-glow-line',  { opacity:0, scaleX:0 }, { opacity:1, scaleX:1, duration:0.70, ease:'power2.out' }, '-=0.15')
@@ -1777,6 +1799,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             // Device mockup + its floating cards — a beat behind the copy so
             // the eye lands on the heading first, matching the reference layout
             .fromTo('#hero-device',     { opacity:0, y:30, scale:0.96 }, { opacity:1, y:0, scale:1, duration:0.85, ease:'power3.out' }, '-=0.55')
+            .fromTo('#hero-device-mobile', { opacity:0, y:24, scale:0.96 }, { opacity:1, y:0, scale:1, duration:0.80, ease:'power3.out' }, '-=0.55')
             .fromTo('#hero-orbit',      { opacity:0 }, { opacity:1, duration:0.90 }, '-=0.60')
             .fromTo('#hero-support-card', { opacity:0, y:-14 }, { opacity:1, y:0, duration:0.55 }, '-=0.45')
             .fromTo('.hero-rating-card', { opacity:0, y:18 }, { opacity:1, y:0, duration:0.55, stagger:0.12 }, '-=0.35')
