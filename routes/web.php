@@ -348,9 +348,11 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::post('/subscriptions/{subscription}/send-reminder', [AdminSubscriptionController::class, 'sendReminder'])->name('subscriptions.send-reminder');
 
     Route::get('/partner-payouts', [AdminPartnerPayoutController::class, 'index'])->name('partner-payouts.index');
+    Route::post('/partner-payouts/manual', [AdminPartnerPayoutController::class, 'store'])->name('partner-payouts.store');
     Route::post('/partner-payouts/recalculate', [AdminPartnerPayoutController::class, 'recalculateAll'])->name('partner-payouts.recalculate');
     Route::post('/partner-payouts/reminder-settings', [AdminPartnerPayoutController::class, 'setReminderSettings'])->name('partner-payouts.set-reminder-settings');
     Route::patch('/partner-payouts/{partnerPayout}', [AdminPartnerPayoutController::class, 'update'])->name('partner-payouts.update');
+    Route::get('/partner-payouts/{partnerPayout}/receipt', [AdminPartnerPayoutController::class, 'downloadReceipt'])->name('partner-payouts.receipt');
 
     // ─── Settings ────────────────────────────────────────────────────────────
     Route::get('/care-plans', [AdminMaintenancePlanController::class, 'index'])->name('care-plans.index');

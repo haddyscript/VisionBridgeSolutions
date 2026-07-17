@@ -48,6 +48,47 @@
     </div>
 </div>
 
+@if (auth()->user()->isSuperAdmin())
+{{-- Log a Manual/Historical Payment — super-admin only, for direct fees paid to FaithStack outside the client-revenue-share flow (e.g. the original one-time website build), including backdated entries --}}
+<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
+    <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Log a Manual or Historical Payment to FaithStack</p>
+    <form method="POST" action="{{ route('admin.partner-payouts.store') }}" enctype="multipart/form-data" class="grid sm:grid-cols-2 gap-3">
+        @csrf
+        <div class="sm:col-span-2">
+            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Description</label>
+            <input type="text" name="description" required placeholder="e.g. VisionBridge website development payment"
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+        </div>
+        <div>
+            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Amount (USD)</label>
+            <input type="number" name="client_amount" step="0.01" min="0" required placeholder="300.00"
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+        </div>
+        <div>
+            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Payment Date</label>
+            <input type="date" name="paid_at" required
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+        </div>
+        <div class="sm:col-span-2">
+            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Notes (reference/transaction #, payment method, original currency amount, etc.)</label>
+            <textarea name="notes" rows="2" placeholder="e.g. Ref #12345, paid via bank transfer to GCash, original amount ₱17,000 PHP"
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white"></textarea>
+        </div>
+        <div class="sm:col-span-2">
+            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Receipt (image or PDF, optional)</label>
+            <input type="file" name="receipt" accept=".jpg,.jpeg,.png,.pdf"
+                class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gold/15 file:text-gold-dark hover:file:bg-gold/25">
+        </div>
+        <div class="sm:col-span-2 flex justify-end">
+            <button type="submit"
+                class="inline-flex items-center gap-1.5 px-4 py-2 bg-navy hover:bg-navy-light text-white text-sm font-semibold rounded-lg transition-colors">
+                Log Payment
+            </button>
+        </div>
+    </form>
+</div>
+@endif
+
 {{-- FaithStack Payment Reminders --}}
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
     <div class="flex flex-wrap items-start justify-between gap-4">
@@ -198,10 +239,19 @@
                         data-client-amount="{{ $payout->client_amount }}"
                         data-faithstack-amount="{{ $payout->faithstack_amount ?? -1 }}">
                         <td class="px-5 py-3.5">
-                            <p class="font-medium text-navy dark:text-white">{{ $project?->user->name ?? '—' }}</p>
+                            <p class="font-medium text-navy dark:text-white">{{ $project?->user->name ?? 'FaithStack (Direct)' }}</p>
                             <p class="text-xs text-gray-400 dark:text-gray-500">{{ $project?->name ?? '—' }}</p>
                         </td>
-                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $payout->sourceLabel() }}</td>
+                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">
+                            {{ $payout->sourceLabel() }}
+                            @if ($payout->hasReceipt())
+                                <a href="{{ route('admin.partner-payouts.receipt', $payout) }}" target="_blank"
+                                   class="inline-flex items-center gap-1 ml-1.5 text-xs text-gold-dark hover:underline align-middle">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                    Receipt
+                                </a>
+                            @endif
+                        </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $payout->created_at->format('M j, Y') }}</td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $payout->formattedClientAmount() }}</td>
                         <td class="px-5 py-3.5 font-semibold {{ $payout->hasFaithstackAmount() ? 'text-navy dark:text-white' : 'text-gold-dark' }}">
@@ -228,7 +278,7 @@
                         </td>
                         <td class="px-5 py-3.5 text-right">
                             @if ($payout->isReady() || $payout->isFlagged())
-                                <form method="POST" action="{{ route('admin.partner-payouts.update', $payout) }}" class="flex items-center justify-end gap-2"
+                                <form method="POST" action="{{ route('admin.partner-payouts.update', $payout) }}" enctype="multipart/form-data" class="flex flex-wrap items-center justify-end gap-2"
                                       onsubmit="return confirm('{{ $payout->isFlagged() ? 'This payout was flagged ('.$payout->flag_reason.'). Send FaithStack anyway?' : 'Confirm you have sent FaithStack this amount?' }}')">
                                     @csrf
                                     @method('PATCH')
@@ -236,6 +286,8 @@
                                         <input type="number" name="faithstack_amount" step="0.01" min="0" placeholder="Amount" required
                                                class="w-24 rounded-lg border border-gray-300 dark:border-gray-600 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
                                     @endunless
+                                    <input type="file" name="receipt" accept=".jpg,.jpeg,.png,.pdf" title="Attach a receipt (optional)"
+                                           class="w-32 text-xs text-gray-500 dark:text-gray-400 file:mr-1.5 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-gold/15 file:text-gold-dark hover:file:bg-gold/25">
                                     <button type="submit" class="{{ $payout->isFlagged() ? 'text-red-500' : 'text-gold-dark' }} font-semibold hover:underline whitespace-nowrap">
                                         {{ $payout->isFlagged() ? 'Send Anyway' : 'Mark Paid' }}
                                     </button>

@@ -10,6 +10,7 @@ use App\Models\Payment;
 use App\Models\Subscription;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PartnerPayoutController extends Controller
 {
@@ -106,6 +107,7 @@ class PartnerPayoutController extends Controller
         $validated = $request->validate([
             'faithstack_amount' => ['nullable', 'numeric', 'min:0'],
             'notes' => ['nullable', 'string', 'max:1000'],
+            'receipt' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:10240'],
         ]);
 
         abort_if(
@@ -120,8 +122,61 @@ class PartnerPayoutController extends Controller
             'status' => 'paid',
             'paid_at' => now(),
             'notes' => $validated['notes'] ?? $partnerPayout->notes,
+            'receipt_path' => $request->hasFile('receipt')
+                ? $request->file('receipt')->store('partner-payout-receipts', 'local')
+                : $partnerPayout->receipt_path,
         ]);
 
         return back()->with('status', 'Marked as paid to FaithStack.');
+    }
+
+    /**
+     * Logs a payout with no linked Payment/Subscription — for fees paid
+     * directly to FaithStack outside the client-revenue-share flow (e.g. the
+     * original one-time website build), including historical/backdated ones.
+     * Super-admin only, same as other financial-record-entry features.
+     */
+    public function store(Request $request)
+    {
+        abort_unless($request->user()->isSuperAdmin(), 403);
+
+        $validated = $request->validate([
+            'description' => ['required', 'string', 'max:255'],
+            'client_amount' => ['required', 'numeric', 'min:0'],
+            'faithstack_amount' => ['nullable', 'numeric', 'min:0'],
+            'paid_at' => ['required', 'date'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+            'receipt' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:10240'],
+        ]);
+
+        $receiptPath = $request->hasFile('receipt')
+            ? $request->file('receipt')->store('partner-payout-receipts', 'local')
+            : null;
+
+        $payout = new PartnerPayout([
+            'description' => $validated['description'],
+            'client_amount' => (int) round($validated['client_amount'] * 100),
+            'faithstack_amount' => (int) round(($validated['faithstack_amount'] ?? $validated['client_amount']) * 100),
+            'status' => 'paid',
+            'paid_at' => $validated['paid_at'],
+            'notes' => $validated['notes'] ?? null,
+            'receipt_path' => $receiptPath,
+        ]);
+
+        // Backdate created_at to the real payment date so the table's "Date"
+        // column (and sort order) reflects when this was actually paid, not
+        // today — otherwise a historical entry logged now would sort/display
+        // as if it just happened.
+        $payout->created_at = $validated['paid_at'];
+        $payout->save();
+
+        return back()->with('status', 'Logged manual payment to FaithStack.');
+    }
+
+    public function downloadReceipt(PartnerPayout $partnerPayout)
+    {
+        abort_unless($partnerPayout->hasReceipt(), 404);
+
+        return Storage::disk('local')->download($partnerPayout->receipt_path);
     }
 }

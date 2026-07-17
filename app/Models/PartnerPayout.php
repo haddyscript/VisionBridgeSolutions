@@ -13,6 +13,7 @@ class PartnerPayout extends Model
     protected $fillable = [
         'payable_type',
         'payable_id',
+        'description',
         'stripe_invoice_id',
         'stripe_payment_intent_id',
         'client_amount',
@@ -23,6 +24,7 @@ class PartnerPayout extends Model
         'flag_reason',
         'paid_at',
         'notes',
+        'receipt_path',
     ];
 
     protected function casts(): array
@@ -49,7 +51,7 @@ class PartnerPayout extends Model
         };
     }
 
-    /** A short label for what this payout is for — a recurring Care Plan cycle or a one-time project payment. */
+    /** A short label for what this payout is for — a recurring Care Plan cycle, a one-time project payment, or a manually logged entry with no linked record. */
     public function sourceLabel(): string
     {
         if ($this->payable instanceof Subscription) {
@@ -60,7 +62,12 @@ class PartnerPayout extends Model
             return $this->payable->kind ? ucfirst($this->payable->kind).' Payment' : $this->payable->description;
         }
 
-        return 'Unknown';
+        return $this->description ?? 'Unknown';
+    }
+
+    public function hasReceipt(): bool
+    {
+        return $this->receipt_path !== null;
     }
 
     public function isPending(): bool
