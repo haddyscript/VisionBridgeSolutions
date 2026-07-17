@@ -21,6 +21,7 @@
     </div>
 @else
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="overflow-x-auto">
         <table class="w-full text-sm">
             <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
                 <tr>
@@ -65,6 +66,7 @@
                 @endforeach
             </tbody>
         </table>
+        </div>
     </div>
 @endif
 
