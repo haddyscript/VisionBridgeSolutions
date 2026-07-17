@@ -168,57 +168,67 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-        <form method="POST" action="{{ route('admin.project-requests.store') }}" enctype="multipart/form-data" class="p-5 space-y-4">
+        <form id="new-request-form" method="POST" action="{{ route('admin.project-requests.store') }}" enctype="multipart/form-data" class="p-5 space-y-4">
             @csrf
             <p class="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 rounded-lg px-3 py-2">
                 For internal work not submitted by a client — e.g. research/feasibility work on an existing account. It's tied to a client for record-keeping but never appears in their portal or notifies them.
             </p>
 
             <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Client</label>
-                <select name="user_id" required class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
-                    <option value="">Select a client...</option>
-                    @foreach ($clients as $client)
-                        <option value="{{ $client->id }}">{{ $client->name }} ({{ $client->email }})</option>
-                    @endforeach
-                </select>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Client</label>
+                @include('admin._dropdown', [
+                    'name' => 'user_id',
+                    'domId' => 'new-request-client',
+                    'options' => $clients->map(fn ($client) => ['value' => $client->id, 'label' => "{$client->name} ({$client->email})"])->all(),
+                    'selected' => old('user_id'),
+                    'placeholder' => 'Select a client...',
+                ])
+                @error('user_id')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Title</label>
-                <input type="text" name="title" required placeholder="e.g. Unity Auto Group Development Research &amp; Feasibility"
+                <input type="text" name="title" required value="{{ old('title') }}" placeholder="e.g. Unity Auto Group Development Research &amp; Feasibility"
                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                @error('title')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Description</label>
                 <textarea name="description" rows="3" required
-                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white"></textarea>
+                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">{{ old('description') }}</textarea>
+                @error('description')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Priority</label>
-                    <select name="priority" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
-                        @foreach (\App\Models\ProjectRequest::PRIORITIES as $value => $label)
-                            <option value="{{ $value }}" {{ $value === 'medium' ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Priority</label>
+                    @include('admin._dropdown', [
+                        'name' => 'priority',
+                        'domId' => 'new-request-priority',
+                        'options' => collect(\App\Models\ProjectRequest::PRIORITIES)->map(fn ($label, $value) => [
+                            'value' => $value,
+                            'label' => $label,
+                            'dot' => ['low' => 'bg-gray-400', 'medium' => 'bg-indigo-400', 'high' => 'bg-gold', 'urgent' => 'bg-red-500'][$value] ?? 'bg-gray-400',
+                        ])->values()->all(),
+                        'selected' => old('priority', 'medium'),
+                    ])
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Due Date</label>
-                    <input type="date" name="due_date" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    <input type="date" name="due_date" value="{{ old('due_date') }}" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
                 </div>
             </div>
 
             <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Assign Developer (optional)</label>
-                <select name="assigned_developer_id" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
-                    <option value="">Unassigned</option>
-                    @foreach ($developers as $developer)
-                        <option value="{{ $developer->id }}">{{ $developer->name }}</option>
-                    @endforeach
-                </select>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Assign Developer (optional)</label>
+                @include('admin._dropdown', [
+                    'name' => 'assigned_developer_id',
+                    'domId' => 'new-request-developer',
+                    'options' => $developers->map(fn ($d) => ['value' => $d->id, 'label' => $d->name])->all(),
+                    'selected' => old('assigned_developer_id'),
+                    'placeholder' => 'Unassigned',
+                ])
             </div>
 
             <div>
@@ -261,6 +271,20 @@
             btn.addEventListener('click', () => closeAdminModal(modal));
         });
     });
+
+    // Reopen the New Project Request modal automatically if the server
+    // rejected the submission (e.g. no client picked) — otherwise the
+    // redirect-back-with-errors would land on a closed modal and the errors
+    // rendered inside it would be invisible.
+    @if ($errors->has('user_id') || $errors->has('title') || $errors->has('description') || old('title') !== null)
+        (function () {
+            const modal = document.getElementById('new-request-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        })();
+    @endif
 
     document.addEventListener('keydown', (e) => {
         if (e.key !== 'Escape') return;
