@@ -110,6 +110,7 @@ class PartnerPayoutController extends Controller
 
         $validated = $request->validate([
             'faithstack_amount' => ['nullable', 'numeric', 'min:0'],
+            'paid_at' => ['required', 'date', 'before_or_equal:today'],
             'notes' => ['nullable', 'string', 'max:1000'],
             'receipts' => ['nullable', 'array', 'max:3'],
             'receipts.*' => ['file', 'mimes:jpg,jpeg,png,pdf', 'max:10240'],
@@ -125,7 +126,7 @@ class PartnerPayoutController extends Controller
             'faithstack_amount' => $partnerPayout->faithstack_amount
                 ?? (int) round($validated['faithstack_amount'] * 100),
             'status' => 'paid',
-            'paid_at' => now(),
+            'paid_at' => $validated['paid_at'],
             'notes' => $validated['notes'] ?? $partnerPayout->notes,
         ]);
 
