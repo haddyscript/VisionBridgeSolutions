@@ -96,6 +96,9 @@
                                 @endif
                                 {{ \App\Models\Upload::STATUSES[$item->status] ?? $item->status }}
                             </span>
+                            @if ($item->isCompleted() && $item->completed_at)
+                                <span class="text-xs text-gray-400 dark:text-gray-500 shrink-0">{{ $item->completed_at->format('M j, Y') }}</span>
+                            @endif
                             @if ($cat === 'revision')
                                 <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full shrink-0 {{ $priorityColors[$item->priority] ?? $priorityColors['medium'] }}">{{ \App\Models\Upload::PRIORITIES[$item->priority] ?? ucfirst($item->priority) }}</span>
                             @endif
@@ -165,6 +168,10 @@
 
                 @if ($item->isClosed() && $item->closed_reason)
                     <p class="text-xs text-gray-500 dark:text-gray-400 italic mb-3">Closed: {{ $item->closed_reason }}</p>
+                @endif
+
+                @if ($item->isCompleted() && $item->completed_at)
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Completed {{ $item->completed_at->format('M j, Y \a\t g:ia') }}</p>
                 @endif
 
                 {{-- Work Order: assign a developer (job_title = "Developer") and

@@ -56,6 +56,8 @@ class UploadApprovalController extends Controller
 
         $previousStatus = $upload->status;
 
+        $validated['completed_at'] = $this->resolveCompletedAt($upload, $validated['status']);
+
         $upload->update($validated);
 
         if ($validated['status'] !== $previousStatus) {
@@ -63,6 +65,16 @@ class UploadApprovalController extends Controller
         }
 
         return back()->with('status', 'Status updated.');
+    }
+
+    /** Sets completed_at the moment a status first becomes "completed," preserves it across no-op re-saves, and clears it if moved elsewhere. */
+    private function resolveCompletedAt(Upload $upload, string $newStatus): ?\Illuminate\Support\Carbon
+    {
+        if ($newStatus !== 'completed') {
+            return null;
+        }
+
+        return $upload->status === 'completed' ? $upload->completed_at : now();
     }
 
     /**
@@ -184,6 +196,7 @@ class UploadApprovalController extends Controller
         // A developer update is never a "closed" outcome, so any stale closed
         // reason from a prior manual closure shouldn't resurface later.
         $validated['closed_reason'] = null;
+        $validated['completed_at'] = $this->resolveCompletedAt($upload, $validated['status']);
 
         $upload->update($validated);
 

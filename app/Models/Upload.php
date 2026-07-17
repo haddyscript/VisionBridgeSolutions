@@ -50,6 +50,7 @@ class Upload extends Model
         'body',
         'approved_at',
         'status',
+        'completed_at',
         'priority',
         'estimated_completion_date',
         'closed_reason',
@@ -62,6 +63,7 @@ class Upload extends Model
     {
         return [
             'approved_at' => 'datetime',
+            'completed_at' => 'datetime',
             'estimated_completion_date' => 'date',
         ];
     }
