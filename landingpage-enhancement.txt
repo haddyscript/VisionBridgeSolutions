@@ -12,7 +12,7 @@ If I were building VisionBridge as a premium agency website, I'd combine these e
 📄 Floating testimonial cards with independent motion - DONE
 ✨ Glass reflection sweeps on cards and buttons
 📈 Count-up statistics on scroll
-🖱️ Mouse parallax for the bridge, laptop, and headline
+🖱️ Mouse parallax for the bridge, laptop, and headline - DONE
 🎞️ Animated film grain/noise overlay - DONE
 🌟 Soft pulse on "Expanding Reach" - DONE
 🚀 GSAP ScrollTrigger reveals with blur and elevation

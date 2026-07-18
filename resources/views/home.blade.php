@@ -219,7 +219,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             </div>
 
             {{-- RIGHT — device mockup + rating row (desktop only) --}}
-            <div class="relative hidden lg:block" style="padding:24px 0 0;">
+            <div id="hero-laptop-parallax" class="relative hidden lg:block" style="padding:24px 0 0;">
                 {{-- Frame carries the explicit aspect-ratio box that both the
                      device image and the orbit ring anchor to — keeps the
                      orbit's percentage sizing tied to the laptop itself
@@ -1935,6 +1935,50 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             hero.addEventListener('mouseleave', () => {
                 isActive = false;
                 gsap.to(glow, { opacity: 0, duration: 0.6 });
+            });
+        })();
+
+        // ============================================================
+        //  HERO — mouse parallax for the bridge, laptop, and headline
+        //
+        //  Three layers drift toward the cursor at different depths — bridge
+        //  furthest/subtlest, laptop closest/most noticeable, headline barely
+        //  moved so the text stays comfortably readable — for a sense of
+        //  depth instead of a flat page. Applied to #hero-laptop-parallax
+        //  (the column wrapper), not #hero-device-frame itself, so it
+        //  composes with that element's own independent idle float/tilt
+        //  animation (see #hero-device-frame in layouts/app.blade.php)
+        //  instead of fighting it for the same transform. Same gating as the
+        //  mouse-glow above: pointer devices only, respects
+        //  prefers-reduced-motion, and eases back to center on mouse leave.
+        // ============================================================
+        (function initHeroMouseParallax() {
+            const hero = document.getElementById('hero');
+            if (!hero) return;
+            if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            const layers = [
+                { el: document.getElementById('hero-bridge-left'), depthX: 14, depthY: 8 },
+                { el: document.getElementById('hero-laptop-parallax'), depthX: 26, depthY: 14 },
+                { el: document.getElementById('hero-heading'), depthX: 8, depthY: 5 },
+            ].filter((layer) => layer.el);
+            if (!layers.length) return;
+
+            hero.addEventListener('mousemove', (e) => {
+                const rect = hero.getBoundingClientRect();
+                const relX = ((e.clientX - rect.left) / rect.width) - 0.5;
+                const relY = ((e.clientY - rect.top) / rect.height) - 0.5;
+
+                layers.forEach(({ el, depthX, depthY }) => {
+                    gsap.to(el, { x: relX * depthX, y: relY * depthY, duration: 0.9, ease: 'power2.out' });
+                });
+            });
+
+            hero.addEventListener('mouseleave', () => {
+                layers.forEach(({ el }) => {
+                    gsap.to(el, { x: 0, y: 0, duration: 0.8, ease: 'power2.out' });
+                });
             });
         })();
 
