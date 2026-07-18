@@ -13,6 +13,6 @@ If I were building VisionBridge as a premium agency website, I'd combine these e
 ✨ Glass reflection sweeps on cards and buttons
 📈 Count-up statistics on scroll
 🖱️ Mouse parallax for the bridge, laptop, and headline
-🎞️ Animated film grain/noise overlay
+🎞️ Animated film grain/noise overlay - DONE
 🌟 Soft pulse on "Expanding Reach" - DONE
 🚀 GSAP ScrollTrigger reveals with blur and elevation

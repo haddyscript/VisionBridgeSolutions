@@ -402,6 +402,32 @@
             100% { transform: translate3d(-40px,-30px,0); }
         }
 
+        /* ─── Site-wide film grain — one fixed overlay covering the whole
+             viewport, not a per-section copy. Scrolling from the hero into
+             every lighter section below reads as one continuous cinematic
+             texture instead of the grain stopping at the hero's edge. Same
+             feTurbulence tile + drift as .hero-noise; mix-blend-mode:overlay
+             adapts to both the hero's dark bg and the lighter sections below
+             without needing a different opacity per section. ─── */
+        .page-noise {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: .035;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            mix-blend-mode: overlay;
+            animation: hero-noise-drift 7s steps(8) infinite alternate;
+            will-change: transform;
+        }
+        @media (max-width: 639px) {
+            .page-noise { display: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .page-noise { animation: none; }
+        }
+
         /* ─── Hero background — floating gold particles (positioned/animated via GSAP in home.blade.php) ─── */
         .hero-particle {
             position:absolute; border-radius:50%; pointer-events:none;

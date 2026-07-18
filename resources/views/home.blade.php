@@ -76,6 +76,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 </svg>';
 @endphp
 
+{{-- Site-wide animated film grain — a single fixed overlay (see .page-noise
+     in layouts/app.blade.php) so the texture reads continuously as you
+     scroll through every section below, not just the hero. --}}
+<div class="page-noise" aria-hidden="true"></div>
+
 {{-- ============================================================
      HERO SECTION — dark theme
      ============================================================ --}}
