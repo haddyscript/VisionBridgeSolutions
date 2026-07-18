@@ -386,17 +386,11 @@
             -webkit-backdrop-filter: blur(2px);
         }
 
-        /* ─── Hero background — animated grain/noise texture ───
-             feTurbulence data-URI tile, translated in discrete steps (not
-             background-position) so the browser can composite it on the GPU
-             instead of repainting the gradient/turbulence each frame. */
-        .hero-noise {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-            background-repeat: repeat;
-            mix-blend-mode: overlay;
-            animation: hero-noise-drift 7s steps(8) infinite alternate;
-            will-change: transform;
-        }
+        /* ─── Animated grain/noise texture — shared keyframe, used by
+             .page-noise below (the sitewide overlay). feTurbulence data-URI
+             tile, translated in discrete steps (not background-position) so
+             the browser can composite it on the GPU instead of repainting
+             the gradient/turbulence each frame. */
         @keyframes hero-noise-drift {
             0%   { transform: translate3d(0,0,0); }
             100% { transform: translate3d(-40px,-30px,0); }
@@ -405,17 +399,17 @@
         /* ─── Site-wide film grain — one fixed overlay covering the whole
              viewport, not a per-section copy. Scrolling from the hero into
              every lighter section below reads as one continuous cinematic
-             texture instead of the grain stopping at the hero's edge. Same
-             feTurbulence tile + drift as .hero-noise; mix-blend-mode:overlay
-             adapts to both the hero's dark bg and the lighter sections below
-             without needing a different opacity per section. ─── */
+             texture instead of the grain stopping at the hero's edge.
+             mix-blend-mode:overlay adapts to both the hero's dark bg and the
+             lighter sections below without needing a different opacity per
+             section. ─── */
         .page-noise {
             position: fixed;
             inset: 0;
             z-index: 9999;
             pointer-events: none;
-            opacity: .035;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            opacity: .09;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
             background-repeat: repeat;
             mix-blend-mode: overlay;
             animation: hero-noise-drift 7s steps(8) infinite alternate;
@@ -438,7 +432,7 @@
 
         /* Respect reduced-motion: the new hero layers go static instead of animating */
         @media (prefers-reduced-motion: reduce) {
-            .hero-gradient-shift, .hero-ray, .hero-noise { animation: none !important; }
+            .hero-gradient-shift, .hero-ray { animation: none !important; }
         }
 
         /* ════════════════════════════════════════════════════════════
@@ -2377,7 +2371,7 @@
                 '.hero-orb', '#svc-toggle-btn', '.wave-teal', '.wave-main',
                 '.shimmer-gold', '.live-dot', '.float-card-1', '.float-card-2',
                 '.portfolio-badge', '#hscroll-edge-arrow', '.medallion-sweep',
-                '.hero-gradient-shift', '.hero-ray', '.hero-noise', '#hero-orbit-glow', '#hero-orbit-bloom', '#hero-orbit-mid',
+                '.hero-gradient-shift', '.hero-ray', '#hero-orbit-glow', '#hero-orbit-bloom', '#hero-orbit-mid',
                 '#hero-orbit-inner-mid', '#hero-orbit-inner-glow', '#hero-halo',
             ];
             const els = document.querySelectorAll(selectors.join(','));

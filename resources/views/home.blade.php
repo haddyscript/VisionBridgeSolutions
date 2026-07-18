@@ -136,8 +136,10 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     <div class="absolute inset-0 pointer-events-none" style="z-index:2;
          background:radial-gradient(ellipse at 28% 46%,transparent 26%,rgba(0,0,0,.55) 100%);"></div>
 
-    {{-- Layer 2 — animated grain/noise texture, kept very faint so it reads as life/depth, not visible grain --}}
-    <div class="hero-noise absolute inset-0 pointer-events-none hidden sm:block" style="z-index:2;opacity:.035;"></div>
+    {{-- Layer 2 — grain/noise texture now comes from the sitewide .page-noise
+         overlay (see near the top of this file), which covers the whole page
+         including this hero, so a separate local layer here would just
+         double up the effect on this section alone. --}}
 
     {{-- Layer 4 — content: two-column grid (text left, device mockup right) --}}
     <div class="relative w-full max-w-[92rem] mx-auto px-5 sm:px-6 lg:px-16 xl:px-28 pt-20 sm:pt-24 lg:pt-28 pb-16 sm:pb-20" style="z-index:4;">
