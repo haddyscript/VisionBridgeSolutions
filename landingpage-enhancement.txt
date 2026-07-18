@@ -11,7 +11,7 @@ If I were building VisionBridge as a premium agency website, I'd combine these e
 🌠 Gold light trails orbiting the laptop
 📄 Floating testimonial cards with independent motion - DONE
 ✨ Glass reflection sweeps on cards and buttons
-📈 Count-up statistics on scroll
+📈 Count-up statistics on scroll - DONE
 🖱️ Mouse parallax for the bridge, laptop, and headline - DONE
 🎞️ Animated film grain/noise overlay - DONE
 🌟 Soft pulse on "Expanding Reach" - DONE

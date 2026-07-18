@@ -202,7 +202,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     </div>
                     <div class="h-4 w-px" style="background:rgba(255,255,255,.18);"></div>
                     <p class="text-sm" style="color:rgba(255,255,255,.55);">
-                        Trusted by <span style="color:rgba(255,255,255,.92);font-weight:600;">20+ organizations</span>
+                        Trusted by <span style="color:rgba(255,255,255,.92);font-weight:600;"><span id="hero-trust-count" data-count-to="20">0</span>+ organizations</span>
                     </p>
                 </div>
 
@@ -1807,6 +1807,22 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         //  HERO — page-load entrance timeline (no ScrollTrigger needed:
         //  hero is always the first thing visible on load)
         // ============================================================
+        // "Trusted by N+ organizations" — counts up from 0 to the real figure
+        // the instant the trust row starts fading in (triggered via onStart
+        // on its tween below), rather than a plain static number.
+        function animateHeroTrustCount() {
+            const el = document.getElementById('hero-trust-count');
+            if (!el) return;
+            const target = parseInt(el.dataset.countTo, 10) || 20;
+
+            gsap.fromTo(el, { textContent: 0 }, {
+                textContent: target,
+                duration: 1.3,
+                ease: 'power2.out',
+                snap: { textContent: 1 },
+            });
+        }
+
         // Starts paused — held until the video intro overlay (app.blade.php)
         // finishes and dispatches 'intro:complete', so the hero reveal plays
         // right after the intro clears instead of finishing silently underneath it.
@@ -1820,7 +1836,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             .fromTo('#hero-glow-line',  { opacity:0, scaleX:0 }, { opacity:1, scaleX:1, duration:0.70, ease:'power2.out' }, '-=0.15')
             .fromTo('#hero-subtext',    { opacity:0, y:26  }, { opacity:1, y:0, duration:0.60 }, '-=0.35')
             .fromTo('#hero-ctas > a',   { opacity:0, y:22  }, { opacity:1, y:0, duration:0.50, stagger:0.13 }, '-=0.30')
-            .fromTo('#hero-trust',      { opacity:0, y:18  }, { opacity:1, y:0, duration:0.50 }, '-=0.20')
+            .fromTo('#hero-trust',      { opacity:0, y:18  }, { opacity:1, y:0, duration:0.50, onStart: animateHeroTrustCount }, '-=0.20')
             // Device mockup + its floating cards — a beat behind the copy so
             // the eye lands on the heading first, matching the reference layout
             .fromTo('#hero-device',     { opacity:0, y:30, scale:0.96 }, { opacity:1, y:0, scale:1, duration:0.85, ease:'power3.out' }, '-=0.55')
