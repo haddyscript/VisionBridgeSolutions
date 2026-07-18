@@ -42,6 +42,12 @@
 
 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Every revision request across every project, in one place — update status, priority, and developer assignment right from this list. This reads the same data as each project's own Revisions tab, so the two always stay in sync.</p>
 
+{{-- Toast notifications for inline dropdown saves — see the script at the
+     bottom of this file for showRevisionToast(). Fixed/overlay, so its
+     position in the DOM doesn't matter; kept outside the @if/@else below so
+     it's always present regardless of whether there are any revisions. --}}
+<div id="rev-toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 w-80 max-w-[90vw]" aria-live="polite" aria-atomic="true"></div>
+
 @if ($revisions->isEmpty())
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
         <p class="text-gray-500 dark:text-gray-400">No revision requests yet.</p>
@@ -311,9 +317,58 @@
     </div>
 @endif
 
+<style>
+    @keyframes rev-toast-in { from { transform: translateX(115%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes rev-toast-out { from { transform: translateX(0); opacity: 1; } to { transform: translateX(115%); opacity: 0; } }
+    @keyframes rev-toast-shrink { from { width: 100%; } to { width: 0%; } }
+    .rev-toast { animation: rev-toast-in .4s cubic-bezier(.16,1,.3,1); }
+    .rev-toast-out { animation: rev-toast-out .25s ease-in forwards; }
+    .rev-toast-progress { animation: rev-toast-shrink 4000ms linear forwards; }
+</style>
+
 <script>
     const REVISIONS_PER_PAGE = 15;
     let revisionsCurrentPage = 1;
+
+    // ─── Toast notifications ────────────────────────────────────────────────
+    // A small, self-dismissing confirmation for every inline save on this
+    // page — since these dropdowns save instantly with no page reload, a
+    // toast is the only feedback the admin gets that anything happened.
+    function showRevisionToast(message, type = 'success', title = null) {
+        const container = document.getElementById('rev-toast-container');
+        if (!container) return;
+
+        const isError = type === 'error';
+        const toast = document.createElement('div');
+        toast.className = 'rev-toast pointer-events-auto relative overflow-hidden rounded-xl border shadow-xl bg-white/97 dark:bg-gray-800/97 backdrop-blur-sm px-4 py-3 flex items-start gap-3 '
+            + (isError ? 'border-red-200 dark:border-red-500/30' : 'border-teal/25 dark:border-teal/25');
+
+        toast.innerHTML = `
+            <span class="absolute top-0 left-0 right-0 h-[3px] ${isError ? 'bg-red-400' : 'bg-gradient-to-r from-teal via-gold to-teal'}"></span>
+            <span class="shrink-0 mt-0.5 w-8 h-8 rounded-full flex items-center justify-center ${isError ? 'bg-red-50 dark:bg-red-500/10 text-red-500' : 'bg-teal/10 text-teal-dark'}">
+                ${isError
+                    ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>'
+                    : '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>'}
+            </span>
+            <div class="flex-1 min-w-0 pt-0.5">
+                <p class="text-sm font-semibold ${isError ? 'text-red-600 dark:text-red-400' : 'text-navy dark:text-white'}">${title || (isError ? 'Update failed' : 'Saved')}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-snug">${message}</p>
+            </div>
+            <button type="button" data-rev-toast-dismiss class="shrink-0 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-300 transition-colors" aria-label="Dismiss notification">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <span class="rev-toast-progress absolute bottom-0 left-0 h-[2px] ${isError ? 'bg-red-300' : 'bg-teal/40'}"></span>
+        `;
+
+        const dismiss = () => {
+            toast.classList.add('rev-toast-out');
+            toast.addEventListener('animationend', () => toast.remove(), { once: true });
+        };
+
+        toast.querySelector('[data-rev-toast-dismiss]').addEventListener('click', dismiss);
+        setTimeout(dismiss, 4000);
+        container.appendChild(toast);
+    }
 
     // ─── Generic pill-dropdown component ───────────────────────────────────
     // One implementation drives every dropdown on this page (5 filters + the
@@ -406,10 +461,19 @@
             const row = wrap.closest('tr');
             if (row) row.dataset[kind === 'developer' ? 'developer' : kind] = value || 'unassigned';
             renderRevisionsPage();
+
+            const displayLabel = wrap.querySelector('[data-rev-dd-label]')?.textContent.trim() || '';
+            const clientName = row?.querySelector('td:first-child p')?.textContent.trim() || 'this request';
+            const messages = {
+                status: `${clientName}'s revision is now "${displayLabel}".`,
+                priority: `Priority for ${clientName} set to ${displayLabel}.`,
+                developer: value ? `${clientName}'s revision assigned to ${displayLabel}.` : `${clientName}'s revision is now unassigned.`,
+            };
+            showRevisionToast(messages[kind] || 'Your change was saved.', 'success');
         })
         .catch(() => {
             revertRevDropdown(wrap, previousValue);
-            alert('Could not save that change. Please try again.');
+            showRevisionToast('That change could not be saved — please try again.', 'error');
         });
     }
 
