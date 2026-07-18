@@ -64,6 +64,10 @@ class UploadApprovalController extends Controller
             $this->notifyClientOfStatusChange($upload);
         }
 
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Status updated.']);
+        }
+
         return back()->with('status', 'Status updated.');
     }
 
@@ -113,6 +117,10 @@ class UploadApprovalController extends Controller
         $validated['estimated_completion_date'] = $validated['estimated_completion_date'] ?: null;
 
         $upload->update($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Details updated.']);
+        }
 
         return back()->with('status', 'Details updated.');
     }
@@ -168,6 +176,10 @@ class UploadApprovalController extends Controller
                 $upload->user->name,
                 route('admin.projects.show', $upload->project),
             ));
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Developer assignment updated.']);
         }
 
         return back()->with('status', 'Developer assignment updated.');
