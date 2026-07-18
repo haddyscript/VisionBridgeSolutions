@@ -6,13 +6,13 @@ If I were building VisionBridge as a premium agency website, I'd combine these e
 ✨ Twinkling gold particles - DONE
 💡 Mouse-following ambient glow - DONE
 🌉 Bridge with tiny moving traffic lights
-💻 Floating laptop with gentle tilt and auto-scrolling website preview
+💻 Floating laptop with gentle tilt and auto-scrolling website preview - DONE (no preview scrolling)
 🪐 Slowly rotating halo behind the laptop - DONE
 🌠 Gold light trails orbiting the laptop
-📄 Floating testimonial cards with independent motion
+📄 Floating testimonial cards with independent motion - DONE
 ✨ Glass reflection sweeps on cards and buttons
 📈 Count-up statistics on scroll
 🖱️ Mouse parallax for the bridge, laptop, and headline
 🎞️ Animated film grain/noise overlay
-🌟 Soft pulse on "Expanding Reach"
+🌟 Soft pulse on "Expanding Reach" - DONE
 🚀 GSAP ScrollTrigger reveals with blur and elevation

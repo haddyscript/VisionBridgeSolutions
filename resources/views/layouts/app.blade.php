@@ -543,6 +543,26 @@
            background blends into the hero instead of showing a hard rectangle. */
         #hero-device { width:100%; }
 
+        /* Idle floating motion for the hero laptop — applied to the outer
+           #hero-device-frame (not #hero-device itself), since GSAP already
+           owns #hero-device's transform for its scale/slide entrance
+           animation; a CSS keyframe animation on the same element would
+           override that inline transform for the animation's duration and
+           kill the entrance easing. The frame is never touched by GSAP, so
+           it's free to carry a continuous bob + gentle tilt from page load
+           with no conflict. Keeps the element's own base scale(1.12) in
+           every keyframe step so the animation doesn't reset it. */
+        #hero-device-frame {
+            animation: hero-laptop-float 8s ease-in-out infinite;
+        }
+        @keyframes hero-laptop-float {
+            0%, 100% { transform: scale(1.12) translateY(0) rotate(-0.6deg); }
+            50%      { transform: scale(1.12) translateY(-12px) rotate(0.6deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #hero-device-frame { animation: none; }
+        }
+
         /* Dark-glass modifier for a .float-card sitting on the dark hero —
            overrides the base opaque-white glass treatment with a translucent
            tinted-dark version so it reads as glass against a dark backdrop
