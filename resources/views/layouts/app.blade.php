@@ -566,6 +566,29 @@
         .hero-rating-quote { color:rgba(255,255,255,.88); font-size:.76rem; line-height:1.35; margin-bottom:4px; }
         .hero-rating-attr { color:rgba(255,255,255,.45); font-size:.68rem; }
 
+        /* Independent floating motion — each rating card bobs on its own
+           duration/delay/amplitude so the row reads as three cards drifting
+           on their own rather than one row moving in lockstep. Transform-only
+           (translateY/rotate), so it never affects flex layout/flow. */
+        #hero-rating-1 { animation: rating-float-1 6s ease-in-out infinite; }
+        #hero-rating-2 { animation: rating-float-2 7.5s ease-in-out infinite; animation-delay: -2.2s; }
+        #hero-rating-3 { animation: rating-float-3 5.2s ease-in-out infinite; animation-delay: -3.6s; }
+        @keyframes rating-float-1 {
+            0%,100% { transform:translateY(0) rotate(-0.6deg); }
+            50%     { transform:translateY(-9px) rotate(0.4deg); }
+        }
+        @keyframes rating-float-2 {
+            0%,100% { transform:translateY(-3px) rotate(0.5deg); }
+            50%     { transform:translateY(-14px) rotate(-0.5deg); }
+        }
+        @keyframes rating-float-3 {
+            0%,100% { transform:translateY(-1px) rotate(-0.4deg); }
+            50%     { transform:translateY(-11px) rotate(0.6deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #hero-rating-1, #hero-rating-2, #hero-rating-3 { animation:none; }
+        }
+
         /* Hero CTA buttons — dark-hero variant of the secondary button
            (transparent + light border instead of the frosted-white pill,
            which would look like a stray white box on a near-black hero) */

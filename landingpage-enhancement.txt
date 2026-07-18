@@ -2,12 +2,12 @@ My Recommended Hero Animation Stack
 
 If I were building VisionBridge as a premium agency website, I'd combine these effects:
 
-🌌 Animated gradient and breathing background - done
-✨ Twinkling gold particles - done
-💡 Mouse-following ambient glow
+🌌 Animated gradient and breathing background - DONE
+✨ Twinkling gold particles - DONE
+💡 Mouse-following ambient glow - DONE
 🌉 Bridge with tiny moving traffic lights
 💻 Floating laptop with gentle tilt and auto-scrolling website preview
-🪐 Slowly rotating halo behind the laptop
+🪐 Slowly rotating halo behind the laptop - DONE
 🌠 Gold light trails orbiting the laptop
 📄 Floating testimonial cards with independent motion
 ✨ Glass reflection sweeps on cards and buttons
