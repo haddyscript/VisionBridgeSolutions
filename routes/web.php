@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
 use App\Http\Controllers\Admin\ProjectRequestController as AdminProjectRequestController;
 use App\Http\Controllers\Admin\RefundRequestController as AdminRefundRequestController;
 use App\Http\Controllers\Admin\RecommendationController as AdminRecommendationController;
+use App\Http\Controllers\Admin\RevisionController as AdminRevisionController;
 use App\Http\Controllers\Admin\SatisfactionSurveyController as AdminSatisfactionSurveyController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
 use App\Http\Controllers\Admin\ServiceAgreementController as AdminServiceAgreementController;
@@ -317,6 +318,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::delete('/milestones/{milestone}', [AdminMilestoneController::class, 'destroy'])->name('milestones.destroy');
 
     // ─── Files, Content & Revisions ──────────────────────────────────────────
+    Route::get('/revisions', [AdminRevisionController::class, 'index'])->name('revisions.index');
     Route::patch('/uploads/{upload}/approve', [UploadApprovalController::class, 'toggle'])->name('uploads.approve');
     Route::patch('/uploads/{upload}/status', [UploadApprovalController::class, 'updateStatus'])->name('uploads.status');
     Route::patch('/uploads/{upload}/details', [UploadApprovalController::class, 'updateDetails'])->name('uploads.details');
