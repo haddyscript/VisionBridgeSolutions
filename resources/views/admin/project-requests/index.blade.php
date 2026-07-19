@@ -236,6 +236,11 @@
                 <input type="file" name="proposal_document" class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gold/15 file:text-gold-dark hover:file:bg-gold/25">
             </div>
 
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Supporting Documents (optional)</label>
+                @include('admin.project-requests._attachments-picker')
+            </div>
+
             <div class="flex justify-end gap-2 pt-2">
                 <button type="button" class="admin-modal-close px-4 py-2 text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
                     Cancel

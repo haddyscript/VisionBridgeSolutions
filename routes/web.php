@@ -296,6 +296,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::patch('/project-requests/{projectRequest}', [AdminProjectRequestController::class, 'update'])->name('project-requests.update');
     Route::patch('/project-requests/{projectRequest}/assign-developer', [AdminProjectRequestController::class, 'assignDeveloper'])->name('project-requests.assign-developer');
     Route::patch('/project-requests/{projectRequest}/developer-status', [AdminProjectRequestController::class, 'updateDeveloperStatus'])->name('project-requests.developer-status');
+    Route::delete('/project-requests/{projectRequest}/attachments/{attachment}', [AdminProjectRequestController::class, 'destroyAttachment'])->name('project-requests.attachments.destroy');
 
     Route::get('/refund-requests', [AdminRefundRequestController::class, 'index'])->name('refund-requests.index');
     Route::patch('/refund-requests/{refundRequest}', [AdminRefundRequestController::class, 'update'])->name('refund-requests.update');

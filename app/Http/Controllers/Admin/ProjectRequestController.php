@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Mail\WorkOrderAssignedMail;
 use App\Mail\WorkOrderInternalUpdateMail;
 use App\Models\ProjectRequest;
+use App\Models\ProjectRequestAttachment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class ProjectRequestController extends Controller
@@ -44,6 +46,8 @@ class ProjectRequestController extends Controller
             'due_date' => ['nullable', 'date'],
             'assigned_developer_id' => ['nullable', 'exists:users,id'],
             'proposal_document' => ['nullable', 'file', 'max:25600'],
+            'attachments' => ['nullable', 'array'],
+            'attachments.*' => ['file', 'max:25600'],
         ]);
 
         $projectRequest = new ProjectRequest([
@@ -64,6 +68,8 @@ class ProjectRequestController extends Controller
 
         $projectRequest->save();
 
+        $this->storeAttachments($request, $projectRequest);
+
         if ($projectRequest->assigned_developer_id) {
             $developer = User::find($projectRequest->assigned_developer_id);
 
@@ -82,7 +88,7 @@ class ProjectRequestController extends Controller
 
     public function show(ProjectRequest $projectRequest)
     {
-        $projectRequest->load('user');
+        $projectRequest->load('user', 'attachments');
 
         return view('admin.project-requests.show', [
             'projectRequest' => $projectRequest,
@@ -108,6 +114,8 @@ class ProjectRequestController extends Controller
             'estimated_value' => ['nullable', 'numeric', 'min:0'],
             'recommended_care_plan_id' => ['nullable', 'exists:maintenance_plans,id'],
             'proposal_document' => ['nullable', 'file', 'max:25600'],
+            'attachments' => ['nullable', 'array'],
+            'attachments.*' => ['file', 'max:25600'],
         ]);
 
         if ($request->user()->isSuperAdmin()) {
@@ -124,10 +132,36 @@ class ProjectRequestController extends Controller
             $validated['proposal_document_path'] = $file->store("project-requests/{$projectRequest->id}/proposal", 'client_uploads');
         }
         unset($validated['proposal_document']);
+        unset($validated['attachments']);
 
         $projectRequest->update($validated);
 
+        $this->storeAttachments($request, $projectRequest);
+
         return back()->with('status', 'Project request updated.');
+    }
+
+    /** Shared by store() and update() — saves any "Supporting Documents" beyond the single proposal_document field. */
+    private function storeAttachments(Request $request, ProjectRequest $projectRequest): void
+    {
+        foreach ($request->file('attachments', []) as $file) {
+            $projectRequest->attachments()->create([
+                'path' => $file->store("project-requests/{$projectRequest->id}/attachments", 'client_uploads'),
+                'original_name' => $file->getClientOriginalName(),
+                'size' => $file->getSize(),
+            ]);
+        }
+    }
+
+    /** Remove a single Supporting Document without deleting the whole Work Order. */
+    public function destroyAttachment(ProjectRequest $projectRequest, ProjectRequestAttachment $attachment)
+    {
+        abort_unless($attachment->project_request_id === $projectRequest->id, 404);
+
+        Storage::disk('client_uploads')->delete($attachment->path);
+        $attachment->delete();
+
+        return back()->with('status', 'Attachment removed.');
     }
 
     /**

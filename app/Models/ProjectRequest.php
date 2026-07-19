@@ -98,6 +98,12 @@ class ProjectRequest extends Model
         return $this->belongsTo(MaintenancePlan::class, 'recommended_care_plan_id');
     }
 
+    /** Supporting documents beyond the single formal proposal_document field — see ProjectRequestAttachment. */
+    public function attachments()
+    {
+        return $this->hasMany(ProjectRequestAttachment::class);
+    }
+
     public function attachmentUrl(): ?string
     {
         return $this->attachment_path ? asset('client-uploads/'.$this->attachment_path) : null;

@@ -23,6 +23,7 @@ class ProjectController extends Controller
             'project' => $project,
             'uploadsByCategory' => $project->uploads->groupBy('category'),
             'developers' => User::developers(),
+            'projectRequests' => $project->user->projectRequests()->latest()->get(),
         ]);
     }
 

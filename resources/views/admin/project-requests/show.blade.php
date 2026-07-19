@@ -131,6 +131,37 @@
             </div>
 
             <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+                <h3 class="font-semibold text-navy dark:text-white mb-1">Supporting Documents</h3>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Specs, contracts, reference files — separate from the formal Proposal Document above.</p>
+
+                @if ($projectRequest->attachments->isNotEmpty())
+                    <div class="space-y-2 mb-4">
+                        @foreach ($projectRequest->attachments as $attachment)
+                            <div class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-3.5 py-2.5">
+                                <a href="{{ $attachment->url() }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-sm text-navy dark:text-white hover:text-gold-dark min-w-0">
+                                    <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    <span class="truncate">{{ $attachment->original_name }}</span>
+                                    @if ($attachment->formattedSize())
+                                        <span class="text-xs text-gray-400 dark:text-gray-500 shrink-0">({{ $attachment->formattedSize() }})</span>
+                                    @endif
+                                </a>
+                                <form method="POST" action="{{ route('admin.project-requests.attachments.destroy', [$projectRequest, $attachment]) }}"
+                                      onsubmit="return confirm('Remove this file?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors" title="Remove">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                @include('admin.project-requests._attachments-picker')
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
                 <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Internal Notes</label>
                 <textarea name="admin_notes" rows="4" placeholder="Notes for setting this up as an actual project..."
                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">{{ old('admin_notes', $projectRequest->admin_notes) }}</textarea>

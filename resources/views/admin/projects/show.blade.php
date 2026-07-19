@@ -90,13 +90,22 @@
                         @endif
                     </div>
                 </div>
-                <button type="button" onclick="openResetPasswordModal()"
-                    class="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-500/40 hover:bg-amber-50 dark:hover:bg-amber-500/10 hover:border-amber-400 dark:hover:border-amber-400/60 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-lg transition-colors">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                    </svg>
-                    Reset Client Password
-                </button>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="openResetPasswordModal()"
+                        class="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-500/40 hover:bg-amber-50 dark:hover:bg-amber-500/10 hover:border-amber-400 dark:hover:border-amber-400/60 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-lg transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        Reset Client Password
+                    </button>
+                    <button type="button" data-modal="new-work-order-modal"
+                        class="modal-trigger inline-flex items-center gap-1.5 text-xs font-semibold text-navy dark:text-white border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-lg transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        New Work Order
+                    </button>
+                </div>
             </div>
 
             {{-- Project Status: auto-saves on change, stays its own form --}}
@@ -334,6 +343,13 @@
         Recommendations
         @if ($project->recommendations->where('status', 'pending_review')->isNotEmpty())
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">{{ $project->recommendations->where('status', 'pending_review')->count() }}</span>
+        @endif
+    </button>
+    <button type="button" data-tab-button="workorders" onclick="showProjectTab('workorders')"
+            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
+        Work Orders
+        @if ($projectRequests->where('status', 'pending')->isNotEmpty())
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">{{ $projectRequests->where('status', 'pending')->count() }}</span>
         @endif
     </button>
 </div>
@@ -967,6 +983,37 @@
     </div>
 </div>
 
+<div id="panel-workorders" data-tab-panel="workorders" class="hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center justify-between gap-4 mb-4">
+            <h3 class="font-semibold text-navy dark:text-white">Work Orders</h3>
+            <button type="button" data-modal="new-work-order-modal"
+                class="modal-trigger inline-flex items-center gap-1.5 text-xs font-semibold text-navy dark:text-white border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-lg transition-colors">
+                New Work Order
+            </button>
+        </div>
+        @if ($projectRequests->isEmpty())
+            <p class="text-sm text-gray-400 dark:text-gray-500">No work orders for this client yet.</p>
+        @else
+            <div class="space-y-2.5">
+                @foreach ($projectRequests as $wo)
+                    <a href="{{ route('admin.project-requests.show', $wo) }}" class="flex items-center justify-between gap-4 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3 hover:border-gold transition-colors">
+                        <span class="min-w-0">
+                            <span class="block text-sm font-medium text-navy dark:text-white truncate">{{ $wo->title }}</span>
+                            <span class="block text-xs text-gray-400 dark:text-gray-500">
+                                {{ \App\Models\ProjectRequest::STATUSES[$wo->status] ?? $wo->status }}
+                                &middot; {{ \App\Models\ProjectRequest::PRIORITIES[$wo->priority] ?? $wo->priority }}
+                                @if ($wo->due_date) &middot; Due {{ $wo->due_date->format('M j, Y') }} @endif
+                                &middot; {{ $wo->assignedDeveloper->name ?? 'Unassigned' }}
+                            </span>
+                        </span>
+                    </a>
+                @endforeach
+            </div>
+        @endif
+    </div>
+</div>
+
 <script>
 // Admin Website Content / Revisions thread UI (list <-> detail, unread
 // badges, message truncation, always-visible composer). Defined here --
@@ -1117,6 +1164,127 @@ function submitAdminReply(form, event) {
     </div>
 </div>
 
+{{-- New Work Order modal — creates a ProjectRequest for this client directly, reusing admin.project-requests.store (see index.blade.php's identical modal for the standalone-page version). Client is pre-filled/hidden since we're already inside their project. On success this redirects to the new request's own show page (not an ajax swap), so the admin can immediately assign a developer / manage files there — matching the existing internal-work-order flow. --}}
+<div id="new-work-order-modal" class="admin-modal hidden fixed inset-0 z-[60] items-center justify-center bg-black/40 px-4">
+    <div class="admin-modal-panel bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+            <p class="font-semibold text-navy dark:text-white">New Work Order</p>
+            <button type="button" class="admin-modal-close w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0" aria-label="Close">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <form method="POST" action="{{ route('admin.project-requests.store') }}" enctype="multipart/form-data" class="p-5 space-y-4">
+            @csrf
+            <input type="hidden" name="user_id" value="{{ $project->user_id }}">
+            <p class="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 rounded-lg px-3 py-2">
+                For {{ $project->user->name }} — e.g. a new work order, revised specs, or additional dev tasks. Tracked in Work Orders for this client and never touches their portal.
+            </p>
+
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Title</label>
+                <input type="text" name="title" required value="{{ old('title') }}" placeholder="e.g. Homepage redesign phase 2"
+                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                @error('title')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Description</label>
+                <textarea name="description" rows="3" required
+                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">{{ old('description') }}</textarea>
+                @error('description')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Priority</label>
+                    @include('admin._dropdown', [
+                        'name' => 'priority',
+                        'domId' => 'new-work-order-priority',
+                        'options' => collect(\App\Models\ProjectRequest::PRIORITIES)->map(fn ($label, $value) => [
+                            'value' => $value,
+                            'label' => $label,
+                            'dot' => ['low' => 'bg-gray-400', 'medium' => 'bg-indigo-400', 'high' => 'bg-gold', 'urgent' => 'bg-red-500'][$value] ?? 'bg-gray-400',
+                        ])->values()->all(),
+                        'selected' => old('priority', 'medium'),
+                    ])
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Due Date</label>
+                    <input type="date" name="due_date" value="{{ old('due_date') }}" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Assign Developer (optional)</label>
+                @include('admin._dropdown', [
+                    'name' => 'assigned_developer_id',
+                    'domId' => 'new-work-order-developer',
+                    'options' => $developers->map(fn ($d) => ['value' => $d->id, 'label' => $d->name])->all(),
+                    'selected' => old('assigned_developer_id'),
+                    'placeholder' => 'Unassigned',
+                ])
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Proposal Document (optional)</label>
+                <input type="file" name="proposal_document" class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gold/15 file:text-gold-dark hover:file:bg-gold/25">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Supporting Documents (optional)</label>
+                @include('admin.project-requests._attachments-picker')
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" class="admin-modal-close px-4 py-2 text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" class="px-4 py-2 bg-navy hover:bg-navy-light text-white text-sm font-semibold rounded-lg transition-colors">
+                    Create
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.modal-trigger').forEach((trigger) => {
+        trigger.addEventListener('click', () => {
+            const modal = document.getElementById(trigger.dataset.modal);
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        });
+    });
+
+    function closeAdminModal(modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    document.querySelectorAll('.admin-modal').forEach((modal) => {
+        modal.addEventListener('click', (e) => {
+            if (!e.target.closest('.admin-modal-panel')) closeAdminModal(modal);
+        });
+        modal.querySelectorAll('.admin-modal-close').forEach((btn) => {
+            btn.addEventListener('click', () => closeAdminModal(modal));
+        });
+    });
+
+    // Reopen the New Work Order modal automatically if the server rejected
+    // the submission — otherwise the redirect-back-with-errors would land on
+    // a closed modal and the errors rendered inside it would be invisible.
+    @if ($errors->has('title') || $errors->has('description'))
+        (function () {
+            const modal = document.getElementById('new-work-order-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        })();
+    @endif
+</script>
+
 {{-- Generic confirm modal, used for delete/cancel actions instead of the native browser confirm() --}}
 <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
     <div id="confirm-modal-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
@@ -1206,7 +1374,7 @@ function submitAdminReply(form, event) {
 </script>
 
 <script>
-    const validProjectTabs = ['overview', 'billing', 'onboarding', 'files', 'content', 'revision', 'recommendations'];
+    const validProjectTabs = ['overview', 'billing', 'onboarding', 'files', 'content', 'revision', 'recommendations', 'workorders'];
     let currentProjectTab = 'overview';
 
     // updateUrl=false is used for restoring state (initial deep-link load,
