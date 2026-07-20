@@ -222,6 +222,27 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                      same element (see the comment on #hero-device-frame's own
                      idle-float CSS rule in layouts/app.blade.php for why). --}}
                 <div id="hero-device-mobile-frame" class="relative mt-12 mb-6 lg:hidden mx-auto" style="max-width:380px;aspect-ratio:4/3.3;border-radius:16px;">
+                    {{-- Gold halo — large, very soft static glow behind the laptop.
+                         Opacity lives in the gradient's own alpha (.13 ≈ 13%,
+                         within the requested 10–15%) rather than a separate
+                         opacity property, so it can't double up with the
+                         opacity-0→1 GSAP fade-in below. --}}
+                    <div id="hero-halo-mobile" class="absolute opacity-0 pointer-events-none" style="
+                         width:170%;height:170%;top:50%;left:50%;transform:translate(-50%,-50%);
+                         border-radius:50%;z-index:-1;
+                         background:radial-gradient(circle, rgba(201,168,76,.13) 0%, transparent 70%);
+                         filter:blur(42px);"></div>
+
+                    {{-- Rotating halo — very faint conic-gradient ring behind the
+                         laptop (a uniform-color ring wouldn't visibly read as
+                         rotating at all — same reason the desktop #hero-halo
+                         uses a conic gradient instead of a plain radial one). --}}
+                    <div id="hero-halo-mobile-ring" class="absolute opacity-0 pointer-events-none" style="
+                         width:145%;height:145%;top:50%;left:50%;transform:translate(-50%,-50%);
+                         border-radius:50%;z-index:-1;
+                         background:conic-gradient(from 0deg, rgba(201,168,76,0) 0%, rgba(201,168,76,.10) 20%, rgba(201,168,76,0) 45%, rgba(201,168,76,.08) 70%, rgba(201,168,76,0) 100%);
+                         filter:blur(16px);"></div>
+
                     <div id="hero-device-mobile" class="opacity-0 absolute inset-0" style="border-radius:16px;overflow:hidden;
                          -webkit-mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);
                          mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);">
@@ -1854,6 +1875,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             // the eye lands on the heading first, matching the reference layout
             .fromTo('#hero-device',     { opacity:0, y:30, scale:0.96 }, { opacity:1, y:0, scale:1, duration:0.85, ease:'power3.out' }, '-=0.55')
             .fromTo('#hero-device-mobile', { opacity:0, y:24, scale:0.96 }, { opacity:1, y:-10, scale:1.25, duration:0.80, ease:'power3.out' }, '-=0.55')
+            .fromTo('#hero-halo-mobile',      { opacity:0 }, { opacity:1, duration:1.1 }, '-=0.60')
+            .fromTo('#hero-halo-mobile-ring', { opacity:0 }, { opacity:1, duration:0.90 }, '-=0.95')
             .fromTo('#hero-halo',       { opacity:0 }, { opacity:1, duration:1.1 }, '-=0.60')
             .fromTo('#hero-orbit',      { opacity:0 }, { opacity:1, duration:0.90 }, '-=0.95')
             .fromTo('#hero-support-card', { opacity:0, y:-14 }, { opacity:1, y:0, duration:0.55 }, '-=0.45')

@@ -57,6 +57,17 @@
         #hero-device-mobile-frame { animation: none; box-shadow: 0 24px 32px -6px rgba(11,15,23,0.45); }
     }
 
+    /* Rotating halo behind the mobile laptop — reuses the `hero-halo-spin`
+       keyframe already defined globally (layouts/app.blade.php, driving the
+       desktop #hero-halo), just slower (40s vs desktop's 55s) and on the new
+       mobile-only ring element. */
+    #hero-halo-mobile-ring {
+        animation: hero-halo-spin 40s linear infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        #hero-halo-mobile-ring { animation: none; }
+    }
+
     /* "Who We Are" mosaic — taller box + larger background scale so the
        "Building Websites. Expanding Reach." text baked into the source
        photo doesn't get cropped/overlapping across the sliced cells. */
