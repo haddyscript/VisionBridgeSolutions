@@ -792,4 +792,16 @@ The boss's team asked how a Revision Request differs from a "Request a New Proje
 - **Global portal search** (§15f) now matches a revision/content request's title in addition to its body, and shows the title as the result label when one exists.
 - New migration: `2026_07_20_000001_add_title_to_uploads_table.php`. Not yet run against the database — needs `php artisan migrate` (safe, additive nullable column; no data affected).
 
+## 21. Mobile Hero — Increased Vertical Spacing (2026-07-20)
+
+Boss's mobile-view feedback: the homepage hero (`resources/views/home.blade.php`) felt visually compressed on phones — badge, heading, description, CTAs, trust row, laptop image, and scroll indicator all sat too close together. Increased the mobile-only (base Tailwind classes, below the `sm:` 640px breakpoint) spacing between each pair, leaving `sm:`/`lg:` tablet/desktop spacing untouched:
+
+- Hero content wrapper: top padding `pt-20` → `pt-24`, bottom padding `pb-16` → `pb-20` (both now match what was previously only the `sm:` value).
+- Badge → Heading: badge `mb-6` → `mb-7`.
+- Heading → Description: heading `mb-3` → `mb-4 sm:mb-3` (new responsive split — desktop/tablet unchanged).
+- Description → CTA: subtext `mb-6` → `mb-7`.
+- Primary CTA → Secondary CTA: button gap `gap-3` → `gap-4` (now matches `sm:gap-4`, simplified to one flat value).
+- CTA row → Trust row: `mb-8` → `mb-9`.
+- Trust row → mobile laptop image: `mt-10` → `mt-12`.
+
 Starting 2026-07-03, implementation specs for features with enough moving parts to warrant one (multi-step flows, anything with a diagram, precise technical reference like PDF field coordinates) live in `specs/` as their own Markdown file, linked from the relevant FEATURES.md entry rather than inlined there. FEATURES.md stays the plain-language "what it does" summary; `specs/` is where the "how, and why it's built that way" detail goes. Existing docs there: [specs/ARTISAN_COMMANDS.md](specs/ARTISAN_COMMANDS.md), [specs/GAP/MULTI_PROJECT_SUPPORT.md](specs/GAP/MULTI_PROJECT_SUPPORT.md), [specs/GAP/CARE_PLAN_TIER_CHANGE.md](specs/GAP/CARE_PLAN_TIER_CHANGE.md), [specs/GAP/COUPON_PROMO_CODE_SUPPORT.md](specs/GAP/COUPON_PROMO_CODE_SUPPORT.md), [specs/GAP/SELF_SERVICE_REFUND_REQUEST.md](specs/GAP/SELF_SERVICE_REFUND_REQUEST.md), [specs/LOGIN/LOGIN_FLOW.md](specs/LOGIN/LOGIN_FLOW.md), [specs/PAYMENT_FLOW.md](specs/PAYMENT_FLOW.md), [specs/CARE_PLAN_SUBSCRIPTION_FLOW.md](specs/CARE_PLAN_SUBSCRIPTION_FLOW.md), [specs/AGREEMENT-PDF-FILLING.md](specs/AGREEMENT-PDF-FILLING.md), [specs/INTERACTIVE_PRODUCT_TOUR.md](specs/INTERACTIVE_PRODUCT_TOUR.md), [specs/PORTAL_ANNOUNCEMENTS.md](specs/PORTAL_ANNOUNCEMENTS.md), [specs/PORTAL_GLOBAL_SEARCH.md](specs/PORTAL_GLOBAL_SEARCH.md), [specs/POST_LAUNCH_SATISFACTION_SURVEY.md](specs/POST_LAUNCH_SATISFACTION_SURVEY.md), [specs/TWO_FACTOR_AUTHENTICATION.md](specs/TWO_FACTOR_AUTHENTICATION.md), [specs/AI_ASSISTANT_KNOWLEDGE_BASE.md](specs/AI_ASSISTANT_KNOWLEDGE_BASE.md) *(knowledge base + implementation notes for the AI Client Portal assistant — see §15x)*.

@@ -142,14 +142,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
          double up the effect on this section alone. --}}
 
     {{-- Layer 4 — content: two-column grid (text left, device mockup right) --}}
-    <div class="relative w-full max-w-[92rem] mx-auto px-5 sm:px-6 lg:px-16 xl:px-28 pt-20 sm:pt-24 lg:pt-28 pb-16 sm:pb-20" style="z-index:4;">
+    <div class="relative w-full max-w-[92rem] mx-auto px-5 sm:px-6 lg:px-16 xl:px-28 pt-24 lg:pt-28 pb-20" style="z-index:4;">
         <div class="grid grid-cols-1 lg:grid-cols-[1fr_1.35fr] gap-10 items-center">
 
             {{-- LEFT — copy --}}
             <div class="text-left">
 
                 {{-- Badge --}}
-                <div id="hero-badge" class="inline-flex items-center text-xs font-semibold tracking-widest uppercase px-5 py-2 rounded-full mb-6 sm:mb-8 opacity-0"
+                <div id="hero-badge" class="inline-flex items-center text-xs font-semibold tracking-widest uppercase px-5 py-2 rounded-full mb-7 sm:mb-8 opacity-0"
                      style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.85);
                      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
                      box-shadow:0 8px 24px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.14);">
@@ -158,7 +158,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 </div>
 
                 {{-- Heading --}}
-                <h1 id="hero-heading" class="font-display font-bold leading-tight mb-3"
+                <h1 id="hero-heading" class="font-display font-bold leading-tight mb-4 sm:mb-3"
                     style="font-size:clamp(2.6rem,5.2vw,4.2rem);">
                     <span style="white-space:nowrap;"><span class="word-wrap"><span class="hero-word text-white">Building</span></span><span class="word-wrap"><span class="hero-word text-white">Websites.</span></span></span><br>
                     <span class="word-wrap"><span class="hero-word shimmer-gold">Expanding</span></span><span class="word-wrap"><span class="hero-word shimmer-gold">Reach.</span></span>
@@ -168,12 +168,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <div id="hero-glow-line" class="glow-line opacity-0" style="margin:18px 0;"></div>
 
                 {{-- Subtext --}}
-                <p id="hero-subtext" class="text-base sm:text-lg lg:text-xl max-w-xl mb-6 sm:mb-8 leading-relaxed opacity-0" style="color:rgba(255,255,255,.68);">
+                <p id="hero-subtext" class="text-base sm:text-lg lg:text-xl max-w-xl mb-7 sm:mb-8 leading-relaxed opacity-0" style="color:rgba(255,255,255,.68);">
                     Custom websites designed to strengthen your brand, expand your reach, and protect your online presence.
                 </p>
 
                 {{-- CTA buttons --}}
-                <div id="hero-ctas" class="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-10">
+                <div id="hero-ctas" class="flex flex-col sm:flex-row gap-4 mb-9 sm:mb-10">
                     <a href="{{ route('register') }}" class="hero-btn-primary opacity-0">
                         <span class="hero-btn-fill" aria-hidden="true"></span>
                         <span class="hero-btn-content">
@@ -212,7 +212,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                      +orbit-rings treatment is desktop-only (sized/positioned relative
                      to the wide right column), so this is a simpler standalone visual
                      to keep the mobile hero from feeling empty below the fold. --}}
-                <div id="hero-device-mobile" class="relative mt-10 lg:hidden opacity-0 mx-auto" style="max-width:380px;aspect-ratio:4/3.3;border-radius:16px;overflow:hidden;
+                <div id="hero-device-mobile" class="relative mt-12 lg:hidden opacity-0 mx-auto" style="max-width:380px;aspect-ratio:4/3.3;border-radius:16px;overflow:hidden;
                      -webkit-mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);
                      mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);">
                     <img src="@assetv('image/laptop-tillted.png')" alt="VisionBridge website preview on a laptop"
