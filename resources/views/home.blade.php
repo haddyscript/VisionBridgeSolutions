@@ -211,12 +211,23 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 {{-- Compact laptop image, mobile/tablet only — the full device-frame
                      +orbit-rings treatment is desktop-only (sized/positioned relative
                      to the wide right column), so this is a simpler standalone visual
-                     to keep the mobile hero from feeling empty below the fold. --}}
-                <div id="hero-device-mobile" class="relative mt-12 mb-6 lg:hidden opacity-0 mx-auto" style="max-width:380px;aspect-ratio:4/3.3;border-radius:16px;overflow:hidden;
-                     -webkit-mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);
-                     mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);">
-                    <img src="@assetv('image/laptop-tillted.png')" alt="VisionBridge website preview on a laptop"
-                         class="absolute inset-0 w-full h-full object-cover" style="object-position:50% 40%;">
+                     to keep the mobile hero from feeling empty below the fold.
+
+                     Outer #hero-device-mobile-frame carries the idle floating
+                     animation (CSS, mobile-design.css) and layout spacing; inner
+                     #hero-device-mobile keeps GSAP's own entrance opacity/y/scale
+                     tween — same frame/device split already used by the desktop
+                     #hero-device-frame/#hero-device pair above, so the CSS float
+                     animation and GSAP's inline transform never fight over the
+                     same element (see the comment on #hero-device-frame's own
+                     idle-float CSS rule in layouts/app.blade.php for why). --}}
+                <div id="hero-device-mobile-frame" class="relative mt-12 mb-6 lg:hidden mx-auto" style="max-width:380px;aspect-ratio:4/3.3;">
+                    <div id="hero-device-mobile" class="opacity-0 absolute inset-0" style="border-radius:16px;overflow:hidden;
+                         -webkit-mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);
+                         mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);">
+                        <img src="@assetv('image/laptop-tillted.png')" alt="VisionBridge website preview on a laptop"
+                             class="absolute inset-0 w-full h-full object-cover" style="object-position:50% 40%;">
+                    </div>
                 </div>
             </div>
 
