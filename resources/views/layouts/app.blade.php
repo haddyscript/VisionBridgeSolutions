@@ -1638,10 +1638,24 @@
             pointer-events: none;
             will-change: transform, opacity;
         }
-        /* Mobile active link */
+        /* Mobile active link — a visible gold pill (matching the desktop
+           nav's own sliding gold capsule), not just a faint tint. Previously
+           this set `color` directly on the <a>, but the title/description
+           text now lives in nested spans with their own explicit colors,
+           which override inherited color from the ancestor — so this had
+           become fully invisible against the new dark theme regardless of
+           the specificity issue: the title needs its own targeted rule
+           (.menu-item-title) since a color set on the <a> can't reach it. */
         #mobile-menu a.is-active {
-            color: #C9A84C !important;
-            background: rgba(201,168,76,0.08);
+            background: linear-gradient(135deg, rgba(201,168,76,.28) 0%, rgba(223,192,106,.14) 100%) !important;
+            border: 1px solid rgba(201,168,76,.4);
+        }
+        #mobile-menu a.is-active .menu-item-title {
+            color: #FFE9B0 !important;
+        }
+        #mobile-menu a.is-active .menu-icon-badge {
+            background: linear-gradient(135deg, rgba(201,168,76,.7) 0%, rgba(223,192,106,.4) 100%);
+            border-color: rgba(255,255,255,.4);
         }
     </style>
 </head>
@@ -1743,7 +1757,7 @@
                 {{-- Premium header — brand wordmark + tagline instead of just
                      the logo mark, so the full-screen takeover itself carries
                      branding rather than reading as a bare settings sheet. --}}
-                <div class="flex items-start justify-between mb-6">
+                <div id="mobile-menu-header" class="flex items-start justify-between mb-6">
                     <div>
                         <p class="font-display text-2xl font-bold text-white leading-tight">VisionBridge</p>
                         <p class="text-sm mt-1 leading-snug" style="color:rgba(255,255,255,.55);">Building Websites.<br>Expanding Reach.</p>
@@ -1778,7 +1792,7 @@
                             <svg class="w-5 h-5" fill="none" stroke="#FFE9B0" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="1" fill="#FFE9B0" stroke="none"/></svg>
                         </span>
                         <span class="flex flex-col">
-                            <span class="block text-lg font-bold uppercase tracking-wide text-white">About</span>
+                            <span class="menu-item-title block text-lg font-bold uppercase tracking-wide text-white">About</span>
                             <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Learn who we are and why businesses trust us.</span>
                         </span>
                     </a>
@@ -1787,7 +1801,7 @@
                             <svg class="w-5 h-5" fill="none" stroke="#FFE9B0" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
                         </span>
                         <span class="flex flex-col">
-                            <span class="block text-lg font-bold uppercase tracking-wide text-white">Services</span>
+                            <span class="menu-item-title block text-lg font-bold uppercase tracking-wide text-white">Services</span>
                             <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Website Design, Development &amp; Maintenance</span>
                         </span>
                     </a>
@@ -1796,7 +1810,7 @@
                             <svg class="w-5 h-5" fill="none" stroke="#FFE9B0" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg>
                         </span>
                         <span class="flex flex-col">
-                            <span class="block text-lg font-bold uppercase tracking-wide text-white">Plans</span>
+                            <span class="menu-item-title block text-lg font-bold uppercase tracking-wide text-white">Plans</span>
                             <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Choose the right care plan.</span>
                         </span>
                     </a>
@@ -1805,7 +1819,7 @@
                             <svg class="w-5 h-5" fill="none" stroke="#FFE9B0" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="#FFE9B0" stroke="none"/><path d="M21 15l-5-5L5 21"/></svg>
                         </span>
                         <span class="flex flex-col">
-                            <span class="block text-lg font-bold uppercase tracking-wide text-white">Portfolio</span>
+                            <span class="menu-item-title block text-lg font-bold uppercase tracking-wide text-white">Portfolio</span>
                             <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Explore our latest projects.</span>
                         </span>
                     </a>
@@ -1814,7 +1828,7 @@
                             <svg class="w-5 h-5" fill="none" stroke="#FFE9B0" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
                         </span>
                         <span class="flex flex-col">
-                            <span class="block text-lg font-bold uppercase tracking-wide text-white">Client Login</span>
+                            <span class="menu-item-title block text-lg font-bold uppercase tracking-wide text-white">Client Login</span>
                             <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Access your project dashboard.</span>
                         </span>
                     </a>
@@ -2117,17 +2131,15 @@
         // existing attributes, children, or the listeners added below.
         document.body.appendChild(document.getElementById('mobile-menu'));
 
-        document.getElementById('menu-btn').addEventListener('click', () => {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
-        });
-        document.querySelectorAll('#mobile-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.getElementById('mobile-menu').classList.add('hidden');
-            });
-        });
-        // The full-screen menu's own ✕ button just simulates a hamburger
-        // click — reuses this toggle above plus mobile-design.js's
-        // backdrop/stagger-class cleanup, instead of a second close path.
+        // Opening/closing itself (the .hidden toggle, the entrance/exit
+        // animation, the backdrop, body/button state classes) is owned
+        // entirely by mobile-design.js's initMobileMenu controller, which
+        // attaches its own click listener directly to #menu-btn — a genuine
+        // animated close needs to control exactly when `.hidden` gets added
+        // (only after the exit animation finishes), which isn't possible
+        // from a plain instant class-toggle running here. The ✕ button
+        // still just simulates a real click on the hamburger, so it goes
+        // through that same controller rather than a second close path.
         document.getElementById('mobile-menu-close')?.addEventListener('click', () => {
             document.getElementById('menu-btn').click();
         });

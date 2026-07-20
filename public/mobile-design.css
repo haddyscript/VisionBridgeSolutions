@@ -309,19 +309,12 @@
         box-shadow: 0 4px 14px rgba(0,0,0,.25);
     }
 
-    @keyframes mobile-menu-link-in {
-        0%   { opacity: 0; transform: translateX(-14px); }
-        100% { opacity: 1; transform: translateX(0); }
-    }
-    #mobile-menu.menu-opening #mobile-menu-links > a {
-        animation: mobile-menu-link-in 0.35s ease both;
-    }
-    #mobile-menu.menu-opening #mobile-menu-links > a:nth-child(1) { animation-delay: 0.03s; }
-    #mobile-menu.menu-opening #mobile-menu-links > a:nth-child(2) { animation-delay: 0.08s; }
-    #mobile-menu.menu-opening #mobile-menu-links > a:nth-child(3) { animation-delay: 0.13s; }
-    #mobile-menu.menu-opening #mobile-menu-links > a:nth-child(4) { animation-delay: 0.18s; }
-    #mobile-menu.menu-opening #mobile-menu-links > a:nth-child(5) { animation-delay: 0.23s; }
-    #mobile-menu.menu-opening #mobile-menu-links > a:nth-child(6) { animation-delay: 0.28s; }
+    /* The old CSS-keyframe stagger (nth-child animation-delay, 50ms apart,
+       links + CTA only) is removed — replaced by a GSAP-driven stagger in
+       mobile-design.js that covers the full open sequence (panel/blur, the
+       header, all 5 links, then the CTA) at a consistent 60ms cadence, per
+       the boss's own timeline. Keeping both would have meant two systems
+       fighting over the same opacity/transform on the same elements. */
 
     /* Hamburger → X morph. menu-btn is already md:hidden (mobile/tablet
        only), so no extra media-query gating is needed for the button itself —

@@ -96,13 +96,24 @@
     maybeTrigger();
 })();
 
-// Mobile-only nav dropdown wow-factor: dim backdrop + staggered link entrance.
+// Mobile-only full-screen nav menu — owns the entire open/close sequence:
+// the dim backdrop, the .hidden toggle, and a staggered entrance/exit.
 //
-// app.blade.php's own click handler on #menu-btn toggles the `hidden` class
-// on #mobile-menu and runs first (it's registered earlier in the document,
-// and listeners on the same element fire in registration order). This just
-// reacts after that toggle to add/remove a backdrop behind the panel and a
-// `menu-opening` class that drives the staggered slide-in in mobile-design.css.
+// This used to be split across two places: app.blade.php's own click
+// handler did an instant `.hidden` toggle, and this file just reacted after
+// the fact to layer a backdrop + CSS-keyframe stagger on top. That worked
+// for opening (nothing has to happen before the panel appears), but a real
+// *animated close* is impossible under that split — by the time this file's
+// listener ran, `.hidden` (display:none) had already been applied
+// synchronously, so there was nothing left visible to animate out. This
+// version is the single owner of #menu-btn's click, and controls exactly
+// when `.hidden` gets added — only after the exit animation finishes.
+//
+// Stagger order matches the boss's own timeline: the panel itself (its
+// background/blur "appearing"), then the header, then the 5 links in
+// order, then the CTA — each 60ms after the previous. If GSAP hasn't
+// loaded yet, both open and close fall back to an instant show/hide rather
+// than leaving the menu stuck invisible or stuck open.
 (function () {
     if (!window.matchMedia('(max-width: 768px)').matches) return;
 
@@ -114,26 +125,91 @@
     backdrop.id = 'mobile-menu-backdrop';
     backdrop.setAttribute('aria-hidden', 'true');
 
+    var isOpen = false;
+    var animating = false;
+
+    function staggerTargets() {
+        var targets = [];
+        var header = document.getElementById('mobile-menu-header');
+        if (header) targets.push(header);
+        menu.querySelectorAll('#mobile-menu-links > a').forEach(function (a) {
+            targets.push(a);
+        });
+        return targets;
+    }
+
+    function openMenu() {
+        if (isOpen || animating) return;
+        isOpen = true;
+        animating = true;
+
+        menu.classList.remove('hidden');
+        menuBtn.classList.add('is-open');
+        document.body.classList.add('mobile-menu-is-open');
+        document.body.appendChild(backdrop);
+        requestAnimationFrame(function () { backdrop.classList.add('is-visible'); });
+        backdrop.addEventListener('click', closeMenu);
+
+        var targets = staggerTargets();
+
+        if (typeof gsap === 'undefined') {
+            animating = false;
+            return;
+        }
+
+        gsap.set(menu, { opacity: 0 });
+        gsap.set(targets, { opacity: 0, y: 16 });
+
+        gsap.timeline({ onComplete: function () { animating = false; } })
+            // Step 1: the panel itself fades in — its own background +
+            // backdrop-filter is what reads as "blur" appearing.
+            .to(menu, { opacity: 1, duration: 0.3, ease: 'power2.out' })
+            // Steps 2–8: header, then each link, then the CTA — starting
+            // 60ms after step 1 *starts* (not finishes), then 60ms apart
+            // from each other, for one consistent cadence across all 8
+            // steps rather than a bigger gap after just the first one.
+            .to(targets, {
+                opacity: 1,
+                y: 0,
+                duration: 0.35,
+                ease: 'power2.out',
+                stagger: 0.06,
+            }, 0.06);
+    }
+
     function closeMenu() {
-        menu.classList.add('hidden');
-        menu.classList.remove('menu-opening');
+        if (!isOpen || animating) return;
+        isOpen = false;
+        animating = true;
+
         menuBtn.classList.remove('is-open');
         document.body.classList.remove('mobile-menu-is-open');
         backdrop.classList.remove('is-visible');
-        if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+
+        function finish() {
+            menu.classList.add('hidden');
+            if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+            animating = false;
+        }
+
+        if (typeof gsap === 'undefined') {
+            finish();
+            return;
+        }
+
+        var targets = staggerTargets();
+
+        // Reverse of the open sequence: everything fades upward together
+        // first (no stagger on the way out — a staggered close reads as
+        // sluggish, not premium), then the panel's own blur/background
+        // fades last, and only then does `.hidden` actually get applied.
+        gsap.timeline({ onComplete: finish })
+            .to(targets, { opacity: 0, y: -14, duration: 0.2, ease: 'power1.in' })
+            .to(menu, { opacity: 0, duration: 0.22, ease: 'power1.in' }, '-=0.05');
     }
 
     menuBtn.addEventListener('click', function () {
-        if (menu.classList.contains('hidden')) {
-            closeMenu();
-        } else {
-            document.body.appendChild(backdrop);
-            requestAnimationFrame(function () { backdrop.classList.add('is-visible'); });
-            menu.classList.add('menu-opening');
-            menuBtn.classList.add('is-open');
-            document.body.classList.add('mobile-menu-is-open');
-            backdrop.addEventListener('click', closeMenu);
-        }
+        if (isOpen) closeMenu(); else openMenu();
     });
 
     menu.querySelectorAll('a').forEach(function (link) {
