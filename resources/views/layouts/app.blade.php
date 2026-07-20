@@ -1765,12 +1765,12 @@
                         <stop offset="100%" stop-color="#3F4C59"/>
                     </linearGradient>
                     <linearGradient id="trailFadeStrong" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stop-color="#2CA6A4" stop-opacity="0"/>
-                        <stop offset="100%" stop-color="#2CA6A4" stop-opacity="0.85"/>
+                        <stop offset="0%" stop-color="#C9A84C" stop-opacity="0"/>
+                        <stop offset="100%" stop-color="#C9A84C" stop-opacity="0.85"/>
                     </linearGradient>
                     <linearGradient id="trailFadeLight" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stop-color="#7FD9D6" stop-opacity="0"/>
-                        <stop offset="100%" stop-color="#7FD9D6" stop-opacity="0.7"/>
+                        <stop offset="0%" stop-color="#FFE9B0" stop-opacity="0"/>
+                        <stop offset="100%" stop-color="#FFE9B0" stop-opacity="0.7"/>
                     </linearGradient>
                     <linearGradient id="skyGradient" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stop-color="#EAF3F8"/>
@@ -1782,6 +1782,17 @@
                         <stop offset="55%" stop-color="#C9A84C" stop-opacity="0.18"/>
                         <stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/>
                     </radialGradient>
+                    {{-- Premium golden wave sweep — deeper gold at the trailing
+                         (left) edge brightening to a near-white highlight at the
+                         leading (right) edge, so the wave reads as a glowing
+                         front sweeping across rather than a flat color fill.
+                         Same tonal family as the hero's .shimmer-gold text. --}}
+                    <linearGradient id="goldWaveSweep" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#A8872E"/>
+                        <stop offset="45%" stop-color="#C9A84C"/>
+                        <stop offset="78%" stop-color="#DFC06A"/>
+                        <stop offset="100%" stop-color="#FFF2A8"/>
+                    </linearGradient>
                 </defs>
                 {{-- Soft sky backdrop + a warm gold glow the plane climbs
                      toward — echoes the golden-hour bridge photo used
@@ -1840,9 +1851,9 @@
                     <rect x="-175" y="591" width="190" height="9" rx="4.5" fill="url(#trailFadeStrong)"/>
                     <rect x="-120" y="605" width="135" height="5" rx="2.5" fill="url(#trailFadeLight)"/>
                     <rect x="-120" y="577" width="135" height="5" rx="2.5" fill="url(#trailFadeLight)"/>
-                    <circle cx="-190" cy="595" r="4" fill="#2CA6A4" opacity="0.5"/>
-                    <circle cx="-212" cy="585" r="3" fill="#7FD9D6" opacity="0.4"/>
-                    <circle cx="-212" cy="605" r="3" fill="#7FD9D6" opacity="0.4"/>
+                    <circle cx="-190" cy="595" r="4" fill="#C9A84C" opacity="0.5"/>
+                    <circle cx="-212" cy="585" r="3" fill="#FFE9B0" opacity="0.4"/>
+                    <circle cx="-212" cy="605" r="3" fill="#FFE9B0" opacity="0.4"/>
                     {{-- Bigger airplane with softly rounded wing/tail tips (no sharp points) --}}
                     <path d="M14,588 Q-18,560 -10,548 Q16,562 52,588 Z" fill="url(#planeBody)"/>
                     <path d="M78,614 Q46,644 42,652 Q70,630 124,614 Z" fill="url(#planeBody)"/>
@@ -1858,6 +1869,28 @@
                     <rect x="14" y="598" width="125" height="4" rx="2" fill="#C9A84C" opacity="0.85"/>
                     <ellipse cx="115" cy="596" rx="11" ry="8" fill="#EAF3F8" opacity="0.92"/>
                     <ellipse cx="119" cy="593" rx="4" ry="2.4" fill="#FFFFFF" opacity="0.6"/>
+                </g>
+                {{-- Golden wave sweep — a single wide band (local width 2300,
+                     viewport is 1600) with a wavy leading/trailing edge on
+                     both sides, translated across via GSAP in the script
+                     below. Declared after #flight-plane so it paints on top
+                     of the whole bridge/plane/cloud scene, fully covering it
+                     ("Golden Fullscreen") partway through its translation,
+                     then continuing to slide off and reveal the destination
+                     underneath ("Reveal New Page"). See initFlightTransition's
+                     comment on the wave tween for the coverage-range math. --}}
+                <g id="flight-wave">
+                    <path fill="url(#goldWaveSweep)" d="
+                        M 0,0
+                        C -40,120 60,180 20,300
+                        C -20,420 70,480 10,600
+                        C -50,720 50,780 0,900
+                        L 2300,900
+                        C 2250,780 2350,720 2290,600
+                        C 2230,480 2320,420 2280,300
+                        C 2240,180 2340,120 2300,0
+                        Z
+                    "/>
                 </g>
             </svg>
         </div>
@@ -2174,6 +2207,7 @@
             if (typeof gsap === 'undefined') { setTimeout(initFlightTransition, 80); return; }
 
             const plane  = document.getElementById('flight-plane');
+            const wave   = document.getElementById('flight-wave');
             const clouds = ['cloud-1', 'cloud-2', 'cloud-3', 'cloud-4'].map(id => document.getElementById(id));
             let flying = false;
 
@@ -2191,6 +2225,10 @@
                 overlay.style.pointerEvents = 'all';
                 gsap.set(plane, { x: 0, y: 0, rotation: 0 });
                 gsap.set(clouds, { x: 0, y: 0, opacity: 0.85 });
+                // Wave's local shape spans x:[0,2300] (viewport is 0-1600), so
+                // starting it at x:-2500 puts it fully off-screen left with a
+                // little lead-in room before its leading edge starts entering.
+                gsap.set(wave, { x: -2500 });
 
                 // Cloud reaction times approximate when the plane's x position
                 // (computed from each stage's easing curve) reaches that cloud.
@@ -2208,6 +2246,27 @@
                   .to('#cloud-2', { x: 45,  y: -20, opacity: 0.3, duration: 0.5, ease: 'power2.out' }, 1.24)
                   .to('#cloud-3', { x: 35,  y: -22, opacity: 0.3, duration: 0.5, ease: 'power2.out' }, 1.59)
                   .to('#cloud-4', { x: 40,  y: -18, opacity: 0.3, duration: 0.5, ease: 'power2.out' }, 2.03);
+
+                // Golden wave sweep — one continuous rightward translation.
+                // The wave's local width (2300) minus the viewport width
+                // (1600) leaves a 700-unit range (x from -700 to 0) where its
+                // global span fully contains [0,1600] — i.e. genuinely 100%
+                // covers the screen, not just a single instant. Three legs:
+                // sweep in to the start of that range (matches the plane's
+                // own climb-out, so it visually "catches up" to the plane
+                // right as it exits), glide through the hold range (still
+                // full coverage throughout — this is where the scroll-jump
+                // at 0.7s above sits, safely hidden), then sweep the rest of
+                // the way off-screen to reveal the destination underneath.
+                // All three legs use explicit absolute start times (not
+                // relative '+=' offsets) — GSAP resolves a relative offset
+                // against the *whole timeline's* current end, not just the
+                // previous call in this chain, and the overlay/plane chain
+                // above already extends to ~2.7s, which would silently have
+                // pushed a relative offset here much later than intended.
+                tl.to(wave, { x: -700, duration: 1.1, ease: 'power2.in' }, 0.15)
+                  .to(wave, { x: 0, duration: 0.55, ease: 'sine.inOut' }, 1.25)
+                  .to(wave, { x: 1600, duration: 1.0, ease: 'power2.inOut' }, 1.95);
             };
 
             // Intercept every in-page anchor click site-wide (nav, mobile
