@@ -1766,25 +1766,57 @@
                      on #mobile-menu-links .mobile-menu-link for why the old
                      icon treatment was dropped rather than kept alongside. --}}
                 <div id="mobile-menu-links" class="flex flex-col flex-1 py-4">
+                    {{-- Icon badge (rounded, gold-gradient glass background)
+                         + title/description pair. Same 5 icon shapes as the
+                         old dropdown-card design (info/grid/document/image/
+                         person) — reused, not reinvented, just given the
+                         premium glass-badge treatment instead of a small
+                         inline outline glyph. .menu-icon-badge is defined
+                         once in mobile-design.css. --}}
                     <a href="{{ $homeAnchor }}#about" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
-                        <span class="block text-lg font-bold uppercase tracking-wide text-white">About</span>
-                        <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Who We Are</span>
+                        <span class="menu-icon-badge shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="#FFE9B0" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="1" fill="#FFE9B0" stroke="none"/></svg>
+                        </span>
+                        <span class="flex flex-col">
+                            <span class="block text-lg font-bold uppercase tracking-wide text-white">About</span>
+                            <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Learn who we are and why businesses trust us.</span>
+                        </span>
                     </a>
                     <a href="{{ $homeAnchor }}#services" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
-                        <span class="block text-lg font-bold uppercase tracking-wide text-white">Services</span>
-                        <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Website Development</span>
+                        <span class="menu-icon-badge shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="#FFE9B0" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                        </span>
+                        <span class="flex flex-col">
+                            <span class="block text-lg font-bold uppercase tracking-wide text-white">Services</span>
+                            <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Website Design, Development &amp; Maintenance</span>
+                        </span>
                     </a>
                     <a href="{{ $homeAnchor }}#plans" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
-                        <span class="block text-lg font-bold uppercase tracking-wide text-white">Plans</span>
-                        <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Website Care Plans</span>
+                        <span class="menu-icon-badge shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="#FFE9B0" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg>
+                        </span>
+                        <span class="flex flex-col">
+                            <span class="block text-lg font-bold uppercase tracking-wide text-white">Plans</span>
+                            <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Choose the right care plan.</span>
+                        </span>
                     </a>
                     <a href="{{ $homeAnchor }}#portfolio" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
-                        <span class="block text-lg font-bold uppercase tracking-wide text-white">Portfolio</span>
-                        <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Recent Projects</span>
+                        <span class="menu-icon-badge shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="#FFE9B0" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="#FFE9B0" stroke="none"/><path d="M21 15l-5-5L5 21"/></svg>
+                        </span>
+                        <span class="flex flex-col">
+                            <span class="block text-lg font-bold uppercase tracking-wide text-white">Portfolio</span>
+                            <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Explore our latest projects.</span>
+                        </span>
                     </a>
                     <a href="{{ route('login') }}" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
-                        <span class="block text-lg font-bold uppercase tracking-wide text-white">Client Login</span>
-                        <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Access Your Portal</span>
+                        <span class="menu-icon-badge shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="#FFE9B0" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                        </span>
+                        <span class="flex flex-col">
+                            <span class="block text-lg font-bold uppercase tracking-wide text-white">Client Login</span>
+                            <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Access your project dashboard.</span>
+                        </span>
                     </a>
                     <a id="mobile-menu-cta" href="{{ route('intake.create') }}" class="mt-auto bg-gold text-navy font-bold text-base text-center px-4 py-4 rounded-xl inline-flex items-center justify-center gap-2">
                         Get Started

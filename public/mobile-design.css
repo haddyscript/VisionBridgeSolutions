@@ -277,20 +277,36 @@
         opacity: 1;
     }
 
-    /* Bigger, scannable menu items — title + short description stacked
-       (flex-column), replacing the old single-line-plus-icon row entirely.
-       The per-link icon treatment (the ::before rules + 5 nth-child
-       background-images this used to be) is removed rather than kept
-       alongside: a decorative icon competing with real description text
-       for attention is exactly the cluttered "looks like settings" feel
-       the two-line title+subtitle layout is meant to replace. */
+    /* Bigger, scannable menu items — icon badge, then title + full
+       description stacked beside it. Back to a row layout (icon + text),
+       reversing the earlier flex-column-only pass, now that the icon is a
+       proper premium badge rather than a small glyph competing with the
+       text for attention. */
     #mobile-menu-links .mobile-menu-link {
         display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-start !important;
+        align-items: center !important;
+        gap: 16px !important;
     }
     #mobile-menu-links .mobile-menu-link:hover {
         background: rgba(255,255,255,0.06) !important;
+    }
+
+    /* Premium icon badge — rounded (not a plain circle or square), a
+       translucent gold-gradient fill for the "gold gradient" ask, and a
+       frosted border + blur for "glass background", instead of the old
+       thin thin flat-outline glyph with no background treatment at all. */
+    .menu-icon-badge {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(201,168,76,.35) 0%, rgba(223,192,106,.15) 100%);
+        border: 1px solid rgba(255,255,255,.18);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        box-shadow: 0 4px 14px rgba(0,0,0,.25);
     }
 
     @keyframes mobile-menu-link-in {
