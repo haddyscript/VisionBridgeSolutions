@@ -251,6 +251,23 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                          background:conic-gradient(from 0deg, rgba(201,168,76,0) 0%, rgba(255,201,77,.30) 18%, rgba(201,168,76,0) 42%, rgba(255,201,77,.22) 68%, rgba(201,168,76,0) 100%);
                          filter:blur(9px);"></div>
 
+                    {{-- Gold light trail — a bright arc slowly orbiting the laptop
+                         (desktop's equivalent is #hero-orbit); much slower here
+                         (20–30s vs desktop's 9s) and simplified to one bloom +
+                         one bright core layer instead of desktop's three, since
+                         this reads as a background detail on the smaller mobile
+                         canvas rather than a focal effect. dasharray total
+                         (80+934=1014) matches this ellipse's own
+                         Ramanujan-approximated circumference so the loop has no
+                         visible seam. linear easing (not ease-in-out) since a
+                         constant-speed sweep is what actually reads as "orbiting"
+                         on a closed path. --}}
+                    <svg id="hero-trail-mobile" class="opacity-0" viewBox="0 0 400 300" style="position:absolute;top:-14%;left:-8%;width:116%;height:128%;pointer-events:none;">
+                        <ellipse cx="200" cy="150" rx="190" ry="130" fill="none" stroke="rgba(201,168,76,.14)" stroke-width="1.5"/>
+                        <ellipse id="hero-trail-mobile-bloom" cx="200" cy="150" rx="190" ry="130" fill="none" stroke="#FF8C1A" stroke-width="7" stroke-linecap="round" stroke-dasharray="80 934"/>
+                        <ellipse id="hero-trail-mobile-core" cx="200" cy="150" rx="190" ry="130" fill="none" stroke="#FFE8A8" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="80 934"/>
+                    </svg>
+
                     <div id="hero-device-mobile" class="opacity-0 absolute inset-0" style="border-radius:16px;overflow:hidden;
                          -webkit-mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);
                          mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);">
@@ -1885,6 +1902,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             .fromTo('#hero-device-mobile', { opacity:0, y:24, scale:0.96 }, { opacity:1, y:-10, scale:1.25, duration:0.80, ease:'power3.out' }, '-=0.55')
             .fromTo('#hero-halo-mobile',      { opacity:0 }, { opacity:1, duration:1.1 }, '-=0.60')
             .fromTo('#hero-halo-mobile-ring', { opacity:0 }, { opacity:1, duration:0.90 }, '-=0.95')
+            .fromTo('#hero-trail-mobile',     { opacity:0 }, { opacity:1, duration:0.90 }, '-=0.75')
             .fromTo('#hero-halo',       { opacity:0 }, { opacity:1, duration:1.1 }, '-=0.60')
             .fromTo('#hero-orbit',      { opacity:0 }, { opacity:1, duration:0.90 }, '-=0.95')
             .fromTo('#hero-support-card', { opacity:0, y:-14 }, { opacity:1, y:0, duration:0.55 }, '-=0.45')
@@ -1905,13 +1923,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         //  background reads as alive instead of mechanically looping.
         //  Skipped entirely for prefers-reduced-motion, and paused via
         //  IntersectionObserver once the hero scrolls out of view.
+        //  Mobile (<640px) gets 20 particles instead of desktop's 22 — was
+        //  10, doubled — plus two extra per-particle tweens (scale "resize"
+        //  and a slight rotation) desktop doesn't have.
         // ============================================================
         (function initHeroParticles() {
             const container = document.getElementById('hero-particles');
             if (!container) return;
             if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-            const count = window.innerWidth < 640 ? 10 : 22;
+            const isMobile = window.innerWidth < 640;
+            const count = isMobile ? 20 : 22;
             const tweens = [];
 
             for (let i = 0; i < count; i++) {
@@ -1950,6 +1972,32 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     repeat: -1,
                     yoyo: true,
                 }));
+
+                // Mobile-only: resize (scale) + a slight rotation, each its own
+                // independently-randomized GSAP tween layered on top of the
+                // drift/twinkle above. GSAP composes simultaneous x/y/scale/
+                // rotation tweens on the same element into one transform
+                // automatically, so this doesn't fight the drift tween's x/y.
+                // Desktop keeps its original drift+twinkle-only behavior.
+                if (isMobile) {
+                    tweens.push(gsap.to(el, {
+                        scale: 0.7 + Math.random() * 0.8,
+                        duration: 6 + Math.random() * 8,
+                        delay: Math.random() * 6,
+                        ease: 'sine.inOut',
+                        repeat: -1,
+                        yoyo: true,
+                    }));
+
+                    tweens.push(gsap.to(el, {
+                        rotation: (Math.random() - 0.5) * 30,
+                        duration: 7 + Math.random() * 8,
+                        delay: Math.random() * 6,
+                        ease: 'sine.inOut',
+                        repeat: -1,
+                        yoyo: true,
+                    }));
+                }
             }
 
             const hero = document.getElementById('hero');

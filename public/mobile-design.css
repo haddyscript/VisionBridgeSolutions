@@ -68,6 +68,32 @@
         #hero-halo-mobile-ring { animation: none; }
     }
 
+    /* Gold light trail behind the mobile laptop — a slow orbiting arc,
+       mirroring desktop's #hero-orbit (see that rule's own comments in
+       layouts/app.blade.php for the general technique) but at a much
+       slower 25s (desktop is 9s) and with only two stroke layers instead
+       of desktop's three. stroke-dashoffset animates the dash segment
+       around the fixed ellipse path (not a transform:rotate on the shape
+       itself, which would rigidly tilt/warp this non-circular ellipse
+       through the spin instead of sliding smoothly around it). */
+    #hero-trail-mobile-bloom, #hero-trail-mobile-core {
+        animation: hero-trail-mobile-travel 25s linear infinite;
+    }
+    #hero-trail-mobile-bloom {
+        opacity: .55;
+        filter: blur(4px) drop-shadow(0 0 10px rgba(255,140,20,.55));
+    }
+    #hero-trail-mobile-core {
+        filter: drop-shadow(0 0 4px rgba(255,255,255,.9)) drop-shadow(0 0 9px rgba(255,180,60,.75));
+    }
+    @keyframes hero-trail-mobile-travel {
+        from { stroke-dashoffset: 0; }
+        to   { stroke-dashoffset: -1014; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        #hero-trail-mobile-bloom, #hero-trail-mobile-core { animation: none; }
+    }
+
     /* "Who We Are" mosaic — taller box + larger background scale so the
        "Building Websites. Expanding Reach." text baked into the source
        photo doesn't get cropped/overlapping across the sliced cells. */
