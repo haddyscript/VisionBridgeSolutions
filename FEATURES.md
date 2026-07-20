@@ -872,4 +872,21 @@ Boss reported that on desktop, the mouse-following ambient hero glow wasn't work
 
 This was a pre-existing bug, unrelated to the mobile-hero work in §21–28 — none of those changes touch `layouts/app.blade.php`'s intro logic or any shared/desktop-visible element.
 
+## 30. Fix: Site-Wide Grain Overlay Blocking Every Click (2026-07-20)
+
+The actual root cause of the "buttons not clickable on desktop" report (§29 was a real, separate bug worth fixing, but not this one) — confirmed via a screenshot of DevTools: right-clicking a hero button and choosing "Inspect" selected `<div class="page-noise" aria-hidden="true">` instead of the button underneath it.
+
+`.page-noise` (`home.blade.php`'s site-wide animated film-grain texture — `position:fixed`, full-viewport, `z-index:9999`) is declared with `pointer-events: none`, since it's purely decorative. But it's also a direct child of `#page-wrapper`, which (`layouts/app.blade.php`, §"Footer: unpeel / reveal") has its own pre-existing rule:
+
+```css
+#page-wrapper { pointer-events: none; }
+#page-wrapper > *:not(#footer-spacer) { pointer-events: auto; }
+```
+
+— an unrelated mechanism that restores clickability to real page content, since `#page-wrapper` itself is `pointer-events:none` so its own empty box doesn't block the fixed footer underneath it. That second rule's `#page-wrapper` ID selector outranks `.page-noise`'s own plain class selector, so it silently re-enabled pointer events on the grain overlay — turning a decorative texture into a full-page invisible click-blocker sitting above literally everything, including every button and nav link on the site.
+
+**Fix:** `.page-noise` added to the exclusion, same as `#footer-spacer` already was: `#page-wrapper > *:not(#footer-spacer):not(.page-noise)`.
+
+This bug (and the `.page-noise` element itself) predates today's session entirely — unrelated to the mobile-hero work in §21–28 or the intro-overlay fix in §29.
+
 Starting 2026-07-03, implementation specs for features with enough moving parts to warrant one (multi-step flows, anything with a diagram, precise technical reference like PDF field coordinates) live in `specs/` as their own Markdown file, linked from the relevant FEATURES.md entry rather than inlined there. FEATURES.md stays the plain-language "what it does" summary; `specs/` is where the "how, and why it's built that way" detail goes. Existing docs there: [specs/ARTISAN_COMMANDS.md](specs/ARTISAN_COMMANDS.md), [specs/GAP/MULTI_PROJECT_SUPPORT.md](specs/GAP/MULTI_PROJECT_SUPPORT.md), [specs/GAP/CARE_PLAN_TIER_CHANGE.md](specs/GAP/CARE_PLAN_TIER_CHANGE.md), [specs/GAP/COUPON_PROMO_CODE_SUPPORT.md](specs/GAP/COUPON_PROMO_CODE_SUPPORT.md), [specs/GAP/SELF_SERVICE_REFUND_REQUEST.md](specs/GAP/SELF_SERVICE_REFUND_REQUEST.md), [specs/LOGIN/LOGIN_FLOW.md](specs/LOGIN/LOGIN_FLOW.md), [specs/PAYMENT_FLOW.md](specs/PAYMENT_FLOW.md), [specs/CARE_PLAN_SUBSCRIPTION_FLOW.md](specs/CARE_PLAN_SUBSCRIPTION_FLOW.md), [specs/AGREEMENT-PDF-FILLING.md](specs/AGREEMENT-PDF-FILLING.md), [specs/INTERACTIVE_PRODUCT_TOUR.md](specs/INTERACTIVE_PRODUCT_TOUR.md), [specs/PORTAL_ANNOUNCEMENTS.md](specs/PORTAL_ANNOUNCEMENTS.md), [specs/PORTAL_GLOBAL_SEARCH.md](specs/PORTAL_GLOBAL_SEARCH.md), [specs/POST_LAUNCH_SATISFACTION_SURVEY.md](specs/POST_LAUNCH_SATISFACTION_SURVEY.md), [specs/TWO_FACTOR_AUTHENTICATION.md](specs/TWO_FACTOR_AUTHENTICATION.md), [specs/AI_ASSISTANT_KNOWLEDGE_BASE.md](specs/AI_ASSISTANT_KNOWLEDGE_BASE.md) *(knowledge base + implementation notes for the AI Client Portal assistant — see §15x)*.

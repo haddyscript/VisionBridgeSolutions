@@ -986,7 +986,14 @@
                the fixed footer underneath, even with the spacer itself passthrough. */
             pointer-events: none;
         }
-        #page-wrapper > *:not(#footer-spacer) {
+        /* .page-noise is also excluded here, same as #footer-spacer — it's a
+           direct child of #page-wrapper too (see home.blade.php), and without
+           this exclusion this rule's #page-wrapper ID selector outranks
+           .page-noise's own `pointer-events: none` (a plain class selector),
+           silently re-enabling pointer events on that fixed, full-viewport,
+           z-index:9999 decorative overlay and blocking every click on the
+           page underneath it. */
+        #page-wrapper > *:not(#footer-spacer):not(.page-noise) {
             pointer-events: auto;
         }
         #site-footer {
