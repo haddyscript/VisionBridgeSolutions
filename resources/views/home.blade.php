@@ -212,7 +212,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                      +orbit-rings treatment is desktop-only (sized/positioned relative
                      to the wide right column), so this is a simpler standalone visual
                      to keep the mobile hero from feeling empty below the fold. --}}
-                <div id="hero-device-mobile" class="relative mt-12 lg:hidden opacity-0 mx-auto" style="max-width:380px;aspect-ratio:4/3.3;border-radius:16px;overflow:hidden;
+                <div id="hero-device-mobile" class="relative mt-12 mb-6 lg:hidden opacity-0 mx-auto" style="max-width:380px;aspect-ratio:4/3.3;border-radius:16px;overflow:hidden;
                      -webkit-mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);
                      mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);">
                     <img src="@assetv('image/laptop-tillted.png')" alt="VisionBridge website preview on a laptop"
@@ -1842,7 +1842,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             // Device mockup + its floating cards — a beat behind the copy so
             // the eye lands on the heading first, matching the reference layout
             .fromTo('#hero-device',     { opacity:0, y:30, scale:0.96 }, { opacity:1, y:0, scale:1, duration:0.85, ease:'power3.out' }, '-=0.55')
-            .fromTo('#hero-device-mobile', { opacity:0, y:24, scale:0.96 }, { opacity:1, y:0, scale:1, duration:0.80, ease:'power3.out' }, '-=0.55')
+            .fromTo('#hero-device-mobile', { opacity:0, y:24, scale:0.96 }, { opacity:1, y:-10, scale:1.25, duration:0.80, ease:'power3.out' }, '-=0.55')
             .fromTo('#hero-halo',       { opacity:0 }, { opacity:1, duration:1.1 }, '-=0.60')
             .fromTo('#hero-orbit',      { opacity:0 }, { opacity:1, duration:0.90 }, '-=0.95')
             .fromTo('#hero-support-card', { opacity:0, y:-14 }, { opacity:1, y:0, duration:0.55 }, '-=0.45')
