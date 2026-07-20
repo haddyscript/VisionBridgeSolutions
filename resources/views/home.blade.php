@@ -221,7 +221,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                      animation and GSAP's inline transform never fight over the
                      same element (see the comment on #hero-device-frame's own
                      idle-float CSS rule in layouts/app.blade.php for why). --}}
-                <div id="hero-device-mobile-frame" class="relative mt-12 mb-6 lg:hidden mx-auto" style="max-width:380px;aspect-ratio:4/3.3;">
+                <div id="hero-device-mobile-frame" class="relative mt-12 mb-6 lg:hidden mx-auto" style="max-width:380px;aspect-ratio:4/3.3;border-radius:16px;">
                     <div id="hero-device-mobile" class="opacity-0 absolute inset-0" style="border-radius:16px;overflow:hidden;
                          -webkit-mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);
                          mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);">

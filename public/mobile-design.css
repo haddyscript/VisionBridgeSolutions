@@ -19,23 +19,42 @@
         font-size: 2.35rem !important;
     }
 
-    /* Mobile hero laptop — continuous idle float, applied to the outer
+    /* Mobile hero laptop — continuous idle float + subtle tilt + a breathing
+       ground shadow, all one animation applied to the outer
        #hero-device-mobile-frame wrapper (not #hero-device-mobile itself,
        which GSAP's entrance tween in home.blade.php already owns the
        transform of — the frame/device split in the markup exists
        specifically so this animation and GSAP's inline transform never
-       land on the same element). Mirrors 0px → -8px → 0px → +5px → 0px. */
+       land on the same element). translateY mirrors 0px → -8px → 0px →
+       +5px → 0px; rotate swings a very subtle -2deg → 0 → +2deg → 0 → -2deg
+       in sync with it (both in one `transform`, since two separate
+       `animation`s can't both drive the same property without one silently
+       overriding the other). The box-shadow grows softer/wider as the
+       laptop rises and tightens as it settles, reinforcing the sense that
+       it's actually floating rather than just sliding up and down. */
     #hero-device-mobile-frame {
         animation: hero-mobile-laptop-float 9s ease-in-out infinite;
     }
     @keyframes hero-mobile-laptop-float {
-        0%, 100% { transform: translateY(0); }
-        25%      { transform: translateY(-8px); }
-        50%      { transform: translateY(0); }
-        75%      { transform: translateY(5px); }
+        0%, 100% {
+            transform: translateY(0) rotate(-2deg);
+            box-shadow: 0 24px 32px -6px rgba(11,15,23,0.45);
+        }
+        25% {
+            transform: translateY(-8px) rotate(0deg);
+            box-shadow: 0 32px 46px -4px rgba(11,15,23,0.32);
+        }
+        50% {
+            transform: translateY(0) rotate(2deg);
+            box-shadow: 0 24px 32px -6px rgba(11,15,23,0.45);
+        }
+        75% {
+            transform: translateY(5px) rotate(0deg);
+            box-shadow: 0 18px 22px -8px rgba(11,15,23,0.5);
+        }
     }
     @media (prefers-reduced-motion: reduce) {
-        #hero-device-mobile-frame { animation: none; }
+        #hero-device-mobile-frame { animation: none; box-shadow: 0 24px 32px -6px rgba(11,15,23,0.45); }
     }
 
     /* "Who We Are" mosaic — taller box + larger background scale so the
