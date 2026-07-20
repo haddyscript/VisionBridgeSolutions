@@ -141,6 +141,66 @@
     });
 })();
 
+// Mobile menu — drifting gold particles behind the frosted-glass content.
+//
+// Lazily created the first time the menu is opened, not on page load —
+// the menu starts `hidden` and there's no reason to animate an invisible
+// container. Reuses the .hero-particle CSS class already defined for the
+// hero background (visual consistency, no new styling needed), at a much
+// smaller count appropriate for a focused panel rather than a full-page
+// hero. If GSAP hasn't loaded yet on first open, this quietly no-ops and
+// retries on the next open — never blocks the menu's own open/close, which
+// works entirely independently of this.
+(function () {
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var menuBtn = document.getElementById('menu-btn');
+    var container = document.getElementById('mobile-menu-particles');
+    if (!menuBtn || !container) return;
+
+    var created = false;
+
+    menuBtn.addEventListener('click', function () {
+        if (created || typeof gsap === 'undefined') return;
+        created = true;
+
+        var count = 10;
+        for (var i = 0; i < count; i++) {
+            var el = document.createElement('div');
+            el.className = 'hero-particle';
+            var size = 3 + Math.random() * 4;
+            el.style.width = size + 'px';
+            el.style.height = size + 'px';
+            el.style.left = Math.random() * 100 + '%';
+            el.style.top = Math.random() * 100 + '%';
+            el.style.opacity = 0;
+            container.appendChild(el);
+
+            gsap.set(el, { opacity: 0.3 + Math.random() * 0.35 });
+
+            gsap.to(el, {
+                x: (Math.random() - 0.5) * 60,
+                y: -30 - Math.random() * 50,
+                duration: 8 + Math.random() * 8,
+                delay: Math.random() * 5,
+                ease: 'sine.inOut',
+                repeat: -1,
+                yoyo: true,
+            });
+
+            gsap.to(el, {
+                opacity: 0.85 + Math.random() * 0.15,
+                duration: 1.2 + Math.random() * 1.5,
+                delay: Math.random() * 3,
+                ease: 'sine.inOut',
+                repeat: -1,
+                yoyo: true,
+            });
+        }
+    });
+})();
+
 // Mobile-only top scroll-progress bar — desktop has the #section-rail dot
 // nav for scroll feedback; mobile has no equivalent, so this fills a glowing
 // gradient bar across the very top edge of the viewport as the page scrolls.

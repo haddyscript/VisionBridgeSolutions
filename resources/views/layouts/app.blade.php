@@ -1727,25 +1727,65 @@
              mobile-design.css, unchanged), then Get Started pinned to the
              bottom of the screen via `mt-auto`. --}}
         <div id="mobile-menu" class="hidden md:hidden fixed inset-0 z-50 overflow-y-auto"
-             style="background:rgba(255,255,255,0.98);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);">
-            <div class="flex flex-col min-h-full px-6 pt-6 pb-8">
-                <div class="flex items-center justify-between mb-6">
-                    <img src="@assetv('image/logo/vbs-logo-v3.jpeg')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
+             style="background:rgba(10,18,30,.55);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);">
+            {{-- Frosted-glass depth layer — reuses .hero-gradient-shift's
+                 existing keyframes (already defined globally in this file's
+                 own <style> block, not scoped to #hero) for the animated
+                 gradient, plus a small drifting-particle field lazily
+                 created on first open by mobile-design.js (see the comment
+                 there) — so the dark glass reads as alive rather than a flat
+                 tinted pane, matching the iOS-style animated-gradient plus
+                 moving-particles ask. --}}
+            <div class="hero-gradient-shift absolute inset-0 pointer-events-none" aria-hidden="true"></div>
+            <div id="mobile-menu-particles" class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true"></div>
+
+            <div class="relative flex flex-col min-h-full px-6 pt-6 pb-8">
+                {{-- Premium header — brand wordmark + tagline instead of just
+                     the logo mark, so the full-screen takeover itself carries
+                     branding rather than reading as a bare settings sheet. --}}
+                <div class="flex items-start justify-between mb-6">
+                    <div>
+                        <p class="font-display text-2xl font-bold text-white leading-tight">VisionBridge</p>
+                        <p class="text-sm mt-1 leading-snug" style="color:rgba(255,255,255,.55);">Building Websites.<br>Expanding Reach.</p>
+                    </div>
                     {{-- Just simulates a click on the hamburger — reuses every
                          bit of existing open/close logic (both the basic
                          `.hidden` toggle below and mobile-design.js's
                          backdrop/stagger cleanup) instead of duplicating it. --}}
-                    <button id="mobile-menu-close" type="button" aria-label="Close menu" class="w-10 h-10 rounded-full flex items-center justify-center text-navy/70 hover:text-navy hover:bg-navy/5 transition-colors">
+                    <button id="mobile-menu-close" type="button" aria-label="Close menu" class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors" style="color:rgba(255,255,255,.7);">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
-                <div class="h-px bg-navy/10"></div>
-                <div id="mobile-menu-links" class="flex flex-col flex-1 py-4 gap-1">
-                    <a href="{{ $homeAnchor }}#about"     class="mobile-menu-link text-navy/80 hover:text-gold text-lg font-semibold px-4 py-3.5 rounded-xl hover:bg-navy/5 transition-all duration-200">About</a>
-                    <a href="{{ $homeAnchor }}#services"  class="mobile-menu-link text-navy/80 hover:text-gold text-lg font-semibold px-4 py-3.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Services</a>
-                    <a href="{{ $homeAnchor }}#plans"     class="mobile-menu-link text-navy/80 hover:text-gold text-lg font-semibold px-4 py-3.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Plans</a>
-                    <a href="{{ $homeAnchor }}#portfolio" class="mobile-menu-link text-navy/80 hover:text-gold text-lg font-semibold px-4 py-3.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Portfolio</a>
-                    <a href="{{ route('login') }}" class="mobile-menu-link text-navy/80 hover:text-gold text-lg font-semibold px-4 py-3.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Client Login</a>
+                <div class="h-px" style="background:rgba(255,255,255,.15);"></div>
+
+                {{-- Bigger, scannable menu items — title + short description
+                     stacked, instead of one plain line each (which read as a
+                     settings list, per the boss's own comparison). Layout
+                     (flex-column, no per-link icon) is finished in
+                     mobile-design.css, not here — see that file's comment
+                     on #mobile-menu-links .mobile-menu-link for why the old
+                     icon treatment was dropped rather than kept alongside. --}}
+                <div id="mobile-menu-links" class="flex flex-col flex-1 py-4">
+                    <a href="{{ $homeAnchor }}#about" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
+                        <span class="block text-lg font-bold uppercase tracking-wide text-white">About</span>
+                        <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Who We Are</span>
+                    </a>
+                    <a href="{{ $homeAnchor }}#services" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
+                        <span class="block text-lg font-bold uppercase tracking-wide text-white">Services</span>
+                        <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Website Development</span>
+                    </a>
+                    <a href="{{ $homeAnchor }}#plans" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
+                        <span class="block text-lg font-bold uppercase tracking-wide text-white">Plans</span>
+                        <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Website Care Plans</span>
+                    </a>
+                    <a href="{{ $homeAnchor }}#portfolio" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
+                        <span class="block text-lg font-bold uppercase tracking-wide text-white">Portfolio</span>
+                        <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Recent Projects</span>
+                    </a>
+                    <a href="{{ route('login') }}" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
+                        <span class="block text-lg font-bold uppercase tracking-wide text-white">Client Login</span>
+                        <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Access Your Portal</span>
+                    </a>
                     <a id="mobile-menu-cta" href="{{ route('intake.create') }}" class="mt-auto bg-gold text-navy font-bold text-base text-center px-4 py-4 rounded-xl inline-flex items-center justify-center gap-2">
                         Get Started
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>

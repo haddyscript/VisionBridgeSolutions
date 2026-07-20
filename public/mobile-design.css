@@ -149,9 +149,11 @@
     }
 
     /* Mobile nav dropdown — thin dividers between links so each item reads
-       as a distinct row instead of loosely stacked text. */
+       as a distinct row instead of loosely stacked text. Light-on-dark now
+       that the menu itself is a dark frosted-glass full screen, not a white
+       card. */
     #mobile-menu-links .mobile-menu-link:not(:last-of-type) {
-        border-bottom: 1px solid rgba(47,58,69,0.07) !important;
+        border-bottom: 1px solid rgba(255,255,255,0.10) !important;
     }
 
     /* Get Started CTA — clearer separation from the links above it, and a
@@ -173,7 +175,7 @@
         left: -1.5rem;
         right: -1.5rem;
         height: 1px;
-        background: rgba(47,58,69,0.10);
+        background: rgba(255,255,255,0.15);
     }
     #mobile-menu-links {
         padding-bottom: 16px !important;
@@ -275,35 +277,20 @@
         opacity: 1;
     }
 
+    /* Bigger, scannable menu items — title + short description stacked
+       (flex-column), replacing the old single-line-plus-icon row entirely.
+       The per-link icon treatment (the ::before rules + 5 nth-child
+       background-images this used to be) is removed rather than kept
+       alongside: a decorative icon competing with real description text
+       for attention is exactly the cluttered "looks like settings" feel
+       the two-line title+subtitle layout is meant to replace. */
     #mobile-menu-links .mobile-menu-link {
         display: flex !important;
-        align-items: center !important;
-        gap: 12px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
     }
-    #mobile-menu-links .mobile-menu-link::before {
-        content: '';
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        flex-shrink: 0;
-        background-repeat: no-repeat;
-        background-size: contain;
-        opacity: 0.85;
-    }
-    #mobile-menu-links a:nth-child(1)::before {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C9A84C' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cline x1='12' y1='11' x2='12' y2='16'/%3E%3Ccircle cx='12' cy='8' r='1' fill='%23C9A84C'/%3E%3C/svg%3E");
-    }
-    #mobile-menu-links a:nth-child(2)::before {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C9A84C' stroke-width='2'%3E%3Crect x='3' y='3' width='7' height='7' rx='1'/%3E%3Crect x='14' y='3' width='7' height='7' rx='1'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1'/%3E%3Crect x='14' y='14' width='7' height='7' rx='1'/%3E%3C/svg%3E");
-    }
-    #mobile-menu-links a:nth-child(3)::before {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C9A84C' stroke-width='2'%3E%3Crect x='4' y='3' width='16' height='18' rx='2'/%3E%3Cline x1='8' y1='8' x2='16' y2='8'/%3E%3Cline x1='8' y1='12' x2='16' y2='12'/%3E%3Cline x1='8' y1='16' x2='13' y2='16'/%3E%3C/svg%3E");
-    }
-    #mobile-menu-links a:nth-child(4)::before {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C9A84C' stroke-width='2'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5' fill='%23C9A84C'/%3E%3Cpath d='M21 15l-5-5L5 21'/%3E%3C/svg%3E");
-    }
-    #mobile-menu-links a:nth-child(5)::before {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C9A84C' stroke-width='2'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c0-4 4-6 8-6s8 2 8 6'/%3E%3C/svg%3E");
+    #mobile-menu-links .mobile-menu-link:hover {
+        background: rgba(255,255,255,0.06) !important;
     }
 
     @keyframes mobile-menu-link-in {
