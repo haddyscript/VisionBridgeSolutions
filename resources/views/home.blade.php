@@ -161,14 +161,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <h1 id="hero-heading" class="font-display font-bold leading-tight mb-4 sm:mb-3"
                     style="font-size:clamp(2.6rem,5.2vw,4.2rem);">
                     <span style="white-space:nowrap;"><span class="word-wrap"><span class="hero-word text-white">Building</span></span><span class="word-wrap"><span class="hero-word text-white">Websites.</span></span></span><br>
-                    <span class="word-wrap"><span class="hero-word shimmer-gold">Expanding</span></span><span class="word-wrap"><span class="hero-word shimmer-gold">Reach.</span></span>
+                    <span style="white-space:nowrap;"><span class="word-wrap"><span class="hero-word shimmer-gold">Expanding</span></span><span class="word-wrap"><span class="hero-word shimmer-gold">Reach.</span></span></span>
                 </h1>
 
                 {{-- Gold glow divider --}}
                 <div id="hero-glow-line" class="glow-line opacity-0" style="margin:18px 0;"></div>
 
                 {{-- Subtext --}}
-                <p id="hero-subtext" class="text-base sm:text-lg lg:text-xl max-w-xl mb-7 sm:mb-8 leading-relaxed opacity-0" style="color:rgba(255,255,255,.68);">
+                <p id="hero-subtext" class="text-base sm:text-lg lg:text-xl max-w-[320px] sm:max-w-xl mb-7 sm:mb-8 leading-[1.75] sm:leading-relaxed tracking-wide sm:tracking-normal opacity-0" style="color:rgba(255,255,255,.68);">
                     Custom websites designed to strengthen your brand, expand your reach, and protect your online presence.
                 </p>
 

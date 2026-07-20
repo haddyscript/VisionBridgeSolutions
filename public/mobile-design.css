@@ -6,6 +6,19 @@
 
 @media (max-width: 768px) {
 
+    /* Hero heading — the inline clamp()'s minimum (2.6rem) is what actually
+       renders on every phone/small-tablet width (its vw-scaling term only
+       overtakes that floor above ~800px viewports), so this override reads
+       as one flat, predictable size here. Reduced ~10% so the heading reads
+       as confident rather than dominating the whole viewport. The matching
+       "Building Websites." / "Expanding Reach." two-line break (instead of
+       wrapping onto three) comes from the nowrap span already wrapping each
+       line's words in home.blade.php — this size reduction is what keeps
+       "Expanding Reach." comfortably fitting on its own line at this width. */
+    #hero-heading {
+        font-size: 2.35rem !important;
+    }
+
     /* "Who We Are" mosaic — taller box + larger background scale so the
        "Building Websites. Expanding Reach." text baked into the source
        photo doesn't get cropped/overlapping across the sliced cells. */
