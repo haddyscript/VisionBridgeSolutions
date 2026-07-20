@@ -155,10 +155,25 @@
     }
 
     /* Get Started CTA — clearer separation from the links above it, and a
-       stronger shadow so it doesn't look like it's clipping the panel edge. */
+       stronger shadow so it doesn't look like it's clipping the panel edge.
+       Now pinned to the bottom of the full-screen menu (`mt-auto` in the
+       markup), so margin-top no longer controls its distance from the links
+       above — the ::before below draws a full-width divider line directly
+       above the button instead, regardless of how much empty space
+       `mt-auto` pushes in between. */
     #mobile-menu-cta {
-        margin-top: 14px !important;
+        position: relative;
+        margin-top: 2rem !important;
         box-shadow: 0 10px 24px rgba(201,168,76,0.4) !important;
+    }
+    #mobile-menu-cta::before {
+        content: '';
+        position: absolute;
+        top: -1.25rem;
+        left: -1.5rem;
+        right: -1.5rem;
+        height: 1px;
+        background: rgba(47,58,69,0.10);
     }
     #mobile-menu-links {
         padding-bottom: 16px !important;
@@ -235,9 +250,16 @@
        behind the panel, and a staggered slide-in for the links/CTA when the
        menu opens. The backdrop element and menu-opening/is-visible classes
        are added by mobile-design.js. */
+    /* Full-screen immersive takeover, not a floating dropdown card — this ID
+       selector is what actually governs #mobile-menu's position/z-index
+       (an ID always outranks the `fixed inset-0 z-50` Tailwind classes on
+       the same element in the markup, regardless of source order), so the
+       real fix for "make it full-screen" had to happen here, not just in
+       the HTML class list. */
     #mobile-menu {
-        position: relative;
-        z-index: 41;
+        position: fixed;
+        inset: 0;
+        z-index: 50;
     }
     #mobile-menu-backdrop {
         position: fixed;
@@ -261,8 +283,8 @@
     #mobile-menu-links .mobile-menu-link::before {
         content: '';
         display: inline-block;
-        width: 18px;
-        height: 18px;
+        width: 20px;
+        height: 20px;
         flex-shrink: 0;
         background-repeat: no-repeat;
         background-size: contain;
@@ -467,8 +489,10 @@
         border-radius: 18px;
     }
 
+    /* No rounded corners — it's full-screen now, not a floating card, so
+       rounded corners would just leave odd gaps at the true screen edges. */
     #mobile-menu {
-        border-radius: 26px !important;
+        border-radius: 0 !important;
     }
     #mobile-menu-cta,
     #mobile-sticky-cta {

@@ -1716,16 +1716,41 @@
             </button>
         </div>
 
-        {{-- Mobile dropdown (glassmorphism, outside pill) --}}
-        <div id="mobile-menu" class="hidden md:hidden mt-2 mx-2 rounded-2xl overflow-hidden"
-             style="background:rgba(255,255,255,0.96);backdrop-filter:blur(20px);border:1px solid rgba(47,58,69,0.08);box-shadow:0 8px 32px rgba(47,58,69,0.14);">
-            <div id="mobile-menu-links" class="flex flex-col p-4 gap-1">
-                <a href="{{ $homeAnchor }}#about"     class="mobile-menu-link text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">About</a>
-                <a href="{{ $homeAnchor }}#services"  class="mobile-menu-link text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Services</a>
-                <a href="{{ $homeAnchor }}#plans"     class="mobile-menu-link text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Plans</a>
-                <a href="{{ $homeAnchor }}#portfolio" class="mobile-menu-link text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Portfolio</a>
-                <a href="{{ route('login') }}" class="mobile-menu-link text-navy/75 hover:text-gold text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Client Login</a>
-                <a id="mobile-menu-cta" href="{{ route('intake.create') }}"   class="mt-2 bg-gold text-navy font-bold text-base text-center px-4 py-3 rounded-xl">Get Started</a>
+        {{-- Mobile menu — full-screen immersive takeover, not a floating
+             dropdown card. #mobile-menu's actual position/sizing is governed
+             by the ID-selector rules in mobile-design.css (an ID selector
+             always outranks a Tailwind utility class on the same element,
+             regardless of what's written here), so the `fixed inset-0`
+             classes below are for readability — the real positioning lives
+             there. Structure mirrors the reference layout: logo + close
+             button, a divider, the nav links (still animate in staggered via
+             mobile-design.css, unchanged), then Get Started pinned to the
+             bottom of the screen via `mt-auto`. --}}
+        <div id="mobile-menu" class="hidden md:hidden fixed inset-0 z-50 overflow-y-auto"
+             style="background:rgba(255,255,255,0.98);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);">
+            <div class="flex flex-col min-h-full px-6 pt-6 pb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <img src="@assetv('image/logo/vbs-logo-v3.jpeg')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
+                    {{-- Just simulates a click on the hamburger — reuses every
+                         bit of existing open/close logic (both the basic
+                         `.hidden` toggle below and mobile-design.js's
+                         backdrop/stagger cleanup) instead of duplicating it. --}}
+                    <button id="mobile-menu-close" type="button" aria-label="Close menu" class="w-10 h-10 rounded-full flex items-center justify-center text-navy/70 hover:text-navy hover:bg-navy/5 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <div class="h-px bg-navy/10"></div>
+                <div id="mobile-menu-links" class="flex flex-col flex-1 py-4 gap-1">
+                    <a href="{{ $homeAnchor }}#about"     class="mobile-menu-link text-navy/80 hover:text-gold text-lg font-semibold px-4 py-3.5 rounded-xl hover:bg-navy/5 transition-all duration-200">About</a>
+                    <a href="{{ $homeAnchor }}#services"  class="mobile-menu-link text-navy/80 hover:text-gold text-lg font-semibold px-4 py-3.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Services</a>
+                    <a href="{{ $homeAnchor }}#plans"     class="mobile-menu-link text-navy/80 hover:text-gold text-lg font-semibold px-4 py-3.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Plans</a>
+                    <a href="{{ $homeAnchor }}#portfolio" class="mobile-menu-link text-navy/80 hover:text-gold text-lg font-semibold px-4 py-3.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Portfolio</a>
+                    <a href="{{ route('login') }}" class="mobile-menu-link text-navy/80 hover:text-gold text-lg font-semibold px-4 py-3.5 rounded-xl hover:bg-navy/5 transition-all duration-200">Client Login</a>
+                    <a id="mobile-menu-cta" href="{{ route('intake.create') }}" class="mt-auto bg-gold text-navy font-bold text-base text-center px-4 py-4 rounded-xl inline-flex items-center justify-center gap-2">
+                        Get Started
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
@@ -2013,6 +2038,12 @@
             link.addEventListener('click', () => {
                 document.getElementById('mobile-menu').classList.add('hidden');
             });
+        });
+        // The full-screen menu's own ✕ button just simulates a hamburger
+        // click — reuses this toggle above plus mobile-design.js's
+        // backdrop/stagger-class cleanup, instead of a second close path.
+        document.getElementById('mobile-menu-close')?.addEventListener('click', () => {
+            document.getElementById('menu-btn').click();
         });
     </script>
 
