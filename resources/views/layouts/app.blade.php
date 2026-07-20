@@ -2071,6 +2071,20 @@
     </footer>
 
     <script>
+        // Re-parent the full-screen menu to the very end of the body element,
+        // outside the navbar entirely. It needs to, not just could: the
+        // navbar wrapper picks up its own backdrop-filter once the page is
+        // scrolled and the pill nav condenses, and any ancestor with a
+        // filter, backdrop-filter, or transform becomes the containing block
+        // for a fixed-position descendant. That meant the menu's full-screen
+        // inset was resolving against the navbar's own short box instead of
+        // the viewport, collapsing the whole panel down to just its header
+        // row. Moving it out from under that ancestor is the actual fix; no
+        // CSS on the menu itself can override an ancestor's containing-block
+        // effect. Moving the element like this does not affect any of its
+        // existing attributes, children, or the listeners added below.
+        document.body.appendChild(document.getElementById('mobile-menu'));
+
         document.getElementById('menu-btn').addEventListener('click', () => {
             document.getElementById('mobile-menu').classList.toggle('hidden');
         });
