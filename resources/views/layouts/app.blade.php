@@ -1770,7 +1770,12 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
-                <div class="h-px" style="background:rgba(255,255,255,.15);"></div>
+                {{-- Draws left-to-right on open (mobile-design.js's
+                     initMobileMenu, a scaleX tween) instead of just being
+                     instantly there — transform-origin:left is what makes a
+                     scaleX tween read as "growing rightward" rather than
+                     growing from the center. --}}
+                <div id="mobile-menu-divider-header" class="h-px" style="background:rgba(255,255,255,.15);transform-origin:left center;"></div>
 
                 {{-- Bigger, scannable menu items — title + short description
                      stacked, instead of one plain line each (which read as a
@@ -1779,7 +1784,7 @@
                      mobile-design.css, not here — see that file's comment
                      on #mobile-menu-links .mobile-menu-link for why the old
                      icon treatment was dropped rather than kept alongside. --}}
-                <div id="mobile-menu-links" class="flex flex-col flex-1 py-4">
+                <div id="mobile-menu-links" class="flex flex-col flex-1 py-4 gap-2">
                     {{-- Icon badge (rounded, gold-gradient glass background)
                          + title/description pair. Same 5 icon shapes as the
                          old dropdown-card design (info/grid/document/image/
@@ -1793,7 +1798,7 @@
                         </span>
                         <span class="flex flex-col">
                             <span class="menu-item-title block text-lg font-bold uppercase tracking-wide text-white">About</span>
-                            <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Learn who we are and why businesses trust us.</span>
+                            <span class="menu-item-desc block mt-1">Learn who we are and why businesses trust us.</span>
                         </span>
                     </a>
                     <a href="{{ $homeAnchor }}#services" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
@@ -1802,7 +1807,7 @@
                         </span>
                         <span class="flex flex-col">
                             <span class="menu-item-title block text-lg font-bold uppercase tracking-wide text-white">Services</span>
-                            <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Website Design, Development &amp; Maintenance</span>
+                            <span class="menu-item-desc block mt-1">Website Design, Development &amp; Maintenance</span>
                         </span>
                     </a>
                     <a href="{{ $homeAnchor }}#plans" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
@@ -1811,7 +1816,7 @@
                         </span>
                         <span class="flex flex-col">
                             <span class="menu-item-title block text-lg font-bold uppercase tracking-wide text-white">Plans</span>
-                            <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Choose the right care plan.</span>
+                            <span class="menu-item-desc block mt-1">Choose the right care plan.</span>
                         </span>
                     </a>
                     <a href="{{ $homeAnchor }}#portfolio" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
@@ -1820,7 +1825,7 @@
                         </span>
                         <span class="flex flex-col">
                             <span class="menu-item-title block text-lg font-bold uppercase tracking-wide text-white">Portfolio</span>
-                            <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Explore our latest projects.</span>
+                            <span class="menu-item-desc block mt-1">Explore our latest projects.</span>
                         </span>
                     </a>
                     <a href="{{ route('login') }}" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
@@ -1829,10 +1834,18 @@
                         </span>
                         <span class="flex flex-col">
                             <span class="menu-item-title block text-lg font-bold uppercase tracking-wide text-white">Client Login</span>
-                            <span class="block text-sm mt-1" style="color:rgba(255,255,255,.5);">Access your project dashboard.</span>
+                            <span class="menu-item-desc block mt-1">Access your project dashboard.</span>
                         </span>
                     </a>
-                    <a id="mobile-menu-cta" href="{{ route('intake.create') }}" class="mt-auto bg-gold text-navy font-bold text-base text-center px-4 py-4 rounded-xl inline-flex items-center justify-center gap-2">
+                    {{-- Real element now, not a ::before — GSAP can't tween a
+                         pseudo-element directly, and this needs to draw in
+                         with the rest of the open sequence. Used to be a
+                         ::before specifically to avoid disturbing an
+                         nth-child-based stagger that no longer exists (see
+                         mobile-design.js's initMobileMenu), so there's no
+                         longer a reason to keep it as one. --}}
+                    <div id="mobile-menu-divider-cta" class="h-px mt-auto" style="background:rgba(255,255,255,.15);transform-origin:left center;"></div>
+                    <a id="mobile-menu-cta" href="{{ route('intake.create') }}" class="bg-gold text-navy font-bold text-base text-center px-4 py-4 rounded-xl inline-flex items-center justify-center gap-2">
                         Get Started
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                     </a>

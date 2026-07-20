@@ -151,6 +151,8 @@
         backdrop.addEventListener('click', closeMenu);
 
         var targets = staggerTargets();
+        var headerDivider = document.getElementById('mobile-menu-divider-header');
+        var ctaDivider = document.getElementById('mobile-menu-divider-cta');
 
         if (typeof gsap === 'undefined') {
             animating = false;
@@ -159,8 +161,13 @@
 
         gsap.set(menu, { opacity: 0 });
         gsap.set(targets, { opacity: 0, y: 16 });
+        // Dividers draw in via scaleX (transform-origin:left is set in the
+        // markup) rather than fading — a growing line reads as "drawing",
+        // a fading line just reads as appearing.
+        if (headerDivider) gsap.set(headerDivider, { scaleX: 0 });
+        if (ctaDivider) gsap.set(ctaDivider, { scaleX: 0 });
 
-        gsap.timeline({ onComplete: function () { animating = false; } })
+        var tl = gsap.timeline({ onComplete: function () { animating = false; } })
             // Step 1: the panel itself fades in — its own background +
             // backdrop-filter is what reads as "blur" appearing.
             .to(menu, { opacity: 1, duration: 0.3, ease: 'power2.out' })
@@ -175,6 +182,13 @@
                 ease: 'power2.out',
                 stagger: 0.06,
             }, 0.06);
+
+        // Header divider draws in just after the header itself has faded in
+        // (header starts at 0.06); CTA divider draws in just before the CTA
+        // does (CTA is the last of the 7 staggered targets, starting at
+        // 0.06 + 6 × 0.06 = 0.42).
+        if (headerDivider) tl.to(headerDivider, { scaleX: 1, duration: 0.3, ease: 'power2.out' }, 0.2);
+        if (ctaDivider) tl.to(ctaDivider, { scaleX: 1, duration: 0.3, ease: 'power2.out' }, 0.38);
     }
 
     function closeMenu() {
@@ -197,12 +211,18 @@
             return;
         }
 
-        var targets = staggerTargets();
+        var targets = staggerTargets().concat(
+            [document.getElementById('mobile-menu-divider-header'), document.getElementById('mobile-menu-divider-cta')]
+                .filter(function (el) { return el; })
+        );
 
         // Reverse of the open sequence: everything fades upward together
         // first (no stagger on the way out — a staggered close reads as
         // sluggish, not premium), then the panel's own blur/background
         // fades last, and only then does `.hidden` actually get applied.
+        // The dividers just fade with everything else here (no reverse
+        // scaleX shrink) — keeping the close simple, one motion for
+        // everything, matching "everything fades upward" as given.
         gsap.timeline({ onComplete: finish })
             .to(targets, { opacity: 0, y: -14, duration: 0.2, ease: 'power1.in' })
             .to(menu, { opacity: 0, duration: 0.22, ease: 'power1.in' }, '-=0.05');

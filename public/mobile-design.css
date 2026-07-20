@@ -148,34 +148,25 @@
         box-shadow: 0 0 0 4px rgba(42,157,143,0.08) !important;
     }
 
-    /* Mobile nav dropdown — thin dividers between links so each item reads
-       as a distinct row instead of loosely stacked text. Light-on-dark now
-       that the menu itself is a dark frosted-glass full screen, not a white
-       card. */
-    #mobile-menu-links .mobile-menu-link:not(:last-of-type) {
-        border-bottom: 1px solid rgba(255,255,255,0.10) !important;
-    }
+    /* Each menu item is its own glass card now (see .mobile-menu-link's
+       glass-highlight rule further down), spaced apart with a real gap in
+       the markup instead of a border-bottom divider between them — a
+       divider line reads as a continuous list; a gap reads as separate
+       cards, which is the point. */
 
     /* Get Started CTA — clearer separation from the links above it, and a
        stronger shadow so it doesn't look like it's clipping the panel edge.
-       Now pinned to the bottom of the full-screen menu (`mt-auto` in the
+       Pinned to the bottom of the full-screen menu (`mt-auto` in the
        markup), so margin-top no longer controls its distance from the links
-       above — the ::before below draws a full-width divider line directly
+       above — #mobile-menu-divider-cta (a real element now, not a ::before —
+       see the comment on it in the markup for why) draws a line directly
        above the button instead, regardless of how much empty space
        `mt-auto` pushes in between. */
     #mobile-menu-cta {
-        position: relative;
-        margin-top: 2rem !important;
         box-shadow: 0 10px 24px rgba(201,168,76,0.4) !important;
     }
-    #mobile-menu-cta::before {
-        content: '';
-        position: absolute;
-        top: -1.25rem;
-        left: -1.5rem;
-        right: -1.5rem;
-        height: 1px;
-        background: rgba(255,255,255,0.15);
+    #mobile-menu-divider-cta {
+        margin-bottom: 1.25rem !important;
     }
     #mobile-menu-links {
         padding-bottom: 16px !important;
@@ -286,9 +277,48 @@
         display: flex !important;
         align-items: center !important;
         gap: 16px !important;
+        position: relative;
+        overflow: hidden;
+        background: rgba(255,255,255,0.045);
+        border: 1px solid rgba(255,255,255,0.09);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
     }
     #mobile-menu-links .mobile-menu-link:hover {
-        background: rgba(255,255,255,0.06) !important;
+        background: rgba(255,255,255,0.08) !important;
+    }
+    /* Glass highlight — a soft diagonal sheen across the top-left corner of
+       each card, like light reflecting off glass. Very low opacity (this
+       should read as a subtle premium detail, not an obvious visual
+       effect) and z-index:0 so it sits behind the icon badge/text (both are
+       already positioned via flex, so they paint above this automatically,
+       but z-index makes that explicit and safe against future changes). */
+    #mobile-menu-links .mobile-menu-link::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,.10) 0%, transparent 45%);
+        pointer-events: none;
+    }
+    #mobile-menu-links .mobile-menu-link > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Menu item typography — explicit values per the boss's own spec,
+       rather than relying on Tailwind's closest utility (tracking-wide is
+       0.025em, not the requested 0.03em; text-sm is already 14px so that
+       one matched, but opacity:.7 (a literal element-opacity dim) is a
+       different mechanism than the rgba-alpha color this used before). */
+    .menu-item-title {
+        font-weight: 700;
+        letter-spacing: .03em;
+    }
+    .menu-item-desc {
+        opacity: .7;
+        font-size: 14px;
+        color: #FFFFFF;
     }
 
     /* Premium icon badge — rounded (not a plain circle or square), a
