@@ -221,27 +221,35 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                      animation and GSAP's inline transform never fight over the
                      same element (see the comment on #hero-device-frame's own
                      idle-float CSS rule in layouts/app.blade.php for why). --}}
-                <div id="hero-device-mobile-frame" class="relative mt-12 mb-6 lg:hidden mx-auto" style="max-width:380px;aspect-ratio:4/3.3;border-radius:16px;">
+                <div id="hero-device-mobile-frame" class="relative mt-12 mb-6 lg:hidden mx-auto" style="max-width:380px;aspect-ratio:4/3.3;border-radius:16px;z-index:0;">
                     {{-- Gold halo — large, very soft static glow behind the laptop.
                          Opacity lives in the gradient's own alpha (.13 ≈ 13%,
                          within the requested 10–15%) rather than a separate
                          opacity property, so it can't double up with the
-                         opacity-0→1 GSAP fade-in below. --}}
+                         opacity-0→1 GSAP fade-in below. No z-index here — the
+                         frame's own explicit z-index:0 above makes it a real
+                         stacking context, so plain DOM order (this sits before
+                         #hero-device-mobile below) is enough to keep it behind
+                         the laptop without a negative z-index risking escaping
+                         to some distant ancestor's stacking context instead. --}}
                     <div id="hero-halo-mobile" class="absolute opacity-0 pointer-events-none" style="
                          width:170%;height:170%;top:50%;left:50%;transform:translate(-50%,-50%);
-                         border-radius:50%;z-index:-1;
+                         border-radius:50%;
                          background:radial-gradient(circle, rgba(201,168,76,.13) 0%, transparent 70%);
                          filter:blur(42px);"></div>
 
-                    {{-- Rotating halo — very faint conic-gradient ring behind the
-                         laptop (a uniform-color ring wouldn't visibly read as
-                         rotating at all — same reason the desktop #hero-halo
-                         uses a conic gradient instead of a plain radial one). --}}
+                    {{-- Rotating halo — faint conic-gradient ring behind the laptop
+                         (a uniform-color ring wouldn't visibly read as rotating at
+                         all — same reason the desktop #hero-halo uses a conic
+                         gradient instead of a plain radial one). Sized larger and
+                         less blurred than a first pass so it actually peeks out
+                         past the laptop's rounded mask edges instead of dissolving
+                         into the background. --}}
                     <div id="hero-halo-mobile-ring" class="absolute opacity-0 pointer-events-none" style="
-                         width:145%;height:145%;top:50%;left:50%;transform:translate(-50%,-50%);
-                         border-radius:50%;z-index:-1;
-                         background:conic-gradient(from 0deg, rgba(201,168,76,0) 0%, rgba(201,168,76,.10) 20%, rgba(201,168,76,0) 45%, rgba(201,168,76,.08) 70%, rgba(201,168,76,0) 100%);
-                         filter:blur(16px);"></div>
+                         width:175%;height:175%;top:50%;left:50%;transform:translate(-50%,-50%);
+                         border-radius:50%;
+                         background:conic-gradient(from 0deg, rgba(201,168,76,0) 0%, rgba(255,201,77,.30) 18%, rgba(201,168,76,0) 42%, rgba(255,201,77,.22) 68%, rgba(201,168,76,0) 100%);
+                         filter:blur(9px);"></div>
 
                     <div id="hero-device-mobile" class="opacity-0 absolute inset-0" style="border-radius:16px;overflow:hidden;
                          -webkit-mask-image:radial-gradient(ellipse 70% 64% at 50% 48%, black 60%, transparent 100%);
