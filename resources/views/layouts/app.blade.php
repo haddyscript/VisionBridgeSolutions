@@ -2295,8 +2295,6 @@
             const overlay = document.getElementById('intro-overlay');
             if (!overlay) return; // not on the homepage
 
-            if (typeof gsap === 'undefined') { setTimeout(initIntro, 80); return; }
-
             const video = document.getElementById('intro-video');
             const skip  = document.getElementById('intro-skip');
             let revealed = false;
@@ -2315,6 +2313,28 @@
             function revealSite() {
                 if (revealed) return;
                 revealed = true;
+
+                // Falls back to a plain CSS fade if GSAP hasn't loaded yet
+                // (e.g. the CDN script was blocked or slow) — every dismiss
+                // path below (video end/error, skip click, the safety-net
+                // timeout) has to be able to reach this regardless of GSAP's
+                // load state, or a stuck overlay (z-index:9999, no
+                // pointer-events:none) blocks every click on the page with
+                // no way out. This used to be impossible: the whole function
+                // wouldn't even set up the skip button or the safety net
+                // until `gsap` existed, so a failed/slow GSAP load could trap
+                // visitors on the intro screen permanently.
+                if (typeof gsap === 'undefined') {
+                    overlay.style.transition = 'opacity .4s ease';
+                    overlay.style.opacity = '0';
+                    setTimeout(() => {
+                        overlay.style.display = 'none';
+                        document.body.style.overflow = '';
+                        window.dispatchEvent(new CustomEvent('intro:complete'));
+                    }, 400);
+                    return;
+                }
+
                 gsap.to(overlay, {
                     scale: 0.06, opacity: 0, duration: 1, ease: 'power3.in',
                     onComplete() {
@@ -2332,7 +2352,9 @@
             }
             if (skip) skip.addEventListener('click', revealSite);
 
-            // Safety net: never trap a visitor on the intro
+            // Safety net: never trap a visitor on the intro. Registered
+            // immediately (not gated behind GSAP being loaded), since this
+            // is the last line of defense against a stuck full-page overlay.
             setTimeout(revealSite, 12000);
 
             // Clicking the logo always replays the intro from the start —
@@ -2347,7 +2369,13 @@
                     window.scrollTo({ top: 0, behavior: 'instant' });
                     revealed = false;
                     document.body.style.overflow = 'hidden';
-                    gsap.set(overlay, { scale: 1, opacity: 1, display: 'block' });
+                    if (typeof gsap !== 'undefined') {
+                        gsap.set(overlay, { scale: 1, opacity: 1, display: 'block' });
+                    } else {
+                        overlay.style.transform = '';
+                        overlay.style.opacity = '1';
+                        overlay.style.display = 'block';
+                    }
                     if (video) {
                         video.currentTime = 0;
                         video.play().catch(revealSite);
