@@ -48,6 +48,7 @@ class Upload extends Model
         'path',
         'size',
         'body',
+        'title',
         'approved_at',
         'status',
         'completed_at',

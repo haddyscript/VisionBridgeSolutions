@@ -11,6 +11,7 @@ use App\Models\Upload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class UploadController extends Controller
 {
@@ -26,6 +27,7 @@ class UploadController extends Controller
             'file' => ['nullable', 'file', 'max:51200'],
             'files' => ['nullable', 'array'],
             'files.*' => ['file', 'max:51200'],
+            'title' => [Rule::requiredIf($request->input('category') === 'revision'), 'nullable', 'string', 'max:150'],
             'body' => ['nullable', 'string', 'max:5000'],
         ]);
 
@@ -99,6 +101,7 @@ class UploadController extends Controller
             'original_name' => $firstFile['original_name'] ?? null,
             'path' => $firstFile['path'] ?? null,
             'size' => $firstFile['size'] ?? null,
+            'title' => $validated['title'] ?? null,
             'body' => $validated['body'] ?? null,
         ]);
 

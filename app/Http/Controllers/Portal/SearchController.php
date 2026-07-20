@@ -37,12 +37,12 @@ class SearchController extends Controller
 
         $content = $project->uploads()
             ->whereIn('category', self::CONTENT_CATEGORIES)
-            ->where('body', 'like', "%{$query}%")
+            ->where(fn ($q) => $q->where('title', 'like', "%{$query}%")->orWhere('body', 'like', "%{$query}%"))
             ->latest()
             ->take(5)
             ->get()
             ->map(fn ($upload) => [
-                'title' => Str::limit($upload->body, 80),
+                'title' => $upload->title ?: Str::limit($upload->body, 80),
                 'subtitle' => CategoryController::CATEGORIES[$upload->category]['label'] ?? $upload->category,
                 'url' => route('portal.category', $upload->category),
             ]);

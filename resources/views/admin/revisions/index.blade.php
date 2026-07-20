@@ -210,7 +210,10 @@
                             <p class="text-xs text-gray-400 dark:text-gray-500">{{ $item->project->name }}</p>
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300 max-w-xs">
-                            <p class="truncate">{{ \Illuminate\Support\Str::limit($item->body ?? $item->original_name ?? 'Revision #'.$item->id, 60) }}</p>
+                            @if ($item->title)
+                                <p class="font-semibold text-navy dark:text-white truncate">{{ $item->title }}</p>
+                            @endif
+                            <p class="truncate {{ $item->title ? 'text-xs text-gray-400 dark:text-gray-500' : '' }}">{{ \Illuminate\Support\Str::limit($item->body ?? $item->original_name ?? 'Revision #'.$item->id, 60) }}</p>
                             @if ($item->isOverdue())
                                 <span class="inline-block mt-1 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400">Overdue</span>
                             @endif

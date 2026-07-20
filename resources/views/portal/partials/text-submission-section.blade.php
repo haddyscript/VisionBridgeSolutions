@@ -13,6 +13,10 @@
             <form method="POST" action="{{ route('portal.uploads.store', $project) }}" enctype="multipart/form-data" class="space-y-2">
                 @csrf
                 <input type="hidden" name="category" value="{{ $category }}">
+                @if ($category === 'revision')
+                    <input type="text" name="title" maxlength="150" required placeholder="Revision title (e.g. Homepage hero image)"
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                @endif
                 <textarea name="body" rows="3" placeholder="{{ $placeholder }}"
                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
                 <div class="upload-attach">
@@ -76,7 +80,10 @@
                                         {{ \App\Models\Upload::STATUSES[$item->status] ?? $item->status }}
                                     </span>
                                 </div>
-                                <p class="text-sm text-gray-600 dark:text-gray-300 truncate mt-1">{{ $isMine ? 'You: ' : '' }}{{ \Illuminate\Support\Str::limit($previewText, 60) }}</p>
+                                @if ($item->title)
+                                    <p class="text-sm font-semibold text-navy dark:text-white truncate mt-1">{{ $item->title }}</p>
+                                @endif
+                                <p class="text-sm text-gray-600 dark:text-gray-300 truncate {{ $item->title ? '' : 'mt-1' }}">{{ $isMine ? 'You: ' : '' }}{{ \Illuminate\Support\Str::limit($previewText, 60) }}</p>
                             </div>
                             <span class="unread-badge shrink-0 min-w-[1.25rem] h-5 px-1.5 rounded-full bg-teal text-white text-xs font-semibold flex items-center justify-center {{ $unreadCount === 0 ? 'hidden' : '' }}">{{ $unreadCount }}</span>
                             <svg class="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
@@ -110,6 +117,10 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                             Back to all requests
                         </button>
+
+                        @if ($item->title)
+                            <h3 class="font-semibold text-navy dark:text-white mb-2">{{ $item->title }}</h3>
+                        @endif
 
                         <div class="flex items-center justify-between gap-4 rounded-lg border border-gray-200 dark:border-gray-700 border-l-4 {{ $borderColor }} px-4 py-2 mb-3">
                             <div class="flex items-center gap-2">

@@ -35,6 +35,11 @@
                             <h2 style="font-size:15px; color:#111D33; margin:20px 0 10px;">Category</h2>
                             <p style="font-size:14px; color:#374151; margin:0;">{{ ucfirst($upload->category) }}</p>
 
+                            @if ($upload->title)
+                                <h2 style="font-size:15px; color:#111D33; margin:20px 0 10px;">Title</h2>
+                                <p style="font-size:14px; color:#374151; margin:0;">{{ $upload->title }}</p>
+                            @endif
+
                             @if ($upload->original_name)
                                 <h2 style="font-size:15px; color:#111D33; margin:20px 0 10px;">File{{ $upload->attachments->isNotEmpty() ? 's' : '' }}</h2>
                                 <p style="font-size:14px; margin:0;">
