@@ -505,7 +505,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     <span class="about-card-badge md:hidden">Our Mission</span>
                     <h3 class="card-title font-extrabold mb-2" style="font-size:1.15rem;color:#15202C;">Our Mission</h3>
                     <span class="about-card-underline md:hidden"></span>
-                    <p class="card-body" style="font-size:1rem;font-weight:500;line-height:1.7;color:rgba(17,29,51,0.84);">To help ministries, churches, nonprofits, entrepreneurs, and businesses establish a <span class="hl-accent">professional</span> <span class="hl-accent">online presence</span> through custom website development, <span class="hl-accent">ongoing support</span>, and <span class="hl-accent">long-term website stability</span>.</p>
+                    <p class="card-body" style="font-size:1rem;font-weight:500;line-height:1.7;color:rgba(17,29,51,0.84);">To help churches, ministries, nonprofits, entrepreneurs, and businesses establish a <span class="hl-accent">powerful online presence</span> through <span class="hl-accent">custom website solutions</span>, professional design, ongoing <span class="hl-accent">Website Care Plans</span>, and <span class="hl-accent">long-term digital support</span>. We are committed to building websites that inspire confidence, strengthen organizations, and create lasting value for every client we serve.</p>
                 </div>
 
                 {{-- Vision card — soft teal tint (desktop); mobile gets a
@@ -540,7 +540,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     <span class="about-card-badge md:hidden">Our Vision</span>
                     <h3 class="card-title font-extrabold mb-2" style="font-size:1.15rem;color:#15202C;">Our Vision</h3>
                     <span class="about-card-underline md:hidden"></span>
-                    <p class="card-body" style="font-size:1rem;font-weight:500;line-height:1.7;color:rgba(17,29,51,0.84);">To become a trusted website solutions company that bridges the gap between <span class="hl-accent">vision</span> and <span class="hl-accent">digital presence</span> while helping clients maintain <span class="hl-accent">ownership</span>, <span class="hl-accent">security</span>, and <span class="hl-accent">confidence</span> in their online future.</p>
+                    <p class="card-body" style="font-size:1rem;font-weight:500;line-height:1.7;color:rgba(17,29,51,0.84);">To become the trusted leader in <span class="hl-accent">custom website solutions</span> by bridging the gap between <span class="hl-accent">vision</span> and <span class="hl-accent">technology</span>. We strive to empower organizations with beautiful, secure, and scalable websites while providing exceptional support, <span class="hl-accent">long-term website stability</span>, and lasting partnerships that help our clients grow with <span class="hl-accent">confidence</span>.</p>
                 </div>
 
             </div>
