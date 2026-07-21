@@ -32,6 +32,12 @@ return Application::configure(basePath: dirname(__DIR__))
             // user's current one on every request, session-driver agnostic
             // (no DB sessions table needed). No-ops for guests.
             \Illuminate\Session\Middleware\AuthenticateSession::class,
+            // Forces every page reload to fetch fresh HTML instead of a
+            // browser-cached copy — otherwise a phone with the site already
+            // open can reload and still see old markup/asset URLs baked
+            // into a stale cached page. See the class docblock for why
+            // @assetv()'s per-file cache-busting alone doesn't cover this.
+            \App\Http\Middleware\PreventStaleHtmlCaching::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [
