@@ -95,11 +95,11 @@
         <h1>Access Restricted</h1>
         <p>{{ $exception->getMessage() ?: "You don't have access to this section. Ask a super admin to grant it." }}</p>
         <div class="actions">
-            <button type="button" class="btn btn-gold" onclick="if (window.history.length > 1) { history.back(); } else { window.location = '{{ auth()->check() ? route('admin.dashboard') : url('/') }}'; }">
+            <button type="button" class="btn btn-gold" onclick="if (window.history.length > 1) { history.back(); } else { window.location = '{{ auth()->check() ? \App\Support\AdminPermissions::adminLandingRoute(auth()->user()) : url('/') }}'; }">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                 Go Back
             </button>
-            <a class="btn btn-ghost" href="{{ auth()->check() ? route('admin.dashboard') : url('/') }}">Go to Dashboard</a>
+            <a class="btn btn-ghost" href="{{ auth()->check() ? \App\Support\AdminPermissions::adminLandingRoute(auth()->user()) : url('/') }}">Go to Dashboard</a>
         </div>
         <p class="support">
             Need this section unlocked? Email
