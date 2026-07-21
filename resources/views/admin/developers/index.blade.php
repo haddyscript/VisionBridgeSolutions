@@ -133,7 +133,7 @@
                         $currentItem = $row['activeItems']->first();
                         $restActiveItems = $row['activeItems']->slice(1);
                     @endphp
-                    <div class="developer-card bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-7 shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-gold/40 dark:hover:border-gold/30 transition-all duration-200"
+                    <div class="developer-card bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-7 shadow-sm hover:shadow-lg hover:border-gold/40 dark:hover:border-gold/30 transition-all duration-200"
                          data-name="{{ strtolower($row['developer']->name) }}" data-has-active="{{ $hasActiveWork ? '1' : '0' }}">
 
                         {{-- SECTION 5 — Developer header --}}
@@ -363,10 +363,16 @@
 </div>
 
 <style>
-    /* SECTION 16 — subtle, staggered fade-in on load. Pure CSS, no GSAP. */
+    /* SECTION 16 — subtle, staggered fade-in on load. Pure CSS, no GSAP.
+       Opacity only, deliberately no transform: animation-fill-mode:both
+       would otherwise leave a permanent (if invisible) `transform` on
+       .developer-card even after the animation ends — and any transform on
+       an ancestor becomes the containing block for position:fixed
+       descendants, which breaks the reassign dropdown's fixed-position
+       menu (it computes coordinates relative to the viewport). */
     @keyframes dev-card-fade-in {
-        from { opacity: 0; transform: translateY(10px); }
-        to   { opacity: 1; transform: translateY(0); }
+        from { opacity: 0; }
+        to   { opacity: 1; }
     }
     .summary-card, .developer-card {
         animation: dev-card-fade-in 0.5s ease-out both;
