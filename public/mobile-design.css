@@ -140,21 +140,53 @@
         align-items: center;
         justify-content: center;
     }
+    /* Premium icon badge — circular glass container (blurred backdrop over
+       the arc/particles/photo layers behind it), a thin border, and a
+       pulsing gold/teal glow. The glyph itself gets a slow, gentle rotate
+       sway (not the badge/ring — a rotating ring would just look static). */
+    #mission-icon, #vision-icon {
+        backdrop-filter: blur(8px) saturate(140%);
+        -webkit-backdrop-filter: blur(8px) saturate(140%);
+    }
     #mission-icon {
         width: 56px !important;
         height: 56px !important;
-        border: 2px solid rgba(201,168,76,0.35) !important;
-        box-shadow: 0 0 0 4px rgba(201,168,76,0.08) !important;
+        border: 1.5px solid rgba(201,168,76,0.4) !important;
         border-radius: 999px !important;
-        background: radial-gradient(circle, rgba(201,168,76,0.16) 0%, rgba(201,168,76,0.04) 100%);
+        background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, rgba(201,168,76,0.05) 100%);
+        animation: about-icon-pulse-gold 2.6s ease-in-out infinite;
     }
     #vision-icon {
         width: 56px !important;
         height: 56px !important;
-        border: 2px solid rgba(42,157,143,0.35) !important;
-        box-shadow: 0 0 0 4px rgba(42,157,143,0.08) !important;
+        border: 1.5px solid rgba(42,157,143,0.45) !important;
         border-radius: 999px !important;
-        background: radial-gradient(circle, rgba(42,157,143,0.18) 0%, rgba(42,157,143,0.05) 100%);
+        background: radial-gradient(circle, rgba(42,157,143,0.2) 0%, rgba(42,157,143,0.06) 100%);
+        animation: about-icon-pulse-teal 2.6s ease-in-out infinite;
+    }
+    @keyframes about-icon-pulse-gold {
+        0%, 100% { box-shadow: 0 0 0 4px rgba(201,168,76,0.08), 0 0 12px 1px rgba(201,168,76,0.15); }
+        50%      { box-shadow: 0 0 0 6px rgba(201,168,76,0.16), 0 0 22px 6px rgba(201,168,76,0.4); }
+    }
+    @keyframes about-icon-pulse-teal {
+        0%, 100% { box-shadow: 0 0 0 4px rgba(42,157,143,0.08), 0 0 12px 1px rgba(42,157,143,0.18); }
+        50%      { box-shadow: 0 0 0 6px rgba(42,157,143,0.18), 0 0 22px 6px rgba(42,157,143,0.45); }
+    }
+    #mission-icon svg {
+        animation: about-icon-sway 4s ease-in-out infinite;
+        transform-origin: 50% 50%;
+    }
+    #vision-icon svg {
+        animation: about-icon-sway 4s ease-in-out infinite 0.3s;
+        transform-origin: 50% 50%;
+    }
+    @keyframes about-icon-sway {
+        0%, 100% { transform: rotate(-6deg); }
+        50%      { transform: rotate(6deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        #mission-icon, #vision-icon { animation: none; }
+        #mission-icon svg, #vision-icon svg { animation: none; }
     }
 
     /* Each menu item is its own glass card now (see .mobile-menu-link's
@@ -754,19 +786,27 @@
     .about-cards .about-card .card-title {
         color: #FFFFFF !important;
         font-size: 1.5rem !important;
+        font-weight: 800 !important;
+        letter-spacing: -0.01em;
     }
     .about-cards .about-card .card-body {
         color: rgba(255,255,255,0.78) !important;
     }
     .about-card-underline {
         display: block;
-        width: 34px;
-        height: 2px;
+        width: 42px;
+        height: 3px;
         border-radius: 2px;
-        margin: 6px 0 14px;
+        margin: 8px 0 16px;
     }
-    .about-cards .about-card:nth-child(1) .about-card-underline { background: #C9A84C; }
-    .about-cards .about-card:nth-child(2) .about-card-underline { background: #2A9D8F; }
+    .about-cards .about-card:nth-child(1) .about-card-underline {
+        background: #C9A84C;
+        box-shadow: 0 0 8px 1px rgba(201,168,76,0.6);
+    }
+    .about-cards .about-card:nth-child(2) .about-card-underline {
+        background: #2A9D8F;
+        box-shadow: 0 0 8px 1px rgba(42,157,143,0.6);
+    }
     .about-cards .about-card:nth-child(1) .hl-accent { color: #DFC06A; font-weight: 700; }
     .about-cards .about-card:nth-child(2) .hl-accent { color: #6FD8CB; font-weight: 700; }
 
