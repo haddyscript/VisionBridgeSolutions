@@ -654,19 +654,60 @@
        the card's own overflow:hidden (only descendant content is), so this
        reads as a soft radial-gradient-style halo bleeding out past the
        card edges without needing extra unclipped DOM elements. */
+    /* Phase 17 — subtle gradient borders (gold on Mission, cyan/teal on
+       Vision) instead of a flat single-color line. border-image doesn't
+       cooperate with border-radius, so this uses the standard two-layer
+       background-clip technique instead: one background layer clipped to
+       the padding-box (the card's own fill), one clipped to the
+       border-box (the gradient "border"), with a transparent real border
+       to reserve the 1px ring between them. */
     .about-cards .about-card--mission {
-        background: linear-gradient(160deg, rgba(64,48,15,0.92) 0%, rgba(28,20,8,0.95) 45%, rgba(12,10,6,0.97) 100%) !important;
-        border: 1px solid rgba(201,168,76,0.35) !important;
+        border: 1px solid transparent !important;
+        background-image:
+            linear-gradient(160deg, rgba(64,48,15,0.92) 0%, rgba(28,20,8,0.95) 45%, rgba(12,10,6,0.97) 100%),
+            linear-gradient(135deg, rgba(201,168,76,0.55) 0%, rgba(230,200,120,0.2) 50%, rgba(201,168,76,0.55) 100%) !important;
+        background-origin: border-box !important;
+        background-clip: padding-box, border-box !important;
         box-shadow: 0 10px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06), 0 0 100px 24px rgba(201,168,76,0.1) !important;
     }
     .about-cards .about-card--vision {
-        background: linear-gradient(180deg, rgba(10,28,30,0.9) 0%, rgba(6,17,21,0.96) 100%) !important;
-        border: 1px solid rgba(42,157,143,0.4) !important;
+        border: 1px solid transparent !important;
+        background-image:
+            linear-gradient(180deg, rgba(10,28,30,0.9) 0%, rgba(6,17,21,0.96) 100%),
+            linear-gradient(135deg, rgba(42,157,143,0.55) 0%, rgba(111,216,203,0.2) 50%, rgba(42,157,143,0.55) 100%) !important;
+        background-origin: border-box !important;
+        background-clip: padding-box, border-box !important;
         box-shadow: 0 10px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06), 0 0 100px 24px rgba(42,157,143,0.1) !important;
     }
     .about-card > * {
         position: relative;
         z-index: 1;
+    }
+
+    /* Phase 18 — a soft light sweep crosses each card once every 12s.
+       Idles off-screen left for most of the cycle, transits across in
+       ~1.4s, then holds off-screen right until the loop restarts —
+       clipped by the card's own overflow:hidden, same as the shine
+       already used on .hero-btn-primary elsewhere on this page. */
+    .about-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -60%;
+        width: 45%;
+        height: 100%;
+        z-index: 2;
+        pointer-events: none;
+        background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,0.16) 45%, rgba(255,255,255,0.28) 50%, rgba(255,255,255,0.16) 55%, transparent 100%);
+        transform: skewX(-18deg);
+        animation: about-card-light-sweep 12s ease-in-out infinite;
+    }
+    @keyframes about-card-light-sweep {
+        0%, 80%  { left: -60%; }
+        92%, 100% { left: 130%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .about-card::after { animation: none; display: none; }
     }
     /* Decorative-only background layer (Mission's bridge photo) — 15%
        opacity plus a screen blend so the photo's bright/golden highlights
@@ -851,52 +892,53 @@
     /* Mission/Vision CTA bar — the only "Get Started" surfaced in this
        section; #mobile-sticky-cta is suppressed while #about is in view
        (mobile-design.js) so it no longer overlaps this card/bar. */
+    /* Phase 16 — a dedicated, self-contained CTA card (icon → heading →
+       subtext → button, all stacked and centered) instead of a horizontal
+       strip, so it reads as intentional rather than an inline afterthought. */
     .about-cards-cta-bar {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 14px;
+        text-align: center;
+        gap: 8px;
         margin-top: 20px;
-        padding: 18px;
+        padding: 30px 26px;
         border-radius: 20px;
         background: linear-gradient(135deg, rgba(21,32,44,0.9) 0%, rgba(15,23,32,0.95) 100%);
         border: 1px solid rgba(201,168,76,0.35);
         box-shadow: 0 8px 24px rgba(0,0,0,0.3);
     }
     .about-cards-cta-icon {
-        flex-shrink: 0;
-        width: 40px;
-        height: 40px;
+        width: 46px;
+        height: 46px;
         border-radius: 999px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: #DFC06A;
         border: 1px solid rgba(201,168,76,0.45);
-    }
-    .about-cards-cta-text {
-        flex: 1;
-        min-width: 0;
+        background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, rgba(201,168,76,0.05) 100%);
+        margin-bottom: 6px;
     }
     .about-cards-cta-title {
-        font-size: 0.9rem;
-        font-weight: 700;
+        font-size: 1.1rem;
+        font-weight: 800;
         color: #DFC06A;
         line-height: 1.3;
     }
     .about-cards-cta-sub {
-        font-size: 0.78rem;
-        color: rgba(255,255,255,0.6);
-        margin-top: 2px;
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.65);
+        margin-bottom: 6px;
     }
     .about-cards-cta-btn {
-        flex-shrink: 0;
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 12px 16px;
+        padding: 13px 26px;
         border-radius: 999px;
         font-weight: 700;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         background: linear-gradient(135deg, #C9A84C 0%, #E6C878 50%, #C9A84C 100%);
         color: #15202C;
         white-space: nowrap;
