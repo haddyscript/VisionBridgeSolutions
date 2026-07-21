@@ -380,6 +380,23 @@
         box-shadow: 0 4px 14px rgba(0,0,0,.25);
     }
 
+    /* "Login" menu row — teal instead of the shared gold badge/card, so it
+       reads as a distinct "your account" action rather than another
+       marketing link (About/Services/etc.), matching desktop's #nav-login
+       pill treatment. #mobile-menu-links-scoped to outrank the ID-scoped
+       base .mobile-menu-link background rule above. */
+    .menu-icon-badge--login {
+        background: linear-gradient(135deg, rgba(42,157,143,.4) 0%, rgba(111,216,203,.18) 100%) !important;
+        border-color: rgba(143,232,219,.3) !important;
+    }
+    #mobile-menu-links .mobile-menu-link--login {
+        background: rgba(42,157,143,0.08) !important;
+        border-color: rgba(42,157,143,0.4) !important;
+    }
+    #mobile-menu-links .mobile-menu-link--login:hover {
+        background: rgba(42,157,143,0.16) !important;
+    }
+
     /* The old CSS-keyframe stagger (nth-child animation-delay, 50ms apart,
        links + CTA only) is removed — replaced by a GSAP-driven stagger in
        mobile-design.js that covers the full open sequence (panel/blur, the

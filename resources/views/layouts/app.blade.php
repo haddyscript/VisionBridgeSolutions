@@ -58,6 +58,37 @@
         .nav-link:hover { color:#C9A84C; }
         .nav-link.is-active { color:#C9A84C !important; }
 
+        /* ─── "Login" — a teal outlined pill, not a plain text link ───
+             Renamed from "Client Login": existing clients scanning the nav
+             for "how do I get to my account" now get a button that visually
+             announces itself, instead of blending in with the marketing
+             links (About/Services/etc.) or reading like a second "Get
+             Started". Teal (not gold) keeps it clearly distinct from the
+             primary gold CTA next to it. */
+        #nav-login {
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1.5px solid rgba(42,157,143,0.45);
+            background: rgba(42,157,143,0.08);
+            color: #1F7A6E;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+        #nav-login:hover {
+            background: rgba(42,157,143,0.18);
+            border-color: rgba(42,157,143,0.75);
+            color: #17635A;
+        }
+        .nav-on-dark-hero #nav-inner:not(.nav-pill) #nav-login {
+            border-color: rgba(111,216,203,0.55);
+            background: rgba(111,216,203,0.12);
+        }
+        .nav-on-dark-hero #nav-inner:not(.nav-pill) #nav-login:hover {
+            background: rgba(111,216,203,0.22);
+            border-color: rgba(111,216,203,0.85);
+        }
+
         /* ─── Nav over a dark hero (homepage only, pre-scroll) ───
              Once #nav-inner gets .nav-pill (solid white pill on scroll) the
              default navy .nav-link color already reads fine again, so these
@@ -1712,7 +1743,10 @@
 
             {{-- Desktop CTA --}}
             <div class="hidden md:flex items-center gap-4">
-                <a id="nav-login" href="{{ route('login') }}" class="nav-link relative z-10 opacity-0">Client Login</a>
+                <a id="nav-login" href="{{ route('login') }}" class="relative z-10 opacity-0 inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                    Login
+                </a>
                 <a id="nav-cta" href="{{ route('intake.create') }}"
                    class="nav-cta-btn inline-flex items-center gap-2 bg-gold hover:bg-gold-light text-navy font-bold text-base px-6 py-2.5 rounded-lg opacity-0 transition-colors duration-200">
                     Get Started
@@ -1828,12 +1862,16 @@
                             <span class="menu-item-desc block mt-1">Explore our latest projects.</span>
                         </span>
                     </a>
-                    <a href="{{ route('login') }}" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
-                        <span class="menu-icon-badge shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="#FFE9B0" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                    {{-- Teal accent (not the shared gold icon badge) so this
+                         reads as "your account" rather than another
+                         marketing link, same distinction made on desktop's
+                         #nav-login pill. --}}
+                    <a href="{{ route('login') }}" class="mobile-menu-link mobile-menu-link--login px-4 py-4 rounded-xl transition-all duration-200">
+                        <span class="menu-icon-badge menu-icon-badge--login shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="#8FE8DB" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
                         </span>
                         <span class="flex flex-col">
-                            <span class="menu-item-title block text-lg font-bold uppercase tracking-wide text-white">Client Login</span>
+                            <span class="menu-item-title block text-lg font-bold uppercase tracking-wide text-white">Login</span>
                             <span class="menu-item-desc block mt-1">Access your project dashboard.</span>
                         </span>
                     </a>
