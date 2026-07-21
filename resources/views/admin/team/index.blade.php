@@ -329,7 +329,14 @@
         </div>
 
         {{-- Existing team members --}}
-        <div class="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col max-h-[42rem]">
+        {{-- No backdrop-blur-sm here, deliberately — this card wraps every
+             .access-modal (and the three-dot menu) below, and
+             backdrop-filter is, per spec, in the same category as
+             transform/filter/opacity<1/will-change: any ancestor with it
+             becomes the containing block for position:fixed descendants
+             instead of the viewport. That's what was pinning the modal
+             inside this card's box rather than centering it on the page. --}}
+        <div class="bg-white/95 dark:bg-gray-800/95 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col max-h-[42rem]">
             <h3 class="text-sm font-semibold text-navy dark:text-white px-5 pt-5 pb-3 shrink-0">Admins ({{ max(0, $admins->count() - 1) }})</h3>
             <div id="team-list" class="space-y-3 overflow-y-auto px-5 pb-5">
                 @foreach ($admins as $admin)
