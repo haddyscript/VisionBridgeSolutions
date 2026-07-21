@@ -82,6 +82,7 @@ class DeveloperController extends Controller
             'type' => $upload->category === 'revision' ? 'Revision Request' : 'Content Request',
             'title' => Str::limit($body ?: ($upload->original_name ?? 'Work Order #'.$upload->id), 80),
             'link' => $link,
+            'project_name' => $upload->project->name,
             'client_name' => $upload->user->name,
             'priority' => $upload->priority,
             'developer_status' => $upload->developer_status,
@@ -100,6 +101,10 @@ class DeveloperController extends Controller
             'type' => 'New Project Request',
             'title' => $request->title,
             'link' => null,
+            // No Project exists yet for a new-project request — the proposed
+            // title is the closest thing to a project name (same fallback
+            // used on the Work Orders list).
+            'project_name' => $request->title,
             'client_name' => $request->user->name,
             'priority' => null,
             'developer_status' => $request->developer_status,

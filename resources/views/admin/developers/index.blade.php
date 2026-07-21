@@ -21,25 +21,83 @@
         'urgent' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
     ];
 
-    // Workload stat boxes — muted gray when 0, richer tint + darker type when >0.
+    // Workload stat boxes — Completed / In Progress / Waiting / Not Started,
+    // muted gray when 0, richer tint + darker type when >0. Colors match the
+    // same status language already used on Work Orders and Revision
+    // Management, rather than introducing a one-off palette just for this page.
     $statBoxes = [
-        'not_started' => ['label' => 'Not Started', 'activeBg' => 'bg-gray-200 dark:bg-gray-600', 'activeText' => 'text-navy dark:text-white'],
-        'in_progress' => ['label' => 'In Progress', 'activeBg' => 'bg-gold/25', 'activeText' => 'text-gold-dark'],
-        'waiting_on_visionbridge' => ['label' => 'Waiting on VB', 'activeBg' => 'bg-purple-100 dark:bg-purple-500/20', 'activeText' => 'text-purple-700 dark:text-purple-300'],
         'completed' => ['label' => 'Completed', 'activeBg' => 'bg-teal/25', 'activeText' => 'text-teal-dark dark:text-teal-300'],
+        'in_progress' => ['label' => 'In Progress', 'activeBg' => 'bg-gold/25', 'activeText' => 'text-gold-dark'],
+        'waiting_on_visionbridge' => ['label' => 'Waiting', 'activeBg' => 'bg-purple-100 dark:bg-purple-500/20', 'activeText' => 'text-purple-700 dark:text-purple-300'],
+        'not_started' => ['label' => 'Not Started', 'activeBg' => 'bg-gray-200 dark:bg-gray-600', 'activeText' => 'text-navy dark:text-white'],
     ];
+
+    // ── Dashboard summary — pure display aggregation over $roster/$developers/
+    // $unassigned, already fully loaded by the controller; no new queries. ──
+    $activeDeveloperCount = $developers->filter(fn ($d) => $d->is_active ?? true)->count();
+    $workingNowCount = $roster->filter(fn ($row) => $row['activeItems']->isNotEmpty())->count();
+    $availableDeveloperCount = $roster->filter(fn ($row) => ($row['developer']->is_active ?? true) && $row['activeItems']->isEmpty())->count();
+    $openWorkOrderCount = $roster->sum(fn ($row) => $row['activeItems']->count()) + $unassigned->count();
+
+    // Workload bar denominator — relative to the busiest developer on the
+    // team right now, not a fabricated fixed "capacity" number that doesn't
+    // exist anywhere in the data model.
+    $maxActiveOnTeam = max($roster->max(fn ($row) => $row['activeItems']->count()) ?: 1, 1);
 @endphp
 
 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Every "Developer" job-title account, their current workload, and any Work Orders still waiting for a developer.</p>
 
-{{-- Global controls --}}
-<div class="flex flex-col sm:flex-row gap-3 mb-6">
-    <div class="relative flex-1 max-w-sm">
-        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        <input type="text" id="developer-search" placeholder="Search developers by name…"
-               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+{{-- ═══════════════════════════════════════════════════════════════════════
+     SECTION 2 — Dashboard summary cards
+     ═══════════════════════════════════════════════════════════════════════ --}}
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="summary-card rounded-2xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-teal/10 to-teal/[0.03] dark:from-teal/15 dark:to-transparent px-5 py-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <div class="w-10 h-10 rounded-xl bg-white/70 dark:bg-white/10 shadow-sm flex items-center justify-center mb-3">
+            <svg class="w-5 h-5 text-teal-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 100-8 4 4 0 000 8zm6 0a4 4 0 100-8"/></svg>
+        </div>
+        <p class="summary-counter text-2xl font-bold text-navy dark:text-white" data-count="{{ $activeDeveloperCount }}">0</p>
+        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">Active Developers</p>
     </div>
-    <div class="w-full sm:w-56">
+
+    <div class="summary-card rounded-2xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-gold/10 to-gold/[0.03] dark:from-gold/15 dark:to-transparent px-5 py-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <div class="w-10 h-10 rounded-xl bg-white/70 dark:bg-white/10 shadow-sm flex items-center justify-center mb-3">
+            <svg class="w-5 h-5 text-gold-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <p class="summary-counter text-2xl font-bold text-navy dark:text-white" data-count="{{ $workingNowCount }}">0</p>
+        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">Working Now</p>
+    </div>
+
+    <div class="summary-card rounded-2xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-blue-50 to-blue-50/20 dark:from-blue-500/15 dark:to-transparent px-5 py-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <div class="w-10 h-10 rounded-xl bg-white/70 dark:bg-white/10 shadow-sm flex items-center justify-center mb-3">
+            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <p class="summary-counter text-2xl font-bold text-navy dark:text-white" data-count="{{ $availableDeveloperCount }}">0</p>
+        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">Available Developers</p>
+    </div>
+
+    <div class="summary-card rounded-2xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-purple-50 to-purple-50/20 dark:from-purple-500/15 dark:to-transparent px-5 py-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <div class="w-10 h-10 rounded-xl bg-white/70 dark:bg-white/10 shadow-sm flex items-center justify-center mb-3">
+            <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+        </div>
+        <p class="summary-counter text-2xl font-bold text-navy dark:text-white" data-count="{{ $openWorkOrderCount }}">0</p>
+        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">Open Work Orders</p>
+    </div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════════════════════
+     SECTION 3 — Search + filters. Kept to the two controls that actually do
+     something (search, workload) — the flex-wrap container is the
+     future-proofing: more filters can drop in here later without layout
+     changes, but adding non-functional placeholder dropdowns now would just
+     be broken UI dressed up as a feature.
+     ═══════════════════════════════════════════════════════════════════════ --}}
+<div class="flex flex-wrap gap-3 mb-8">
+    <div class="relative flex-1 min-w-[240px] max-w-xl">
+        <svg class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input type="text" id="developer-search" placeholder="Search developers by name…"
+               class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white pl-11 pr-4 py-3 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition-shadow">
+    </div>
+    <div class="w-full sm:w-60">
         @include('admin._dropdown', [
             'name' => 'workload_filter',
             'domId' => 'workload-filter',
@@ -55,65 +113,104 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
-    {{-- Left: developer workload cards — wraps into 2 columns at xl as more developers are added --}}
+    {{-- ═══════════════════════════════════════════════════════════════════
+         SECTION 4-12 — Developer cards, the primary focus of the page
+         ═══════════════════════════════════════════════════════════════════ --}}
     <div class="lg:col-span-2">
         @if ($developers->isEmpty())
-            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-10 text-center">
                 <p class="text-gray-500 dark:text-gray-400">No team members have the "Developer" job title yet — set one on the Team Members page.</p>
             </div>
         @else
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 @foreach ($roster as $row)
-                    @php $hasActiveWork = $row['activeItems']->isNotEmpty(); @endphp
-                    <div class="developer-card bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6"
+                    @php
+                        $hasActiveWork = $row['activeItems']->isNotEmpty();
+                        $activeCount = $row['activeItems']->count();
+                        $capacityPct = (int) round($activeCount / $maxActiveOnTeam * 100);
+                        $capacityBarColor = $capacityPct > 85 ? 'bg-red-400' : ($capacityPct > 50 ? 'bg-gold' : 'bg-teal');
+                        $capacityTextColor = $capacityPct > 85 ? 'text-red-500' : ($capacityPct > 50 ? 'text-gold-dark' : 'text-teal-dark');
+                        $currentItem = $row['activeItems']->first();
+                        $restActiveItems = $row['activeItems']->slice(1);
+                    @endphp
+                    <div class="developer-card bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-7 shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-gold/40 dark:hover:border-gold/30 transition-all duration-200"
                          data-name="{{ strtolower($row['developer']->name) }}" data-has-active="{{ $hasActiveWork ? '1' : '0' }}">
-                        <div class="flex items-center justify-between gap-4 mb-4">
-                            <div class="flex items-center gap-3">
-                                <span class="w-10 h-10 rounded-full bg-navy text-gold text-sm font-bold flex items-center justify-center shrink-0">
-                                    {{ strtoupper(substr($row['developer']->name, 0, 1)) }}
-                                </span>
-                                <div>
-                                    <p class="font-semibold text-navy dark:text-white">{{ $row['developer']->name }}</p>
-                                    <p class="text-xs text-gray-400 dark:text-gray-500">{{ $row['developer']->email }}</p>
-                                </div>
+
+                        {{-- SECTION 5 — Developer header --}}
+                        <div class="flex items-start gap-3.5 mb-5">
+                            <span class="w-13 h-13 rounded-2xl bg-gradient-to-br from-navy to-navy/75 text-gold text-base font-bold flex items-center justify-center shrink-0 shadow-sm" style="width:3.25rem;height:3.25rem;">
+                                {{ strtoupper(substr($row['developer']->name, 0, 1)) }}
+                            </span>
+                            <div class="min-w-0 flex-1 pt-0.5">
+                                <p class="font-bold text-navy dark:text-white leading-snug truncate">{{ $row['developer']->name }}</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500">{{ $row['developer']->job_title ?? 'Developer' }}</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 truncate">{{ $row['developer']->email }}</p>
                             </div>
                             @if ($row['developer']->is_active ?? true)
-                                <span class="text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-teal/10 text-teal-dark">Active</span>
+                                <span class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-teal/10 text-teal-dark">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-teal animate-pulse"></span>
+                                    Active
+                                </span>
                             @else
-                                <span class="text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-red-50 text-red-500">Inactive</span>
+                                <span class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                                    Inactive
+                                </span>
                             @endif
                         </div>
 
-                        {{-- Workload breakdown --}}
-                        <div class="grid grid-cols-4 gap-2 mb-4">
+                        {{-- SECTION 6 — Workload capacity bar, relative to the
+                             busiest developer on the team (no fabricated fixed
+                             "capacity" ceiling exists in the data model). --}}
+                        <div class="mb-5">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <p class="text-xs font-semibold text-gray-500 dark:text-gray-400">Workload</p>
+                                <p class="text-xs font-bold {{ $capacityTextColor }}">{{ $activeCount }} active</p>
+                            </div>
+                            <div class="h-2 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                                <div class="workload-bar-fill h-full rounded-full {{ $capacityBarColor }}" data-target-pct="{{ $capacityPct }}" style="width:0%;"></div>
+                            </div>
+                        </div>
+
+                        {{-- SECTION 7 — Statistics --}}
+                        <div class="grid grid-cols-4 gap-2 mb-5">
                             @foreach ($statBoxes as $key => $box)
                                 @php $count = $row['counts'][$key]; @endphp
-                                <div class="text-center rounded-lg py-2.5 {{ $count > 0 ? $box['activeBg'] : 'bg-gray-50 dark:bg-gray-900' }}">
+                                <div class="text-center rounded-xl py-3 {{ $count > 0 ? $box['activeBg'] : 'bg-gray-50 dark:bg-gray-900' }}">
                                     <p class="text-lg font-bold {{ $count > 0 ? $box['activeText'] : 'text-gray-300 dark:text-gray-600' }}">{{ $count }}</p>
-                                    <p class="text-[0.65rem] uppercase tracking-wide {{ $count > 0 ? 'text-gray-500 dark:text-gray-400' : 'text-gray-300 dark:text-gray-600' }}">{{ $box['label'] }}</p>
+                                    <p class="text-[0.63rem] uppercase tracking-wide {{ $count > 0 ? 'text-gray-500 dark:text-gray-400' : 'text-gray-300 dark:text-gray-600' }}">{{ $box['label'] }}</p>
                                 </div>
                             @endforeach
                         </div>
 
-                        {{-- Active assigned items --}}
-                        @if ($row['activeItems']->isEmpty())
-                            <p class="text-sm text-gray-400 dark:text-gray-500">No active Work Orders right now.</p>
+                        {{-- SECTION 8 — Current Work Order, emphasized. The
+                             underlying item row (link, status pill, reassign
+                             dropdown) is unchanged — only its wrapper here is
+                             new, so nothing about how it works changes. --}}
+                        <p class="text-[0.65rem] font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">Current Work Order</p>
+                        @if ($currentItem)
+                            <div class="rounded-xl border border-gray-200 dark:border-gray-700 border-l-4 border-l-gold bg-gray-50/70 dark:bg-gray-900/40 px-2 mb-3">
+                                @include('admin.developers._item-row', ['item' => $currentItem, 'statusColors' => $statusColors, 'developers' => $developers, 'assignedDeveloperId' => $row['developer']->id])
+                            </div>
+                            @if ($restActiveItems->isNotEmpty())
+                                <p class="text-[0.65rem] font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Also Assigned ({{ $restActiveItems->count() }})</p>
+                                <div class="divide-y divide-gray-100 dark:divide-gray-700 max-h-48 overflow-y-auto pr-1 rounded-lg border border-gray-100 dark:border-gray-700/60 mb-4">
+                                    @foreach ($restActiveItems as $item)
+                                        @include('admin.developers._item-row', ['item' => $item, 'statusColors' => $statusColors, 'developers' => $developers, 'assignedDeveloperId' => $row['developer']->id])
+                                    @endforeach
+                                </div>
+                            @endif
                         @else
-                            <div class="divide-y divide-gray-100 dark:divide-gray-700 max-h-56 overflow-y-auto pr-1">
-                                @foreach ($row['activeItems'] as $item)
-                                    @include('admin.developers._item-row', ['item' => $item, 'statusColors' => $statusColors, 'developers' => $developers, 'assignedDeveloperId' => $row['developer']->id])
-                                @endforeach
+                            <div class="rounded-xl border border-dashed border-gray-200 dark:border-gray-700 py-5 text-center mb-4">
+                                <p class="text-sm text-gray-400 dark:text-gray-500">No active Work Orders right now.</p>
                             </div>
                         @endif
 
-                        {{-- History — opens a modal with the full completed list
-                             instead of expanding inline (which used to push the
-                             rest of the card/grid around). A real bordered
-                             button, not plain link-style text, so it reads as
-                             clickable rather than just another label. --}}
+                        {{-- SECTION 12 — History button, sized/rounded to
+                             match the search input and filter dropdown above. --}}
                         @if ($row['completedItems']->isNotEmpty())
                             <button type="button"
-                                    class="developer-history-btn mt-4 inline-flex items-center gap-1.5 text-xs font-semibold rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50 hover:border-gold hover:text-gold-dark text-navy dark:text-white px-3 py-1.5 transition-colors"
+                                    class="developer-history-btn inline-flex items-center gap-1.5 text-xs font-semibold rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50 hover:border-gold hover:text-gold-dark text-navy dark:text-white px-3 py-2 transition-colors"
                                     data-target="developer-history-{{ $row['developer']->id }}"
                                     data-developer-name="{{ $row['developer']->name }}"
                                     data-count="{{ $row['completedItems']->count() }}">
@@ -138,10 +235,10 @@
         @endif
     </div>
 
-    {{-- Right: unassigned, side-by-side with developer availability. Made
-         deliberately loud (red badge + icon + bordered card, not a plain
-         heading) — this list is easy to overlook otherwise, and it's the
-         one thing on this page that always needs a human to act on it. --}}
+    {{-- ═══════════════════════════════════════════════════════════════════
+         Unassigned — kept deliberately loud (red badge + icon + bordered
+         card, not a plain heading), same as before this pass.
+         ═══════════════════════════════════════════════════════════════════ --}}
     <div class="lg:col-span-1 lg:sticky lg:top-6">
         <div class="flex items-center gap-2 mb-3">
             @if ($unassigned->isNotEmpty())
@@ -155,13 +252,17 @@
             @endif
         </div>
 
+        {{-- SECTION 9 — Polished empty state --}}
         @if ($unassigned->isEmpty())
-            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
-                <svg class="w-8 h-8 text-teal-dark mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Everything is assigned. Nice.</p>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 text-center">
+                <div class="w-14 h-14 rounded-full bg-teal/10 flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-7 h-7 text-teal-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <p class="font-bold text-navy dark:text-white mb-1">Great Work!</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Every Work Order currently has an assigned developer.<br>No pending assignments.</p>
             </div>
         @else
-            <div class="bg-white dark:bg-gray-800 rounded-xl border-2 border-red-200 dark:border-red-500/30 divide-y divide-gray-100 dark:divide-gray-700 max-h-[calc(100vh-220px)] overflow-y-auto">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl border-2 border-red-200 dark:border-red-500/30 divide-y divide-gray-100 dark:divide-gray-700 max-h-[calc(100vh-220px)] overflow-y-auto">
                 <div class="sticky top-0 bg-red-50 dark:bg-red-500/10 px-4 py-2.5 border-b border-red-200 dark:border-red-500/30">
                     <p class="text-xs font-bold uppercase tracking-wide text-red-700 dark:text-red-400">{{ $unassigned->count() }} {{ $unassigned->count() === 1 ? 'item' : 'items' }} waiting for assignment</p>
                 </div>
@@ -205,6 +306,30 @@
     </div>
 </div>
 
+{{-- ═══════════════════════════════════════════════════════════════════════
+     SECTION 17 — Future placeholders. Visual only, clearly marked, no
+     backend behind any of these yet.
+     ═══════════════════════════════════════════════════════════════════════ --}}
+<div class="mt-10">
+    <p class="text-xs font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-3">Coming Soon</p>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        @foreach ([
+            ['label' => 'Recent Activity', 'desc' => 'A live feed of assignment and status changes.', 'icon' => 'M13 10V3L4 14h7v7l9-11h-7z'],
+            ['label' => 'Developer Timeline', 'desc' => 'Historical workload trends per developer.', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-9-4h.01M9 16h.01'],
+            ['label' => 'Performance Analytics', 'desc' => 'Completion rate and turnaround charts.', 'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
+        ] as $placeholder)
+            <div class="rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30 px-5 py-6 text-center opacity-70">
+                <div class="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center mx-auto mb-3">
+                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="{{ $placeholder['icon'] }}"/></svg>
+                </div>
+                <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">{{ $placeholder['label'] }}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 leading-relaxed">{{ $placeholder['desc'] }}</p>
+                <span class="inline-block mt-2 text-[0.6rem] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400">Coming Soon</span>
+            </div>
+        @endforeach
+    </div>
+</div>
+
 {{-- Full-page reload still happens on assign (see the form below) — this
      overlay just covers the wait with a spinner instead of the dropdown
      appearing to do nothing until the new page arrives. --}}
@@ -237,12 +362,58 @@
     </div>
 </div>
 
+<style>
+    /* SECTION 16 — subtle, staggered fade-in on load. Pure CSS, no GSAP. */
+    @keyframes dev-card-fade-in {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .summary-card, .developer-card {
+        animation: dev-card-fade-in 0.5s ease-out both;
+    }
+    .summary-card:nth-child(1) { animation-delay: 0s; }
+    .summary-card:nth-child(2) { animation-delay: 0.06s; }
+    .summary-card:nth-child(3) { animation-delay: 0.12s; }
+    .summary-card:nth-child(4) { animation-delay: 0.18s; }
+    .developer-card:nth-child(1) { animation-delay: 0.08s; }
+    .developer-card:nth-child(2) { animation-delay: 0.14s; }
+    .developer-card:nth-child(3) { animation-delay: 0.2s; }
+    .developer-card:nth-child(4) { animation-delay: 0.26s; }
+    @media (prefers-reduced-motion: reduce) {
+        .summary-card, .developer-card { animation: none; }
+    }
+</style>
+
 <script>
     document.querySelectorAll('.assign-developer-form').forEach((form) => {
         form.addEventListener('submit', () => {
             document.getElementById('assign-loading-overlay')?.classList.remove('hidden');
         });
     });
+
+    // SECTION 16 — workload bars fill smoothly from 0 on load, and the
+    // summary numbers count up, instead of just appearing at their final
+    // value. Plain vanilla JS, no animation library.
+    (function () {
+        requestAnimationFrame(function () {
+            document.querySelectorAll('.workload-bar-fill').forEach(function (bar) {
+                bar.style.width = (bar.dataset.targetPct || 0) + '%';
+            });
+        });
+
+        document.querySelectorAll('.summary-counter').forEach(function (el) {
+            const target = parseInt(el.dataset.count || '0', 10);
+            if (!target) { el.textContent = '0'; return; }
+            const duration = 700;
+            const start = performance.now();
+            function tick(now) {
+                const progress = Math.min((now - start) / duration, 1);
+                el.textContent = Math.round(target * (1 - Math.pow(1 - progress, 3))); // ease-out cubic
+                if (progress < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+        });
+    })();
 
     (function () {
         const modal = document.getElementById('developer-history-modal');
