@@ -135,12 +135,18 @@
 
     /* Mission/Vision icon circles — bigger with a colored ring accent so
        they read as intentional rather than small/flat against the cards */
+    #mission-icon, #vision-icon {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
     #mission-icon {
         width: 56px !important;
         height: 56px !important;
         border: 2px solid rgba(201,168,76,0.35) !important;
         box-shadow: 0 0 0 4px rgba(201,168,76,0.08) !important;
         border-radius: 999px !important;
+        background: radial-gradient(circle, rgba(201,168,76,0.16) 0%, rgba(201,168,76,0.04) 100%);
     }
     #vision-icon {
         width: 56px !important;
@@ -148,6 +154,7 @@
         border: 2px solid rgba(42,157,143,0.35) !important;
         box-shadow: 0 0 0 4px rgba(42,157,143,0.08) !important;
         border-radius: 999px !important;
+        background: radial-gradient(circle, rgba(42,157,143,0.18) 0%, rgba(42,157,143,0.05) 100%);
     }
 
     /* Each menu item is its own glass card now (see .mobile-menu-link's

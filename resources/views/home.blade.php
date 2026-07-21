@@ -475,7 +475,16 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     <div class="absolute left-0 top-6 bottom-6 w-0.5 rounded-r-full" style="background:linear-gradient(180deg,#C9A84C 0%,rgba(201,168,76,0.15) 100%);"></div>
                     <div class="about-card-photo-bg md:hidden" aria-hidden="true" style="--photo:url('@assetv('image/landing-glowing-bridge.png')');"></div>
                     <div id="mission-icon" class="card-icon w-10 h-10 rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(201,168,76,0.18);">
-                        <img src="@assetv('image/Our_Mission.png')" alt="Our Mission" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
+                        <img src="@assetv('image/Our_Mission.png')" alt="Our Mission" loading="lazy" decoding="async" class="hidden md:block" style="width:100%;height:100%;object-fit:cover;">
+                        {{-- Mobile-only: the PNG above is dark art made for the
+                             old white circle — invisible on the new dark card,
+                             so a gold outline icon replaces it here instead. --}}
+                        <svg class="md:hidden" viewBox="0 0 24 24" fill="none" stroke="#DFC06A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:60%;height:60%;">
+                            <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+                            <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+                            <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+                            <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+                        </svg>
                     </div>
                     <span class="about-card-badge md:hidden">Our Mission</span>
                     <h3 class="card-title font-extrabold mb-2" style="font-size:1.15rem;color:#15202C;">Our Mission</h3>
@@ -489,7 +498,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     <div class="absolute left-0 top-6 bottom-6 w-0.5 rounded-r-full" style="background:linear-gradient(180deg,#2A9D8F 0%,rgba(42,157,143,0.15) 100%);"></div>
                     <div class="about-card-photo-bg md:hidden" aria-hidden="true" style="--photo:url('@assetv('image/laptop-tillted.png')');"></div>
                     <div id="vision-icon" class="card-icon w-10 h-10 rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(42,157,143,0.22);">
-                        <img src="@assetv('image/Our_Vision.png')" alt="Our Vision" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
+                        <img src="@assetv('image/Our_Vision.png')" alt="Our Vision" loading="lazy" decoding="async" class="hidden md:block" style="width:100%;height:100%;object-fit:cover;">
+                        {{-- Mobile-only: same dark-art-on-dark-card issue as
+                             the Mission icon, replaced with a teal outline icon --}}
+                        <svg class="md:hidden" viewBox="0 0 24 24" fill="none" stroke="#6FD8CB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:60%;height:60%;">
+                            <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+                            <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                            <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+                            <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                            <circle cx="12" cy="12" r="4"/>
+                            <circle cx="12" cy="12" r="1"/>
+                        </svg>
                     </div>
                     <span class="about-card-badge md:hidden">Our Vision</span>
                     <h3 class="card-title font-extrabold mb-2" style="font-size:1.15rem;color:#15202C;">Our Vision</h3>
