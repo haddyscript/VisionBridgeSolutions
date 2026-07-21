@@ -19,12 +19,21 @@ class ProjectRequestController extends Controller
     {
         $requests = ProjectRequest::with('user', 'createdByAdmin')->latest()->paginate(15)->withQueryString();
 
+        // Read-only counts for the header KPI cards / filter dropdown —
+        // additive queries alongside the existing one above, nothing about
+        // $requests itself changes. Pulled across the full table (not just
+        // the current page) so the numbers are real totals, not fabricated.
+        $statusCounts = ProjectRequest::selectRaw('status, count(*) as aggregate_count')->groupBy('status')->pluck('aggregate_count', 'status');
+
         return view('admin.project-requests.index', [
             'requests' => $requests,
             'clients' => User::where(fn ($q) => $q->where('role', '!=', 'admin')->orWhereNull('role'))
                 ->orderBy('name')
                 ->get(['id', 'name', 'email']),
             'developers' => User::developers(),
+            'totalRequestCount' => array_sum($statusCounts->all()),
+            'statusCounts' => $statusCounts,
+            'draftProposalCount' => ProjectRequest::where('proposal_status', 'draft')->count(),
         ]);
     }
 
