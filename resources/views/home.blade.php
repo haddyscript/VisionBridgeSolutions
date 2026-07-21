@@ -480,7 +480,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         <circle cx="100" cy="100" r="92" fill="none" stroke="#DFC06A" stroke-width="1.4"/>
                     </svg>
                     <div class="about-card-particles md:hidden" aria-hidden="true">
-                        <span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span><span></span>
                     </div>
                     <div id="mission-icon" class="card-icon w-10 h-10 rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(201,168,76,0.18);">
                         <img src="@assetv('image/Our_Mission.png')" alt="Our Mission" loading="lazy" decoding="async" class="hidden md:block" style="width:100%;height:100%;object-fit:cover;">
@@ -514,7 +514,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     </svg>
                     <div class="about-card-beam md:hidden" aria-hidden="true"></div>
                     <div class="about-card-particles md:hidden" aria-hidden="true">
-                        <span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span><span></span>
                     </div>
                     <div id="vision-icon" class="card-icon w-10 h-10 rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(42,157,143,0.22);">
                         <img src="@assetv('image/Our_Vision.png')" alt="Our Vision" loading="lazy" decoding="async" class="hidden md:block" style="width:100%;height:100%;object-fit:cover;">

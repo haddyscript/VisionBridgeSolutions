@@ -619,7 +619,7 @@
         box-shadow: 0 10px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06) !important;
     }
     .about-cards .about-card:nth-child(1) {
-        background: linear-gradient(180deg, rgba(17,29,51,0.9) 0%, rgba(9,15,27,0.96) 100%) !important;
+        background: linear-gradient(160deg, rgba(64,48,15,0.92) 0%, rgba(28,20,8,0.95) 45%, rgba(12,10,6,0.97) 100%) !important;
         border: 1px solid rgba(201,168,76,0.35) !important;
     }
     .about-cards .about-card:nth-child(2) {
@@ -677,22 +677,29 @@
     }
     .about-card-particles span {
         position: absolute;
-        width: 4px;
-        height: 4px;
+        width: 6px;
+        height: 6px;
         border-radius: 50%;
-        filter: blur(0.5px);
         animation: about-card-particle-float 7s ease-in-out infinite;
     }
-    .about-card-particles span:nth-child(1) { top: 18%; left: 68%; animation-delay: 0s; }
-    .about-card-particles span:nth-child(2) { top: 52%; left: 84%; animation-delay: 1.4s; }
-    .about-card-particles span:nth-child(3) { top: 74%; left: 58%; animation-delay: 2.8s; }
-    .about-card-particles span:nth-child(4) { top: 34%; left: 92%; animation-delay: 4.2s; }
+    .about-card-particles span:nth-child(1) { top: 15%; left: 66%; animation-delay: 0s; }
+    .about-card-particles span:nth-child(2) { top: 48%; left: 84%; animation-delay: 1.4s; }
+    .about-card-particles span:nth-child(3) { top: 72%; left: 56%; animation-delay: 2.8s; }
+    .about-card-particles span:nth-child(4) { top: 30%; left: 92%; animation-delay: 4.2s; }
+    .about-card-particles span:nth-child(5) { top: 60%; left: 70%; animation-delay: 2.1s; }
+    .about-card-particles span:nth-child(6) { top: 85%; left: 88%; animation-delay: 3.5s; }
     @keyframes about-card-particle-float {
-        0%, 100% { transform: translateY(0); opacity: 0.06; }
-        50%      { transform: translateY(-14px); opacity: 0.15; }
+        0%, 100% { transform: translateY(0) scale(0.85); opacity: 0.35; }
+        50%      { transform: translateY(-16px) scale(1); opacity: 0.9; }
     }
-    .about-cards .about-card:nth-child(1) .about-card-particles span { background: #DFC06A; }
-    .about-cards .about-card:nth-child(2) .about-card-particles span { background: #6FD8CB; }
+    .about-cards .about-card:nth-child(1) .about-card-particles span {
+        background: #F2D98C;
+        box-shadow: 0 0 6px 1px rgba(242,217,140,0.9);
+    }
+    .about-cards .about-card:nth-child(2) .about-card-particles span {
+        background: #8FE8DB;
+        box-shadow: 0 0 6px 1px rgba(143,232,219,0.9);
+    }
 
     /* Mountain range + winding road (Vision) — no matching photo asset
        exists in public/image, so this is hand-drawn SVG. Anchored to the
