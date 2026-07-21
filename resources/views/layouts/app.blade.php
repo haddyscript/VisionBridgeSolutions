@@ -1735,7 +1735,7 @@
              by the ID-selector rules in mobile-design.css (an ID selector
              always outranks a Tailwind utility class on the same element,
              regardless of what's written here), so the `fixed inset-0`
-             classes below are for readability — the real positioning lives
+             classes below are for readability — the real positioning livesx
              there. Structure mirrors the reference layout: logo + close
              button, a divider, the nav links (still animate in staggered via
              mobile-design.css, unchanged), then Get Started pinned to the

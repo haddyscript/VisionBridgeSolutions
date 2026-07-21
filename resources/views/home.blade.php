@@ -467,26 +467,54 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             {{-- Right: Mission & Vision --}}
             <div class="about-cards flex flex-col gap-6">
 
-                {{-- Mission card — light, airy, gold-accented --}}
+                {{-- Mission card — light, airy, gold-accented (desktop);
+                     mobile gets a dark glowing-bridge photo card instead,
+                     see .about-card-photo-bg / .about-card-badge in
+                     mobile-design.css --}}
                 <div class="about-card rounded-2xl flex-1 relative overflow-hidden" style="padding:22px 24px;background:#FFFFFF;border:1px solid rgba(201,168,76,0.14);box-shadow:0 4px 28px rgba(17,29,51,0.07),0 1px 4px rgba(17,29,51,0.04);">
                     <div class="absolute left-0 top-6 bottom-6 w-0.5 rounded-r-full" style="background:linear-gradient(180deg,#C9A84C 0%,rgba(201,168,76,0.15) 100%);"></div>
+                    <div class="about-card-photo-bg md:hidden" aria-hidden="true" style="--photo:url('@assetv('image/landing-glowing-bridge.png')');"></div>
                     <div id="mission-icon" class="card-icon w-10 h-10 rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(201,168,76,0.18);">
                         <img src="@assetv('image/Our_Mission.png')" alt="Our Mission" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
                     </div>
+                    <span class="about-card-badge md:hidden">Our Mission</span>
                     <h3 class="card-title font-extrabold mb-2" style="font-size:1.15rem;color:#15202C;">Our Mission</h3>
-                    <p class="card-body" style="font-size:1rem;font-weight:500;line-height:1.7;color:rgba(17,29,51,0.84);">To help ministries, churches, nonprofits, entrepreneurs, and businesses establish a professional online presence through custom website development, ongoing support, and long-term website stability.</p>
+                    <span class="about-card-underline md:hidden"></span>
+                    <p class="card-body" style="font-size:1rem;font-weight:500;line-height:1.7;color:rgba(17,29,51,0.84);">To help ministries, churches, nonprofits, entrepreneurs, and businesses establish a professional <span class="hl-accent">online presence</span> through custom website development, <span class="hl-accent">ongoing support</span>, and <span class="hl-accent">long-term website stability</span>.</p>
                 </div>
 
-                {{-- Vision card — soft teal tint, welcoming --}}
+                {{-- Vision card — soft teal tint (desktop); mobile gets a
+                     dark photo card matching the Mission card's treatment --}}
                 <div class="about-card rounded-2xl flex-1 relative overflow-hidden" style="padding:22px 24px;background:linear-gradient(135deg,#F0FAF9 0%,#EDFAF8 100%);border:1px solid rgba(42,157,143,0.18);box-shadow:0 4px 28px rgba(42,157,143,0.08),0 1px 4px rgba(42,157,143,0.04);">
                     <div class="absolute left-0 top-6 bottom-6 w-0.5 rounded-r-full" style="background:linear-gradient(180deg,#2A9D8F 0%,rgba(42,157,143,0.15) 100%);"></div>
+                    <div class="about-card-photo-bg md:hidden" aria-hidden="true" style="--photo:url('@assetv('image/laptop-tillted.png')');"></div>
                     <div id="vision-icon" class="card-icon w-10 h-10 rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(42,157,143,0.22);">
                         <img src="@assetv('image/Our_Vision.png')" alt="Our Vision" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
                     </div>
+                    <span class="about-card-badge md:hidden">Our Vision</span>
                     <h3 class="card-title font-extrabold mb-2" style="font-size:1.15rem;color:#15202C;">Our Vision</h3>
-                    <p class="card-body" style="font-size:1rem;font-weight:500;line-height:1.7;color:rgba(17,29,51,0.84);">To become a trusted website solutions company that bridges the gap between vision and digital presence while helping clients maintain ownership, security, and confidence in their online future.</p>
+                    <span class="about-card-underline md:hidden"></span>
+                    <p class="card-body" style="font-size:1rem;font-weight:500;line-height:1.7;color:rgba(17,29,51,0.84);">To become a trusted website solutions company that bridges the gap between <span class="hl-accent">vision</span> and <span class="hl-accent">digital presence</span> while helping clients maintain <span class="hl-accent">ownership</span>, <span class="hl-accent">security</span>, and <span class="hl-accent">confidence</span> in their online future.</p>
                 </div>
 
+            </div>
+
+            {{-- Mobile-only CTA bar — the sticky floating "Get Started" pill
+                 (mobile-design.js) is suppressed while #about is in view so
+                 this is the only CTA surfaced here, avoiding the overlap the
+                 floating pill used to cause over the Vision card's text. --}}
+            <div class="about-cards-cta-bar md:hidden">
+                <div class="about-cards-cta-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9 12 2"/></svg>
+                </div>
+                <div class="about-cards-cta-text">
+                    <p class="about-cards-cta-title">Ready to build something amazing together?</p>
+                    <p class="about-cards-cta-sub">Let's turn your vision into reality.</p>
+                </div>
+                <a href="{{ route('intake.create') }}" class="about-cards-cta-btn">
+                    Get Started
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
             </div>
         </div>
 

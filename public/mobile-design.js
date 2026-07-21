@@ -347,6 +347,7 @@
 
     var sourceCta = document.getElementById('mobile-menu-cta');
     var hero = document.getElementById('hero');
+    var about = document.getElementById('about');
     var founder = document.getElementById('founder');
     var contact = document.getElementById('contact');
     if (!sourceCta || !hero) return;
@@ -358,17 +359,28 @@
     document.body.appendChild(pill);
 
     var hiddenByHero = true;
+    var hiddenByAbout = false;
     var hiddenByFounder = false;
     var hiddenByContact = false;
 
     function updateVisibility() {
-        pill.classList.toggle('is-visible', !hiddenByHero && !hiddenByFounder && !hiddenByContact);
+        pill.classList.toggle('is-visible', !hiddenByHero && !hiddenByAbout && !hiddenByFounder && !hiddenByContact);
     }
 
     new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) { hiddenByHero = entry.isIntersecting; });
         updateVisibility();
     }, { threshold: 0.15 }).observe(hero);
+
+    // The About section now has its own inline CTA bar right under the
+    // Mission/Vision cards (home.blade.php) — hiding the floating pill here
+    // stops it from overlapping that bar or the card copy above it.
+    if (about) {
+        new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) { hiddenByAbout = entry.isIntersecting; });
+            updateVisibility();
+        }, { threshold: 0.1 }).observe(about);
+    }
 
     if (founder) {
         new IntersectionObserver(function (entries) {
