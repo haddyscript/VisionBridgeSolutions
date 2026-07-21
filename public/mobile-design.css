@@ -630,30 +630,34 @@
         position: relative;
         z-index: 1;
     }
-    /* Decorative-only background layer (Mission's bridge photo) — kept at
-       8-15% opacity so it reads as ambient texture, never competes with the
-       copy for contrast. */
+    /* Decorative-only background layer (Mission's bridge photo) — 15%
+       opacity plus a screen blend so the photo's bright/golden highlights
+       still read as an ambient glow against the dark card, instead of
+       flattening into invisibility the way a plain low-opacity photo does. */
     .about-card-photo-bg {
         position: absolute;
         inset: 0;
         z-index: 0;
-        opacity: 0.12;
+        opacity: 0.15;
+        mix-blend-mode: screen;
         background-image: var(--photo);
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
     }
 
-    /* Golden arc (Mission) — a faint slow-rotating ring echoing the bridge's
-       curve, oversized and cropped by the card's own overflow:hidden. */
+    /* Golden arc (Mission) — a faint slow-rotating ring in the top-right
+       corner. A *complete* ring (not a partial dashed arc) mostly cropped
+       off-canvas by the card's own overflow:hidden, so it reads as a
+       deliberate corner accent rather than a stray floating line. */
     .about-card-arc {
         position: absolute;
-        top: -70px;
-        right: -90px;
-        width: 240px;
-        height: 240px;
+        top: -60px;
+        right: -60px;
+        width: 150px;
+        height: 150px;
         z-index: 0;
-        opacity: 0.12;
+        opacity: 0.15;
         animation: about-card-arc-spin 60s linear infinite;
     }
     @keyframes about-card-arc-spin {
@@ -690,28 +694,31 @@
     .about-cards .about-card:nth-child(1) .about-card-particles span { background: #DFC06A; }
     .about-cards .about-card:nth-child(2) .about-card-particles span { background: #6FD8CB; }
 
-    /* Mountain + winding road (Vision) — no matching photo asset exists in
-       public/image, so this is hand-drawn SVG at the same decorative-only
-       opacity as Mission's photo/arc. */
+    /* Mountain range + winding road (Vision) — no matching photo asset
+       exists in public/image, so this is hand-drawn SVG. Anchored to the
+       bottom of the card as a shallow band (not inset:0/cover) so it reads
+       as a distant horizon silhouette instead of one giant zoomed-in peak. */
     .about-card-scenery {
         position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 42%;
         z-index: 0;
-        opacity: 0.12;
+        opacity: 0.15;
     }
 
-    /* Light beam off the mountain peak, matching .about-card-scenery's path
-       (peak sits roughly 20% in from the right at ~30% height). */
+    /* Light beam off the tallest peak (~118/300 → ~39% from the left,
+       matching .about-card-scenery's path), shining down from the top of
+       the card. */
     .about-card-beam {
         position: absolute;
         top: 0;
-        right: 24%;
+        left: 37%;
         width: 2px;
-        height: 65%;
+        height: 55%;
         z-index: 0;
-        opacity: 0.15;
+        opacity: 0.18;
         filter: blur(3px);
         background: linear-gradient(180deg, rgba(111,216,203,0.6) 0%, transparent 100%);
     }

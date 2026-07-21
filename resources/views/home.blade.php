@@ -477,7 +477,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                          faded bridge photo, a slow-rotating gold arc, and drifting particles --}}
                     <div class="about-card-photo-bg md:hidden" aria-hidden="true" style="--photo:url('@assetv('image/landing-glowing-bridge.png')');"></div>
                     <svg class="about-card-arc md:hidden" viewBox="0 0 200 200" aria-hidden="true">
-                        <circle cx="100" cy="100" r="92" fill="none" stroke="#DFC06A" stroke-width="1.4" stroke-dasharray="180 400"/>
+                        <circle cx="100" cy="100" r="92" fill="none" stroke="#DFC06A" stroke-width="1.4"/>
                     </svg>
                     <div class="about-card-particles md:hidden" aria-hidden="true">
                         <span></span><span></span><span></span><span></span>
@@ -508,9 +508,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                          mountain + winding road silhouette, a soft light beam off the
                          peak, and drifting teal particles — no mountain/road photo
                          asset exists in public/image, so this is hand-drawn SVG --}}
-                    <svg class="about-card-scenery md:hidden" viewBox="0 0 300 200" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-                        <path d="M0 200 L70 90 L110 140 L160 60 L230 160 L260 120 L300 200 Z" fill="#6FD8CB"/>
-                        <path d="M150 200 C140 160 170 150 155 120 C145 95 175 90 165 60" fill="none" stroke="#6FD8CB" stroke-width="4" stroke-linecap="round"/>
+                    <svg class="about-card-scenery md:hidden" viewBox="0 0 300 100" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+                        <path d="M0 100 L40 55 L70 80 L110 30 L150 70 L190 45 L230 85 L260 60 L300 100 Z" fill="#6FD8CB"/>
+                        <path d="M110 100 C102 75 122 68 112 45 C105 28 122 25 118 12" fill="none" stroke="#6FD8CB" stroke-width="2.5" stroke-linecap="round"/>
                     </svg>
                     <div class="about-card-beam md:hidden" aria-hidden="true"></div>
                     <div class="about-card-particles md:hidden" aria-hidden="true">
