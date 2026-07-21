@@ -4,6 +4,13 @@
         'waiting_on_visionbridge' => 'bg-purple-50 dark:bg-purple-500/10 text-purple-500',
         'completed' => 'bg-teal/10 text-teal-dark',
     ];
+    $rowStatusDots = [
+        'in_progress' => 'bg-gold',
+        'waiting_on_visionbridge' => 'bg-purple-400',
+        'completed' => 'bg-teal',
+    ];
+    $neutralStatusPill = 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400';
+    $rowCheckIcon = '<svg data-option-check class="w-4 h-4 text-gold-dark shrink-0 %s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>';
 @endphp
 
 @if ($workOrders->isEmpty())
@@ -49,14 +56,26 @@
                             @endif
                         </td>
                         <td class="px-5 py-3.5">
-                            <select onchange="updateWorkOrderStatus(this, '{{ $item['status_url'] }}')"
-                                    data-current="{{ $item['developer_status'] }}"
-                                    class="work-order-status-select text-xs font-semibold rounded-full px-3 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-gold {{ $statusColors[$item['developer_status']] ?? 'bg-gray-100 text-gray-500' }}">
-                                <option value="" disabled {{ $item['developer_status'] ? '' : 'selected' }}>Not Started</option>
-                                @foreach (\App\Models\Upload::DEVELOPER_STATUSES as $value => $label)
-                                    <option value="{{ $value }}" {{ $item['developer_status'] === $value ? 'selected' : '' }}>{{ $label }}</option>
-                                @endforeach
-                            </select>
+                            {{-- Inline pill dropdown, saves via AJAX on select — see
+                                 initWoDropdown()/saveWoStatusDropdown() in index.blade.php --}}
+                            <div class="relative" data-wo-dd data-wo-dd-kind="status" data-value="{{ $item['developer_status'] ?? '' }}"
+                                 data-wo-dd-url="{{ $item['status_url'] }}">
+                                <button type="button" data-wo-dd-toggle data-color-class="{{ $statusColors[$item['developer_status']] ?? $neutralStatusPill }}"
+                                        aria-haspopup="listbox" aria-expanded="false"
+                                        class="inline-flex items-center gap-1.5 text-xs font-semibold rounded-full pl-3 pr-2 py-1 focus:outline-none focus:ring-2 focus:ring-gold transition-colors {{ $statusColors[$item['developer_status']] ?? $neutralStatusPill }}">
+                                    <span data-wo-dd-label>{{ \App\Models\Upload::DEVELOPER_STATUSES[$item['developer_status']] ?? 'Not Started' }}</span>
+                                    <svg data-wo-dd-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <div data-wo-dd-menu class="hidden absolute z-20 left-0 mt-1.5 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                                    @foreach (\App\Models\Upload::DEVELOPER_STATUSES as $value => $label)
+                                        <button type="button" data-wo-dd-option="{{ $value }}" data-color-class="{{ $statusColors[$value] ?? $neutralStatusPill }}" role="option" aria-selected="{{ $item['developer_status'] === $value ? 'true' : 'false' }}"
+                                                class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $item['developer_status'] === $value ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
+                                            <span class="flex items-center gap-2" data-option-label><span class="w-2 h-2 rounded-full shrink-0 {{ $rowStatusDots[$value] ?? 'bg-gray-400' }}"></span>{{ $label }}</span>
+                                            {!! sprintf($rowCheckIcon, $item['developer_status'] === $value ? '' : 'invisible') !!}
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $item['created_at']->format('M j, Y') }}</td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $item['completed_at']?->format('M j, Y') ?? '—' }}</td>
