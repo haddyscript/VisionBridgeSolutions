@@ -106,17 +106,30 @@
                             </div>
                         @endif
 
-                        {{-- History — completed items, collapsed by default --}}
+                        {{-- History — opens a modal with the full completed list
+                             instead of expanding inline (which used to push the
+                             rest of the card/grid around). A real bordered
+                             button, not plain link-style text, so it reads as
+                             clickable rather than just another label. --}}
                         @if ($row['completedItems']->isNotEmpty())
-                            <button type="button" class="developer-history-toggle mt-4 inline-flex items-center gap-1 text-xs font-semibold text-navy dark:text-white hover:text-gold-dark" data-target="developer-history-{{ $row['developer']->id }}">
+                            <button type="button"
+                                    class="developer-history-btn mt-4 inline-flex items-center gap-1.5 text-xs font-semibold rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50 hover:border-gold hover:text-gold-dark text-navy dark:text-white px-3 py-1.5 transition-colors"
+                                    data-target="developer-history-{{ $row['developer']->id }}"
+                                    data-developer-name="{{ $row['developer']->name }}"
+                                    data-count="{{ $row['completedItems']->count() }}">
+                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 History ({{ $row['completedItems']->count() }})
-                                <svg class="w-3 h-3 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </button>
-                            <div id="developer-history-{{ $row['developer']->id }}" class="hidden mt-2 divide-y divide-gray-100 dark:divide-gray-700 max-h-56 overflow-y-auto pr-1 border-t border-gray-100 dark:border-gray-700 pt-2">
-                                @foreach ($row['completedItems'] as $item)
-                                    @include('admin.developers._item-row', ['item' => $item, 'statusColors' => $statusColors, 'completed' => true])
-                                @endforeach
-                            </div>
+                            {{-- <template> content is inert (never rendered
+                                 inline) until JS clones it into the shared
+                                 modal below. --}}
+                            <template id="developer-history-{{ $row['developer']->id }}">
+                                <div class="divide-y divide-gray-100 dark:divide-gray-700">
+                                    @foreach ($row['completedItems'] as $item)
+                                        @include('admin.developers._item-row', ['item' => $item, 'statusColors' => $statusColors, 'completed' => true])
+                                    @endforeach
+                                </div>
+                            </template>
                         @endif
                     </div>
                 @endforeach
@@ -205,6 +218,25 @@
     </div>
 </div>
 
+{{-- Shared History modal — one instance, populated on click by cloning the
+     clicked developer's <template> from above rather than one modal per
+     developer card. --}}
+<div id="developer-history-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/50" data-history-modal-close></div>
+    <div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-lg max-h-[85vh] flex flex-col">
+        <div class="flex items-center justify-between gap-4 px-5 py-4 border-b border-gray-100 dark:border-gray-700 shrink-0">
+            <div class="min-w-0">
+                <h3 id="developer-history-modal-title" class="font-bold text-navy dark:text-white truncate"></h3>
+                <p class="text-xs text-gray-400 dark:text-gray-500">Completed Work Orders</p>
+            </div>
+            <button type="button" data-history-modal-close class="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors" aria-label="Close">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div id="developer-history-modal-body" class="overflow-y-auto px-5"></div>
+    </div>
+</div>
+
 <script>
     document.querySelectorAll('.assign-developer-form').forEach((form) => {
         form.addEventListener('submit', () => {
@@ -212,14 +244,37 @@
         });
     });
 
-    document.querySelectorAll('.developer-history-toggle').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const panel = document.getElementById(btn.dataset.target);
-            if (!panel) return;
-            panel.classList.toggle('hidden');
-            btn.querySelector('svg').classList.toggle('rotate-90');
+    (function () {
+        const modal = document.getElementById('developer-history-modal');
+        const modalTitle = document.getElementById('developer-history-modal-title');
+        const modalBody = document.getElementById('developer-history-modal-body');
+        if (!modal || !modalTitle || !modalBody) return;
+
+        function openHistoryModal(btn) {
+            const template = document.getElementById(btn.dataset.target);
+            if (!template) return;
+            modalTitle.textContent = `${btn.dataset.developerName} — History (${btn.dataset.count})`;
+            modalBody.innerHTML = '';
+            modalBody.appendChild(template.content.cloneNode(true));
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeHistoryModal() {
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        document.querySelectorAll('.developer-history-btn').forEach((btn) => {
+            btn.addEventListener('click', () => openHistoryModal(btn));
         });
-    });
+        modal.querySelectorAll('[data-history-modal-close]').forEach((el) => {
+            el.addEventListener('click', closeHistoryModal);
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeHistoryModal();
+        });
+    })();
 
     (function () {
         const searchInput = document.getElementById('developer-search');
