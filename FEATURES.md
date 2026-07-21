@@ -804,6 +804,14 @@ Boss's mobile-view feedback: the homepage hero (`resources/views/home.blade.php`
 - CTA row → Trust row: `mb-8` → `mb-9`.
 - Trust row → mobile laptop image: `mt-10` → `mt-12`.
 
+## 22. Work Orders List — Project Name Column + Filtering (2026-07-21)
+
+`/admin/work-orders` ("My Work Orders") now shows a **Project Name** column and a filter bar (Type, Status, and a text Search matching project name/client name/item). Pagination was already 15-per-page (§18); this adds the filtering on top of it.
+
+- **Project Name column**: for Upload-backed rows (revisions/content requests) this is the linked `Project`'s `name`; `ProjectRequest` rows (new-project requests) have no `Project` yet, so their own proposed `title` is shown instead — the same value already visible in the Item column for those rows, since there's nothing else to show.
+- **Filter bar**: Type (Revision/Content/New Project Request), Status (Not Started/In Progress/Waiting for VisionBridge/Completed), and a Search box matching project name, client name, or item text — a plain GET form with native `<select>`s (auto-submit on change), same pattern as Consultations' sort control, not the styled pill dropdowns used on the separate `/admin/revisions` Revision Management page. A "Clear" link appears once any filter is active.
+- Filtering happens in `WorkOrderController::index()` against the already-merged Upload+ProjectRequest collection (this list was never a real DB table — see §15bb), then re-paginated; filter values are preserved across page links via the paginator's `query` option.
+
 ## 22. Mobile Hero — Typography Pass (2026-07-20)
 
 Follow-up to §21's mobile spacing pass, this time the boss's feedback was on the hero heading/description text itself: the heading felt oversized (dominating the viewport) and wrapped onto an awkward third line ("Building Websites." / "Expanding" / "Reach."), and the description read cramped. Mobile-only (`≤768px`), desktop/tablet untouched:
