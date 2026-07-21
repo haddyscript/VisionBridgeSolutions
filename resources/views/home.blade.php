@@ -1326,15 +1326,15 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
             {{-- Right: supporting copy + CTAs --}}
             <div class="lg:col-span-6 text-center lg:text-left">
-                <span class="inline-block text-sm font-semibold tracking-widest uppercase mb-3" style="color:#2A9D8F;">In The Spotlight</span>
-                <h2 class="font-display font-bold text-white leading-tight mb-5" style="font-size:clamp(1.9rem,4vw,2.9rem);">
+                <span id="spotlight-kicker" class="inline-block text-sm font-semibold tracking-widest uppercase mb-3" style="color:#2A9D8F;">In The Spotlight</span>
+                <h2 id="spotlight-heading" class="font-display font-bold text-white leading-tight mb-5" style="font-size:clamp(1.9rem,4vw,2.9rem);">
                     Websites That <span class="shimmer-gold">Grow Your Mission</span> or Business
                 </h2>
-                <p class="text-white/80 text-lg leading-relaxed mb-5" style="max-width:34rem;">
+                <p class="spotlight-copy text-white/80 text-lg leading-relaxed mb-5" style="max-width:34rem;">
                     Professional websites that look amazing, work flawlessly, and help you reach
                     more people online — built and maintained by VisionBridge Solutions.
                 </p>
-                <p class="text-white/60 text-base leading-relaxed mb-8" style="max-width:34rem;">
+                <p class="spotlight-copy text-white/60 text-base leading-relaxed mb-8" style="max-width:34rem;">
                     This campaign poster showcases our work for <span class="text-gold font-semibold">Johnny Davis Global Missions</span> —
                     one of the ministries we've helped expand their reach online.
                 </p>
@@ -1349,7 +1349,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         'Easy to Manage',
                         'Ongoing Support',
                     ] as $feature)
-                        <div class="flex items-center gap-3">
+                        <div class="spotlight-feature-item flex items-center gap-3">
                             <span class="shrink-0 w-6 h-6 rounded-full flex items-center justify-center" style="background:rgba(201,168,76,0.16);border:1px solid rgba(201,168,76,0.35);">
                                 <svg class="w-3.5 h-3.5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                             </span>
@@ -2754,6 +2754,56 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                   scrollTrigger: { trigger:el, start:'top 92%', toggleActions: TOGGLE } }
             );
         });
+
+        // ============================================================
+        //  SPOTLIGHT — poster settles into its frame from the left while
+        //  the copy cascades in on the right (kicker sweep → heading rise
+        //  → paragraphs → checklist → CTAs), matching the staggered-cascade
+        //  style already used for Portfolio's header. Previously had no
+        //  ScrollTrigger at all — none of the existing generic reveal
+        //  selectors (.bg-white.rounded-2xl etc.) match this section's
+        //  inline-styled markup, so it just appeared instantly.
+        // ============================================================
+        (function() {
+            const section = document.getElementById('spotlight');
+            if (!section) return;
+            // Desktop only, per request — mobile has its own lighter,
+            // separate entrance-animation system (mobile-design.js) and
+            // #spotlight isn't part of it, so this stays out of its way.
+            if (window.matchMedia('(max-width: 768px)').matches) return;
+
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const frame    = section.querySelector('.spotlight-frame');
+            const badge    = section.querySelector('.spotlight-frame .absolute.z-10');
+            const kicker   = document.getElementById('spotlight-kicker');
+            const heading  = document.getElementById('spotlight-heading');
+            const copyEls  = section.querySelectorAll('.spotlight-copy');
+            const features = section.querySelectorAll('.spotlight-feature-item');
+            const ctas     = section.querySelectorAll('.spotlight-cta-primary, .spotlight-cta-outline');
+            const targets  = [frame, badge, kicker, heading, ...copyEls, ...features, ...ctas].filter(Boolean);
+
+            if (reduceMotion) {
+                gsap.set(targets, { opacity:1, x:0, y:0, scale:1, rotate:0, skewY:0 });
+                return;
+            }
+
+            gsap.set(frame,    { opacity:0, x:-70, rotate:-5, scale:0.92 });
+            gsap.set(badge,    { opacity:0, y:-10 });
+            gsap.set(kicker,   { opacity:0, x:-22, letterSpacing:'0.32em' });
+            gsap.set(heading,  { opacity:0, y:36, skewY:2 });
+            gsap.set(copyEls,  { opacity:0, y:20 });
+            gsap.set(features, { opacity:0, x:-16 });
+            gsap.set(ctas,     { opacity:0, y:16 });
+
+            gsap.timeline({ scrollTrigger: { trigger: section, start: 'top 72%', toggleActions: TOGGLE } })
+                .to(frame,   { opacity:1, x:0, rotate:0, scale:1, duration:0.9, ease:'power3.out' })
+                .to(badge,   { opacity:1, y:0, duration:0.5, ease:'power2.out' }, '-=0.45')
+                .to(kicker,  { opacity:1, x:0, letterSpacing:'0.16em', duration:0.55, ease:'power3.out' }, '-=0.55')
+                .to(heading, { opacity:1, y:0, skewY:0, duration:0.75, ease:'power3.out' }, '-=0.30')
+                .to(copyEls, { opacity:1, y:0, duration:0.55, stagger:0.12, ease:'power2.out' }, '-=0.35')
+                .to(features,{ opacity:1, x:0, duration:0.45, stagger:0.08, ease:'power2.out' }, '-=0.25')
+                .to(ctas,    { opacity:1, y:0, duration:0.5, stagger:0.1, ease:'power2.out' }, '-=0.15');
+        })();
 
         // ============================================================
         //  PARTNERSHIP — zoom-out entrance: header + both cards + the
