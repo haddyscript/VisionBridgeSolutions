@@ -892,25 +892,23 @@
     /* Mission/Vision CTA bar — the only "Get Started" surfaced in this
        section; #mobile-sticky-cta is suppressed while #about is in view
        (mobile-design.js) so it no longer overlaps this card/bar. */
-    /* Phase 16 — a dedicated, self-contained CTA card (icon → heading →
-       subtext → button, all stacked and centered) instead of a horizontal
-       strip, so it reads as intentional rather than an inline afterthought. */
+    /* CTA bar — compact horizontal row (icon, text, button) per the
+       reference mockup, not a tall stacked/centered card. */
     .about-cards-cta-bar {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        text-align: center;
-        gap: 8px;
+        gap: 14px;
         margin-top: 20px;
-        padding: 30px 26px;
+        padding: 18px;
         border-radius: 20px;
         background: linear-gradient(135deg, rgba(21,32,44,0.9) 0%, rgba(15,23,32,0.95) 100%);
         border: 1px solid rgba(201,168,76,0.35);
         box-shadow: 0 8px 24px rgba(0,0,0,0.3);
     }
     .about-cards-cta-icon {
-        width: 46px;
-        height: 46px;
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
         border-radius: 999px;
         display: flex;
         align-items: center;
@@ -918,27 +916,31 @@
         color: #DFC06A;
         border: 1px solid rgba(201,168,76,0.45);
         background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, rgba(201,168,76,0.05) 100%);
-        margin-bottom: 6px;
+    }
+    .about-cards-cta-text {
+        flex: 1;
+        min-width: 0;
     }
     .about-cards-cta-title {
-        font-size: 1.1rem;
-        font-weight: 800;
+        font-size: 0.9rem;
+        font-weight: 700;
         color: #DFC06A;
         line-height: 1.3;
     }
     .about-cards-cta-sub {
-        font-size: 0.85rem;
-        color: rgba(255,255,255,0.65);
-        margin-bottom: 6px;
+        font-size: 0.78rem;
+        color: rgba(255,255,255,0.6);
+        margin-top: 2px;
     }
     .about-cards-cta-btn {
+        flex-shrink: 0;
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 13px 26px;
+        padding: 12px 16px;
         border-radius: 999px;
         font-weight: 700;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         background: linear-gradient(135deg, #C9A84C 0%, #E6C878 50%, #C9A84C 100%);
         color: #15202C;
         white-space: nowrap;

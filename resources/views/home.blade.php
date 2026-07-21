@@ -551,10 +551,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                  floating pill used to cause over the Vision card's text. --}}
             <div class="about-cards-cta-bar md:hidden">
                 <div class="about-cards-cta-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9 12 2"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9 12 2"/></svg>
                 </div>
-                <p class="about-cards-cta-title">Ready to Build<br>Something Amazing?</p>
-                <p class="about-cards-cta-sub">Let's turn your vision into reality.</p>
+                <div class="about-cards-cta-text">
+                    <p class="about-cards-cta-title">Ready to build something amazing together?</p>
+                    <p class="about-cards-cta-sub">Let's turn your vision into reality.</p>
+                </div>
                 <a href="{{ route('intake.create') }}" class="about-cards-cta-btn">
                     Get Started
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
