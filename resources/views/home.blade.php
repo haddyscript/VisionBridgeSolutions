@@ -467,6 +467,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             {{-- Right: Mission & Vision --}}
             <div class="about-cards flex flex-col gap-6">
 
+                {{-- Phase 9: ambient particles drifting in the space around
+                     and between the two cards (not clipped to inside either
+                     card the way #mission-icon's/#vision-icon's own
+                     .about-card-particles are) --}}
+                <div class="about-cards-ambient-particles md:hidden" aria-hidden="true">
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
+
                 {{-- Mission card — light, airy, gold-accented (desktop);
                      mobile gets a dark glowing-bridge photo card instead,
                      see .about-card-photo-bg / .about-card-badge in
