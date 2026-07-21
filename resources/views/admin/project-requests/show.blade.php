@@ -112,18 +112,39 @@
 
                 <div>
                     <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Proposal Document</label>
+
+                    {{-- Unmissable either-way status — previously this was just a
+                         small text link when a file existed and nothing at all
+                         when it didn't, easy to miss either way. --}}
                     @if ($projectRequest->proposal_document_path)
-                        <a href="{{ $projectRequest->proposalDocumentUrl() }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-dark hover:underline mb-2">
-                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                            Current: {{ $projectRequest->proposal_document_original_name }}
-                        </a>
+                        <div class="flex items-center justify-between gap-3 mb-3 rounded-xl border border-teal/30 dark:border-teal/25 bg-teal/8 dark:bg-teal/10 px-4 py-3">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <span class="shrink-0 w-9 h-9 rounded-full flex items-center justify-center bg-teal/15 text-teal-dark">
+                                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                </span>
+                                <div class="min-w-0">
+                                    <p class="text-[0.65rem] font-bold uppercase tracking-wide text-teal-dark">Document on File</p>
+                                    <p class="text-sm font-semibold text-navy dark:text-white truncate">{{ $projectRequest->proposal_document_original_name }}</p>
+                                </div>
+                            </div>
+                            <a href="{{ $projectRequest->proposalDocumentUrl() }}" target="_blank" rel="noopener" class="shrink-0 text-xs font-semibold text-teal-dark hover:underline">View</a>
+                        </div>
+                    @else
+                        <div class="flex items-center gap-2 mb-3 rounded-xl border border-amber-300/60 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-2.5">
+                            <svg class="w-4 h-4 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                            <p class="text-xs font-semibold text-amber-700 dark:text-amber-400">No document uploaded yet</p>
+                        </div>
                     @endif
+
                     <label id="proposal-document-dropzone" for="proposal-document-input"
                            class="flex flex-col items-center justify-center gap-1.5 w-full rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gold dark:hover:border-gold bg-gray-50 dark:bg-gray-900/50 px-4 py-7 text-center cursor-pointer transition-colors">
                         <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M7 16a4 4 0 01-.88-7.9A5 5 0 1115.9 6 5 5 0 0117 15.9M12 12v9m0-9l-3 3m3-3l3 3"/>
                         </svg>
-                        <p class="text-sm text-gray-600 dark:text-gray-300"><span class="font-semibold text-gold-dark">Click to upload</span> or drag and drop</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            <span class="font-semibold text-gold-dark">{{ $projectRequest->proposal_document_path ? 'Click to replace' : 'Click to upload' }}</span>
+                            or drag and drop
+                        </p>
                         <p id="proposal-document-filename" class="text-xs text-gray-400 dark:text-gray-500">PDF, Word, or image — up to 25MB</p>
                         <input type="file" name="proposal_document" id="proposal-document-input" class="sr-only">
                     </label>
