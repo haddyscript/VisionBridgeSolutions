@@ -812,6 +812,10 @@ Boss's mobile-view feedback: the homepage hero (`resources/views/home.blade.php`
 - **Filter bar**: Type (Revision/Content/New Project Request), Status (Not Started/In Progress/Waiting for VisionBridge/Completed), and a Search box matching project name, client name, or item text — a plain GET form with native `<select>`s (auto-submit on change), same pattern as Consultations' sort control, not the styled pill dropdowns used on the separate `/admin/revisions` Revision Management page. A "Clear" link appears once any filter is active.
 - Filtering happens in `WorkOrderController::index()` against the already-merged Upload+ProjectRequest collection (this list was never a real DB table — see §15bb), then re-paginated; filter values are preserved across page links via the paginator's `query` option.
 
+## 23. Branded 403 "Access Restricted" Page (2026-07-21)
+
+An admin without a given section granted (`EnsureUserCanAccessAdminPage`, §restricted-access) used to hit Laravel's bare, unstyled default 403 page — no branding, no way back except the browser's own Back button. New `resources/views/errors/403.blade.php` (same self-contained-page style as the existing `errors/maintenance.blade.php`) shows the same "Ask a super admin to grant it" message inside a branded VisionBridge card, with a **Go Back** button (browser history, falling back to the admin dashboard if there's no history to go back to — e.g. a direct link/bookmark) and a **Go to Dashboard** link. No route/controller changes needed — Laravel automatically resolves `errors/{status}.blade.php` for HTTP exceptions the app's exception handler doesn't otherwise intercept.
+
 ## 22. Mobile Hero — Typography Pass (2026-07-20)
 
 Follow-up to §21's mobile spacing pass, this time the boss's feedback was on the hero heading/description text itself: the heading felt oversized (dominating the viewport) and wrapped onto an awkward third line ("Building Websites." / "Expanding" / "Reach."), and the description read cramped. Mobile-only (`≤768px`), desktop/tablet untouched:
