@@ -619,13 +619,15 @@
     .kpi-card:nth-child(2) { animation-delay: 0.05s; }
     .kpi-card:nth-child(3) { animation-delay: 0.1s; }
     .kpi-card:nth-child(4) { animation-delay: 0.15s; }
-    .team-member-card {
-        animation: team-member-fade-in 0.4s ease-out both;
-    }
-    @keyframes team-member-fade-in {
-        from { opacity: 0; }
-        to   { opacity: 1; }
-    }
+    /* No entrance animation on .team-member-card, deliberately — even an
+       opacity-only CSS `animation` makes an element a containing block for
+       position:fixed descendants while animation-fill-mode:both holds it
+       applied, which breaks both the access modal and the three-dot menu
+       nested inside these cards (both rely on real position:fixed,
+       viewport-relative coordinates). This isn't just a transform problem —
+       opacity/filter/perspective/will-change all trigger the same
+       containing-block behavior per spec. Correctness over a decorative
+       fade here, same as the missing hover-lift above. */
     .team-filter-chip.is-active {
         background-color: rgb(212 175 55 / 0.15);
         border-color: rgb(212 175 55 / 0.5) !important;
