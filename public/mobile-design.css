@@ -654,12 +654,12 @@
        the card's own overflow:hidden (only descendant content is), so this
        reads as a soft radial-gradient-style halo bleeding out past the
        card edges without needing extra unclipped DOM elements. */
-    .about-cards .about-card:nth-child(1) {
+    .about-cards .about-card--mission {
         background: linear-gradient(160deg, rgba(64,48,15,0.92) 0%, rgba(28,20,8,0.95) 45%, rgba(12,10,6,0.97) 100%) !important;
         border: 1px solid rgba(201,168,76,0.35) !important;
         box-shadow: 0 10px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06), 0 0 100px 24px rgba(201,168,76,0.1) !important;
     }
-    .about-cards .about-card:nth-child(2) {
+    .about-cards .about-card--vision {
         background: linear-gradient(180deg, rgba(10,28,30,0.9) 0%, rgba(6,17,21,0.96) 100%) !important;
         border: 1px solid rgba(42,157,143,0.4) !important;
         box-shadow: 0 10px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06), 0 0 100px 24px rgba(42,157,143,0.1) !important;
@@ -737,11 +737,11 @@
         0%, 100% { transform: translate(0, 0) scale(0.85); opacity: var(--op-min, 0.3); }
         50%      { transform: translate(var(--dx, 0), var(--dy, -16px)) scale(1); opacity: var(--op-max, 0.9); }
     }
-    .about-cards .about-card:nth-child(1) .about-card-particles span {
+    .about-cards .about-card--mission .about-card-particles span {
         background: #F2D98C;
         box-shadow: 0 0 6px 1px rgba(242,217,140,0.9);
     }
-    .about-cards .about-card:nth-child(2) .about-card-particles span {
+    .about-cards .about-card--vision .about-card-particles span {
         background: #8FE8DB;
         box-shadow: 0 0 6px 1px rgba(143,232,219,0.9);
     }
@@ -811,12 +811,12 @@
         border-radius: 999px;
         margin-bottom: 10px;
     }
-    .about-cards .about-card:nth-child(1) .about-card-badge {
+    .about-cards .about-card--mission .about-card-badge {
         color: #DFC06A;
         border: 1px solid rgba(201,168,76,0.45);
         background: rgba(201,168,76,0.08);
     }
-    .about-cards .about-card:nth-child(2) .about-card-badge {
+    .about-cards .about-card--vision .about-card-badge {
         color: #6FD8CB;
         border: 1px solid rgba(42,157,143,0.45);
         background: rgba(42,157,143,0.1);
@@ -837,16 +837,16 @@
         border-radius: 2px;
         margin: 8px 0 16px;
     }
-    .about-cards .about-card:nth-child(1) .about-card-underline {
+    .about-cards .about-card--mission .about-card-underline {
         background: #C9A84C;
         box-shadow: 0 0 8px 1px rgba(201,168,76,0.6);
     }
-    .about-cards .about-card:nth-child(2) .about-card-underline {
+    .about-cards .about-card--vision .about-card-underline {
         background: #2A9D8F;
         box-shadow: 0 0 8px 1px rgba(42,157,143,0.6);
     }
-    .about-cards .about-card:nth-child(1) .hl-accent { color: #DFC06A; font-weight: 700; }
-    .about-cards .about-card:nth-child(2) .hl-accent { color: #6FD8CB; font-weight: 700; }
+    .about-cards .about-card--mission .hl-accent { color: #DFC06A; font-weight: 700; }
+    .about-cards .about-card--vision .hl-accent { color: #6FD8CB; font-weight: 700; }
 
     /* Mission/Vision CTA bar — the only "Get Started" surfaced in this
        section; #mobile-sticky-cta is suppressed while #about is in view
