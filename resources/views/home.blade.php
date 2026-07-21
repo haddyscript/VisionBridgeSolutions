@@ -473,7 +473,15 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                      mobile-design.css --}}
                 <div class="about-card rounded-2xl flex-1 relative overflow-hidden" style="padding:22px 24px;background:#FFFFFF;border:1px solid rgba(201,168,76,0.14);box-shadow:0 4px 28px rgba(17,29,51,0.07),0 1px 4px rgba(17,29,51,0.04);">
                     <div class="absolute left-0 top-6 bottom-6 w-0.5 rounded-r-full" style="background:linear-gradient(180deg,#C9A84C 0%,rgba(201,168,76,0.15) 100%);"></div>
+                    {{-- Decorative only, mobile-only, ~8-15% opacity (mobile-design.css):
+                         faded bridge photo, a slow-rotating gold arc, and drifting particles --}}
                     <div class="about-card-photo-bg md:hidden" aria-hidden="true" style="--photo:url('@assetv('image/landing-glowing-bridge.png')');"></div>
+                    <svg class="about-card-arc md:hidden" viewBox="0 0 200 200" aria-hidden="true">
+                        <circle cx="100" cy="100" r="92" fill="none" stroke="#DFC06A" stroke-width="1.4" stroke-dasharray="180 400"/>
+                    </svg>
+                    <div class="about-card-particles md:hidden" aria-hidden="true">
+                        <span></span><span></span><span></span><span></span>
+                    </div>
                     <div id="mission-icon" class="card-icon w-10 h-10 rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(201,168,76,0.18);">
                         <img src="@assetv('image/Our_Mission.png')" alt="Our Mission" loading="lazy" decoding="async" class="hidden md:block" style="width:100%;height:100%;object-fit:cover;">
                         {{-- Mobile-only: the PNG above is dark art made for the
@@ -496,7 +504,18 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                      dark photo card matching the Mission card's treatment --}}
                 <div class="about-card rounded-2xl flex-1 relative overflow-hidden" style="padding:22px 24px;background:linear-gradient(135deg,#F0FAF9 0%,#EDFAF8 100%);border:1px solid rgba(42,157,143,0.18);box-shadow:0 4px 28px rgba(42,157,143,0.08),0 1px 4px rgba(42,157,143,0.04);">
                     <div class="absolute left-0 top-6 bottom-6 w-0.5 rounded-r-full" style="background:linear-gradient(180deg,#2A9D8F 0%,rgba(42,157,143,0.15) 100%);"></div>
-                    <div class="about-card-photo-bg md:hidden" aria-hidden="true" style="--photo:url('@assetv('image/laptop-tillted.png')');"></div>
+                    {{-- Decorative only, mobile-only, ~8-15% opacity (mobile-design.css):
+                         mountain + winding road silhouette, a soft light beam off the
+                         peak, and drifting teal particles — no mountain/road photo
+                         asset exists in public/image, so this is hand-drawn SVG --}}
+                    <svg class="about-card-scenery md:hidden" viewBox="0 0 300 200" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+                        <path d="M0 200 L70 90 L110 140 L160 60 L230 160 L260 120 L300 200 Z" fill="#6FD8CB"/>
+                        <path d="M150 200 C140 160 170 150 155 120 C145 95 175 90 165 60" fill="none" stroke="#6FD8CB" stroke-width="4" stroke-linecap="round"/>
+                    </svg>
+                    <div class="about-card-beam md:hidden" aria-hidden="true"></div>
+                    <div class="about-card-particles md:hidden" aria-hidden="true">
+                        <span></span><span></span><span></span><span></span>
+                    </div>
                     <div id="vision-icon" class="card-icon w-10 h-10 rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(42,157,143,0.22);">
                         <img src="@assetv('image/Our_Vision.png')" alt="Our Vision" loading="lazy" decoding="async" class="hidden md:block" style="width:100%;height:100%;object-fit:cover;">
                         {{-- Mobile-only: same dark-art-on-dark-card issue as

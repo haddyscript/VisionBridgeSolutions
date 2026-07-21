@@ -630,14 +630,90 @@
         position: relative;
         z-index: 1;
     }
+    /* Decorative-only background layer (Mission's bridge photo) — kept at
+       8-15% opacity so it reads as ambient texture, never competes with the
+       copy for contrast. */
     .about-card-photo-bg {
         position: absolute;
         inset: 0;
         z-index: 0;
-        background-image: linear-gradient(90deg, rgba(8,14,24,0.95) 0%, rgba(8,14,24,0.55) 34%, rgba(8,14,24,0.08) 64%, transparent 100%), var(--photo);
-        background-size: cover, cover;
-        background-position: center, center;
-        background-repeat: no-repeat, no-repeat;
+        opacity: 0.12;
+        background-image: var(--photo);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    /* Golden arc (Mission) — a faint slow-rotating ring echoing the bridge's
+       curve, oversized and cropped by the card's own overflow:hidden. */
+    .about-card-arc {
+        position: absolute;
+        top: -70px;
+        right: -90px;
+        width: 240px;
+        height: 240px;
+        z-index: 0;
+        opacity: 0.12;
+        animation: about-card-arc-spin 60s linear infinite;
+    }
+    @keyframes about-card-arc-spin {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+    }
+
+    /* Drifting particles — gold on Mission, teal on Vision (nth-child below).
+       Decorative only: small, blurred, low-opacity dots that gently rise
+       and fade, never fully opaque. */
+    .about-card-particles {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+    }
+    .about-card-particles span {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        filter: blur(0.5px);
+        animation: about-card-particle-float 7s ease-in-out infinite;
+    }
+    .about-card-particles span:nth-child(1) { top: 18%; left: 68%; animation-delay: 0s; }
+    .about-card-particles span:nth-child(2) { top: 52%; left: 84%; animation-delay: 1.4s; }
+    .about-card-particles span:nth-child(3) { top: 74%; left: 58%; animation-delay: 2.8s; }
+    .about-card-particles span:nth-child(4) { top: 34%; left: 92%; animation-delay: 4.2s; }
+    @keyframes about-card-particle-float {
+        0%, 100% { transform: translateY(0); opacity: 0.06; }
+        50%      { transform: translateY(-14px); opacity: 0.15; }
+    }
+    .about-cards .about-card:nth-child(1) .about-card-particles span { background: #DFC06A; }
+    .about-cards .about-card:nth-child(2) .about-card-particles span { background: #6FD8CB; }
+
+    /* Mountain + winding road (Vision) — no matching photo asset exists in
+       public/image, so this is hand-drawn SVG at the same decorative-only
+       opacity as Mission's photo/arc. */
+    .about-card-scenery {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        opacity: 0.12;
+    }
+
+    /* Light beam off the mountain peak, matching .about-card-scenery's path
+       (peak sits roughly 20% in from the right at ~30% height). */
+    .about-card-beam {
+        position: absolute;
+        top: 0;
+        right: 24%;
+        width: 2px;
+        height: 65%;
+        z-index: 0;
+        opacity: 0.15;
+        filter: blur(3px);
+        background: linear-gradient(180deg, rgba(111,216,203,0.6) 0%, transparent 100%);
     }
     .about-card-badge {
         display: inline-block;
