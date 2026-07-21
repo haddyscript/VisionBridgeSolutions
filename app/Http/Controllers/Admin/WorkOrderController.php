@@ -116,11 +116,19 @@ class WorkOrderController extends Controller
             ],
         );
 
-        return view('admin.work-orders.index', [
+        $data = [
             'workOrders' => $workOrders,
             'type' => $type,
             'status' => $status,
             'search' => $search,
-        ]);
+        ];
+
+        // Filter/pagination requests fetch just the results partial (table +
+        // pagination) so the page never fully reloads — see index.blade.php's
+        // loadResults(). $request->ajax() checks for X-Requested-With, which
+        // that fetch() call sets explicitly.
+        return $request->ajax()
+            ? view('admin.work-orders._results', $data)
+            : view('admin.work-orders.index', $data);
     }
 }
