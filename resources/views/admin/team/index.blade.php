@@ -364,7 +364,7 @@
                                 </div>
                                 <div class="min-w-0">
                                     <div class="flex flex-wrap items-center gap-1.5">
-                                        <span class="text-lg font-semibold text-navy dark:text-white whitespace-nowrap">{{ $admin->name }}</span>
+                                        <span class="text-base font-semibold text-navy dark:text-white whitespace-nowrap">{{ $admin->name }}</span>
                                         @if ($admin->is($me))
                                             <span class="text-xs text-gray-400 dark:text-gray-500">(you)</span>
                                         @endif
