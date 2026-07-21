@@ -33,11 +33,17 @@ class SatisfactionSurveyController extends Controller
             default => $submitted->orderByDesc('submitted_at'),
         };
 
+        $activeTotal = $base->clone()->whereNull('archived_at')->count();
+
         return view('admin.satisfaction-surveys.index', [
             'surveys' => $submitted->paginate(15)->withQueryString(),
             'averageRating' => round($base->clone()->whereNull('archived_at')->avg('rating') ?? 0, 1),
-            'totalSubmitted' => $base->clone()->whereNull('archived_at')->count(),
+            'totalSubmitted' => $activeTotal,
             'archivedCount' => $base->clone()->whereNotNull('archived_at')->count(),
+            // No "would recommend" field exists on the model — this is a
+            // real, computed proxy (4-5★ share), not a fabricated metric.
+            'positiveReviewPercent' => $activeTotal > 0 ? (int) round($base->clone()->whereNull('archived_at')->where('rating', '>=', 4)->count() / $activeTotal * 100) : 0,
+            'fiveStarPercent' => $activeTotal > 0 ? (int) round($base->clone()->whereNull('archived_at')->where('rating', 5)->count() / $activeTotal * 100) : 0,
             'search' => $search,
             'sort' => $sort,
             'showArchived' => $showArchived,

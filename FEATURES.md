@@ -822,6 +822,16 @@ On a Project Request's detail page (`admin/project-requests/{projectRequest}`), 
 
 Each developer card's "History (N)" control (completed Work Orders) used to be plain link-style text that expanded/collapsed the list inline, pushing the rest of that card's grid around and easy to mistake for just another label rather than something clickable. It's now a real bordered button, and clicking it opens a single shared modal with the developer's name and full completed-item list instead of expanding in place — the per-developer item list still renders server-side same as before, just inside an inert `<template>` that JS clones into the modal on click rather than a hidden expand/collapse `<div>`.
 
+## 26. Satisfaction Surveys — Premium Dashboard Redesign (2026-07-21)
+
+UI/UX-only redesign of `/admin/satisfaction-surveys` — same search/sort/archive/feature/delete functionality and routes as before, presented as a premium SaaS dashboard instead of a plain list:
+
+- **KPI cards** (Average Rating, Responses, Positive Reviews, Five-Star Reviews) plus a gold-accented summary banner above the toolbar.
+- **"Positive Reviews" is a real computed metric** (share of active reviews rated 4★ or 5★, `SatisfactionSurveyController::index()`), not the brief's originally-requested "Recommendation Rate" — no would-recommend field exists anywhere on `SatisfactionSurvey`, and showing a fabricated "100%" would just be fake data. Kept it honest instead.
+- **Review cards** now show a project-initial avatar, star-rating badge with a text label (Excellent/Good/Fair/Needs Attention), and a "Read Full Review" toggle for long feedback (manual `-webkit-line-clamp`, not Tailwind's `line-clamp` utility, so it doesn't depend on which Tailwind build the page's CDN `<script>` happens to load).
+- **Keyword highlighting** — feedback text gets a subtle gold highlight on whole-word matches of Outstanding/Excellent/Professional/Reliable/Highly Recommend/Amazing/Fast; the text is HTML-escaped first, then only `<span>` wrapper tags are inserted around already-safe text, so this can't introduce an XSS vector through review content.
+- Grid changed from 1-column-until-`lg` to 2-columns-from-`md`, per the requested breakpoint behavior.
+
 ## 23. Branded 403 "Access Restricted" Page (2026-07-21)
 
 An admin without a given section granted (`EnsureUserCanAccessAdminPage`, §restricted-access) used to hit Laravel's bare, unstyled default 403 page — no branding, no way back except the browser's own Back button. New `resources/views/errors/403.blade.php` (same self-contained-page style as the existing `errors/maintenance.blade.php`) shows the same "Ask a super admin to grant it" message inside a branded VisionBridge card, with a **Go Back** button and a **Go to Dashboard** link. Both route to `AdminPermissions::adminLandingRoute()` (the same helper that already picks a restricted admin's post-login landing page — §restricted-access) rather than hardcoding `admin.dashboard`, which is itself a restrictable section — an admin without the "All Projects" section granted would otherwise land back on another 403 after clicking either button. No route/controller changes needed — Laravel automatically resolves `errors/{status}.blade.php` for HTTP exceptions the app's exception handler doesn't otherwise intercept.
