@@ -635,9 +635,9 @@
        still read as an ambient glow against the dark card, instead of
        flattening into invisibility the way a plain low-opacity photo does. */
     .about-card-photo-bg {
-        position: absolute;
-        inset: 0;
-        z-index: 0;
+        position: absolute !important;
+        inset: 0 !important;
+        z-index: 0 !important;
         opacity: 0.15;
         mix-blend-mode: screen;
         background-image: var(--photo);
@@ -651,12 +651,12 @@
        off-canvas by the card's own overflow:hidden, so it reads as a
        deliberate corner accent rather than a stray floating line. */
     .about-card-arc {
-        position: absolute;
-        top: -60px;
-        right: -60px;
-        width: 150px;
-        height: 150px;
-        z-index: 0;
+        position: absolute !important;
+        top: -60px !important;
+        right: -60px !important;
+        width: 150px !important;
+        height: 150px !important;
+        z-index: 0 !important;
         opacity: 0.15;
         animation: about-card-arc-spin 60s linear infinite;
     }
@@ -669,9 +669,9 @@
        Decorative only: small, blurred, low-opacity dots that gently rise
        and fade, never fully opaque. */
     .about-card-particles {
-        position: absolute;
-        inset: 0;
-        z-index: 0;
+        position: absolute !important;
+        inset: 0 !important;
+        z-index: 0 !important;
         overflow: hidden;
         pointer-events: none;
     }
@@ -699,12 +699,14 @@
        bottom of the card as a shallow band (not inset:0/cover) so it reads
        as a distant horizon silhouette instead of one giant zoomed-in peak. */
     .about-card-scenery {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 42%;
-        z-index: 0;
+        position: absolute !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: auto !important;
+        width: auto !important;
+        height: 42% !important;
+        z-index: 0 !important;
         opacity: 0.15;
     }
 
@@ -712,12 +714,12 @@
        matching .about-card-scenery's path), shining down from the top of
        the card. */
     .about-card-beam {
-        position: absolute;
-        top: 0;
-        left: 37%;
-        width: 2px;
-        height: 55%;
-        z-index: 0;
+        position: absolute !important;
+        top: 0 !important;
+        left: 37% !important;
+        width: 2px !important;
+        height: 55% !important;
+        z-index: 0 !important;
         opacity: 0.18;
         filter: blur(3px);
         background: linear-gradient(180deg, rgba(111,216,203,0.6) 0%, transparent 100%);
