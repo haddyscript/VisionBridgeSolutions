@@ -17,7 +17,47 @@ class EmailTemplateController extends Controller
         return view('admin.email-templates.index', [
             'templates' => $templates,
             'selected' => $selected,
+            'categories' => $this->templateCategories(),
         ]);
+    }
+
+    /**
+     * Groups each template file under a human-readable category purely for
+     * the search/filter UI — this has no bearing on rendering or sending.
+     * Anything not explicitly listed falls back to "Other" rather than
+     * erroring, so a newly-added template file doesn't break this page.
+     */
+    protected function templateCategories(): array
+    {
+        $map = [
+            'Account' => ['account-email-changed', 'account-password-changed', 'new-client-registration', 'welcome-client'],
+            'Onboarding' => ['intake-confirmation', 'new-intake-submission', 'new-client-upload', 'questionnaire-completed', 'service-agreement-signed'],
+            'Consultations' => ['consultation-cancelled', 'consultation-confirmed', 'consultation-received', 'consultation-rescheduled', 'new-consultation'],
+            'Payments & Billing' => [
+                'admin-payment-notification', 'care-plan-payment-reminder', 'invoice-sent', 'new-refund-request',
+                'payment-failed', 'payment-receipt', 'phased-payment-plan', 'refund-request-approved',
+                'refund-request-declined', 'subscription-created', 'subscription-receipt',
+                'subscription-renewal-reminder', 'subscription-status-alert',
+            ],
+            'Projects' => [
+                'new-project-request', 'project-approved', 'project-canceled', 'project-launched',
+                'project-quote-ready', 'project-request-status-changed', 'project-restored', 'project-suspended',
+            ],
+            'Revisions & Content' => ['client-reply', 'revision-status-changed', 'upload-replied'],
+            'Support Tickets' => ['new-support-ticket', 'support-ticket-client-reply', 'support-ticket-reply'],
+            'Work Orders' => ['work-order-assigned', 'work-order-instructions', 'work-order-internal-update'],
+            'FaithStack' => ['faithstack-new-client', 'faithstack-payment-reminder'],
+            'System' => ['new-contact-message', 'system-alert'],
+        ];
+
+        $byTemplate = [];
+        foreach ($map as $category => $names) {
+            foreach ($names as $name) {
+                $byTemplate[$name] = $category;
+            }
+        }
+
+        return $byTemplate;
     }
 
     public function preview(string $template)
