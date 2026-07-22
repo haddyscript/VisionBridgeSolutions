@@ -312,8 +312,11 @@
      assigned_developer_id data (see DeveloperController) — no new tables.
      Recent Activity in particular shows "what's recently changed" (most
      recently touched items), not a full audit trail of every past change,
-     since there's no event log to draw a true history from.
+     since there's no event log to draw a true history from. Super-admin
+     only — a regular admin/developer job-title account doesn't need
+     team-wide performance visibility into every other developer.
      ═══════════════════════════════════════════════════════════════════════ --}}
+@if (auth()->user()->isSuperAdmin())
 <div class="mt-10 space-y-6">
 
     {{-- Recent Activity --}}
@@ -427,6 +430,7 @@
         </div>
     </div>
 </div>
+@endif
 
 {{-- Full-page reload still happens on assign (see the form below) — this
      overlay just covers the wait with a spinner instead of the dropdown
