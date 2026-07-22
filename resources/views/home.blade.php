@@ -99,7 +99,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 <style>
     #story-overture{position:relative;background:#0B0F17;}
     /* Scenes 1–3 pin + scrub inside this 300vh track; Scene 4 (project cards) follows un-pinned. */
-    .story-pin-track{position:relative;height:500vh;}
+    .story-pin-track{position:relative;height:600vh;}
     /* GSAP ScrollTrigger pins this stage with pinType:'fixed', which works even
        though the layout sets overflow-x:hidden on html/body (that only disables
        CSS position:sticky, not ScrollTrigger's fixed pin). */
@@ -208,6 +208,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     .story-cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;}
     @media (max-width:860px){ .story-cards-grid{grid-template-columns:1fr;gap:14px;} }
 
+    /* Care Plans scene — the infographic image, sized to fit one pinned screen */
+    .story-scene-plans{width:min(94vw,1120px);}
+    .story-plans-img{display:block;width:100%;height:auto;max-height:86vh;object-fit:contain;
+        border-radius:16px;box-shadow:0 30px 90px rgba(0,0,0,.55),0 0 0 1px rgba(201,168,76,.18);}
+
     /* Reduced motion — no pin/scrub; every scene becomes a normal stacked block
        so all content (including the project cards) stays reachable. */
     .story-reduced .story-pin-track{height:auto;}
@@ -240,6 +245,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         var s2    = ov.querySelector('[data-scene="2"]');
         var s3    = ov.querySelector('[data-scene="3"]');
         var s4    = ov.querySelector('[data-scene="4"]');
+        var s5    = ov.querySelector('[data-scene="5"]');
         var dots  = ov.querySelectorAll('.story-dot');
         var cue   = ov.querySelector('.story-cue');
 
@@ -254,9 +260,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         // centring is expressed as xPercent/yPercent (not a CSS translate GSAP
         // would otherwise overwrite). transformPerspective gives each scene its
         // own 3D depth for the z / rotation "camera" moves.
-        gsap.set([s0, s1, s2, s3, s4], { xPercent:-50, yPercent:-50, transformPerspective:1400, transformOrigin:'center center', force3D:true });
+        gsap.set([s0, s1, s2, s3, s4, s5], { xPercent:-50, yPercent:-50, transformPerspective:1400, transformOrigin:'center center', force3D:true });
         gsap.set(s0, { autoAlpha:1, scale:1, z:0, filter:'blur(0px)' });
-        gsap.set([s1, s2, s3, s4], { autoAlpha:0, scale:0.82, z:-380, filter:'blur(12px)' });
+        gsap.set([s1, s2, s3, s4, s5], { autoAlpha:0, scale:0.82, z:-380, filter:'blur(12px)' });
 
         // One pinned, scrubbed timeline. ScrollTrigger pins the stage to the
         // viewport (pinType:'fixed' — immune to the layout's overflow-x:hidden)
@@ -273,7 +279,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 invalidateOnRefresh: true,
                 onUpdate: function(self){
                     var p = self.progress;
-                    var active = Math.min(4, Math.floor(p * 5));
+                    var active = Math.min(5, Math.floor(p * 6));
                     for(var i=0;i<dots.length;i++){ dots[i].classList.toggle('is-active', i === active); }
                     if(cue){ cue.style.opacity = p > 0.03 ? 0 : 1; }
                 }
@@ -296,7 +302,23 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             // Scene 4 (cards 01–02) out, Scene 5 (cards 03–04) rises in
             .to(s3, { scale:1.12, z:200, y:-50, filter:'blur(11px)', autoAlpha:0, duration:1, ease:'power1.inOut' }, 4.2)
             .fromTo(s4, { autoAlpha:0, scale:0.85, z:-340, y:70, filter:'blur(11px)' },
-                        { autoAlpha:1, scale:1, z:0, y:0, filter:'blur(0px)', duration:1, ease:'power1.inOut' }, 4.6);
+                        { autoAlpha:1, scale:1, z:0, y:0, filter:'blur(0px)', duration:1, ease:'power1.inOut' }, 4.6)
+            // Scene 5 (cards 03–04) out, Scene 6 (Care Plans) rises in
+            .to(s4, { scale:1.12, z:200, y:-50, filter:'blur(11px)', autoAlpha:0, duration:1, ease:'power1.inOut' }, 5.6)
+            .fromTo(s5, { autoAlpha:0, scale:0.85, z:-340, rotationY:-12, filter:'blur(12px)' },
+                        { autoAlpha:1, scale:1, z:0, rotationY:0, filter:'blur(0px)', duration:1, ease:'power1.inOut' }, 6.0);
+
+        // Entry transition — as the overture scrolls up out of the Hero, the
+        // logo scene spins + unblurs into place (rotating blur reveal) before
+        // the pin begins. It runs across the [overture enters → pin starts] zone
+        // and finishes at the exact "clear" state the pinned timeline expects.
+        gsap.fromTo(s0,
+            { rotation: 16, scale: 0.66, filter: 'blur(26px)', autoAlpha: 0 },
+            {
+                rotation: 0, scale: 1, filter: 'blur(0px)', autoAlpha: 1, ease: 'none',
+                scrollTrigger: { trigger: ov, start: 'top bottom', end: 'top top', scrub: true },
+            }
+        );
 
         // Progress rail: visible while the overture (its pin track) is on screen.
         var rail = ov.querySelector('.story-progress');
@@ -613,6 +635,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         <span class="story-dot"></span>
         <span class="story-dot"></span>
         <span class="story-dot"></span>
+        <span class="story-dot"></span>
     </div>
     {{-- Scenes 1–3: pinned + scrubbed inside this track (see script). --}}
     <div class="story-pin-track">
@@ -809,6 +832,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             </div>
         </div>
         @endforeach
+
+        {{-- SCENE 6 — Website Care Plans (infographic image) --}}
+        <div class="story-scene story-scene-plans" data-scene="5" style="opacity:0;">
+            <img class="story-plans-img" src="@assetv('image/care-plan.jpeg')"
+                 alt="VisionBridge Solutions Website Care Plans — Essential $59/mo, Growth $149/mo, Elite $249/mo">
+        </div>
 
         {{-- scroll cue --}}
         <div class="story-cue" aria-hidden="true">
