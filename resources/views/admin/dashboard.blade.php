@@ -22,6 +22,13 @@
         // emerald, distinct from the teal "Launched" badge.
         'maintenance' => 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300',
     ];
+    $statusDots = [
+        'onboarding'  => 'bg-gold',
+        'in_progress' => 'bg-navy dark:bg-white',
+        'review'      => 'bg-indigo-400',
+        'launched'    => 'bg-teal',
+        'maintenance' => 'bg-emerald-500',
+    ];
 @endphp
 
 {{-- Controls: search, status filter, new project --}}
@@ -33,13 +40,19 @@
         <input type="text" id="project-search" placeholder="Search client, email, or project..." autocomplete="off"
                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark dark:text-white pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
     </div>
-    <select id="project-status-filter"
-            class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
-        <option value="">All statuses</option>
-        @foreach ($statusLabels as $key => $label)
-            <option value="{{ $key }}">{{ $label }}</option>
-        @endforeach
-    </select>
+    <div class="w-full sm:w-52 shrink-0">
+        @include('admin._dropdown', [
+            'name' => 'status_filter',
+            'domId' => 'project-status-filter',
+            'options' => collect($statusLabels)->map(fn ($label, $key) => [
+                'value' => $key,
+                'label' => $label,
+                'dot' => $statusDots[$key] ?? 'bg-gray-400',
+            ])->values()->all(),
+            'selected' => '',
+            'placeholder' => 'All Statuses',
+        ])
+    </div>
     <a href="{{ route('admin.intake-submissions.index') }}"
        title="New projects start from an intake submission"
        class="inline-flex items-center justify-center gap-1.5 shrink-0 bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
@@ -137,7 +150,7 @@
     <script>
         (function () {
             const search = document.getElementById('project-search');
-            const statusFilter = document.getElementById('project-status-filter');
+            const statusFilter = document.getElementById('project-status-filter-input');
             const emptyRow = document.getElementById('projects-empty-filter');
             const rows = Array.from(document.querySelectorAll('#projects-table tbody tr[data-search]'));
 
