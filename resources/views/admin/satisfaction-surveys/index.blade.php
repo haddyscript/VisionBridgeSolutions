@@ -118,12 +118,19 @@
                 <input type="text" name="search" value="{{ $search }}" placeholder="Search by client, project, or review content…"
                        class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark dark:text-white pl-10 pr-4 py-2.5 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition-shadow">
             </div>
-            <select name="sort" onchange="this.form.requestSubmit()"
-                    class="rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark dark:text-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition-shadow">
-                <option value="newest" {{ $sort === 'newest' ? 'selected' : '' }}>Newest</option>
-                <option value="highest" {{ $sort === 'highest' ? 'selected' : '' }}>Highest Rating</option>
-                <option value="lowest" {{ $sort === 'lowest' ? 'selected' : '' }}>Lowest Rating</option>
-            </select>
+            <div class="w-full sm:w-48 shrink-0">
+                @include('admin._dropdown', [
+                    'name' => 'sort',
+                    'domId' => 'survey-sort',
+                    'options' => [
+                        ['value' => 'newest', 'label' => 'Newest', 'dot' => 'bg-indigo-400'],
+                        ['value' => 'highest', 'label' => 'Highest Rating', 'dot' => 'bg-gold'],
+                        ['value' => 'lowest', 'label' => 'Lowest Rating', 'dot' => 'bg-gray-400'],
+                    ],
+                    'selected' => $sort,
+                    'autoSubmit' => true,
+                ])
+            </div>
             <button type="submit" class="px-5 py-2.5 bg-navy hover:bg-navy-light text-white text-sm font-semibold rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
                 Search
             </button>
