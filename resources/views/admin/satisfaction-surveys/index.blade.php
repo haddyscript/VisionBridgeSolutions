@@ -106,8 +106,12 @@
     </div>
 </div>
 
-{{-- SECTION 3 — toolbar --}}
-<div class="bg-white/90 dark:bg-navy/90 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 mb-8">
+{{-- SECTION 3 — toolbar. No backdrop-blur-sm here (deliberately) — this now
+     wraps the Sort dropdown, whose menu is real position:fixed, and per spec
+     backdrop-filter on an ancestor becomes the containing block for a fixed
+     descendant instead of the viewport, breaking its coordinates. Same class
+     of bug already documented/fixed on the Team and Developers pages. --}}
+<div class="bg-white/90 dark:bg-navy/90 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 mb-8">
     <div class="flex flex-col sm:flex-row sm:items-center gap-2.5">
         <form method="GET" action="{{ route('admin.satisfaction-surveys.index') }}" class="flex-1 flex flex-col sm:flex-row gap-2.5">
             @if ($showArchived)
