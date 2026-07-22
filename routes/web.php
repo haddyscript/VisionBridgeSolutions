@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\ServiceAgreementController as AdminServiceAgreeme
 use App\Http\Controllers\Admin\PartnerPayoutController as AdminPartnerPayoutController;
 use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\Admin\TeamController as AdminTeamController;
+use App\Http\Controllers\Admin\TwoFactorController as AdminTwoFactorController;
 use App\Http\Controllers\Admin\UploadApprovalController;
 use App\Http\Controllers\Admin\WorkOrderController as AdminWorkOrderController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -374,6 +375,11 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::get('/team', [AdminTeamController::class, 'index'])->name('team.index');
     Route::patch('/team/profile', [AdminTeamController::class, 'updateProfile'])->name('team.profile.update');
     Route::patch('/team/password', [AdminTeamController::class, 'updatePassword'])->name('team.password.update');
+
+    Route::get('/two-factor', [AdminTwoFactorController::class, 'show'])->name('two-factor.show');
+    Route::post('/two-factor/confirm', [AdminTwoFactorController::class, 'confirm'])->name('two-factor.confirm');
+    Route::post('/two-factor/disable', [AdminTwoFactorController::class, 'disable'])->name('two-factor.disable');
+    Route::post('/two-factor/recovery-codes', [AdminTwoFactorController::class, 'regenerateRecoveryCodes'])->name('two-factor.recovery-codes');
 
     Route::middleware('super-admin')->group(function () {
         Route::post('/team', [AdminTeamController::class, 'store'])->name('team.store');

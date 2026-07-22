@@ -214,18 +214,20 @@
                 </form>
             </details>
 
-            {{-- Not implemented yet — shown honestly as disabled rows,
-                 not faked as working. --}}
-            <div class="flex items-center gap-3.5 px-5 py-4 opacity-60 cursor-not-allowed">
-                <span class="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 flex items-center justify-center shrink-0">
-                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <a href="{{ route('admin.two-factor.show') }}"
+               class="flex items-center gap-3.5 px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
+                <span class="w-9 h-9 rounded-xl {{ $me->hasTwoFactorEnabled() ? 'bg-teal/10 text-teal-dark' : 'bg-gold/10 text-gold-dark' }} flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                 </span>
                 <span class="min-w-0 flex-1">
-                    <span class="block text-sm font-semibold text-gray-500 dark:text-gray-400">Two-Factor Authentication</span>
-                    <span class="block text-xs text-gray-500 dark:text-gray-400 mt-0.5">Add an extra layer of login security.</span>
+                    <span class="block text-sm font-semibold text-navy dark:text-white">Two-Factor Authentication</span>
+                    <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">Add an extra layer of login security.</span>
                 </span>
-                <span class="text-[0.65rem] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 shrink-0">Coming Soon</span>
-            </div>
+                @if ($me->hasTwoFactorEnabled())
+                    <span class="text-[0.65rem] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-teal/10 text-teal-dark shrink-0">Enabled</span>
+                @endif
+                <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
 
             <div class="flex items-center gap-3.5 px-5 py-4 opacity-60 cursor-not-allowed">
                 <span class="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 flex items-center justify-center shrink-0">
