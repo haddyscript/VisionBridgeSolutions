@@ -54,7 +54,10 @@ class TeamController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $request->user()->id],
+            'notification_email' => ['nullable', 'string', 'email', 'max:255'],
         ]);
+
+        $validated['notification_email'] = $validated['notification_email'] ?: null;
 
         $request->user()->update($validated);
 

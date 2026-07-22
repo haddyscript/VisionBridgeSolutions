@@ -155,6 +155,12 @@
                         <input type="email" name="email" value="{{ old('email', $me->email) }}" required
                                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-navy-dark dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                     </div>
+                    <div>
+                        <label class="block text-xs font-medium text-navy dark:text-white mb-1">Recovery/Notification Email <span class="text-gray-400 font-normal">(optional)</span></label>
+                        <input type="email" name="notification_email" value="{{ old('notification_email', $me->notification_email) }}" placeholder="Leave blank to use the email above"
+                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-navy-dark dark:text-white dark:placeholder-gray-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                        <p class="text-xs text-gray-400 mt-1">Where password-reset and account-recovery emails actually get delivered — set this if the email above isn't a real inbox you check.</p>
+                    </div>
                     <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
                         Save Profile
                     </button>

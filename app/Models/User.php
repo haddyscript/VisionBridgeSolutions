@@ -22,6 +22,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
+        'notification_email',
         'phone',
         'password',
         'role',
@@ -245,6 +246,21 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isDarkTheme(): bool
     {
         return $this->theme === 'dark';
+    }
+
+    /**
+     * Where Laravel's own Notification system (password reset, email
+     * verification) actually delivers mail — separate from `email`, which
+     * stays the login/identity field. Lets an account whose login email
+     * isn't a real inbox (e.g. a shared/technical account) still receive
+     * account-recovery mail somewhere real, without changing who they log
+     * in as. Only affects Notification-based mail (`$user->notify(...)`);
+     * the many `Mail::to($user->email)->send(...)` calls elsewhere in the
+     * app are unaffected and still go straight to `email`.
+     */
+    public function routeNotificationForMail($notification = null): string
+    {
+        return $this->notification_email ?: $this->email;
     }
 
     public function getOrCreateStripeCustomerId(): string
