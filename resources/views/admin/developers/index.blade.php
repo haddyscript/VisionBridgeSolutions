@@ -307,26 +307,124 @@
 </div>
 
 {{-- ═══════════════════════════════════════════════════════════════════════
-     SECTION 17 — Future placeholders. Visual only, clearly marked, no
-     backend behind any of these yet.
+     SECTION 17 — Recent Activity, Developer Timeline, Performance Analytics.
+     All three are derived purely from existing created_at/completed_at/
+     assigned_developer_id data (see DeveloperController) — no new tables.
+     Recent Activity in particular shows "what's recently changed" (most
+     recently touched items), not a full audit trail of every past change,
+     since there's no event log to draw a true history from.
      ═══════════════════════════════════════════════════════════════════════ --}}
-<div class="mt-10">
-    <p class="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">Coming Soon</p>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        @foreach ([
-            ['label' => 'Recent Activity', 'desc' => 'A live feed of assignment and status changes.', 'icon' => 'M13 10V3L4 14h7v7l9-11h-7z'],
-            ['label' => 'Developer Timeline', 'desc' => 'Historical workload trends per developer.', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-9-4h.01M9 16h.01'],
-            ['label' => 'Performance Analytics', 'desc' => 'Completion rate and turnaround charts.', 'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
-        ] as $placeholder)
-            <div class="rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30 px-5 py-6 text-center opacity-70">
-                <div class="w-10 h-10 rounded-xl bg-white dark:bg-navy shadow-sm flex items-center justify-center mx-auto mb-3">
-                    <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="{{ $placeholder['icon'] }}"/></svg>
-                </div>
-                <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">{{ $placeholder['label'] }}</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{{ $placeholder['desc'] }}</p>
-                <span class="inline-block mt-2 text-[0.6rem] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400">Coming Soon</span>
+<div class="mt-10 space-y-6">
+
+    {{-- Recent Activity --}}
+    <div class="bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center gap-2 mb-4">
+            <svg class="w-4.5 h-4.5 text-gold-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <h3 class="font-bold text-navy dark:text-white">Recent Activity</h3>
+        </div>
+        @if ($recentActivity->isEmpty())
+            <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-6">Nothing assigned to a developer yet.</p>
+        @else
+            <div class="divide-y divide-gray-100 dark:divide-gray-700">
+                @foreach ($recentActivity as $item)
+                    <a href="{{ $item['url'] }}" class="flex items-center justify-between gap-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700/40 -mx-2 px-2 rounded-lg transition-colors">
+                        <div class="min-w-0">
+                            <p class="text-sm text-navy dark:text-white truncate">
+                                <span class="font-semibold">{{ $item['developer_name'] ?? 'Unassigned' }}</span>
+                                — {{ $item['type'] }} for {{ $item['client_name'] }}
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $item['project_name'] }}</p>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $statusColors[$item['developer_status']] ?? 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400' }}">
+                                {{ \App\Models\Upload::DEVELOPER_STATUSES[$item['developer_status']] ?? 'Not Started' }}
+                            </span>
+                            <span class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">{{ $item['updated_at']->diffForHumans() }}</span>
+                        </div>
+                    </a>
+                @endforeach
             </div>
-        @endforeach
+        @endif
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {{-- Developer Timeline --}}
+        <div class="bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
+            <div class="flex items-center gap-2 mb-4">
+                <svg class="w-4.5 h-4.5 text-gold-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-9-4h.01M9 16h.01"/></svg>
+                <h3 class="font-bold text-navy dark:text-white">Developer Timeline</h3>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Completed Work Orders per month, last {{ count($timelineMonths) }} months.</p>
+            @if ($roster->isEmpty())
+                <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-6">No developers yet.</p>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                                <th class="py-2 pr-3">Developer</th>
+                                @foreach ($timelineMonths as $month)
+                                    <th class="py-2 px-2 text-center whitespace-nowrap">{{ $month }}</th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                            @foreach ($roster as $row)
+                                <tr>
+                                    <td class="py-2 pr-3 font-medium text-navy dark:text-white whitespace-nowrap">{{ $row['developer']->name }}</td>
+                                    @foreach ($row['timeline'] as $count)
+                                        <td class="py-2 px-2 text-center {{ $count > 0 ? 'text-navy dark:text-white font-semibold' : 'text-gray-300 dark:text-gray-600' }}">{{ $count }}</td>
+                                    @endforeach
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
+
+        {{-- Performance Analytics --}}
+        <div class="bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
+            <div class="flex items-center gap-2 mb-4">
+                <svg class="w-4.5 h-4.5 text-gold-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <h3 class="font-bold text-navy dark:text-white">Performance Analytics</h3>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Completion rate and average turnaround, all-time.</p>
+            @if ($roster->isEmpty())
+                <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-6">No developers yet.</p>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                                <th class="py-2 pr-3">Developer</th>
+                                <th class="py-2 px-2 text-center">Completed</th>
+                                <th class="py-2 px-2 text-center">Rate</th>
+                                <th class="py-2 pl-2 text-right">Avg. Turnaround</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                            @foreach ($roster as $row)
+                                <tr>
+                                    <td class="py-2 pr-3 font-medium text-navy dark:text-white whitespace-nowrap">{{ $row['developer']->name }}</td>
+                                    <td class="py-2 px-2 text-center text-gray-700 dark:text-gray-300">{{ $row['performance']['completed'] }} / {{ $row['performance']['total'] }}</td>
+                                    <td class="py-2 px-2 text-center">
+                                        @if ($row['performance']['completion_rate'] !== null)
+                                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $row['performance']['completion_rate'] >= 75 ? 'bg-teal/10 text-teal-dark' : ($row['performance']['completion_rate'] >= 40 ? 'bg-gold/15 text-gold-dark' : 'bg-red-50 dark:bg-red-500/10 text-red-500') }}">{{ $row['performance']['completion_rate'] }}%</span>
+                                        @else
+                                            <span class="text-gray-300 dark:text-gray-600">—</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-2 pl-2 text-right text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                                        {{ $row['performance']['avg_turnaround_days'] !== null ? $row['performance']['avg_turnaround_days'].' days' : '—' }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
     </div>
 </div>
 
