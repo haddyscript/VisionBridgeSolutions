@@ -28,9 +28,9 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
         </svg>
         <input type="text" id="submission-search" placeholder="Search organization or contact..." autocomplete="off"
-               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark dark:text-white pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
     </div>
-    <div id="submission-status-tabs" class="inline-flex flex-wrap items-center gap-1 bg-gray-100 dark:bg-gray-900 rounded-lg p-1 shrink-0">
+    <div id="submission-status-tabs" class="inline-flex flex-wrap items-center gap-1 bg-gray-100 dark:bg-navy-dark rounded-lg p-1 shrink-0">
         <button type="button" data-status-tab="" class="submission-tab is-active px-3 py-1.5 rounded-md text-xs font-semibold transition-colors">All Submissions</button>
         @foreach ($statusLabels as $key => $label)
             <button type="button" data-status-tab="{{ $key }}" class="submission-tab px-3 py-1.5 rounded-md text-xs font-semibold transition-colors">{{ $label }}</button>
@@ -39,13 +39,13 @@
 </div>
 
 @if ($submissions->isEmpty())
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
         <p class="text-gray-500 dark:text-gray-400">No intake submissions yet.</p>
     </div>
 @else
-    <div id="submissions-table" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-x-auto">
+    <div id="submissions-table" class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-x-auto">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+            <thead class="bg-gray-50 dark:bg-navy-dark text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                 <tr>
                     <th class="px-5 py-3">Organization</th>
                     <th class="px-5 py-3">Contact</th>
@@ -71,12 +71,12 @@
                         <td class="px-5 py-3.5 align-middle">
                             <p class="font-medium text-navy dark:text-white">{{ $orgDisplayName }}</p>
                             @if ($submission->organization_type)
-                                <p class="text-xs text-gray-400 dark:text-gray-500">{{ $submission->organization_type }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $submission->organization_type }}</p>
                             @endif
                         </td>
                         <td class="px-5 py-3.5 align-middle">
                             <p class="text-gray-700 dark:text-gray-300">{{ $submission->contact_name }}</p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $submission->contact_email }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $submission->contact_email }}</p>
                         </td>
                         <td class="px-5 py-3.5 align-middle">
                             <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $statusColors[$submission->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500' }}">
@@ -84,7 +84,7 @@
                             </span>
                         </td>
                         <td class="px-5 py-3.5 align-middle">
-                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full {{ $hasFiles ? 'bg-teal/10 text-teal-dark' : 'bg-gray-100 dark:bg-gray-700/50 text-gray-400 dark:text-gray-500' }}">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full {{ $hasFiles ? 'bg-teal/10 text-teal-dark' : 'bg-gray-100 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400' }}">
                                 <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
                                 </svg>
@@ -112,7 +112,7 @@
             </tbody>
         </table>
 
-        <div class="flex items-center justify-between gap-4 px-5 py-3 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-400 dark:text-gray-500">
+        <div class="flex items-center justify-between gap-4 px-5 py-3 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
             <span id="submissions-count-label">Showing {{ $submissions->count() }} of {{ $submissions->total() }} submission{{ $submissions->total() === 1 ? '' : 's' }}</span>
         </div>
     </div>

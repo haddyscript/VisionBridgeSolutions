@@ -17,7 +17,7 @@
         'waiting_on_visionbridge' => 'bg-purple-400',
         'completed' => 'bg-teal',
     ];
-    $neutralPill = 'border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-navy dark:text-white';
+    $neutralPill = 'border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy text-navy dark:text-white';
     $checkIcon = '<svg data-option-check class="w-4 h-4 text-gold-dark shrink-0 %s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>';
 @endphp
 
@@ -40,7 +40,7 @@
             <span data-wo-dd-label>{{ $type === 'all' ? 'All Types' : \App\Http\Controllers\Admin\WorkOrderController::TYPES[$type] }}</span>
             <svg data-wo-dd-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
         </button>
-        <div data-wo-dd-menu class="hidden absolute z-30 left-0 mt-1.5 w-52 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+        <div data-wo-dd-menu class="hidden absolute z-30 left-0 mt-1.5 w-52 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
             <button type="button" data-wo-dd-option="" role="option" aria-selected="{{ $type === 'all' ? 'true' : 'false' }}" class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $type === 'all' ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
                 <span data-option-label>All Types</span>
                 {!! sprintf($checkIcon, $type === 'all' ? '' : 'invisible') !!}
@@ -61,7 +61,7 @@
             <span data-wo-dd-label>{{ $status === 'all' ? 'All Statuses' : \App\Http\Controllers\Admin\WorkOrderController::STATUSES[$status] }}</span>
             <svg data-wo-dd-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
         </button>
-        <div data-wo-dd-menu class="hidden absolute z-30 left-0 mt-1.5 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+        <div data-wo-dd-menu class="hidden absolute z-30 left-0 mt-1.5 w-56 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
             <button type="button" data-wo-dd-option="" role="option" aria-selected="{{ $status === 'all' ? 'true' : 'false' }}" class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $status === 'all' ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
                 <span data-option-label>All Statuses</span>
                 {!! sprintf($checkIcon, $status === 'all' ? '' : 'invisible') !!}
@@ -77,7 +77,7 @@
 
     <div class="relative flex-1 min-w-[200px] max-w-xs">
         <input type="text" name="search" value="{{ $search }}" placeholder="Search project, client, item…"
-               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-sm pl-3 pr-3 py-2 text-sm text-navy dark:text-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold placeholder:text-gray-400">
+               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy shadow-sm pl-3 pr-3 py-2 text-sm text-navy dark:text-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold placeholder:text-gray-400">
     </div>
 
     <button type="submit" class="rounded-lg bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 transition-colors">Filter</button>
@@ -99,7 +99,7 @@
 
         const isError = type === 'error';
         const toast = document.createElement('div');
-        toast.className = 'wo-toast pointer-events-auto relative overflow-hidden rounded-xl border shadow-xl bg-white/97 dark:bg-gray-800/97 backdrop-blur-sm px-4 py-3 flex items-start gap-3 '
+        toast.className = 'wo-toast pointer-events-auto relative overflow-hidden rounded-xl border shadow-xl bg-white/97 dark:bg-navy/97 backdrop-blur-sm px-4 py-3 flex items-start gap-3 '
             + (isError ? 'border-red-200 dark:border-red-500/30' : 'border-teal/25 dark:border-teal/25');
 
         toast.innerHTML = `

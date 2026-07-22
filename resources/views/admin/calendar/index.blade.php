@@ -22,22 +22,22 @@
     </div>
 </div>
 
-<form method="POST" action="{{ route('admin.calendar.events.store') }}" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-5 flex flex-wrap items-end gap-3">
+<form method="POST" action="{{ route('admin.calendar.events.store') }}" class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-5 flex flex-wrap items-end gap-3">
     @csrf
     <div class="flex-1 min-w-[180px]">
-        <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Task</label>
+        <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Task</label>
         <input type="text" name="title" placeholder="e.g. Follow up with client" required
-               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
     </div>
     <div>
-        <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Date</label>
+        <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Date</label>
         <input type="date" name="date" required value="{{ now()->format('Y-m-d') }}"
-               class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+               class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
     </div>
     <div>
-        <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Time (optional)</label>
+        <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Time (optional)</label>
         <input type="time" name="time"
-               class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+               class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
     </div>
     <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors">
         Add Task
@@ -51,16 +51,16 @@
     $startOffset = $firstOfMonth->dayOfWeek;
 @endphp
 
-<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+<div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
     <div class="grid grid-cols-7 border-b border-gray-200 dark:border-gray-700">
         @foreach (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day)
-            <div class="px-2 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">{{ $day }}</div>
+            <div class="px-2 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ $day }}</div>
         @endforeach
     </div>
 
     <div class="grid grid-cols-7">
         @for ($i = 0; $i < $startOffset; $i++)
-            <div class="border-b border-r border-gray-100 dark:border-gray-700/60 min-h-[110px] bg-gray-50/40 dark:bg-gray-900/20"></div>
+            <div class="border-b border-r border-gray-100 dark:border-gray-700/60 min-h-[110px] bg-gray-50/40 dark:bg-navy-dark/20"></div>
         @endfor
 
         @for ($day = 1; $day <= $daysInMonth; $day++)
@@ -99,7 +99,7 @@
                         @endif
                     @endforeach
                     @if (count($events) > 3)
-                        <p class="text-[0.65rem] text-gray-400 dark:text-gray-500 px-1.5">+{{ count($events) - 3 }} more</p>
+                        <p class="text-[0.65rem] text-gray-500 dark:text-gray-400 px-1.5">+{{ count($events) - 3 }} more</p>
                     @endif
                 </div>
             </div>
@@ -108,14 +108,14 @@
 </div>
 
 @if ($tasks->isNotEmpty())
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mt-6">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 mt-6">
         <h3 class="font-semibold text-navy dark:text-white mb-4">Your Tasks This Month</h3>
         <div class="space-y-2">
             @foreach ($tasks as $task)
                 <div class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2.5">
                     <div>
                         <span class="text-sm text-navy dark:text-white">{{ $task->title }}</span>
-                        <span class="text-xs text-gray-400 dark:text-gray-500 ml-2">
+                        <span class="text-xs text-gray-500 dark:text-gray-400 ml-2">
                             {{ $task->date->format('M j, Y') }}
                             @if ($task->time) &middot; {{ \Illuminate\Support\Carbon::parse($task->time)->format('g:ia') }} @endif
                         </span>
@@ -123,7 +123,7 @@
                     <form method="POST" action="{{ route('admin.calendar.events.destroy', $task) }}" onsubmit="return confirm('Remove this task?')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
+                        <button type="submit" class="w-7 h-7 rounded-full text-gray-500 dark:text-gray-400 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </form>
@@ -138,7 +138,7 @@
     <div id="event-modal-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200" onclick="closeEventModal()"></div>
 
     <div id="event-modal-panel" class="relative w-full max-w-sm transform scale-95 opacity-0 transition-all duration-200">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
+        <div class="bg-white dark:bg-navy rounded-2xl shadow-2xl p-6">
             <div class="w-11 h-11 rounded-full bg-navy/10 dark:bg-white/10 text-navy dark:text-white flex items-center justify-center mb-4">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
             </div>

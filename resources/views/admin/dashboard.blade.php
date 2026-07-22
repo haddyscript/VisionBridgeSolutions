@@ -31,10 +31,10 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
         </svg>
         <input type="text" id="project-search" placeholder="Search client, email, or project..." autocomplete="off"
-               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark dark:text-white pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
     </div>
     <select id="project-status-filter"
-            class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+            class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
         <option value="">All statuses</option>
         @foreach ($statusLabels as $key => $label)
             <option value="{{ $key }}">{{ $label }}</option>
@@ -49,13 +49,13 @@
 </div>
 
 @if ($projects->isEmpty())
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
         <p class="text-gray-500 dark:text-gray-400">No client projects yet.</p>
     </div>
 @else
-    <div id="projects-table" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-x-auto">
+    <div id="projects-table" class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-x-auto">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+            <thead class="bg-gray-50 dark:bg-navy-dark text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                 <tr>
                     <th class="px-5 py-3">Client</th>
                     <th class="px-5 py-3">Project</th>
@@ -89,7 +89,7 @@
                                     </span>
                                 @endif
                             </p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $project->user->email }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $project->user->email }}</p>
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $project->name }}</td>
                         <td class="px-5 py-3.5">

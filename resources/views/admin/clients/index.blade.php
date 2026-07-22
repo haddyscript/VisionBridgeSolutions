@@ -31,19 +31,19 @@
 
 {{-- Stats --}}
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4 flex flex-col justify-center">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4 flex flex-col justify-center">
         <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1.5">Total Clients</p>
         <p class="text-2xl font-bold leading-tight text-navy dark:text-white">{{ $total }}</p>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4 flex flex-col justify-center">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4 flex flex-col justify-center">
         <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1.5">Online Now</p>
         <p class="text-2xl font-bold leading-tight text-green-600 dark:text-green-400">{{ $online }}</p>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4 flex flex-col justify-center">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4 flex flex-col justify-center">
         <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1.5">Verified</p>
         <p class="text-2xl font-bold leading-tight text-navy dark:text-white">{{ $verified }}</p>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4 flex flex-col justify-center">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4 flex flex-col justify-center">
         <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1.5">No Project Yet</p>
         <p class="text-2xl font-bold leading-tight text-gold">{{ $noProject }}</p>
     </div>
@@ -54,7 +54,7 @@
     <div class="flex flex-col sm:flex-row gap-2">
         <form method="GET" action="{{ route('admin.clients.index') }}" class="flex flex-1 gap-2">
             <input type="text" name="search" value="{{ $search }}" placeholder="Search by name or email…"
-                class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-800 dark:text-white">
+                class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy dark:text-white">
             <button type="submit"
                 class="px-4 py-2 bg-navy text-white text-sm font-semibold rounded-lg hover:bg-navy-light transition-colors">
                 Search
@@ -77,10 +77,10 @@
 </div>
 
 {{-- Table --}}
-<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+<div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
     @if ($clients->isEmpty())
         <div class="px-6 py-16 text-center">
-            <p class="text-gray-400 dark:text-gray-500 text-sm">
+            <p class="text-gray-500 dark:text-gray-400 text-sm">
                 {{ $search ? 'No clients match your search.' : 'No clients yet.' }}
             </p>
         </div>
@@ -115,7 +115,7 @@
                                     </div>
                                     <div class="min-w-0">
                                         <p class="font-semibold text-navy dark:text-white truncate">{{ $client->name }}</p>
-                                        <p class="text-xs text-gray-400 dark:text-gray-500 truncate">{{ $client->email }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $client->email }}</p>
                                     </div>
                                 </div>
                             </td>
@@ -130,7 +130,7 @@
                                 @if ($project)
                                     <p class="font-medium text-navy dark:text-white truncate max-w-[180px]">{{ $project->name }}</p>
                                 @else
-                                    <span class="text-xs text-gray-400 dark:text-gray-500">No project</span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">No project</span>
                                 @endif
                             </td>
 
@@ -176,7 +176,7 @@
                                             </svg>
                                         </button>
                                         <div x-show="open" x-transition
-                                            class="fixed w-52 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg z-50 py-1">
+                                            class="fixed w-52 bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg z-50 py-1">
                                             <button type="button"
                                                 onclick="openEditModal({{ $client->id }}, '{{ addslashes($client->name) }}', '{{ addslashes($client->email) }}', '{{ addslashes($client->phone ?? '') }}')"
                                                 class="w-full text-left px-3 py-2 text-xs text-navy dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
@@ -258,7 +258,7 @@
 
 {{-- Edit Client Modal --}}
 <div id="edit-client-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 hidden">
-    <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div class="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
 
         <div class="px-6 pt-6 pb-5" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
             <button type="button" onclick="closeEditModal()" class="absolute top-4 right-4 text-white/40 hover:text-white transition-colors">
@@ -277,17 +277,17 @@
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Full Name</label>
                 <input type="text" name="name" id="edit-name" required
-                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
             </div>
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Email Address</label>
                 <input type="email" name="email" id="edit-email" required
-                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
             </div>
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Phone Number <span class="text-gray-400">(optional)</span></label>
                 <input type="tel" name="phone" id="edit-phone"
-                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white"
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white"
                     placeholder="(000) 000-0000">
             </div>
 
@@ -307,7 +307,7 @@
 
 {{-- Add Client Modal --}}
 <div id="add-client-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 hidden">
-    <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div class="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
 
         <div class="px-6 pt-6 pb-5" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
             <button type="button" onclick="closeAddClientModal()" class="absolute top-4 right-4 text-white/40 hover:text-white transition-colors">
@@ -325,20 +325,20 @@
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Full Name</label>
                 <input type="text" name="name" required
-                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
             </div>
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Email Address</label>
                 <input type="email" name="email" required
-                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
             </div>
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Phone Number <span class="text-gray-400">(optional)</span></label>
                 <input type="tel" name="phone"
-                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white"
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white"
                     placeholder="(000) 000-0000">
             </div>
-            <p class="text-xs text-gray-400 dark:text-gray-500">
+            <p class="text-xs text-gray-500 dark:text-gray-400">
                 Creates the account right away and emails them a password-setup link. No project is attached yet — add one from their row afterward.
             </p>
 

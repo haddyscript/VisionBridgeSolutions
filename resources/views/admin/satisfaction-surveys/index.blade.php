@@ -43,40 +43,40 @@
      the data model, so this shows a real, computed proxy (4-5★ share)
      instead of a fabricated number. --}}
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-    <div class="kpi-card bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 px-5 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+    <div class="kpi-card bg-white/95 dark:bg-navy/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 px-5 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
         <div class="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center mb-3">
             <svg class="w-5 h-5 text-gold-dark" fill="currentColor" viewBox="0 0 20 20"><path d="{{ $starPath }}"/></svg>
         </div>
-        <p class="text-2xl font-bold text-navy dark:text-white">{{ $averageRating }}<span class="text-sm font-medium text-gray-400 dark:text-gray-500">/5</span></p>
+        <p class="text-2xl font-bold text-navy dark:text-white">{{ $averageRating }}<span class="text-sm font-medium text-gray-500 dark:text-gray-400">/5</span></p>
         <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-0.5">Average Rating</p>
-        <p class="text-[0.7rem] text-gray-400 dark:text-gray-500 mt-1">{{ $avgLabel }} Overall</p>
+        <p class="text-[0.7rem] text-gray-500 dark:text-gray-400 mt-1">{{ $avgLabel }} Overall</p>
     </div>
 
-    <div class="kpi-card bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 px-5 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+    <div class="kpi-card bg-white/95 dark:bg-navy/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 px-5 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
         <div class="w-10 h-10 rounded-xl bg-teal/10 flex items-center justify-center mb-3">
             <svg class="w-5 h-5 text-teal-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8-1.5 0-2.9-.32-4.14-.9L3 20l1.1-3.3C3.4 15.6 3 13.85 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
         </div>
         <p class="text-2xl font-bold text-navy dark:text-white">{{ $totalSubmitted }}</p>
         <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-0.5">Responses</p>
-        <p class="text-[0.7rem] text-gray-400 dark:text-gray-500 mt-1">Client Reviews</p>
+        <p class="text-[0.7rem] text-gray-500 dark:text-gray-400 mt-1">Client Reviews</p>
     </div>
 
-    <div class="kpi-card bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 px-5 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+    <div class="kpi-card bg-white/95 dark:bg-navy/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 px-5 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
         <div class="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center mb-3">
             <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
         </div>
         <p class="text-2xl font-bold text-navy dark:text-white">{{ $positiveReviewPercent }}%</p>
         <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-0.5">Positive Reviews</p>
-        <p class="text-[0.7rem] text-gray-400 dark:text-gray-500 mt-1">Rated 4★ or Higher</p>
+        <p class="text-[0.7rem] text-gray-500 dark:text-gray-400 mt-1">Rated 4★ or Higher</p>
     </div>
 
-    <div class="kpi-card bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 px-5 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+    <div class="kpi-card bg-white/95 dark:bg-navy/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 px-5 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
         <div class="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center mb-3">
             <svg class="w-5 h-5 text-gold-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
         <p class="text-2xl font-bold text-navy dark:text-white">{{ $fiveStarPercent }}%</p>
         <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-0.5">Five-Star Reviews</p>
-        <p class="text-[0.7rem] text-gray-400 dark:text-gray-500 mt-1">Perfect Satisfaction</p>
+        <p class="text-[0.7rem] text-gray-500 dark:text-gray-400 mt-1">Perfect Satisfaction</p>
     </div>
 </div>
 
@@ -87,7 +87,7 @@
         <div class="flex items-center gap-2.5">
             <div class="flex items-center gap-0.5">
                 @for ($i = 1; $i <= 5; $i++)
-                    <svg class="w-5 h-5 {{ $i <= round($averageRating) ? 'text-gold' : 'text-gray-200 dark:text-gray-600' }}" fill="currentColor" viewBox="0 0 20 20"><path d="{{ $starPath }}"/></svg>
+                    <svg class="w-5 h-5 {{ $i <= round($averageRating) ? 'text-gold' : 'text-gray-600 dark:text-gray-200' }}" fill="currentColor" viewBox="0 0 20 20"><path d="{{ $starPath }}"/></svg>
                 @endfor
             </div>
             <span class="text-lg font-bold text-navy dark:text-white">{{ $averageRating }} / 5</span>
@@ -107,7 +107,7 @@
 </div>
 
 {{-- SECTION 3 — toolbar --}}
-<div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 mb-8">
+<div class="bg-white/90 dark:bg-navy/90 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 mb-8">
     <div class="flex flex-col sm:flex-row sm:items-center gap-2.5">
         <form method="GET" action="{{ route('admin.satisfaction-surveys.index') }}" class="flex-1 flex flex-col sm:flex-row gap-2.5">
             @if ($showArchived)
@@ -116,10 +116,10 @@
             <div class="relative flex-1">
                 <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 <input type="text" name="search" value="{{ $search }}" placeholder="Search by client, project, or review content…"
-                       class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white pl-10 pr-4 py-2.5 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition-shadow">
+                       class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark dark:text-white pl-10 pr-4 py-2.5 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition-shadow">
             </div>
             <select name="sort" onchange="this.form.requestSubmit()"
-                    class="rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition-shadow">
+                    class="rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark dark:text-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition-shadow">
                 <option value="newest" {{ $sort === 'newest' ? 'selected' : '' }}>Newest</option>
                 <option value="highest" {{ $sort === 'highest' ? 'selected' : '' }}>Highest Rating</option>
                 <option value="lowest" {{ $sort === 'lowest' ? 'selected' : '' }}>Lowest Rating</option>
@@ -146,14 +146,14 @@
 
 {{-- SECTION 10 — empty state --}}
 @if ($surveys->isEmpty())
-    <div class="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 py-16 px-6 text-center">
+    <div class="bg-white/95 dark:bg-navy/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 py-16 px-6 text-center">
         <div class="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-4">
             <svg class="w-8 h-8 text-gold-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.958a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.368 2.447a1 1 0 00-.363 1.118l1.287 3.957c.3.922-.755 1.688-1.538 1.118l-3.367-2.447a1 1 0 00-1.176 0l-3.367 2.447c-.783.57-1.838-.196-1.539-1.118l1.287-3.957a1 1 0 00-.363-1.118l-3.368-2.447c-.783-.57-.38-1.81.588-1.81h4.163a1 1 0 00.95-.69l1.285-3.958z"/></svg>
         </div>
         <p class="font-bold text-navy dark:text-white mb-1.5">
             {{ $search ? 'No Reviews Match Your Search' : ($showArchived ? 'No Archived Reviews' : 'No Satisfaction Surveys Yet') }}
         </p>
-        <p class="text-sm text-gray-400 dark:text-gray-500 max-w-sm mx-auto leading-relaxed">
+        <p class="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
             {{ $search
                 ? 'Try a different search term, or clear your search to see everything.'
                 : ($showArchived ? 'Archived reviews will appear here once you archive one.' : 'Once clients complete surveys, their feedback will appear here.') }}
@@ -172,7 +172,7 @@
             {{-- SECTION 4 — review card. No overflow-hidden here: the
                  actions menu below is position:absolute and needs to be
                  able to sit outside the card's own box without being clipped. --}}
-            <div class="review-card bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-gold/40 dark:hover:border-gold/30 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 p-6 flex flex-col">
+            <div class="review-card bg-white/95 dark:bg-navy/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-gold/40 dark:hover:border-gold/30 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 p-6 flex flex-col">
                 <div class="flex items-start justify-between gap-3 mb-4">
                     <div class="flex items-center gap-3 min-w-0">
                         <span class="w-11 h-11 rounded-xl bg-navy text-gold text-sm font-bold flex items-center justify-center shrink-0">
@@ -181,7 +181,7 @@
                         <div class="min-w-0">
                             <p class="text-xl font-semibold text-navy dark:text-white truncate leading-snug">{{ $survey->project->name }}</p>
                             <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ $survey->user->name }}</p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $survey->submitted_at->format('M j, Y') }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $survey->submitted_at->format('M j, Y') }}</p>
                         </div>
                     </div>
 
@@ -192,10 +192,10 @@
 
                         {{-- SECTION 11 — overflow menu --}}
                         <div class="relative survey-menu">
-                            <button type="button" class="survey-menu-toggle w-8 h-8 rounded-full flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-navy dark:hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gold">
+                            <button type="button" class="survey-menu-toggle w-8 h-8 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-navy dark:hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gold">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"/></svg>
                             </button>
-                            <div class="survey-menu-panel hidden absolute right-0 top-9 z-10 w-44 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg py-1.5">
+                            <div class="survey-menu-panel hidden absolute right-0 top-9 z-10 w-44 bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg py-1.5">
                                 <form method="POST" action="{{ route('admin.satisfaction-surveys.feature', $survey) }}">
                                     @csrf
                                     @method('PATCH')
@@ -226,7 +226,7 @@
                 <div class="flex items-center gap-2.5 mb-4">
                     <div class="flex items-center gap-0.5">
                         @for ($i = 1; $i <= 5; $i++)
-                            <svg class="w-4 h-4 {{ $i <= $rating ? 'text-gold' : 'text-gray-200 dark:text-gray-600' }}" fill="currentColor" viewBox="0 0 20 20"><path d="{{ $starPath }}"/></svg>
+                            <svg class="w-4 h-4 {{ $i <= $rating ? 'text-gold' : 'text-gray-600 dark:text-gray-200' }}" fill="currentColor" viewBox="0 0 20 20"><path d="{{ $starPath }}"/></svg>
                         @endfor
                     </div>
                     <span class="text-sm font-bold text-navy dark:text-white">{{ number_format($rating, 1) }}</span>

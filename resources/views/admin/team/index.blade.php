@@ -51,40 +51,40 @@
 {{-- SECTION 2 — KPI cards. Safe to use a transform-based hover lift here —
      nothing inside these cards uses position:fixed. --}}
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-    <div class="kpi-card bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 px-5 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+    <div class="kpi-card bg-white/95 dark:bg-navy/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 px-5 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
         <div class="w-10 h-10 rounded-xl bg-navy/5 dark:bg-white/10 flex items-center justify-center mb-3">
             <svg class="w-5 h-5 text-navy dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 100-8 4 4 0 000 8zm6 0a4 4 0 100-8"/></svg>
         </div>
         <p class="text-2xl font-bold text-navy dark:text-white">{{ $teamMemberCount }}</p>
         <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-0.5">Team Members</p>
-        <p class="text-[0.7rem] text-gray-400 dark:text-gray-500 mt-1">Total Members</p>
+        <p class="text-[0.7rem] text-gray-500 dark:text-gray-400 mt-1">Total Members</p>
     </div>
 
-    <div class="kpi-card bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 px-5 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+    <div class="kpi-card bg-white/95 dark:bg-navy/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 px-5 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
         <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-3">
             <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
         </div>
         <p class="text-2xl font-bold text-navy dark:text-white">{{ $administratorCount }}</p>
         <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-0.5">Administrators</p>
-        <p class="text-[0.7rem] text-gray-400 dark:text-gray-500 mt-1">Full Access Accounts</p>
+        <p class="text-[0.7rem] text-gray-500 dark:text-gray-400 mt-1">Full Access Accounts</p>
     </div>
 
-    <div class="kpi-card bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 px-5 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+    <div class="kpi-card bg-white/95 dark:bg-navy/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 px-5 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
         <div class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-3">
             <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 10-8 0v2"/></svg>
         </div>
         <p class="text-2xl font-bold text-navy dark:text-white">{{ $restrictedCount }}</p>
         <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-0.5">Restricted Accounts</p>
-        <p class="text-[0.7rem] text-gray-400 dark:text-gray-500 mt-1">Limited Access</p>
+        <p class="text-[0.7rem] text-gray-500 dark:text-gray-400 mt-1">Limited Access</p>
     </div>
 
-    <div class="kpi-card bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 px-5 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+    <div class="kpi-card bg-white/95 dark:bg-navy/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 px-5 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
         <div class="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center mb-3">
             <svg class="w-5 h-5 text-gold-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l3 3 3-6 3 6 3-6 3 6 3-3-2 10H5L3 8z"/></svg>
         </div>
         <p class="text-2xl font-bold text-navy dark:text-white">{{ $ownerCount }}</p>
         <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-0.5">Owners</p>
-        <p class="text-[0.7rem] text-gray-400 dark:text-gray-500 mt-1">Full Access Accounts</p>
+        <p class="text-[0.7rem] text-gray-500 dark:text-gray-400 mt-1">Full Access Accounts</p>
     </div>
 </div>
 
@@ -100,7 +100,7 @@
         </div>
 
         {{-- Profile summary card --}}
-        <div class="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm px-6 py-6 flex items-center gap-4">
+        <div class="bg-white/95 dark:bg-navy/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm px-6 py-6 flex items-center gap-4">
             <span class="w-16 h-16 rounded-2xl bg-gradient-to-br from-navy to-navy/75 text-gold text-xl font-bold flex items-center justify-center shrink-0 ring-2 ring-gold/30 shadow-sm">
                 {{ strtoupper(substr($me->name, 0, 1)) }}
             </span>
@@ -128,8 +128,8 @@
              Authentication and Activity Logs are explicitly not built yet
              — shown as disabled "Coming Soon" rows rather than silently
              omitted or faked as working. --}}
-        <div class="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm divide-y divide-gray-100 dark:divide-gray-700 overflow-hidden">
-            <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 px-5 pt-4 pb-2">Quick Actions</p>
+        <div class="bg-white/95 dark:bg-navy/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm divide-y divide-gray-100 dark:divide-gray-700 overflow-hidden">
+            <p class="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 px-5 pt-4 pb-2">Quick Actions</p>
 
             <details class="quick-action-details group">
                 <summary class="quick-action-row flex items-center gap-3.5 px-5 py-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
@@ -138,7 +138,7 @@
                     </span>
                     <span class="min-w-0 flex-1">
                         <span class="block text-sm font-semibold text-navy dark:text-white">Edit Profile</span>
-                        <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">Update your name and email address.</span>
+                        <span class="block text-xs text-gray-500 dark:text-gray-400 mt-0.5">Update your name and email address.</span>
                     </span>
                     <svg class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200 group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </summary>
@@ -148,12 +148,12 @@
                     <div>
                         <label class="block text-xs font-medium text-navy dark:text-white mb-1">Full Name</label>
                         <input type="text" name="name" value="{{ old('name', $me->name) }}" required
-                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-navy-dark dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-navy dark:text-white mb-1">Email</label>
                         <input type="email" name="email" value="{{ old('email', $me->email) }}" required
-                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-navy-dark dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                     </div>
                     <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
                         Save Profile
@@ -168,7 +168,7 @@
                     </span>
                     <span class="min-w-0 flex-1">
                         <span class="block text-sm font-semibold text-navy dark:text-white">Change Password</span>
-                        <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">Update your account password.</span>
+                        <span class="block text-xs text-gray-500 dark:text-gray-400 mt-0.5">Update your account password.</span>
                     </span>
                     <svg class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200 group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </summary>
@@ -179,7 +179,7 @@
                         <label class="block text-xs font-medium text-navy dark:text-white mb-1">Current Password</label>
                         <div class="relative">
                             <input type="password" name="current_password" required
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-navy-dark dark:text-white px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                             <button type="button" class="password-toggle absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-navy dark:hover:text-white" aria-label="Show password">
                                 <svg class="eye-open w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 <svg class="eye-closed w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
@@ -190,7 +190,7 @@
                         <label class="block text-xs font-medium text-navy dark:text-white mb-1">New Password</label>
                         <div class="relative">
                             <input type="password" name="password" required
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-navy-dark dark:text-white px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                             <button type="button" class="password-toggle absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-navy dark:hover:text-white" aria-label="Show password">
                                 <svg class="eye-open w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 <svg class="eye-closed w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
@@ -201,7 +201,7 @@
                         <label class="block text-xs font-medium text-navy dark:text-white mb-1">Confirm New Password</label>
                         <div class="relative">
                             <input type="password" name="password_confirmation" required
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-navy-dark dark:text-white px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                             <button type="button" class="password-toggle absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-navy dark:hover:text-white" aria-label="Show password">
                                 <svg class="eye-open w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 <svg class="eye-closed w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
@@ -217,25 +217,25 @@
             {{-- Not implemented yet — shown honestly as disabled rows,
                  not faked as working. --}}
             <div class="flex items-center gap-3.5 px-5 py-4 opacity-60 cursor-not-allowed">
-                <span class="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 flex items-center justify-center shrink-0">
+                <span class="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 flex items-center justify-center shrink-0">
                     <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                 </span>
                 <span class="min-w-0 flex-1">
                     <span class="block text-sm font-semibold text-gray-500 dark:text-gray-400">Two-Factor Authentication</span>
-                    <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">Add an extra layer of login security.</span>
+                    <span class="block text-xs text-gray-500 dark:text-gray-400 mt-0.5">Add an extra layer of login security.</span>
                 </span>
-                <span class="text-[0.65rem] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 shrink-0">Coming Soon</span>
+                <span class="text-[0.65rem] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 shrink-0">Coming Soon</span>
             </div>
 
             <div class="flex items-center gap-3.5 px-5 py-4 opacity-60 cursor-not-allowed">
-                <span class="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 flex items-center justify-center shrink-0">
+                <span class="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 flex items-center justify-center shrink-0">
                     <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </span>
                 <span class="min-w-0 flex-1">
                     <span class="block text-sm font-semibold text-gray-500 dark:text-gray-400">Activity Logs</span>
-                    <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">A history of actions taken on your account.</span>
+                    <span class="block text-xs text-gray-500 dark:text-gray-400 mt-0.5">A history of actions taken on your account.</span>
                 </span>
-                <span class="text-[0.65rem] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 shrink-0">Coming Soon</span>
+                <span class="text-[0.65rem] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 shrink-0">Coming Soon</span>
             </div>
         </div>
     </div>
@@ -258,14 +258,14 @@
 
         @if ($me->isSuperAdmin())
             {{-- Add Team Member — premium action card --}}
-            <details class="group bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
+            <details class="group bg-white/95 dark:bg-navy/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
                 <summary class="flex items-center gap-4 px-6 py-5 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                     <span class="w-11 h-11 rounded-xl bg-gold/15 text-gold-dark flex items-center justify-center shrink-0">
                         <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     </span>
                     <span class="min-w-0 flex-1">
                         <span class="block text-sm font-bold text-navy dark:text-white">Add Team Member</span>
-                        <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">Invite a new administrator to the platform.</span>
+                        <span class="block text-xs text-gray-500 dark:text-gray-400 mt-0.5">Invite a new administrator to the platform.</span>
                     </span>
                     <svg class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200 group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </summary>
@@ -274,17 +274,17 @@
                     <div>
                         <label class="block text-xs font-medium text-navy dark:text-white mb-1">Full Name</label>
                         <input type="text" name="name" value="{{ old('name') }}" required
-                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-navy-dark dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-navy dark:text-white mb-1">Email</label>
                         <input type="email" name="email" value="{{ old('email') }}" required
-                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-navy-dark dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-navy dark:text-white mb-1">Job Title</label>
                         <select name="job_title"
-                                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-navy-dark dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                             <option value="">— Select a role —</option>
                             @foreach ($jobTitles as $title)
                                 <option value="{{ $title }}" {{ old('job_title') === $title ? 'selected' : '' }}>{{ $title }}</option>
@@ -296,7 +296,7 @@
                                class="rounded border-gray-300 text-gold focus:ring-gold">
                         Grant super admin access
                     </label>
-                    <p class="text-xs text-gray-400 dark:text-gray-500">New members are created with the default password <span class="font-semibold text-navy dark:text-white">admin123</span>.</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">New members are created with the default password <span class="font-semibold text-navy dark:text-white">admin123</span>.</p>
                     <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
                         Add Team Member
                     </button>
@@ -311,11 +311,11 @@
         @php
             $jobTitlesInUse = $visibleAdmins->pluck('job_title')->filter()->unique()->values();
         @endphp
-        <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
+        <div class="bg-white/90 dark:bg-navy/90 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
             <div class="relative mb-3">
                 <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 <input type="text" id="team-search" placeholder="Search team members…"
-                       class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white pl-10 pr-4 py-2.5 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition-shadow">
+                       class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark dark:text-white pl-10 pr-4 py-2.5 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition-shadow">
             </div>
             <div class="flex flex-wrap gap-1.5">
                 <button type="button" class="team-filter-chip is-active px-3 py-1.5 rounded-full text-xs font-semibold border border-gray-300 dark:border-gray-600 text-navy dark:text-white transition-colors" data-role="all">All Members</button>
@@ -336,7 +336,7 @@
              becomes the containing block for position:fixed descendants
              instead of the viewport. That's what was pinning the modal
              inside this card's box rather than centering it on the page. --}}
-        <div class="bg-white/95 dark:bg-gray-800/95 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col max-h-[42rem]">
+        <div class="bg-white/95 dark:bg-navy/95 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col max-h-[42rem]">
             <h3 class="text-sm font-semibold text-navy dark:text-white px-5 pt-5 pb-3 shrink-0">Admins ({{ max(0, $admins->count() - 1) }})</h3>
             <div id="team-list" class="space-y-3 overflow-y-auto px-5 pb-5">
                 @foreach ($admins as $admin)
@@ -366,7 +366,7 @@
                                     <div class="flex flex-wrap items-center gap-1.5">
                                         <span class="text-base font-semibold text-navy dark:text-white whitespace-nowrap">{{ $admin->name }}</span>
                                         @if ($admin->is($me))
-                                            <span class="text-xs text-gray-400 dark:text-gray-500">(you)</span>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">(you)</span>
                                         @endif
                                         {{-- SECTION 6 — role badge with icon --}}
                                         @if ($badge)
@@ -387,10 +387,10 @@
                                         {{-- SECTION 11 — real data, not placeholders: both
                                              last_login_at and created_at are genuine
                                              columns already populated on every user. --}}
-                                        <span class="text-xs text-gray-400 dark:text-gray-500">
+                                        <span class="text-xs text-gray-500 dark:text-gray-400">
                                             Last active: {{ $admin->last_login_at?->diffForHumans() ?? 'Never' }}
                                         </span>
-                                        <span class="text-xs text-gray-400 dark:text-gray-500">
+                                        <span class="text-xs text-gray-500 dark:text-gray-400">
                                             Joined {{ $admin->created_at->format('M Y') }}
                                         </span>
                                     </div>
@@ -399,12 +399,12 @@
                             @if ($me->isSuperAdmin())
                                 <div class="relative shrink-0 ml-auto" x-data="{ open: false }">
                                     <button type="button" @click="open = !open" @click.outside="open = false"
-                                            class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-navy dark:hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gold">
+                                            class="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-navy dark:hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gold">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                             <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
                                         </svg>
                                     </button>
-                                    <div x-show="open" x-transition class="fixed w-52 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg z-50 py-1">
+                                    <div x-show="open" x-transition class="fixed w-52 bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg z-50 py-1">
                                         <button type="button" class="permissions-toggle w-full text-left px-3 py-2 text-xs text-navy dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" data-target="edit-name-{{ $admin->id }}">
                                             Edit Name
                                         </button>
@@ -455,31 +455,31 @@
                         </div>
 
                         @if ($me->isSuperAdmin())
-                            <div id="edit-name-{{ $admin->id }}" class="hidden border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40 px-5 py-5">
+                            <div id="edit-name-{{ $admin->id }}" class="hidden border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-navy-dark/40 px-5 py-5">
                                 <form method="POST" action="{{ route('admin.team.name.update', $admin) }}" class="space-y-3">
                                     @csrf
                                     @method('PATCH')
                                     <div>
                                         <label class="block text-xs font-medium text-navy dark:text-white mb-1">Full Name</label>
                                         <input type="text" name="name" value="{{ $admin->name }}" required
-                                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-navy-dark dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                                     </div>
                                     <div class="flex items-center gap-3">
                                         <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
                                             Save Name
                                         </button>
-                                        <button type="button" class="permissions-toggle text-xs font-semibold text-gray-400 dark:text-gray-500 hover:text-navy dark:hover:text-white" data-target="edit-name-{{ $admin->id }}">Cancel</button>
+                                        <button type="button" class="permissions-toggle text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white" data-target="edit-name-{{ $admin->id }}">Cancel</button>
                                     </div>
                                 </form>
                             </div>
-                            <div id="job-title-{{ $admin->id }}" class="hidden border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40 px-5 py-5">
+                            <div id="job-title-{{ $admin->id }}" class="hidden border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-navy-dark/40 px-5 py-5">
                                 <form method="POST" action="{{ route('admin.team.job-title.update', $admin) }}" class="space-y-3">
                                     @csrf
                                     @method('PATCH')
                                     <div>
                                         <label class="block text-xs font-medium text-navy dark:text-white mb-1">Job Title</label>
                                         <select name="job_title"
-                                                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                                                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-navy-dark dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                                             <option value="">— No role —</option>
                                             @foreach ($jobTitles as $title)
                                                 <option value="{{ $title }}" {{ $admin->job_title === $title ? 'selected' : '' }}>{{ $title }}</option>
@@ -490,7 +490,7 @@
                                         <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
                                             Save Job Title
                                         </button>
-                                        <button type="button" class="permissions-toggle text-xs font-semibold text-gray-400 dark:text-gray-500 hover:text-navy dark:hover:text-white" data-target="job-title-{{ $admin->id }}">Cancel</button>
+                                        <button type="button" class="permissions-toggle text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white" data-target="job-title-{{ $admin->id }}">Cancel</button>
                                     </div>
                                 </form>
                             </div>
@@ -503,7 +503,7 @@
                             $canEditAccess = $me->isSuperAdmin() && ! $admin->isSuperAdmin();
                         @endphp
                         <div id="access-modal-{{ $admin->id }}" class="access-modal hidden fixed inset-0 z-[60] items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-                            <div class="access-modal-panel bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto">
+                            <div class="access-modal-panel bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto">
                                 <div class="flex items-start justify-between gap-3 p-5 border-b border-gray-100 dark:border-gray-700">
                                     <div class="flex items-center gap-3 min-w-0">
                                         <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-gold/25 to-gold/10 text-gold-dark flex items-center justify-center text-sm font-bold shrink-0 ring-2 ring-gold/25">
@@ -516,30 +516,30 @@
                                                     <span class="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $badge['class'] }}">{{ $badge['label'] }}</span>
                                                 @endif
                                             </div>
-                                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">{{ $admin->email }}</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">{{ $admin->email }}</p>
                                             @if ($admin->job_title)
                                                 <p class="text-xs font-medium text-gold-dark mt-0.5">{{ $admin->job_title }}</p>
                                             @endif
                                         </div>
                                     </div>
-                                    <button type="button" class="access-modal-close w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0" aria-label="Close">
+                                    <button type="button" class="access-modal-close w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0" aria-label="Close">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                     </button>
                                 </div>
                                 <div class="p-5">
-                                    <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Admin Page Access</p>
+                                    <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">Admin Page Access</p>
 
                                     @if ($canEditAccess)
                                         <form method="POST" action="{{ route('admin.team.permissions.update', $admin) }}" class="space-y-4">
                                             @csrf
                                             @method('PATCH')
 
-                                            <label class="flex items-start gap-2.5 bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700 rounded-lg px-3.5 py-3 cursor-pointer">
+                                            <label class="flex items-start gap-2.5 bg-gray-50 dark:bg-navy-dark/40 border border-gray-200 dark:border-gray-700 rounded-lg px-3.5 py-3 cursor-pointer">
                                                 <input type="checkbox" name="restricted_access" value="1" class="restricted-access-checkbox mt-0.5 rounded border-gray-300 text-gold focus:ring-gold focus:ring-offset-0"
                                                        {{ $admin->restricted_access ? 'checked' : '' }} data-panel="modal-permissions-fields-{{ $admin->id }}">
                                                 <span>
                                                     <span class="block text-sm font-semibold text-navy dark:text-white">Restrict this admin's access</span>
-                                                    <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">Off = full access to every section (default). On = only the pages checked below.</span>
+                                                    <span class="block text-xs text-gray-500 dark:text-gray-400 mt-0.5">Off = full access to every section (default). On = only the pages checked below.</span>
                                                 </span>
                                             </label>
 
@@ -547,11 +547,11 @@
                                                 <div class="flex items-center justify-end gap-3">
                                                     <button type="button" class="select-all-permissions text-xs font-semibold text-gold-dark hover:underline" data-panel="modal-permissions-fields-{{ $admin->id }}">Select All</button>
                                                     <span class="text-gray-300 dark:text-gray-600">|</span>
-                                                    <button type="button" class="select-none-permissions text-xs font-semibold text-gray-400 dark:text-gray-500 hover:underline" data-panel="modal-permissions-fields-{{ $admin->id }}">Select None</button>
+                                                    <button type="button" class="select-none-permissions text-xs font-semibold text-gray-500 dark:text-gray-400 hover:underline" data-panel="modal-permissions-fields-{{ $admin->id }}">Select None</button>
                                                 </div>
                                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                     @foreach ($sections as $key => $section)
-                                                        <label class="flex items-center gap-2 text-sm text-navy dark:text-white bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 cursor-pointer transition-colors has-[:checked]:border-gold has-[:checked]:bg-gold/5 hover:border-gray-300 dark:hover:border-gray-600">
+                                                        <label class="flex items-center gap-2 text-sm text-navy dark:text-white bg-white dark:bg-navy-dark border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 cursor-pointer transition-colors has-[:checked]:border-gold has-[:checked]:bg-gold/5 hover:border-gray-300 dark:hover:border-gray-600">
                                                             <input type="checkbox" name="permissions[]" value="{{ $key }}" class="rounded border-gray-300 text-gold focus:ring-gold focus:ring-offset-0"
                                                                    {{ in_array($key, $modalAccessKeys, true) ? 'checked' : '' }}>
                                                             {{ $section['label'] }}
@@ -562,7 +562,7 @@
 
                                             <div class="flex items-center gap-3 pt-1">
                                                 <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">Save Access</button>
-                                                <button type="button" class="access-modal-close text-xs font-semibold text-gray-400 dark:text-gray-500 hover:text-navy dark:hover:text-white">Cancel</button>
+                                                <button type="button" class="access-modal-close text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white">Cancel</button>
                                             </div>
                                         </form>
                                     @else
@@ -572,14 +572,14 @@
                                                 <p class="text-sm text-navy dark:text-white">Full access to <span class="font-semibold">every</span> admin section.</p>
                                             </div>
                                         @elseif (count($modalAccessKeys) === 0)
-                                            <div class="bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700 rounded-lg px-3.5 py-3">
+                                            <div class="bg-gray-50 dark:bg-navy-dark/40 border border-gray-200 dark:border-gray-700 rounded-lg px-3.5 py-3">
                                                 <p class="text-sm text-gray-500 dark:text-gray-400">No sections enabled — this member currently has no admin page access.</p>
                                             </div>
                                         @endif
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
                                             @foreach ($sections as $key => $section)
                                                 @php $canAccess = $modalFullAccess || in_array($key, $modalAccessKeys, true); @endphp
-                                                <div class="flex items-center gap-2 text-sm rounded-lg border px-3 py-2 {{ $canAccess ? 'border-gold/40 bg-gold/5 text-navy dark:text-white' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-500' }}">
+                                                <div class="flex items-center gap-2 text-sm rounded-lg border px-3 py-2 {{ $canAccess ? 'border-gold/40 bg-gold/5 text-navy dark:text-white' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-navy-dark text-gray-500 dark:text-gray-400' }}">
                                                     @if ($canAccess)
                                                         <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                                                     @else
@@ -597,12 +597,12 @@
                 @endif
                 @endforeach
             </div>
-            <p id="team-empty-state" class="hidden text-sm text-gray-400 dark:text-gray-500 text-center py-8 px-5">No team members match your search or filter.</p>
+            <p id="team-empty-state" class="hidden text-sm text-gray-500 dark:text-gray-400 text-center py-8 px-5">No team members match your search or filter.</p>
         </div>
     </div>
     @else
-    <div class="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-6">
-        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">Team Management</p>
+    <div class="bg-white/95 dark:bg-navy/95 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-6">
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Team Management</p>
         <p class="text-sm text-gray-500 dark:text-gray-400">You don't have access to this section.</p>
     </div>
     @endif

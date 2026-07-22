@@ -9,13 +9,13 @@
 
 <div class="space-y-4 mb-8">
     @foreach ($plans as $plan)
-        <details class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden" open>
+        <details class="group bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden" open>
             <summary class="flex items-center justify-between gap-4 cursor-pointer list-none px-6 py-4 [&::-webkit-details-marker]:hidden">
                 <div class="flex items-center gap-3">
-                    <svg class="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 transition-transform duration-200 group-open:rotate-90 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 transition-transform duration-200 group-open:rotate-90 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     <div>
                         <p class="font-semibold text-navy dark:text-white">{{ $plan->name }}</p>
-                        <p class="text-xs text-gray-400 dark:text-gray-500">{{ $plan->formattedPrice() ? $plan->formattedPrice().'/mo' : 'No price shown' }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $plan->formattedPrice() ? $plan->formattedPrice().'/mo' : 'No price shown' }}</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
@@ -25,7 +25,7 @@
                     <form method="POST" action="{{ route('admin.care-plans.destroy', $plan) }}" onsubmit="return confirm('Remove this plan card?')" onclick="event.stopPropagation()">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="w-7 h-7 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
+                        <button type="submit" class="w-7 h-7 rounded-full text-gray-500 dark:text-gray-400 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </form>
@@ -39,77 +39,77 @@
 
                     <div class="grid sm:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Plan Name</label>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Plan Name</label>
                             <input type="text" name="name" value="{{ $plan->name }}" required
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Tagline (shown under the plan name)</label>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Tagline (shown under the plan name)</label>
                             <input type="text" name="tagline" value="{{ $plan->tagline }}" placeholder="e.g. Perfect for Getting Started"
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Price / month (USD, blank = no price shown)</label>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Price / month (USD, blank = no price shown)</label>
                             <input type="number" name="price" step="0.01" min="0" value="{{ $plan->price !== null ? $plan->price / 100 : '' }}"
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Badge (e.g. "Most Popular")</label>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Badge (e.g. "Most Popular")</label>
                             <input type="text" name="badge" value="{{ $plan->badge }}"
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">FaithStack Compensation / cycle (USD, blank = enter manually per payout)</label>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">FaithStack Compensation / cycle (USD, blank = enter manually per payout)</label>
                             <input type="number" name="faithstack_compensation" step="0.01" min="0" value="{{ $plan->faithstack_compensation !== null ? $plan->faithstack_compensation / 100 : '' }}"
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Auto-fills the FaithStack Owed amount on every recurring payout for this plan going forward — no manual entry needed each cycle.</p>
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Auto-fills the FaithStack Owed amount on every recurring payout for this plan going forward — no manual entry needed each cycle.</p>
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Stripe Price ID (from your Stripe product's Pricing section, starts with "price_")</label>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Stripe Price ID (from your Stripe product's Pricing section, starts with "price_")</label>
                             <input type="text" name="stripe_price_id" value="{{ $plan->stripe_price_id }}" placeholder="price_..."
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Leave blank to have checkout build a price automatically from the amount above instead of using a specific Stripe product.</p>
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Leave blank to have checkout build a price automatically from the amount above instead of using a specific Stripe product.</p>
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Description (short paragraph under the price)</label>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Description (short paragraph under the price)</label>
                             <input type="text" name="description" value="{{ $plan->description }}"
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Header Icon</label>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Header Icon</label>
                             <select name="icon"
-                                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                                 @foreach (['shield' => 'Shield (Security)', 'trending-up' => 'Trending Up (Growth)', 'crown' => 'Crown (Elite)'] as $value => $label)
                                     <option value="{{ $value }}" {{ $plan->icon === $value ? 'selected' : '' }}>{{ $label }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Response Time</label>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Response Time</label>
                             <input type="text" name="response_time" value="{{ $plan->response_time }}" placeholder="e.g. Within 2 Business Days"
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Display Order</label>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Display Order</label>
                             <input type="number" name="sort_order" min="0" value="{{ $plan->sort_order }}" required
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Button Label</label>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Button Label</label>
                             <input type="text" name="cta_label" value="{{ $plan->cta_label }}" required
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Button Link</label>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Button Link</label>
                             <input type="text" name="cta_url" value="{{ $plan->cta_url }}" required
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                         </div>
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Features — one per line, as "Title | Short description"</label>
+                        <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Features — one per line, as "Title | Short description"</label>
                         <textarea name="features" rows="6"
-                                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">{{ collect($plan->features ?? [])->map(fn ($item) => trim(($item['title'] ?? '').(isset($item['description']) && $item['description'] !== null ? ' | '.$item['description'] : '')))->implode("\n") }}</textarea>
+                                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">{{ collect($plan->features ?? [])->map(fn ($item) => trim(($item['title'] ?? '').(isset($item['description']) && $item['description'] !== null ? ' | '.$item['description'] : '')))->implode("\n") }}</textarea>
                     </div>
 
                     <div class="flex items-center justify-between">
@@ -125,7 +125,7 @@
                 </form>
 
                 <div>
-                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">Live Preview</p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Live Preview</p>
                     @include('admin.care-plans._preview', ['id' => 'preview-'.$plan->id, 'plan' => $plan])
                 </div>
             </div>
@@ -134,9 +134,9 @@
 </div>
 
 {{-- Add new plan --}}
-<details class="bg-white dark:bg-gray-800 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 overflow-hidden">
+<details class="bg-white dark:bg-navy rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 overflow-hidden">
     <summary class="flex items-center gap-3 cursor-pointer list-none px-6 py-4 [&::-webkit-details-marker]:hidden">
-        <svg class="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 transition-transform duration-200 group-open:rotate-90 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 transition-transform duration-200 group-open:rotate-90 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         <h3 class="font-semibold text-navy dark:text-white">Add a New Plan Card</h3>
     </summary>
 
@@ -146,77 +146,77 @@
 
             <div class="grid sm:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Plan Name</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Plan Name</label>
                     <input type="text" name="name" placeholder="e.g. Growth Care" required
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Tagline (shown under the plan name)</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Tagline (shown under the plan name)</label>
                     <input type="text" name="tagline" placeholder="e.g. For Businesses Ready to Grow"
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Price / month (USD, blank = no price shown)</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Price / month (USD, blank = no price shown)</label>
                     <input type="number" name="price" step="0.01" min="0" placeholder="99.00"
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Badge</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Badge</label>
                     <input type="text" name="badge" placeholder="e.g. Most Popular"
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                 </div>
                 <div class="sm:col-span-2">
-                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">FaithStack Compensation / cycle (USD, blank = enter manually per payout)</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">FaithStack Compensation / cycle (USD, blank = enter manually per payout)</label>
                     <input type="number" name="faithstack_compensation" step="0.01" min="0" placeholder="20.00"
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Auto-fills the FaithStack Owed amount on every recurring payout for this plan going forward — no manual entry needed each cycle.</p>
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Auto-fills the FaithStack Owed amount on every recurring payout for this plan going forward — no manual entry needed each cycle.</p>
                 </div>
                 <div class="sm:col-span-2">
-                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Stripe Price ID (from your Stripe product's Pricing section, starts with "price_")</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Stripe Price ID (from your Stripe product's Pricing section, starts with "price_")</label>
                     <input type="text" name="stripe_price_id" placeholder="price_..."
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Leave blank to have checkout build a price automatically from the amount above instead of using a specific Stripe product.</p>
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Leave blank to have checkout build a price automatically from the amount above instead of using a specific Stripe product.</p>
                 </div>
                 <div class="sm:col-span-2">
-                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Description (short paragraph under the price)</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Description (short paragraph under the price)</label>
                     <input type="text" name="description"
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Header Icon</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Header Icon</label>
                     <select name="icon"
-                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                         <option value="shield">Shield (Security)</option>
                         <option value="trending-up">Trending Up (Growth)</option>
                         <option value="crown">Crown (Elite)</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Response Time</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Response Time</label>
                     <input type="text" name="response_time" placeholder="e.g. Within 2 Business Days"
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Display Order</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Display Order</label>
                     <input type="number" name="sort_order" min="0" value="{{ $plans->count() + 1 }}" required
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Button Label</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Button Label</label>
                     <input type="text" name="cta_label" value="Get Started" required
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Button Link</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Button Link</label>
                     <input type="text" name="cta_url" value="#contact" required
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                 </div>
             </div>
 
             <div class="mb-4">
-                <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Features — one per line, as "Title | Short description"</label>
+                <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Features — one per line, as "Title | Short description"</label>
                 <textarea name="features" rows="6" placeholder="Website Updates | Keep your website, plugins & themes up to date.&#10;Security Monitoring | We monitor your website 24/7 for threats."
-                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
+                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500"></textarea>
             </div>
 
             <div class="flex items-center justify-between">
@@ -232,7 +232,7 @@
         </form>
 
         <div>
-            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">Live Preview</p>
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Live Preview</p>
             @include('admin.care-plans._preview', ['id' => 'preview-new', 'plan' => null])
         </div>
     </div>

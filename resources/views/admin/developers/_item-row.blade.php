@@ -19,7 +19,7 @@
 <div class="flex items-center justify-between gap-3 px-1 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
     <div class="min-w-0">
         <a href="{{ $item['url'] }}" class="text-sm text-navy dark:text-white truncate hover:underline block">{{ $item['title'] }}</a>
-        <p class="text-xs text-gray-400 dark:text-gray-500 flex flex-wrap items-center gap-x-1.5 gap-y-1 mt-0.5">
+        <p class="text-xs text-gray-500 dark:text-gray-400 flex flex-wrap items-center gap-x-1.5 gap-y-1 mt-0.5">
             <span>
                 {{ $item['type'] }} &middot; {{ $item['client_name'] }}
                 @if (! empty($completed))

@@ -5,7 +5,7 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
     @foreach (\App\Http\Controllers\Portal\WebsiteTypeController::TYPES as $type)
         <label class="flex items-center gap-4 p-4 rounded-xl border-2 transition-all
-                      {{ $selectedType === $type ? 'border-gold bg-gold/10' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800' }}">
+                      {{ $selectedType === $type ? 'border-gold bg-gold/10' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-navy' }}">
             <input type="radio" {{ $selectedType === $type ? 'checked' : '' }} class="sr-only">
             <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-navy/5 dark:bg-white/5">
                 @php
@@ -31,5 +31,5 @@
 </div>
 
 @unless ($selectedType)
-    <p class="text-sm text-gray-400 dark:text-gray-500 text-center">Not selected yet — the client hasn't reached or completed this step.</p>
+    <p class="text-sm text-gray-500 dark:text-gray-400 text-center">Not selected yet — the client hasn't reached or completed this step.</p>
 @endunless

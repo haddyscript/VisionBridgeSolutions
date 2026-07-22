@@ -14,7 +14,7 @@
 @endphp
 
 @if ($workOrders->isEmpty())
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
         <p class="text-gray-500 dark:text-gray-400">
             @if ($type !== 'all' || $status !== 'all' || $search !== '')
                 No work orders match those filters.
@@ -24,10 +24,10 @@
         </p>
     </div>
 @else
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div class="overflow-x-auto">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+            <thead class="bg-gray-50 dark:bg-navy-dark text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                 <tr>
                     <th class="px-5 py-3">Project Name</th>
                     <th class="px-5 py-3">Client</th>
@@ -66,7 +66,7 @@
                                     <span data-wo-dd-label>{{ \App\Models\Upload::DEVELOPER_STATUSES[$item['developer_status']] ?? 'Not Started' }}</span>
                                     <svg data-wo-dd-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
-                                <div data-wo-dd-menu class="hidden absolute z-20 left-0 mt-1.5 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                                <div data-wo-dd-menu class="hidden absolute z-20 left-0 mt-1.5 w-56 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                                     @foreach (\App\Models\Upload::DEVELOPER_STATUSES as $value => $label)
                                         <button type="button" data-wo-dd-option="{{ $value }}" data-color-class="{{ $statusColors[$value] ?? $neutralStatusPill }}" role="option" aria-selected="{{ $item['developer_status'] === $value ? 'true' : 'false' }}"
                                                 class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $item['developer_status'] === $value ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
@@ -88,7 +88,7 @@
         </table>
         </div>
 
-        <div class="flex items-center justify-between gap-4 px-5 py-3 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-400 dark:text-gray-500">
+        <div class="flex items-center justify-between gap-4 px-5 py-3 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
             <span>Showing {{ $workOrders->count() }} of {{ $workOrders->total() }} work order{{ $workOrders->total() === 1 ? '' : 's' }}</span>
         </div>
     </div>

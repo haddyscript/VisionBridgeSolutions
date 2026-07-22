@@ -54,7 +54,7 @@
     ];
 @endphp
 
-<div id="{{ $panelId }}-inner" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+<div id="{{ $panelId }}-inner" class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
     <div class="flex items-center justify-between mb-4">
         <h3 class="font-semibold text-navy dark:text-white">
             {{ $meta['label'] }}
@@ -62,11 +62,11 @@
                 <span class="ml-2 inline-block text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">{{ $items->whereNotIn('status', \App\Models\Upload::CLOSED_STATUSES)->count() }} open</span>
             @endif
         </h3>
-        <span class="text-xs text-gray-400 dark:text-gray-500">{{ $items->count() }} item{{ $items->count() === 1 ? '' : 's' }}</span>
+        <span class="text-xs text-gray-500 dark:text-gray-400">{{ $items->count() }} item{{ $items->count() === 1 ? '' : 's' }}</span>
     </div>
 
     @if ($items->isEmpty())
-        <p class="text-sm text-gray-400 dark:text-gray-500">Nothing here yet.</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Nothing here yet.</p>
     @else
         {{-- Conversation list --}}
         <div id="thread-list-{{ $cat }}" class="space-y-2">
@@ -86,7 +86,7 @@
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between gap-2">
                             <span class="text-sm font-medium text-navy dark:text-white truncate">{{ $item->user->name }}</span>
-                            <span class="text-xs text-gray-400 dark:text-gray-500 shrink-0">{{ $item->created_at->format('M j, Y') }}</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 shrink-0">{{ $item->created_at->format('M j, Y') }}</span>
                         </div>
                         @if ($item->title)
                             <p class="text-sm font-semibold text-navy dark:text-white truncate mt-0.5">{{ $item->title }}</p>
@@ -100,7 +100,7 @@
                                 {{ \App\Models\Upload::STATUSES[$item->status] ?? $item->status }}
                             </span>
                             @if ($item->isCompleted() && $item->completed_at)
-                                <span class="text-xs text-gray-400 dark:text-gray-500 shrink-0">{{ $item->completed_at->format('M j, Y') }}</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 shrink-0">{{ $item->completed_at->format('M j, Y') }}</span>
                             @endif
                             @if ($cat === 'revision')
                                 <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full shrink-0 {{ $priorityColors[$item->priority] ?? $priorityColors['medium'] }}">{{ \App\Models\Upload::PRIORITIES[$item->priority] ?? ucfirst($item->priority) }}</span>
@@ -111,7 +111,7 @@
                         </div>
                     </div>
                     <span class="unread-badge shrink-0 min-w-[1.25rem] h-5 px-1.5 rounded-full bg-teal text-white text-xs font-semibold flex items-center justify-center {{ $unreadCount === 0 ? 'hidden' : '' }}">{{ $unreadCount }}</span>
-                    <svg class="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </button>
             @endforeach
         </div>
@@ -129,7 +129,7 @@
                 @endif
 
                 <div class="flex items-center justify-between gap-4 rounded-lg border border-gray-200 dark:border-gray-700 border-l-4 {{ $borderColors[$item->status] ?? 'border-l-red-400' }} px-4 py-2 mb-3">
-                    <p class="text-xs text-gray-400 dark:text-gray-500">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
                         {{ $item->created_at->format('M j, Y \a\t g:ia') }} &middot; from {{ $item->user->name }}
                         @if ($cat === 'revision' && $item->isOverdue())
                             <span class="ml-2 inline-block text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400">Overdue</span>
@@ -148,7 +148,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
                             </button>
-                            <div data-revision-status-menu class="hidden absolute z-20 right-0 mt-1.5 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                            <div data-revision-status-menu class="hidden absolute z-20 right-0 mt-1.5 w-56 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                                 @foreach (\App\Models\Upload::STATUSES as $value => $label)
                                     <button type="button" data-revision-status-option="{{ $value }}" data-color-class="{{ $statusColors[$value] ?? 'bg-gray-100 text-gray-500' }}" role="option" aria-selected="{{ $item->status === $value ? 'true' : 'false' }}"
                                             class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $item->status === $value ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
@@ -191,14 +191,14 @@
                         <input type="hidden" name="assigned_developer_id" value="{{ $item->assigned_developer_id }}">
                         <div class="relative" data-assigned-developer-dropdown>
                             <button type="button" data-assigned-developer-toggle aria-haspopup="listbox" aria-expanded="false"
-                                    class="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg pl-2.5 pr-2 py-1.5 border focus:outline-none focus:ring-2 focus:ring-gold hover:border-gray-400 dark:hover:border-gray-500 transition-colors {{ $item->assigned_developer_id ? 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-navy dark:text-white' : 'border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-500' }}">
+                                    class="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg pl-2.5 pr-2 py-1.5 border focus:outline-none focus:ring-2 focus:ring-gold hover:border-gray-400 dark:hover:border-gray-500 transition-colors {{ $item->assigned_developer_id ? 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-navy dark:text-white' : 'border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400' }}">
                                 <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                 <span data-assigned-developer-toggle-label>{{ $item->assignedDeveloper->name ?? 'Unassigned' }}</span>
                                 <svg data-assigned-developer-toggle-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
                             </button>
-                            <div data-assigned-developer-menu class="hidden absolute z-20 left-0 mt-1.5 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                            <div data-assigned-developer-menu class="hidden absolute z-20 left-0 mt-1.5 w-48 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                                 <button type="button" data-assigned-developer-option="" role="option" aria-selected="{{ ! $item->assigned_developer_id ? 'true' : 'false' }}"
                                         class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ ! $item->assigned_developer_id ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
                                     <span data-option-label>Unassigned</span>
@@ -232,7 +232,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                     </svg>
                                 </button>
-                                <div data-developer-status-menu class="hidden absolute z-20 left-0 mt-1.5 w-52 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                                <div data-developer-status-menu class="hidden absolute z-20 left-0 mt-1.5 w-52 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                                     @foreach (\App\Models\Upload::DEVELOPER_STATUSES as $value => $label)
                                         <button type="button" data-developer-status-option="{{ $value }}" data-color-class="{{ $developerStatusColors[$value] ?? 'bg-gray-100 text-gray-500' }}" role="option" aria-selected="{{ $item->developer_status === $value ? 'true' : 'false' }}"
                                                 class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $item->developer_status === $value ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
@@ -263,7 +263,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                     </svg>
                                 </button>
-                                <div data-priority-menu class="hidden absolute z-20 left-0 mt-1.5 w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                                <div data-priority-menu class="hidden absolute z-20 left-0 mt-1.5 w-40 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                                     @foreach (\App\Models\Upload::PRIORITIES as $value => $label)
                                         <button type="button" data-priority-option="{{ $value }}" data-color-class="{{ $priorityColors[$value] }}" role="option" aria-selected="{{ $item->priority === $value ? 'true' : 'false' }}"
                                                 class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $item->priority === $value ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
@@ -279,7 +279,7 @@
                                 </div>
                             </div>
                             <div class="relative">
-                                <svg class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <svg class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                 <input type="date" name="estimated_completion_date" value="{{ $item->estimated_completion_date?->format('Y-m-d') }}"
                                        onchange="this.form.requestSubmit()" title="Estimated completion date (visible to client)"
                                        class="text-xs font-medium rounded-lg pl-8 pr-2.5 py-1.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold">
@@ -294,7 +294,7 @@
                     <form method="POST" action="{{ route('admin.uploads.dev-instructions', $item) }}" class="mb-3" data-ajax-target="{{ $panelId ?? '' }}">
                         @csrf
                         @method('PATCH')
-                        <label class="block text-[0.65rem] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">Dev Instructions (internal only)</label>
+                        <label class="block text-[0.65rem] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">Dev Instructions (internal only)</label>
                         <textarea name="dev_instructions" rows="2" placeholder="Clarify or rewrite this request for the dev team..."
                                   class="w-full rounded-lg border border-dashed border-gray-300 dark:border-gray-600 px-3 py-2 text-sm bg-yellow-50/40 dark:bg-yellow-500/5 focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:text-white dark:placeholder-gray-500">{{ $item->dev_instructions }}</textarea>
                         <button type="submit" class="mt-1.5 text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3 py-1 rounded-full transition-colors">
@@ -309,7 +309,7 @@
                 <form method="POST" action="{{ route('admin.uploads.completion-note', $item) }}" class="mb-3" data-ajax-target="{{ $panelId ?? '' }}">
                     @csrf
                     @method('PATCH')
-                    <label class="block text-[0.65rem] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">Completion Note (shown to client when marked Completed)</label>
+                    <label class="block text-[0.65rem] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">Completion Note (shown to client when marked Completed)</label>
                     <textarea name="completion_note" rows="2" placeholder="Anything the client should know now that this is done..."
                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">{{ $item->completion_note }}</textarea>
                     <button type="submit" class="mt-1.5 text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3 py-1 rounded-full transition-colors">
@@ -334,7 +334,7 @@
                                         <a href="{{ $attachment->url }}" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm text-gold-dark hover:underline">
                                             {{ $attachment->original_name }}
                                             @if ($attachment->formattedSize)
-                                                <span class="text-xs text-gray-400 dark:text-gray-500">({{ $attachment->formattedSize }})</span>
+                                                <span class="text-xs text-gray-500 dark:text-gray-400">({{ $attachment->formattedSize }})</span>
                                             @endif
                                         </a>
                                     @endforeach
@@ -354,7 +354,7 @@
                                     <div class="rounded-2xl rounded-tl-sm bg-gray-100 dark:bg-gray-700/60 px-4 py-2.5">
                                         <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line message-text max-h-24 overflow-hidden">{{ $reply->body }}</p>
                                         <button type="button" onclick="toggleAdminMessage(this)" class="message-toggle hidden text-xs font-semibold text-navy dark:text-white hover:text-gold-dark mt-1">See more</button>
-                                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5">{{ $reply->created_at->format('M j, Y \a\t g:ia') }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5">{{ $reply->created_at->format('M j, Y \a\t g:ia') }}</p>
                                     </div>
                                 </div>
                             @else

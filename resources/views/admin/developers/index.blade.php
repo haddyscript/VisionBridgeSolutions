@@ -118,7 +118,7 @@
          ═══════════════════════════════════════════════════════════════════ --}}
     <div class="lg:col-span-2">
         @if ($developers->isEmpty())
-            <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+            <div class="bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 p-10 text-center">
                 <p class="text-gray-500 dark:text-gray-400">No team members have the "Developer" job title yet — set one on the Team Members page.</p>
             </div>
         @else
@@ -133,7 +133,7 @@
                         $currentItem = $row['activeItems']->first();
                         $restActiveItems = $row['activeItems']->slice(1);
                     @endphp
-                    <div class="developer-card bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-7 shadow-sm hover:shadow-lg hover:border-gold/40 dark:hover:border-gold/30 transition-all duration-200"
+                    <div class="developer-card bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 p-7 shadow-sm hover:shadow-lg hover:border-gold/40 dark:hover:border-gold/30 transition-all duration-200"
                          data-name="{{ strtolower($row['developer']->name) }}" data-has-active="{{ $hasActiveWork ? '1' : '0' }}">
 
                         {{-- SECTION 5 — Developer header --}}
@@ -143,8 +143,8 @@
                             </span>
                             <div class="min-w-0 flex-1 pt-0.5">
                                 <p class="font-bold text-navy dark:text-white leading-snug truncate">{{ $row['developer']->name }}</p>
-                                <p class="text-xs text-gray-400 dark:text-gray-500">{{ $row['developer']->job_title ?? 'Developer' }}</p>
-                                <p class="text-xs text-gray-400 dark:text-gray-500 truncate">{{ $row['developer']->email }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $row['developer']->job_title ?? 'Developer' }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $row['developer']->email }}</p>
                             </div>
                             @if ($row['developer']->is_active ?? true)
                                 <span class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-teal/10 text-teal-dark">
@@ -187,13 +187,13 @@
                              underlying item row (link, status pill, reassign
                              dropdown) is unchanged — only its wrapper here is
                              new, so nothing about how it works changes. --}}
-                        <p class="text-[0.65rem] font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">Current Work Order</p>
+                        <p class="text-[0.65rem] font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Current Work Order</p>
                         @if ($currentItem)
                             <div class="rounded-xl border border-gray-200 dark:border-gray-700 border-l-4 border-l-gold bg-gray-50/70 dark:bg-gray-900/40 px-2 mb-3">
                                 @include('admin.developers._item-row', ['item' => $currentItem, 'statusColors' => $statusColors, 'developers' => $developers, 'assignedDeveloperId' => $row['developer']->id])
                             </div>
                             @if ($restActiveItems->isNotEmpty())
-                                <p class="text-[0.65rem] font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Also Assigned ({{ $restActiveItems->count() }})</p>
+                                <p class="text-[0.65rem] font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Also Assigned ({{ $restActiveItems->count() }})</p>
                                 <div class="divide-y divide-gray-100 dark:divide-gray-700 max-h-48 overflow-y-auto pr-1 rounded-lg border border-gray-100 dark:border-gray-700/60 mb-4">
                                     @foreach ($restActiveItems as $item)
                                         @include('admin.developers._item-row', ['item' => $item, 'statusColors' => $statusColors, 'developers' => $developers, 'assignedDeveloperId' => $row['developer']->id])
@@ -202,7 +202,7 @@
                             @endif
                         @else
                             <div class="rounded-xl border border-dashed border-gray-200 dark:border-gray-700 py-5 text-center mb-4">
-                                <p class="text-sm text-gray-400 dark:text-gray-500">No active Work Orders right now.</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">No active Work Orders right now.</p>
                             </div>
                         @endif
 
@@ -231,7 +231,7 @@
                     </div>
                 @endforeach
             </div>
-            <p id="developer-empty-state" class="hidden text-sm text-gray-400 dark:text-gray-500 text-center py-10">No developers match your search.</p>
+            <p id="developer-empty-state" class="hidden text-sm text-gray-500 dark:text-gray-400 text-center py-10">No developers match your search.</p>
         @endif
     </div>
 
@@ -254,7 +254,7 @@
 
         {{-- SECTION 9 — Polished empty state --}}
         @if ($unassigned->isEmpty())
-            <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 text-center">
+            <div class="bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 p-8 text-center">
                 <div class="w-14 h-14 rounded-full bg-teal/10 flex items-center justify-center mx-auto mb-4">
                     <svg class="w-7 h-7 text-teal-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
@@ -262,7 +262,7 @@
                 <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Every Work Order currently has an assigned developer.<br>No pending assignments.</p>
             </div>
         @else
-            <div class="bg-white dark:bg-gray-800 rounded-2xl border-2 border-red-200 dark:border-red-500/30 divide-y divide-gray-100 dark:divide-gray-700 max-h-[calc(100vh-220px)] overflow-y-auto">
+            <div class="bg-white dark:bg-navy rounded-2xl border-2 border-red-200 dark:border-red-500/30 divide-y divide-gray-100 dark:divide-gray-700 max-h-[calc(100vh-220px)] overflow-y-auto">
                 <div class="sticky top-0 bg-red-50 dark:bg-red-500/10 px-4 py-2.5 border-b border-red-200 dark:border-red-500/30">
                     <p class="text-xs font-bold uppercase tracking-wide text-red-700 dark:text-red-400">{{ $unassigned->count() }} {{ $unassigned->count() === 1 ? 'item' : 'items' }} waiting for assignment</p>
                 </div>
@@ -270,9 +270,9 @@
                     <div class="p-4">
                         <div class="flex items-center justify-between gap-2 mb-1">
                             <p class="text-sm font-semibold text-navy dark:text-white">{{ $item['client_name'] }}</p>
-                            <span class="text-[0.65rem] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 shrink-0">{{ $item['created_at']->format('M j') }}</span>
+                            <span class="text-[0.65rem] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 shrink-0">{{ $item['created_at']->format('M j') }}</span>
                         </div>
-                        <p class="text-xs text-gray-400 dark:text-gray-500 mb-1.5 flex flex-wrap items-center gap-1.5">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1.5 flex flex-wrap items-center gap-1.5">
                             <span>{{ $item['type'] }}</span>
                             @if (! empty($item['priority']))
                                 <span class="text-[0.65rem] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full {{ $priorityColors[$item['priority']] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
@@ -311,7 +311,7 @@
      backend behind any of these yet.
      ═══════════════════════════════════════════════════════════════════════ --}}
 <div class="mt-10">
-    <p class="text-xs font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-3">Coming Soon</p>
+    <p class="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">Coming Soon</p>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         @foreach ([
             ['label' => 'Recent Activity', 'desc' => 'A live feed of assignment and status changes.', 'icon' => 'M13 10V3L4 14h7v7l9-11h-7z'],
@@ -319,11 +319,11 @@
             ['label' => 'Performance Analytics', 'desc' => 'Completion rate and turnaround charts.', 'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
         ] as $placeholder)
             <div class="rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30 px-5 py-6 text-center opacity-70">
-                <div class="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center mx-auto mb-3">
-                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="{{ $placeholder['icon'] }}"/></svg>
+                <div class="w-10 h-10 rounded-xl bg-white dark:bg-navy shadow-sm flex items-center justify-center mx-auto mb-3">
+                    <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="{{ $placeholder['icon'] }}"/></svg>
                 </div>
                 <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">{{ $placeholder['label'] }}</p>
-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 leading-relaxed">{{ $placeholder['desc'] }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{{ $placeholder['desc'] }}</p>
                 <span class="inline-block mt-2 text-[0.6rem] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400">Coming Soon</span>
             </div>
         @endforeach
@@ -334,7 +334,7 @@
      overlay just covers the wait with a spinner instead of the dropdown
      appearing to do nothing until the new page arrives. --}}
 <div id="assign-loading-overlay" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
-    <div class="bg-white dark:bg-gray-800 rounded-xl px-6 py-5 flex items-center gap-3 shadow-lg">
+    <div class="bg-white dark:bg-navy rounded-xl px-6 py-5 flex items-center gap-3 shadow-lg">
         <svg class="w-5 h-5 animate-spin text-gold" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
@@ -348,11 +348,11 @@
      developer card. --}}
 <div id="developer-history-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/50" data-history-modal-close></div>
-    <div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-lg max-h-[85vh] flex flex-col">
+    <div class="relative bg-white dark:bg-navy rounded-xl shadow-xl w-full max-w-lg max-h-[85vh] flex flex-col">
         <div class="flex items-center justify-between gap-4 px-5 py-4 border-b border-gray-100 dark:border-gray-700 shrink-0">
             <div class="min-w-0">
                 <h3 id="developer-history-modal-title" class="font-bold text-navy dark:text-white truncate"></h3>
-                <p class="text-xs text-gray-400 dark:text-gray-500">Completed Work Orders</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Completed Work Orders</p>
             </div>
             <button type="button" data-history-modal-close class="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors" aria-label="Close">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>

@@ -10,18 +10,18 @@
 </p>
 
 @if ($recommendations->isEmpty())
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
         <p class="text-gray-500 dark:text-gray-400">Nothing pending review.</p>
     </div>
 @else
     <div class="space-y-4">
         @foreach ($recommendations as $item)
-            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6">
                 <div class="flex items-center justify-between gap-4 mb-2">
                     <a href="{{ route('admin.projects.show', $item->project) }}" class="font-semibold text-navy dark:text-white hover:underline">
                         {{ $item->project->user->name }} &middot; {{ $item->project->name }}
                     </a>
-                    <span class="text-xs text-gray-400 dark:text-gray-500">Submitted by {{ $item->submittedBy->name }} &middot; {{ $item->created_at->format('M j, Y') }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Submitted by {{ $item->submittedBy->name }} &middot; {{ $item->created_at->format('M j, Y') }}</span>
                 </div>
                 <p class="text-sm font-semibold text-navy dark:text-white mb-1">{{ $item->title }}</p>
                 <p class="text-xs font-semibold uppercase tracking-wide text-gold-dark mb-2">{{ \App\Models\Recommendation::CATEGORIES[$item->category] ?? $item->category }}</p>
@@ -31,7 +31,7 @@
                     @csrf
                     @method('PATCH')
                     <select name="status" onchange="this.form.requestSubmit()"
-                            class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                            class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                         @foreach (\App\Models\Recommendation::STATUSES as $value => $label)
                             <option value="{{ $value }}" {{ $item->status === $value ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach

@@ -53,7 +53,7 @@
 </a>
 
 {{-- Client + project header --}}
-<div id="header-card" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+<div id="header-card" class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
 
     {{-- Suspension banner --}}
     @if ($project->isSuspended())
@@ -76,7 +76,7 @@
         <div class="p-6 flex flex-col h-full">
             {{-- Client identity --}}
             <div>
-                <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Client</p>
+                <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">Client</p>
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
                         style="background:#1B2A4A20; color:#1B2A4A;">
@@ -86,20 +86,20 @@
                         <p class="font-semibold text-navy dark:text-white">{{ $project->user->name }}</p>
                         <p class="text-sm text-gray-500 dark:text-gray-400">{{ $project->user->email }}</p>
                         @if ($project->user->phone)
-                            <p class="text-sm text-gray-400 dark:text-gray-500">{{ $project->user->phone }}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $project->user->phone }}</p>
                         @endif
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-2">
                     <button type="button" onclick="openResetPasswordModal()"
-                        class="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-500/40 hover:bg-amber-50 dark:hover:bg-amber-500/10 hover:border-amber-400 dark:hover:border-amber-400/60 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-lg transition-colors">
+                        class="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-500/40 hover:bg-amber-50 dark:hover:bg-amber-500/10 hover:border-amber-400 dark:hover:border-amber-400/60 bg-white dark:bg-navy px-3 py-1.5 rounded-lg transition-colors">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                         </svg>
                         Reset Client Password
                     </button>
                     <button type="button" data-modal="new-work-order-modal"
-                        class="modal-trigger inline-flex items-center gap-1.5 text-xs font-semibold text-navy dark:text-white border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-lg transition-colors">
+                        class="modal-trigger inline-flex items-center gap-1.5 text-xs font-semibold text-navy dark:text-white border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 bg-white dark:bg-navy px-3 py-1.5 rounded-lg transition-colors">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
@@ -113,12 +113,12 @@
                 <form method="POST" action="{{ route('admin.projects.update', $project) }}" data-ajax-target="header-card">
                     @csrf
                     @method('PATCH')
-                    <label class="block text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1.5">Project Status</label>
+                    <label class="block text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1.5">Project Status</label>
                     <input type="hidden" name="status" value="{{ $project->status }}">
 
                     <div class="relative" data-status-dropdown>
                         <button type="button" data-status-toggle aria-haspopup="listbox" aria-expanded="false"
-                                class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 pl-3 pr-2.5 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+                                class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 pl-3 pr-2.5 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
                             <span data-status-toggle-label class="flex items-center gap-2 text-navy dark:text-white">
                                 <span class="w-2 h-2 rounded-full shrink-0 {{ $projectStatusDots[$project->status] ?? 'bg-gray-400' }}"></span>
                                 {{ $statusLabels[$project->status] ?? ucfirst($project->status) }}
@@ -128,7 +128,7 @@
                             </svg>
                         </button>
 
-                        <div data-status-menu class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                        <div data-status-menu class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                             @foreach ($statusLabels as $value => $label)
                                 <button type="button" data-status-option="{{ $value }}" role="option" aria-selected="{{ $project->status === $value ? 'true' : 'false' }}"
                                         class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $project->status === $value ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
@@ -168,18 +168,18 @@
                     <input type="number" name="progress_override" form="project-settings-form" min="0" max="100"
                         placeholder="Auto (from milestones)"
                         value="{{ old('progress_override', $project->progress_override) }}"
-                        class="w-full min-w-0 {{ $project->isProgressOverridden() ? 'rounded-l-lg' : 'rounded-lg' }} border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold focus:z-10 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                        class="w-full min-w-0 {{ $project->isProgressOverridden() ? 'rounded-l-lg' : 'rounded-lg' }} border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold focus:z-10 dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                     @if ($project->isProgressOverridden())
                         <button type="button"
                             onclick="document.getElementById('clear-override-form').requestSubmit()"
                             title="Clear override"
-                            class="shrink-0 inline-flex items-center gap-1 text-xs font-medium text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 border border-l-0 border-gray-300 dark:border-gray-600 px-3 rounded-r-lg transition-colors">
+                            class="shrink-0 inline-flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 border border-l-0 border-gray-300 dark:border-gray-600 px-3 rounded-r-lg transition-colors">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             Clear
                         </button>
                     @endif
                 </div>
-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Leave blank to calculate automatically from milestone completion.</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Leave blank to calculate automatically from milestone completion.</p>
             </div>
 
             {{-- Hidden form for clearing the progress override --}}
@@ -194,7 +194,7 @@
 
         {{-- Right: Project settings (unified form), compressed into a tighter grid --}}
         <div class="p-6 flex flex-col h-full">
-            <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-4">Project Settings</p>
+            <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-4">Project Settings</p>
 
             <form id="project-settings-form" method="POST" action="{{ route('admin.projects.update', $project) }}" data-ajax-target="header-card" class="flex flex-col flex-1 space-y-4">
                 @csrf
@@ -211,8 +211,8 @@
                     <input type="text" name="status_message" value="{{ old('status_message', $project->status_message) }}"
                         placeholder="e.g. Payment Received — your project is now in development"
                         maxlength="255"
-                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Shows as a banner on the client's Overview page. Leave blank to hide it.</p>
+                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Shows as a banner on the client's Overview page. Leave blank to hide it.</p>
                 </div>
 
                 {{-- Row 2: Preview URL --}}
@@ -229,8 +229,8 @@
                     </div>
                     <input type="url" name="preview_url" value="{{ old('preview_url', $project->preview_url) }}"
                         placeholder="https://staging.example.com"
-                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Shown to client as a "View Live Preview" button on their dashboard.</p>
+                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Shown to client as a "View Live Preview" button on their dashboard.</p>
                 </div>
 
                 {{-- Row 3: Total Project Price / Discount, side by side --}}
@@ -239,7 +239,7 @@
                         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Total Project Price ($)</label>
                         <input type="number" id="total-price-input" name="total_price" step="0.01" min="1" placeholder="e.g. 2500.00"
                             value="{{ old('total_price', $project->total_price !== null ? $project->total_price / 100 : '') }}"
-                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                     </div>
 
                     <div>
@@ -247,10 +247,10 @@
                         <div class="relative">
                             <input type="number" id="discount-percent-input" name="discount_percent" step="0.01" min="0" max="100" placeholder="e.g. 10"
                                 value="{{ old('discount_percent', $project->discount_percent) }}"
-                                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-3 pr-9 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 dark:text-gray-500 pointer-events-none">%</span>
+                                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-3 pr-9 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-500 dark:text-gray-400 pointer-events-none">%</span>
                         </div>
-                        <p id="discounted-total-preview" class="text-xs text-gray-400 dark:text-gray-500 mt-1 {{ $project->discount_percent ? '' : 'hidden' }}">
+                        <p id="discounted-total-preview" class="text-xs text-gray-500 dark:text-gray-400 mt-1 {{ $project->discount_percent ? '' : 'hidden' }}">
                             Discounted: <strong id="discounted-total-value" class="text-navy dark:text-white">{{ $project->formattedDiscountedTotalPrice() }}</strong>
                         </p>
                     </div>
@@ -266,7 +266,7 @@
                     </div>
                 @elseif ($project->depositPayment())
                     @if ($project->depositPayment()->isPaid())
-                        <p class="text-xs text-gray-400 dark:text-gray-500">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
                             Deposit: <strong>{{ $project->depositPayment()->formattedAmount() }}</strong> — paid.
                         </p>
                     @else
@@ -303,7 +303,7 @@
 @endphp
 
 {{-- Tabs — high-contrast pill segmented control --}}
-<div class="inline-flex flex-wrap items-center gap-1 bg-gray-100 dark:bg-gray-900 rounded-full p-1 mb-6">
+<div class="inline-flex flex-wrap items-center gap-1 bg-gray-100 dark:bg-navy-dark rounded-full p-1 mb-6">
     <button type="button" data-tab-button="overview" onclick="showProjectTab('overview')"
             class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-colors bg-navy text-white dark:bg-gold dark:text-navy">
         Overview
@@ -357,15 +357,15 @@
 <div id="panel-overview" data-tab-panel="overview">
 
 {{-- Milestones --}}
-<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+<div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
     <h3 class="font-semibold text-navy dark:text-white mb-4">Milestones</h3>
 
     {{-- Distinct "create" zone — dashed border sets it apart from the solid,
          state-tinted cards below so it never reads as just another row.
          Shown first so adding a milestone doesn't require scrolling past
          every existing one first. --}}
-    <div class="rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50/60 dark:bg-gray-900/20 p-4 mb-6">
-        <p class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">
+    <div class="rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50/60 dark:bg-navy-dark/20 p-4 mb-6">
+        <p class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
             Add a New Milestone
         </p>
@@ -373,16 +373,16 @@
             @csrf
             <div class="flex flex-wrap items-center gap-2.5">
                 <input type="text" name="title" placeholder="Milestone title..." required
-                       class="flex-1 min-w-[14rem] rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                       class="flex-1 min-w-[14rem] rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                 <input type="date" name="due_date"
-                       class="w-44 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                       class="w-44 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                 <button type="submit" class="shrink-0 inline-flex items-center gap-1.5 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                     Add
                 </button>
             </div>
             <textarea name="description" rows="2" placeholder="Add details for this milestone (optional)..."
-                      class="w-full min-h-[4rem] resize-y rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
+                      class="w-full min-h-[4rem] resize-y rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500"></textarea>
         </form>
     </div>
 
@@ -395,7 +395,7 @@
                      with many milestones doesn't turn this into a huge wall
                      of open forms. --}}
                 <div class="flex flex-wrap items-center gap-3">
-                    <button type="button" class="milestone-toggle shrink-0 w-6 h-6 rounded-full text-gray-400 dark:text-gray-500 hover:bg-black/5 dark:hover:bg-white/10 flex items-center justify-center transition-colors" data-target="milestone-body-{{ $milestone->id }}" aria-expanded="false" title="Expand to edit">
+                    <button type="button" class="milestone-toggle shrink-0 w-6 h-6 rounded-full text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10 flex items-center justify-center transition-colors" data-target="milestone-body-{{ $milestone->id }}" aria-expanded="false" title="Expand to edit">
                         <svg class="milestone-toggle-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </button>
                     <button type="button" class="milestone-toggle flex-1 min-w-[10rem] text-left text-sm font-medium text-navy dark:text-white truncate" data-target="milestone-body-{{ $milestone->id }}">
@@ -420,7 +420,7 @@
                         @if ($milestone->status === 'completed' && $milestone->completed_at)
                             <p class="text-[0.65rem] text-teal-dark px-1 whitespace-nowrap">{{ $milestone->completed_at->format('M j, Y') }}</p>
                         @elseif ($milestone->due_date)
-                            <p class="text-[0.65rem] text-gray-400 dark:text-gray-500 px-1 whitespace-nowrap">Due {{ $milestone->due_date->format('M j, Y') }}</p>
+                            <p class="text-[0.65rem] text-gray-500 dark:text-gray-400 px-1 whitespace-nowrap">Due {{ $milestone->due_date->format('M j, Y') }}</p>
                         @endif
                         <form method="POST" action="{{ route('admin.milestones.destroy', $milestone) }}" data-confirm="Remove this milestone?" data-ajax-target="header-card panel-overview">
                             @csrf
@@ -440,22 +440,22 @@
                         <input type="hidden" name="status" value="{{ $milestone->status }}">
                         <div class="flex flex-wrap items-center gap-2.5">
                             <input type="text" name="title" value="{{ $milestone->title }}" required
-                                   class="flex-1 min-w-[14rem] rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                                   class="flex-1 min-w-[14rem] rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                             <input type="date" name="due_date" value="{{ $milestone->due_date?->format('Y-m-d') }}"
-                                   class="w-40 shrink-0 rounded-lg border border-gray-300 dark:border-gray-600 px-2.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                                   class="w-40 shrink-0 rounded-lg border border-gray-300 dark:border-gray-600 px-2.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                             <button type="submit" title="Save title, due date &amp; details" class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 hover:bg-navy hover:text-white dark:hover:bg-navy px-3 py-2 rounded-lg transition-colors">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
                                 Save
                             </button>
                         </div>
                         <textarea name="description" rows="2" placeholder="Add details for this milestone (optional)..."
-                                  class="w-full min-h-[4.5rem] resize-y rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">{{ $milestone->description }}</textarea>
+                                  class="w-full min-h-[4.5rem] resize-y rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">{{ $milestone->description }}</textarea>
                     </form>
                 </div>
             </div>
         @endforeach
         @if ($project->milestones->isEmpty())
-            <p class="text-sm text-gray-400 dark:text-gray-500">No milestones yet.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">No milestones yet.</p>
         @endif
     </div>
 </div>
@@ -481,7 +481,7 @@
     $paidTotal = $billablePayments->where('status', 'paid')->sum('amount');
     $balanceDue = $invoicedTotal - $paidTotal;
 @endphp
-<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+<div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
     <div class="flex items-center justify-between gap-3 mb-4">
         <h3 class="font-semibold text-navy dark:text-white">Payments</h3>
 
@@ -503,7 +503,7 @@
     <div class="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden mb-4">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                <thead class="bg-gray-50 dark:bg-navy-dark text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                     <tr>
                         <th class="px-4 py-3">Line Item</th>
                         <th class="px-4 py-3">Category</th>
@@ -534,7 +534,7 @@
                             <td class="px-4 py-3.5 align-top text-right">
                                 <div class="flex items-center justify-end gap-1">
                                     @if ($payment->isPending() && $payment->stripe_checkout_session_id)
-                                        <span class="text-xs text-gray-400 dark:text-gray-500" title="A Stripe checkout session is in progress for this payment — sync or wait before removing.">Checkout in progress</span>
+                                        <span class="text-xs text-gray-500 dark:text-gray-400" title="A Stripe checkout session is in progress for this payment — sync or wait before removing.">Checkout in progress</span>
                                     @elseif ($payment->isPending())
                                         <form method="POST" action="{{ route('admin.payments.send-email', $payment) }}" data-confirm="Email this ${{ number_format($payment->amount / 100, 2) }} invoice to {{ $project->user->name }} now?" data-ajax-target="panel-billing tabbtn-billing">
                                             @csrf
@@ -545,7 +545,7 @@
                                         <form method="POST" action="{{ route('admin.payments.destroy', $payment) }}" data-confirm="Remove this payment request?" data-ajax-target="panel-billing tabbtn-billing">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" title="Remove this payment request" class="w-8 h-8 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 flex items-center justify-center transition-colors">
+                                            <button type="submit" title="Remove this payment request" class="w-8 h-8 rounded-full text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 flex items-center justify-center transition-colors">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                             </button>
                                         </form>
@@ -557,7 +557,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-400 dark:text-gray-500">No payment requests yet.</td>
+                            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">No payment requests yet.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -587,13 +587,13 @@
 
     {{-- Compact "Add Line Item" row --}}
     <div class="pt-5 border-t border-gray-100 dark:border-gray-700">
-        <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Add New Line Item</p>
+        <p class="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">Add New Line Item</p>
         <form method="POST" action="{{ route('admin.payments.store', $project) }}" class="flex flex-wrap items-end gap-3" data-ajax-target="panel-billing tabbtn-billing">
             @csrf
             <div class="flex-1 min-w-[14rem]">
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Description</label>
                 <input type="text" name="description" placeholder="What's this payment for..." required
-                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
             </div>
             <div class="w-44 shrink-0">
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Category</label>
@@ -601,14 +601,14 @@
 
                 <div class="relative" data-payment-category-dropdown>
                     <button type="button" data-payment-category-toggle aria-haspopup="listbox" aria-expanded="false"
-                            class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
-                        <span data-payment-category-label class="text-gray-400 dark:text-gray-500 truncate">No category</span>
+                            class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+                        <span data-payment-category-label class="text-gray-500 dark:text-gray-400 truncate">No category</span>
                         <svg data-payment-category-chevron class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </button>
 
-                    <div data-payment-category-menu class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                    <div data-payment-category-menu class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                         @foreach (['' => 'No category', 'phase' => 'Phase', 'one_time' => 'One-Time Payment', 'deposit' => 'Deposit', 'final' => 'Final Payment', 'other' => 'Other'] as $value => $label)
                             <button type="button" data-payment-category-option="{{ $value }}" role="option" aria-selected="{{ $value === '' ? 'true' : 'false' }}"
                                     class="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $value === '' ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
@@ -624,9 +624,9 @@
             <div class="w-36 shrink-0">
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Amount</label>
                 <div class="relative">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 dark:text-gray-500 pointer-events-none">$</span>
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400 pointer-events-none">$</span>
                     <input type="number" name="amount" step="0.01" min="1" placeholder="0.00" required
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-6 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-6 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                 </div>
             </div>
             <button type="submit" class="shrink-0 inline-flex items-center gap-1.5 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
@@ -653,23 +653,23 @@
     ];
     $currentSubscription = $project->subscription;
 @endphp
-<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+<div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
     <h3 class="font-semibold text-navy dark:text-white mb-4">Care Plan</h3>
 
     @if ($currentSubscription && ! $currentSubscription->isCanceled())
-        <div class="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50/60 dark:bg-gray-900/20 px-5 py-4">
+        <div class="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50/60 dark:bg-navy-dark/20 px-5 py-4">
             <div class="flex flex-wrap items-center gap-4">
                 <div>
                     <p class="text-sm font-semibold text-navy dark:text-white">{{ $currentSubscription->description }}</p>
                     @if ($currentSubscription->cancel_at_period_end && $currentSubscription->current_period_end)
                         <p class="text-xs text-red-500 mt-0.5">Cancels {{ $currentSubscription->current_period_end->format('M j, Y') }}</p>
                     @elseif ($currentSubscription->current_period_end)
-                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Renews {{ $currentSubscription->current_period_end->format('M j, Y') }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Renews {{ $currentSubscription->current_period_end->format('M j, Y') }}</p>
                     @endif
                 </div>
                 <div class="pl-4 border-l border-gray-200 dark:border-gray-700">
                     <span class="font-display text-xl font-bold text-navy dark:text-white">${{ number_format($currentSubscription->amount / 100, 2) }}</span>
-                    <span class="text-xs text-gray-400 dark:text-gray-500">/{{ $currentSubscription->interval }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">/{{ $currentSubscription->interval }}</span>
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -686,21 +686,21 @@
                 @endif
                 <form method="POST" action="{{ route('admin.subscriptions.sync', $currentSubscription) }}" data-ajax-target="panel-billing">
                     @csrf
-                    <button type="submit" title="Refresh status from Stripe" class="w-8 h-8 rounded-full text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-navy dark:hover:text-white flex items-center justify-center transition-colors">
+                    <button type="submit" title="Refresh status from Stripe" class="w-8 h-8 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-navy dark:hover:text-white flex items-center justify-center transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                     </button>
                 </form>
                 <form method="POST" action="{{ route('admin.subscriptions.destroy', $currentSubscription) }}" data-confirm="Cancel this care plan?" data-ajax-target="panel-billing">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" title="Cancel this care plan" class="w-8 h-8 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 flex items-center justify-center transition-colors">
+                    <button type="submit" title="Cancel this care plan" class="w-8 h-8 rounded-full text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 flex items-center justify-center transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </form>
             </div>
         </div>
     @else
-        <p class="text-sm text-gray-400 dark:text-gray-500 mb-4">No active care plan.</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">No active care plan.</p>
         @if (! in_array($project->status, ['launched', 'maintenance'], true))
             <p class="text-sm text-gold-dark bg-gold/10 border border-gold/30 rounded-lg px-4 py-3">
                 Care Plan billing doesn't start until this project is launched — set status to "Launched" on the
@@ -712,16 +712,16 @@
                 <div>
                     <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Description</label>
                     <input type="text" name="description" placeholder="e.g. Monthly Website Care" required
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                 </div>
                 <div class="flex items-end gap-3">
                     <div class="w-44">
                         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Amount / Month</label>
                         <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 dark:text-gray-500 pointer-events-none">$</span>
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400 pointer-events-none">$</span>
                             <input type="number" name="amount" step="0.01" min="1" placeholder="0.00" required
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-6 pr-12 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 dark:text-gray-500 pointer-events-none">USD</span>
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-6 pr-12 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-500 dark:text-gray-400 pointer-events-none">USD</span>
                         </div>
                     </div>
                     <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors">
@@ -737,7 +737,7 @@
 
 <div id="panel-onboarding" data-tab-panel="onboarding" class="hidden">
 
-    <div class="flex items-center justify-between mb-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+    <div class="flex items-center justify-between mb-6 bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5">
         <div>
             <h3 class="font-semibold text-navy dark:text-white">Walk Through Client Onboarding</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">See exactly what {{ $project->user->name }} saw on each of the 5 onboarding steps, filled in with their real answers — read only.</p>
@@ -749,7 +749,7 @@
     </div>
 
     {{-- Care Plan Agreement --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <h3 class="font-semibold text-navy dark:text-white mb-4">Care Plan Agreement</h3>
         @if ($project->carePlanAgreement)
             <p class="text-sm text-gray-600 dark:text-gray-300">
@@ -758,12 +758,12 @@
                 on {{ $project->carePlanAgreement->agreed_at->format('M j, Y \a\t g:i A') }}
             </p>
         @else
-            <p class="text-sm text-gray-400 dark:text-gray-500">Not selected yet.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Not selected yet.</p>
         @endif
     </div>
 
     {{-- Service Agreement --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <h3 class="font-semibold text-navy dark:text-white mb-4">Service Agreement</h3>
         @if ($project->agreementSignature)
             <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
@@ -788,12 +788,12 @@
                 @endif
             </div>
         @else
-            <p class="text-sm text-gray-400 dark:text-gray-500">Not signed yet.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Not signed yet.</p>
         @endif
     </div>
 
     {{-- Onboarding Questionnaire --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6">
         <h3 class="font-semibold text-navy dark:text-white mb-4">Onboarding Questionnaire</h3>
         @if ($project->questionnaire?->isCompleted())
             @php
@@ -806,32 +806,32 @@
                     ['label' => 'Additional Notes', 'value' => $q->additional_notes],
                 ];
             @endphp
-            <p class="text-xs text-gray-400 dark:text-gray-500 mb-5">Submitted {{ $q->completed_at->format('M j, Y \a\t g:i A') }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-5">Submitted {{ $q->completed_at->format('M j, Y \a\t g:i A') }}</p>
 
             {{-- Short metadata --}}
             <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-5 mb-6">
                 <div>
-                    <dt class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">Organization Type</dt>
+                    <dt class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Organization Type</dt>
                     <dd class="text-base font-medium text-navy dark:text-white">{{ $q->organization_type ?: '—' }}</dd>
                 </div>
                 <div>
-                    <dt class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">Brand Colors</dt>
+                    <dt class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Brand Colors</dt>
                     <dd class="text-base font-medium text-navy dark:text-white">{{ $q->brand_colors ?: '—' }}</dd>
                 </div>
                 <div>
-                    <dt class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">Services Interested In</dt>
+                    <dt class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Services Interested In</dt>
                     <dd class="text-base font-medium text-navy dark:text-white">{{ !empty($q->services) ? implode(', ', $q->services) : '—' }}</dd>
                 </div>
             </dl>
 
             {{-- Social Links — consolidated pills; "none"/empty values read as muted, not a wall of "none" text --}}
             <div class="mb-6">
-                <p class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Social Links</p>
+                <p class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Social Links</p>
                 @if (!empty($q->social_links))
                     <div class="flex flex-wrap gap-2">
                         @foreach ($q->social_links as $platform => $url)
                             @if ($isBlank($url))
-                                <span class="inline-flex items-center text-xs font-medium text-gray-300 dark:text-gray-600 bg-gray-50 dark:bg-gray-900/40 border border-gray-100 dark:border-gray-700 rounded-full px-3 py-1.5">
+                                <span class="inline-flex items-center text-xs font-medium text-gray-300 dark:text-gray-600 bg-gray-50 dark:bg-navy-dark/40 border border-gray-100 dark:border-gray-700 rounded-full px-3 py-1.5">
                                     {{ ucfirst($platform) }}
                                 </span>
                             @elseif (filter_var($url, FILTER_VALIDATE_URL) !== false)
@@ -853,14 +853,14 @@
             {{-- Long-form fields — own card each, isolated from the short metadata above --}}
             <div class="space-y-3">
                 @foreach ($longFormFields as $field)
-                    <div class="bg-gray-50/50 dark:bg-gray-900/30 border border-gray-100 dark:border-gray-700 rounded-lg p-4">
-                        <p class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">{{ $field['label'] }}</p>
+                    <div class="bg-gray-50/50 dark:bg-navy-dark/30 border border-gray-100 dark:border-gray-700 rounded-lg p-4">
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">{{ $field['label'] }}</p>
                         <p class="text-base font-medium text-navy dark:text-white whitespace-pre-wrap">{{ $field['value'] ?: '—' }}</p>
                     </div>
                 @endforeach
             </div>
         @else
-            <p class="text-sm text-gray-400 dark:text-gray-500">Not submitted yet.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Not submitted yet.</p>
         @endif
     </div>
 
@@ -873,14 +873,14 @@
     @continue ($meta['type'] !== 'file')
     @php $items = $uploadsByCategory->get($cat, $empty); @endphp
 
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <div class="flex items-center justify-between mb-4">
             <h3 class="font-semibold text-navy dark:text-white">{{ $meta['label'] }}</h3>
-            <span class="text-xs text-gray-400 dark:text-gray-500">{{ $items->count() }} item{{ $items->count() === 1 ? '' : 's' }}</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{ $items->count() }} item{{ $items->count() === 1 ? '' : 's' }}</span>
         </div>
 
         @if ($items->isEmpty())
-            <p class="text-sm text-gray-400 dark:text-gray-500">Nothing here yet.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Nothing here yet.</p>
         @else
             <div class="space-y-2.5">
                 @foreach ($items as $item)
@@ -895,7 +895,7 @@
                             </span>
                             <span class="min-w-0">
                                 <span class="block text-sm font-medium text-navy dark:text-white group-hover:text-gold-dark truncate">{{ $item->original_name }}</span>
-                                <span class="block text-xs text-gray-400 dark:text-gray-500">
+                                <span class="block text-xs text-gray-500 dark:text-gray-400">
                                     {{ $item->created_at->format('M j, Y') }}
                                     @if ($item->formattedSize()) &middot; {{ $item->formattedSize() }} @endif
                                     &middot; from {{ $item->user->name }}
@@ -934,21 +934,21 @@
 </div>
 
 <div id="panel-recommendations" data-tab-panel="recommendations" class="hidden">
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <h3 class="font-semibold text-navy dark:text-white mb-4">Submit a Recommendation</h3>
         <form method="POST" action="{{ route('admin.recommendations.store', $project) }}" class="space-y-3" data-ajax-target="panel-recommendations">
             @csrf
             <input type="text" name="title" required placeholder="e.g. Add a sticky donate button"
-                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
             <select name="category" required
-                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                 <option value="" disabled selected>Choose a category...</option>
                 @foreach (\App\Models\Recommendation::CATEGORIES as $value => $label)
                     <option value="{{ $value }}">{{ $label }}</option>
                 @endforeach
             </select>
             <textarea name="description" rows="3" required placeholder="What's the improvement and why would it help?"
-                      class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
+                      class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500"></textarea>
             <div class="flex justify-end">
                 <button type="submit" class="bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
                     Submit
@@ -957,12 +957,12 @@
         </form>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
         @forelse ($project->recommendations as $item)
             <div class="px-6 py-4">
                 <div class="flex items-center justify-between gap-4 mb-1">
                     <p class="text-sm font-semibold text-navy dark:text-white">{{ $item->title }}</p>
-                    <span class="text-xs text-gray-400 dark:text-gray-500">by {{ $item->submittedBy->name }} &middot; {{ $item->created_at->format('M j, Y') }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">by {{ $item->submittedBy->name }} &middot; {{ $item->created_at->format('M j, Y') }}</span>
                 </div>
                 <p class="text-xs font-semibold uppercase tracking-wide text-gold-dark mb-2">{{ \App\Models\Recommendation::CATEGORIES[$item->category] ?? $item->category }}</p>
                 <p class="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-line mb-3">{{ $item->description }}</p>
@@ -970,7 +970,7 @@
                     @csrf
                     @method('PATCH')
                     <select name="status" onchange="this.form.requestSubmit()"
-                            class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                            class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                         @foreach (\App\Models\Recommendation::STATUSES as $value => $label)
                             <option value="{{ $value }}" {{ $item->status === $value ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
@@ -978,29 +978,29 @@
                 </form>
             </div>
         @empty
-            <p class="text-sm text-gray-400 dark:text-gray-500 px-6 py-8 text-center">No recommendations submitted for this project yet.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 px-6 py-8 text-center">No recommendations submitted for this project yet.</p>
         @endforelse
     </div>
 </div>
 
 <div id="panel-workorders" data-tab-panel="workorders" class="hidden">
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6">
         <div class="flex items-center justify-between gap-4 mb-4">
             <h3 class="font-semibold text-navy dark:text-white">Work Orders</h3>
             <button type="button" data-modal="new-work-order-modal"
-                class="modal-trigger inline-flex items-center gap-1.5 text-xs font-semibold text-navy dark:text-white border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-lg transition-colors">
+                class="modal-trigger inline-flex items-center gap-1.5 text-xs font-semibold text-navy dark:text-white border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 bg-white dark:bg-navy px-3 py-1.5 rounded-lg transition-colors">
                 New Work Order
             </button>
         </div>
         @if ($projectRequests->isEmpty())
-            <p class="text-sm text-gray-400 dark:text-gray-500">No work orders for this client yet.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">No work orders for this client yet.</p>
         @else
             <div class="space-y-2.5">
                 @foreach ($projectRequests as $wo)
                     <a href="{{ route('admin.project-requests.show', $wo) }}" class="flex items-center justify-between gap-4 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3 hover:border-gold transition-colors">
                         <span class="min-w-0">
                             <span class="block text-sm font-medium text-navy dark:text-white truncate">{{ $wo->title }}</span>
-                            <span class="block text-xs text-gray-400 dark:text-gray-500">
+                            <span class="block text-xs text-gray-500 dark:text-gray-400">
                                 {{ \App\Models\ProjectRequest::STATUSES[$wo->status] ?? $wo->status }}
                                 &middot; {{ \App\Models\ProjectRequest::PRIORITIES[$wo->priority] ?? $wo->priority }}
                                 @if ($wo->due_date) &middot; Due {{ $wo->due_date->format('M j, Y') }} @endif
@@ -1141,7 +1141,7 @@ function submitAdminReply(form, event) {
     <div id="reset-password-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
 
     <div id="reset-password-panel" class="relative w-full max-w-sm transform scale-95 opacity-0 transition-all duration-200">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
+        <div class="bg-white dark:bg-navy rounded-2xl shadow-2xl p-6">
             <div class="w-11 h-11 rounded-full bg-gold/15 text-gold-dark flex items-center justify-center mb-4">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
             </div>
@@ -1166,7 +1166,7 @@ function submitAdminReply(form, event) {
 
 {{-- New Work Order modal — creates a ProjectRequest for this client directly, reusing admin.project-requests.store (see index.blade.php's identical modal for the standalone-page version). Client is pre-filled/hidden since we're already inside their project. On success this redirects to the new request's own show page (not an ajax swap), so the admin can immediately assign a developer / manage files there — matching the existing internal-work-order flow. --}}
 <div id="new-work-order-modal" class="admin-modal hidden fixed inset-0 z-[60] items-center justify-center bg-black/40 px-4">
-    <div class="admin-modal-panel bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
+    <div class="admin-modal-panel bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
         <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
             <p class="font-semibold text-navy dark:text-white">New Work Order</p>
             <button type="button" class="admin-modal-close w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0" aria-label="Close">
@@ -1176,21 +1176,21 @@ function submitAdminReply(form, event) {
         <form method="POST" action="{{ route('admin.project-requests.store') }}" enctype="multipart/form-data" class="p-5 space-y-4">
             @csrf
             <input type="hidden" name="user_id" value="{{ $project->user_id }}">
-            <p class="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 rounded-lg px-3 py-2">
+            <p class="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-navy-dark/50 rounded-lg px-3 py-2">
                 For {{ $project->user->name }} — e.g. a new work order, revised specs, or additional dev tasks. Tracked in Work Orders for this client and never touches their portal.
             </p>
 
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Title</label>
                 <input type="text" name="title" required value="{{ old('title') }}" placeholder="e.g. Homepage redesign phase 2"
-                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                 @error('title')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Description</label>
                 <textarea name="description" rows="3" required
-                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">{{ old('description') }}</textarea>
+                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">{{ old('description') }}</textarea>
                 @error('description')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
             </div>
 
@@ -1210,7 +1210,7 @@ function submitAdminReply(form, event) {
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Due Date</label>
-                    <input type="date" name="due_date" value="{{ old('due_date') }}" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    <input type="date" name="due_date" value="{{ old('due_date') }}" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                 </div>
             </div>
 
@@ -1302,7 +1302,7 @@ function submitAdminReply(form, event) {
                 <h2 class="font-display text-2xl font-bold text-white">Are you sure?</h2>
             </div>
 
-            <div class="relative bg-white dark:bg-gray-800 rounded-t-2xl px-7 py-6">
+            <div class="relative bg-white dark:bg-navy rounded-t-2xl px-7 py-6">
                 <p id="confirm-modal-message" class="text-sm text-gray-500 dark:text-gray-400 mb-6 text-center"></p>
                 <div class="flex justify-end gap-2.5">
                     <button type="button" id="confirm-modal-cancel" class="px-4 py-2.5 rounded-lg text-sm font-medium text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">

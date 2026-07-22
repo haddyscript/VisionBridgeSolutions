@@ -25,13 +25,13 @@
         {{-- Left column (~60%): request info, proposal, internal notes --}}
         <div class="lg:col-span-3 space-y-6">
 
-            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6">
                 <div class="flex items-center justify-between gap-4 mb-4">
                     <div>
                         <p class="font-semibold text-navy dark:text-white">{{ $projectRequest->user->name }}</p>
-                        <p class="text-xs text-gray-400 dark:text-gray-500">{{ $projectRequest->user->email }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $projectRequest->user->email }}</p>
                     </div>
-                    <span class="text-xs text-gray-400 dark:text-gray-500 shrink-0 text-right">
+                    <span class="text-xs text-gray-500 dark:text-gray-400 shrink-0 text-right">
                         @if ($projectRequest->isInternal())
                             <span class="inline-block text-[0.65rem] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-navy/10 dark:bg-white/10 text-navy dark:text-white mb-0.5">Internal</span><br>
                             Created {{ $projectRequest->created_at->format('M j, Y') }} by {{ $projectRequest->createdByAdmin?->name ?? 'an admin' }}
@@ -53,7 +53,7 @@
                 <div class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                     <div>
                         <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Priority</label>
-                        <select name="priority" form="request-form" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                        <select name="priority" form="request-form" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                             @foreach (\App\Models\ProjectRequest::PRIORITIES as $value => $label)
                                 <option value="{{ $value }}" {{ old('priority', $projectRequest->priority) === $value ? 'selected' : '' }}>{{ $label }}</option>
                             @endforeach
@@ -62,12 +62,12 @@
                     <div>
                         <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Due Date</label>
                         <input type="date" name="due_date" form="request-form" value="{{ old('due_date', $projectRequest->due_date?->format('Y-m-d')) }}"
-                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="font-semibold text-navy dark:text-white mb-4">Proposal</h3>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -103,9 +103,9 @@
                             <span class="inline-block text-[0.6rem] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-navy/10 dark:bg-white/10 text-navy dark:text-white">Staff Only</span>
                         </div>
                         <div class="relative max-w-xs">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400 dark:text-gray-500 pointer-events-none">$</span>
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400 pointer-events-none">$</span>
                             <input type="number" name="estimated_value" step="0.01" min="0" value="{{ old('estimated_value', $projectRequest->estimated_value !== null ? number_format($projectRequest->estimated_value / 100, 2, '.', '') : '') }}" placeholder="0.00"
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-7 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-7 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
                         </div>
                     </div>
                 @endif
@@ -137,7 +137,7 @@
                     @endif
 
                     <label id="proposal-document-dropzone" for="proposal-document-input"
-                           class="flex flex-col items-center justify-center gap-1.5 w-full rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gold dark:hover:border-gold bg-gray-50 dark:bg-gray-900/50 px-4 py-7 text-center cursor-pointer transition-colors">
+                           class="flex flex-col items-center justify-center gap-1.5 w-full rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gold dark:hover:border-gold bg-gray-50 dark:bg-navy-dark/50 px-4 py-7 text-center cursor-pointer transition-colors">
                         <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M7 16a4 4 0 01-.88-7.9A5 5 0 1115.9 6 5 5 0 0117 15.9M12 12v9m0-9l-3 3m3-3l3 3"/>
                         </svg>
@@ -145,15 +145,15 @@
                             <span class="font-semibold text-gold-dark">{{ $projectRequest->proposal_document_path ? 'Click to replace' : 'Click to upload' }}</span>
                             or drag and drop
                         </p>
-                        <p id="proposal-document-filename" class="text-xs text-gray-400 dark:text-gray-500">PDF, Word, or image — up to 25MB</p>
+                        <p id="proposal-document-filename" class="text-xs text-gray-500 dark:text-gray-400">PDF, Word, or image — up to 25MB</p>
                         <input type="file" name="proposal_document" id="proposal-document-input" class="sr-only">
                     </label>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="font-semibold text-navy dark:text-white mb-1">Supporting Documents</h3>
-                <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Specs, contracts, reference files — separate from the formal Proposal Document above.</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Specs, contracts, reference files — separate from the formal Proposal Document above.</p>
 
                 @if ($projectRequest->attachments->isNotEmpty())
                     <div class="space-y-2 mb-4">
@@ -163,7 +163,7 @@
                                     <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                     <span class="truncate">{{ $attachment->original_name }}</span>
                                     @if ($attachment->formattedSize())
-                                        <span class="text-xs text-gray-400 dark:text-gray-500 shrink-0">({{ $attachment->formattedSize() }})</span>
+                                        <span class="text-xs text-gray-500 dark:text-gray-400 shrink-0">({{ $attachment->formattedSize() }})</span>
                                     @endif
                                 </a>
                                 <form method="POST" action="{{ route('admin.project-requests.attachments.destroy', [$projectRequest, $attachment]) }}"
@@ -182,10 +182,10 @@
                 @include('admin.project-requests._attachments-picker')
             </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6">
                 <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Internal Notes</label>
                 <textarea name="admin_notes" rows="4" placeholder="Notes for setting this up as an actual project..."
-                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">{{ old('admin_notes', $projectRequest->admin_notes) }}</textarea>
+                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">{{ old('admin_notes', $projectRequest->admin_notes) }}</textarea>
 
                 <div class="flex items-start gap-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 px-4 py-3.5 mt-4">
                     <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,7 +201,7 @@
         {{-- Right column (~40%, sticky): quick controls + the one save action --}}
         <div class="lg:col-span-2 lg:sticky lg:top-6 space-y-6">
 
-            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+            <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Assign Developer (Work Order)</label>
                     <form method="POST" action="{{ route('admin.project-requests.assign-developer', $projectRequest) }}">
@@ -239,7 +239,7 @@
                 @endif
             </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+            <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Status</label>
                     @include('admin._dropdown', [
@@ -258,7 +258,7 @@
                 <button type="submit" form="request-form" class="w-full bg-navy hover:bg-navy-light text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
                     Save Changes
                 </button>
-                <p class="text-xs text-gray-400 dark:text-gray-500 text-center">Saves status, proposal, and internal notes together.</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 text-center">Saves status, proposal, and internal notes together.</p>
             </div>
         </div>
     </div>

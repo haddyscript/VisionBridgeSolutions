@@ -36,7 +36,7 @@
         'high' => 'bg-gold',
         'urgent' => 'bg-red-400',
     ];
-    $neutralPill = 'border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-navy dark:text-white';
+    $neutralPill = 'border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark text-navy dark:text-white';
     $checkIcon = '<svg data-option-check class="w-4 h-4 text-gold-dark shrink-0 %s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>';
 @endphp
 
@@ -49,7 +49,7 @@
 <div id="rev-toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 w-80 max-w-[90vw]" aria-live="polite" aria-atomic="true"></div>
 
 @if ($revisions->isEmpty())
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
         <p class="text-gray-500 dark:text-gray-400">No revision requests yet.</p>
     </div>
 @else
@@ -62,11 +62,11 @@
         <div class="relative" data-rev-dd data-rev-dd-kind="filter" id="rev-filter-client" data-value="">
             <button type="button" data-rev-dd-toggle aria-haspopup="listbox" aria-expanded="false"
                     class="inline-flex items-center gap-1.5 text-sm font-medium rounded-lg pl-3 pr-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-gold transition-colors {{ $neutralPill }}">
-                <svg class="w-3.5 h-3.5 shrink-0 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <svg class="w-3.5 h-3.5 shrink-0 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 <span data-rev-dd-label>All Clients</span>
                 <svg data-rev-dd-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </button>
-            <div data-rev-dd-menu class="hidden absolute z-30 left-0 mt-1.5 w-56 max-h-72 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+            <div data-rev-dd-menu class="hidden absolute z-30 left-0 mt-1.5 w-56 max-h-72 overflow-y-auto bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                 <button type="button" data-rev-dd-option="" role="option" aria-selected="true" class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors text-gold-dark font-semibold">
                     <span data-option-label>All Clients</span>
                     {!! sprintf($checkIcon, '') !!}
@@ -84,11 +84,11 @@
         <div class="relative" data-rev-dd data-rev-dd-kind="filter" id="rev-filter-project" data-value="">
             <button type="button" data-rev-dd-toggle aria-haspopup="listbox" aria-expanded="false"
                     class="inline-flex items-center gap-1.5 text-sm font-medium rounded-lg pl-3 pr-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-gold transition-colors {{ $neutralPill }}">
-                <svg class="w-3.5 h-3.5 shrink-0 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/></svg>
+                <svg class="w-3.5 h-3.5 shrink-0 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/></svg>
                 <span data-rev-dd-label>All Projects</span>
                 <svg data-rev-dd-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </button>
-            <div data-rev-dd-menu class="hidden absolute z-30 left-0 mt-1.5 w-56 max-h-72 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+            <div data-rev-dd-menu class="hidden absolute z-30 left-0 mt-1.5 w-56 max-h-72 overflow-y-auto bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                 <button type="button" data-rev-dd-option="" role="option" aria-selected="true" class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors text-gold-dark font-semibold">
                     <span data-option-label>All Projects</span>
                     {!! sprintf($checkIcon, '') !!}
@@ -109,7 +109,7 @@
                 <span data-rev-dd-label>All Statuses</span>
                 <svg data-rev-dd-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </button>
-            <div data-rev-dd-menu class="hidden absolute z-30 left-0 mt-1.5 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+            <div data-rev-dd-menu class="hidden absolute z-30 left-0 mt-1.5 w-56 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                 <button type="button" data-rev-dd-option="" role="option" aria-selected="true" class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors text-gold-dark font-semibold">
                     <span data-option-label>All Statuses</span>
                     {!! sprintf($checkIcon, '') !!}
@@ -130,7 +130,7 @@
                 <span data-rev-dd-label>All Priorities</span>
                 <svg data-rev-dd-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </button>
-            <div data-rev-dd-menu class="hidden absolute z-30 left-0 mt-1.5 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+            <div data-rev-dd-menu class="hidden absolute z-30 left-0 mt-1.5 w-48 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                 <button type="button" data-rev-dd-option="" role="option" aria-selected="true" class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors text-gold-dark font-semibold">
                     <span data-option-label>All Priorities</span>
                     {!! sprintf($checkIcon, '') !!}
@@ -151,7 +151,7 @@
                 <span data-rev-dd-label>All Developers</span>
                 <svg data-rev-dd-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </button>
-            <div data-rev-dd-menu class="hidden absolute z-30 left-0 mt-1.5 w-52 max-h-72 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+            <div data-rev-dd-menu class="hidden absolute z-30 left-0 mt-1.5 w-52 max-h-72 overflow-y-auto bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                 <button type="button" data-rev-dd-option="" role="option" aria-selected="true" class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors text-gold-dark font-semibold">
                     <span data-option-label>All Developers</span>
                     {!! sprintf($checkIcon, '') !!}
@@ -172,20 +172,20 @@
         {{-- Date range — plain native inputs, not a dropdown --}}
         <div class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
             <label for="rev-filter-date-from" class="text-xs">From</label>
-            <input type="date" id="rev-filter-date-from" onchange="filterRevisions()" class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+            <input type="date" id="rev-filter-date-from" onchange="filterRevisions()" class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
             <label for="rev-filter-date-to" class="text-xs">To</label>
-            <input type="date" id="rev-filter-date-to" onchange="filterRevisions()" class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+            <input type="date" id="rev-filter-date-to" onchange="filterRevisions()" class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
         </div>
 
         <button type="button" onclick="clearRevisionFilters()" class="text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white underline">Clear filters</button>
     </div>
 
-    <p id="rev-filter-empty" class="hidden text-sm text-gray-400 dark:text-gray-500 mb-4">No revision requests match these filters.</p>
+    <p id="rev-filter-empty" class="hidden text-sm text-gray-500 dark:text-gray-400 mb-4">No revision requests match these filters.</p>
 
-    <div id="revisions-table-wrap" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div id="revisions-table-wrap" class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div class="overflow-x-auto">
         <table id="revisions-table" class="w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+            <thead class="bg-gray-50 dark:bg-navy-dark text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                 <tr>
                     <th class="px-5 py-3">Client / Project</th>
                     <th class="px-5 py-3">Request</th>
@@ -207,13 +207,13 @@
                         data-date="{{ $item->created_at->format('Y-m-d') }}">
                         <td class="px-5 py-3.5">
                             <p class="font-medium text-navy dark:text-white">{{ $item->user->name }}</p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $item->project->name }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $item->project->name }}</p>
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300 max-w-xs">
                             @if ($item->title)
                                 <p class="font-semibold text-navy dark:text-white truncate">{{ $item->title }}</p>
                             @endif
-                            <p class="truncate {{ $item->title ? 'text-xs text-gray-400 dark:text-gray-500' : '' }}">{{ \Illuminate\Support\Str::limit($item->body ?? $item->original_name ?? 'Revision #'.$item->id, 60) }}</p>
+                            <p class="truncate {{ $item->title ? 'text-xs text-gray-500 dark:text-gray-400' : '' }}">{{ \Illuminate\Support\Str::limit($item->body ?? $item->original_name ?? 'Revision #'.$item->id, 60) }}</p>
                             @if ($item->isOverdue())
                                 <span class="inline-block mt-1 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400">Overdue</span>
                             @endif
@@ -229,7 +229,7 @@
                                     <span data-rev-dd-label>{{ \App\Models\Upload::STATUSES[$item->status] ?? $item->status }}</span>
                                     <svg data-rev-dd-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
-                                <div data-rev-dd-menu class="hidden absolute z-20 left-0 mt-1.5 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                                <div data-rev-dd-menu class="hidden absolute z-20 left-0 mt-1.5 w-56 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                                     @foreach (\App\Models\Upload::STATUSES as $value => $label)
                                         <button type="button" data-rev-dd-option="{{ $value }}" data-color-class="{{ $statusColors[$value] ?? 'bg-gray-100 text-gray-500' }}" role="option" aria-selected="{{ $item->status === $value ? 'true' : 'false' }}"
                                                 class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $item->status === $value ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
@@ -252,7 +252,7 @@
                                     <span data-rev-dd-label>{{ \App\Models\Upload::PRIORITIES[$item->priority] ?? ucfirst($item->priority) }}</span>
                                     <svg data-rev-dd-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
-                                <div data-rev-dd-menu class="hidden absolute z-20 left-0 mt-1.5 w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                                <div data-rev-dd-menu class="hidden absolute z-20 left-0 mt-1.5 w-40 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                                     @foreach (\App\Models\Upload::PRIORITIES as $value => $label)
                                         <button type="button" data-rev-dd-option="{{ $value }}" data-color-class="{{ $priorityColors[$value] }}" role="option" aria-selected="{{ $item->priority === $value ? 'true' : 'false' }}"
                                                 class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $item->priority === $value ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
@@ -269,12 +269,12 @@
                             <div class="relative" data-rev-dd data-rev-dd-kind="developer" data-value="{{ $item->assigned_developer_id }}"
                                  data-rev-dd-url="{{ route('admin.uploads.assign-developer', $item) }}">
                                 <button type="button" data-rev-dd-toggle aria-haspopup="listbox" aria-expanded="false"
-                                        class="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg pl-2.5 pr-2 py-1.5 border focus:outline-none focus:ring-2 focus:ring-gold hover:border-gray-400 dark:hover:border-gray-500 transition-colors {{ $item->assigned_developer_id ? 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-navy dark:text-white' : 'border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-500' }}">
+                                        class="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg pl-2.5 pr-2 py-1.5 border focus:outline-none focus:ring-2 focus:ring-gold hover:border-gray-400 dark:hover:border-gray-500 transition-colors {{ $item->assigned_developer_id ? 'border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark text-navy dark:text-white' : 'border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark text-gray-500 dark:text-gray-400' }}">
                                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                     <span data-rev-dd-label>{{ $item->assignedDeveloper->name ?? 'Unassigned' }}</span>
                                     <svg data-rev-dd-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
-                                <div data-rev-dd-menu class="hidden absolute z-20 left-0 mt-1.5 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                                <div data-rev-dd-menu class="hidden absolute z-20 left-0 mt-1.5 w-48 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                                     <button type="button" data-rev-dd-option="" role="option" aria-selected="{{ ! $item->assigned_developer_id ? 'true' : 'false' }}"
                                             class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ ! $item->assigned_developer_id ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
                                         <span data-option-label>Unassigned</span>
@@ -303,7 +303,7 @@
 
         {{-- ─── Pagination — 15 per page, client-side (all rows already loaded
              for instant filtering above; this just slices the filtered set) ── --}}
-        <div class="flex items-center justify-between gap-4 px-5 py-3 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-400 dark:text-gray-500">
+        <div class="flex items-center justify-between gap-4 px-5 py-3 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
             <span id="rev-page-summary"></span>
             <div class="flex items-center gap-2">
                 <button type="button" id="rev-page-prev" onclick="changeRevisionPage(-1)"
@@ -343,7 +343,7 @@
 
         const isError = type === 'error';
         const toast = document.createElement('div');
-        toast.className = 'rev-toast pointer-events-auto relative overflow-hidden rounded-xl border shadow-xl bg-white/97 dark:bg-gray-800/97 backdrop-blur-sm px-4 py-3 flex items-start gap-3 '
+        toast.className = 'rev-toast pointer-events-auto relative overflow-hidden rounded-xl border shadow-xl bg-white/97 dark:bg-navy/97 backdrop-blur-sm px-4 py-3 flex items-start gap-3 '
             + (isError ? 'border-red-200 dark:border-red-500/30' : 'border-teal/25 dark:border-teal/25');
 
         toast.innerHTML = `

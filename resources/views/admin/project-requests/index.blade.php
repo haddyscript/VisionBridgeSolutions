@@ -45,9 +45,9 @@
         Review incoming website requests, manage proposals, and approve projects before assigning them to developers.
     </p>
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 shrink-0">
-        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 px-4 py-3 text-center shadow-sm">
+        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-navy/80 px-4 py-3 text-center shadow-sm">
             <p class="text-xl font-bold text-navy dark:text-white">{{ $totalRequestCount }}</p>
-            <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mt-0.5">Total Requests</p>
+            <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mt-0.5">Total Requests</p>
         </div>
         <div class="rounded-xl border border-amber-200/60 dark:border-amber-500/20 bg-amber-50/60 dark:bg-amber-500/5 px-4 py-3 text-center shadow-sm">
             <p class="text-xl font-bold text-amber-700 dark:text-amber-400">{{ $statusCounts['pending'] ?? 0 }}</p>
@@ -57,9 +57,9 @@
             <p class="text-xl font-bold text-indigo-600 dark:text-indigo-300">{{ $statusCounts['reviewed'] ?? 0 }}</p>
             <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-indigo-600/70 dark:text-indigo-300/70 mt-0.5">Reviewed</p>
         </div>
-        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 px-4 py-3 text-center shadow-sm">
+        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-navy/80 px-4 py-3 text-center shadow-sm">
             <p class="text-xl font-bold text-navy dark:text-white">{{ $draftProposalCount }}</p>
-            <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mt-0.5">Draft Proposals</p>
+            <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mt-0.5">Draft Proposals</p>
         </div>
     </div>
 </div>
@@ -73,10 +73,10 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
         </svg>
         <input type="text" id="request-search" placeholder="Search client, email, or title…" autocomplete="off"
-               class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white pl-10 pr-4 py-2.5 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition-shadow">
+               class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark dark:text-white pl-10 pr-4 py-2.5 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition-shadow">
     </div>
     <select id="request-status-filter"
-            class="rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white px-3.5 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition-shadow">
+            class="rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark dark:text-white px-3.5 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition-shadow">
         <option value="">All ({{ $totalRequestCount }})</option>
         @foreach (\App\Models\ProjectRequest::STATUSES as $key => $label)
             <option value="{{ $key }}">{{ $label }} ({{ $statusCounts[$key] ?? 0 }})</option>
@@ -93,12 +93,12 @@
     {{-- ═══════════════════════════════════════════════════════════════
          EMPTY STATE (no requests exist at all)
          ═══════════════════════════════════════════════════════════════ --}}
-    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 py-16 px-6 text-center">
+    <div class="bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 py-16 px-6 text-center">
         <div class="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-4">
             <svg class="w-8 h-8 text-gold-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
         </div>
         <p class="font-bold text-navy dark:text-white mb-1.5">No Project Requests Yet</p>
-        <p class="text-sm text-gray-400 dark:text-gray-500 max-w-sm mx-auto leading-relaxed mb-5">Projects submitted by clients will appear here.</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed mb-5">Projects submitted by clients will appear here.</p>
         <button type="button" data-modal="new-request-modal"
                 class="modal-trigger inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-br from-gold via-gold to-gold-dark text-navy text-sm font-bold rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
@@ -113,10 +113,10 @@
          inside a row (the View link is a plain <a>), so a transform-based
          hover lift here is safe.
          ═══════════════════════════════════════════════════════════════ --}}
-    <div id="requests-table" class="hidden md:block bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+    <div id="requests-table" class="hidden md:block bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
         <table class="w-full text-sm" style="border-collapse:separate;border-spacing:0 10px;">
-            <thead class="text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+            <thead class="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 <tr>
                     <th class="px-5 pb-2">Client</th>
                     <th class="px-5 pb-2">Title</th>
@@ -129,7 +129,7 @@
             <tbody>
                 @foreach ($requests as $item)
                     @php $searchText = strtolower($item->user->name.' '.$item->user->email.' '.$item->title); @endphp
-                    <tr class="request-row group bg-gray-50/60 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-800 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+                    <tr class="request-row group bg-gray-50/60 dark:bg-navy-dark/40 hover:bg-white dark:hover:bg-gray-800 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
                         data-search="{{ $searchText }}" data-status="{{ $item->status }}"
                         onclick="window.location='{{ route('admin.project-requests.show', $item) }}'">
                         <td class="px-5 py-4 align-middle rounded-l-xl border-y border-l border-gray-100 dark:border-gray-700 group-hover:border-gold/30">
@@ -139,7 +139,7 @@
                                 </span>
                                 <div class="min-w-0">
                                     <p class="font-bold text-navy dark:text-white truncate">{{ $item->user->name }}</p>
-                                    <p class="text-xs text-gray-400 dark:text-gray-500 truncate">{{ $item->user->email }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $item->user->email }}</p>
                                 </div>
                             </div>
                         </td>
@@ -171,14 +171,14 @@
                                     {{ \App\Models\ProjectRequest::PROPOSAL_STATUSES[$item->proposal_status] ?? $item->proposal_status }}
                                 </span>
                             @else
-                                <span class="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-700/50 text-gray-400 dark:text-gray-500">
+                                <span class="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400">
                                     No Proposal
                                 </span>
                             @endif
                         </td>
                         <td class="px-5 py-4 align-middle border-y border-gray-100 dark:border-gray-700 group-hover:border-gold/30 whitespace-nowrap">
                             <p class="font-medium text-gray-700 dark:text-gray-300">{{ $item->created_at->format('M j, Y') }}</p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $item->created_at->diffForHumans() }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $item->created_at->diffForHumans() }}</p>
                         </td>
                         <td class="px-5 py-4 align-middle text-right rounded-r-xl border-y border-r border-gray-100 dark:border-gray-700 group-hover:border-gold/30">
                             <a href="{{ route('admin.project-requests.show', $item) }}" onclick="event.stopPropagation()"
@@ -200,10 +200,10 @@
         <div id="requests-empty-filter-desktop" class="hidden py-14 text-center px-5">
             <svg class="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
             <p class="font-semibold text-navy dark:text-white mb-1">No matching requests found</p>
-            <p class="text-sm text-gray-400 dark:text-gray-500">Try another keyword.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Try another keyword.</p>
         </div>
 
-        <div class="flex items-center justify-between gap-4 px-5 py-3 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-400 dark:text-gray-500">
+        <div class="flex items-center justify-between gap-4 px-5 py-3 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
             <span id="requests-count-label">Showing {{ $requests->count() }} of {{ $requests->total() }} request{{ $requests->total() === 1 ? '' : 's' }}</span>
         </div>
     </div>
@@ -217,7 +217,7 @@
         @foreach ($requests as $item)
             @php $searchText = strtolower($item->user->name.' '.$item->user->email.' '.$item->title); @endphp
             <a href="{{ route('admin.project-requests.show', $item) }}"
-               class="request-card block bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm active:scale-[0.99] transition-transform duration-150 p-4"
+               class="request-card block bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm active:scale-[0.99] transition-transform duration-150 p-4"
                data-search="{{ $searchText }}" data-status="{{ $item->status }}">
                 <div class="flex items-start gap-3 mb-3">
                     <span class="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shrink-0 {{ $avatarClass($item->user->id) }}">
@@ -225,7 +225,7 @@
                     </span>
                     <div class="min-w-0 flex-1">
                         <p class="font-bold text-navy dark:text-white truncate">{{ $item->user->name }}</p>
-                        <p class="text-xs text-gray-400 dark:text-gray-500 truncate">{{ $item->user->email }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $item->user->email }}</p>
                     </div>
                     <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </div>
@@ -256,7 +256,7 @@
                 <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
                     <div>
                         <p class="text-xs font-medium text-gray-600 dark:text-gray-300">{{ $item->created_at->format('M j, Y') }}</p>
-                        <p class="text-[0.65rem] text-gray-400 dark:text-gray-500">{{ $item->created_at->diffForHumans() }}</p>
+                        <p class="text-[0.65rem] text-gray-500 dark:text-gray-400">{{ $item->created_at->diffForHumans() }}</p>
                     </div>
                     <span class="inline-flex items-center gap-1 text-xs font-semibold text-gold-dark">
                         View Details
@@ -266,10 +266,10 @@
             </a>
         @endforeach
 
-        <div id="requests-empty-filter-mobile" class="hidden bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 py-12 text-center px-5">
+        <div id="requests-empty-filter-mobile" class="hidden bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 py-12 text-center px-5">
             <svg class="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
             <p class="font-semibold text-navy dark:text-white mb-1">No matching requests found</p>
-            <p class="text-sm text-gray-400 dark:text-gray-500">Try another keyword.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Try another keyword.</p>
         </div>
     </div>
 
@@ -329,7 +329,7 @@
      properties on an ancestor would make this panel their containing block
      instead (same class of bug hit and fixed on the Team page). --}}
 <div id="new-request-modal" class="admin-modal hidden fixed inset-0 z-[60] items-center justify-center bg-black/40 px-4">
-    <div class="admin-modal-panel bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
+    <div class="admin-modal-panel bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
         <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
             <p class="font-bold text-navy dark:text-white">New Project Request</p>
             <button type="button" class="admin-modal-close w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0" aria-label="Close">
@@ -338,7 +338,7 @@
         </div>
         <form id="new-request-form" method="POST" action="{{ route('admin.project-requests.store') }}" enctype="multipart/form-data" class="p-5 space-y-4">
             @csrf
-            <p class="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 rounded-lg px-3 py-2">
+            <p class="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-navy-dark/50 rounded-lg px-3 py-2">
                 For internal work not submitted by a client — e.g. research/feasibility work on an existing account. It's tied to a client for record-keeping but never appears in their portal or notifies them.
             </p>
 
@@ -357,14 +357,14 @@
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Title</label>
                 <input type="text" name="title" required value="{{ old('title') }}" placeholder="e.g. Unity Auto Group Development Research &amp; Feasibility"
-                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                 @error('title')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Description</label>
                 <textarea name="description" rows="3" required
-                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">{{ old('description') }}</textarea>
+                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">{{ old('description') }}</textarea>
                 @error('description')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
             </div>
 
@@ -384,7 +384,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Due Date</label>
-                    <input type="date" name="due_date" value="{{ old('due_date') }}" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    <input type="date" name="due_date" value="{{ old('due_date') }}" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                 </div>
             </div>
 

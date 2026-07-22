@@ -128,7 +128,7 @@
         One-Time Payments
     </button>
     <button type="button" data-tab-button="maintenance" onclick="showPaymentsTab('maintenance')"
-            class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-navy transition-colors">
+            class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-navy transition-colors">
         Care Plans
         @if ($pendingSubscriptionCount > 0)
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">{{ $pendingSubscriptionCount }} pending</span>
@@ -139,13 +139,13 @@
 <div id="panel-one-time" data-tab-panel="one-time">
 
 @if ($payments->isEmpty())
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
         <p class="text-gray-500 dark:text-gray-400">No payment requests yet.</p>
     </div>
 @else
-    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+            <thead class="bg-gray-50 dark:bg-navy-dark text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                 <tr>
                     <th class="px-5 py-3">Client</th>
                     <th class="px-5 py-3">Description</th>
@@ -171,7 +171,7 @@
                         data-project-url="{{ route('admin.projects.show', $payment->project) }}">
                         <td class="px-5 py-3.5">
                             <p class="font-medium text-navy dark:text-white">{{ $payment->project->user->name }}</p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $payment->project->name }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $payment->project->name }}</p>
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $payment->description }}</td>
                         <td class="px-5 py-3.5 font-semibold text-navy dark:text-white">{{ $payment->formattedAmount() }}</td>
@@ -211,29 +211,29 @@
 <div id="panel-maintenance" data-tab-panel="maintenance" class="hidden">
 
 @if ($subscriptions->isEmpty())
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
         <p class="text-gray-500 dark:text-gray-400">No care plans yet.</p>
     </div>
 @else
     {{-- Search + status filter toolbar --}}
     <div class="flex flex-wrap items-center gap-3 mb-4">
         <div class="relative flex-1 min-w-[200px]">
-            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
             <input type="text" id="care-plan-search" placeholder="Search by client or project name..."
-                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
         </div>
         <div class="relative w-full sm:w-48" id="care-plan-status-filter-wrap">
             <input type="hidden" id="care-plan-status-filter" value="">
 
             <button type="button" id="care-plan-status-filter-toggle" aria-haspopup="listbox" aria-expanded="false"
-                    class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+                    class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
                 <span id="care-plan-status-filter-label" class="flex items-center gap-2 min-w-0 truncate text-navy dark:text-white">All Statuses</span>
                 <svg id="care-plan-status-filter-chevron" class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                 </svg>
             </button>
 
-            <div id="care-plan-status-filter-menu" class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+            <div id="care-plan-status-filter-menu" class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                 @foreach (['' => 'All Statuses'] + $subscriptionStatusLabels as $value => $label)
                     <button type="button" data-status-option="{{ $value }}" role="option" aria-selected="{{ $value === '' ? 'true' : 'false' }}"
                             class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $value === '' ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
@@ -252,11 +252,11 @@
         </div>
     </div>
 
-    <p id="care-plan-empty-state" class="hidden text-sm text-gray-400 dark:text-gray-500 text-center py-6">No care plans match your search.</p>
+    <p id="care-plan-empty-state" class="hidden text-sm text-gray-500 dark:text-gray-400 text-center py-6">No care plans match your search.</p>
 
-    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+            <thead class="bg-gray-50 dark:bg-navy-dark text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                 <tr>
                     <th class="px-5 py-3">
                         <button type="button" data-sort-key="client" class="care-plan-sort-btn inline-flex items-center gap-1 hover:text-navy dark:hover:text-white transition-colors">
@@ -292,7 +292,7 @@
                         data-renews="{{ $subscription->current_period_end?->timestamp ?? 0 }}">
                         <td class="px-5 py-3.5">
                             <p class="font-medium text-navy dark:text-white">{{ $subscription->project->user->name }}</p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $subscription->project->name }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $subscription->project->name }}</p>
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $subscription->description }}</td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $subscription->formattedAmount() }}</td>
@@ -319,9 +319,9 @@
                         </td>
                     </tr>
                     @if ($subscription->payments->isNotEmpty())
-                        <tr id="subscription-history-{{ $subscription->id }}" class="subscription-history-row hidden bg-gray-50/60 dark:bg-gray-900/40" data-group="sub-{{ $subscription->id }}">
+                        <tr id="subscription-history-{{ $subscription->id }}" class="subscription-history-row hidden bg-gray-50/60 dark:bg-navy-dark/40" data-group="sub-{{ $subscription->id }}">
                             <td colspan="6" class="px-5 py-4">
-                                <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">Payment History</p>
+                                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Payment History</p>
                                 <div class="space-y-1.5">
                                     @foreach ($subscription->payments as $subscriptionPayment)
                                         <div class="flex items-center justify-between gap-4 text-sm">
@@ -330,7 +330,7 @@
                                             @if ($subscriptionPayment->hosted_invoice_url)
                                                 <a href="{{ $subscriptionPayment->hosted_invoice_url }}" target="_blank" rel="noopener" class="text-gold-dark hover:underline shrink-0">View Invoice</a>
                                             @else
-                                                <span class="text-gray-300 dark:text-gray-600 shrink-0">—</span>
+                                                <span class="text-gray-600 dark:text-gray-300 shrink-0">—</span>
                                             @endif
                                         </div>
                                     @endforeach
@@ -533,33 +533,33 @@
                 <p id="modal-description" class="text-sm text-white/50 mt-1"></p>
             </div>
 
-            <div class="relative bg-white dark:bg-gray-800 rounded-t-2xl px-7 py-6 space-y-4">
+            <div class="relative bg-white dark:bg-navy rounded-t-2xl px-7 py-6 space-y-4">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Client</span>
+                    <span class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Client</span>
                     <span id="modal-client" class="text-sm font-semibold text-navy dark:text-white"></span>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Project</span>
+                    <span class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Project</span>
                     <span id="modal-project" class="text-sm font-semibold text-navy dark:text-white"></span>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Status</span>
+                    <span class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Status</span>
                     <span id="modal-status-badge" class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full"></span>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Currency</span>
+                    <span class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Currency</span>
                     <span id="modal-currency" class="text-sm font-semibold text-navy dark:text-white"></span>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Created</span>
+                    <span class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Created</span>
                     <span id="modal-created" class="text-sm font-semibold text-navy dark:text-white"></span>
                 </div>
                 <div id="modal-paid-row" class="flex items-center justify-between">
-                    <span class="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Paid On</span>
+                    <span class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Paid On</span>
                     <span id="modal-paid-at" class="text-sm font-semibold text-navy dark:text-white"></span>
                 </div>
                 <div id="modal-intent-row" class="flex items-center justify-between gap-3">
-                    <span class="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 shrink-0">Transaction ID</span>
+                    <span class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400 shrink-0">Transaction ID</span>
                     <button type="button" onclick="copyTransactionId()" id="modal-intent" class="text-sm font-mono text-navy dark:text-white truncate hover:text-gold transition-colors" title="Click to copy"></button>
                 </div>
 

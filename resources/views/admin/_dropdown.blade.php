@@ -32,7 +32,7 @@
     <input type="hidden" name="{{ $name }}" id="{{ $domId }}-input" value="{{ $effectiveSelected }}" @if ($formId) form="{{ $formId }}" @endif>
 
     <button type="button" id="{{ $domId }}-toggle" aria-haspopup="listbox" aria-expanded="false"
-            class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+            class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
         <span id="{{ $domId }}-label" class="flex items-center gap-2 min-w-0 truncate {{ $selectedOption ? 'text-navy dark:text-white' : 'text-gray-400' }}">
             @if ($selectedOption && ($selectedOption['dot'] ?? null))
                 <span class="w-2 h-2 rounded-full shrink-0 {{ $selectedOption['dot'] }}"></span>
@@ -48,7 +48,7 @@
          CSS absolute — this dropdown is used inside scrollable containers (e.g. the
          Developers page's Unassigned list), and an absolutely-positioned menu gets
          clipped by an ancestor's overflow:auto instead of floating above everything. --}}
-    <div id="{{ $domId }}-menu" class="hidden fixed z-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1 max-h-64 overflow-y-auto" role="listbox">
+    <div id="{{ $domId }}-menu" class="hidden fixed z-40 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1 max-h-64 overflow-y-auto" role="listbox">
         @if ($placeholder !== null)
             <button type="button" data-select-option="" data-select-label="{{ $placeholder }}" role="option" aria-selected="{{ $effectiveSelected === '' ? 'true' : 'false' }}"
                     class="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $effectiveSelected === '' ? 'text-gold-dark font-semibold' : 'text-gray-500 dark:text-gray-400' }}">

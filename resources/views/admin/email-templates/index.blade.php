@@ -5,7 +5,7 @@
 
 @section('content')
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div class="lg:col-span-1 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="lg:col-span-1 bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                 <p class="text-sm font-semibold text-navy dark:text-white">{{ count($templates) }} Templates</p>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Read-only — rendered with sample placeholder data, not real client info.</p>
@@ -20,7 +20,7 @@
             </nav>
         </div>
 
-        <div class="lg:col-span-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="lg:col-span-3 bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between gap-3">
                 <p class="text-sm font-semibold text-navy dark:text-white">{{ ucwords(str_replace('-', ' ', $selected)) }}</p>
                 <span class="text-xs text-gray-400 font-mono">emails/{{ $selected }}.blade.php</span>

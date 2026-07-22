@@ -12,23 +12,23 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
     <div class="lg:col-span-2 space-y-6">
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex items-center justify-between gap-4 mb-1">
                 <div>
                     <p class="font-semibold text-navy dark:text-white">{{ $ticket->user->name }}</p>
-                    <p class="text-xs text-gray-400 dark:text-gray-500">{{ $ticket->user->email }} &middot; {{ $ticket->project->name ?? 'No project' }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ $ticket->user->email }} &middot; {{ $ticket->project->name ?? 'No project' }}</p>
                 </div>
-                <span class="text-xs text-gray-400 dark:text-gray-500 shrink-0">Opened {{ $ticket->created_at->format('M j, Y \a\t g:ia') }}</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400 shrink-0">Opened {{ $ticket->created_at->format('M j, Y \a\t g:ia') }}</span>
             </div>
             <h3 class="font-semibold text-navy dark:text-white mt-3 mb-1">{{ $ticket->subject }}</h3>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+        <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
             <div class="flex justify-start">
                 <div class="max-w-[85%] bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-tl-sm px-4 py-3">
                     <p class="text-xs font-semibold text-navy dark:text-white mb-1">{{ $ticket->user->name }} · Client</p>
                     <p class="text-sm text-navy dark:text-white whitespace-pre-line">{{ $ticket->message }}</p>
-                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5">{{ $ticket->created_at->format('M j, g:ia') }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5">{{ $ticket->created_at->format('M j, g:ia') }}</p>
                 </div>
             </div>
 
@@ -38,7 +38,7 @@
                     <div class="max-w-[85%] {{ $fromClient ? 'bg-gray-100 dark:bg-gray-700 rounded-tl-sm' : 'bg-gold/10 rounded-tr-sm' }} rounded-2xl px-4 py-3">
                         <p class="text-xs font-semibold text-navy dark:text-white mb-1">{{ $reply->user->name }} · {{ $fromClient ? 'Client' : 'VisionBridge' }}</p>
                         <p class="text-sm text-navy dark:text-white whitespace-pre-line">{{ $reply->body }}</p>
-                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5">{{ $reply->created_at->format('M j, g:ia') }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5">{{ $reply->created_at->format('M j, g:ia') }}</p>
                     </div>
                 </div>
             @endforeach
@@ -56,7 +56,7 @@
     </div>
 
     <div class="lg:col-span-1 lg:sticky lg:top-6">
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6">
             <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Status</label>
             <form method="POST" action="{{ route('admin.support-tickets.status', $ticket) }}">
                 @csrf

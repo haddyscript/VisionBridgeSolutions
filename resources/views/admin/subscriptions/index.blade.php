@@ -22,32 +22,32 @@
 
 {{-- ─── KPI summary ─────────────────────────────────────────────────────── --}}
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5">
         <div class="flex items-center gap-2 mb-2">
             <svg class="w-4 h-4 text-gold-dark" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V6m0 10v2m9-8a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Monthly Recurring Revenue</p>
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Monthly Recurring Revenue</p>
         </div>
         <p class="text-2xl font-bold text-navy dark:text-white">${{ number_format($monthlyRecurringRevenue / 100, 2) }}</p>
-        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">From {{ $activeCount }} active {{ $activeCount === 1 ? 'plan' : 'plans' }}</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">From {{ $activeCount }} active {{ $activeCount === 1 ? 'plan' : 'plans' }}</p>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5">
         <div class="flex items-center gap-2 mb-2">
             <svg class="w-4 h-4 text-teal-dark" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Active Care Plans</p>
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Active Care Plans</p>
         </div>
         <p class="text-2xl font-bold text-navy dark:text-white">{{ $activeCount }}</p>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5">
         <div class="flex items-center gap-2 mb-2">
             <svg class="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Pending Setups</p>
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Pending Setups</p>
         </div>
         <p class="text-2xl font-bold text-navy dark:text-white">{{ $pendingCount }}</p>
     </div>
 </div>
 
 @if ($subscriptions->isEmpty())
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
         <p class="text-gray-500 dark:text-gray-400">No care plans yet.</p>
     </div>
 @else
@@ -58,10 +58,10 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
             </svg>
             <input type="text" id="subscription-search" placeholder="Search client, project, or description..." oninput="filterSubscriptions()"
-                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
         </div>
         <select id="subscription-status-filter" onchange="filterSubscriptions()"
-                class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
             <option value="">All statuses</option>
             <option value="pending">Pending</option>
             <option value="active">Active</option>
@@ -71,9 +71,9 @@
         <p id="subscription-empty-filter" class="hidden text-sm text-gray-400">No care plans match your search.</p>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <table id="subscriptions-table" class="w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+            <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                 <tr>
                     <th class="px-5 py-3">Client</th>
                     <th class="px-5 py-3">Description</th>
@@ -90,7 +90,7 @@
                         data-status="{{ $subscription->status }}">
                         <td class="px-5 py-3.5">
                             <p class="font-medium text-navy dark:text-white">{{ $subscription->project->user->name }}</p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $subscription->project->name }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $subscription->project->name }}</p>
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $subscription->description }}</td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $subscription->formattedAmount() }}</td>
@@ -115,7 +115,7 @@
 
                             {{-- Positioned via JS (fixed, not absolute) so it isn't clipped by
                                  the table's overflow — see toggleSubscriptionMenu() below. --}}
-                            <div id="subscription-menu-{{ $subscription->id }}" class="subscription-menu hidden fixed z-30 w-52 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1 text-left">
+                            <div id="subscription-menu-{{ $subscription->id }}" class="subscription-menu hidden fixed z-30 w-52 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1 text-left">
                                 <a href="{{ route('admin.projects.show', $subscription->project) }}"
                                    class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700">
                                     View Details

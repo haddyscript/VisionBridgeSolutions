@@ -4,7 +4,7 @@
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
     @foreach ($plans as $plan)
-        <div class="relative block bg-white dark:bg-gray-800 rounded-2xl border-2 p-6 {{ $selectedPlanId === $plan->id ? 'border-gold' : 'border-gray-200 dark:border-gray-700' }}">
+        <div class="relative block bg-white dark:bg-navy rounded-2xl border-2 p-6 {{ $selectedPlanId === $plan->id ? 'border-gold' : 'border-gray-200 dark:border-gray-700' }}">
             <input type="radio" {{ $selectedPlanId === $plan->id ? 'checked' : '' }}
                    class="absolute top-5 right-5 w-4 h-4 text-gold">
 
@@ -13,11 +13,11 @@
             @endif
 
             <h3 class="font-display text-lg font-bold text-navy dark:text-white mb-1">{{ $plan->name }}</h3>
-            <p class="text-xs text-gray-400 dark:text-gray-500 mb-3">{{ $plan->tagline }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">{{ $plan->tagline }}</p>
 
             <p class="mb-3">
                 <span class="text-3xl font-extrabold text-navy dark:text-white">{{ $plan->formattedPrice() }}</span>
-                <span class="text-sm text-gray-400 dark:text-gray-500">/{{ $plan->interval }}</span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">/{{ $plan->interval }}</span>
             </p>
 
             <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{{ $plan->description }}</p>
@@ -30,14 +30,14 @@
                     </li>
                 @endforeach
                 @if (count($plan->features) > 5)
-                    <li class="text-xs text-gray-400 dark:text-gray-500">+ {{ count($plan->features) - 5 }} more</li>
+                    <li class="text-xs text-gray-500 dark:text-gray-400">+ {{ count($plan->features) - 5 }} more</li>
                 @endif
             </ul>
         </div>
     @endforeach
 </div>
 
-<div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
+<div class="bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
     <h3 class="font-semibold text-navy dark:text-white mb-3">Care Plan Agreement</h3>
 
     @if ($project->carePlanAgreement)
@@ -47,6 +47,6 @@
             {{ $project->carePlanAgreement->agreed_at->format('M j, Y \a\t g:i A') }}.
         </label>
     @else
-        <p class="text-sm text-gray-400 dark:text-gray-500 text-center">Not selected yet — the client hasn't reached or completed this step.</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 text-center">Not selected yet — the client hasn't reached or completed this step.</p>
     @endif
 </div>

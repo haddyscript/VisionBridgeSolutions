@@ -13,10 +13,10 @@
 </p>
 
 {{-- FaithStack Payout — Per Care Plan --}}
-<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
+<div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
     <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2">FaithStack Payout — Per Care Plan</p>
+            <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2">FaithStack Payout — Per Care Plan</p>
             @if ($carePlans->isEmpty())
                 <p class="text-sm text-gold-dark font-medium">No Care Plans configured yet.</p>
             @else
@@ -29,7 +29,7 @@
                     @endforeach
                 </div>
             @endif
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
                 Set per plan on the <a href="{{ route('admin.care-plans.index') }}" class="text-gold-dark hover:underline">Care Plan Pricing</a> page —
                 auto-fills the FaithStack Owed amount on every new recurring payout going forward. One-time project payments are always entered manually below.
             </p>
@@ -50,29 +50,29 @@
 
 @if (auth()->user()->isSuperAdmin())
 {{-- Log a Manual/Historical Payment — super-admin only, for direct fees paid to FaithStack outside the client-revenue-share flow (e.g. the original one-time website build), including backdated entries --}}
-<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
-    <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Log a Manual or Historical Payment to FaithStack</p>
+<div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
+    <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">Log a Manual or Historical Payment to FaithStack</p>
     <form method="POST" action="{{ route('admin.partner-payouts.store') }}" enctype="multipart/form-data" class="grid sm:grid-cols-2 gap-3">
         @csrf
         <div class="sm:col-span-2">
             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Description</label>
             <input type="text" name="description" required placeholder="e.g. VisionBridge website development payment"
-                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
         </div>
         <div>
             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Amount (USD)</label>
             <input type="number" name="client_amount" step="0.01" min="0" required placeholder="300.00"
-                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
         </div>
         <div>
             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Payment Date</label>
             <input type="date" name="paid_at" required
-                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
         </div>
         <div class="sm:col-span-2">
             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Notes (reference/transaction #, payment method, original currency amount, etc.)</label>
             <textarea name="notes" rows="2" placeholder="e.g. Ref #12345, paid via bank transfer to GCash, original amount ₱17,000 PHP"
-                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white"></textarea>
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white"></textarea>
         </div>
         <div class="sm:col-span-2 receipts-field" data-max="3">
             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Receipts (image or PDF, up to 3, optional)</label>
@@ -94,13 +94,13 @@
 @endif
 
 {{-- FaithStack Payment Reminders --}}
-<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
+<div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
     <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">Payment Reminders</p>
+            <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Payment Reminders</p>
             @if ($faithstackDueDay)
                 <p class="font-display text-2xl font-bold text-navy dark:text-white">Day {{ $faithstackDueDay }} of each month</p>
-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Emails {{ str_replace(',', ', ', $faithstackReminderEmail) }} 5 days before, on the due date, and then every day it stays unpaid — whenever there's a ready-to-send balance.</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Emails {{ str_replace(',', ', ', $faithstackReminderEmail) }} 5 days before, on the due date, and then every day it stays unpaid — whenever there's a ready-to-send balance.</p>
             @else
                 <p class="text-sm text-gold-dark font-medium">No due day set — automatic reminders are off.</p>
             @endif
@@ -112,14 +112,14 @@
                 <input type="number" name="faithstack_payment_due_day" min="1" max="28"
                     value="{{ old('faithstack_payment_due_day', $faithstackDueDay ?: '') }}"
                     placeholder="e.g. 5"
-                    class="w-24 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    class="w-24 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
             </div>
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Reminder Email(s)</label>
                 <input type="text" name="faithstack_reminder_email"
                     value="{{ old('faithstack_reminder_email', $faithstackReminderEmail) }}"
                     placeholder="you@example.com, other@example.com"
-                    class="w-72 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                    class="w-72 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                 @error('faithstack_reminder_email')
                     <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                 @enderror
@@ -136,15 +136,15 @@
 </div>
 
 <div class="grid sm:grid-cols-3 gap-4 mb-6">
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5">
         <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Still Verifying</p>
         <p class="font-display text-2xl font-bold text-navy dark:text-white">${{ number_format($totalVerifying / 100, 2) }}</p>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5">
         <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Ready to Send</p>
         <p class="font-display text-2xl font-bold text-teal-dark">${{ number_format($totalReady / 100, 2) }}</p>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5">
         <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Amount Not Yet Decided</p>
         <p class="font-display text-2xl font-bold text-gold-dark">{{ $totalUndecided }}</p>
     </div>
@@ -156,29 +156,29 @@
 @endphp
 
 @if ($payouts->isEmpty())
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
         <p class="text-gray-500 dark:text-gray-400">No payments recorded yet.</p>
     </div>
 @else
     {{-- Search + status filter toolbar --}}
     <div class="flex flex-wrap items-center gap-3 mb-4">
         <div class="relative flex-1 min-w-[200px]">
-            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
             <input type="text" id="payout-search" placeholder="Search by client or project name..."
-                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
+                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
         </div>
         <div class="relative w-full sm:w-48" id="payout-status-filter-wrap">
             <input type="hidden" id="payout-status-filter" value="">
 
             <button type="button" id="payout-status-filter-toggle" aria-haspopup="listbox" aria-expanded="false"
-                    class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+                    class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
                 <span id="payout-status-filter-label" class="flex items-center gap-2 min-w-0 truncate text-navy dark:text-white">All Statuses</span>
                 <svg id="payout-status-filter-chevron" class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                 </svg>
             </button>
 
-            <div id="payout-status-filter-menu" class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+            <div id="payout-status-filter-menu" class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
                 @foreach (['' => 'All Statuses'] + $payoutStatusLabels as $value => $label)
                     <button type="button" data-status-option="{{ $value }}" role="option" aria-selected="{{ $value === '' ? 'true' : 'false' }}"
                             class="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $value === '' ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
@@ -197,11 +197,11 @@
         </div>
     </div>
 
-    <p id="payout-empty-state" class="hidden text-sm text-gray-400 dark:text-gray-500 text-center py-6">No payments match your search.</p>
+    <p id="payout-empty-state" class="hidden text-sm text-gray-500 dark:text-gray-400 text-center py-6">No payments match your search.</p>
 
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+            <thead class="bg-gray-50 dark:bg-navy-dark text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                 <tr>
                     <th class="px-5 py-3">
                         <button type="button" data-sort-key="client" class="payout-sort-btn inline-flex items-center gap-1 hover:text-navy dark:hover:text-white transition-colors">
@@ -244,12 +244,12 @@
                         data-faithstack-amount="{{ $payout->faithstack_amount ?? -1 }}">
                         <td class="px-5 py-3.5">
                             <p class="font-medium text-navy dark:text-white">{{ $project?->user->name ?? 'FaithStack (Direct)' }}</p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $project?->name ?? '—' }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $project?->name ?? '—' }}</p>
                         </td>
                         <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">
                             {{ $payout->sourceLabel() }}
                             @if ($payout->hasReceipts())
-                                <span class="inline-flex items-center gap-1 ml-1.5 text-xs text-gray-400 dark:text-gray-500 align-middle">
+                                <span class="inline-flex items-center gap-1 ml-1.5 text-xs text-gray-500 dark:text-gray-400 align-middle">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
                                     {{ $payout->receipts->count() }}
                                 </span>
@@ -266,7 +266,7 @@
                                     Paid {{ $payout->paid_at?->format('M j, Y') }}
                                 </span>
                                 @if ($payout->wasEdited())
-                                    <span class="block text-[11px] text-gray-400 dark:text-gray-500 mt-1" title="{{ $payout->edited_at->format('M j, Y g:ia') }}">
+                                    <span class="block text-[11px] text-gray-500 dark:text-gray-400 mt-1" title="{{ $payout->edited_at->format('M j, Y g:ia') }}">
                                         Edited {{ $payout->edited_at->format('M j, Y') }}@if ($payout->editedBy) by {{ $payout->editedBy->name }} @endif
                                     </span>
                                 @endif
@@ -292,7 +292,7 @@
                                 </button>
                             @elseif ($payout->isPaid() && auth()->user()->isSuperAdmin())
                                 <button type="button" data-modal="mark-paid-modal-{{ $payout->id }}"
-                                        class="modal-trigger text-gray-400 dark:text-gray-500 hover:text-gold-dark font-semibold hover:underline whitespace-nowrap">
+                                        class="modal-trigger text-gray-500 dark:text-gray-400 hover:text-gold-dark font-semibold hover:underline whitespace-nowrap">
                                     Edit
                                 </button>
                             @endif
@@ -307,11 +307,11 @@
     @foreach ($payouts as $payout)
         @php $modalProject = $payout->project(); @endphp
         <div id="payout-modal-{{ $payout->id }}" class="payout-modal hidden fixed inset-0 z-[60] items-center justify-center bg-black/40 px-4">
-            <div class="payout-modal-panel bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
+            <div class="payout-modal-panel bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
                 <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
                     <div>
                         <p class="font-semibold text-navy dark:text-white">{{ $modalProject?->user->name ?? 'FaithStack (Direct)' }}</p>
-                        <p class="text-xs text-gray-400 dark:text-gray-500">{{ $modalProject?->name ?? $payout->sourceLabel() }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $modalProject?->name ?? $payout->sourceLabel() }}</p>
                     </div>
                     <button type="button" class="payout-modal-close w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0" aria-label="Close">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -320,23 +320,23 @@
                 <div class="p-5 space-y-4 text-sm">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">For</p>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">For</p>
                             <p class="text-navy dark:text-white">{{ $payout->sourceLabel() }}</p>
                         </div>
                         <div>
-                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Date</p>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Date</p>
                             <p class="text-navy dark:text-white">{{ $payout->created_at->format('M j, Y') }}</p>
                         </div>
                         <div>
-                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Client Paid</p>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Client Paid</p>
                             <p class="text-navy dark:text-white">{{ $payout->formattedClientAmount() }}</p>
                         </div>
                         <div>
-                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">FaithStack Owed</p>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">FaithStack Owed</p>
                             <p class="text-navy dark:text-white">{{ $payout->formattedFaithstackAmount() }}</p>
                         </div>
                         <div class="col-span-2">
-                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Status</p>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Status</p>
                             <p class="text-navy dark:text-white">
                                 @if ($payout->isPaid())
                                     Paid {{ $payout->paid_at?->format('M j, Y') }}
@@ -353,15 +353,15 @@
 
                     @if ($payout->notes)
                         <div>
-                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">Notes</p>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">Notes</p>
                             <p class="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{{ $payout->notes }}</p>
                         </div>
                     @endif
 
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">Receipts</p>
+                        <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Receipts</p>
                         @if ($payout->receipts->isEmpty())
-                            <p class="text-gray-400 dark:text-gray-500 text-xs">No receipt uploaded.</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-xs">No receipt uploaded.</p>
                         @else
                             <div class="grid grid-cols-3 gap-2">
                                 @foreach ($payout->receipts as $receipt)
@@ -370,7 +370,7 @@
                                         @if ($receipt->isImage())
                                             <img src="{{ route('admin.partner-payouts.receipts.show', $receipt) }}" class="w-full h-full object-cover" alt="Receipt">
                                         @else
-                                            <div class="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-900 text-gray-400">
+                                            <div class="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-navy-dark text-gray-400">
                                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                             </div>
                                         @endif
@@ -387,7 +387,7 @@
             @php $isEditingPaid = $payout->isPaid(); @endphp
             {{-- Mark Paid / Edit modal — date paid, FaithStack amount, and up to 3 receipts. Editing an already-paid row is super-admin only. --}}
             <div id="mark-paid-modal-{{ $payout->id }}" class="payout-modal hidden fixed inset-0 z-[60] items-center justify-center bg-black/40 px-4">
-                <div class="payout-modal-panel bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl w-full max-w-md max-h-[85vh] overflow-y-auto">
+                <div class="payout-modal-panel bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl w-full max-w-md max-h-[85vh] overflow-y-auto">
                     <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
                         <p class="font-semibold text-navy dark:text-white">{{ $isEditingPaid ? 'Edit Payout' : ($payout->isFlagged() ? 'Send Anyway' : 'Mark Paid') }} — {{ $modalProject?->user->name ?? 'FaithStack (Direct)' }}</p>
                         <button type="button" class="payout-modal-close w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0" aria-label="Close">
@@ -409,14 +409,14 @@
                                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">FaithStack Amount (USD)</label>
                                 <input type="number" name="faithstack_amount" step="0.01" min="0" placeholder="Amount" required
                                        value="{{ $payout->hasFaithstackAmount() ? number_format($payout->faithstack_amount / 100, 2, '.', '') : '' }}"
-                                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                             </div>
                         @endif
 
                         <div>
                             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Date Paid</label>
                             <input type="date" name="paid_at" required max="{{ now()->format('Y-m-d') }}" value="{{ $payout->paid_at?->format('Y-m-d') ?? now()->format('Y-m-d') }}"
-                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
+                                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                         </div>
 
                         @if ($isEditingPaid && $payout->receipts->isNotEmpty())
@@ -429,7 +429,7 @@
                                             @if ($receipt->isImage())
                                                 <img src="{{ route('admin.partner-payouts.receipts.show', $receipt) }}" class="w-full h-full object-cover" alt="Receipt">
                                             @else
-                                                <div class="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-900 text-gray-400">
+                                                <div class="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-navy-dark text-gray-400">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                                 </div>
                                             @endif

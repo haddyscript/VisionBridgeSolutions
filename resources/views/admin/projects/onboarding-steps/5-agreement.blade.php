@@ -1,8 +1,8 @@
 @if (! $template)
-    <p class="text-sm text-gray-400 dark:text-gray-500 text-center py-8">No active agreement template exists to preview.</p>
+    <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-8">No active agreement template exists to preview.</p>
 @else
     @if ($template->isPdfBased())
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
             <div class="flex items-center justify-between gap-4 mb-3">
                 <h3 class="font-display text-lg font-bold text-navy dark:text-white">{{ $template->title }}</h3>
                 <a href="{{ route('portal.agreement.view-template', $template) }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-dark hover:underline shrink-0">
@@ -17,9 +17,9 @@
             $agreementParagraphs = preg_split('/\n\s*\n/', trim($template->body));
         @endphp
 
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
             <h3 class="font-display text-lg font-bold text-navy dark:text-white mb-3">{{ $template->title }}</h3>
-            <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed max-h-96 overflow-y-auto border border-gray-100 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
+            <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed max-h-96 overflow-y-auto border border-gray-100 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-navy-dark">
                 @foreach ($agreementParagraphs as $index => $paragraph)
                     @php
                         $lines = array_values(array_filter(explode("\n", $paragraph), fn ($line) => trim($line) !== ''));
@@ -43,12 +43,12 @@
     @endif
 @endif
 
-<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+<div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6">
 
     @if (! $signature)
-        <p class="text-sm text-gray-400 dark:text-gray-500 text-center py-4">Not signed yet — the client hasn't reached or completed this step.</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">Not signed yet — the client hasn't reached or completed this step.</p>
     @else
-        <div class="mb-6 p-5 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+        <div class="mb-6 p-5 rounded-xl bg-gray-50 dark:bg-navy-dark border border-gray-200 dark:border-gray-700">
             <p class="text-xs font-bold uppercase tracking-widest text-navy dark:text-white mb-3">Client Pre-Signature Acknowledgments</p>
             <div class="space-y-2.5">
                 @foreach ([
@@ -69,19 +69,19 @@
         <div class="mb-5">
             <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Client / Organization Name</label>
             <input type="text" value="{{ $signature->organization_name }}"
-                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-900 dark:text-white">
+                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-gray-50 dark:bg-navy-dark dark:text-white">
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
             <div>
                 <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Authorized Representative</label>
                 <input type="text" value="{{ $signature->signer_name }}"
-                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-900 dark:text-white">
+                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-gray-50 dark:bg-navy-dark dark:text-white">
             </div>
             <div>
                 <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Title</label>
                 <input type="text" value="{{ $signature->title }}"
-                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-900 dark:text-white">
+                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-gray-50 dark:bg-navy-dark dark:text-white">
             </div>
         </div>
 
@@ -96,7 +96,7 @@
                 @endif
             </div>
         </div>
-        <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
             Signed {{ $signature->signed_at->format('M j, Y \a\t g:i A') }} (v{{ $signature->template->version }})
         </p>
     @endif

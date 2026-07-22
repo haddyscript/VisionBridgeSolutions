@@ -1,7 +1,7 @@
 @if (! $carePlanAgreement)
-    <p class="text-sm text-gray-400 dark:text-gray-500 text-center py-8">Not reached yet — the client hasn't completed the Care Plan step this summary depends on.</p>
+    <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-8">Not reached yet — the client hasn't completed the Care Plan step this summary depends on.</p>
 @else
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
 
         <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
             <p class="text-xs font-bold uppercase tracking-widest text-navy dark:text-white">Client Agreement Summary</p>
@@ -33,7 +33,7 @@
                     <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 shrink-0 w-48">Agreement</span>
                     <span class="text-sm text-navy dark:text-white font-medium text-right">
                         {{ $template->title }}
-                        <span class="text-xs text-gray-400 dark:text-gray-500 ml-1">v{{ $template->version }}</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">v{{ $template->version }}</span>
                     </span>
                 </div>
             @endif
@@ -62,6 +62,6 @@
     @if ($project->hasSignedCurrentAgreement() || ($project->user->onboarding_step ?? 1) >= 10)
         <p class="text-sm text-teal-dark text-center font-medium">Confirmed — the client proceeded past this step to sign the Master Agreement.</p>
     @else
-        <p class="text-sm text-gray-400 dark:text-gray-500 text-center">Not confirmed yet — the client hasn't proceeded past this step.</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 text-center">Not confirmed yet — the client hasn't proceeded past this step.</p>
     @endif
 @endif

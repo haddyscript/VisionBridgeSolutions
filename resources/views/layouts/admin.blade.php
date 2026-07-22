@@ -52,7 +52,7 @@
         }
     </style>
 </head>
-<body class="font-sans antialiased text-gray-800 dark:text-gray-100 bg-gray-50 dark:bg-gray-900 min-h-screen">
+<body class="font-sans antialiased text-gray-800 dark:text-gray-100 bg-gray-50 dark:bg-navy-dark min-h-screen">
 
     <div class="flex min-h-screen">
 
@@ -344,14 +344,14 @@
 
         {{-- Main content --}}
         <div class="flex-1 md:ml-64 min-w-0">
-            <header class="sticky top-0 z-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 h-16 flex items-center px-4 sm:px-6 lg:px-8 gap-4">
+            <header class="sticky top-0 z-20 bg-white dark:bg-navy border-b border-gray-200 dark:border-gray-700 h-16 flex items-center px-4 sm:px-6 lg:px-8 gap-4">
                 <button id="sidebar-toggle" class="md:hidden text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
                 <h1 class="font-display text-lg font-bold text-navy dark:text-white flex-1">@yield('page-title', 'Admin')</h1>
-                <div class="flex items-center gap-2.5 pl-3 pr-1.5 py-1.5 rounded-full bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 shadow-sm">
+                <div class="flex items-center gap-2.5 pl-3 pr-1.5 py-1.5 rounded-full bg-gray-50 dark:bg-navy-dark/50 border border-gray-200 dark:border-gray-700 shadow-sm">
                     <span id="theme-toggle-label" class="hidden sm:inline text-xs font-bold uppercase tracking-wider text-navy dark:text-gold select-none transition-colors">Light Mode</span>
                     <button id="theme-toggle" type="button" title="Toggle dark mode" aria-label="Toggle light and dark mode"
                             class="relative inline-flex items-center h-8 w-16 shrink-0 rounded-full border-2 border-gold bg-gradient-to-r from-amber-200 via-amber-100 to-amber-50 dark:from-indigo-950 dark:via-navy-dark dark:to-navy shadow-inner hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300">
