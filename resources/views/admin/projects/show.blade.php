@@ -33,11 +33,11 @@
     $milestoneStateStyles = [
         'completed' => [
             'card' => 'border-l-4 border-l-teal border-teal/20 bg-teal/[0.04] dark:bg-teal/[0.06]',
-            'badge' => 'bg-teal/15 text-teal-dark border-teal/30',
+            'badge' => 'bg-teal/15 text-teal-dark dark:text-teal-light border-teal/30',
         ],
         'in_progress' => [
             'card' => 'border-l-4 border-l-gold border-gold/20 bg-gold/[0.04] dark:bg-gold/[0.06]',
-            'badge' => 'bg-gold/15 text-gold-dark border-gold/30',
+            'badge' => 'bg-gold/15 text-gold-dark dark:text-gold-light border-gold/30',
         ],
         'pending' => [
             'card' => 'border-l-4 border-l-gray-300 dark:border-l-gray-600 border-gray-200 dark:border-gray-700',
@@ -374,7 +374,7 @@
             <div class="flex flex-wrap items-center gap-2.5">
                 <input type="text" name="title" placeholder="Milestone title..." required
                        class="flex-1 min-w-[14rem] rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
-                <input type="date" name="due_date"
+                <input type="date" name="due_date" onclick="this.showPicker && this.showPicker()"
                        class="w-44 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                 <button type="submit" class="shrink-0 inline-flex items-center gap-1.5 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
@@ -409,16 +409,35 @@
                             <input type="hidden" name="title" value="{{ $milestone->title }}">
                             <input type="hidden" name="description" value="{{ $milestone->description }}">
                             <input type="hidden" name="due_date" value="{{ $milestone->due_date?->format('Y-m-d') }}">
-                            <select name="status" onchange="this.form.requestSubmit()"
-                                    class="rounded-full border {{ $state['badge'] }} pl-3 pr-7 py-1.5 text-xs font-semibold uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-gold appearance-none bg-no-repeat bg-[right_0.5rem_center] bg-[length:0.85rem]"
-                                    style="background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 24 24%27 stroke=%27currentColor%27%3E%3Cpath stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272.5%27 d=%27M19 9l-7 7-7-7%27/%3E%3C/svg%3E');">
-                                @foreach ($milestoneStatuses as $value => $label)
-                                    <option value="{{ $value }}" {{ $milestone->status === $value ? 'selected' : '' }}>{{ $label }}</option>
-                                @endforeach
-                            </select>
+                            <input type="hidden" name="status" value="{{ $milestone->status }}">
+
+                            {{-- Custom-styled status pill (replaces the native <select>, which
+                                 rendered its option list with unstyleable OS-default chrome —
+                                 unreadable in dark mode). Driven by the same bindPillDropdown()
+                                 used for the revision-thread dropdowns below. --}}
+                            <div class="relative shrink-0" data-milestone-status-dropdown>
+                                <button type="button" data-milestone-status-toggle data-color-class="{{ $state['badge'] }}" aria-haspopup="listbox" aria-expanded="false"
+                                        class="rounded-full border {{ $state['badge'] }} pl-3 pr-2 py-1.5 text-xs font-semibold uppercase tracking-wide flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-gold transition-colors">
+                                    <span data-milestone-status-toggle-label>{{ $milestoneStatuses[$milestone->status] ?? ucfirst($milestone->status) }}</span>
+                                    <svg data-milestone-status-toggle-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+
+                                <div data-milestone-status-menu class="hidden absolute z-20 right-0 mt-1.5 w-40 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                                    @foreach ($milestoneStatuses as $value => $label)
+                                        @php $optionBadge = $milestoneStateStyles[$value]['badge'] ?? $milestoneStateStyles['pending']['badge']; @endphp
+                                        <button type="button" data-milestone-status-option="{{ $value }}" data-color-class="{{ $optionBadge }}" role="option" aria-selected="{{ $milestone->status === $value ? 'true' : 'false' }}"
+                                                class="w-full flex items-center justify-between gap-2 px-3 py-2 text-xs text-left hover:bg-gold/10 transition-colors {{ $milestone->status === $value ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
+                                            <span data-option-label>{{ $label }}</span>
+                                            <svg data-option-check class="w-3.5 h-3.5 text-gold-dark shrink-0 {{ $milestone->status === $value ? '' : 'invisible' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
                         </form>
                         @if ($milestone->status === 'completed' && $milestone->completed_at)
-                            <p class="text-[0.65rem] text-teal-dark px-1 whitespace-nowrap">{{ $milestone->completed_at->format('M j, Y') }}</p>
+                            <p class="text-[0.65rem] text-teal-dark dark:text-teal-light px-1 whitespace-nowrap">{{ $milestone->completed_at->format('M j, Y') }}</p>
                         @elseif ($milestone->due_date)
                             <p class="text-[0.65rem] text-gray-500 dark:text-gray-400 px-1 whitespace-nowrap">Due {{ $milestone->due_date->format('M j, Y') }}</p>
                         @endif
@@ -441,7 +460,7 @@
                         <div class="flex flex-wrap items-center gap-2.5">
                             <input type="text" name="title" value="{{ $milestone->title }}" required
                                    class="flex-1 min-w-[14rem] rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
-                            <input type="date" name="due_date" value="{{ $milestone->due_date?->format('Y-m-d') }}"
+                            <input type="date" name="due_date" value="{{ $milestone->due_date?->format('Y-m-d') }}" onclick="this.showPicker && this.showPicker()"
                                    class="w-40 shrink-0 rounded-lg border border-gray-300 dark:border-gray-600 px-2.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                             <button type="submit" title="Save title, due date &amp; details" class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 hover:bg-navy hover:text-white dark:hover:bg-navy px-3 py-2 rounded-lg transition-colors">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
@@ -1587,6 +1606,7 @@ function submitAdminReply(form, event) {
         bindPillDropdown(root, 'priority', 'priority');
         bindPillDropdown(root, 'assigned-developer', 'assigned_developer_id');
         bindPillDropdown(root, 'developer-status', 'developer_status');
+        bindPillDropdown(root, 'milestone-status', 'status');
     }
 
     window.bindRevisionDropdowns = bindRevisionDropdowns;
