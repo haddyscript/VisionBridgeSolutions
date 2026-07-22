@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ProjectRequestStatusChangedMail;
 use App\Mail\WorkOrderAssignedMail;
 use App\Mail\WorkOrderInternalUpdateMail;
+use App\Models\ClientNotification;
 use App\Models\ProjectRequest;
 use App\Models\ProjectRequestAttachment;
 use App\Models\User;
@@ -143,11 +145,53 @@ class ProjectRequestController extends Controller
         unset($validated['proposal_document']);
         unset($validated['attachments']);
 
+        $previousStatus = $projectRequest->status;
+
         $projectRequest->update($validated);
 
         $this->storeAttachments($request, $projectRequest);
 
+        // Only client-submitted requests are ever shown to a client at all
+        // (see ProjectRequest::isInternal()) — an admin-created internal
+        // work order has nothing for a client to be notified about.
+        if ($validated['status'] !== $previousStatus
+            && in_array($validated['status'], ['converted', 'declined'], true)
+            && ! $projectRequest->isInternal()) {
+            $this->notifyClientOfRequestResolution($projectRequest);
+        }
+
         return back()->with('status', 'Project request updated.');
+    }
+
+    /** Client-facing resolution notice — fires once, when a request is finally Converted (their new project is being set up) or Declined. */
+    private function notifyClientOfRequestResolution(ProjectRequest $projectRequest): void
+    {
+        $isConverted = $projectRequest->status === 'converted';
+
+        $title = $isConverted
+            ? 'Your project request has been approved'
+            : 'Update on your project request';
+
+        $description = $isConverted
+            ? "Great news — \"{$projectRequest->title}\" has been approved and your new project is being set up."
+            : "We've reviewed \"{$projectRequest->title}\" and won't be moving forward with it at this time.";
+
+        // Clear this request's own earlier notifications (e.g. a stale
+        // "Reviewed" notice) now that it's actually resolved.
+        ClientNotification::resolveFor($projectRequest);
+
+        ClientNotification::send(
+            $projectRequest->user,
+            'project_request_status_changed',
+            $title,
+            $description,
+            route('portal.project-requests.show'),
+            $projectRequest,
+        );
+
+        if ($projectRequest->user->notify_on_replies) {
+            Mail::to($projectRequest->user->email)->send(new ProjectRequestStatusChangedMail($projectRequest));
+        }
     }
 
     /** Shared by store() and update() — saves any "Supporting Documents" beyond the single proposal_document field. */

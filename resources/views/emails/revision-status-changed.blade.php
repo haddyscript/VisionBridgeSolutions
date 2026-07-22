@@ -38,6 +38,11 @@
                                 <p style="font-size:14px; color:#374151; margin:0 0 20px; white-space:pre-line;">{{ $upload->closed_reason }}</p>
                             @endif
 
+                            @if ($upload->isCompleted() && $upload->completion_note)
+                                <h2 style="font-size:13px; color:#9CA3AF; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 8px;">Additional Information</h2>
+                                <p style="font-size:14px; color:#374151; margin:0 0 20px; white-space:pre-line;">{{ $upload->completion_note }}</p>
+                            @endif
+
                             @if ($upload->estimated_completion_date)
                                 <p style="font-size:14px; color:#374151; margin:0 0 20px;">
                                     <strong>Estimated completion:</strong> {{ $upload->estimated_completion_date->format('F j, Y') }}

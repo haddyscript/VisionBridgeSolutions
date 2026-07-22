@@ -55,6 +55,7 @@ class Upload extends Model
         'priority',
         'estimated_completion_date',
         'closed_reason',
+        'completion_note',
         'dev_instructions',
         'assigned_developer_id',
         'developer_status',

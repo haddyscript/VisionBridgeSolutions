@@ -303,6 +303,20 @@
                     </form>
                 @endif
 
+                {{-- Optional — folded into the "Completed" notification/email so the
+                     client gets more than a generic status line if there's anything
+                     specific they need to know. --}}
+                <form method="POST" action="{{ route('admin.uploads.completion-note', $item) }}" class="mb-3" data-ajax-target="{{ $panelId ?? '' }}">
+                    @csrf
+                    @method('PATCH')
+                    <label class="block text-[0.65rem] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">Completion Note (shown to client when marked Completed)</label>
+                    <textarea name="completion_note" rows="2" placeholder="Anything the client should know now that this is done..."
+                              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">{{ $item->completion_note }}</textarea>
+                    <button type="submit" class="mt-1.5 text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gold/15 hover:text-gold-dark px-3 py-1 rounded-full transition-colors">
+                        Save Note
+                    </button>
+                </form>
+
                 <div id="admin-thread-messages-{{ $cat }}-{{ $item->id }}" class="admin-thread-scroll space-y-2.5 max-h-[calc(100vh-460px)] overflow-y-auto pr-1">
                     {{-- Client message bubble --}}
                     <div class="flex items-start gap-2.5 max-w-[85%]">

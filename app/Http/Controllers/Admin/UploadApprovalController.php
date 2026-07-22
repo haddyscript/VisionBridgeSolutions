@@ -34,6 +34,7 @@ class UploadApprovalController extends Controller
                 'File approved',
                 "Your {$label} upload \"{$upload->original_name}\" has been approved.",
                 route('portal.category', $upload->category),
+                $upload,
             );
         }
 
@@ -91,14 +92,26 @@ class UploadApprovalController extends Controller
         $label = CategoryController::CATEGORIES[$upload->category]['label'] ?? 'submission';
         $statusLabel = Upload::STATUSES[$upload->status] ?? $upload->status;
 
+        $description = match (true) {
+            $upload->isClosed() && $upload->closed_reason => $upload->closed_reason,
+            $upload->isCompleted() && $upload->completion_note => $upload->completion_note,
+            default => "We've updated the status on your {$label}.",
+        };
+
+        // Once a request reaches a resolved end state, its own earlier
+        // notifications (replies, prior status changes) are stale — clear
+        // them before adding the fresh one so they stop sitting as unread.
+        if ($upload->isResolved()) {
+            ClientNotification::resolveFor($upload);
+        }
+
         ClientNotification::send(
             $upload->user,
             'revision_status_changed',
             "Your {$label} is now \"{$statusLabel}\"",
-            $upload->isClosed() && $upload->closed_reason
-                ? $upload->closed_reason
-                : "We've updated the status on your {$label}.",
+            $description,
             route('portal.category', $upload->category),
+            $upload,
         );
 
         if ($upload->user->notify_on_replies) {
@@ -147,6 +160,22 @@ class UploadApprovalController extends Controller
         }
 
         return back()->with('status', 'Dev instructions saved.');
+    }
+
+    /** Optional client-facing note included in the "Completed" notification/email — lets an admin add real instructions instead of just a generic status message. */
+    public function updateCompletionNote(Request $request, Upload $upload)
+    {
+        $validated = $request->validate([
+            'completion_note' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $upload->update($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Completion note saved.']);
+        }
+
+        return back()->with('status', 'Completion note saved.');
     }
 
     /**
@@ -273,6 +302,7 @@ class UploadApprovalController extends Controller
             "VisionBridge replied to your {$label}",
             $reply->body,
             route('portal.category', $upload->category),
+            $upload,
         );
 
         // A developer commenting on their own assigned Work Order is treated
