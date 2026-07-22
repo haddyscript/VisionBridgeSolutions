@@ -79,7 +79,7 @@
                 </div>
                 <div class="px-6 py-6">
                     <p id="admin-greeting-quote" class="text-base text-navy dark:text-white leading-relaxed italic opacity-0 transition-all duration-500 ease-out" style="transform:translateY(6px);">&ldquo;{{ $adminGreeting }}&rdquo;</p>
-                    <button type="button" onclick="document.getElementById('admin-greeting-modal').remove()"
+                    <button type="button" onclick="document.getElementById('admin-greeting-modal').remove(); document.getElementById('admin-greeting-confetti')?.remove();"
                             class="mt-6 w-full bg-gold hover:bg-gold-dark text-navy font-bold text-sm py-2.5 rounded-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]">
                         Let's Get to Work
                     </button>
@@ -127,6 +127,76 @@
                     quote.classList.remove('opacity-0');
                     quote.style.transform = 'translateY(0)';
                 }, 380);
+
+                // Hand-rolled canvas confetti — no external library, same as
+                // the QR code and everything else this app generates itself.
+                // Skipped entirely under prefers-reduced-motion.
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+                const canvas = document.createElement('canvas');
+                canvas.id = 'admin-greeting-confetti';
+                canvas.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:75;pointer-events:none;';
+                document.body.appendChild(canvas);
+
+                const ctx = canvas.getContext('2d');
+                function resizeCanvas() {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                }
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+
+                const colors = ['#C9A84C', '#DFC06A', '#A8872E', '#2A9D8F', '#3DBFB0', '#FFFFFF'];
+                const particles = Array.from({ length: 160 }, function () {
+                    return {
+                        x: Math.random() * canvas.width,
+                        y: -20 - Math.random() * canvas.height * 0.6,
+                        w: 5 + Math.random() * 6,
+                        h: 8 + Math.random() * 8,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        rotation: Math.random() * 360,
+                        rotationSpeed: (Math.random() - 0.5) * 12,
+                        speedY: 2 + Math.random() * 3,
+                        speedX: (Math.random() - 0.5) * 2.5,
+                        opacity: 1,
+                    };
+                });
+
+                const durationMs = 6000;
+                const startedAt = performance.now();
+
+                function drawConfetti(now) {
+                    const elapsed = now - startedAt;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    particles.forEach(function (p) {
+                        p.y += p.speedY;
+                        p.x += p.speedX;
+                        p.rotation += p.rotationSpeed;
+
+                        // Fade out over the last second instead of stopping abruptly.
+                        if (elapsed > durationMs - 1000) {
+                            p.opacity = Math.max(0, (durationMs - elapsed) / 1000);
+                        }
+
+                        ctx.save();
+                        ctx.globalAlpha = p.opacity;
+                        ctx.translate(p.x, p.y);
+                        ctx.rotate((p.rotation * Math.PI) / 180);
+                        ctx.fillStyle = p.color;
+                        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                        ctx.restore();
+                    });
+
+                    if (elapsed < durationMs) {
+                        requestAnimationFrame(drawConfetti);
+                    } else {
+                        window.removeEventListener('resize', resizeCanvas);
+                        canvas.remove();
+                    }
+                }
+
+                requestAnimationFrame(drawConfetti);
             })();
         </script>
     @endif
@@ -497,12 +567,9 @@
     </div>
 
     <script>
-        document.getElementById('admin-greeting-backdrop')?.addEventListener('click', function () {
-            document.getElementById('admin-greeting-modal')?.remove();
-        });
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') document.getElementById('admin-greeting-modal')?.remove();
-        });
+        // Deliberately no backdrop-click or Escape dismissal here — the
+        // greeting is meant to actually be read, so "Let's Get to Work" is
+        // the only way out.
 
         const sidebar = document.getElementById('admin-sidebar');
         const overlay = document.getElementById('sidebar-overlay');
