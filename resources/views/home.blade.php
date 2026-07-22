@@ -651,6 +651,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     </div>
     {{-- Scenes 1–3: pinned + scrubbed inside this track (see script). --}}
     <div class="story-pin-track">
+        {{-- #portfolio anchor — the project cards are now pinned scenes inside
+             this track (the old standalone #portfolio section was removed), so
+             this marker sits at the scroll depth where those card scenes play,
+             giving the "Portfolio" nav link + scroll-spy a real target again. --}}
+        <span id="portfolio" aria-hidden="true" style="position:absolute;top:50%;left:0;width:1px;height:1px;pointer-events:none;"></span>
     <div class="story-stage">
         <div class="story-bg"></div>
         <div class="story-stars"></div>
