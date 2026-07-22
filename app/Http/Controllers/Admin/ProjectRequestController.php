@@ -65,6 +65,8 @@ class ProjectRequestController extends Controller
             'proposal_document' => ['nullable', 'file', 'max:25600'],
             'attachments' => ['nullable', 'array'],
             'attachments.*' => ['file', 'max:25600'],
+        ], [
+            'title.unique' => 'A project request with this exact title already exists. Please use a more specific title so it can\'t be confused with the existing one.',
         ]);
 
         $projectRequest = new ProjectRequest([
