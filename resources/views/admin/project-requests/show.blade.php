@@ -252,7 +252,7 @@
                     ])
                 </div>
 
-                <button type="submit" form="request-form" class="w-full bg-navy hover:bg-navy-light text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
+                <button type="submit" form="request-form" class="w-full bg-navy hover:bg-navy-light dark:bg-gold dark:hover:bg-gold-dark text-white dark:text-navy-dark text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
                     Save Changes
                 </button>
                 <p class="text-xs text-gray-500 dark:text-gray-400 text-center">Saves status, proposal, and internal notes together.</p>
