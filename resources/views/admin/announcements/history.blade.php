@@ -5,10 +5,10 @@
 
 @section('content')
 
-<div class="bg-white rounded-xl border border-gray-200 p-5">
+<div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5">
     <div class="flex items-center gap-2 mb-4">
-        <h3 class="text-sm font-semibold text-navy">Announcement History</h3>
-        <span class="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-navy/5 text-navy/60">{{ $announcements->count() }}</span>
+        <h3 class="text-sm font-semibold text-navy dark:text-white">Announcement History</h3>
+        <span class="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-navy/5 dark:bg-white/10 text-navy/60 dark:text-white/70">{{ $announcements->count() }}</span>
     </div>
 
     @if ($announcements->isEmpty())
@@ -23,34 +23,34 @@
                         'allow_unsafe_links' => false,
                     ]);
                 @endphp
-                <div id="history-item-{{ $announcement->id }}" class="rounded-lg border {{ $acknowledged ? 'border-gray-200' : 'border-gold/40 bg-gold/5' }} px-4 py-3">
+                <div id="history-item-{{ $announcement->id }}" class="rounded-lg border {{ $acknowledged ? 'border-gray-200 dark:border-gray-700' : 'border-gold/40 bg-gold/5' }} px-4 py-3">
                     <button type="button" onclick="toggleAnnouncementHistoryItem({{ $announcement->id }})" class="w-full flex items-start justify-between gap-3 text-left group">
                         <span class="min-w-0 flex-1">
                             <span class="flex items-center flex-wrap gap-2">
-                                <span class="text-sm font-bold text-navy">{{ $announcement->title }}</span>
+                                <span class="text-sm font-bold text-navy dark:text-white">{{ $announcement->title }}</span>
                                 <span id="history-badge-{{ $announcement->id }}"
-                                      class="text-[11px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $acknowledged ? 'bg-gray-100 text-gray-400' : 'bg-gold/15 text-gold-dark' }}">
+                                      class="text-[11px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $acknowledged ? 'bg-gray-100 dark:bg-gray-700 text-gray-400' : 'bg-gold/15 text-gold-dark' }}">
                                     {{ $acknowledged ? 'Acknowledged' : 'Unacknowledged' }}
                                 </span>
                                 @foreach ($announcement->audienceLabels() as $label)
-                                    <span class="text-[11px] font-medium px-1.5 py-0.5 rounded bg-navy/5 text-navy/70">{{ $label }}</span>
+                                    <span class="text-[11px] font-medium px-1.5 py-0.5 rounded bg-navy/5 dark:bg-white/10 text-navy/70 dark:text-white/70">{{ $label }}</span>
                                 @endforeach
                             </span>
                             <span class="block text-xs text-gray-400 mt-0.5">{{ $announcement->created_at->format('M j, Y') }} — by {{ $announcement->createdBy->name }}</span>
                         </span>
-                        <svg id="history-chevron-{{ $announcement->id }}" class="w-4 h-4 mt-0.5 shrink-0 text-gray-400 group-hover:text-navy transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <svg id="history-chevron-{{ $announcement->id }}" class="w-4 h-4 mt-0.5 shrink-0 text-gray-400 group-hover:text-navy dark:group-hover:text-white transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
                         </svg>
                     </button>
 
                     <div id="history-body-{{ $announcement->id }}" class="hidden mt-3">
                         @if ($announcement->subtitle || $announcement->event_date || $announcement->event_time)
-                            <div class="mb-3 pb-3 border-b border-gray-100">
+                            <div class="mb-3 pb-3 border-b border-gray-100 dark:border-gray-700">
                                 @if ($announcement->subtitle)
-                                    <p class="text-sm text-navy/60 whitespace-pre-line">{{ $announcement->subtitle }}</p>
+                                    <p class="text-sm text-navy/60 dark:text-white/70 whitespace-pre-line">{{ $announcement->subtitle }}</p>
                                 @endif
                                 @if ($announcement->event_date || $announcement->event_time)
-                                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-xs font-medium text-gray-500">
+                                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">
                                         @if ($announcement->event_date)
                                             <span class="inline-flex items-center gap-1.5">
                                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
@@ -73,7 +73,7 @@
                         </div>
 
                         @unless ($acknowledged)
-                            <div id="history-actions-{{ $announcement->id }}" class="flex justify-end mt-4 pt-3 border-t border-gray-100">
+                            <div id="history-actions-{{ $announcement->id }}" class="flex justify-end mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
                                 <button type="button" onclick="acknowledgeAnnouncementHistoryItem({{ $announcement->id }}, this)" data-url="{{ route('admin.announcements.dismiss', $announcement) }}"
                                         class="inline-flex items-center gap-1.5 bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
@@ -106,11 +106,11 @@
         }).then(() => {
             const item = document.getElementById('history-item-' + id);
             item?.classList.remove('border-gold/40', 'bg-gold/5');
-            item?.classList.add('border-gray-200');
+            item?.classList.add('border-gray-200', 'dark:border-gray-700');
             const badge = document.getElementById('history-badge-' + id);
             if (badge) {
                 badge.textContent = 'Acknowledged';
-                badge.className = 'text-[11px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gray-100 text-gray-400';
+                badge.className = 'text-[11px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-400';
             }
             document.getElementById('history-actions-' + id)?.remove();
         });
