@@ -245,22 +245,6 @@
             50%      { transform:translateY(-13px) rotate(0deg); }
         }
 
-        /* ─── Portfolio floating service badges — same glassmorphism
-             pill treatment as .float-card, reused for the 4 corner
-             badges around the Our Work video panel. ─── */
-        .portfolio-badge {
-            position:absolute; pointer-events:none; z-index:3;
-            background:rgba(255,255,255,.92); border:1px solid rgba(47,58,69,.08);
-            box-shadow:0 8px 28px rgba(47,58,69,.10);
-            backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-            border-radius:9999px; padding:10px 20px;
-            will-change:transform;
-        }
-        .portfolio-badge-1 { top:6%;    left:2%;  animation:float-a 5s   ease-in-out infinite; }
-        .portfolio-badge-2 { top:8%;    right:2%; animation:float-b 6.5s ease-in-out infinite 0.6s; }
-        .portfolio-badge-3 { bottom:8%; left:3%;  animation:float-b 6s   ease-in-out infinite 1.2s; }
-        .portfolio-badge-4 { bottom:6%; right:3%; animation:float-a 5.5s ease-in-out infinite 1.8s; }
-
         /* ─── Portfolio project cards — premium agency showcase ─── */
         .portfolio-filter-btn {
             padding:10px 22px; border-radius:9999px; font-size:0.85rem; font-weight:600;
@@ -1688,6 +1672,46 @@
             background: linear-gradient(135deg, rgba(201,168,76,.7) 0%, rgba(223,192,106,.4) 100%);
             border-color: rgba(255,255,255,.4);
         }
+
+        /* ════════════════════════════════════════════════════════════
+           OUR WORK / IN THE SPOTLIGHT — hover-tilt depth only, homepage
+           only. No invented content, and no duplicate entrance animation
+           either: both sections already had their own well-tuned reveal
+           timelines (runPortfolioAnimation() and the Spotlight reveal,
+           both in home.blade.php) before any of this was added — an
+           earlier pass here also added a second, scroll-scrubbed
+           entrance on the same cards/panel/frame, and the two systems
+           fighting over the same transforms is what made the section
+           look jumbled. That duplicate entrance was removed; only the
+           mouse-tilt hover (initPortfolioTilt()/initSpotlightTilt() in
+           home.blade.php) remains, since it drives rotationX/rotationY —
+           a different transform axis than what the existing entrances
+           already animate — so it layers on top safely instead of
+           competing. `perspective`/`preserve-3d` below exist for that
+           hover tilt to render with real depth. Deliberately no
+           filter:blur() scrubbing here either — blur is one of the most
+           expensive properties to repaint, and animating it on several
+           elements at once (Hero, panel, every card, the Spotlight
+           frame) added real paint cost for no benefit scale/rotation/
+           opacity don't already give more cheaply. (A genuinely broken
+           multi-second scroll lag reported around this same change
+           turned out to be from a smooth-scroll library tried alongside
+           this work, since reverted — this blur removal
+           is kept anyway as good practice, not as that fix.) */
+        #portfolio-grid {
+            perspective: 1400px;
+        }
+        .portfolio-card {
+            transform-style: preserve-3d;
+            will-change: transform, opacity;
+        }
+        .spotlight-frame {
+            transform-style: preserve-3d;
+            will-change: transform, opacity;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .portfolio-card, .spotlight-frame, #portfolio-panel { opacity: 1 !important; transform: none !important; filter: none !important; }
+        }
     </style>
 </head>
 <body class="font-sans antialiased text-gray-800 bg-white">
@@ -1899,11 +1923,11 @@
             <div id="rail-progress"></div>
             @foreach ([
                 ['id' => 'hero',        'label' => 'Home'],
+                ['id' => 'portfolio',   'label' => 'Portfolio'],
                 ['id' => 'about',       'label' => 'About'],
                 ['id' => 'services',    'label' => 'Services'],
                 ['id' => 'why',         'label' => 'Why Us'],
                 ['id' => 'plans',       'label' => 'Plans'],
-                ['id' => 'portfolio',   'label' => 'Portfolio'],
                 ['id' => 'partnership', 'label' => 'Partnership'],
                 ['id' => 'contact',     'label' => 'Contact'],
             ] as $rail)
@@ -2644,7 +2668,7 @@
             const selectors = [
                 '.hero-orb', '#svc-toggle-btn', '.wave-teal', '.wave-main',
                 '.shimmer-gold', '.live-dot', '.float-card-1', '.float-card-2',
-                '.portfolio-badge', '#hscroll-edge-arrow', '.medallion-sweep',
+                '#hscroll-edge-arrow', '.medallion-sweep',
                 '.hero-gradient-shift', '.hero-ray', '#hero-orbit-glow', '#hero-orbit-bloom', '#hero-orbit-mid',
                 '#hero-orbit-inner-mid', '#hero-orbit-inner-glow', '#hero-halo',
             ];

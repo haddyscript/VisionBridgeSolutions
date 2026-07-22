@@ -82,6 +82,237 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 <div class="page-noise" aria-hidden="true"></div>
 
 {{-- ============================================================
+     3D STORYTELLING OVERTURE — a scroll-driven, camera-style
+     intro that plays right after the Hero, travelling through
+     three pinned scenes:
+        Scene 1  VisionBridge logo reveal
+        Scene 2  Our Work
+        Scene 3  In The Spotlight
+     Self-contained, all class names prefixed story- to avoid
+     clashes. The scoped style block + driving script live right
+     here; the overture markup itself is placed just after the
+     Hero section (below) so it renders in that position.
+     Pure CSS plus a scroll listener (no GSAP dependency). Shares the
+     Hero background 0B0F17 so it hands off with no seam. Honors
+     prefers-reduced-motion by collapsing to a static logo.
+     ============================================================ --}}
+<style>
+    #story-overture{position:relative;background:#0B0F17;}
+    /* Scenes 1–3 pin + scrub inside this 300vh track; Scene 4 (project cards) follows un-pinned. */
+    .story-pin-track{position:relative;height:500vh;}
+    /* GSAP ScrollTrigger pins this stage with pinType:'fixed', which works even
+       though the layout sets overflow-x:hidden on html/body (that only disables
+       CSS position:sticky, not ScrollTrigger's fixed pin). */
+    .story-stage{position:relative;height:100vh;overflow:hidden;background:#0B0F17;
+        perspective:1400px;transform-style:preserve-3d;}
+    .story-bg{position:absolute;inset:0;pointer-events:none;
+        background:
+            radial-gradient(ellipse 65% 55% at 50% 42%, rgba(201,168,76,.10), transparent 70%),
+            radial-gradient(circle at 16% 20%, rgba(44,166,164,.10), transparent 46%),
+            #0B0F17;}
+    .story-stars{position:absolute;inset:0;pointer-events:none;opacity:.5;
+        background-image:radial-gradient(circle, rgba(255,255,255,.10) 1px, transparent 1px);
+        background-size:46px 46px;}
+    .story-vignette{position:absolute;inset:0;pointer-events:none;
+        background:radial-gradient(ellipse at 50% 50%, transparent 34%, rgba(0,0,0,.62) 100%);}
+
+    .story-scene{position:absolute;top:50%;left:50%;width:min(92vw,1040px);
+        transform:translate(-50%,-50%);transform-origin:center center;
+        will-change:transform,opacity,filter;text-align:center;pointer-events:none;}
+
+    /* ---- Scene 1 : logo ---- */
+    .story-logo-wrap{position:relative;display:inline-block;margin:0 auto;}
+    .story-logo{position:relative;z-index:2;display:block;width:min(78vw,600px);border-radius:22px;
+        box-shadow:0 40px 120px rgba(0,0,0,.6);
+        -webkit-mask-image:radial-gradient(ellipse 84% 84% at 50% 50%, #000 58%, transparent 100%);
+        mask-image:radial-gradient(ellipse 84% 84% at 50% 50%, #000 58%, transparent 100%);}
+    .story-logo-glow{position:absolute;top:50%;left:50%;width:150%;height:150%;
+        transform:translate(-50%,-50%);border-radius:50%;z-index:0;
+        background:radial-gradient(circle, rgba(201,168,76,.28) 0%, transparent 62%);
+        filter:blur(46px);animation:story-pulse 6s ease-in-out infinite;}
+    .story-logo-ring{position:absolute;top:50%;left:50%;width:132%;height:132%;
+        transform:translate(-50%,-50%);border-radius:50%;z-index:1;pointer-events:none;
+        background:conic-gradient(from 0deg,
+            rgba(201,168,76,0) 0%, rgba(255,201,77,.30) 16%, rgba(201,168,76,0) 40%,
+            rgba(255,201,77,.22) 66%, rgba(201,168,76,0) 100%);
+        filter:blur(10px);animation:story-ring 22s linear infinite;}
+    .story-logo-sweep{position:absolute;inset:0;z-index:3;overflow:hidden;border-radius:22px;pointer-events:none;
+        -webkit-mask-image:radial-gradient(ellipse 84% 84% at 50% 50%, #000 58%, transparent 100%);
+        mask-image:radial-gradient(ellipse 84% 84% at 50% 50%, #000 58%, transparent 100%);}
+    .story-logo-sweep::before{content:"";position:absolute;top:-30%;left:0;width:36%;height:160%;
+        background:linear-gradient(105deg, transparent, rgba(255,255,255,.42), transparent);
+        transform:translateX(-160%) skewX(-16deg);
+        animation:story-sweep 6.5s ease-in-out 1.2s infinite;mix-blend-mode:screen;}
+    .story-bridge{display:block;width:min(70vw,520px);height:auto;margin:26px auto 0;overflow:visible;}
+    .story-bridge path,.story-bridge line{stroke-dasharray:1400;stroke-dashoffset:1400;
+        animation:story-draw 2.8s ease forwards .4s;}
+
+    /* ---- Scenes 2 & 3 : title cards ---- */
+    .story-kicker{display:inline-block;font-size:.78rem;letter-spacing:.3em;text-transform:uppercase;
+        font-weight:700;margin-bottom:1.1rem;}
+    .story-title{font-weight:800;color:#fff;line-height:.98;letter-spacing:-.02em;
+        font-size:clamp(2.8rem,8vw,6rem);}
+    .story-sub{color:rgba(255,255,255,.62);margin:1.2rem auto 0;max-width:34rem;
+        font-size:clamp(1rem,2vw,1.35rem);line-height:1.6;}
+    .story-rule{width:120px;height:2px;margin:1.6rem auto 0;
+        background:linear-gradient(90deg,transparent,rgba(201,168,76,.8),transparent);}
+
+    /* floating objects */
+    .story-float{position:absolute;pointer-events:none;will-change:transform;}
+    .story-dot-p{width:7px;height:7px;border-radius:50%;
+        background:radial-gradient(circle,#FFE8A8,#C9A84C);box-shadow:0 0 12px rgba(201,168,76,.7);
+        animation:story-float 7s ease-in-out infinite;}
+    .story-card{width:150px;height:96px;border-radius:14px;
+        background:linear-gradient(155deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
+        border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(6px);
+        box-shadow:0 24px 60px rgba(0,0,0,.5);animation:story-float 9s ease-in-out infinite;}
+    .story-card::before{content:"";position:absolute;top:12px;left:12px;right:12px;height:8px;border-radius:4px;
+        background:rgba(255,255,255,.22);box-shadow:0 16px 0 -4px rgba(255,255,255,.12),0 30px 0 -6px rgba(255,255,255,.08);}
+    .story-card i{position:absolute;top:10px;left:12px;width:7px;height:7px;border-radius:50%;
+        background:#DFC06A;box-shadow:12px 0 0 rgba(63,189,187,.9),24px 0 0 rgba(255,255,255,.5);}
+    .story-poster{width:150px;height:200px;border-radius:12px;
+        background:linear-gradient(160deg,#141a24,#0b0f17);
+        border:1px solid rgba(201,168,76,.5);
+        box-shadow:0 0 0 1px rgba(201,168,76,.2),0 30px 70px rgba(0,0,0,.6);
+        animation:story-float 8s ease-in-out infinite;}
+    .story-spot{position:absolute;top:-10%;left:50%;width:120%;height:150%;pointer-events:none;
+        transform:translateX(-50%);transform-origin:top center;
+        background:conic-gradient(from 180deg at 50% 0%,
+            transparent 40%, rgba(255,231,168,.16) 50%, transparent 60%);
+        filter:blur(6px);animation:story-spot 7s ease-in-out infinite;}
+
+    /* progress rail + scroll cue */
+    .story-progress{position:fixed;top:50%;left:26px;transform:translateY(-50%);z-index:30;
+        display:flex;flex-direction:column;gap:12px;pointer-events:none;opacity:0;transition:opacity .4s ease;}
+    .story-progress.is-visible{opacity:1;}
+    .story-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.22);
+        transition:all .4s ease;}
+    .story-dot.is-active{background:#C9A84C;box-shadow:0 0 12px rgba(201,168,76,.8);height:24px;border-radius:5px;}
+    .story-cue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:6;
+        display:flex;flex-direction:column;align-items:center;gap:8px;transition:opacity .5s ease;
+        color:rgba(255,255,255,.7);font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;}
+    .story-cue-mouse{width:20px;height:32px;border-radius:12px;border:1.5px solid rgba(255,255,255,.4);
+        display:flex;align-items:flex-start;justify-content:center;padding-top:6px;}
+    .story-cue-mouse span{width:4px;height:8px;border-radius:2px;background:rgba(201,168,76,.9);
+        animation:scroll-dot 1.9s ease-in-out infinite;}
+
+    @keyframes story-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+    @keyframes story-sweep{0%{transform:translateX(-160%) skewX(-16deg)}55%,100%{transform:translateX(320%) skewX(-16deg)}}
+    @keyframes story-draw{to{stroke-dashoffset:0}}
+    @keyframes story-ring{to{transform:translate(-50%,-50%) rotate(360deg)}}
+    @keyframes story-pulse{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)}50%{opacity:.95;transform:translate(-50%,-50%) scale(1.06)}}
+    @keyframes story-spot{0%,100%{transform:translateX(-50%) rotate(-7deg)}50%{transform:translateX(-50%) rotate(7deg)}}
+
+    /* Card scenes — two project cards per pinned scene */
+    .story-scene-cards{width:min(94vw,960px);}
+    .story-cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;}
+    @media (max-width:860px){ .story-cards-grid{grid-template-columns:1fr;gap:14px;} }
+
+    /* Reduced motion — no pin/scrub; every scene becomes a normal stacked block
+       so all content (including the project cards) stays reachable. */
+    .story-reduced .story-pin-track{height:auto;}
+    .story-reduced .story-stage{position:relative;height:auto;overflow:visible;}
+    .story-reduced .story-scene{position:relative!important;top:auto;left:auto;width:auto;
+        transform:none!important;opacity:1!important;visibility:visible!important;filter:none!important;
+        padding:56px 5vw;}
+    .story-reduced .story-logo-sweep::before,
+    .story-reduced .story-logo-ring{animation:none;}
+    .story-reduced .story-cue,
+    .story-reduced .story-progress{display:none;}
+    @media (max-width:640px){
+        .story-progress{right:14px;}
+        .story-card{width:118px;height:76px;}
+        .story-poster{width:116px;height:156px;}
+    }
+</style>
+
+<script>
+(function(){
+    function initStory(){
+        var ov = document.getElementById('story-overture');
+        if(!ov) return;
+        // Wait for GSAP + ScrollTrigger (loaded with defer in the layout).
+        if(typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined'){ return setTimeout(initStory, 100); }
+
+        var stage = ov.querySelector('.story-stage');
+        var s0    = ov.querySelector('[data-scene="0"]');
+        var s1    = ov.querySelector('[data-scene="1"]');
+        var s2    = ov.querySelector('[data-scene="2"]');
+        var s3    = ov.querySelector('[data-scene="3"]');
+        var s4    = ov.querySelector('[data-scene="4"]');
+        var dots  = ov.querySelectorAll('.story-dot');
+        var cue   = ov.querySelector('.story-cue');
+
+        if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+            ov.classList.add('story-reduced');
+            return;
+        }
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Scenes are centred with left/top:50%; GSAP owns the transform, so the
+        // centring is expressed as xPercent/yPercent (not a CSS translate GSAP
+        // would otherwise overwrite). transformPerspective gives each scene its
+        // own 3D depth for the z / rotation "camera" moves.
+        gsap.set([s0, s1, s2, s3, s4], { xPercent:-50, yPercent:-50, transformPerspective:1400, transformOrigin:'center center', force3D:true });
+        gsap.set(s0, { autoAlpha:1, scale:1, z:0, filter:'blur(0px)' });
+        gsap.set([s1, s2, s3, s4], { autoAlpha:0, scale:0.82, z:-380, filter:'blur(12px)' });
+
+        // One pinned, scrubbed timeline. ScrollTrigger pins the stage to the
+        // viewport (pinType:'fixed' — immune to the layout's overflow-x:hidden)
+        // for the full height of #story-overture (300vh → ~200vh of travel).
+        var tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: ov.querySelector('.story-pin-track'),
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: 1,
+                pin: stage,
+                pinType: 'fixed',
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
+                onUpdate: function(self){
+                    var p = self.progress;
+                    var active = Math.min(4, Math.floor(p * 5));
+                    for(var i=0;i<dots.length;i++){ dots[i].classList.toggle('is-active', i === active); }
+                    if(cue){ cue.style.opacity = p > 0.03 ? 0 : 1; }
+                }
+            }
+        });
+
+        tl
+            // Scene 1 (logo) pushes through toward the viewer as Scene 2 arrives from depth
+            .to(s0, { scale:1.35, z:300, filter:'blur(14px)', autoAlpha:0, duration:1, ease:'power1.inOut' }, 0)
+            .fromTo(s1, { autoAlpha:0, scale:0.82, z:-380, rotationY:-14, filter:'blur(12px)' },
+                        { autoAlpha:1, scale:1, z:0, rotationY:0, filter:'blur(0px)', duration:1, ease:'power1.inOut' }, 0.4)
+            // Scene 2 (Our Work) pans out, Scene 3 tilts in
+            .to(s1, { scale:1.35, z:300, rotationY:14, filter:'blur(14px)', autoAlpha:0, duration:1, ease:'power1.inOut' }, 1.4)
+            .fromTo(s2, { autoAlpha:0, scale:0.82, z:-380, rotationX:-12, filter:'blur(12px)' },
+                        { autoAlpha:1, scale:1, z:0, rotationX:0, filter:'blur(0px)', duration:1, ease:'power1.inOut' }, 1.8)
+            // Scene 3 (Spotlight) pushes out, Scene 4 (cards 01–02) rises in
+            .to(s2, { scale:1.3, z:280, rotationX:10, filter:'blur(13px)', autoAlpha:0, duration:1, ease:'power1.inOut' }, 2.8)
+            .fromTo(s3, { autoAlpha:0, scale:0.85, z:-340, y:70, filter:'blur(11px)' },
+                        { autoAlpha:1, scale:1, z:0, y:0, filter:'blur(0px)', duration:1, ease:'power1.inOut' }, 3.2)
+            // Scene 4 (cards 01–02) out, Scene 5 (cards 03–04) rises in
+            .to(s3, { scale:1.12, z:200, y:-50, filter:'blur(11px)', autoAlpha:0, duration:1, ease:'power1.inOut' }, 4.2)
+            .fromTo(s4, { autoAlpha:0, scale:0.85, z:-340, y:70, filter:'blur(11px)' },
+                        { autoAlpha:1, scale:1, z:0, y:0, filter:'blur(0px)', duration:1, ease:'power1.inOut' }, 4.6);
+
+        // Progress rail: visible while the overture (its pin track) is on screen.
+        var rail = ov.querySelector('.story-progress');
+        ScrollTrigger.create({
+            trigger: ov, start: 'top top', end: 'bottom bottom',
+            onToggle: function(self){ if(rail) rail.classList.toggle('is-visible', self.isActive); }
+        });
+
+        ScrollTrigger.refresh();
+    }
+    if(document.readyState !== 'loading'){ initStory(); }
+    else { window.addEventListener('DOMContentLoaded', initStory); }
+})();
+</script>
+
+{{-- ============================================================
      HERO SECTION — dark theme
      ============================================================ --}}
 <section id="hero" class="hero-dark relative min-h-screen flex items-center overflow-hidden" style="background:#0B0F17;">
@@ -142,7 +373,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
          double up the effect on this section alone. --}}
 
     {{-- Layer 4 — content: two-column grid (text left, device mockup right) --}}
-    <div class="relative w-full max-w-[92rem] mx-auto px-5 sm:px-6 lg:px-16 xl:px-28 pt-24 lg:pt-28 pb-20" style="z-index:4;">
+    <div id="hero-content" class="relative w-full max-w-[92rem] mx-auto px-5 sm:px-6 lg:px-16 xl:px-28 pt-24 lg:pt-28 pb-20" style="z-index:4;">
         <div class="grid grid-cols-1 lg:grid-cols-[1fr_1.35fr] gap-10 items-center">
 
             {{-- LEFT — copy --}}
@@ -364,6 +595,314 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         <div class="w-5 h-8 rounded-full flex items-start justify-center pt-1.5"
              style="border:1.5px solid rgba(255,255,255,.40);">
             <div class="w-1 h-2 rounded-full" style="background:rgba(201,168,76,.9);animation:scroll-dot 1.9s ease-in-out infinite;"></div>
+        </div>
+    </div>
+</section>
+
+{{-- The 3D storytelling overture renders here — right after the Hero,
+     before the arch transition into the light Our Work section. Its
+     scoped style + script live up near the top of this file (search
+     "STORYTELLING OVERTURE"); only the markup lives here. --}}
+<section id="story-overture" aria-label="VisionBridge Solutions — a scroll-driven introduction">
+    {{-- scene progress rail — 5 dots (Logo, Our Work, Spotlight, Cards 01-02,
+         Cards 03-04). Fixed on the LEFT (site nav is on the right); kept OUT of
+         .story-stage because GSAP transforms that element. --}}
+    <div class="story-progress" aria-hidden="true">
+        <span class="story-dot is-active"></span>
+        <span class="story-dot"></span>
+        <span class="story-dot"></span>
+        <span class="story-dot"></span>
+        <span class="story-dot"></span>
+    </div>
+    {{-- Scenes 1–3: pinned + scrubbed inside this track (see script). --}}
+    <div class="story-pin-track">
+    <div class="story-stage">
+        <div class="story-bg"></div>
+        <div class="story-stars"></div>
+        {{-- ambient drifting orbs (reuse Hero's orb styling/keyframes) --}}
+        <div class="hero-orb" style="width:520px;height:520px;top:-120px;right:-100px;z-index:0;
+             background:radial-gradient(circle,rgba(201,168,76,.16) 0%,transparent 70%);
+             animation:orb-drift 18s ease-in-out infinite;"></div>
+        <div class="hero-orb" style="width:400px;height:400px;bottom:-90px;left:-80px;z-index:0;
+             background:radial-gradient(circle,rgba(44,166,164,.14) 0%,transparent 70%);
+             animation:orb-drift 22s ease-in-out infinite reverse 3s;"></div>
+
+        {{-- SCENE 1 — Logo reveal --}}
+        <div class="story-scene" data-scene="0">
+            <div class="story-logo-wrap">
+                <div class="story-logo-glow"></div>
+                <div class="story-logo-ring"></div>
+                <img class="story-logo" src="@assetv('image/logo/vbs-logo-v3.jpeg')" alt="VisionBridge Solutions">
+                <div class="story-logo-sweep"></div>
+            </div>
+            {{-- SVG line-art: a suspension bridge that draws itself in --}}
+            <svg class="story-bridge" viewBox="0 0 600 120" fill="none" stroke="#C9A84C" stroke-opacity=".85" xmlns="http://www.w3.org/2000/svg">
+                <line x1="30" y1="96" x2="570" y2="96" stroke-width="2" stroke-linecap="round"/>
+                <line x1="180" y1="18" x2="165" y2="96" stroke-width="3" stroke-linecap="round"/>
+                <line x1="180" y1="18" x2="195" y2="96" stroke-width="3" stroke-linecap="round"/>
+                <line x1="420" y1="18" x2="405" y2="96" stroke-width="3" stroke-linecap="round"/>
+                <line x1="420" y1="18" x2="435" y2="96" stroke-width="3" stroke-linecap="round"/>
+                <line x1="180" y1="18" x2="60"  y2="96" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="180" y1="18" x2="120" y2="96" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="180" y1="18" x2="240" y2="96" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="180" y1="18" x2="300" y2="96" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="420" y1="18" x2="300" y2="96" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="420" y1="18" x2="360" y2="96" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="420" y1="18" x2="480" y2="96" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="420" y1="18" x2="540" y2="96" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            {{-- floating gold particles --}}
+            <div class="story-float story-dot-p" style="top:14%;left:16%;animation-delay:.2s;"></div>
+            <div class="story-float story-dot-p" style="top:24%;right:18%;animation-delay:1.4s;"></div>
+            <div class="story-float story-dot-p" style="bottom:20%;left:24%;animation-delay:2.1s;"></div>
+            <div class="story-float story-dot-p" style="bottom:28%;right:22%;animation-delay:.8s;"></div>
+        </div>
+
+        {{-- SCENE 2 — Our Work (real panel content, sized to fit one pinned screen) --}}
+        <div class="story-scene" data-scene="1" style="opacity:0;">
+            <span class="story-kicker" style="color:#3FBDBB;">Our Work</span>
+            <h2 class="story-title font-display" style="font-size:clamp(1.9rem,4.6vw,3.4rem);line-height:1.12;">Websites Built with Purpose. Designed for Results.</h2>
+            <p class="story-sub">Every website we create tells a story, strengthens a brand, and helps our clients reach more people. Explore a few of the organizations we've had the privilege to serve.</p>
+            <div class="story-rule"></div>
+            {{-- service pills — mirrors the full Our Work section below --}}
+            <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:0.7rem;margin-top:1.8rem;">
+                @foreach ([
+                    ['label' => 'Website Design', 'color' => '#DFC06A', 'path' => 'M7 21h10M9 21V3h6v18M9 8h6M9 13h6'],
+                    ['label' => 'Development',    'color' => '#3FBDBB', 'path' => 'M8 9l-4 4 4 4m8-8l4 4-4 4M14 5l-4 14'],
+                    ['label' => 'Care Plans',     'color' => '#3FBDBB', 'path' => 'M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7l7-4z'],
+                    ['label' => 'Hosting',        'color' => '#DFC06A', 'path' => 'M5 12a7 7 0 0113.9-1.4A4.5 4.5 0 0118.5 19H6a4 4 0 01-1-7.87'],
+                ] as $svc)
+                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-full" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.85);">
+                        <svg class="w-3.5 h-3.5" style="color:{{ $svc['color'] }};" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $svc['path'] }}"/></svg>
+                        {{ $svc['label'] }}
+                    </span>
+                @endforeach
+            </div>
+            {{-- ambient floating particles --}}
+            <div class="story-float story-dot-p" style="top:16%;left:8%;animation-delay:.6s;"></div>
+            <div class="story-float story-dot-p" style="bottom:20%;right:10%;animation-delay:1.9s;"></div>
+        </div>
+
+        {{-- SCENE 3 — In The Spotlight --}}
+        <div class="story-scene" data-scene="2" style="opacity:0;">
+            <div class="story-spot"></div>
+            <span class="story-kicker" style="color:#DFC06A;">Chapter Three</span>
+            <h2 class="story-title font-display">In The <span class="shimmer-gold">Spotlight</span></h2>
+            <p class="story-sub">Real campaigns. Real reach. The work that puts our clients center-stage.</p>
+            <div class="story-rule"></div>
+            {{-- floating poster frames catching the light --}}
+            <div class="story-float story-poster" style="top:8%;left:8%;transform:rotate(-6deg);animation-delay:.4s;"></div>
+            <div class="story-float story-poster" style="bottom:6%;right:8%;transform:rotate(5deg);animation-delay:1.7s;"></div>
+            <div class="story-float story-dot-p" style="top:30%;right:16%;animation-delay:1.1s;"></div>
+            <div class="story-float story-dot-p" style="bottom:24%;left:18%;animation-delay:2.3s;"></div>
+        </div>
+
+        {{-- ============================================================
+             SCENES 4 & 5 — project cards, two per pinned scene. array_chunk
+             splits the 4 projects into two scenes (data-scene 3 and 4) so the
+             cards stay full-size and each is its own pinned camera beat.
+             ============================================================ --}}
+        @php
+        $portfolioProjects = [
+            [
+                'num'      => '01',
+                'title'    => 'Johnny Davis Global Missions',
+                'tagline'  => 'Bringing Hope to the Nations Through Compassion.',
+                'desc'     => 'A global missions platform designed to inspire generosity, connect supporters, and mobilize life-changing outreach around the world.',
+                'industry' => 'Ministry',
+                'filter'   => 'ministries',
+                'image'    => 'image/johnnydavisglobalmission.png',
+                'url'      => 'https://johnnydavisglobalmissions.org/',
+                'status'   => 'live',
+                'features' => ['Donation Platform', 'Disaster Relief Campaigns', 'Mission Updates', 'Volunteer Opportunities'],
+            ],
+            [
+                'num'      => '02',
+                'title'    => 'Johnny Davis Ministries',
+                'tagline'  => 'Transforming Lives. Equipping Believers. Inspiring Faith.',
+                'desc'     => 'A ministry website created to share biblical teaching, prayer resources, leadership development, and Christ-centered content that impacts lives worldwide.',
+                'industry' => 'Ministry',
+                'filter'   => 'ministries',
+                'image'    => 'image/johnnydavisministries.png',
+                'url'      => 'https://johnnydavisministries.org/',
+                'status'   => 'live',
+                'features' => ['Ministry Resources', 'Virtual Prayer Community', 'Leadership Training', 'Media Library'],
+            ],
+            [
+                'num'      => '03',
+                'title'    => 'Mercy City Church',
+                'tagline'  => 'A Church Website Designed to Welcome Before Visitors Arrive.',
+                'desc'     => 'A modern church platform designed to connect people with the church, communicate its vision, and serve the surrounding community.',
+                'industry' => 'Church',
+                'filter'   => 'churches',
+                'icon'     => 'building',
+                'status'   => 'soon',
+            ],
+            [
+                'num'      => '04',
+                'title'    => 'Your Project Could Be Next',
+                'tagline'  => 'Your Vision. Our Expertise. One Powerful Website.',
+                'desc'     => "Whether you're a church, nonprofit, ministry, or growing business, VisionBridge Solutions builds websites that expand your reach and strengthen your online presence.",
+                'icon'     => 'sparkles',
+                'status'   => 'cta',
+            ],
+        ];
+        @endphp
+
+        @foreach (array_chunk($portfolioProjects, 2) as $chunkIndex => $chunk)
+        <div class="story-scene story-scene-cards" data-scene="{{ 3 + $chunkIndex }}" style="opacity:0;">
+            <div class="story-cards-grid">
+                @foreach ($chunk as $project)
+                    <div class="portfolio-card" data-category="{{ $project['status'] === 'cta' ? 'evergreen' : $project['filter'] }}">
+                        <div class="portfolio-card-inner{{ $project['status'] === 'cta' ? ' portfolio-card-inner-cta' : '' }}">
+
+                            <div class="portfolio-card-media">
+                                @if ($project['status'] === 'live')
+                                    <img src="@assetv($project['image'])" alt="{{ $project['title'] }} homepage preview" loading="lazy" decoding="async">
+                                    <span class="portfolio-industry-badge">{{ $project['industry'] }}</span>
+                                @elseif ($project['status'] === 'soon')
+                                    <div class="portfolio-card-placeholder">
+                                        <svg class="w-12 h-12 text-navy" style="opacity:0.22;" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
+                                    </div>
+                                    <span class="portfolio-industry-badge">{{ $project['industry'] }}</span>
+                                    <span class="portfolio-status-pill">Coming Soon</span>
+                                @else
+                                    <div class="portfolio-card-placeholder portfolio-card-placeholder-cta">
+                                        <svg class="w-12 h-12 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="portfolio-card-body">
+                                <span class="portfolio-card-num">{{ $project['num'] }}</span>
+                                <h3 class="portfolio-card-title">{{ $project['title'] }}</h3>
+                                <p class="portfolio-card-tagline">{{ $project['tagline'] }}</p>
+                                <p class="portfolio-card-desc">{{ $project['desc'] }}</p>
+
+                                @if (!empty($project['features']))
+                                    <ul class="portfolio-card-features">
+                                        @foreach ($project['features'] as $feature)
+                                            <li>{{ $feature }}</li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+
+                                <div class="portfolio-card-btn-wrap">
+                                    @if ($project['status'] === 'live')
+                                        <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="portfolio-card-btn">
+                                            View Project
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                        </a>
+                                    @elseif ($project['status'] === 'soon')
+                                        <span class="portfolio-card-btn portfolio-card-btn-disabled">Coming Soon</span>
+                                    @else
+                                        <a href="{{ route('register') }}" class="portfolio-card-btn portfolio-card-btn-gold">
+                                            Start Your Project
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+        @endforeach
+
+        {{-- scroll cue --}}
+        <div class="story-cue" aria-hidden="true">
+            <span>Scroll</span>
+            <span class="story-cue-mouse"><span></span></span>
+        </div>
+    </div>
+    </div>{{-- /.story-pin-track --}}
+</section>{{-- /#story-overture --}}
+
+{{-- ============================================================
+     MARKETING SPOTLIGHT SECTION — dark gallery frame for the
+     printed promo poster (Johnny Davis Global Missions campaign).
+     Dark navy backdrop makes the mostly-white poster pop, echoing
+     the "Our Team plaque" gold-on-dark aesthetic used above.
+     ============================================================ --}}
+<section id="spotlight" class="py-28 relative overflow-hidden" style="background:linear-gradient(155deg,#0A0D11 0%,#171B21 40%,#0A0D11 72%,#15191F 100%);">
+    {{-- Ambient orbs --}}
+    <div class="hero-orb" style="width:560px;height:560px;top:-160px;left:-140px;background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,transparent 70%);filter:blur(70px);animation:orb-drift 22s ease-in-out infinite;"></div>
+    <div class="hero-orb" style="width:460px;height:460px;bottom:-120px;right:-100px;background:radial-gradient(circle,rgba(42,157,143,0.10) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 18s ease-in-out infinite reverse 4s;"></div>
+    <div class="absolute inset-0 pointer-events-none" style="opacity:0.6;background-image:radial-gradient(circle,rgba(255,255,255,0.035) 1px,transparent 1px);background-size:28px 28px;"></div>
+    {{-- Faint bridge watermark — signature motif --}}
+    <div class="absolute pointer-events-none text-white" style="width:900px;max-width:90%;height:220px;bottom:-10px;left:-60px;opacity:0.05;">
+        {!! $bridgeSilhouette !!}
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+
+            {{-- Left: the poster in a matte gallery frame --}}
+            <div class="lg:col-span-6 flex justify-center">
+                <div class="spotlight-frame relative rounded-2xl overflow-hidden" style="max-width:440px;background:#FFFFFF;padding:10px;box-shadow:0 0 0 1px rgba(201,168,76,0.30),0 40px 90px rgba(0,0,0,0.55),0 12px 32px rgba(0,0,0,0.4);">
+                    {{-- "Real client campaign" badge --}}
+                    <div class="absolute z-10 flex items-center gap-1.5 text-xs font-semibold tracking-wide px-3 py-1.5 rounded-full" style="top:20px;left:20px;background:rgba(15,19,25,0.82);color:#DFC06A;backdrop-filter:blur(6px);border:1px solid rgba(201,168,76,0.35);">
+                        <span class="live-dot"></span>
+                        Real Client Campaign
+                    </div>
+                    <img src="@assetv('image/marketing/JDGM-marketing.jpeg')"
+                         alt="VisionBridge Solutions marketing poster — Johnny Davis Global Missions website campaign"
+                         loading="lazy" decoding="async"
+                         class="w-full h-auto rounded-xl block">
+                </div>
+            </div>
+
+            {{-- Right: supporting copy + CTAs --}}
+            <div class="lg:col-span-6 text-center lg:text-left">
+                <span id="spotlight-kicker" class="inline-block text-sm font-semibold tracking-widest uppercase mb-3" style="color:#2A9D8F;">In The Spotlight</span>
+                <h2 id="spotlight-heading" class="font-display font-bold text-white leading-tight mb-5" style="font-size:clamp(1.9rem,4vw,2.9rem);">
+                    Websites That <span class="shimmer-gold">Grow Your Mission</span> or Business
+                </h2>
+                <p class="spotlight-copy text-white/80 text-lg leading-relaxed mb-5" style="max-width:34rem;">
+                    Professional websites that look amazing, work flawlessly, and help you reach
+                    more people online — built and maintained by VisionBridge Solutions.
+                </p>
+                <p class="spotlight-copy text-white/60 text-base leading-relaxed mb-8" style="max-width:34rem;">
+                    This campaign poster showcases our work for <span class="text-gold font-semibold">Johnny Davis Global Missions</span> —
+                    one of the ministries we've helped expand their reach online.
+                </p>
+
+                {{-- Feature checklist --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 mb-10 max-w-lg mx-auto lg:mx-0 text-left">
+                    @foreach ([
+                        'Modern & Responsive Design',
+                        'Mobile Friendly',
+                        'SEO Optimized',
+                        'Secure & Reliable',
+                        'Easy to Manage',
+                        'Ongoing Support',
+                    ] as $feature)
+                        <div class="spotlight-feature-item flex items-center gap-3">
+                            <span class="shrink-0 w-6 h-6 rounded-full flex items-center justify-center" style="background:rgba(201,168,76,0.16);border:1px solid rgba(201,168,76,0.35);">
+                                <svg class="w-3.5 h-3.5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </span>
+                            <span class="text-white/85 text-sm font-medium">{{ $feature }}</span>
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- CTAs --}}
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <a href="https://johnnydavisglobalmissions.org/" target="_blank" rel="noopener"
+                       class="spotlight-cta-primary inline-flex items-center justify-center gap-2 font-bold px-8 py-4 rounded-lg"
+                       style="background:#C9A84C;color:#15202C;">
+                        View The Live Site
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
+                    <a href="{{ route('consultation.create') }}"
+                       class="spotlight-cta-outline inline-flex items-center justify-center gap-2 font-semibold px-8 py-4 rounded-lg"
+                       style="border:1.5px solid rgba(255,255,255,0.28);color:#FFFFFF;">
+                        Book A Free Consultation
+                    </a>
+                </div>
+            </div>
+
         </div>
     </div>
 </section>
@@ -1047,11 +1586,10 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     </div>
 </section>
 
-{{-- Bridge cable divider — sits right at the Plans/Featured Projects seam.
-     The bridge photo here uses background-attachment:fixed, the classic
-     "fixed background" parallax: it stays pinned to the viewport (same
-     technique the site's own footer uses) while the divider/page content
-     scrolls past it, instead of moving with the page like a normal image. --}}
+{{-- Bridge cable divider — sits at the Plans/Our Team seam (Portfolio
+     and Spotlight used to follow here — both were moved up to sit right
+     inside the Story Sequence instead, see the new "Story (dark) → Our
+     Work (light)" transition and comment near the top of this file). --}}
 <div class="relative parallax-divider" style="height:600px;overflow:hidden;background-image:url('@assetv('image/parallax-bg2-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 45%;">
     {{-- Dark gradient so the overlay quote stays readable over the bright photo --}}
     <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
@@ -1062,321 +1600,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         <span class="text-sm font-semibold tracking-widest uppercase" style="color:#C9A84C;">VisionBridge Solutions</span>
     </div>
 </div>
-
-{{-- ============================================================
-     PORTFOLIO SECTION
-     ============================================================ --}}
-<section id="portfolio" class="py-28 relative overflow-hidden" style="background:linear-gradient(160deg,#FFFFFF 0%,#F7F3EA 55%,#FFFFFF 100%);">
-    {{-- Ambient orbs — softened for the light backdrop --}}
-    <div class="hero-orb" style="width:580px;height:580px;top:-160px;left:-140px;background:radial-gradient(circle,rgba(201,168,76,0.14) 0%,transparent 70%);filter:blur(70px);animation:orb-drift 20s ease-in-out infinite;"></div>
-    <div class="hero-orb" style="width:480px;height:480px;bottom:-120px;right:-100px;background:radial-gradient(circle,rgba(42,157,143,0.10) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 16s ease-in-out infinite reverse 4s;"></div>
-    <div class="absolute inset-0 pointer-events-none" style="opacity:0.5;background-image:radial-gradient(circle,rgba(21,32,44,0.045) 1px,transparent 1px);background-size:28px 28px;"></div>
-
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
-
-        @php
-        $portfolioProjects = [
-            [
-                'num'      => '01',
-                'title'    => 'Johnny Davis Global Missions',
-                'tagline'  => 'Bringing Hope to the Nations Through Compassion.',
-                'desc'     => 'A global missions platform designed to inspire generosity, connect supporters, and mobilize life-changing outreach around the world.',
-                'industry' => 'Ministry',
-                'filter'   => 'ministries',
-                'image'    => 'image/johnnydavisglobalmission.png',
-                'url'      => 'https://johnnydavisglobalmissions.org/',
-                'status'   => 'live',
-                'features' => ['Donation Platform', 'Disaster Relief Campaigns', 'Mission Updates', 'Volunteer Opportunities'],
-            ],
-            [
-                'num'      => '02',
-                'title'    => 'Johnny Davis Ministries',
-                'tagline'  => 'Transforming Lives. Equipping Believers. Inspiring Faith.',
-                'desc'     => 'A ministry website created to share biblical teaching, prayer resources, leadership development, and Christ-centered content that impacts lives worldwide.',
-                'industry' => 'Ministry',
-                'filter'   => 'ministries',
-                'image'    => 'image/johnnydavisministries.png',
-                'url'      => 'https://johnnydavisministries.org/',
-                'status'   => 'live',
-                'features' => ['Ministry Resources', 'Virtual Prayer Community', 'Leadership Training', 'Media Library'],
-            ],
-            [
-                'num'      => '03',
-                'title'    => 'Mercy City Church',
-                'tagline'  => 'A Church Website Designed to Welcome Before Visitors Arrive.',
-                'desc'     => 'A modern church platform designed to connect people with the church, communicate its vision, and serve the surrounding community.',
-                'industry' => 'Church',
-                'filter'   => 'churches',
-                'icon'     => 'building',
-                'status'   => 'soon',
-            ],
-            [
-                'num'      => '04',
-                'title'    => 'Your Project Could Be Next',
-                'tagline'  => 'Your Vision. Our Expertise. One Powerful Website.',
-                'desc'     => "Whether you're a church, nonprofit, ministry, or growing business, VisionBridge Solutions builds websites that expand your reach and strengthen your online presence.",
-                'icon'     => 'sparkles',
-                'status'   => 'cta',
-            ],
-        ];
-        @endphp
-
-        {{-- Glass panel — a looping showcase reel plays behind a soft
-             white/cream overlay so heading text and badges stay legible. --}}
-        <div id="portfolio-panel" class="rounded-3xl relative text-center overflow-hidden px-6 sm:px-12 pt-16 pb-16" style="border:1px solid rgba(201,168,76,0.25);box-shadow:0 20px 50px rgba(21,32,44,0.08);">
-            {{-- Background video loop — removed via JS for visitors with
-                 prefers-reduced-motion set, leaving just the section's own
-                 cream gradient behind it. --}}
-            <div id="portfolio-video" class="absolute inset-0" style="z-index:0;">
-                <iframe src="https://player.vimeo.com/video/1204394600?api=1&background=1&autoplay=1&loop=1&muted=1&h=4a378f873f"
-                        style="position:absolute;top:50%;left:50%;width:177.78vh;height:56.25vw;min-width:100%;min-height:100%;transform:translate(-50%,-50%);pointer-events:none;"
-                        frameborder="0" allow="autoplay; fullscreen" loading="lazy" title="VisionBridge showcase reel"></iframe>
-                {{-- Light wash only where it's needed for legibility (top,
-                     behind the heading, and bottom, behind the card grid
-                     overlap) — the middle stays clear so the video reads
-                     as the actual background, not a washed-out tint. --}}
-                <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(255,255,255,0.55) 0%,rgba(255,255,255,0.05) 30%,rgba(255,255,255,0.05) 65%,rgba(255,255,255,0.55) 100%);"></div>
-            </div>
-
-            <div class="hero-orb" style="width:420px;height:420px;top:-120px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,0.18) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 20s ease-in-out infinite;z-index:1;"></div>
-            <div class="hero-orb" style="width:360px;height:360px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.14) 0%,transparent 70%);filter:blur(54px);animation:orb-drift 18s ease-in-out infinite reverse 3s;z-index:1;"></div>
-
-            {{-- Floating service badges --}}
-            <div class="portfolio-badge portfolio-badge-1 hidden lg:flex items-center gap-2.5">
-                <svg class="w-4 h-4" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10M9 21V3h6v18M9 8h6M9 13h6"/></svg>
-                <span class="text-sm font-semibold" style="color:#15202C;">Website Design</span>
-            </div>
-            <div class="portfolio-badge portfolio-badge-2 hidden lg:flex items-center gap-2.5">
-                <svg class="w-4 h-4" style="color:#2A9D8F;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l-4 4 4 4m8-8l4 4-4 4M14 5l-4 14"/></svg>
-                <span class="text-sm font-semibold" style="color:#15202C;">Development</span>
-            </div>
-            <div class="portfolio-badge portfolio-badge-3 hidden lg:flex items-center gap-2.5">
-                <svg class="w-4 h-4" style="color:#2A9D8F;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7l7-4z"/></svg>
-                <span class="text-sm font-semibold" style="color:#15202C;">Care Plans</span>
-            </div>
-            <div class="portfolio-badge portfolio-badge-4 hidden lg:flex items-center gap-2.5">
-                <svg class="w-4 h-4" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12a7 7 0 0113.9-1.4A4.5 4.5 0 0118.5 19H6a4 4 0 01-1-7.87"/></svg>
-                <span class="text-sm font-semibold" style="color:#15202C;">Hosting</span>
-            </div>
-
-            <div class="relative" style="z-index:2;">
-                <span id="portfolio-kicker" class="inline-block text-sm font-semibold tracking-widest uppercase mb-3" style="color:#2A9D8F;text-shadow:0 1px 16px rgba(255,255,255,0.9);">Our Work</span>
-                <h2 id="portfolio-heading" class="font-display font-bold" style="color:#15202C;font-size:clamp(1.875rem,4vw,2.75rem);text-shadow:0 2px 20px rgba(255,255,255,0.9);">Websites Built with Purpose. Designed for Results.</h2>
-                <p id="portfolio-subtitle" class="text-base mt-3 max-w-xl mx-auto" style="color:rgba(21,32,44,0.75);text-shadow:0 1px 14px rgba(255,255,255,0.9);">Every website we create tells a story, strengthens a brand, and helps our clients reach more people. Explore a few of the organizations we've had the privilege to serve.</p>
-
-                {{-- Mobile fallback for the 4 floating service badges, which
-                     are desktop-only (hidden lg:flex) — otherwise this list
-                     of services disappears entirely below the lg breakpoint. --}}
-                <div class="flex lg:hidden flex-wrap justify-center gap-2 mt-6">
-                    @foreach ([
-                        ['label' => 'Website Design', 'color' => '#C9A84C', 'path' => 'M7 21h10M9 21V3h6v18M9 8h6M9 13h6'],
-                        ['label' => 'Development',    'color' => '#2A9D8F', 'path' => 'M8 9l-4 4 4 4m8-8l4 4-4 4M14 5l-4 14'],
-                        ['label' => 'Care Plans',      'color' => '#2A9D8F', 'path' => 'M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7l7-4z'],
-                        ['label' => 'Hosting',         'color' => '#C9A84C', 'path' => 'M5 12a7 7 0 0113.9-1.4A4.5 4.5 0 0118.5 19H6a4 4 0 01-1-7.87'],
-                    ] as $service)
-                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full" style="background:rgba(255,255,255,0.85);color:#15202C;">
-                            <svg class="w-3.5 h-3.5" style="color:{{ $service['color'] }};" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $service['path'] }}"/></svg>
-                            {{ $service['label'] }}
-                        </span>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-
-        {{-- Filter bar — future-proofed for growth; categories with no
-             live projects yet simply surface the "Your Project Could Be
-             Next" card until real projects land there. --}}
-        <div id="portfolio-filters" class="flex flex-wrap justify-center gap-3 mt-14 mb-10">
-            @foreach ([
-                ['key' => 'all',        'label' => 'All'],
-                ['key' => 'churches',   'label' => 'Churches'],
-                ['key' => 'ministries', 'label' => 'Ministries'],
-                ['key' => 'nonprofits', 'label' => 'Nonprofits'],
-                ['key' => 'businesses', 'label' => 'Businesses'],
-            ] as $i => $f)
-                <button type="button" class="portfolio-filter-btn{{ $i === 0 ? ' is-active' : '' }}" data-filter="{{ $f['key'] }}">{{ $f['label'] }}</button>
-            @endforeach
-        </div>
-
-        {{-- Portfolio cards — homepage screenshot, industry badge, tagline,
-             description, feature chips, and a CTA button. Uniform height via
-             flex + margin-top:auto on the button so a short vs. long
-             description never changes the card's footprint. --}}
-        <div id="portfolio-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            @foreach ($portfolioProjects as $project)
-                <div class="portfolio-card" data-category="{{ $project['status'] === 'cta' ? 'evergreen' : $project['filter'] }}">
-                    <div class="portfolio-card-inner{{ $project['status'] === 'cta' ? ' portfolio-card-inner-cta' : '' }}">
-
-                        <div class="portfolio-card-media">
-                            @if ($project['status'] === 'live')
-                                <img src="@assetv($project['image'])" alt="{{ $project['title'] }} homepage preview" loading="lazy" decoding="async">
-                                <span class="portfolio-industry-badge">{{ $project['industry'] }}</span>
-                            @elseif ($project['status'] === 'soon')
-                                <div class="portfolio-card-placeholder">
-                                    <svg class="w-12 h-12 text-navy" style="opacity:0.22;" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
-                                </div>
-                                <span class="portfolio-industry-badge">{{ $project['industry'] }}</span>
-                                <span class="portfolio-status-pill">Coming Soon</span>
-                            @else
-                                <div class="portfolio-card-placeholder portfolio-card-placeholder-cta">
-                                    <svg class="w-12 h-12 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$project['icon']] !!}</svg>
-                                </div>
-                            @endif
-                        </div>
-
-                        <div class="portfolio-card-body">
-                            <span class="portfolio-card-num">{{ $project['num'] }}</span>
-                            <h3 class="portfolio-card-title">{{ $project['title'] }}</h3>
-                            <p class="portfolio-card-tagline">{{ $project['tagline'] }}</p>
-                            <p class="portfolio-card-desc">{{ $project['desc'] }}</p>
-
-                            @if (!empty($project['features']))
-                                <ul class="portfolio-card-features">
-                                    @foreach ($project['features'] as $feature)
-                                        <li>{{ $feature }}</li>
-                                    @endforeach
-                                </ul>
-                            @endif
-
-                            <div class="portfolio-card-btn-wrap">
-                                @if ($project['status'] === 'live')
-                                    <a href="{{ $project['url'] }}" target="_blank" rel="noopener" class="portfolio-card-btn">
-                                        View Project
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                                    </a>
-                                @elseif ($project['status'] === 'soon')
-                                    <span class="portfolio-card-btn portfolio-card-btn-disabled">Coming Soon</span>
-                                @else
-                                    <a href="{{ route('register') }}" class="portfolio-card-btn portfolio-card-btn-gold">
-                                        Start Your Project
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-
-        {{-- Closing CTA panel --}}
-        <div id="portfolio-cta-panel" class="mt-20 rounded-3xl relative overflow-hidden text-center py-16 px-6 sm:px-12" style="background:linear-gradient(155deg,#15202C 0%,#2F3A45 100%);">
-            <div class="hero-orb" style="width:460px;height:460px;top:-140px;left:-100px;background:radial-gradient(circle,rgba(201,168,76,0.14) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 22s ease-in-out infinite;"></div>
-            <div class="hero-orb" style="width:380px;height:380px;bottom:-110px;right:-90px;background:radial-gradient(circle,rgba(42,157,143,0.12) 0%,transparent 70%);filter:blur(54px);animation:orb-drift 18s ease-in-out infinite reverse 3s;"></div>
-            <div class="relative max-w-2xl mx-auto" style="z-index:1;">
-                <h3 class="font-display font-bold text-white" style="font-size:clamp(1.6rem,3.4vw,2.4rem);line-height:1.25;">Your Website Should Do More Than Look Good. It Should Work for You.</h3>
-                <p class="text-white/75 mt-5" style="font-size:1.05rem;line-height:1.75;">From churches and nonprofits to businesses and organizations, VisionBridge Solutions builds websites that inspire trust, engage visitors, and help our clients grow with confidence.</p>
-                <div class="glow-line" style="margin:22px auto;"></div>
-                <span class="inline-block text-gold text-xs font-semibold tracking-widest uppercase mb-8">Building Websites. Expanding Reach.</span>
-                <div>
-                    <a href="{{ route('register') }}" class="hero-btn-primary">
-                        <span class="hero-btn-fill" aria-hidden="true"></span>
-                        <span class="hero-btn-content">
-                            Start Your Project Today
-                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                            </svg>
-                        </span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-    </div>
-</section>
-
-{{-- Bridge cable divider --}}
-<div class="bg-white py-8" aria-hidden="true">
-    <div class="bridge-cable-divider">{!! $bridgeCableDivider !!}</div>
-</div>
-
-{{-- ============================================================
-     MARKETING SPOTLIGHT SECTION — dark gallery frame for the
-     printed promo poster (Johnny Davis Global Missions campaign).
-     Dark navy backdrop makes the mostly-white poster pop, echoing
-     the "Our Team plaque" gold-on-dark aesthetic used above.
-     ============================================================ --}}
-<section id="spotlight" class="py-28 relative overflow-hidden" style="background:linear-gradient(155deg,#0A0D11 0%,#171B21 40%,#0A0D11 72%,#15191F 100%);">
-    {{-- Ambient orbs --}}
-    <div class="hero-orb" style="width:560px;height:560px;top:-160px;left:-140px;background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,transparent 70%);filter:blur(70px);animation:orb-drift 22s ease-in-out infinite;"></div>
-    <div class="hero-orb" style="width:460px;height:460px;bottom:-120px;right:-100px;background:radial-gradient(circle,rgba(42,157,143,0.10) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 18s ease-in-out infinite reverse 4s;"></div>
-    <div class="absolute inset-0 pointer-events-none" style="opacity:0.6;background-image:radial-gradient(circle,rgba(255,255,255,0.035) 1px,transparent 1px);background-size:28px 28px;"></div>
-    {{-- Faint bridge watermark — signature motif --}}
-    <div class="absolute pointer-events-none text-white" style="width:900px;max-width:90%;height:220px;bottom:-10px;left:-60px;opacity:0.05;">
-        {!! $bridgeSilhouette !!}
-    </div>
-
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-
-            {{-- Left: the poster in a matte gallery frame --}}
-            <div class="lg:col-span-6 flex justify-center">
-                <div class="spotlight-frame relative rounded-2xl overflow-hidden" style="max-width:440px;background:#FFFFFF;padding:10px;box-shadow:0 0 0 1px rgba(201,168,76,0.30),0 40px 90px rgba(0,0,0,0.55),0 12px 32px rgba(0,0,0,0.4);">
-                    {{-- "Real client campaign" badge --}}
-                    <div class="absolute z-10 flex items-center gap-1.5 text-xs font-semibold tracking-wide px-3 py-1.5 rounded-full" style="top:20px;left:20px;background:rgba(15,19,25,0.82);color:#DFC06A;backdrop-filter:blur(6px);border:1px solid rgba(201,168,76,0.35);">
-                        <span class="live-dot"></span>
-                        Real Client Campaign
-                    </div>
-                    <img src="@assetv('image/marketing/JDGM-marketing.jpeg')"
-                         alt="VisionBridge Solutions marketing poster — Johnny Davis Global Missions website campaign"
-                         loading="lazy" decoding="async"
-                         class="w-full h-auto rounded-xl block">
-                </div>
-            </div>
-
-            {{-- Right: supporting copy + CTAs --}}
-            <div class="lg:col-span-6 text-center lg:text-left">
-                <span id="spotlight-kicker" class="inline-block text-sm font-semibold tracking-widest uppercase mb-3" style="color:#2A9D8F;">In The Spotlight</span>
-                <h2 id="spotlight-heading" class="font-display font-bold text-white leading-tight mb-5" style="font-size:clamp(1.9rem,4vw,2.9rem);">
-                    Websites That <span class="shimmer-gold">Grow Your Mission</span> or Business
-                </h2>
-                <p class="spotlight-copy text-white/80 text-lg leading-relaxed mb-5" style="max-width:34rem;">
-                    Professional websites that look amazing, work flawlessly, and help you reach
-                    more people online — built and maintained by VisionBridge Solutions.
-                </p>
-                <p class="spotlight-copy text-white/60 text-base leading-relaxed mb-8" style="max-width:34rem;">
-                    This campaign poster showcases our work for <span class="text-gold font-semibold">Johnny Davis Global Missions</span> —
-                    one of the ministries we've helped expand their reach online.
-                </p>
-
-                {{-- Feature checklist --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 mb-10 max-w-lg mx-auto lg:mx-0 text-left">
-                    @foreach ([
-                        'Modern & Responsive Design',
-                        'Mobile Friendly',
-                        'SEO Optimized',
-                        'Secure & Reliable',
-                        'Easy to Manage',
-                        'Ongoing Support',
-                    ] as $feature)
-                        <div class="spotlight-feature-item flex items-center gap-3">
-                            <span class="shrink-0 w-6 h-6 rounded-full flex items-center justify-center" style="background:rgba(201,168,76,0.16);border:1px solid rgba(201,168,76,0.35);">
-                                <svg class="w-3.5 h-3.5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                            </span>
-                            <span class="text-white/85 text-sm font-medium">{{ $feature }}</span>
-                        </div>
-                    @endforeach
-                </div>
-
-                {{-- CTAs --}}
-                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                    <a href="https://johnnydavisglobalmissions.org/" target="_blank" rel="noopener"
-                       class="spotlight-cta-primary inline-flex items-center justify-center gap-2 font-bold px-8 py-4 rounded-lg"
-                       style="background:#C9A84C;color:#15202C;">
-                        View The Live Site
-                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                    </a>
-                    <a href="{{ route('consultation.create') }}"
-                       class="spotlight-cta-outline inline-flex items-center justify-center gap-2 font-semibold px-8 py-4 rounded-lg"
-                       style="border:1.5px solid rgba(255,255,255,0.28);color:#FFFFFF;">
-                        Book A Free Consultation
-                    </a>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
 
 {{-- ============================================================
      OUR TEAM SECTION (shorter version, above Contact)
@@ -2165,6 +2388,80 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         })();
 
         // ============================================================
+        //  HERO EXIT — subtle "camera pulling forward" as you scroll
+        //  out of the Hero toward Our Work: content gently scales up,
+        //  blurs, and fades rather than just vanishing, so the handoff
+        //  into the portfolio experience reads as continuous motion.
+        // ============================================================
+        (function initHeroExitTransition() {
+            const heroContent = document.getElementById('hero-content');
+            if (!heroContent) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            gsap.set(heroContent, { transformPerspective: 1400, transformOrigin: 'center center', force3D: true });
+            gsap.to(heroContent, {
+                opacity: 0.15, scale: 1.08, y: -30, ease: 'none',
+                scrollTrigger: { trigger: '#hero', start: 'center center', end: 'bottom top', scrub: 1 },
+            });
+        })();
+
+        // ============================================================
+        //  OUR WORK — hover-tilt only. Portfolio already has its own
+        //  well-tuned entrance system a bit further down this file
+        //  (runPortfolioAnimation(), IntersectionObserver-triggered: kicker
+        //  sweep → heading rise → cards zoom-in with a continuous idle
+        //  float). An earlier pass added a SECOND, scroll-scrubbed entrance
+        //  on the same cards/panel here, and the two fighting over the same
+        //  transforms is what made the section look jumbled. Only the
+        //  hover-tilt survives that cleanup — it's safe to keep because it
+        //  drives rotationX/rotationY, a different transform axis than the
+        //  existing float loop's `y`, so the two don't collide.
+        // ============================================================
+        (function initPortfolioTilt() {
+            if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            const cards = Array.from(document.querySelectorAll('#portfolio-grid .portfolio-card'));
+            cards.forEach((card) => {
+                card.addEventListener('mousemove', (e) => {
+                    const r = card.getBoundingClientRect();
+                    const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
+                    const dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
+                    gsap.to(card, { rotationY: dx * 5, rotationX: -dy * 5, duration: 0.35, ease: 'power2.out', overwrite: 'auto' });
+                }, { passive: true });
+                card.addEventListener('mouseleave', () => {
+                    gsap.to(card, { rotationX: 0, rotationY: 0, duration: 0.6, ease: 'power2.out', overwrite: 'auto' });
+                }, { passive: true });
+            });
+        })();
+
+        // ============================================================
+        //  IN THE SPOTLIGHT — mouse-parallax tilt only, for the same
+        //  reason as initPortfolioTilt() above: Spotlight already has its
+        //  own cinematic entrance timeline further down this file (frame
+        //  slides in from the left, copy cascades in on the right). This
+        //  just adds the hover tilt on top of it — rotationX/rotationY,
+        //  a different axis than the existing entrance's `rotate`.
+        // ============================================================
+        (function initSpotlightTilt() {
+            if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            const frame = document.querySelector('#spotlight .spotlight-frame');
+            if (!frame) return;
+
+            frame.addEventListener('mousemove', (e) => {
+                const r = frame.getBoundingClientRect();
+                const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
+                const dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
+                gsap.to(frame, { rotationY: dx * 6, rotationX: -dy * 6, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
+            }, { passive: true });
+            frame.addEventListener('mouseleave', () => {
+                gsap.to(frame, { rotationX: 0, rotationY: 0, duration: 0.7, ease: 'power2.out', overwrite: 'auto' });
+            }, { passive: true });
+        })();
+
+        // ============================================================
         //  WELCOME / FOUNDER'S MESSAGE — bi-directional timeline
         //
         //  TOGGLE on the parent ScrollTrigger means the entire timeline
@@ -2599,76 +2896,35 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         })();
 
         // ============================================================
-        //  PORTFOLIO — IntersectionObserver (ScrollTrigger positions are
-        //  unreliable after the GSAP pin; same fix as Plans section)
+        //  SCENE 4 (project cards) — scroll-scrubbed cinematic reveal so the
+        //  overture's scroll-driven camera feel carries into the cards
+        //  instead of a plain scroll. Each card rises + tilts + fades in,
+        //  tied directly to scroll position (scrub), the same language as
+        //  the pinned scenes 1–3 above.
         // ============================================================
         (function() {
-            let portfolioAnimated = false;
             const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const cards = gsap.utils.toArray('#portfolio-grid .portfolio-card');
+            if (!cards.length) return;
 
-            // Visitors who've asked their OS for reduced motion don't get the
-            // autoplaying background video either — drop the iframe entirely
-            // and let the section's own cream gradient show through instead.
             if (reduceMotion) {
-                document.getElementById('portfolio-video')?.remove();
+                gsap.set(cards, { opacity:1, y:0, scale:1, rotationX:0 });
+                return;
             }
 
-            // Set hidden initial state immediately so elements don't flash visible
-            gsap.set(['#portfolio-kicker','#portfolio-heading','#portfolio-subtitle'], { opacity:0 });
-            gsap.set('.portfolio-card', { opacity:0, scale:0.85, y:44, transformOrigin:'center bottom' });
-            gsap.set('.portfolio-badge', { opacity:0 });
-
-            function runPortfolioAnimation() {
-                if (portfolioAnimated) return;
-                portfolioAnimated = true;
-
-                if (reduceMotion) {
-                    // Skip straight to the final visible state — no motion at all.
-                    gsap.set(['#portfolio-kicker','#portfolio-heading','#portfolio-subtitle','.portfolio-card','.portfolio-badge'], { opacity:1, x:0, y:0, scale:1, skewY:0 });
-                    return;
-                }
-
-                // Header cascade: kicker sweeps left → heading rises → subtitle fades
-                gsap.timeline()
-                    .fromTo('#portfolio-kicker',
-                        { opacity:0, x:-22, letterSpacing:'0.32em' },
-                        { opacity:1, x:0,   letterSpacing:'0.16em', duration:0.60, ease:'power3.out' })
-                    .fromTo('#portfolio-heading',
-                        { opacity:0, y:44, skewY:2 },
-                        { opacity:1, y:0,  skewY:0, duration:0.80, ease:'power3.out' }, '-=0.28')
-                    .fromTo('#portfolio-subtitle',
-                        { opacity:0, y:16 },
-                        { opacity:1, y:0, duration:0.50, ease:'power2.out' }, '-=0.28');
-
-                // Cards: scale-up zoom — 85% → 100% with back.out(1.55) overshoot,
-                // then settle into a continuous gentle up/down float once landed
-                // (chained via onComplete rather than a separate CSS animation so
-                // it never fights the entrance tween's own transform values).
-                gsap.fromTo('.portfolio-card',
-                    { opacity:0, scale:0.85, y:44 },
+            cards.forEach((card) => {
+                gsap.fromTo(card,
+                    { opacity:0, y:90, scale:0.9, rotationX:10, transformPerspective:1000, transformOrigin:'center bottom' },
                     {
-                        opacity:1, scale:1, y:0, duration:0.82, ease:'back.out(1.55)', stagger:0.13, delay:0.22,
-                        onComplete() {
-                            gsap.to('.portfolio-card', {
-                                y:'-=16', duration:2.4, ease:'sine.inOut',
-                                yoyo:true, repeat:-1, stagger:{ each:0.4, from:'start' },
-                            });
-                        },
+                        opacity:1, y:0, scale:1, rotationX:0, ease:'none',
+                        scrollTrigger: { trigger: card, start: 'top 90%', end: 'top 52%', scrub: 0.6 },
                     }
                 );
+            });
 
-                // Badges: fade in only — their continuous float already comes
-                // from the .portfolio-badge-N CSS animations, so GSAP never
-                // touches their transform (avoids fighting the CSS keyframes).
-                gsap.to('.portfolio-badge', { opacity:1, duration:0.6, stagger:0.15, ease:'power2.out', delay:0.35 });
-            }
-
-            const io = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting) { runPortfolioAnimation(); io.disconnect(); }
-            }, { threshold: 0.08 });
-
-            const portfolioSection = document.getElementById('portfolio');
-            if (portfolioSection) io.observe(portfolioSection);
+            // Positions depend on the overture's pin spacer above — recompute
+            // once everything is laid out so the scrub starts/ends land right.
+            ScrollTrigger.refresh();
         })();
 
         // ============================================================
