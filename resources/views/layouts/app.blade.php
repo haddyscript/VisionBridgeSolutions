@@ -58,6 +58,50 @@
         .nav-link:hover { color:#C9A84C; }
         .nav-link.is-active { color:#C9A84C !important; }
 
+        /* ── Premium 3D nav items (Vision Pro / Linear feel) ──
+           Each link is a small 3D card: a perspective stage (<a>) holds an
+           inner object that tilts to the cursor, with layered glass, a
+           cursor-following glow, a gradient border, and a light sweep. All
+           transform/opacity/filter only → GPU-composited, holds 60fps. */
+        .nav-link-3d { display:inline-block; perspective:700px; }
+        .nav-link-3d .nav-link-inner {
+            position:relative; display:flex; align-items:center; justify-content:center;
+            padding:8px 16px; border-radius:12px; transform-style:preserve-3d;
+            will-change:transform; transition:box-shadow .35s cubic-bezier(.22,1,.36,1); }
+        .nav-link-3d.is-hover .nav-link-inner {
+            box-shadow:0 18px 38px rgba(0,0,0,.30), 0 5px 14px rgba(0,0,0,.22); }
+        /* glass panel + cursor-following glow */
+        .nav-link-glass {
+            position:absolute; inset:0; border-radius:12px; opacity:0; pointer-events:none;
+            background:
+                radial-gradient(140px circle at var(--mx,50%) var(--my,50%), rgba(201,168,76,.22), transparent 62%),
+                linear-gradient(155deg, rgba(255,255,255,.12), rgba(255,255,255,.03));
+            -webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px);
+            transition:opacity .32s cubic-bezier(.22,1,.36,1); }
+        /* premium gradient border (masked so only the 1px ring shows) */
+        .nav-link-glass::before {
+            content:""; position:absolute; inset:0; border-radius:12px; padding:1px;
+            background:linear-gradient(130deg, rgba(201,168,76,.75), rgba(63,189,187,.55), rgba(201,168,76,0) 72%);
+            -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite:xor; mask-composite:exclude; }
+        .nav-link-3d.is-hover .nav-link-glass { opacity:1; }
+        /* cinematic light sweep */
+        .nav-link-sweep { position:absolute; inset:0; border-radius:12px; overflow:hidden; opacity:0; pointer-events:none; }
+        .nav-link-sweep::before {
+            content:""; position:absolute; top:-20%; left:0; width:36%; height:140%;
+            background:linear-gradient(105deg, transparent, rgba(255,255,255,.42), transparent);
+            transform:translateX(-260%) skewX(-16deg); }
+        .nav-link-3d.is-hover .nav-link-sweep { opacity:1; }
+        .nav-link-3d.is-hover .nav-link-sweep::before { animation:nav-sweep .72s cubic-bezier(.22,1,.36,1) forwards; }
+        .nav-link-label { position:relative; z-index:2; display:inline-block; transform:translateZ(16px); }
+        @keyframes nav-sweep { to { transform:translateX(320%) skewX(-16deg); } }
+        /* reduced motion: drop the 3D layers, keep the simple gold-text hover */
+        @media (prefers-reduced-motion: reduce) {
+            .nav-link-3d .nav-link-inner { transform:none !important; }
+            .nav-link-glass, .nav-link-sweep { display:none; }
+        }
+
         /* ─── "Login" — a teal outlined pill, not a plain text link ───
              Renamed from "Client Login": existing clients scanning the nav
              for "how do I get to my account" now get a button that visually
@@ -1759,10 +1803,23 @@
             <div id="nav-links" class="hidden md:flex items-center gap-0.5 relative">
                 <div id="nav-cursor"></div>
                 <div id="nav-active-dot"></div>
-                <a href="{{ $homeAnchor }}#about"     class="nav-link relative z-10 px-4 py-2 opacity-0">About</a>
-                <a href="{{ $homeAnchor }}#services"  class="nav-link relative z-10 px-4 py-2 opacity-0">Services</a>
-                <a href="{{ $homeAnchor }}#plans"     class="nav-link relative z-10 px-4 py-2 opacity-0">Plans</a>
-                <a href="{{ $homeAnchor }}#portfolio" class="nav-link relative z-10 px-4 py-2 opacity-0">Portfolio</a>
+                @php
+                    $navItems = [
+                        ['href' => '#about',     'label' => 'About'],
+                        ['href' => '#services',  'label' => 'Services'],
+                        ['href' => '#plans',     'label' => 'Plans'],
+                        ['href' => '#portfolio', 'label' => 'Portfolio'],
+                    ];
+                @endphp
+                @foreach ($navItems as $navItem)
+                    <a href="{{ $homeAnchor }}{{ $navItem['href'] }}" class="nav-link nav-link-3d relative z-10 opacity-0">
+                        <span class="nav-link-inner">
+                            <span class="nav-link-glass" aria-hidden="true"></span>
+                            <span class="nav-link-sweep" aria-hidden="true"></span>
+                            <span class="nav-link-label">{{ $navItem['label'] }}</span>
+                        </span>
+                    </a>
+                @endforeach
             </div>
 
             {{-- Desktop CTA --}}
@@ -2254,23 +2311,50 @@
             });
 
 
-            // ── Sliding capsule across desktop links ─────────────────────
-            if (navLinks && cursor) {
+            // ── Premium 3D hover on desktop nav items ────────────────────
+            // Two motion channels kept separate so they never fight:
+            //  1) state (enter/leave): spring lift + scale + glass/sweep/shadow
+            //  2) cursor tilt: pointermove → rotateX/rotateY via GSAP quickTo
+            //     (a pre-made setter — the cheapest way to push 60fps values).
+            // Gated to fine pointers + no reduced-motion; touch just navigates.
+            const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+            const noMotion    = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (navLinks && finePointer && !noMotion) {
                 linkEls.forEach(link => {
+                    const inner = link.querySelector('.nav-link-inner');
+                    const glass = link.querySelector('.nav-link-glass');
+                    if (!inner) return;
+
+                    // quickTo = reusable tweened setters; no new tween per frame.
+                    const setRotX = gsap.quickTo(inner, 'rotationX', { duration: 0.4, ease: 'power3.out' });
+                    const setRotY = gsap.quickTo(inner, 'rotationY', { duration: 0.4, ease: 'power3.out' });
+
                     link.addEventListener('mouseenter', () => {
-                        const lr = link.getBoundingClientRect();
-                        const nr = navLinks.getBoundingClientRect();
-                        gsap.to(cursor, {
-                            x: lr.left - nr.left - 8,
-                            width: lr.width + 16,
-                            opacity: 1,
-                            duration: 0.26,
-                            ease: 'power2.out',
-                        });
+                        link.classList.add('is-hover');
+                        // lift toward the viewer + subtle scale, spring-eased
+                        gsap.to(inner, { y: -4, z: 24, scale: 1.04, duration: 0.5, ease: 'back.out(2.2)', overwrite: 'auto' });
+                        // dim the other items to focus the hovered one
+                        linkEls.forEach(other => { if (other !== link) gsap.to(other, { opacity: 0.5, duration: 0.3, ease: 'power2.out' }); });
                     });
-                });
-                navLinks.addEventListener('mouseleave', () => {
-                    gsap.to(cursor, { opacity:0, duration:0.20 });
+
+                    link.addEventListener('mousemove', e => {
+                        const r  = inner.getBoundingClientRect();
+                        const px = (e.clientX - r.left) / r.width  - 0.5;  // -0.5 … +0.5
+                        const py = (e.clientY - r.top)  / r.height - 0.5;
+                        setRotY(px * 12);   // ≈ ±6° — subtle, never exaggerated
+                        setRotX(-py * 12);
+                        if (glass) {
+                            glass.style.setProperty('--mx', ((px + 0.5) * 100).toFixed(1) + '%');
+                            glass.style.setProperty('--my', ((py + 0.5) * 100).toFixed(1) + '%');
+                        }
+                    });
+
+                    link.addEventListener('mouseleave', () => {
+                        link.classList.remove('is-hover');
+                        setRotX(0); setRotY(0);
+                        gsap.to(inner, { y: 0, z: 0, scale: 1, duration: 0.6, ease: 'elastic.out(1, 0.55)', overwrite: 'auto' });
+                        linkEls.forEach(other => gsap.to(other, { opacity: 1, duration: 0.35, ease: 'power2.out' }));
+                    });
                 });
             }
 
