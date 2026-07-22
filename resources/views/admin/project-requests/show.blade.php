@@ -62,6 +62,7 @@
                     <div>
                         <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Due Date</label>
                         <input type="date" name="due_date" form="request-form" value="{{ old('due_date', $projectRequest->due_date?->format('Y-m-d')) }}"
+                               onclick="this.showPicker && this.showPicker()"
                                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                     </div>
                 </div>
