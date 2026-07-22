@@ -60,14 +60,20 @@
             <input type="text" id="subscription-search" placeholder="Search client, project, or description..." oninput="filterSubscriptions()"
                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
         </div>
-        <select id="subscription-status-filter" onchange="filterSubscriptions()"
-                class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
-            <option value="">All statuses</option>
-            <option value="pending">Pending</option>
-            <option value="active">Active</option>
-            <option value="past_due">Past Due</option>
-            <option value="canceled">Canceled</option>
-        </select>
+        <div class="w-full sm:w-48">
+            @include('admin._dropdown', [
+                'name' => 'status_filter',
+                'domId' => 'subscription-status-filter',
+                'options' => [
+                    ['value' => 'pending', 'label' => 'Pending', 'dot' => 'bg-amber-400'],
+                    ['value' => 'active', 'label' => 'Active', 'dot' => 'bg-teal'],
+                    ['value' => 'past_due', 'label' => 'Past Due', 'dot' => 'bg-red-400'],
+                    ['value' => 'canceled', 'label' => 'Canceled', 'dot' => 'bg-gray-400'],
+                ],
+                'selected' => '',
+                'placeholder' => 'All Statuses',
+            ])
+        </div>
         <p id="subscription-empty-filter" class="hidden text-sm text-gray-400">No care plans match your search.</p>
     </div>
 
@@ -150,7 +156,7 @@
     <script>
         function filterSubscriptions() {
             const q = document.getElementById('subscription-search').value.trim().toLowerCase();
-            const status = document.getElementById('subscription-status-filter').value;
+            const status = document.getElementById('subscription-status-filter-input').value;
             let visibleCount = 0;
 
             document.querySelectorAll('#subscriptions-table tbody tr').forEach(row => {
@@ -163,6 +169,11 @@
 
             document.getElementById('subscription-empty-filter')?.classList.toggle('hidden', visibleCount > 0);
         }
+
+        // The styled dropdown partial has no inline onchange like the old
+        // native <select> did — it fires a real 'change' event on its hidden
+        // input instead, specifically so page-specific JS can hook into it.
+        document.getElementById('subscription-status-filter-input')?.addEventListener('change', filterSubscriptions);
 
         // Positioned with fixed coordinates (not CSS absolute) so the menu can
         // escape the table's rounded-corner container without being clipped.
