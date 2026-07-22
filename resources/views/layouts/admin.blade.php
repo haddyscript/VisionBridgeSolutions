@@ -351,15 +351,20 @@
                     </svg>
                 </button>
                 <h1 class="font-display text-lg font-bold text-navy dark:text-white flex-1">@yield('page-title', 'Admin')</h1>
-                <button id="theme-toggle" type="button" title="Toggle dark mode"
-                        class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                    <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
-                    <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                    </svg>
-                </button>
+                <div class="flex items-center gap-2.5">
+                    <span id="theme-toggle-label" class="hidden sm:inline text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 select-none">Light Mode</span>
+                    <button id="theme-toggle" type="button" title="Toggle dark mode" aria-label="Toggle light and dark mode"
+                            class="relative inline-flex items-center h-8 w-16 shrink-0 rounded-full border-2 border-gold bg-amber-50 dark:bg-navy-dark shadow-sm hover:shadow-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300">
+                        <span class="absolute left-1 top-1 w-6 h-6 rounded-full bg-white dark:bg-navy-light shadow-md flex items-center justify-center transform transition-transform duration-300 dark:translate-x-8">
+                            <svg id="theme-icon-light" class="w-4 h-4 text-amber-500 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                            <svg id="theme-icon-dark" class="w-4 h-4 text-gold-dark hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
             </header>
 
             @if (session('impersonator_id'))
@@ -442,11 +447,13 @@
         const themeToggle = document.getElementById('theme-toggle');
         const iconLight = document.getElementById('theme-icon-light');
         const iconDark = document.getElementById('theme-icon-dark');
+        const themeLabel = document.getElementById('theme-toggle-label');
 
         function syncThemeIcon() {
             const isDark = document.documentElement.classList.contains('dark');
             iconLight.classList.toggle('hidden', !isDark);
             iconDark.classList.toggle('hidden', isDark);
+            if (themeLabel) themeLabel.textContent = isDark ? 'Dark Mode' : 'Light Mode';
         }
         syncThemeIcon();
 
