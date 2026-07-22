@@ -63,14 +63,21 @@
         <div id="admin-greeting-modal" class="fixed inset-0 z-[70] flex items-center justify-center px-4">
             <div id="admin-greeting-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
 
-            <div id="admin-greeting-panel" class="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform scale-90 opacity-0 translate-y-4 transition-all duration-500 ease-out">
+            <div id="admin-greeting-panel" class="relative bg-white dark:bg-navy rounded-2xl w-full max-w-md overflow-hidden transform scale-90 opacity-0 translate-y-4 transition-all duration-500 ease-out admin-greeting-ring">
                 <div class="relative overflow-hidden px-6 pt-7 pb-6" style="background:linear-gradient(135deg,#111D33,#1B2A4A 65%,#1B2A4A);">
-                    {{-- Decorative glow + drifting sparkles — purely cosmetic, all disabled under reduced-motion below. --}}
+                    {{-- Decorative glow + drifting sparkles — all purely cosmetic
+                         and disabled under reduced-motion below. These keep
+                         running for as long as the modal stays open (not just
+                         during the 6s confetti burst), so it stays lively. --}}
                     <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full pointer-events-none admin-greeting-glow" style="background:radial-gradient(circle,rgba(201,168,76,0.35) 0%,transparent 70%);"></div>
-                    <div class="absolute -bottom-14 -left-10 w-44 h-44 rounded-full pointer-events-none admin-greeting-glow" style="background:radial-gradient(circle,rgba(42,157,143,0.22) 0%,transparent 70%);"></div>
+                    <div class="absolute -bottom-14 -left-10 w-44 h-44 rounded-full pointer-events-none admin-greeting-glow" style="background:radial-gradient(circle,rgba(42,157,143,0.22) 0%,transparent 70%); animation-delay:1.5s;"></div>
                     <svg class="absolute top-5 right-16 w-3.5 h-3.5 text-gold admin-greeting-sparkle" style="animation-delay:.2s" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg>
                     <svg class="absolute top-12 right-6 w-2.5 h-2.5 text-white/70 admin-greeting-sparkle" style="animation-delay:.6s" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg>
                     <svg class="absolute bottom-6 right-24 w-2 h-2 text-gold/80 admin-greeting-sparkle" style="animation-delay:1s" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg>
+                    <svg class="absolute top-20 right-28 w-2 h-2 text-teal-light admin-greeting-sparkle" style="animation-delay:1.4s" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg>
+                    <svg class="absolute bottom-10 right-8 w-3 h-3 text-white/50 admin-greeting-sparkle" style="animation-delay:1.8s" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg>
+                    <svg class="absolute top-8 left-8 w-2.5 h-2.5 text-gold/70 admin-greeting-sparkle" style="animation-delay:.9s" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg>
+                    <svg class="absolute bottom-4 left-16 w-2 h-2 text-teal-light/80 admin-greeting-sparkle" style="animation-delay:2.2s" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg>
 
                     <div id="admin-greeting-header-text" class="relative opacity-0 transition-all duration-500 ease-out" style="transform:translateY(6px);">
                         <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Welcome back</p>
@@ -80,8 +87,9 @@
                 <div class="px-6 py-6">
                     <p id="admin-greeting-quote" class="text-base text-navy dark:text-white leading-relaxed italic opacity-0 transition-all duration-500 ease-out" style="transform:translateY(6px);">&ldquo;{{ $adminGreeting }}&rdquo;</p>
                     <button type="button" onclick="document.getElementById('admin-greeting-modal').remove(); document.getElementById('admin-greeting-confetti')?.remove();"
-                            class="mt-6 w-full bg-gold hover:bg-gold-dark text-navy font-bold text-sm py-2.5 rounded-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]">
-                        Let's Get to Work
+                            class="relative overflow-hidden mt-6 w-full bg-gold hover:bg-gold-dark text-navy font-bold text-sm py-2.5 rounded-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]">
+                        <span class="relative">Let's Get to Work</span>
+                        <span class="admin-greeting-shimmer" aria-hidden="true"></span>
                     </button>
                 </div>
             </div>
@@ -95,13 +103,36 @@
             .admin-greeting-glow { animation: admin-greeting-float 6s ease-in-out infinite; }
 
             @keyframes admin-greeting-twinkle {
-                0%, 100% { opacity: 0.25; transform: scale(0.85) rotate(0deg); }
-                50% { opacity: 1; transform: scale(1.15) rotate(15deg); }
+                0%, 100% { opacity: 0.2; transform: scale(0.8) rotate(0deg); }
+                50% { opacity: 1; transform: scale(1.2) rotate(20deg); }
             }
-            .admin-greeting-sparkle { animation: admin-greeting-twinkle 2.4s ease-in-out infinite; }
+            .admin-greeting-sparkle { animation: admin-greeting-twinkle 2.2s ease-in-out infinite; }
+
+            /* Continuous pulsing gold ring around the whole panel — runs for
+               as long as the modal stays open, not just on entrance. */
+            @keyframes admin-greeting-ring-pulse {
+                0%, 100% { box-shadow: 0 0 0 0 rgba(201,168,76,0.45), 0 25px 50px -12px rgba(0,0,0,0.5); }
+                50% { box-shadow: 0 0 0 8px rgba(201,168,76,0), 0 25px 50px -12px rgba(0,0,0,0.5); }
+            }
+            .admin-greeting-ring { animation: admin-greeting-ring-pulse 2.5s ease-out infinite; }
+
+            /* Diagonal light sweep looping across the CTA button. */
+            @keyframes admin-greeting-shimmer-sweep {
+                0% { transform: translateX(-150%) skewX(-20deg); }
+                100% { transform: translateX(250%) skewX(-20deg); }
+            }
+            .admin-greeting-shimmer {
+                position: absolute;
+                top: 0; left: 0;
+                width: 35%; height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+                animation: admin-greeting-shimmer-sweep 2.8s ease-in-out infinite;
+            }
 
             @media (prefers-reduced-motion: reduce) {
-                .admin-greeting-glow, .admin-greeting-sparkle { animation: none; }
+                .admin-greeting-glow, .admin-greeting-sparkle, .admin-greeting-ring, .admin-greeting-shimmer {
+                    animation: none;
+                }
             }
         </style>
 
