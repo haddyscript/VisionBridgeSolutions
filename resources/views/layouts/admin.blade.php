@@ -351,16 +351,26 @@
                     </svg>
                 </button>
                 <h1 class="font-display text-lg font-bold text-navy dark:text-white flex-1">@yield('page-title', 'Admin')</h1>
-                <div class="flex items-center gap-2.5">
-                    <span id="theme-toggle-label" class="hidden sm:inline text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 select-none">Light Mode</span>
+                <div class="flex items-center gap-2.5 pl-3 pr-1.5 py-1.5 rounded-full bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <span id="theme-toggle-label" class="hidden sm:inline text-xs font-bold uppercase tracking-wider text-navy dark:text-gold select-none transition-colors">Light Mode</span>
                     <button id="theme-toggle" type="button" title="Toggle dark mode" aria-label="Toggle light and dark mode"
-                            class="relative inline-flex items-center h-8 w-16 shrink-0 rounded-full border-2 border-gold bg-amber-50 dark:bg-navy-dark shadow-sm hover:shadow-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300">
-                        <span class="absolute left-1 top-1 w-6 h-6 rounded-full bg-white dark:bg-navy-light shadow-md flex items-center justify-center transform transition-transform duration-300 dark:translate-x-8">
-                            <svg id="theme-icon-light" class="w-4 h-4 text-amber-500 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            class="relative inline-flex items-center h-8 w-16 shrink-0 rounded-full border-2 border-gold bg-gradient-to-r from-amber-200 via-amber-100 to-amber-50 dark:from-indigo-950 dark:via-navy-dark dark:to-navy shadow-inner hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300">
+                        {{-- Static day/night cues at each end of the track — always
+                             present, just dimmed on the side that isn't active, so
+                             the switch reads as "day ↔ night" at a glance even
+                             before noticing the sliding knob. --}}
+                        <svg class="absolute left-1.5 w-3.5 h-3.5 text-amber-500 opacity-90 dark:opacity-20 transition-opacity duration-300 pointer-events-none" fill="currentColor" viewBox="0 0 24 24">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
+                        </svg>
+                        <svg class="absolute right-1.5 w-3.5 h-3.5 text-gold opacity-20 dark:opacity-90 transition-opacity duration-300 pointer-events-none" fill="currentColor" viewBox="0 0 24 24">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z"/>
+                        </svg>
+                        <span class="absolute left-1 top-1 w-6 h-6 rounded-full bg-white dark:bg-navy-light shadow-md ring-1 ring-black/5 flex items-center justify-center transform transition-transform duration-300 dark:translate-x-8">
+                            <svg id="theme-icon-light" class="w-4 h-4 text-amber-500 hidden" fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
                             </svg>
-                            <svg id="theme-icon-dark" class="w-4 h-4 text-gold-dark hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                            <svg id="theme-icon-dark" class="w-4 h-4 text-gold-dark hidden" fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z"/>
                             </svg>
                         </span>
                     </button>
