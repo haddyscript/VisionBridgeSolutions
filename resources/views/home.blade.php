@@ -116,9 +116,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     .story-vignette{position:absolute;inset:0;pointer-events:none;
         background:radial-gradient(ellipse at 50% 50%, transparent 34%, rgba(0,0,0,.62) 100%);}
 
-    .story-scene{position:absolute;top:50%;left:50%;width:min(92vw,1040px);
-        transform:translate(-50%,-50%);transform-origin:center center;
-        will-change:transform,opacity,filter;text-align:center;pointer-events:none;}
+    /* Fill the stage and flex-centre the content — no left:50% / xPercent, which
+       was clipping off-centre inside the fixed pin on mobile. GSAP animates the
+       scene's scale / z / rotation around its own centre. */
+    .story-scene{position:absolute;inset:0;display:flex;flex-direction:column;
+        align-items:center;justify-content:center;text-align:center;padding:24px 5vw;
+        transform-origin:center center;will-change:transform,opacity,filter;pointer-events:none;}
+    .story-scene > .story-title{max-width:min(92vw,900px);}
 
     /* ---- Scene 1 : logo ---- */
     .story-logo-wrap{position:relative;display:inline-block;margin:0 auto;}
@@ -203,15 +207,16 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     @keyframes story-pulse{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)}50%{opacity:.95;transform:translate(-50%,-50%) scale(1.06)}}
     @keyframes story-spot{0%,100%{transform:translateX(-50%) rotate(-7deg)}50%{transform:translateX(-50%) rotate(7deg)}}
 
-    /* Card scenes — two project cards per pinned scene */
-    .story-scene-cards{width:min(94vw,960px);}
-    .story-cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;}
-    @media (max-width:860px){ .story-cards-grid{grid-template-columns:1fr;gap:14px;} }
+    /* Card scenes — two project cards per pinned scene. Stays 2-up even on
+       mobile so both cards fit the pinned height (side-by-side, narrower);
+       the static/reduced layout switches to a single readable column. */
+    .story-cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch;
+        width:min(94vw,960px);}
+    .story-reduced .story-cards-grid{grid-template-columns:1fr;gap:16px;width:min(88vw,420px);}
 
     /* Care Plans scene — the infographic image, sized to fit one pinned screen */
-    .story-scene-plans{width:min(94vw,1120px);}
-    .story-plans-img{display:block;width:100%;height:auto;max-height:86vh;object-fit:contain;
-        border-radius:16px;box-shadow:0 30px 90px rgba(0,0,0,.55),0 0 0 1px rgba(201,168,76,.18);}
+    .story-plans-img{display:block;width:100%;max-width:min(94vw,1120px);height:auto;max-height:84vh;
+        object-fit:contain;border-radius:16px;box-shadow:0 30px 90px rgba(0,0,0,.55),0 0 0 1px rgba(201,168,76,.18);}
 
     /* Reduced motion — no pin/scrub; every scene becomes a normal stacked block
        so all content (including the project cards) stays reachable. */
@@ -222,10 +227,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         padding:56px 5vw;}
     .story-reduced .story-logo-sweep::before,
     .story-reduced .story-logo-ring{animation:none;}
+    /* drop the decorative floats/spotlight in the static layout so stacked
+       scenes stay clean (they were positioned for the centered pinned scenes) */
+    .story-reduced .story-float,
+    .story-reduced .story-spot{display:none;}
     .story-reduced .story-cue,
     .story-reduced .story-progress{display:none;}
     @media (max-width:640px){
-        .story-progress{right:14px;}
+        .story-progress{left:14px;gap:9px;}
         .story-card{width:118px;height:76px;}
         .story-poster{width:116px;height:156px;}
     }
@@ -249,6 +258,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         var dots  = ov.querySelectorAll('.story-dot');
         var cue   = ov.querySelector('.story-cue');
 
+        // Reduced-motion only: fall back to a static stacked layout. The pinned
+        // camera now runs on mobile too — scenes are flex-centred, so they no
+        // longer depend on the xPercent centring that mis-laid-out before.
         if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
             ov.classList.add('story-reduced');
             return;
@@ -260,7 +272,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         // centring is expressed as xPercent/yPercent (not a CSS translate GSAP
         // would otherwise overwrite). transformPerspective gives each scene its
         // own 3D depth for the z / rotation "camera" moves.
-        gsap.set([s0, s1, s2, s3, s4, s5], { xPercent:-50, yPercent:-50, transformPerspective:1400, transformOrigin:'center center', force3D:true });
+        gsap.set([s0, s1, s2, s3, s4, s5], { transformPerspective:1400, transformOrigin:'center center', force3D:true });
         gsap.set(s0, { autoAlpha:1, scale:1, z:0, filter:'blur(0px)' });
         gsap.set([s1, s2, s3, s4, s5], { autoAlpha:0, scale:0.82, z:-380, filter:'blur(12px)' });
 
