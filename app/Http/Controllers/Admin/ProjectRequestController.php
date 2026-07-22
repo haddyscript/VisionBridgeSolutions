@@ -57,7 +57,7 @@ class ProjectRequestController extends Controller
     {
         $validated = $request->validate([
             'user_id' => ['required', 'exists:users,id'],
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'string', 'max:255', 'unique:project_requests,title'],
             'description' => ['required', 'string', 'max:5000'],
             'priority' => ['nullable', Rule::in(array_keys(ProjectRequest::PRIORITIES))],
             'due_date' => ['nullable', 'date'],
