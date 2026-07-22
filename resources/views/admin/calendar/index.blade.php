@@ -32,11 +32,13 @@
     <div>
         <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Date</label>
         <input type="date" name="date" required value="{{ now()->format('Y-m-d') }}"
+               onclick="this.showPicker && this.showPicker()"
                class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
     </div>
     <div>
         <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Time (optional)</label>
         <input type="time" name="time"
+               onclick="this.showPicker && this.showPicker()"
                class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
     </div>
     <button type="submit" class="shrink-0 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors">
