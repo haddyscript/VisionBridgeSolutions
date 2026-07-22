@@ -1118,3 +1118,11 @@ Added a separate, optional **Recovery/Notification Email** field instead (`users
 - **Scope, deliberately**: this only affects Notification-based mail. The app's many other emails (payment receipts, security alerts, welcome emails, etc.) are sent via `Mail::to($user->email)->send(...)` directly throughout the codebase, bypassing Notification routing entirely — those still go straight to the login email and were not touched. Rerouting every one of those would mean auditing dozens of call sites for a concern (this account can't receive password resets) that a single, Laravel-native override already solves cleanly.
 - Editable by any admin on their own account via **Team → My Account → Edit Profile**, right under the Email field — not exclusive to the Owner account, since any admin could plausibly want a distinct recovery inbox.
 - **Still needed**: someone with real server access must run `php artisan migrate` to apply the new column before this field can be saved.
+
+## 60. Welcome-Back Greeting Modal for Admins (2026-07-22)
+
+Every genuine admin login now shows a modal with one randomly-picked inspirational line (`App\Support\AdminGreetings::MESSAGES`, 50 total — expanded from an initial 20 the same day, to make repeats noticeably less likely) — "Welcome back, {name}" over a branded navy/gold header, one message, and a "Let's Get to Work" dismiss button.
+
+- `AuthenticatedSessionController::finishLogin()` picks a random message into `session('admin_greeting')` for admin logins only (client logins are untouched — they already have their own post-login prompts). `layouts.admin.blade.php` reads it via `session()->pull('admin_greeting')`, which reads and clears it in the same step — so it renders exactly once right after login and never again on subsequent page loads in that session, with no extra flag/column/migration needed.
+- **Never shows during impersonation** — "Log In as Client"/"Log In as Admin" both call `Auth::login()` directly and intentionally skip `finishLogin()` entirely (that's also why impersonation doesn't update `last_login_at` or log a normal login activity), so viewing-as-someone-else never triggers this modal.
+- Dismissible via the button, clicking the backdrop, or Escape — same conventions as every other modal in the app.

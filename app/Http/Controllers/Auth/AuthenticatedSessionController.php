@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\ClientNotification;
 use App\Models\LoginActivity;
+use App\Support\AdminGreetings;
 use App\Support\AdminPermissions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -109,6 +110,12 @@ class AuthenticatedSessionController extends Controller
         if (! $user->isAdmin()) {
             $request->session()->put('show_payment_reminder', true);
             $request->session()->put('show_survey_prompt', true);
+        } else {
+            // Read once via session()->pull() in layouts.admin — shows exactly
+            // once per genuine login, never on impersonation (Admin\TeamController
+            // ::impersonate() and Admin\ClientController::impersonate() call
+            // Auth::login() directly and never go through finishLogin()).
+            $request->session()->put('admin_greeting', AdminGreetings::random());
         }
 
         $destination = $request->user()->isAdmin()

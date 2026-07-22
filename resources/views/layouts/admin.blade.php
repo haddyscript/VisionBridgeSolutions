@@ -54,6 +54,29 @@
 </head>
 <body class="font-sans antialiased text-gray-800 dark:text-gray-100 bg-gray-50 dark:bg-navy-dark min-h-screen">
 
+    {{-- Welcome-back greeting — session()->pull() reads AND clears it in one
+         step, so this renders exactly once right after a genuine login, never
+         again on subsequent page loads in the same session, and never at all
+         during impersonation (see AuthenticatedSessionController::finishLogin()). --}}
+    @php($adminGreeting = session()->pull('admin_greeting'))
+    @if ($adminGreeting)
+        <div id="admin-greeting-modal" class="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+            <div class="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+                <div class="px-6 pt-6 pb-5" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
+                    <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Welcome back</p>
+                    <h2 class="font-display text-xl font-bold text-white">{{ auth()->user()->name }}</h2>
+                </div>
+                <div class="px-6 py-6">
+                    <p class="text-base text-navy dark:text-white leading-relaxed italic">&ldquo;{{ $adminGreeting }}&rdquo;</p>
+                    <button type="button" onclick="document.getElementById('admin-greeting-modal').remove()"
+                            class="mt-6 w-full bg-gold hover:bg-gold-dark text-navy font-bold text-sm py-2.5 rounded-lg transition-colors">
+                        Let's Get to Work
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="flex min-h-screen">
 
         {{-- Sidebar --}}
@@ -420,6 +443,13 @@
     </div>
 
     <script>
+        document.getElementById('admin-greeting-modal')?.addEventListener('click', function (e) {
+            if (e.target === this) this.remove();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') document.getElementById('admin-greeting-modal')?.remove();
+        });
+
         const sidebar = document.getElementById('admin-sidebar');
         const overlay = document.getElementById('sidebar-overlay');
         const toggle = document.getElementById('sidebar-toggle');
