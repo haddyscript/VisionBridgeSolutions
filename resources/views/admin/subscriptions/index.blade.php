@@ -151,29 +151,84 @@
                 @endforeach
             </tbody>
         </table>
+
+        {{-- Client-side pagination — everything's already loaded for instant
+             search/filter above (same reasoning as Revision Management), so
+             this just slices the already-filtered set rather than re-fetching. --}}
+        <div class="flex items-center justify-between gap-4 px-5 py-3 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
+            <span id="subscription-page-summary"></span>
+            <div class="flex items-center gap-2">
+                <button type="button" id="subscription-page-prev" onclick="changeSubscriptionPage(-1)"
+                        class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                    Prev
+                </button>
+                <span id="subscription-page-indicator" class="px-2 text-navy dark:text-white font-medium"></span>
+                <button type="button" id="subscription-page-next" onclick="changeSubscriptionPage(1)"
+                        class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                    Next
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
-        function filterSubscriptions() {
+        const SUBSCRIPTIONS_PER_PAGE = 15;
+        let subscriptionsCurrentPage = 1;
+
+        function subscriptionRowMatchesFilters(row) {
             const q = document.getElementById('subscription-search').value.trim().toLowerCase();
             const status = document.getElementById('subscription-status-filter-input').value;
-            let visibleCount = 0;
+            const matchesSearch = !q || row.dataset.search.includes(q);
+            const matchesStatus = !status || row.dataset.status === status;
+            return matchesSearch && matchesStatus;
+        }
 
-            document.querySelectorAll('#subscriptions-table tbody tr').forEach(row => {
-                const matchesSearch = !q || row.dataset.search.includes(q);
-                const matchesStatus = !status || row.dataset.status === status;
-                const visible = matchesSearch && matchesStatus;
-                row.classList.toggle('hidden', !visible);
-                if (visible) visibleCount++;
-            });
+        function renderSubscriptionsPage() {
+            const rows = Array.from(document.querySelectorAll('#subscriptions-table tbody tr'));
+            const matched = rows.filter(subscriptionRowMatchesFilters);
+            const total = matched.length;
+            const totalPages = Math.max(1, Math.ceil(total / SUBSCRIPTIONS_PER_PAGE));
+            subscriptionsCurrentPage = Math.min(Math.max(subscriptionsCurrentPage, 1), totalPages);
 
-            document.getElementById('subscription-empty-filter')?.classList.toggle('hidden', visibleCount > 0);
+            const start = (subscriptionsCurrentPage - 1) * SUBSCRIPTIONS_PER_PAGE;
+            const end = start + SUBSCRIPTIONS_PER_PAGE;
+            const pageRows = new Set(matched.slice(start, end));
+
+            rows.forEach((row) => row.classList.toggle('hidden', !pageRows.has(row)));
+
+            document.getElementById('subscription-empty-filter')?.classList.toggle('hidden', total > 0);
+
+            const summary = document.getElementById('subscription-page-summary');
+            if (summary) {
+                summary.textContent = total === 0
+                    ? 'No matching care plans'
+                    : `Showing ${start + 1}–${Math.min(end, total)} of ${total}`;
+            }
+            const indicator = document.getElementById('subscription-page-indicator');
+            if (indicator) indicator.textContent = `Page ${subscriptionsCurrentPage} of ${totalPages}`;
+
+            const prevBtn = document.getElementById('subscription-page-prev');
+            const nextBtn = document.getElementById('subscription-page-next');
+            if (prevBtn) prevBtn.disabled = subscriptionsCurrentPage <= 1;
+            if (nextBtn) nextBtn.disabled = subscriptionsCurrentPage >= totalPages;
+        }
+
+        function filterSubscriptions() {
+            subscriptionsCurrentPage = 1;
+            renderSubscriptionsPage();
+        }
+
+        function changeSubscriptionPage(delta) {
+            subscriptionsCurrentPage += delta;
+            renderSubscriptionsPage();
         }
 
         // The styled dropdown partial has no inline onchange like the old
         // native <select> did — it fires a real 'change' event on its hidden
         // input instead, specifically so page-specific JS can hook into it.
         document.getElementById('subscription-status-filter-input')?.addEventListener('change', filterSubscriptions);
+
+        renderSubscriptionsPage();
 
         // Positioned with fixed coordinates (not CSS absolute) so the menu can
         // escape the table's rounded-corner container without being clipped.
