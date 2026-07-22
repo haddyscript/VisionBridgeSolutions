@@ -235,7 +235,7 @@
             <tbody id="payout-tbody" class="divide-y divide-gray-100 dark:divide-gray-700">
                 @foreach ($payouts as $payout)
                     @php $project = $payout->project(); @endphp
-                    <tr class="payout-row hover:bg-gray-50/60 cursor-pointer" data-modal="payout-modal-{{ $payout->id }}"
+                    <tr class="payout-row hover:bg-gray-50/60 dark:hover:bg-gray-700/40 cursor-pointer" data-modal="payout-modal-{{ $payout->id }}"
                         data-client="{{ strtolower($project?->user->name ?? '') }}"
                         data-project="{{ strtolower($project?->name ?? '') }}"
                         data-status="{{ $payout->status }}"

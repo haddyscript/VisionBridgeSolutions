@@ -1072,3 +1072,7 @@ Same fix as §49/§51, applied to `/admin/subscriptions` (Care Plans): its statu
 ## 53. Care Plans — Client-Side Pagination, 15 per Page (2026-07-22)
 
 `/admin/subscriptions` previously rendered every care plan row at once with no pagination. Since its search/filter is entirely client-side (every row is already loaded in the DOM for instant filtering — see §52), real server-side pagination would have broken that: only one page's worth of rows would ever exist in the DOM to search/filter against. Instead, added the same client-side pagination pattern already used by Revision Management (§Revision Management) — 15 rows per page, computed by slicing the already-filtered match set rather than fetching anything new. Search/status-filter changes reset back to page 1; a "Showing X–Y of Z" summary and Prev/Next buttons sit in the table's footer, disabling at the first/last page.
+
+## 54. FaithStack Payouts — Fixed Washed-Out Row Hover in Dark Mode (2026-07-22)
+
+Hovering a row in the FaithStack Payouts table painted it with `hover:bg-gray-50/60` — a near-white overlay — with no `dark:` counterpart at all, so in dark mode it washed the row out to a pale gray background underneath text still styled for a dark background (`dark:text-white`/`dark:text-gray-300`), reading as broken/low-contrast. Added `dark:hover:bg-gray-700/40`, matching the hover treatment every other admin table already uses (Care Plans, All Projects, Revision Management, etc.) — this table was simply missed when it was originally built.
