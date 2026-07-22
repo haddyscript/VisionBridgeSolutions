@@ -75,13 +75,19 @@
         <input type="text" id="request-search" placeholder="Search client, email, or title…" autocomplete="off"
                class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark dark:text-white pl-10 pr-4 py-2.5 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition-shadow">
     </div>
-    <select id="request-status-filter"
-            class="rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark dark:text-white px-3.5 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition-shadow">
-        <option value="">All ({{ $totalRequestCount }})</option>
-        @foreach (\App\Models\ProjectRequest::STATUSES as $key => $label)
-            <option value="{{ $key }}">{{ $label }} ({{ $statusCounts[$key] ?? 0 }})</option>
-        @endforeach
-    </select>
+    <div class="w-full sm:w-56 shrink-0">
+        @include('admin._dropdown', [
+            'name' => 'status_filter',
+            'domId' => 'request-status-filter',
+            'options' => collect(\App\Models\ProjectRequest::STATUSES)->map(fn ($label, $key) => [
+                'value' => $key,
+                'label' => "{$label} (".($statusCounts[$key] ?? 0).')',
+                'dot' => ['pending' => 'bg-amber-400', 'reviewed' => 'bg-indigo-400', 'converted' => 'bg-teal', 'declined' => 'bg-red-400'][$key] ?? 'bg-gray-400',
+            ])->values()->all(),
+            'selected' => '',
+            'placeholder' => "All ({$totalRequestCount})",
+        ])
+    </div>
     <button type="button" data-modal="new-request-modal"
             class="modal-trigger inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-gradient-to-br from-gold via-gold to-gold-dark text-navy text-sm font-bold rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 whitespace-nowrap">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
@@ -280,7 +286,7 @@
     <script>
         (function () {
             const search = document.getElementById('request-search');
-            const statusFilter = document.getElementById('request-status-filter');
+            const statusFilter = document.getElementById('request-status-filter-input');
             const emptyDesktop = document.getElementById('requests-empty-filter-desktop');
             const emptyMobile = document.getElementById('requests-empty-filter-mobile');
             const countLabel = document.getElementById('requests-count-label');
