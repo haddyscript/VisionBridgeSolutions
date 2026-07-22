@@ -347,7 +347,12 @@
                 @include('admin._dropdown', [
                     'name' => 'user_id',
                     'domId' => 'new-request-client',
-                    'options' => $clients->map(fn ($client) => ['value' => $client->id, 'label' => "{$client->name} ({$client->email})"])->all(),
+                    'options' => $clients->map(fn ($client) => [
+                        'value' => $client->id,
+                        'label' => $client->projects->isNotEmpty()
+                            ? "{$client->name} — {$client->projects->first()->name} ({$client->email})"
+                            : "{$client->name} ({$client->email})",
+                    ])->all(),
                     'selected' => old('user_id'),
                     'placeholder' => 'Select a client...',
                 ])

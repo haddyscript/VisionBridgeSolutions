@@ -29,8 +29,14 @@ class ProjectRequestController extends Controller
 
         return view('admin.project-requests.index', [
             'requests' => $requests,
+            // Project name is eager-loaded so the "New Project Request" modal's
+            // Client dropdown can show it alongside name/email — several real
+            // clients share the same name (e.g. "Johnny Davis" across three
+            // separate accounts), so the project name is what actually
+            // disambiguates them.
             'clients' => User::where(fn ($q) => $q->where('role', '!=', 'admin')->orWhereNull('role'))
                 ->orderBy('name')
+                ->with(['projects' => fn ($q) => $q->select('id', 'user_id', 'name')])
                 ->get(['id', 'name', 'email']),
             'developers' => User::developers(),
             'totalRequestCount' => array_sum($statusCounts->all()),
