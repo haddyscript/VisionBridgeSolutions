@@ -1076,3 +1076,10 @@ Same fix as §49/§51, applied to `/admin/subscriptions` (Care Plans): its statu
 ## 54. FaithStack Payouts — Fixed Washed-Out Row Hover in Dark Mode (2026-07-22)
 
 Hovering a row in the FaithStack Payouts table painted it with `hover:bg-gray-50/60` — a near-white overlay — with no `dark:` counterpart at all, so in dark mode it washed the row out to a pale gray background underneath text still styled for a dark background (`dark:text-white`/`dark:text-gray-300`), reading as broken/low-contrast. Added `dark:hover:bg-gray-700/40`, matching the hover treatment every other admin table already uses (Care Plans, All Projects, Revision Management, etc.) — this table was simply missed when it was originally built.
+
+## 55. Service Agreement — Fixed "Choose File" Button & Row Hover in Dark Mode (2026-07-22)
+
+Two dark-mode bugs on `/admin/service-agreement`, both the same categories of issue already fixed elsewhere this session:
+
+- **"Choose File" button was unreadable in dark mode**: the PDF upload field relied on Tailwind's `file:` variant to style the native `<input type="file">`'s built-in button (`file:bg-gold/15 file:text-navy`), plus a bare `dark:text-white` that was missing its own `file:` prefix — so in dark mode the button fell back to the browser's own default gray UA styling instead of the intended gold treatment, rendering as a washed-out, low-contrast pill. Replaced it with the same hidden-input-plus-styled-`<label>` pattern already proven elsewhere in the app (FaithStack Payouts' receipt picker) — a real gold button in both themes, with a separate `<span>` showing the chosen filename (since the native input's own "no file chosen" text goes away once the input itself is visually hidden). `previewPdf()`/`clearPdfPreview()` now also update that filename span directly.
+- **Signed Agreements row hover** was the identical missing-`dark:hover:` bug as §54 (FaithStack Payouts) — `hover:bg-gray-50/60` with no dark counterpart, washing the row out. Fixed the same way: added `dark:hover:bg-gray-700/40`.

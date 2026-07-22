@@ -67,9 +67,18 @@
 
             <div id="agreement-source-panel-pdf" class="mb-4" style="{{ $source === 'pdf' ? '' : 'display:none;' }}">
                 <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Agreement PDF</label>
-                <input type="file" name="pdf" accept="application/pdf" id="pdf-upload-input"
-                       onchange="previewPdf(this)"
-                       class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gold/15 file:text-navy dark:text-white file:font-semibold file:text-sm hover:file:bg-gold/25">
+                {{-- A hidden input + styled <label>, not the native file-selector-button
+                     pseudo-element — that relies on browser UA chrome that doesn't
+                     reliably pick up dark-mode text/background styling (it was
+                     rendering as a washed-out, low-contrast gray pill in dark mode).
+                     Same pattern already used for FaithStack Payouts' receipt picker. --}}
+                <div class="flex items-center gap-3">
+                    <label for="pdf-upload-input" class="inline-flex items-center gap-1.5 cursor-pointer px-4 py-2 rounded-lg bg-gold/15 text-gold-dark text-sm font-semibold hover:bg-gold/25 transition-colors">
+                        Choose File
+                    </label>
+                    <span id="pdf-upload-filename-label" class="text-sm text-gray-600 dark:text-gray-300">No file chosen</span>
+                    <input type="file" name="pdf" accept="application/pdf" id="pdf-upload-input" onchange="previewPdf(this)" class="sr-only">
+                </div>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5">PDF only, up to 25 MB. Clients will review/download this exact file, then sign with their typed name and drawn signature as usual.</p>
 
                 <div id="pdf-preview-wrap" class="hidden mt-4">
@@ -93,6 +102,8 @@
     function previewPdf(input) {
         const wrap = document.getElementById('pdf-preview-wrap');
         const frame = document.getElementById('pdf-preview-frame');
+        const filenameLabel = document.getElementById('pdf-upload-filename-label');
+        if (filenameLabel) filenameLabel.textContent = input.files[0]?.name || 'No file chosen';
         if (input.files && input.files[0]) {
             const url = URL.createObjectURL(input.files[0]);
             frame.src = url;
@@ -103,8 +114,10 @@
     function clearPdfPreview() {
         const input = document.getElementById('pdf-upload-input');
         const frame = document.getElementById('pdf-preview-frame');
+        const filenameLabel = document.getElementById('pdf-upload-filename-label');
         input.value = '';
         frame.src = '';
+        if (filenameLabel) filenameLabel.textContent = 'No file chosen';
         document.getElementById('pdf-preview-wrap').classList.add('hidden');
     }
 
@@ -144,7 +157,7 @@
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                 @foreach ($signatures as $signature)
-                    <tr class="hover:bg-gray-50/60">
+                    <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-700/40">
                         <td class="px-5 py-3.5">
                             <p class="font-medium text-navy dark:text-white">{{ $signature->signer_name }}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">{{ $signature->user->email }}</p>
