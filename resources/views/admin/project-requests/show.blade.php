@@ -220,21 +220,17 @@
                 @if ($projectRequest->assigned_developer_id)
                     <div>
                         <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Developer Status</label>
-                        <form method="POST" action="{{ route('admin.project-requests.developer-status', $projectRequest) }}">
-                            @csrf
-                            @method('PATCH')
-                            @include('admin._dropdown', [
-                                'name' => 'developer_status',
-                                'domId' => 'developer-status',
-                                'options' => collect(\App\Models\ProjectRequest::DEVELOPER_STATUSES)->map(fn ($label, $value) => [
-                                    'value' => $value,
-                                    'label' => $label,
-                                    'dot' => ['in_progress' => 'bg-gold', 'waiting_on_visionbridge' => 'bg-purple-400', 'completed' => 'bg-teal'][$value] ?? 'bg-gray-400',
-                                ])->values()->all(),
-                                'selected' => $projectRequest->developer_status,
-                                'autoSubmit' => true,
-                            ])
-                        </form>
+                        @include('admin._dropdown', [
+                            'name' => 'developer_status',
+                            'domId' => 'developer-status',
+                            'options' => collect(\App\Models\ProjectRequest::DEVELOPER_STATUSES)->map(fn ($label, $value) => [
+                                'value' => $value,
+                                'label' => $label,
+                                'dot' => ['in_progress' => 'bg-gold', 'waiting_on_visionbridge' => 'bg-purple-400', 'completed' => 'bg-teal'][$value] ?? 'bg-gray-400',
+                            ])->values()->all(),
+                            'selected' => $projectRequest->developer_status,
+                        ])
+                        <p id="developer-status-toast" class="hidden text-xs mt-1.5"></p>
                     </div>
                 @endif
             </div>
@@ -266,6 +262,56 @@
 
 {{-- Custom-dropdown behavior is wired up automatically by admin/_dropdown.blade.php (@once script). --}}
 <script>
+(function () {
+    // Developer Status — saves via fetch instead of a real form submit, so
+    // picking a new status doesn't reload the whole page. Mirrors the same
+    // AJAX pattern already used for this exact field on the Work Orders page
+    // (saveWoStatusDropdown); the admin._dropdown partial dispatches a real
+    // 'change' event on its hidden input specifically so page-specific JS
+    // like this can hook into it without touching the shared partial.
+    const devStatusInput = document.getElementById('developer-status-input');
+    const devStatusToast = document.getElementById('developer-status-toast');
+    if (!devStatusInput) return;
+
+    let previousValue = devStatusInput.value;
+
+    function showDevStatusToast(message, isError) {
+        if (!devStatusToast) return;
+        devStatusToast.textContent = message;
+        devStatusToast.className = 'text-xs mt-1.5 ' + (isError ? 'text-red-500' : 'text-teal-dark dark:text-teal-light');
+        clearTimeout(devStatusToast._hideTimer);
+        devStatusToast._hideTimer = setTimeout(function () {
+            devStatusToast.classList.add('hidden');
+        }, 3000);
+    }
+
+    devStatusInput.addEventListener('change', function () {
+        const value = devStatusInput.value;
+        const savedPreviousValue = previousValue;
+        previousValue = value;
+
+        fetch('{{ route('admin.project-requests.developer-status', $projectRequest) }}', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            },
+            body: JSON.stringify({ developer_status: value }),
+        })
+        .then(function (res) {
+            if (!res.ok) throw new Error('Failed to update');
+            showDevStatusToast('Developer status saved.', false);
+        })
+        .catch(function () {
+            previousValue = savedPreviousValue;
+            const revertOption = document.querySelector('#developer-status-menu [data-select-option="' + savedPreviousValue + '"]');
+            if (revertOption) revertOption.click();
+            showDevStatusToast('That change could not be saved — please try again.', true);
+        });
+    });
+})();
+
 (function () {
     // Proposal document dropzone — click-to-browse (native label/for
     // behavior) plus real drag-and-drop, with the filename swapped in once
