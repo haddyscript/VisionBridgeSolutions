@@ -105,22 +105,22 @@
 @endphp
 
 <div class="max-w-3xl">
-    <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-        <h2 class="font-display text-lg font-bold text-navy mb-1">Admin Operations Guide</h2>
-        <p class="text-sm text-gray-500">A reference for how leads move through the system — from a public form submission to an onboarded, paying client.</p>
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <h2 class="font-display text-lg font-bold text-navy dark:text-white mb-1">Admin Operations Guide</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">A reference for how leads move through the system — from a public form submission to an onboarded, paying client.</p>
     </div>
 
     @foreach ($sections as $title => $items)
         <div class="mb-6">
             <h3 class="font-display text-sm font-bold uppercase tracking-wide text-gold-dark mb-3">{{ $title }}</h3>
-            <div class="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100 overflow-hidden">
+            <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700 overflow-hidden">
                 @foreach ($items as $item)
                     <details class="group">
-                        <summary class="list-none flex items-center justify-between gap-3 px-5 py-4 cursor-pointer select-none hover:bg-gray-50 transition-colors">
-                            <span class="text-sm font-medium text-navy">{{ $item['q'] }}</span>
+                        <summary class="list-none flex items-center justify-between gap-3 px-5 py-4 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
+                            <span class="text-sm font-medium text-navy dark:text-white">{{ $item['q'] }}</span>
                             <svg class="w-4 h-4 text-gray-400 shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </summary>
-                        <div class="px-5 pb-4 text-sm text-gray-600 leading-relaxed">
+                        <div class="px-5 pb-4 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                             {{ $item['a'] }}
                         </div>
                     </details>
