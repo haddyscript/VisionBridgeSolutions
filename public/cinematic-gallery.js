@@ -18,13 +18,30 @@
     // of initCineOpening/initCinematicGallery below — safe to fail silently
     // if #cine-atmosphere isn't on the page.
     function initCineAtmosphere() {
+        var atmosphere = document.getElementById('cine-atmosphere');
         var starHost = document.getElementById('cine-atmo-starfield');
         var dustHost = document.getElementById('cine-atmo-dust');
-        if (!starHost && !dustHost) return;
+        if (!atmosphere || (!starHost && !dustHost)) return;
         if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        if (typeof gsap === 'undefined') { return setTimeout(initCineAtmosphere, 100); }
+        // ScrollTrigger, not just gsap, is required now — the scroll-
+        // reactivity below listens for ScrollTrigger's own scrollStart/
+        // scrollEnd events rather than native window scroll events (see
+        // the comment further down for why).
+        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+            return setTimeout(initCineAtmosphere, 100);
+        }
+        gsap.registerPlugin(ScrollTrigger);
 
         var isMobile = window.matchMedia('(max-width: 767px)').matches;
+        // Every twinkle/drift tween created below goes in here so a single
+        // scroll listener can speed all of them up together (see the
+        // scroll-reactivity block at the end of this function).
+        var atmosphereTweens = [];
+        // "Boost" stars — created hidden, only faded in while the visitor
+        // is actively scrolling (see below). A second population rather
+        // than literally creating/destroying DOM nodes on every scroll
+        // event, which would be wasteful churn for the same visual result.
+        var boostStars = [];
 
         // Stars — genuinely random positions/sizes/brightness (Math.random,
         // not a CSS tiled background), which is what actually reads as a
@@ -48,47 +65,103 @@
                 starHost.appendChild(star);
 
                 if (Math.random() < 0.35) {
-                    gsap.to(star, {
+                    atmosphereTweens.push(gsap.to(star, {
                         opacity: Math.min(1, baseOpacity + 0.35 + Math.random() * 0.3),
                         duration: 1.5 + Math.random() * 3, delay: Math.random() * 6,
                         ease: 'sine.inOut', repeat: -1, yoyo: true,
-                    });
+                    }));
                 }
             }
-        }
 
-        if (!dustHost) return;
+            // Boost pool — same generation, just hidden (opacity 0) until
+            // scrolling starts. Each element remembers its own intended
+            // opacity via a data attribute (read back in setScrolling below)
+            // since they're not all meant to fade to the same brightness.
+            var boostCount = isMobile ? 30 : 70;
+            for (var b = 0; b < boostCount; b++) {
+                var boost = document.createElement('div');
+                boost.className = 'cine-atmo-star';
+                var boostSize = 0.8 + Math.random() * 1.7;
+                boost.style.width = boostSize + 'px';
+                boost.style.height = boostSize + 'px';
+                boost.style.left = Math.random() * 100 + '%';
+                boost.style.top = Math.random() * 100 + '%';
+                boost.style.opacity = 0;
+                boost.setAttribute('data-target-opacity', (0.3 + Math.random() * 0.4).toFixed(2));
+                starHost.appendChild(boost);
+                boostStars.push(boost);
+            }
+        }
 
         // Opacity range roughly tripled from the first pass (0.12–0.3 base /
         // 0.3–0.5 twinkle) — that version was correct in concept but too
         // faint to register as a starfield at all against #0B0F17, the same
         // lesson as the CSS layers above.
-        var count = isMobile ? 18 : 34;
-        for (var i = 0; i < count; i++) {
-            var el = document.createElement('div');
-            el.className = 'hero-particle';
-            var size = 2 + Math.random() * 3;
-            el.style.width = size + 'px';
-            el.style.height = size + 'px';
-            el.style.left = Math.random() * 100 + '%';
-            el.style.top = Math.random() * 100 + '%';
-            dustHost.appendChild(el);
+        if (dustHost) {
+            var count = isMobile ? 18 : 34;
+            for (var i = 0; i < count; i++) {
+                var el = document.createElement('div');
+                el.className = 'hero-particle';
+                var size = 2 + Math.random() * 3;
+                el.style.width = size + 'px';
+                el.style.height = size + 'px';
+                el.style.left = Math.random() * 100 + '%';
+                el.style.top = Math.random() * 100 + '%';
+                dustHost.appendChild(el);
 
-            gsap.set(el, { opacity: 0.35 + Math.random() * 0.25 });
-            // Drift duration cut roughly in half and travel distance
-            // increased — same "too slow/small to register as motion"
-            // fix applied to the CSS nebula/stars/rays above.
-            gsap.to(el, {
-                x: (Math.random() - 0.5) * 110, y: -60 - Math.random() * 90,
-                duration: 9 + Math.random() * 10, delay: Math.random() * 6,
-                ease: 'sine.inOut', repeat: -1, yoyo: true,
-            });
-            gsap.to(el, {
-                opacity: 0.6 + Math.random() * 0.3,
-                duration: 2 + Math.random() * 3, delay: Math.random() * 4,
-                ease: 'sine.inOut', repeat: -1, yoyo: true,
+                gsap.set(el, { opacity: 0.35 + Math.random() * 0.25 });
+                // Drift duration cut roughly in half and travel distance
+                // increased — same "too slow/small to register as motion"
+                // fix applied to the CSS nebula/stars/rays above.
+                atmosphereTweens.push(gsap.to(el, {
+                    x: (Math.random() - 0.5) * 110, y: -60 - Math.random() * 90,
+                    duration: 9 + Math.random() * 10, delay: Math.random() * 6,
+                    ease: 'sine.inOut', repeat: -1, yoyo: true,
+                }));
+                atmosphereTweens.push(gsap.to(el, {
+                    opacity: 0.6 + Math.random() * 0.3,
+                    duration: 2 + Math.random() * 3, delay: Math.random() * 4,
+                    ease: 'sine.inOut', repeat: -1, yoyo: true,
+                }));
+            }
+        }
+
+        // ── Scroll reactivity ──
+        // While actively scrolling: every CSS drift animation above speeds
+        // up (via --cine-atmo-speed, consumed by animation-duration:calc()
+        // in cinematic-gallery.css), every JS twinkle/drift tween speeds up
+        // together via timeScale(), and the boost stars fade in — so
+        // scrolling makes the galaxy feel more alive/dense, not just the
+        // same constant ambient drift running forever at one pace.
+        //
+        // Listens to ScrollTrigger's own global "scrollStart"/"scrollEnd"
+        // events, NOT a plain window.addEventListener('scroll', ...) —
+        // this page lazy-loads Lenis for smooth scrolling, which drives its
+        // own virtual scroll position and isn't guaranteed to dispatch
+        // native window scroll events on the same cadence real scrolling
+        // would. ScrollTrigger's update loop is what's actually driving
+        // frame-by-frame progress here regardless of Lenis vs. native, so
+        // its own activity events are the reliable signal — a plain native
+        // listener was very likely just never firing once Lenis took over,
+        // which is why this had no visible effect at all rather than just
+        // being subtle. ScrollTrigger also handles its own "settled" /
+        // debounce timing internally, so no manual setTimeout is needed
+        // here the way the first version had one.
+        var isScrolling = false;
+        function setScrolling(active) {
+            if (active === isScrolling) return;
+            isScrolling = active;
+            atmosphere.style.setProperty('--cine-atmo-speed', active ? '0.22' : '1');
+            atmosphereTweens.forEach(function (tw) { tw.timeScale(active ? 3.2 : 1); });
+            gsap.to(boostStars, {
+                opacity: function (idx, target) {
+                    return active ? parseFloat(target.getAttribute('data-target-opacity')) : 0;
+                },
+                duration: 0.35, ease: 'power1.out', overwrite: 'auto',
             });
         }
+        ScrollTrigger.addEventListener('scrollStart', function () { setScrolling(true); });
+        ScrollTrigger.addEventListener('scrollEnd', function () { setScrolling(false); });
     }
 
     // ── Cinematic opening sequence ──

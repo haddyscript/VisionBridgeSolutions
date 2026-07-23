@@ -29,6 +29,13 @@
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
+    /* Consumed by every animation-duration: calc(...) below. JS
+       (initCineAtmosphere) drops this toward ~0.35 while the visitor is
+       actively scrolling and eases it back to 1 shortly after they stop —
+       changing animation-duration on an already-running CSS animation
+       re-times it smoothly from its current point rather than restarting
+       it, so speeding up mid-cycle never causes a visible jump. */
+    --cine-atmo-speed: 1;
 }
 
 /* Nebula wash — big, soft, gold/teal color fields. Their real strength is
@@ -48,12 +55,12 @@
 .cine-atmo-nebula-1 {
     width: 70vw; height: 70vw; top: -8%; left: -5%;
     background: radial-gradient(circle, rgba(201,168,76,.26) 0%, transparent 70%);
-    animation: cine-atmo-drift-a 26s ease-in-out infinite;
+    animation: cine-atmo-drift-a calc(26s * var(--cine-atmo-speed)) ease-in-out infinite;
 }
 .cine-atmo-nebula-2 {
     width: 60vw; height: 60vw; bottom: -5%; right: 0%;
     background: radial-gradient(circle, rgba(44,166,164,.24) 0%, transparent 70%);
-    animation: cine-atmo-drift-b 32s ease-in-out infinite reverse;
+    animation: cine-atmo-drift-b calc(32s * var(--cine-atmo-speed)) ease-in-out infinite reverse;
 }
 /* Duration cut from 75s/90s to 26s/32s and travel distance roughly
    doubled — the original cycle was technically animating but far too
@@ -81,7 +88,7 @@
     position: absolute;
     inset: -5%;
     will-change: transform;
-    animation: cine-atmo-starfield-drift 70s linear infinite alternate;
+    animation: cine-atmo-starfield-drift calc(70s * var(--cine-atmo-speed)) linear infinite alternate;
 }
 @keyframes cine-atmo-starfield-drift {
     from { transform: translate(0, 0); }
@@ -105,8 +112,8 @@
     filter: blur(26px);
     will-change: transform;
 }
-.cine-atmo-ray-1 { animation: cine-atmo-ray-sway 18s ease-in-out infinite; }
-.cine-atmo-ray-2 { opacity: .6; animation: cine-atmo-ray-sway 23s ease-in-out infinite reverse; animation-delay: -6s; }
+.cine-atmo-ray-1 { animation: cine-atmo-ray-sway calc(18s * var(--cine-atmo-speed)) ease-in-out infinite; }
+.cine-atmo-ray-2 { opacity: .6; animation: cine-atmo-ray-sway calc(23s * var(--cine-atmo-speed)) ease-in-out infinite reverse; animation-delay: -6s; }
 @keyframes cine-atmo-ray-sway {
     0%, 100% { transform: rotate(-14deg) translateX(0); }
     50%       { transform: rotate(-6deg) translateX(50px); }
