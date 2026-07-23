@@ -11,6 +11,112 @@
         else document.addEventListener('DOMContentLoaded', fn);
     }
 
+    // ── Cinematic opening sequence ──
+    // A fixed overlay (pointer-events:none) that plays once on load, on top
+    // of the real page rendering normally underneath. Because it never
+    // intercepts input, there's no scroll-lock to release — the first
+    // wheel/touch/key/scroll just fades it away immediately. See the CSS
+    // failsafe keyframe in cinematic-gallery.css for what happens if this
+    // function never runs at all (blocked script, etc.).
+    function initCineOpening() {
+        var overlay = document.getElementById('cine-opening');
+        if (!overlay) return;
+
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            overlay.remove();
+            return;
+        }
+
+        if (typeof gsap === 'undefined') {
+            return setTimeout(initCineOpening, 100);
+        }
+
+        var bg = overlay.querySelector('.cine-opening-bg');
+        var stars = overlay.querySelector('.cine-opening-stars');
+        var field = overlay.querySelector('.cine-opening-field');
+        var frames = Array.prototype.slice.call(overlay.querySelectorAll('.cine-opening-frame'));
+        var featured = overlay.querySelector('.cine-opening-frame.is-featured');
+        var background = frames.filter(function (f) { return f !== featured; });
+
+        if (!featured || !frames.length) {
+            overlay.remove();
+            return;
+        }
+
+        var dismissed = false;
+        var floatTweens = [];
+
+        function cleanup() {
+            floatTweens.forEach(function (t) { t.kill(); });
+            if (overlay.parentNode) overlay.remove();
+        }
+
+        function dismiss() {
+            if (dismissed) return;
+            dismissed = true;
+            tl.kill();
+            floatTweens.forEach(function (t) { t.kill(); });
+            gsap.to(overlay, {
+                opacity: 0, duration: 0.35, ease: 'power2.out',
+                onComplete: cleanup,
+            });
+        }
+
+        // Any real input at all — scrolling in immediately, not waiting on
+        // the sequence to finish — dismisses it. {once:true} so this never
+        // fires twice; passive since nothing here needs to preventDefault.
+        ['wheel', 'touchstart', 'keydown', 'scroll'].forEach(function (evt) {
+            window.addEventListener(evt, dismiss, { passive: true, once: true });
+        });
+
+        // Frames start matching their CSS defaults (opacity 0, scale .6,
+        // blur 14px) so there's no visible jump when GSAP takes over the
+        // transform. Centering uses xPercent/yPercent (not a CSS
+        // translate, which GSAP would silently overwrite) — same
+        // convention already used for the homepage overture's scenes.
+        gsap.set(frames, {
+            xPercent: -50, yPercent: -50, scale: 0.6, opacity: 0,
+            filter: 'blur(14px)', transformOrigin: 'center center', force3D: true,
+        });
+
+        var tl = gsap.timeline();
+
+        tl.to(bg, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 0)
+            .to(stars, { opacity: 0.5, duration: 0.6, ease: 'power2.out' }, 0.05)
+            // Depth is faked with scale/blur only (each frame's own CSS
+            // width already sets its apparent size) — no z-translate/
+            // perspective math needed for this effect.
+            .to(frames, {
+                opacity: 1, scale: 1, filter: 'blur(0px)',
+                duration: 0.9, ease: 'power2.out', stagger: 0.12,
+            }, 0.3)
+            // Idle float once each background frame has arrived — same
+            // slow bob/drift feel as .story-float elsewhere on the site.
+            .call(function () {
+                background.forEach(function (f, i) {
+                    floatTweens.push(gsap.to(f, {
+                        y: '+=14', rotation: (i % 2 === 0 ? 1 : -1) * 1.4,
+                        duration: 3 + Math.random() * 2, ease: 'sine.inOut',
+                        repeat: -1, yoyo: true, delay: Math.random() * 0.6,
+                    }));
+                });
+            }, null, 1.6)
+            // Camera dolly: the whole field pushes forward; background
+            // frames blur/fade as they're passed, the featured one
+            // sharpens and grows ahead of the rest.
+            .to(field, { scale: 1.15, duration: 1.4, ease: 'power1.inOut' }, 1.4)
+            .to(background, { filter: 'blur(10px)', opacity: 0, scale: 0.9, duration: 1.2, ease: 'power1.inOut' }, 1.6)
+            .to(featured, { scale: 1.9, duration: 1.6, ease: 'power2.inOut' }, 1.4)
+            // Convergence: featured image settles into final prominence.
+            .to(featured, { scale: 2.1, duration: 1.0, ease: 'power2.out' }, 2.8)
+            // Handoff: the overlay itself lifts away. The real page
+            // underneath (title already faded in on load, gallery scene 0
+            // already resting at full opacity showing this same photo) is
+            // what's revealed — same image, similar scale/position, no cut.
+            .to(overlay, { opacity: 0, duration: 0.5, ease: 'power2.inOut' }, 3.6)
+            .call(function () { dismissed = true; cleanup(); }, null, 4.1);
+    }
+
     function initCinematicGallery() {
         var root = document.getElementById('cine-gallery');
         if (!root) return;
@@ -135,6 +241,7 @@
     }
 
     ready(function () {
+        initCineOpening();
         initCinematicGallery();
 
         // Lenis smooth scroll — self-contained to this page, loaded lazily so

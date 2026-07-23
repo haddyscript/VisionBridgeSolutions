@@ -11,6 +11,95 @@
     overflow: hidden;
 }
 
+/* ─── Opening sequence — a fixed overlay that plays once on load, sitting
+   on top of the real page (which renders normally underneath the whole
+   time). pointer-events:none so scroll/clicks always reach the real page —
+   there is no scroll-lock to release, only an overlay to fade away, which
+   is what makes "skip instantly on first scroll" trivial in the JS.
+   The failsafe keyframe (bottom of this block) guarantees this can never
+   get stuck covering the page forever if JS fails to load — the exact
+   class of bug documented in FEATURES.md §29/§30 for the old video intro
+   and the film-grain overlay. ─── */
+#cine-opening {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: #0B0F17;
+    overflow: hidden;
+    pointer-events: none;
+}
+.cine-opening-bg {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background:
+        radial-gradient(ellipse 60% 55% at 50% 45%, rgba(201,168,76,.10), transparent 70%),
+        radial-gradient(circle at 20% 25%, rgba(44,166,164,.10), transparent 46%),
+        #0B0F17;
+}
+.cine-opening-stars {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,.10) 1px, transparent 1px);
+    background-size: 46px 46px;
+}
+.cine-opening-field {
+    position: absolute;
+    inset: 0;
+}
+.cine-opening-frame {
+    position: absolute;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 30px 90px rgba(0,0,0,.55), 0 0 0 1px rgba(201,168,76,.14);
+    aspect-ratio: 4 / 3;
+    opacity: 0;
+    transform: scale(.6);
+    filter: blur(14px);
+    will-change: transform, opacity, filter;
+}
+.cine-opening-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.cine-opening-frame-1 { top: 50%; left: 50%; width: min(40vw, 480px); z-index: 5; }
+.cine-opening-frame-2 { top: 24%; left: 18%; width: min(22vw, 260px); z-index: 4; }
+.cine-opening-frame-3 { top: 20%; left: 80%; width: min(20vw, 230px); z-index: 4; }
+.cine-opening-frame-4 { top: 76%; left: 22%; width: min(19vw, 220px); z-index: 3; }
+.cine-opening-frame-5 { top: 80%; left: 78%; width: min(21vw, 250px); z-index: 3; }
+.cine-opening-frame-6 { top: 50%; left: 50%; width: min(30vw, 340px); z-index: 2; }
+
+@media (max-width: 767px) {
+    .cine-opening-frame-1 { width: min(64vw, 320px); }
+    .cine-opening-frame-2 { width: min(38vw, 190px); top: 20%; left: 24%; }
+    .cine-opening-frame-3 { width: min(34vw, 170px); top: 18%; left: 76%; }
+    .cine-opening-frame-6 { width: min(50vw, 260px); }
+    .cine-opening-frame-4, .cine-opening-frame-5 { display: none; }
+}
+
+/* Pure-CSS failsafe: if JS never runs (blocked script, slow CDN, etc.) this
+   fades the overlay out unconditionally ~4.6s in regardless — it's already
+   pointer-events:none so it was never blocking clicks, but without this it
+   would sit there covering the page indefinitely. In the normal path the
+   JS timeline finishes and removes the element well before this fires, so
+   this rule has no visible effect most of the time. */
+@keyframes cine-opening-failsafe {
+    to { opacity: 0; visibility: hidden; }
+}
+#cine-opening {
+    animation: cine-opening-failsafe .6s ease forwards;
+    animation-delay: 4.6s;
+}
+@media (prefers-reduced-motion: reduce) {
+    #cine-opening {
+        animation-delay: 0s;
+        animation-duration: .01s;
+    }
+}
+
 /* ─── Intro ─── */
 .cine-intro {
     position: relative;

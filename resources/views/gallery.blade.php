@@ -8,11 +8,33 @@
 @php
     $projects = config('gallery.projects', []);
     $count    = count($projects);
+    // First 6 projects only — the opening is meant to feel curated, not
+    // exhaustive. The featured slide (index 0) is deliberately the same
+    // photo as the first pinned scene below, so the opening's climax and
+    // the real gallery's first chapter show the same image.
+    $openingSlides = array_slice($projects, 0, 6);
 @endphp
 
 <link rel="stylesheet" href="@assetv('cinematic-gallery.css')">
 
 <div id="cine-gallery">
+
+    {{-- ── Cinematic opening — plays once on load, on top of the page
+         below (which renders normally underneath it the whole time).
+         See cinematic-gallery.js's initCineOpening() for the timeline. ── --}}
+    @if(count($openingSlides))
+        <div id="cine-opening" aria-hidden="true">
+            <div class="cine-opening-bg"></div>
+            <div class="cine-opening-stars"></div>
+            <div class="cine-opening-field">
+                @foreach($openingSlides as $i => $slide)
+                    <div class="cine-opening-frame cine-opening-frame-{{ $i + 1 }} @if($i === 0) is-featured @endif">
+                        <img src="@assetv($slide['image'])" alt="" loading="eager">
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
 
     {{-- ── Intro ── --}}
     <section class="cine-intro" aria-label="Our Work — introduction">
