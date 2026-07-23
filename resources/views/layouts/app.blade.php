@@ -1809,10 +1809,13 @@
                         ['href' => '#services',  'label' => 'Services'],
                         ['href' => '#plans',     'label' => 'Plans'],
                         ['href' => '#portfolio', 'label' => 'Portfolio'],
+                        // A real page (not a homepage anchor), so it skips the
+                        // $homeAnchor prefix the other items use below.
+                        ['href' => route('gallery'), 'label' => 'Our Work', 'absolute' => true],
                     ];
                 @endphp
                 @foreach ($navItems as $navItem)
-                    <a href="{{ $homeAnchor }}{{ $navItem['href'] }}" class="nav-link nav-link-3d relative z-10 opacity-0">
+                    <a href="{{ ($navItem['absolute'] ?? false) ? $navItem['href'] : $homeAnchor.$navItem['href'] }}" class="nav-link nav-link-3d relative z-10 opacity-0">
                         <span class="nav-link-inner">
                             <span class="nav-link-glass" aria-hidden="true"></span>
                             <span class="nav-link-sweep" aria-hidden="true"></span>
@@ -1941,6 +1944,15 @@
                         <span class="flex flex-col">
                             <span class="menu-item-title block text-lg font-bold uppercase tracking-wide text-white">Portfolio</span>
                             <span class="menu-item-desc block mt-1">Explore our latest projects.</span>
+                        </span>
+                    </a>
+                    <a href="{{ route('gallery') }}" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
+                        <span class="menu-icon-badge shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="#FFE9B0" stroke-width="2" viewBox="0 0 24 24"><rect x="7" y="7" width="14" height="14" rx="2"/><path d="M17 7V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2"/></svg>
+                        </span>
+                        <span class="flex flex-col">
+                            <span class="menu-item-title block text-lg font-bold uppercase tracking-wide text-white">Our Work</span>
+                            <span class="menu-item-desc block mt-1">Walk through our project gallery.</span>
                         </span>
                     </a>
                     {{-- Teal accent (not the shared gold icon badge) so this
