@@ -323,7 +323,7 @@
     60%      { transform: translateY(9px); opacity: .25; }
 }
 
-/* ─── Progress rail ─── */
+/* ─── Progress rail — a constellation ─── */
 .cine-progress {
     position: fixed;
     right: 24px;
@@ -333,21 +333,63 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     pointer-events: none;
 }
+/* Connecting light-line behind the stars — static faint track, plus a
+   glowing fill that grows to the active star's position (height set by
+   JS from the same scroll progress that already drives the dots/counter
+   below). Same track+fill technique as the homepage's #section-rail. */
+.cine-progress-track {
+    position: absolute;
+    left: 50%;
+    top: 3px;
+    bottom: 3px;
+    width: 1.5px;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,.10);
+    border-radius: 2px;
+}
+.cine-progress-fill {
+    position: absolute;
+    left: 50%;
+    top: 3px;
+    width: 1.5px;
+    height: 0;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, #FFE9B0, rgba(201,168,76,.25));
+    box-shadow: 0 0 8px rgba(201,168,76,.65);
+    border-radius: 2px;
+}
 .cine-dot {
-    width: 7px;
-    height: 7px;
+    position: relative;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    background: rgba(255,255,255,.22);
-    transition: all .4s ease;
+    background: rgba(255,255,255,.4);
+    box-shadow: 0 0 4px rgba(255,255,255,.35);
+    transition: width .4s ease, height .4s ease, background .4s ease, box-shadow .4s ease;
+    animation: cine-star-twinkle 4.5s ease-in-out infinite;
+}
+/* Staggered twinkle so the stars don't all pulse in sync — nth-child
+   offsets (not random delays) so it's deterministic across reloads. */
+.cine-dot:nth-child(4n+2) { animation-delay: -1.1s; }
+.cine-dot:nth-child(4n+3) { animation-delay: -2.2s; }
+.cine-dot:nth-child(4n+4) { animation-delay: -3.3s; }
+@keyframes cine-star-twinkle {
+    0%, 100% { opacity: .55; }
+    50%       { opacity: 1; }
 }
 .cine-dot.is-active {
-    background: #C9A84C;
-    box-shadow: 0 0 12px rgba(201,168,76,.8);
-    height: 22px;
-    border-radius: 5px;
+    width: 11px;
+    height: 11px;
+    background: #FFE9B0;
+    box-shadow: 0 0 14px rgba(201,168,76,.9), 0 0 30px rgba(201,168,76,.5);
+    animation: cine-star-pulse 2.2s ease-in-out infinite;
+}
+@keyframes cine-star-pulse {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.22); }
 }
 .cine-progress-count {
     margin-top: 6px;
@@ -355,6 +397,9 @@
     letter-spacing: .18em;
     color: rgba(255,255,255,.4);
     writing-mode: vertical-rl;
+}
+@media (prefers-reduced-motion: reduce) {
+    .cine-dot, .cine-dot.is-active { animation: none; }
 }
 @media (max-width: 1023px) {
     .cine-progress { display: none; }
@@ -373,6 +418,23 @@
     perspective: 1600px;
     transform-style: preserve-3d;
 }
+/* Shooting-star trails — one per transition between projects. Drawn in
+   (stroke-dashoffset) and faded out by JS, scrubbed to the same scroll
+   position as that transition's crossfade — see the Blade comment above
+   #cine-trails for why this is a brief connecting streak rather than a
+   literal line tracking each image's exact on-screen position. Kept thin
+   and modestly opaque (max ~.6) so it reads as a delicate accent, never
+   competing with the project photo itself. */
+.cine-trail {
+    stroke: rgba(255,233,176,.6);
+    stroke-width: 1.3px;
+    stroke-linecap: round;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    opacity: 0;
+    filter: drop-shadow(0 0 3px rgba(201,168,76,.7));
+}
+
 .cine-stage-bg {
     position: absolute;
     inset: 0;

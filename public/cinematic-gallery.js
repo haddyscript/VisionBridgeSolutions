@@ -223,6 +223,8 @@
         var scenes = Array.prototype.slice.call(root.querySelectorAll('.cine-scene'));
         var dots = Array.prototype.slice.call(root.querySelectorAll('.cine-dot'));
         var counter = root.querySelector('.cine-progress-count');
+        var progressFill = root.querySelector('.cine-progress-fill');
+        var trails = Array.prototype.slice.call(root.querySelectorAll('.cine-trail'));
 
         // Five named entrance choreographies (data-preset in the markup,
         // index % 5) — each one animates a DIFFERENT element/property
@@ -476,6 +478,9 @@
                             counter.textContent =
                                 String(active + 1).padStart(2, '0') + ' / ' + String(scenes.length).padStart(2, '0');
                         }
+                        // Constellation line grows to the active star as the
+                        // camera moves through the gallery.
+                        if (progressFill) progressFill.style.height = (self.progress * 100) + '%';
                         onSceneActivate(active);
                     },
                 },
@@ -498,6 +503,19 @@
                 // the scene crossfade above, so it's scrubbed in lockstep
                 // with scroll rather than autoplaying on its own clock.
                 addPresetReveal(tl, sceneData[i + 1], t + 0.4);
+
+                // Shooting-star trail for this transition — draws in over
+                // the first ~60% of the crossfade window, then fades back
+                // out, so it briefly connects the two "stars" rather than
+                // lingering. Same timeline position as everything else
+                // above, so scrubbing back reverses it in lockstep too.
+                var trail = trails[i];
+                if (trail) {
+                    tl.fromTo(trail,
+                        { strokeDashoffset: 100, opacity: 0 },
+                        { strokeDashoffset: 0, opacity: 0.7, duration: 0.6, ease: 'power1.out' }, t + 0.4)
+                        .to(trail, { opacity: 0, duration: 0.5, ease: 'power1.in' }, t + 1.0);
+                }
             }
 
             // Scene 0 has no crossfade to piggyback on (nothing scrolls it

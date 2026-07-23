@@ -78,8 +78,13 @@
     </section>
 
     @if($count)
-        {{-- ── Progress rail ── --}}
+        {{-- ── Progress rail — a constellation, not just dots. A thin
+             connecting light-line (.cine-progress-fill, JS-scrubbed to
+             scroll progress) runs behind a column of "stars", each one
+             a project; the active one glows brighter and pulses. ── --}}
         <div class="cine-progress" aria-hidden="true">
+            <div class="cine-progress-track"></div>
+            <div class="cine-progress-fill"></div>
             @foreach($projects as $i => $project)
                 <span class="cine-dot @if($i === 0) is-active @endif"></span>
             @endforeach
@@ -97,6 +102,33 @@
                 <div class="hero-orb" style="width:380px;height:380px;bottom:-80px;left:-70px;z-index:0;
                      background:radial-gradient(circle,rgba(44,166,164,.12) 0%,transparent 70%);
                      animation:orb-drift 22s ease-in-out infinite reverse 3s;"></div>
+
+                {{-- Shooting-star trails — one per transition between
+                     projects, alternating diagonal direction (deterministic
+                     by index, not random) for variety. Each one draws in and
+                     fades out briefly, scrubbed to the SAME scroll position
+                     as that transition's crossfade in cinematic-gallery.js —
+                     not a literal line between the two images' exact pixel
+                     positions (those move/scale/rotate in 3D during the
+                     crossfade, which would need real-time position tracking
+                     to follow precisely), but a brief connecting streak that
+                     reads as "the camera moving from one star to the next"
+                     without that added complexity. pathLength="100"
+                     normalizes stroke-dasharray/dashoffset to a plain 0–100
+                     range regardless of the line's actual rendered length. --}}
+                <svg id="cine-trails" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"
+                     style="position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;">
+                    @for ($i = 0; $i < $count - 1; $i++)
+                        @php
+                            $trailStart = $i % 2 === 0 ? ['x' => 18, 'y' => 82] : ['x' => 82, 'y' => 18];
+                            $trailEnd   = $i % 2 === 0 ? ['x' => 82, 'y' => 14] : ['x' => 18, 'y' => 86];
+                        @endphp
+                        <line class="cine-trail" data-trail="{{ $i }}"
+                              x1="{{ $trailStart['x'] }}" y1="{{ $trailStart['y'] }}"
+                              x2="{{ $trailEnd['x'] }}" y2="{{ $trailEnd['y'] }}"
+                              pathLength="100" vector-effect="non-scaling-stroke"></line>
+                    @endfor
+                </svg>
 
                 @php
                     // Five named entrance choreographies, cycling by index —
