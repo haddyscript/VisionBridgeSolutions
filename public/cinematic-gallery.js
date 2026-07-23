@@ -225,6 +225,7 @@
         var counter = root.querySelector('.cine-progress-count');
         var progressFill = root.querySelector('.cine-progress-fill');
         var trails = Array.prototype.slice.call(root.querySelectorAll('.cine-trail'));
+        var trailSparks = Array.prototype.slice.call(root.querySelectorAll('.cine-trail-spark'));
 
         // Five named entrance choreographies (data-preset in the markup,
         // index % 5) — each one animates a DIFFERENT element/property
@@ -461,6 +462,43 @@
             // only scene visible before any scrolling happens.
             startAmbient(sceneData[0]);
 
+            // Shooting-star trail for transition i (connecting scene i to
+            // scene i+1) — the line draws in then fades out, and the spark
+            // riding along it "travels" the path twice (repeat:1), all as
+            // plain tweens INSIDE the single scrubbed `tl` below, same as
+            // everything else in this timeline. Earlier version drove the
+            // spark with an independent gsap.to(repeat:-1), started/stopped
+            // via tl.call() — reliable scrolling down, but scrubbing back up
+            // (especially fast) could skip the "stop" callback, leaving that
+            // spark instance frozen mid-path forever instead of resetting to
+            // hidden. Keeping it entirely inside `tl` means there's no
+            // second tween lifecycle to leak — the single scrub timeline
+            // owns and correctly interpolates it in both directions, exactly
+            // like every other effect here. A plain named function (not an
+            // inline closure inside the `for` loop below) so `i` is a real
+            // per-call parameter, not a shared loop variable.
+            function addTrail(i, t) {
+                var trail = trails[i];
+                if (!trail) return;
+                // Real geometric length of this specific line (set inline
+                // in Blade — see the comment there on why pathLength="100"
+                // wasn't reliable enough on <line> to use as a shortcut).
+                var len = parseFloat(trail.getAttribute('data-length')) || 100;
+                tl.fromTo(trail,
+                    { strokeDashoffset: len, opacity: 0 },
+                    { strokeDashoffset: 0, opacity: 0.7, duration: 0.6, ease: 'power1.out' }, t + 0.4)
+                    .to(trail, { opacity: 0, duration: 0.5, ease: 'power1.in' }, t + 1.0);
+
+                var spark = trailSparks[i];
+                if (!spark) return;
+                var sparkLen = parseFloat(spark.getAttribute('data-length')) || len;
+                tl.fromTo(spark,
+                    { strokeDashoffset: sparkLen, opacity: 0 },
+                    { opacity: 1, duration: 0.15, ease: 'power1.out' }, t + 0.4)
+                    .to(spark, { strokeDashoffset: 0, duration: 0.45, ease: 'none', repeat: 1 }, t + 0.4)
+                    .to(spark, { opacity: 0, duration: 0.2, ease: 'power1.in' }, t + 1.3);
+            }
+
             var tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: track,
@@ -504,18 +542,7 @@
                 // with scroll rather than autoplaying on its own clock.
                 addPresetReveal(tl, sceneData[i + 1], t + 0.4);
 
-                // Shooting-star trail for this transition — draws in over
-                // the first ~60% of the crossfade window, then fades back
-                // out, so it briefly connects the two "stars" rather than
-                // lingering. Same timeline position as everything else
-                // above, so scrubbing back reverses it in lockstep too.
-                var trail = trails[i];
-                if (trail) {
-                    tl.fromTo(trail,
-                        { strokeDashoffset: 100, opacity: 0 },
-                        { strokeDashoffset: 0, opacity: 0.7, duration: 0.6, ease: 'power1.out' }, t + 0.4)
-                        .to(trail, { opacity: 0, duration: 0.5, ease: 'power1.in' }, t + 1.0);
-                }
+                addTrail(i, t);
             }
 
             // Scene 0 has no crossfade to piggyback on (nothing scrolls it

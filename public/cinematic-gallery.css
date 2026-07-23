@@ -424,15 +424,30 @@
    #cine-trails for why this is a brief connecting streak rather than a
    literal line tracking each image's exact on-screen position. Kept thin
    and modestly opaque (max ~.6) so it reads as a delicate accent, never
-   competing with the project photo itself. */
+   competing with the project photo itself.
+   stroke-dasharray/dashoffset are NOT set here — each <line> carries its
+   own exact geometric length inline (see the Blade comment above
+   #cine-trails for why pathLength="100" wasn't reliable on <line>), so
+   setting a generic value here would just be dead, overridden CSS. */
 .cine-trail {
     stroke: rgba(255,233,176,.6);
     stroke-width: 1.3px;
     stroke-linecap: round;
-    stroke-dasharray: 100;
-    stroke-dashoffset: 100;
     opacity: 0;
     filter: drop-shadow(0 0 3px rgba(201,168,76,.7));
+}
+/* Small bright "spark" sharing the trail's own path — a short dash that
+   loops its dashoffset continuously (see addTrail() in
+   cinematic-gallery.js) while the trail is visible, so light appears to
+   travel along the connecting line instead of it just sitting drawn and
+   static. Same note as .cine-trail above — dasharray/dashoffset are set
+   inline per-line, not here. */
+.cine-trail-spark {
+    stroke: #FFF9E8;
+    stroke-width: 2.2px;
+    stroke-linecap: round;
+    opacity: 0;
+    filter: drop-shadow(0 0 5px rgba(255,246,220,.95)) drop-shadow(0 0 10px rgba(201,168,76,.6));
 }
 
 .cine-stage-bg {

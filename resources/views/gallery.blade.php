@@ -113,20 +113,49 @@
                      crossfade, which would need real-time position tracking
                      to follow precisely), but a brief connecting streak that
                      reads as "the camera moving from one star to the next"
-                     without that added complexity. pathLength="100"
-                     normalizes stroke-dasharray/dashoffset to a plain 0–100
-                     range regardless of the line's actual rendered length. --}}
+                     without that added complexity.
+
+                     Dasharray/dashoffset use each line's own EXACT geometric
+                     length (computed here in the same 0–100 user-unit space
+                     the viewBox uses), not the pathLength="100" normalization
+                     trick used for .cine-frame-border's <rect> elsewhere on
+                     this page — pathLength isn't reliably honored on <line>
+                     across browsers the way it is on <rect>, which made the
+                     spark's small "6 94" dash pattern get interpreted against
+                     the line's real ~800px on-screen length instead of a
+                     normalized 100 units, repeating it many times across the
+                     diagonal as a dashed stripe instead of one small moving
+                     point. Computing the real length directly here sidesteps
+                     that inconsistency entirely — see data-length below,
+                     read by addTrail() in cinematic-gallery.js. --}}
                 <svg id="cine-trails" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"
                      style="position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;">
                     @for ($i = 0; $i < $count - 1; $i++)
                         @php
                             $trailStart = $i % 2 === 0 ? ['x' => 18, 'y' => 82] : ['x' => 82, 'y' => 18];
                             $trailEnd   = $i % 2 === 0 ? ['x' => 82, 'y' => 14] : ['x' => 18, 'y' => 86];
+                            $trailLen   = round(sqrt(
+                                pow($trailEnd['x'] - $trailStart['x'], 2) +
+                                pow($trailEnd['y'] - $trailStart['y'], 2)
+                            ), 2);
+                            $sparkDash  = 5;
                         @endphp
-                        <line class="cine-trail" data-trail="{{ $i }}"
+                        <line class="cine-trail" data-trail="{{ $i }}" data-length="{{ $trailLen }}"
                               x1="{{ $trailStart['x'] }}" y1="{{ $trailStart['y'] }}"
                               x2="{{ $trailEnd['x'] }}" y2="{{ $trailEnd['y'] }}"
-                              pathLength="100" vector-effect="non-scaling-stroke"></line>
+                              style="stroke-dasharray:{{ $trailLen }};stroke-dashoffset:{{ $trailLen }};"
+                              vector-effect="non-scaling-stroke"></line>
+                        {{-- Travels along the same path while the trail
+                             above is visible — a short bright "spark"
+                             (small dasharray) with its dashoffset looping
+                             continuously, so the line reads as light
+                             flowing through it rather than a static drawn
+                             segment. See addTrail() in cinematic-gallery.js. --}}
+                        <line class="cine-trail-spark" data-trail-spark="{{ $i }}" data-length="{{ $trailLen }}"
+                              x1="{{ $trailStart['x'] }}" y1="{{ $trailStart['y'] }}"
+                              x2="{{ $trailEnd['x'] }}" y2="{{ $trailEnd['y'] }}"
+                              style="stroke-dasharray:{{ $sparkDash }} {{ $trailLen - $sparkDash }};stroke-dashoffset:{{ $trailLen }};"
+                              vector-effect="non-scaling-stroke"></line>
                     @endfor
                 </svg>
 
