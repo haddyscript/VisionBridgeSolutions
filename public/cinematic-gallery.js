@@ -180,12 +180,117 @@
         var dots = Array.prototype.slice.call(root.querySelectorAll('.cine-dot'));
         var counter = root.querySelector('.cine-progress-count');
 
+        // Deterministic per-scene variation (index-based, not random) so
+        // repeat visits/screenshots are consistent — glow color comes from
+        // the .cine-variant-* CSS classes already in the markup; only the
+        // float rhythm and sweep timing need JS values.
+        function sceneVariant(i) {
+            return {
+                floatAmp: 8 + (i % 4) * 2,
+                floatDur: 5 + (i % 3),
+                sweepDelay: 0.15 + (i % 3) * 0.08,
+            };
+        }
+
+        // Per-scene resources gathered once — the reveal/ambient logic below
+        // reads scene count and structure from the DOM, same as the rest of
+        // this file, so adding a project only means editing config/gallery.php.
+        var sceneData = scenes.map(function (scene, i) {
+            return {
+                el: scene,
+                wrap: scene.querySelector('.cine-frame-wrap'),
+                frame: scene.querySelector('.cine-frame'),
+                img: scene.querySelector('.cine-frame img'),
+                sweep: scene.querySelector('.cine-frame-sweep'),
+                borderRect: scene.querySelector('.cine-frame-border rect'),
+                revealEls: Array.prototype.slice.call(scene.querySelectorAll('.cine-info [data-reveal]')),
+                variant: sceneVariant(i),
+                ambientTweens: [],
+                sweepPlayed: false,
+            };
+        });
+
         if (reduce || !track || !stage || scenes.length < 2) {
             root.classList.add('cine-reduced');
+            if (sceneData[0]) sceneData[0].el.classList.add('is-active');
         } else {
             gsap.set(scenes, { transformPerspective: 1600, transformOrigin: 'center center', force3D: true });
             gsap.set(scenes[0], { autoAlpha: 1, scale: 1, z: 0, filter: 'blur(0px)' });
             gsap.set(scenes.slice(1), { autoAlpha: 0, scale: 0.84, z: -360, filter: 'blur(12px)' });
+            sceneData[0].el.classList.add('is-active');
+
+            // Non-first scenes' inner content starts hidden/blurred to match
+            // their parent scene's own hidden state — revealed together with
+            // it in the crossfade loop below, never independently, so there's
+            // only ever one clock driving both (no double-fade mismatch).
+            sceneData.slice(1).forEach(function (s) {
+                gsap.set(s.revealEls, { opacity: 0, y: 16, filter: 'blur(6px)' });
+                if (s.img) gsap.set(s.img, { filter: 'blur(8px)' });
+            });
+
+            var currentActive = 0;
+            var activatedOnce = { 0: true };
+
+            // GSAP can't target a ::before pseudo-element directly, so the
+            // one-shot sweep pass is driven by toggling a class that
+            // triggers a plain CSS @keyframes animation instead (see
+            // .cine-frame-sweep.is-sweeping in cinematic-gallery.css).
+            function playSweep(s) {
+                if (s.sweepPlayed || !s.sweep) return;
+                s.sweepPlayed = true;
+                gsap.delayedCall(s.variant.sweepDelay, function () {
+                    s.sweep.classList.add('is-sweeping');
+                    s.sweep.addEventListener('animationend', function () {
+                        s.sweep.classList.remove('is-sweeping');
+                    }, { once: true });
+                });
+            }
+
+            function startAmbient(s) {
+                if (s.ambientTweens.length || !s.wrap) return;
+                s.ambientTweens.push(gsap.to(s.wrap, {
+                    y: '+=' + s.variant.floatAmp,
+                    duration: s.variant.floatDur, ease: 'sine.inOut',
+                    repeat: -1, yoyo: true,
+                }));
+                var glow = s.el.querySelector('.cine-frame-glow');
+                if (glow) {
+                    glow.classList.add('cine-glow-pulse');
+                    gsap.to(glow, { opacity: 1, duration: 0.6, ease: 'power2.out' });
+                }
+            }
+
+            function stopAmbient(s) {
+                s.ambientTweens.forEach(function (tw) { tw.kill(); });
+                s.ambientTweens = [];
+                if (s.wrap) gsap.set(s.wrap, { y: 0 });
+                var glow = s.el.querySelector('.cine-frame-glow');
+                if (glow) {
+                    glow.classList.remove('cine-glow-pulse');
+                    gsap.to(glow, { opacity: 0, duration: 0.4, ease: 'power2.out' });
+                }
+            }
+
+            function onSceneActivate(newIndex) {
+                if (newIndex === currentActive && sceneData[newIndex].el.classList.contains('is-active')) return;
+                var prev = sceneData[currentActive];
+                var next = sceneData[newIndex];
+                if (prev) {
+                    prev.el.classList.remove('is-active');
+                    stopAmbient(prev);
+                }
+                next.el.classList.add('is-active');
+                startAmbient(next);
+                if (!activatedOnce[newIndex]) {
+                    activatedOnce[newIndex] = true;
+                    playSweep(next);
+                }
+                currentActive = newIndex;
+            }
+
+            // Kick off scene 0's own ambient loop immediately — it's the
+            // only scene visible before any scrolling happens.
+            startAmbient(sceneData[0]);
 
             var tl = gsap.timeline({
                 scrollTrigger: {
@@ -204,6 +309,7 @@
                             counter.textContent =
                                 String(active + 1).padStart(2, '0') + ' / ' + String(scenes.length).padStart(2, '0');
                         }
+                        onSceneActivate(active);
                     },
                 },
             });
@@ -211,6 +317,7 @@
             var unit = 2;
             for (var i = 0; i < scenes.length - 1; i++) {
                 var t = i * unit;
+                var next = sceneData[i + 1];
                 tl.to(scenes[i], {
                     scale: 1.3, z: 260, filter: 'blur(13px)', autoAlpha: 0,
                     duration: 1, ease: 'power1.inOut',
@@ -220,8 +327,35 @@
                         {
                             autoAlpha: 1, scale: 1, z: 0, filter: 'blur(0px)',
                             duration: 1, ease: 'power1.inOut',
-                        }, t + 0.4);
+                        }, t + 0.4)
+                    // Content settle — driven by the SAME timeline position as
+                    // the scene crossfade above, so it's scrubbed in lockstep
+                    // with scroll rather than autoplaying on its own clock.
+                    .fromTo(next.revealEls,
+                        { opacity: 0, y: 16, filter: 'blur(6px)' },
+                        { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1, ease: 'power1.inOut', stagger: 0.06 },
+                        t + 0.4);
+                if (next.img) {
+                    tl.fromTo(next.img, { filter: 'blur(8px)' }, { filter: 'blur(0px)', duration: 1, ease: 'power1.inOut' }, t + 0.4);
+                }
+                if (next.borderRect) {
+                    tl.fromTo(next.borderRect, { strokeDashoffset: 100 }, { strokeDashoffset: 0, duration: 1, ease: 'power1.inOut' }, t + 0.4);
+                }
             }
+
+            // Scene 0 has no crossfade to piggyback on (nothing scrolls it
+            // into view — it's just there from the start), so its reveal
+            // plays once on its own short timeline instead. It's already
+            // hidden behind the opening overlay for the first few seconds,
+            // so there's no visible pop.
+            var first = sceneData[0];
+            gsap.timeline()
+                .fromTo(first.revealEls,
+                    { opacity: 0, y: 16, filter: 'blur(6px)' },
+                    { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1, ease: 'power1.inOut', stagger: 0.06 }, 0)
+                .fromTo(first.borderRect,
+                    { strokeDashoffset: 100 }, { strokeDashoffset: 0, duration: 1, ease: 'power1.inOut' }, 0);
+            playSweep(first);
         }
 
         ScrollTrigger.refresh();
@@ -239,7 +373,11 @@
             frameImgs.forEach(function (img) { img.classList.add('cine-kenburns-run'); });
         }
 
-        // ── Cursor tilt + glow on frames — desktop/pointer:fine only ──
+        // ── Cursor tilt + glow + dynamic shadow on frames, and a subtler
+        // matching tilt on the glass info panel — desktop/pointer:fine only.
+        // Listeners are attached to every frame/panel up front, but only the
+        // currently-active scene can actually receive the events at all
+        // (see .cine-scene.is-active in the CSS) — inactive ones sit inert.
         if (!reduce && window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
             root.querySelectorAll('.cine-frame').forEach(function (frame) {
                 var rotX = gsap.quickTo(frame, 'rotationX', { duration: 0.6, ease: 'power3.out' });
@@ -253,8 +391,35 @@
                     rotX(-(py - 0.5) * 10);
                     frame.style.setProperty('--mx', (px * 100) + '%');
                     frame.style.setProperty('--my', (py * 100) + '%');
+                    // Shadow leans away from the cursor, like a light source
+                    // following it — reads as the card physically responding.
+                    frame.style.setProperty('--shadow-x', ((px - 0.5) * -30).toFixed(1) + 'px');
+                    frame.style.setProperty('--shadow-y', (40 + (py - 0.5) * -20).toFixed(1) + 'px');
                 });
                 frame.addEventListener('mouseleave', function () {
+                    rotX(0);
+                    rotY(0);
+                    frame.style.setProperty('--shadow-x', '0px');
+                    frame.style.setProperty('--shadow-y', '40px');
+                });
+            });
+
+            root.querySelectorAll('.cine-info').forEach(function (panel) {
+                var rotX = gsap.quickTo(panel, 'rotationX', { duration: 0.6, ease: 'power3.out' });
+                var rotY = gsap.quickTo(panel, 'rotationY', { duration: 0.6, ease: 'power3.out' });
+
+                panel.addEventListener('mousemove', function (e) {
+                    var r = panel.getBoundingClientRect();
+                    var px = (e.clientX - r.left) / r.width;
+                    var py = (e.clientY - r.top) / r.height;
+                    // Noticeably subtler than the image's own tilt (±4° vs
+                    // ±10°) — the panel is glass chrome, not the focal point.
+                    rotY((px - 0.5) * 4);
+                    rotX(-(py - 0.5) * 4);
+                    panel.style.setProperty('--mx', (px * 100) + '%');
+                    panel.style.setProperty('--my', (py * 100) + '%');
+                });
+                panel.addEventListener('mouseleave', function () {
                     rotX(0);
                     rotY(0);
                 });

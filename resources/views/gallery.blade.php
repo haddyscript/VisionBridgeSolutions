@@ -70,17 +70,43 @@
                      background:radial-gradient(circle,rgba(44,166,164,.12) 0%,transparent 70%);
                      animation:orb-drift 22s ease-in-out infinite reverse 3s;"></div>
 
+                {{-- cine-variant-{0,1,2} (index % 3) gives each scene a
+                     slightly different glow color / float rhythm — see the
+                     variant rules in cinematic-gallery.css and
+                     sceneVariant() in cinematic-gallery.js — so the gallery
+                     reads as handcrafted rather than one effect repeated
+                     11 times identically. --}}
                 @foreach($projects as $i => $project)
-                    <div class="cine-scene" data-scene="{{ $i }}">
-                        <div class="cine-frame">
-                            <img src="@assetv($project['image'])" alt="{{ $project['title'] }}" loading="lazy">
+                    <div class="cine-scene cine-variant-{{ $i % 3 }}" data-scene="{{ $i }}">
+                        <div class="cine-frame-wrap">
+                            <div class="cine-frame-glow" aria-hidden="true"></div>
+                            <div class="cine-frame">
+                                <img src="@assetv($project['image'])" alt="{{ $project['title'] }}" loading="lazy">
+                                {{-- One-shot light sweep + animated border draw — both
+                                     played once by JS when this scene becomes active,
+                                     not a repeating loop (kept subtle, not flashy). The
+                                     rect's pathLength="100" normalizes stroke-dasharray/
+                                     dashoffset to a simple 0–100 range regardless of the
+                                     frame's actual rendered size. --}}
+                                <div class="cine-frame-sweep" aria-hidden="true"></div>
+                                <svg class="cine-frame-border" viewBox="0 0 100 75" preserveAspectRatio="none" aria-hidden="true">
+                                    <rect x="1" y="1" width="98" height="73" rx="6" pathLength="100"></rect>
+                                </svg>
+                            </div>
                         </div>
                         <div class="cine-info">
-                            <span class="cine-index">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }} / {{ str_pad($count, 2, '0', STR_PAD_LEFT) }}</span>
-                            <span class="cine-category">{{ $project['category'] }}</span>
-                            <h2 class="cine-title">{{ $project['title'] }}</h2>
-                            <div class="cine-rule"></div>
-                            <p class="cine-desc">{{ $project['description'] }}</p>
+                            <span class="cine-index" data-reveal>{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }} / {{ str_pad($count, 2, '0', STR_PAD_LEFT) }}</span>
+                            <span class="cine-category" data-reveal>{{ $project['category'] }}</span>
+                            <h2 class="cine-title" data-reveal>{{ $project['title'] }}</h2>
+                            <div class="cine-rule" data-reveal></div>
+                            <p class="cine-desc" data-reveal>{{ $project['description'] }}</p>
+                            <a href="{{ route('consultation.create') }}" class="cine-cta" data-reveal>
+                                <span class="cine-cta-fill" aria-hidden="true"></span>
+                                <span class="cine-cta-content">
+                                    Start a Project Like This
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                </span>
+                            </a>
                         </div>
                     </div>
                 @endforeach

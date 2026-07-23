@@ -244,21 +244,51 @@
     padding: 6vh 7vw;
     transform-origin: center center;
     will-change: transform, opacity, filter;
+    /* Only the currently-active scene should receive hover/click — the other
+       10 are stacked underneath it (position:absolute;inset:0) and would
+       otherwise intercept input meant for the one actually on screen. JS
+       toggles .is-active on whichever scene is current (see onSceneActivate
+       in cinematic-gallery.js). */
     pointer-events: none;
 }
+.cine-scene.is-active { pointer-events: auto; }
 
 /* ─── Image frame ─── */
-.cine-frame {
+.cine-frame-wrap {
     position: relative;
     flex: 0 0 auto;
+}
+/* Ambient glow — lives outside .cine-frame's own overflow:hidden so its
+   blur can bleed past the frame's edges instead of being clipped flush
+   against them. Color varies per scene via the --cine-glow-color custom
+   property set on the .cine-variant-* classes further down. */
+.cine-frame-glow {
+    position: absolute;
+    inset: -14%;
+    border-radius: 30px;
+    pointer-events: none;
+    opacity: 0;
+    filter: blur(38px);
+    background: radial-gradient(ellipse at center, var(--cine-glow-color, rgba(201,168,76,.35)), transparent 70%);
+}
+.cine-glow-pulse { animation: cine-glow-pulse 6s ease-in-out infinite; }
+@keyframes cine-glow-pulse {
+    0%, 100% { opacity: .35; }
+    50%      { opacity: .6; }
+}
+
+.cine-frame {
+    position: relative;
     width: min(48vw, 620px);
     aspect-ratio: 4 / 3;
     border-radius: 22px;
     overflow: hidden;
-    box-shadow: 0 40px 120px rgba(0,0,0,.55), 0 0 0 1px rgba(201,168,76,.16);
-    transform-style: preserve-3d;
     --mx: 50%;
     --my: 50%;
+    --shadow-x: 0px;
+    --shadow-y: 40px;
+    box-shadow: var(--shadow-x) var(--shadow-y) 120px rgba(0,0,0,.55), 0 0 0 1px rgba(201,168,76,.16);
+    transform-style: preserve-3d;
 }
 .cine-frame img {
     position: absolute;
@@ -269,10 +299,13 @@
     transform: scale(1.08);
     will-change: transform;
 }
+/* Cursor-tracking highlight — topmost layer so it's never dimmed by the
+   sweep/border layers beneath it. */
 .cine-frame::after {
     content: '';
     position: absolute;
     inset: 0;
+    z-index: 4;
     background: radial-gradient(260px circle at var(--mx) var(--my), rgba(255,255,255,.10), transparent 68%);
     opacity: 0;
     transition: opacity .3s ease;
@@ -289,11 +322,94 @@
     animation: cine-kenburns 16s ease-in-out infinite alternate;
 }
 
-/* ─── Text panel ─── */
+/* Light sweep — a single one-shot pass played by JS when the scene becomes
+   active, not a repeating loop (kept subtle rather than flashy). */
+.cine-frame-sweep {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    overflow: hidden;
+    pointer-events: none;
+}
+.cine-frame-sweep::before {
+    content: '';
+    position: absolute;
+    top: -30%;
+    left: 0;
+    width: 34%;
+    height: 160%;
+    background: linear-gradient(105deg, transparent, rgba(255,255,255,.30), transparent);
+    transform: translateX(-160%) skewX(-16deg);
+}
+/* One-shot pass — JS toggles .is-sweeping (see playSweep() in
+   cinematic-gallery.js) and removes it again on animationend, so this
+   never loops on its own. */
+.cine-frame-sweep.is-sweeping::before {
+    animation: cine-sweep-pass 0.9s ease-in-out forwards;
+}
+@keyframes cine-sweep-pass {
+    to { transform: translateX(320%) skewX(-16deg); }
+}
+
+/* Animated border — an SVG rect whose stroke draws in, scrubbed in lockstep
+   with the scene's own scroll-driven crossfade (see the JS timeline) rather
+   than a separate autoplay, so it never looks out of sync with the image
+   fading in/out as the user scrolls back and forth. pathLength="100" on the
+   <rect> (set in the Blade markup) normalizes dash values to a plain 0–100
+   range regardless of the frame's real rendered size. */
+.cine-frame-border {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+.cine-frame-border rect {
+    fill: none;
+    stroke: rgba(201,168,76,.55);
+    stroke-width: 1.5;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+}
+
+/* Per-scene variation (index % 3) — alternates the ambient glow's color
+   between gold and teal so the gallery doesn't read as one effect repeated
+   identically 11 times. */
+.cine-variant-0 .cine-frame-glow { --cine-glow-color: rgba(201,168,76,.38); }
+.cine-variant-1 .cine-frame-glow { --cine-glow-color: rgba(63,189,187,.34); }
+.cine-variant-2 .cine-frame-glow { --cine-glow-color: rgba(201,168,76,.24); }
+
+/* ─── Text panel — glassmorphism ─── */
 .cine-info {
+    position: relative;
     flex: 0 0 auto;
     max-width: 26rem;
     text-align: left;
+    padding: 1.8rem 2rem;
+    border-radius: 20px;
+    background: rgba(255,255,255,.045);
+    border: 1px solid rgba(255,255,255,.10);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 20px 60px rgba(0,0,0,.30);
+    --mx: 50%;
+    --my: 50%;
+}
+/* Cursor-tracking highlight, same technique as .cine-frame::after and
+   .about-card::after (layouts/app.blade.php) elsewhere on the site. */
+.cine-info::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(220px circle at var(--mx) var(--my), rgba(201,168,76,.12), transparent 68%);
+    opacity: 0;
+    transition: opacity .3s ease;
+    pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+    .cine-info:hover::after { opacity: 1; }
 }
 .cine-index {
     display: block;
@@ -332,6 +448,47 @@
     line-height: 1.75;
 }
 
+/* ─── Per-project CTA — small pill, same fill-sweep hover mechanic as the
+   site's .hero-btn-* buttons (layouts/app.blade.php) but sized to fit
+   comfortably inside a pinned scene's tighter vertical budget. ─── */
+.cine-cta {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 1.4rem;
+    padding: 11px 20px;
+    border-radius: 9999px;
+    border: 1.5px solid rgba(201,168,76,.40);
+    color: #FFE9B0;
+    font-size: .85rem;
+    font-weight: 700;
+    overflow: hidden;
+    transition: border-color .25s ease, color .25s ease, transform .25s ease;
+}
+.cine-cta-fill {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(135deg, #C9A84C 0%, #E6C878 50%, #C9A84C 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .4s cubic-bezier(.65,0,.35,1);
+}
+.cine-cta-content {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.cine-cta svg { transition: transform .3s ease; }
+@media (hover: hover) and (pointer: fine) {
+    .cine-cta:hover { border-color: transparent; color: #15202C; transform: translateY(-2px); }
+    .cine-cta:hover .cine-cta-fill { transform: scaleX(1); }
+    .cine-cta:hover svg { transform: translateX(3px); }
+}
+
 /* ─── Reduced-motion / no-JS fallback: static stacked layout ─── */
 .cine-reduced .cine-pin-track { height: auto !important; }
 .cine-reduced .cine-stage { position: relative; height: auto; overflow: visible; }
@@ -345,17 +502,24 @@
     transform: none !important;
     filter: none !important;
     padding: 9vh 6vw;
+    /* Every scene is in normal document flow here, not stacked
+       position:absolute — nothing to accidentally intercept, so all of
+       them (not just one "active" one) stay interactive. */
+    pointer-events: auto;
 }
 .cine-reduced .cine-info { text-align: center; }
 .cine-reduced .cine-frame { width: min(80vw, 560px); }
 .cine-reduced .cine-kenburns-run { animation: none; }
 .cine-reduced .cine-progress { display: none; }
+.cine-reduced .cine-frame-glow { opacity: .3; }
+.cine-reduced .cine-frame-sweep { display: none; }
+.cine-reduced .cine-frame-border rect { stroke-dashoffset: 0; }
 
 /* ─── Mobile: stack image above text, even inside the live pin ─── */
 @media (max-width: 767px) {
     .cine-scene { flex-direction: column; gap: 3.2vh; padding: 7vh 7vw; }
     .cine-frame { width: 80vw; }
-    .cine-info { text-align: center; }
+    .cine-info { text-align: center; padding: 1.4rem 1.6rem; }
     .cine-desc {
         display: -webkit-box;
         -webkit-line-clamp: 3;

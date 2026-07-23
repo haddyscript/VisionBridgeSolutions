@@ -7,6 +7,7 @@ VisionBridgeSolutions/
 │   │       ├── BackfillSubscriptionPeriodEnds.php
 │   │       ├── CancelDuplicateCarePlanSubscriptions.php
 │   │       ├── RetryFailedPayments.php
+│   │       ├── SendFaithStackPaymentReminder.php
 │   │       ├── SendRenewalReminders.php
 │   │       ├── SuspendOverdueProjects.php
 │   │       └── VerifyPartnerPayouts.php
@@ -31,10 +32,13 @@ VisionBridgeSolutions/
 │   │   │   │   ├── ProjectRequestController.php
 │   │   │   │   ├── RecommendationController.php
 │   │   │   │   ├── RefundRequestController.php
+│   │   │   │   ├── RevisionController.php
 │   │   │   │   ├── SatisfactionSurveyController.php
 │   │   │   │   ├── ServiceAgreementController.php
 │   │   │   │   ├── SubscriptionController.php
+│   │   │   │   ├── SupportTicketController.php
 │   │   │   │   ├── TeamController.php
+│   │   │   │   ├── TwoFactorController.php
 │   │   │   │   ├── UploadApprovalController.php
 │   │   │   │   └── WorkOrderController.php
 │   │   │   ├── Auth/
@@ -67,6 +71,7 @@ VisionBridgeSolutions/
 │   │   │   │   ├── SearchController.php
 │   │   │   │   ├── ServiceAgreementController.php
 │   │   │   │   ├── SubscriptionController.php
+│   │   │   │   ├── SupportTicketController.php
 │   │   │   │   ├── SuspendedController.php
 │   │   │   │   ├── TourController.php
 │   │   │   │   ├── TwoFactorController.php
@@ -89,17 +94,20 @@ VisionBridgeSolutions/
 │   │       ├── EnsureUserIsAdmin.php
 │   │       ├── EnsureUserIsOwner.php
 │   │       ├── EnsureUserIsSuperAdmin.php
+│   │       ├── PreventStaleHtmlCaching.php
 │   │       └── UpdateLastSeen.php
 │   ├── Mail/
 │   │   ├── AccountEmailChangedMail.php
 │   │   ├── AccountPasswordChangedMail.php
 │   │   ├── AdminPaymentNotificationMail.php
+│   │   ├── CarePlanPaymentReminderMail.php
 │   │   ├── ClientReplyMail.php
 │   │   ├── ConsultationCancelledMail.php
 │   │   ├── ConsultationConfirmedMail.php
 │   │   ├── ConsultationReceivedMail.php
 │   │   ├── ConsultationRescheduledMail.php
 │   │   ├── FaithStackNewClientMail.php
+│   │   ├── FaithStackPaymentReminderMail.php
 │   │   ├── IntakeConfirmationMail.php
 │   │   ├── InvoiceSentMail.php
 │   │   ├── NewClientRegistrationMail.php
@@ -109,22 +117,28 @@ VisionBridgeSolutions/
 │   │   ├── NewIntakeSubmissionMail.php
 │   │   ├── NewProjectRequestMail.php
 │   │   ├── NewRefundRequestMail.php
+│   │   ├── NewSupportTicketMail.php
 │   │   ├── PaymentFailedMail.php
 │   │   ├── PaymentReceiptMail.php
+│   │   ├── PhasedPaymentPlanMail.php
 │   │   ├── ProjectApprovedMail.php
 │   │   ├── ProjectCanceledMail.php
 │   │   ├── ProjectLaunchedMail.php
 │   │   ├── ProjectQuoteReadyMail.php
+│   │   ├── ProjectRequestStatusChangedMail.php
 │   │   ├── ProjectRestoredMail.php
 │   │   ├── ProjectSuspendedMail.php
 │   │   ├── QuestionnaireCompletedMail.php
 │   │   ├── RefundRequestApprovedMail.php
 │   │   ├── RefundRequestDeclinedMail.php
+│   │   ├── RevisionStatusChangedMail.php
 │   │   ├── ServiceAgreementSignedMail.php
 │   │   ├── SubscriptionCreatedMail.php
 │   │   ├── SubscriptionReceiptMail.php
 │   │   ├── SubscriptionRenewalReminderMail.php
 │   │   ├── SubscriptionStatusAlertMail.php
+│   │   ├── SupportTicketClientReplyMail.php
+│   │   ├── SupportTicketReplyMail.php
 │   │   ├── SystemAlertMail.php
 │   │   ├── UploadRepliedMail.php
 │   │   ├── WelcomeClientMail.php
@@ -150,10 +164,12 @@ VisionBridgeSolutions/
 │   │   ├── MaintenancePlan.php
 │   │   ├── Milestone.php
 │   │   ├── PartnerPayout.php
+│   │   ├── PartnerPayoutReceipt.php
 │   │   ├── Payment.php
 │   │   ├── Project.php
 │   │   ├── ProjectQuestionnaire.php
 │   │   ├── ProjectRequest.php
+│   │   ├── ProjectRequestAttachment.php
 │   │   ├── Recommendation.php
 │   │   ├── RefundRequest.php
 │   │   ├── SatisfactionSurvey.php
@@ -161,6 +177,8 @@ VisionBridgeSolutions/
 │   │   ├── ServiceAgreementTemplate.php
 │   │   ├── Subscription.php
 │   │   ├── SubscriptionPayment.php
+│   │   ├── SupportTicket.php
+│   │   ├── SupportTicketReply.php
 │   │   ├── Upload.php
 │   │   ├── UploadAttachment.php
 │   │   ├── UploadReply.php
@@ -174,9 +192,11 @@ VisionBridgeSolutions/
 │   │   ├── SubscriptionReconciler.php
 │   │   └── TwoFactorAuthenticator.php
 │   └── Support/
+│       ├── AdminGreetings.php
 │       ├── AdminPermissions.php
 │       ├── AssetVersion.php
-│       └── EmailPreviewStub.php
+│       ├── EmailPreviewStub.php
+│       └── IcsCalendar.php
 ├── bootstrap/
 │   ├── cache/
 │   │   ├── .gitignore
@@ -191,6 +211,7 @@ VisionBridgeSolutions/
 │   ├── database.php
 │   ├── dial_codes.php
 │   ├── filesystems.php
+│   ├── gallery.php
 │   ├── logging.php
 │   ├── mail.php
 │   ├── queue.php
@@ -291,7 +312,25 @@ VisionBridgeSolutions/
 │   │   ├── 2026_07_13_000001_add_description_to_milestones_table.php
 │   │   ├── 2026_07_13_100000_add_audiences_to_announcements_table.php
 │   │   ├── 2026_07_13_120000_add_metadata_to_announcements_table.php
-│   │   └── 2026_07_14_000001_add_proposal_fields_to_project_requests_table.php
+│   │   ├── 2026_07_14_000001_add_proposal_fields_to_project_requests_table.php
+│   │   ├── 2026_07_14_000002_create_support_tickets_table.php
+│   │   ├── 2026_07_14_000003_create_support_ticket_replies_table.php
+│   │   ├── 2026_07_15_100000_add_payment_reminder_shown_at_to_users_table.php
+│   │   ├── 2026_07_15_140000_add_discount_percent_to_projects_table.php
+│   │   ├── 2026_07_15_150000_add_category_to_payments_table.php
+│   │   ├── 2026_07_15_160000_add_status_message_to_projects_table.php
+│   │   ├── 2026_07_16_000000_add_last_login_at_to_users_table.php
+│   │   ├── 2026_07_16_010000_add_priority_fields_to_uploads_table.php
+│   │   ├── 2026_07_17_000001_add_completed_at_to_uploads_table.php
+│   │   ├── 2026_07_17_000001_add_manual_entry_fields_to_partner_payouts_table.php
+│   │   ├── 2026_07_17_000002_create_partner_payout_receipts_table.php
+│   │   ├── 2026_07_17_000003_add_edited_fields_to_partner_payouts_table.php
+│   │   ├── 2026_07_17_000004_add_internal_work_order_fields_to_project_requests_table.php
+│   │   ├── 2026_07_19_000001_create_project_request_attachments_table.php
+│   │   ├── 2026_07_20_000001_add_title_to_uploads_table.php
+│   │   ├── 2026_07_22_000001_add_completion_note_to_uploads_table.php
+│   │   ├── 2026_07_22_000002_add_notifiable_columns_to_client_notifications_table.php
+│   │   └── 2026_07_22_000003_add_notification_email_to_users_table.php
 │   ├── seeders/
 │   │   ├── DatabaseSeeder.php
 │   │   ├── MaintenancePlanSeeder.php
@@ -340,7 +379,10 @@ VisionBridgeSolutions/
 │   │   ├── Hosting_Management.jpeg
 │   │   ├── johnnydavisglobalmission.png
 │   │   ├── johnnydavisministries.png
+│   │   ├── landing-glowing-bridge.png
 │   │   ├── Landing_Page_Development.jpeg
+│   │   ├── laptop-tillted.png
+│   │   ├── lets-get-started.png
 │   │   ├── Login_LeftSide_Image.png
 │   │   ├── logo-v2.png
 │   │   ├── Long_Term_Stability.png
@@ -364,17 +406,21 @@ VisionBridgeSolutions/
 │   │   ├── parallax-bg7-enhance.png
 │   │   ├── Partnership_Approach.png
 │   │   ├── Professional_Support.png
+│   │   ├── reminder-word-icon.png
 │   │   ├── Small_Business_Website_Development.jpeg
 │   │   ├── vbs-logo-v2.png
 │   │   ├── VisionBridge_Solutions_1.jpeg
 │   │   ├── vission-bridge-htumbnail.png
 │   │   ├── Website_Consulting.jpeg
 │   │   ├── Website_Maintenance_Services.jpeg
-│   │   └── Website_Redesign_Services.jpeg
+│   │   ├── Website_Redesign_Services.jpeg
+│   │   └── whats-next.png
 │   ├── videos/
 │   │   ├── VisionBridge_Solutions_welcome_v.mp4
 │   │   └── Web_development_company_hero_video.mp4
 │   ├── .htaccess
+│   ├── cinematic-gallery.css
+│   ├── cinematic-gallery.js
 │   ├── favicon.ico
 │   ├── index.php
 │   ├── mobile-design.css
@@ -417,6 +463,7 @@ VisionBridgeSolutions/
 │       │   ├── payments/
 │       │   │   └── index.blade.php
 │       │   ├── project-requests/
+│       │   │   ├── _attachments-picker.blade.php
 │       │   │   ├── _dropdown.blade.php
 │       │   │   ├── index.blade.php
 │       │   │   └── show.blade.php
@@ -434,19 +481,26 @@ VisionBridgeSolutions/
 │       │   │   └── index.blade.php
 │       │   ├── refund-requests/
 │       │   │   └── index.blade.php
+│       │   ├── revisions/
+│       │   │   └── index.blade.php
 │       │   ├── satisfaction-surveys/
 │       │   │   └── index.blade.php
 │       │   ├── service-agreement/
 │       │   │   └── index.blade.php
 │       │   ├── subscriptions/
 │       │   │   └── index.blade.php
+│       │   ├── support-tickets/
+│       │   │   ├── index.blade.php
+│       │   │   └── show.blade.php
 │       │   ├── team/
 │       │   │   └── index.blade.php
 │       │   ├── work-orders/
+│       │   │   ├── _results.blade.php
 │       │   │   └── index.blade.php
 │       │   ├── _dropdown.blade.php
 │       │   ├── dashboard.blade.php
-│       │   └── faq.blade.php
+│       │   ├── faq.blade.php
+│       │   └── two-factor.blade.php
 │       ├── auth/
 │       │   ├── forgot-password.blade.php
 │       │   ├── login.blade.php
@@ -461,12 +515,14 @@ VisionBridgeSolutions/
 │       │   ├── account-email-changed.blade.php
 │       │   ├── account-password-changed.blade.php
 │       │   ├── admin-payment-notification.blade.php
+│       │   ├── care-plan-payment-reminder.blade.php
 │       │   ├── client-reply.blade.php
 │       │   ├── consultation-cancelled.blade.php
 │       │   ├── consultation-confirmed.blade.php
 │       │   ├── consultation-received.blade.php
 │       │   ├── consultation-rescheduled.blade.php
 │       │   ├── faithstack-new-client.blade.php
+│       │   ├── faithstack-payment-reminder.blade.php
 │       │   ├── intake-confirmation.blade.php
 │       │   ├── invoice-sent.blade.php
 │       │   ├── new-client-registration.blade.php
@@ -476,22 +532,28 @@ VisionBridgeSolutions/
 │       │   ├── new-intake-submission.blade.php
 │       │   ├── new-project-request.blade.php
 │       │   ├── new-refund-request.blade.php
+│       │   ├── new-support-ticket.blade.php
 │       │   ├── payment-failed.blade.php
 │       │   ├── payment-receipt.blade.php
+│       │   ├── phased-payment-plan.blade.php
 │       │   ├── project-approved.blade.php
 │       │   ├── project-canceled.blade.php
 │       │   ├── project-launched.blade.php
 │       │   ├── project-quote-ready.blade.php
+│       │   ├── project-request-status-changed.blade.php
 │       │   ├── project-restored.blade.php
 │       │   ├── project-suspended.blade.php
 │       │   ├── questionnaire-completed.blade.php
 │       │   ├── refund-request-approved.blade.php
 │       │   ├── refund-request-declined.blade.php
+│       │   ├── revision-status-changed.blade.php
 │       │   ├── service-agreement-signed.blade.php
 │       │   ├── subscription-created.blade.php
 │       │   ├── subscription-receipt.blade.php
 │       │   ├── subscription-renewal-reminder.blade.php
 │       │   ├── subscription-status-alert.blade.php
+│       │   ├── support-ticket-client-reply.blade.php
+│       │   ├── support-ticket-reply.blade.php
 │       │   ├── system-alert.blade.php
 │       │   ├── upload-replied.blade.php
 │       │   ├── welcome-client.blade.php
@@ -499,6 +561,7 @@ VisionBridgeSolutions/
 │       │   ├── work-order-instructions.blade.php
 │       │   └── work-order-internal-update.blade.php
 │       ├── errors/
+│       │   ├── 403.blade.php
 │       │   ├── 404.blade.php
 │       │   └── maintenance.blade.php
 │       ├── intake/
@@ -526,6 +589,9 @@ VisionBridgeSolutions/
 │       │   │   ├── onboarding-progress.blade.php
 │       │   │   ├── subscription-card.blade.php
 │       │   │   └── text-submission-section.blade.php
+│       │   ├── support-tickets/
+│       │   │   ├── index.blade.php
+│       │   │   └── show.blade.php
 │       │   ├── account.blade.php
 │       │   ├── agreement-summary.blade.php
 │       │   ├── agreement.blade.php
@@ -550,6 +616,7 @@ VisionBridgeSolutions/
 │       │   ├── two-factor.blade.php
 │       │   └── website-type.blade.php
 │       ├── consultation.blade.php
+│       ├── gallery.blade.php
 │       ├── home.blade.php
 │       └── welcome.blade.php
 ├── routes/
@@ -591,11 +658,34 @@ VisionBridgeSolutions/
 │   │   │   └── .gitignore
 │   │   ├── sessions/
 │   │   │   ├── .gitignore
-│   │   │   └── UWQURp7eUe3OUmtJG0swLxgpeR1cOrmVxETAYGj5
+│   │   │   ├── 7yDG76pFW6attL10BSV9NqjEtBQNO2n7uwAPSAxF
+│   │   │   ├── pTqDqOJ8NPHhrRkcNoRvtqmH3dHK2RigPOmSbZ4P
+│   │   │   ├── qKWFJUpGcCY4UiMSDXdVRHFOvW7gwwCajhKIRFKE
+│   │   │   ├── qx0IMQrkMlbNY7ZO6H4MRuC2elOACd6xcY4TAyi5
+│   │   │   └── R4fyWQwRYR8OJt8nDdCUCLDX2MgNEKzjV3OScSHK
 │   │   ├── testing/
 │   │   │   └── .gitignore
 │   │   ├── views/
-│   │   │   └── .gitignore
+│   │   │   ├── .gitignore
+│   │   │   ├── 187f828346b000af3c7029fb05171792.php
+│   │   │   ├── 1b38c7ca485dad804641aa52cbb02c57.php
+│   │   │   ├── 1f01f63bfde5399b503525700dccfacb.php
+│   │   │   ├── 32b20c62cb6b20693d1fa7a678d9d9c1.php
+│   │   │   ├── 3a4287aed945b1785c4c7f46181cb68b.php
+│   │   │   ├── 410027ebf47c55a7dbcb71bcde6426d5.php
+│   │   │   ├── 59eab594168c481055975a689218b2ee.php
+│   │   │   ├── 5c3b6fa39746f5211a541fa628954dd5.php
+│   │   │   ├── 6676b3c448ba8089a9e13967158d946c.php
+│   │   │   ├── 7777fcbb2ee4f07a3f03e03c2db6b1a7.php
+│   │   │   ├── 79d077736a92f72faf4623831507bedb.php
+│   │   │   ├── 8a2ffb36f1d0410f5fedcd53a7125a92.php
+│   │   │   ├── 97570e7f401c1518e896fac0a72db289.php
+│   │   │   ├── aa1d07ece745088f5315aad7a139ef42.php
+│   │   │   ├── b95ea80a83614489f07ef0c2706c5a97.php
+│   │   │   ├── c79b03b44b206c900eabdbea4cd7a6ca.php
+│   │   │   ├── cb97ddebfee9b4b4b142d9eda436b54b.php
+│   │   │   ├── e1a333eb20190c1dd9986c8891aed262.php
+│   │   │   └── e595db8bf302839146177c246bf88c0f.php
 │   │   └── .gitignore
 │   └── logs/
 │       ├── .gitignore
@@ -623,6 +713,7 @@ VisionBridgeSolutions/
 ├── docket-setup-inside-my-terminal.txt
 ├── FEATURES.md
 ├── grep-prompt.txt
+├── landingpage-enhancement.txt
 ├── Maintenance_Plan.txt
 ├── MILESTONES.md
 ├── package.json
