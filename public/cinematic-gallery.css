@@ -48,20 +48,25 @@
 .cine-atmo-nebula-1 {
     width: 70vw; height: 70vw; top: -8%; left: -5%;
     background: radial-gradient(circle, rgba(201,168,76,.26) 0%, transparent 70%);
-    animation: cine-atmo-drift-a 75s ease-in-out infinite;
+    animation: cine-atmo-drift-a 26s ease-in-out infinite;
 }
 .cine-atmo-nebula-2 {
     width: 60vw; height: 60vw; bottom: -5%; right: 0%;
     background: radial-gradient(circle, rgba(44,166,164,.24) 0%, transparent 70%);
-    animation: cine-atmo-drift-b 90s ease-in-out infinite reverse;
+    animation: cine-atmo-drift-b 32s ease-in-out infinite reverse;
 }
+/* Duration cut from 75s/90s to 26s/32s and travel distance roughly
+   doubled — the original cycle was technically animating but far too
+   slow/small to read as motion within a normal viewing session. Added a
+   slow rotation on top of the translate/scale for a gentle swirl rather
+   than a straight back-and-forth drift. */
 @keyframes cine-atmo-drift-a {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50%       { transform: translate(4%, 3%) scale(1.08); }
+    0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    50%       { transform: translate(9%, 7%) scale(1.16) rotate(6deg); }
 }
 @keyframes cine-atmo-drift-b {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50%       { transform: translate(-3%, -4%) scale(1.05); }
+    0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    50%       { transform: translate(-8%, -9%) scale(1.13) rotate(-5deg); }
 }
 
 /* Distant stars — two dot-grid densities for a bit of depth. Same fix as
@@ -79,16 +84,23 @@
 .cine-atmo-stars-far {
     background-size: 160px 160px;
     opacity: .35;
-    animation: cine-atmo-stars-sway 140s linear infinite;
+    animation: cine-atmo-stars-sway-far 55s linear infinite;
 }
 .cine-atmo-stars-near {
     background-size: 90px 90px;
     opacity: .45;
-    animation: cine-atmo-stars-sway 95s linear infinite reverse;
+    animation: cine-atmo-stars-sway-near 34s linear infinite reverse;
 }
-@keyframes cine-atmo-stars-sway {
+/* Two different distances (not just two durations on the same keyframe)
+   so the near layer visibly drifts faster/farther than the far one —
+   that speed difference is what reads as depth, not just motion. */
+@keyframes cine-atmo-stars-sway-far {
     from { transform: translate(0, 0); }
-    to   { transform: translate(-2%, -3%); }
+    to   { transform: translate(-6%, -8%); }
+}
+@keyframes cine-atmo-stars-sway-near {
+    from { transform: translate(0, 0); }
+    to   { transform: translate(-10%, -13%); }
 }
 
 /* Ambient light rays — desktop only, same reasoning as the Hero's own
@@ -102,11 +114,11 @@
     filter: blur(26px);
     will-change: transform;
 }
-.cine-atmo-ray-1 { animation: cine-atmo-ray-sway 34s ease-in-out infinite; }
-.cine-atmo-ray-2 { opacity: .6; animation: cine-atmo-ray-sway 42s ease-in-out infinite reverse; animation-delay: -10s; }
+.cine-atmo-ray-1 { animation: cine-atmo-ray-sway 18s ease-in-out infinite; }
+.cine-atmo-ray-2 { opacity: .6; animation: cine-atmo-ray-sway 23s ease-in-out infinite reverse; animation-delay: -6s; }
 @keyframes cine-atmo-ray-sway {
-    0%, 100% { transform: rotate(-12deg) translateX(0); }
-    50%       { transform: rotate(-8deg) translateX(20px); }
+    0%, 100% { transform: rotate(-14deg) translateX(0); }
+    50%       { transform: rotate(-6deg) translateX(50px); }
 }
 @media (max-width: 767px) {
     .cine-atmo-rays { display: none; }

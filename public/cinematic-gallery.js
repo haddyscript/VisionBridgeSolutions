@@ -39,14 +39,17 @@
             host.appendChild(el);
 
             gsap.set(el, { opacity: 0.35 + Math.random() * 0.25 });
+            // Drift duration cut roughly in half and travel distance
+            // increased — same "too slow/small to register as motion"
+            // fix applied to the CSS nebula/stars/rays above.
             gsap.to(el, {
-                x: (Math.random() - 0.5) * 60, y: -30 - Math.random() * 60,
-                duration: 18 + Math.random() * 18, delay: Math.random() * 10,
+                x: (Math.random() - 0.5) * 110, y: -60 - Math.random() * 90,
+                duration: 9 + Math.random() * 10, delay: Math.random() * 6,
                 ease: 'sine.inOut', repeat: -1, yoyo: true,
             });
             gsap.to(el, {
                 opacity: 0.6 + Math.random() * 0.3,
-                duration: 3 + Math.random() * 4, delay: Math.random() * 6,
+                duration: 2 + Math.random() * 3, delay: Math.random() * 4,
                 ease: 'sine.inOut', repeat: -1, yoyo: true,
             });
         }
