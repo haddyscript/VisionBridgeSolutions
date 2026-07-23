@@ -13,11 +13,20 @@
 
     // ── Cinematic opening sequence ──
     // A fixed overlay (pointer-events:none) that plays once on load, on top
-    // of the real page rendering normally underneath. Because it never
-    // intercepts input, there's no scroll-lock to release — the first
-    // wheel/touch/key/scroll just fades it away immediately. See the CSS
-    // failsafe keyframe in cinematic-gallery.css for what happens if this
-    // function never runs at all (blocked script, etc.).
+    // of the real page rendering normally underneath. Scrolling is fully
+    // locked for the duration — no early skip — via the body position:fixed
+    // technique (works on iOS Safari, unlike plain overflow:hidden).
+    //
+    // The lock is applied by THIS function only, never by default CSS —
+    // so if this script never runs at all (blocked/slow CDN), the page was
+    // never locked in the first place ("fail open"). See the CSS failsafe
+    // keyframe in cinematic-gallery.css for the matching visual guarantee
+    // (the overlay itself fades away unconditionally even without JS).
+    // Once the lock *does* engage, a hard setTimeout safety net guarantees
+    // it's released even if the GSAP timeline never completes for some
+    // unforeseen reason — this class of "stuck forever" bug is exactly
+    // what's documented in FEATURES.md §29/§30 for the old video intro and
+    // the film-grain overlay, so it gets the same defensive treatment here.
     function initCineOpening() {
         var overlay = document.getElementById('cine-opening');
         if (!overlay) return;
@@ -45,29 +54,41 @@
 
         var dismissed = false;
         var floatTweens = [];
+        var scrollLockY = 0;
 
-        function cleanup() {
+        function lockScroll() {
+            scrollLockY = window.scrollY || window.pageYOffset || 0;
+            document.body.style.position = 'fixed';
+            document.body.style.top = (-scrollLockY) + 'px';
+            document.body.style.left = '0';
+            document.body.style.right = '0';
+            document.body.style.width = '100%';
+        }
+
+        function unlockScroll() {
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.left = '';
+            document.body.style.right = '';
+            document.body.style.width = '';
+            window.scrollTo(0, scrollLockY);
+        }
+
+        function finish() {
+            if (dismissed) return;
+            dismissed = true;
+            clearTimeout(safety);
             floatTweens.forEach(function (t) { t.kill(); });
+            unlockScroll();
             if (overlay.parentNode) overlay.remove();
         }
 
-        function dismiss() {
-            if (dismissed) return;
-            dismissed = true;
-            tl.kill();
-            floatTweens.forEach(function (t) { t.kill(); });
-            gsap.to(overlay, {
-                opacity: 0, duration: 0.35, ease: 'power2.out',
-                onComplete: cleanup,
-            });
-        }
+        lockScroll();
 
-        // Any real input at all — scrolling in immediately, not waiting on
-        // the sequence to finish — dismisses it. {once:true} so this never
-        // fires twice; passive since nothing here needs to preventDefault.
-        ['wheel', 'touchstart', 'keydown', 'scroll'].forEach(function (evt) {
-            window.addEventListener(evt, dismiss, { passive: true, once: true });
-        });
+        // Independent of the GSAP timeline below — guarantees scroll is
+        // released even if that timeline somehow never reaches its own
+        // onComplete (~4.1s of animation; 6s gives a comfortable margin).
+        var safety = setTimeout(finish, 6000);
 
         // Frames start matching their CSS defaults (opacity 0, scale .6,
         // blur 14px) so there's no visible jump when GSAP takes over the
@@ -79,7 +100,7 @@
             filter: 'blur(14px)', transformOrigin: 'center center', force3D: true,
         });
 
-        var tl = gsap.timeline();
+        var tl = gsap.timeline({ onComplete: finish });
 
         tl.to(bg, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 0)
             .to(stars, { opacity: 0.5, duration: 0.6, ease: 'power2.out' }, 0.05)
@@ -113,8 +134,9 @@
             // underneath (title already faded in on load, gallery scene 0
             // already resting at full opacity showing this same photo) is
             // what's revealed — same image, similar scale/position, no cut.
-            .to(overlay, { opacity: 0, duration: 0.5, ease: 'power2.inOut' }, 3.6)
-            .call(function () { dismissed = true; cleanup(); }, null, 4.1);
+            // tl's onComplete (= finish, set above) fires right after this,
+            // releasing the scroll lock and removing the overlay.
+            .to(overlay, { opacity: 0, duration: 0.5, ease: 'power2.inOut' }, 3.6);
     }
 
     function initCinematicGallery() {

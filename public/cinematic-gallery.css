@@ -13,13 +13,17 @@
 
 /* ─── Opening sequence — a fixed overlay that plays once on load, sitting
    on top of the real page (which renders normally underneath the whole
-   time). pointer-events:none so scroll/clicks always reach the real page —
-   there is no scroll-lock to release, only an overlay to fade away, which
-   is what makes "skip instantly on first scroll" trivial in the JS.
-   The failsafe keyframe (bottom of this block) guarantees this can never
-   get stuck covering the page forever if JS fails to load — the exact
-   class of bug documented in FEATURES.md §29/§30 for the old video intro
-   and the film-grain overlay. ─── */
+   time). Scrolling is fully locked for its duration (no early skip) via
+   JS — see initCineOpening() in cinematic-gallery.js for the body
+   position:fixed lock and its hard safety-net release. pointer-events is
+   still none here so clicks on the real nav underneath (e.g. leaving the
+   page entirely) aren't blocked, only scrolling is.
+   The failsafe keyframe (bottom of this block) guarantees the overlay
+   itself can never get stuck covering the page forever if JS fails to
+   load at all — the exact class of bug documented in FEATURES.md
+   §29/§30 for the old video intro and the film-grain overlay. Because the
+   scroll lock is only ever applied by that same JS, "JS never loads"
+   also means scrolling was never locked in the first place. ─── */
 #cine-opening {
     position: fixed;
     inset: 0;
