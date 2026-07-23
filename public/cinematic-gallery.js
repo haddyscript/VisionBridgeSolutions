@@ -11,6 +11,47 @@
         else document.addEventListener('DOMContentLoaded', fn);
     }
 
+    // ── Ambient galaxy atmosphere ──
+    // Populates the floating-dust layer behind the intro/pinned gallery
+    // (see #cine-atmosphere in cinematic-gallery.css — the nebula/stars/
+    // rays there are pure CSS, only the dust needs JS). Independent of
+    // initCineOpening/initCinematicGallery below — safe to fail silently
+    // if #cine-atmosphere isn't on the page.
+    function initCineAtmosphere() {
+        var host = document.getElementById('cine-atmo-dust');
+        if (!host) return;
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        if (typeof gsap === 'undefined') { return setTimeout(initCineAtmosphere, 100); }
+
+        // Opacity range roughly tripled from the first pass (0.12–0.3 base /
+        // 0.3–0.5 twinkle) — that version was correct in concept but too
+        // faint to register as a starfield at all against #0B0F17, the same
+        // lesson as the CSS layers above.
+        var count = window.matchMedia('(max-width: 767px)').matches ? 18 : 34;
+        for (var i = 0; i < count; i++) {
+            var el = document.createElement('div');
+            el.className = 'hero-particle';
+            var size = 2 + Math.random() * 3;
+            el.style.width = size + 'px';
+            el.style.height = size + 'px';
+            el.style.left = Math.random() * 100 + '%';
+            el.style.top = Math.random() * 100 + '%';
+            host.appendChild(el);
+
+            gsap.set(el, { opacity: 0.35 + Math.random() * 0.25 });
+            gsap.to(el, {
+                x: (Math.random() - 0.5) * 60, y: -30 - Math.random() * 60,
+                duration: 18 + Math.random() * 18, delay: Math.random() * 10,
+                ease: 'sine.inOut', repeat: -1, yoyo: true,
+            });
+            gsap.to(el, {
+                opacity: 0.6 + Math.random() * 0.3,
+                duration: 3 + Math.random() * 4, delay: Math.random() * 6,
+                ease: 'sine.inOut', repeat: -1, yoyo: true,
+            });
+        }
+    }
+
     // ── Cinematic opening sequence ──
     // A fixed overlay (pointer-events:none) that plays once on load, on top
     // of the real page rendering normally underneath. Scrolling is fully
@@ -535,6 +576,7 @@
     }
 
     ready(function () {
+        initCineAtmosphere();
         initCineOpening();
         initCinematicGallery();
 

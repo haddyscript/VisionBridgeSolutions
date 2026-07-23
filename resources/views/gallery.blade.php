@@ -19,6 +19,34 @@
 
 <div id="cine-gallery">
 
+    {{-- ============================================================
+         AMBIENT GALAXY ATMOSPHERE — a fixed, pointer-events:none layer
+         behind the intro title and the pinned gallery. Deliberately NOT
+         shown behind #cine-opening (it has its own self-contained
+         stars/bg) or .cine-finale (which keeps its own opaque
+         background on purpose) — meaning this layer is always hidden
+         again well before the page could ever scroll past it into the
+         footer, with no extra fade-out logic needed to stop it lingering
+         over content it was never meant to sit above. Kept deliberately
+         low-contrast/low-opacity throughout — the projects are the
+         focus, this is ambience behind them, never competing with them.
+         See cinematic-gallery.css for the layer styling and
+         initCineAtmosphere() in cinematic-gallery.js for the dust setup.
+         ============================================================ --}}
+    <div id="cine-atmosphere" aria-hidden="true">
+        <div class="cine-atmo-nebula cine-atmo-nebula-1"></div>
+        <div class="cine-atmo-nebula cine-atmo-nebula-2"></div>
+        <div class="cine-atmo-stars cine-atmo-stars-far"></div>
+        <div class="cine-atmo-stars cine-atmo-stars-near"></div>
+        <div class="cine-atmo-rays">
+            <div class="cine-atmo-ray cine-atmo-ray-1"></div>
+            <div class="cine-atmo-ray cine-atmo-ray-2"></div>
+        </div>
+        <div id="cine-atmo-dust"></div>
+        <div class="cine-atmo-fog cine-atmo-fog-top"></div>
+        <div class="cine-atmo-fog cine-atmo-fog-bottom"></div>
+    </div>
+
     {{-- ── Cinematic opening — plays once on load, on top of the page
          below (which renders normally underneath it the whole time).
          See cinematic-gallery.js's initCineOpening() for the timeline. ── --}}
