@@ -1699,6 +1699,161 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- ============================================================
      MEET THE FOUNDER SECTION
      ============================================================ --}}
+<style>
+    /* Scoped to #founder — founder- prefix, same convention as story-/cine-
+       elsewhere in this codebase, to avoid clashing with either. */
+
+    /* Outer entrance target (opacity/y/scale on scroll-in) — kept separate
+       from #founder-photo-inner (the mouse-parallax target, x/y) so the two
+       never fight over the same transform property on the same element. */
+    #founder-photo-inner { position: relative; }
+
+    #founder-orbit-wrap { position: absolute; inset: -8%; pointer-events: none; z-index: 0; }
+    /* Same three-layer bloom/mid/glow technique as #hero-orbit, just resized
+       for the founder photo and on a slower, calmer cycle. */
+    #founder-orbit-bloom { opacity: .5; filter: blur(9px) drop-shadow(0 0 14px rgba(255,140,20,.45)); }
+    #founder-orbit-mid   { opacity: .8; filter: blur(1.5px) drop-shadow(0 0 8px rgba(255,201,77,.6)); }
+    #founder-orbit-glow  { filter: drop-shadow(0 0 5px rgba(255,255,255,.9)) drop-shadow(0 0 12px rgba(255,180,60,.65)); }
+    #founder-orbit-bloom, #founder-orbit-mid, #founder-orbit-glow {
+        animation: hero-orbit-travel 12s linear infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        #founder-orbit-bloom, #founder-orbit-mid, #founder-orbit-glow { animation: none; }
+    }
+
+    #founder-particles { position: absolute; inset: -10%; pointer-events: none; z-index: 1; overflow: visible; }
+
+    #founder-photo-glass {
+        position: relative;
+        z-index: 2;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 40px 90px rgba(17,29,51,.22), 0 0 0 1px rgba(201,168,76,.16);
+    }
+    /* One-shot light sweep across the photo once it settles into place —
+       same technique as .cine-frame-sweep on the gallery page, redefined
+       here since this is a separate stylesheet (home.blade.php's own
+       embedded <style>, not cinematic-gallery.css). Toggled by JS adding
+       .is-sweeping, removed again on animationend — never loops on its own. */
+    .founder-photo-sweep { position: absolute; inset: 0; z-index: 3; overflow: hidden; pointer-events: none; }
+    .founder-photo-sweep::before {
+        content: '';
+        position: absolute;
+        top: -30%; left: 0;
+        width: 34%; height: 160%;
+        background: linear-gradient(105deg, transparent, rgba(255,255,255,.38), transparent);
+        transform: translateX(-160%) skewX(-16deg);
+    }
+    .founder-photo-sweep.is-sweeping::before {
+        animation: founder-sweep-pass 1s ease-in-out forwards;
+    }
+    @keyframes founder-sweep-pass {
+        to { transform: translateX(320%) skewX(-16deg); }
+    }
+
+    #founder-badge {
+        position: absolute;
+        left: 24px;
+        bottom: -22px;
+        z-index: 4;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 18px;
+        border-radius: 16px;
+        background: rgba(255,255,255,.88);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 18px 40px rgba(17,29,51,.18), 0 0 0 1px rgba(201,168,76,.16);
+        /* Baseline hidden state so there's no jump when GSAP's bouncier
+           pop-in tween (a beat after the frame itself settles) takes over. */
+        opacity: 0;
+        transform: scale(.4) translateY(14px);
+    }
+    #founder-badge-avatar {
+        width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(135deg,#C9A84C,#8B5A2B);
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(0,0,0,.25);
+    }
+
+    .founder-stat-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 20px 22px;
+        border-radius: 18px;
+        flex: 1 1 200px;
+        background: rgba(255,255,255,.7);
+        border: 1px solid rgba(17,29,51,.08);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 10px 30px rgba(17,29,51,.08);
+        transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s ease, border-color .35s ease;
+    }
+    .founder-stat-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 24px 50px rgba(201,168,76,.20), 0 6px 18px rgba(17,29,51,.10);
+        border-color: rgba(201,168,76,.35);
+    }
+    .founder-stat-icon {
+        width: 44px; height: 44px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(201,168,76,.14);
+        color: #C9A84C;
+    }
+    .founder-stat-title { font-weight: 800; font-size: 1.05rem; color: #15202C; }
+    .founder-stat-caption { font-size: .82rem; color: rgba(17,29,51,.6); }
+
+    /* Decorative quotation mark on the existing tagline line — restyling
+       real copy already in this section, not new/invented text. */
+    #founder-quote { position: relative; padding-left: 2.1rem; }
+    #founder-quote::before {
+        content: '\201C';
+        position: absolute;
+        left: 0; top: -.5rem;
+        font-family: 'Playfair Display', serif;
+        font-size: 3rem;
+        line-height: 1;
+        color: rgba(201,168,76,.42);
+    }
+
+    .founder-highlight { color: #C9A84C; font-weight: 700; }
+
+    /* Local vertical progress line — a smaller, section-scoped echo of the
+       sitewide #section-rail (homepage-only, fixed to the viewport), not a
+       duplicate of it: this one is position:absolute to #founder itself. */
+    #founder-progress {
+        position: absolute;
+        top: 10%;
+        bottom: 10%;
+        right: 18px;
+        width: 2px;
+        z-index: 2;
+    }
+    #founder-progress-track { position: absolute; inset: 0; background: rgba(17,29,51,.08); border-radius: 2px; }
+    #founder-progress-fill {
+        position: absolute; top: 0; left: 0; right: 0; height: 0;
+        background: linear-gradient(180deg,#C9A84C,#DFC06A);
+        border-radius: 2px;
+    }
+    #founder-progress-label {
+        position: absolute; top: -28px; left: 50%; transform: translateX(-50%);
+        font-size: .64rem; letter-spacing: .18em; text-transform: uppercase; font-weight: 700;
+        color: #C9A84C; white-space: nowrap;
+    }
+    @media (max-width: 1023px) {
+        #founder-progress { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .founder-stat-card { transition: none !important; }
+    }
+</style>
+
 <section id="founder" class="pt-8 pb-16 lg:py-0 lg:h-[75vh] relative overflow-hidden" style="background:#FFFFFF;">
     {{-- Ambient orbs --}}
     <div class="hero-orb" style="width:560px;height:560px;top:-160px;left:-140px;background:radial-gradient(circle,rgba(201,168,76,0.10) 0%,transparent 70%);filter:blur(70px);animation:orb-drift 20s ease-in-out infinite;"></div>
@@ -1706,15 +1861,57 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
     {{-- Full-bleed photo — anchored to the actual viewport edge (not the
          centered max-w container) and spans the full section height, the
-         way the reference "Meet Our CEO" slide's photo fills its frame. --}}
-    <div class="hidden lg:flex absolute inset-y-0 left-0 items-end justify-center pointer-events-none" style="width:48%;" aria-hidden="true">
-        <img src="@assetv('image/founder.jpeg')" alt="" style="height:95%;width:auto;max-width:none;object-fit:contain;filter:drop-shadow(0 30px 50px rgba(17,29,51,0.20));">
+         way the reference "Meet Our CEO" slide's photo fills its frame.
+         No longer aria-hidden on the wrapper — #founder-badge below carries
+         real name/title text now, not just a decorative image, so it needs
+         to stay in the accessibility tree. The <img> itself keeps alt=""
+         since the mobile version below already carries the real alt text
+         (only one of the two is ever in the DOM's visible/rendered layout
+         at a given viewport width). --}}
+    <div class="hidden lg:flex absolute inset-y-0 left-0 items-end justify-center" style="width:48%;z-index:1;">
+        <div id="founder-photo-frame" class="opacity-0" style="width:82%;">
+            <div id="founder-photo-inner">
+                <div id="founder-orbit-wrap">
+                    <svg id="founder-orbit" viewBox="0 0 400 500" style="position:absolute;inset:0;width:100%;height:100%;">
+                        <ellipse cx="200" cy="250" rx="170" ry="220" fill="none" stroke="rgba(201,168,76,.14)" stroke-width="1.5"/>
+                        <ellipse id="founder-orbit-bloom" cx="200" cy="250" rx="170" ry="220" fill="none" stroke="#FF8C1A" stroke-width="6" stroke-linecap="round" stroke-dasharray="90 1339"/>
+                        <ellipse id="founder-orbit-mid" cx="200" cy="250" rx="170" ry="220" fill="none" stroke="#FFC94D" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="90 1339"/>
+                        <ellipse id="founder-orbit-glow" cx="200" cy="250" rx="170" ry="220" fill="none" stroke="#FFF6DC" stroke-width="1" stroke-linecap="round" stroke-dasharray="90 1339"/>
+                    </svg>
+                </div>
+                <div id="founder-particles"></div>
+                <div id="founder-photo-glass">
+                    <img src="@assetv('image/founder.jpeg')" alt="" style="width:100%;height:auto;display:block;">
+                    <div class="founder-photo-sweep" aria-hidden="true"></div>
+                </div>
+                <div id="founder-badge">
+                    <div id="founder-badge-avatar">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    </div>
+                    <div class="text-left">
+                        <p class="font-bold text-sm leading-tight" style="color:#2F3A45;">Johnny Davis</p>
+                        <p class="text-xs font-semibold leading-tight" style="color:#C9A84C;">Founder &amp; President</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     {{-- Mobile/tablet: photo sits inline above the text instead of full-bleed --}}
     <div class="lg:hidden flex justify-center pt-2 pb-8">
-        <img src="@assetv('image/founder.jpeg')" alt="Johnny Davis, Founder &amp; President of VisionBridge Solutions" loading="lazy" decoding="async"
-             style="width:100%;max-width:340px;height:auto;display:block;filter:drop-shadow(0 24px 40px rgba(17,29,51,0.18));">
+        <div class="opacity-0" data-reveal-mobile-photo style="width:100%;max-width:340px;border-radius:22px;overflow:hidden;box-shadow:0 24px 50px rgba(17,29,51,.18);">
+            <img src="@assetv('image/founder.jpeg')" alt="Johnny Davis, Founder &amp; President of VisionBridge Solutions" loading="lazy" decoding="async"
+                 style="width:100%;height:auto;display:block;">
+        </div>
+    </div>
+
+    {{-- Local scroll-progress line — desktop only, scrubbed to this
+         section's own scroll span (see cinematic-gallery.js-style scrub
+         convention used elsewhere, applied here inline). --}}
+    <div id="founder-progress" aria-hidden="true">
+        <span id="founder-progress-label">Partnership</span>
+        <div id="founder-progress-track"></div>
+        <div id="founder-progress-fill"></div>
     </div>
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 lg:h-full" style="z-index:1;">
@@ -1733,16 +1930,16 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                  height on desktop and scrollable internally so the section
                  never grows past 75vh of the viewport. --}}
             <div class="lg:col-span-6 lg:h-full lg:overflow-y-auto lg:pr-2">
-                <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Meet The Founder</span>
-                <h2 class="font-display font-bold leading-tight mb-2" style="font-size:clamp(2.2rem,4vw,3.2rem);color:#2F3A45;">Meet the Founder</h2>
-                <h3 class="font-extrabold text-lg mb-1" style="color:#C9A84C;">Johnny Davis</h3>
-                <p class="text-sm font-semibold tracking-wide mb-7" style="color:rgba(17,29,51,0.6);">Founder &amp; President, VisionBridge Solutions</p>
+                <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3 opacity-0" data-reveal-content>Meet The Founder</span>
+                <h2 class="font-display font-bold leading-tight mb-2 opacity-0" data-reveal-content style="font-size:clamp(2.2rem,4vw,3.2rem);color:#2F3A45;">Meet the Founder</h2>
+                <h3 class="font-extrabold text-lg mb-1 opacity-0" data-reveal-content style="color:#C9A84C;">Johnny Davis</h3>
+                <p class="text-sm font-semibold tracking-wide mb-7 opacity-0" data-reveal-content style="color:rgba(17,29,51,0.6);">Founder &amp; President, VisionBridge Solutions</p>
 
-                <h4 class="font-display font-bold mb-4" style="font-size:1.2rem;color:#2F3A45;">Why I Started VisionBridge Solutions</h4>
-                <div class="space-y-4 text-base font-medium leading-relaxed" style="color:rgba(17,29,51,0.78);">
-                    <p>When I chose the name VisionBridge Solutions, I wasn't simply looking for a business name—I was defining a mission.</p>
+                <h4 class="font-display font-bold mb-4 opacity-0" data-reveal-content style="font-size:1.2rem;color:#2F3A45;">Why I Started VisionBridge Solutions</h4>
+                <div class="space-y-4 text-base font-medium leading-relaxed opacity-0" data-reveal-content style="color:rgba(17,29,51,0.78);">
+                    <p>When I chose the name <span class="founder-highlight">VisionBridge Solutions</span>, I wasn't simply looking for a business name—I was defining a mission.</p>
                     <p>Throughout my years in ministry, nonprofit leadership, and business, I've had the privilege of meeting countless organizations with incredible visions to serve their communities. They had passion, purpose, and a desire to make a difference, but many lacked the digital tools needed to reach more people.</p>
-                    <p>I realized that a website is much more than an online presence—it is a bridge.</p>
+                    <p>I realized that a website is much more than an online presence—it is <span class="founder-highlight">a bridge</span>.</p>
                 </div>
 
                 <div id="founder-story-more" class="space-y-4 text-base font-medium leading-relaxed overflow-hidden transition-all duration-500" style="color:rgba(17,29,51,0.78);max-height:0;">
@@ -1762,9 +1959,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     </svg>
                 </button>
 
-                <p class="font-display font-bold italic mb-8" style="font-size:1.1rem;color:#C9A84C;">Building Websites. Expanding Reach.</p>
+                <p id="founder-quote" class="font-display font-bold italic mb-8 opacity-0" data-reveal-content style="font-size:1.1rem;color:#C9A84C;">Building Websites. Expanding Reach.</p>
 
-                <div class="flex flex-wrap items-center justify-between gap-8">
+                <div class="flex flex-wrap items-center gap-8 mb-6 opacity-0" data-reveal-content>
                     {{-- Placeholder for the founder's future "Watch Johnny's Story"
                          welcome video — swap this block for a video embed once
                          the recording is delivered. --}}
@@ -1780,36 +1977,208 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                             <p class="text-xs" style="color:rgba(17,29,51,0.55);">Video coming soon</p>
                         </div>
                     </div>
+                </div>
 
-                    {{-- Decorative ring badges, styled after the reference template's
-                         "Leadership"/"Traction" circles — purely visual, no real metric. --}}
-                    <div class="flex items-center gap-8">
-                    <div class="relative w-28 h-28 shrink-0">
-                        <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
-                            <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(17,29,51,0.10)" stroke-width="7"/>
-                            <circle cx="50" cy="50" r="42" fill="none" stroke="#15202C" stroke-width="7"
-                                    stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="66"/>
-                        </svg>
-                        <div class="absolute inset-0 flex items-center justify-center text-center px-2">
-                            <span class="font-extrabold text-sm leading-tight" style="color:#15202C;">Vision-Led</span>
+                {{-- Stat cards — same two labels the old decorative ring
+                     badges used ("Vision-Led" / "Community Impact"), restyled
+                     into the glass-card format with an icon + short caption.
+                     No numbers invented — see FEATURES.md for why. --}}
+                <div class="flex flex-wrap gap-4">
+                    <div class="founder-stat-card opacity-0" data-reveal-stats>
+                        <div class="founder-stat-icon">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['sparkles'] !!}</svg>
                         </div>
+                        <p class="founder-stat-title">Vision-Led</p>
+                        <p class="founder-stat-caption">Guided by purpose, not just profit</p>
                     </div>
-                    <div class="relative w-28 h-28 shrink-0">
-                        <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
-                            <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(17,29,51,0.10)" stroke-width="7"/>
-                            <circle cx="50" cy="50" r="42" fill="none" stroke="#C9A84C" stroke-width="7"
-                                    stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="66"/>
-                        </svg>
-                        <div class="absolute inset-0 flex items-center justify-center text-center px-2">
-                            <span class="font-extrabold text-sm leading-tight" style="color:#15202C;">Community<br>Impact</span>
+                    <div class="founder-stat-card opacity-0" data-reveal-stats>
+                        <div class="founder-stat-icon">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['heart'] !!}</svg>
                         </div>
-                    </div>
+                        <p class="founder-stat-title">Community Impact</p>
+                        <p class="founder-stat-caption">Every project strengthens a community</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<script>
+(function () {
+    function initFounderSection() {
+        var section = document.getElementById('founder');
+        if (!section) return;
+        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+            return setTimeout(initFounderSection, 100);
+        }
+        gsap.registerPlugin(ScrollTrigger);
+
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        var photoFrame = document.getElementById('founder-photo-frame');
+        var photoInner = document.getElementById('founder-photo-inner');
+        var badge = document.getElementById('founder-badge');
+        var sweep = section.querySelector('.founder-photo-sweep');
+        var mobilePhoto = section.querySelector('[data-reveal-mobile-photo]');
+        var contentEls = Array.prototype.slice.call(section.querySelectorAll('[data-reveal-content]'));
+        var statEls = Array.prototype.slice.call(section.querySelectorAll('[data-reveal-stats]'));
+        var statIcons = Array.prototype.slice.call(section.querySelectorAll('.founder-stat-icon'));
+
+        if (reduce) {
+            // Badge defaults to opacity:0/scaled-down in CSS (so its bouncy
+            // pop-in below has no jump) — it has to be force-shown here same
+            // as everything else, or reduced-motion visitors would never see
+            // it at all.
+            [photoFrame, badge, mobilePhoto].concat(contentEls, statEls).forEach(function (el) {
+                if (el) { el.style.opacity = 1; el.style.transform = 'none'; el.style.filter = 'none'; }
+            });
+        } else {
+            // toggleActions: 'restart none restart reset' on every trigger
+            // below — replays the animation every time the section is
+            // scrolled into view, from either direction (scrolling down
+            // into it, or back up into it after having scrolled past),
+            // instead of the default "play once, never again." onLeaveBack
+            // (scrolling back up past the start) silently resets to the
+            // hidden state with no visible play, so the next re-entry has
+            // something to animate FROM again. Using fromTo (not a separate
+            // gsap.set + to) is what makes "reset" work correctly — it's
+            // the tween's own recorded start values that get reapplied.
+            var REPLAY = 'restart none restart reset';
+
+            if (photoFrame) {
+                // Photo, badge, and sweep are one timeline so restart/reset
+                // applies to all three together — the badge and sweep need
+                // to go back to hidden whenever the photo does, or the
+                // second play-through would show a badge that's already
+                // visible popping in from nowhere.
+                var photoTl = gsap.timeline({
+                    scrollTrigger: { trigger: section, start: 'top 75%', toggleActions: REPLAY },
+                });
+                // Bigger travel distance, a slight rotation settle, and a
+                // back.out overshoot (rather than a flat power-ease) so the
+                // photo visibly "arrives" instead of just quietly fading up.
+                photoTl.fromTo(photoFrame,
+                    { opacity: 0, y: 90, scale: 0.8, rotation: -3, filter: 'blur(10px)' },
+                    { opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 1.3, ease: 'back.out(1.5)' });
+                if (badge) {
+                    photoTl.fromTo(badge,
+                        { opacity: 0, scale: 0.4, y: 14 },
+                        { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: 'back.out(2.2)' });
+                }
+                if (sweep) {
+                    photoTl.call(function () {
+                        sweep.classList.add('is-sweeping');
+                        sweep.addEventListener('animationend', function () {
+                            sweep.classList.remove('is-sweeping');
+                        }, { once: true });
+                    });
+                }
+            }
+            if (mobilePhoto) {
+                gsap.fromTo(mobilePhoto,
+                    { opacity: 0, y: 60, scale: 0.9 },
+                    {
+                        opacity: 1, y: 0, scale: 1, duration: 1, ease: 'back.out(1.4)',
+                        scrollTrigger: { trigger: section, start: 'top 80%', toggleActions: REPLAY },
+                    });
+            }
+            if (contentEls.length) {
+                // Blur-to-focus layered on top of the fade/slide, and a
+                // wider stagger gap, so the cascade down the text block
+                // reads clearly instead of arriving as one flat block.
+                gsap.fromTo(contentEls,
+                    { opacity: 0, y: 40, filter: 'blur(6px)' },
+                    {
+                        opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.9, ease: 'power2.out', stagger: 0.14,
+                        scrollTrigger: { trigger: section, start: 'top 72%', toggleActions: REPLAY },
+                    });
+            }
+            if (statEls.length) {
+                var statsTl = gsap.timeline({
+                    scrollTrigger: { trigger: section, start: 'top 55%', toggleActions: REPLAY },
+                });
+                statsTl.fromTo(statEls,
+                    { opacity: 0, y: 50, scale: 0.82 },
+                    { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'back.out(1.8)', stagger: 0.15 });
+                // A small icon "pop" right after the cards land — a second,
+                // smaller beat rather than the whole card arriving as one
+                // motion. Part of the same timeline so it resets/replays
+                // together with the cards rather than drifting out of sync.
+                if (statIcons.length) {
+                    statsTl.fromTo(statIcons, { scale: 0.6 }, { scale: 1, duration: 0.5, ease: 'back.out(3)', stagger: 0.08 }, '-=0.2');
+                }
+            }
+        }
+
+        // Local vertical progress line — scrubbed to this section's own
+        // scroll span, not tied to the sitewide #section-rail.
+        var fill = document.getElementById('founder-progress-fill');
+        if (fill && !reduce) {
+            gsap.to(fill, {
+                height: '100%', ease: 'none',
+                scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: true },
+            });
+        }
+
+        // Floating particles inside the photo frame — same drift+twinkle
+        // pattern as the Hero's own particles (home.blade.php), smaller
+        // count appropriate to a photo-sized frame rather than a full hero.
+        // Desktop only — the frame this lives in doesn't render on mobile.
+        var particleHost = document.getElementById('founder-particles');
+        if (particleHost && !reduce && !window.matchMedia('(max-width: 1023px)').matches) {
+            var count = 10;
+            for (var i = 0; i < count; i++) {
+                var el = document.createElement('div');
+                el.className = 'hero-particle';
+                var size = 2 + Math.random() * 3;
+                el.style.width = size + 'px';
+                el.style.height = size + 'px';
+                el.style.left = Math.random() * 100 + '%';
+                el.style.top = Math.random() * 100 + '%';
+                particleHost.appendChild(el);
+
+                gsap.set(el, { opacity: 0.25 + Math.random() * 0.3 });
+                gsap.to(el, {
+                    x: (Math.random() - 0.5) * 40, y: -20 - Math.random() * 40,
+                    duration: 7 + Math.random() * 7, delay: Math.random() * 4,
+                    ease: 'sine.inOut', repeat: -1, yoyo: true,
+                });
+                gsap.to(el, {
+                    opacity: 0.75 + Math.random() * 0.2,
+                    duration: 1.4 + Math.random() * 1.6, delay: Math.random() * 3,
+                    ease: 'sine.inOut', repeat: -1, yoyo: true,
+                });
+            }
+        }
+
+        // Mouse-move parallax on the photo — desktop/pointer:fine only.
+        // Targets #founder-photo-inner (x/y), a different element+property
+        // pair than the entrance tween above (#founder-photo-frame's own
+        // opacity/y/scale), so the two can never fight over the same value.
+        if (photoInner && !reduce && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+            var moveX = gsap.quickTo(photoInner, 'x', { duration: 0.7, ease: 'power3.out' });
+            var moveY = gsap.quickTo(photoInner, 'y', { duration: 0.7, ease: 'power3.out' });
+
+            section.addEventListener('mousemove', function (e) {
+                var r = section.getBoundingClientRect();
+                var px = (e.clientX - r.left) / r.width - 0.5;
+                var py = (e.clientY - r.top) / r.height - 0.5;
+                moveX(px * -14);
+                moveY(py * -10);
+            });
+            section.addEventListener('mouseleave', function () {
+                moveX(0);
+                moveY(0);
+            });
+        }
+
+        ScrollTrigger.refresh();
+    }
+    if (document.readyState !== 'loading') { initFounderSection(); }
+    else { window.addEventListener('DOMContentLoaded', initFounderSection); }
+})();
+</script>
 
 {{-- Founder parallax divider — sits between Meet the Founder and Contact.
      Same fixed-background parallax technique as the other section
