@@ -241,6 +241,20 @@
     text-align: center;
     padding: 10vh 6vw 6vh;
 }
+/* Softens the handoff into .cine-stage-vignette right below — that
+   vignette starts darkening abruptly at .cine-stage's own top edge (a
+   hard DOM boundary), while .cine-intro above it has no darkening at
+   all, which read as a visible seam right where the two sections meet.
+   This fades .cine-intro's own bottom edge down to roughly the same
+   darkness the vignette starts at, so the transition is continuous. */
+.cine-intro::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 20vh;
+    background: linear-gradient(180deg, transparent, rgba(0,0,0,.4));
+    pointer-events: none;
+}
 .cine-kicker {
     font-size: .75rem;
     letter-spacing: .32em;
