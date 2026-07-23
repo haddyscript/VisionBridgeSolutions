@@ -79,6 +79,8 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
+Route::view('/our-work', 'gallery')->name('gallery');
+
 Route::get('/onboarding/start', function () {
     if (auth()->check()) {
         return redirect()->route('portal.dashboard');

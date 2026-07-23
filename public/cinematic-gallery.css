@@ -1,0 +1,310 @@
+/* ════════════════════════════════════════════════════════════
+   CINEMATIC SCROLL GALLERY — resources/views/gallery.blade.php
+   Animation logic lives in cinematic-gallery.js, data in
+   config/gallery.php. Plain CSS (no @apply) — this file is a
+   linked stylesheet, not scanned by the Tailwind Play CDN.
+   ════════════════════════════════════════════════════════════ */
+
+#cine-gallery {
+    position: relative;
+    background: #0B0F17;
+    overflow: hidden;
+}
+
+/* ─── Intro ─── */
+.cine-intro {
+    position: relative;
+    min-height: 76vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10vh 6vw 6vh;
+}
+.cine-kicker {
+    font-size: .75rem;
+    letter-spacing: .32em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #3FBDBB;
+    margin-bottom: 1.1rem;
+}
+.cine-intro-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 800;
+    color: #fff;
+    font-size: clamp(2.4rem, 6.6vw, 5rem);
+    line-height: 1.06;
+    letter-spacing: -.01em;
+}
+.cine-intro-sub {
+    color: rgba(255,255,255,.60);
+    max-width: 36rem;
+    margin: 1.5rem auto 0;
+    font-size: clamp(1rem, 1.6vw, 1.15rem);
+    line-height: 1.75;
+}
+.cine-scroll-cue {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255,255,255,.5);
+    font-size: .68rem;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+}
+.cine-scroll-cue-track {
+    width: 20px;
+    height: 32px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(255,255,255,.32);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 6px;
+}
+.cine-scroll-cue-track span {
+    width: 4px;
+    height: 8px;
+    border-radius: 2px;
+    background: rgba(201,168,76,.9);
+    animation: cine-scroll-dot 1.9s ease-in-out infinite;
+}
+@keyframes cine-scroll-dot {
+    0%,100% { transform: translateY(0);   opacity: 1; }
+    60%      { transform: translateY(9px); opacity: .25; }
+}
+
+/* ─── Progress rail ─── */
+.cine-progress {
+    position: fixed;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    pointer-events: none;
+}
+.cine-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.22);
+    transition: all .4s ease;
+}
+.cine-dot.is-active {
+    background: #C9A84C;
+    box-shadow: 0 0 12px rgba(201,168,76,.8);
+    height: 22px;
+    border-radius: 5px;
+}
+.cine-progress-count {
+    margin-top: 6px;
+    font-size: .64rem;
+    letter-spacing: .18em;
+    color: rgba(255,255,255,.4);
+    writing-mode: vertical-rl;
+}
+@media (max-width: 1023px) {
+    .cine-progress { display: none; }
+}
+
+/* ─── Pinned stage ─── */
+.cine-pin-track { position: relative; }
+.cine-stage {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    background: #0B0F17;
+    perspective: 1600px;
+    transform-style: preserve-3d;
+}
+.cine-stage-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 60% 50% at 50% 40%, rgba(201,168,76,.08), transparent 70%),
+        radial-gradient(circle at 18% 22%, rgba(44,166,164,.09), transparent 46%),
+        #0B0F17;
+}
+.cine-stage-vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 50%, transparent 32%, rgba(0,0,0,.62) 100%);
+}
+
+.cine-scene {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5vw;
+    padding: 6vh 7vw;
+    transform-origin: center center;
+    will-change: transform, opacity, filter;
+    pointer-events: none;
+}
+
+/* ─── Image frame ─── */
+.cine-frame {
+    position: relative;
+    flex: 0 0 auto;
+    width: min(48vw, 620px);
+    aspect-ratio: 4 / 3;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 40px 120px rgba(0,0,0,.55), 0 0 0 1px rgba(201,168,76,.16);
+    transform-style: preserve-3d;
+    --mx: 50%;
+    --my: 50%;
+}
+.cine-frame img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.08);
+    will-change: transform;
+}
+.cine-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(260px circle at var(--mx) var(--my), rgba(255,255,255,.10), transparent 68%);
+    opacity: 0;
+    transition: opacity .3s ease;
+    pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+    .cine-frame:hover::after { opacity: 1; }
+}
+@keyframes cine-kenburns {
+    0%   { transform: scale(1.08); }
+    100% { transform: scale(1.17); }
+}
+.cine-kenburns-run {
+    animation: cine-kenburns 16s ease-in-out infinite alternate;
+}
+
+/* ─── Text panel ─── */
+.cine-info {
+    flex: 0 0 auto;
+    max-width: 26rem;
+    text-align: left;
+}
+.cine-index {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-size: .95rem;
+    color: rgba(201,168,76,.55);
+    letter-spacing: .2em;
+    margin-bottom: 1rem;
+}
+.cine-category {
+    display: inline-block;
+    font-size: .7rem;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #3FBDBB;
+    margin-bottom: .9rem;
+}
+.cine-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 800;
+    color: #fff;
+    font-size: clamp(1.7rem, 3.1vw, 2.8rem);
+    line-height: 1.14;
+    letter-spacing: -.01em;
+}
+.cine-rule {
+    width: 64px;
+    height: 2px;
+    margin: 1.1rem 0;
+    background: linear-gradient(90deg, #C9A84C, transparent);
+}
+.cine-desc {
+    color: rgba(255,255,255,.62);
+    font-size: 1rem;
+    line-height: 1.75;
+}
+
+/* ─── Reduced-motion / no-JS fallback: static stacked layout ─── */
+.cine-reduced .cine-pin-track { height: auto !important; }
+.cine-reduced .cine-stage { position: relative; height: auto; overflow: visible; }
+.cine-reduced .cine-scene {
+    position: relative !important;
+    inset: auto;
+    flex-direction: column;
+    text-align: center;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    filter: none !important;
+    padding: 9vh 6vw;
+}
+.cine-reduced .cine-info { text-align: center; }
+.cine-reduced .cine-frame { width: min(80vw, 560px); }
+.cine-reduced .cine-kenburns-run { animation: none; }
+.cine-reduced .cine-progress { display: none; }
+
+/* ─── Mobile: stack image above text, even inside the live pin ─── */
+@media (max-width: 767px) {
+    .cine-scene { flex-direction: column; gap: 3.2vh; padding: 7vh 7vw; }
+    .cine-frame { width: 80vw; }
+    .cine-info { text-align: center; }
+    .cine-desc {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+}
+
+/* ─── Finale ─── */
+.cine-finale {
+    position: relative;
+    padding: 14vh 6vw 16vh;
+    text-align: center;
+    background: linear-gradient(180deg, #0B0F17 0%, #0F1520 100%);
+}
+.cine-finale-img {
+    width: min(56vw, 380px);
+    margin: 0 auto 2.2rem;
+    display: block;
+}
+.cine-finale-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 800;
+    color: #fff;
+    font-size: clamp(2rem, 4.4vw, 3.2rem);
+    line-height: 1.1;
+}
+.cine-finale-sub {
+    color: rgba(255,255,255,.6);
+    max-width: 34rem;
+    margin: 1.1rem auto 0;
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+.cine-finale-ctas {
+    margin-top: 2.4rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cine-kenburns-run { animation: none !important; }
+}
