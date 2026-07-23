@@ -36,8 +36,12 @@
     <div id="cine-atmosphere" aria-hidden="true">
         <div class="cine-atmo-nebula cine-atmo-nebula-1"></div>
         <div class="cine-atmo-nebula cine-atmo-nebula-2"></div>
-        <div class="cine-atmo-stars cine-atmo-stars-far"></div>
-        <div class="cine-atmo-stars cine-atmo-stars-near"></div>
+        {{-- Randomly-positioned star elements (populated by
+             initCineAtmosphere() in cinematic-gallery.js), not a repeating
+             CSS background pattern — a tiled radial-gradient dot-grid reads
+             as an obvious lattice up close, the opposite of how a real
+             starfield looks. --}}
+        <div id="cine-atmo-starfield"></div>
         <div class="cine-atmo-rays">
             <div class="cine-atmo-ray cine-atmo-ray-1"></div>
             <div class="cine-atmo-ray cine-atmo-ray-2"></div>

@@ -12,22 +12,58 @@
     }
 
     // ── Ambient galaxy atmosphere ──
-    // Populates the floating-dust layer behind the intro/pinned gallery
-    // (see #cine-atmosphere in cinematic-gallery.css — the nebula/stars/
-    // rays there are pure CSS, only the dust needs JS). Independent of
-    // initCineOpening/initCinematicGallery below — safe to fail silently
+    // Populates the starfield + floating-dust layers behind the
+    // intro/pinned gallery (see #cine-atmosphere in cinematic-gallery.css —
+    // the nebula/rays there are pure CSS, these two need JS). Independent
+    // of initCineOpening/initCinematicGallery below — safe to fail silently
     // if #cine-atmosphere isn't on the page.
     function initCineAtmosphere() {
-        var host = document.getElementById('cine-atmo-dust');
-        if (!host) return;
+        var starHost = document.getElementById('cine-atmo-starfield');
+        var dustHost = document.getElementById('cine-atmo-dust');
+        if (!starHost && !dustHost) return;
         if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         if (typeof gsap === 'undefined') { return setTimeout(initCineAtmosphere, 100); }
+
+        var isMobile = window.matchMedia('(max-width: 767px)').matches;
+
+        // Stars — genuinely random positions/sizes/brightness (Math.random,
+        // not a CSS tiled background), which is what actually reads as a
+        // starfield instead of a visible lattice. Size/opacity vary
+        // per-star to fake depth (bigger+brighter = "nearer") without
+        // needing separate near/far layers. Only a minority twinkle, each
+        // on its own random timing, so it never reads as one grid pulsing
+        // in sync.
+        if (starHost) {
+            var starCount = isMobile ? 55 : 120;
+            for (var s = 0; s < starCount; s++) {
+                var star = document.createElement('div');
+                star.className = 'cine-atmo-star';
+                var starSize = 0.8 + Math.random() * 1.7;
+                star.style.width = starSize + 'px';
+                star.style.height = starSize + 'px';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                var baseOpacity = 0.22 + Math.random() * 0.35;
+                star.style.opacity = baseOpacity;
+                starHost.appendChild(star);
+
+                if (Math.random() < 0.35) {
+                    gsap.to(star, {
+                        opacity: Math.min(1, baseOpacity + 0.35 + Math.random() * 0.3),
+                        duration: 1.5 + Math.random() * 3, delay: Math.random() * 6,
+                        ease: 'sine.inOut', repeat: -1, yoyo: true,
+                    });
+                }
+            }
+        }
+
+        if (!dustHost) return;
 
         // Opacity range roughly tripled from the first pass (0.12–0.3 base /
         // 0.3–0.5 twinkle) — that version was correct in concept but too
         // faint to register as a starfield at all against #0B0F17, the same
         // lesson as the CSS layers above.
-        var count = window.matchMedia('(max-width: 767px)').matches ? 18 : 34;
+        var count = isMobile ? 18 : 34;
         for (var i = 0; i < count; i++) {
             var el = document.createElement('div');
             el.className = 'hero-particle';
@@ -36,7 +72,7 @@
             el.style.height = size + 'px';
             el.style.left = Math.random() * 100 + '%';
             el.style.top = Math.random() * 100 + '%';
-            host.appendChild(el);
+            dustHost.appendChild(el);
 
             gsap.set(el, { opacity: 0.35 + Math.random() * 0.25 });
             // Drift duration cut roughly in half and travel distance

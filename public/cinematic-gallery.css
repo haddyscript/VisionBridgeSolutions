@@ -69,38 +69,29 @@
     50%       { transform: translate(-8%, -9%) scale(1.13) rotate(-5deg); }
 }
 
-/* Distant stars — two dot-grid densities for a bit of depth. Same fix as
-   the nebula above: the dot color itself now carries most of the alpha
-   (.9, not .5) with the per-layer opacity doing the rest, instead of two
-   low values compounding down to almost nothing. Same technique as
-   .hero-grid-dots elsewhere on the site, just brighter here since this
-   page's whole point is the starfield being visible. */
-.cine-atmo-stars {
+/* Distant stars — genuinely randomly-positioned elements, populated by
+   initCineAtmosphere() in cinematic-gallery.js (see #cine-atmo-starfield
+   in the Blade markup). Previously a tiled radial-gradient background
+   (background-size repeating every 90–160px) — cheap, but a perfectly
+   even lattice is the one thing that reads as obviously NOT a real
+   starfield once you look at it for more than a second. Individual
+   elements cost more DOM nodes but genuinely scatter, and each one can
+   vary in size/brightness/twinkle independently (see .cine-atmo-star). */
+#cine-atmo-starfield {
     position: absolute;
-    inset: -10%;
-    background-image: radial-gradient(circle, rgba(255,255,255,.9) 1.3px, transparent 1.3px);
+    inset: -5%;
     will-change: transform;
+    animation: cine-atmo-starfield-drift 70s linear infinite alternate;
 }
-.cine-atmo-stars-far {
-    background-size: 160px 160px;
-    opacity: .35;
-    animation: cine-atmo-stars-sway-far 55s linear infinite;
-}
-.cine-atmo-stars-near {
-    background-size: 90px 90px;
-    opacity: .45;
-    animation: cine-atmo-stars-sway-near 34s linear infinite reverse;
-}
-/* Two different distances (not just two durations on the same keyframe)
-   so the near layer visibly drifts faster/farther than the far one —
-   that speed difference is what reads as depth, not just motion. */
-@keyframes cine-atmo-stars-sway-far {
+@keyframes cine-atmo-starfield-drift {
     from { transform: translate(0, 0); }
-    to   { transform: translate(-6%, -8%); }
+    to   { transform: translate(-4%, -5%); }
 }
-@keyframes cine-atmo-stars-sway-near {
-    from { transform: translate(0, 0); }
-    to   { transform: translate(-10%, -13%); }
+.cine-atmo-star {
+    position: absolute;
+    border-radius: 50%;
+    background: #fff;
+    will-change: opacity;
 }
 
 /* Ambient light rays — desktop only, same reasoning as the Hero's own
@@ -138,15 +129,15 @@
 .cine-atmo-fog-bottom { bottom: 0; background: linear-gradient(0deg,   #0B0F17 0%, transparent 100%); }
 
 @media (prefers-reduced-motion: reduce) {
-    .cine-atmo-nebula, .cine-atmo-stars, .cine-atmo-ray { animation: none !important; }
+    .cine-atmo-nebula, #cine-atmo-starfield, .cine-atmo-ray { animation: none !important; }
 }
 
 /* Mobile: trim density/cost — smaller blur radius (cheaper to paint on
-   lower-end GPUs) and drop the far starfield layer; rays already dropped
-   above. */
+   lower-end GPUs); star count itself is trimmed in JS (initCineAtmosphere)
+   since these are individual generated elements, not a CSS layer to hide;
+   rays already dropped above. */
 @media (max-width: 767px) {
     .cine-atmo-nebula { filter: blur(55px); }
-    .cine-atmo-stars-far { display: none; }
 }
 
 /* ─── Opening sequence — a fixed overlay that plays once on load, sitting
