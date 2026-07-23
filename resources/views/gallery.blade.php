@@ -70,21 +70,32 @@
                      background:radial-gradient(circle,rgba(44,166,164,.12) 0%,transparent 70%);
                      animation:orb-drift 22s ease-in-out infinite reverse 3s;"></div>
 
-                {{-- cine-variant-{0,1,2} (index % 3) gives each scene a
-                     slightly different glow color / float rhythm — see the
-                     variant rules in cinematic-gallery.css and
-                     sceneVariant() in cinematic-gallery.js — so the gallery
-                     reads as handcrafted rather than one effect repeated
-                     11 times identically. --}}
+                @php
+                    // Five named entrance choreographies, cycling by index —
+                    // see PRESETS in cinematic-gallery.js for what each one
+                    // actually animates. Independent of cine-variant-{0,1,2}
+                    // (glow color, index % 3) below — with a 5-cycle and a
+                    // 3-cycle running side by side, no two of these 11 scenes
+                    // share the exact same (preset, variant) combination.
+                    $cinePresets = ['A', 'B', 'C', 'D', 'E'];
+                @endphp
                 @foreach($projects as $i => $project)
-                    <div class="cine-scene cine-variant-{{ $i % 3 }}" data-scene="{{ $i }}">
+                    <div class="cine-scene cine-variant-{{ $i % 3 }}" data-scene="{{ $i }}" data-preset="{{ $cinePresets[$i % 5] }}">
                         <div class="cine-frame-wrap">
                             <div class="cine-frame-glow" aria-hidden="true"></div>
+                            {{-- Ghost cards — only animated for Preset E ("stacked
+                                 cards separating into depth"); sit inert/invisible
+                                 behind the frame for every other preset, same as
+                                 the sweep/border below sit inert outside their own
+                                 preset. --}}
+                            <div class="cine-frame-ghost cine-frame-ghost-1" aria-hidden="true"></div>
+                            <div class="cine-frame-ghost cine-frame-ghost-2" aria-hidden="true"></div>
                             <div class="cine-frame">
                                 <img src="@assetv($project['image'])" alt="{{ $project['title'] }}" loading="lazy">
-                                {{-- One-shot light sweep + animated border draw — both
-                                     played once by JS when this scene becomes active,
-                                     not a repeating loop (kept subtle, not flashy). The
+                                {{-- One-shot light sweep + animated border draw —
+                                     Preset D only ("light sweep with layered
+                                     parallax"); played once by JS when a Preset D
+                                     scene becomes active, not a repeating loop. The
                                      rect's pathLength="100" normalizes stroke-dasharray/
                                      dashoffset to a simple 0–100 range regardless of the
                                      frame's actual rendered size. --}}

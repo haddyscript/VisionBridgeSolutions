@@ -277,6 +277,22 @@
     50%      { opacity: .6; }
 }
 
+/* Ghost cards — Preset E only ("stacked cards separating into depth"). Sit
+   at opacity:0/no offset by default (inert) for every other preset, same
+   convention as .cine-frame-sweep/.cine-frame-border below. Plain glass
+   silhouettes rather than a second copy of the photo — cheaper (no extra
+   image decode) and reads as an abstract "stack" without looking like a
+   literal duplicate underneath the real one. */
+.cine-frame-ghost {
+    position: absolute;
+    inset: 0;
+    border-radius: 22px;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(201,168,76,.20);
+    opacity: 0;
+    pointer-events: none;
+}
+
 .cine-frame {
     position: relative;
     width: min(48vw, 620px);
@@ -514,6 +530,7 @@
 .cine-reduced .cine-frame-glow { opacity: .3; }
 .cine-reduced .cine-frame-sweep { display: none; }
 .cine-reduced .cine-frame-border rect { stroke-dashoffset: 0; }
+.cine-reduced .cine-frame-ghost { display: none; }
 
 /* ─── Mobile: stack image above text, even inside the live pin ─── */
 @media (max-width: 767px) {

@@ -180,6 +180,15 @@
         var dots = Array.prototype.slice.call(root.querySelectorAll('.cine-dot'));
         var counter = root.querySelector('.cine-progress-count');
 
+        // Five named entrance choreographies (data-preset in the markup,
+        // index % 5) — each one animates a DIFFERENT element/property
+        // combination on purpose. That's not just variety for its own sake:
+        // a preset's ongoing ambient motion (startAmbient below) never
+        // touches the same element+property its own entrance tween just
+        // animated, so the two can never fight over who owns a value once
+        // scrubbing settles and the ambient loop takes over.
+        var PRESETS = ['A', 'B', 'C', 'D', 'E'];
+
         // Deterministic per-scene variation (index-based, not random) so
         // repeat visits/screenshots are consistent — glow color comes from
         // the .cine-variant-* CSS classes already in the markup; only the
@@ -201,9 +210,14 @@
                 wrap: scene.querySelector('.cine-frame-wrap'),
                 frame: scene.querySelector('.cine-frame'),
                 img: scene.querySelector('.cine-frame img'),
+                info: scene.querySelector('.cine-info'),
+                glow: scene.querySelector('.cine-frame-glow'),
                 sweep: scene.querySelector('.cine-frame-sweep'),
                 borderRect: scene.querySelector('.cine-frame-border rect'),
+                ghost1: scene.querySelector('.cine-frame-ghost-1'),
+                ghost2: scene.querySelector('.cine-frame-ghost-2'),
                 revealEls: Array.prototype.slice.call(scene.querySelectorAll('.cine-info [data-reveal]')),
+                preset: scene.getAttribute('data-preset') || PRESETS[i % PRESETS.length],
                 variant: sceneVariant(i),
                 ambientTweens: [],
                 sweepPlayed: false,
@@ -219,14 +233,94 @@
             gsap.set(scenes.slice(1), { autoAlpha: 0, scale: 0.84, z: -360, filter: 'blur(12px)' });
             sceneData[0].el.classList.add('is-active');
 
-            // Non-first scenes' inner content starts hidden/blurred to match
-            // their parent scene's own hidden state — revealed together with
-            // it in the crossfade loop below, never independently, so there's
-            // only ever one clock driving both (no double-fade mismatch).
-            sceneData.slice(1).forEach(function (s) {
+            // Sets a scene's inner content to whatever hidden/pre-entrance
+            // state its preset's own reveal tween below animates FROM — so
+            // there's no visible jump the moment GSAP takes over. Every
+            // preset always includes the baseline text stagger; the switch
+            // only adds the preset-specific extra(s) on top of it.
+            function setPresetInitial(s) {
                 gsap.set(s.revealEls, { opacity: 0, y: 16, filter: 'blur(6px)' });
-                if (s.img) gsap.set(s.img, { filter: 'blur(8px)' });
-            });
+                switch (s.preset) {
+                    case 'A':
+                        if (s.img) gsap.set(s.img, { filter: 'blur(4px)' });
+                        break;
+                    case 'B':
+                        if (s.frame) gsap.set(s.frame, { scale: 0.72 });
+                        if (s.img) gsap.set(s.img, { filter: 'blur(16px)' });
+                        break;
+                    case 'C':
+                        if (s.info) gsap.set(s.info, { x: 60 });
+                        if (s.frame) gsap.set(s.frame, { rotationY: -16 });
+                        if (s.img) gsap.set(s.img, { filter: 'blur(6px)' });
+                        break;
+                    case 'D':
+                        if (s.wrap) gsap.set(s.wrap, { y: 14 });
+                        if (s.img) gsap.set(s.img, { filter: 'blur(6px)' });
+                        break;
+                    case 'E':
+                        if (s.frame) gsap.set(s.frame, { scale: 0.92 });
+                        if (s.img) gsap.set(s.img, { filter: 'blur(4px)' });
+                        break;
+                }
+            }
+
+            // Non-first scenes' inner content starts hidden to match their
+            // parent scene's own hidden state — revealed together with it in
+            // the crossfade loop below, never independently, so there's only
+            // ever one clock driving both (no double-fade mismatch).
+            sceneData.slice(1).forEach(setPresetInitial);
+
+            // Adds a scene's preset-specific reveal tweens to `timeline` at
+            // position `pos` — used both by the scrubbed crossfade loop
+            // (below) and scene 0's own one-shot timeline (further below),
+            // so there's exactly one definition of what each preset does.
+            var dur = 1, ease = 'power1.inOut';
+            function addPresetReveal(timeline, s, pos) {
+                timeline.fromTo(s.revealEls,
+                    { opacity: 0, y: 16, filter: 'blur(6px)' },
+                    { opacity: 1, y: 0, filter: 'blur(0px)', duration: dur, ease: ease, stagger: 0.06 },
+                    pos);
+
+                switch (s.preset) {
+                    case 'A': // Gentle float + subtle rotation — the float
+                        // itself is the ONGOING ambient loop (startAmbient);
+                        // entrance here stays to blur-resolve only, so it
+                        // never competes with that loop over .wrap's transform.
+                        if (s.img) timeline.fromTo(s.img, { filter: 'blur(4px)' }, { filter: 'blur(0px)', duration: dur, ease: ease }, pos);
+                        break;
+
+                    case 'B': // Camera zoom + blur-to-focus reveal
+                        if (s.frame) timeline.fromTo(s.frame, { scale: 0.72 }, { scale: 1, duration: dur, ease: ease }, pos);
+                        if (s.img) timeline.fromTo(s.img, { filter: 'blur(16px)' }, { filter: 'blur(0px)', duration: dur, ease: ease }, pos);
+                        break;
+
+                    case 'C': // Glass panel slides in while the image tilts
+                        if (s.info) timeline.fromTo(s.info, { x: 60 }, { x: 0, duration: dur, ease: ease }, pos);
+                        if (s.frame) timeline.fromTo(s.frame, { rotationY: -16 }, { rotationY: 0, duration: dur, ease: ease }, pos);
+                        if (s.img) timeline.fromTo(s.img, { filter: 'blur(6px)' }, { filter: 'blur(0px)', duration: dur, ease: ease }, pos);
+                        break;
+
+                    case 'D': // Light sweep with layered parallax — the wrap's
+                        // one-time arrival offset here is a DIFFERENT element/
+                        // property than the ongoing ambient drift (which moves
+                        // .glow, not .wrap), so the two never collide either.
+                        if (s.wrap) timeline.fromTo(s.wrap, { y: 14 }, { y: 0, duration: dur, ease: ease }, pos);
+                        if (s.img) timeline.fromTo(s.img, { filter: 'blur(6px)' }, { filter: 'blur(0px)', duration: dur, ease: ease }, pos);
+                        if (s.borderRect) timeline.fromTo(s.borderRect, { strokeDashoffset: 100 }, { strokeDashoffset: 0, duration: dur, ease: ease }, pos);
+                        break;
+
+                    case 'E': // Stacked cards separating into depth
+                        if (s.ghost1) timeline.fromTo(s.ghost1,
+                            { x: 0, y: 0, rotation: 0, opacity: 0 },
+                            { x: -18, y: 14, rotation: -4, opacity: 1, duration: dur, ease: ease }, pos);
+                        if (s.ghost2) timeline.fromTo(s.ghost2,
+                            { x: 0, y: 0, rotation: 0, opacity: 0 },
+                            { x: 22, y: 20, rotation: 5, opacity: 1, duration: dur, ease: ease }, pos);
+                        if (s.frame) timeline.fromTo(s.frame, { scale: 0.92 }, { scale: 1, duration: dur, ease: ease }, pos);
+                        if (s.img) timeline.fromTo(s.img, { filter: 'blur(4px)' }, { filter: 'blur(0px)', duration: dur, ease: ease }, pos);
+                        break;
+                }
+            }
 
             var currentActive = 0;
             var activatedOnce = { 0: true };
@@ -235,8 +329,9 @@
             // one-shot sweep pass is driven by toggling a class that
             // triggers a plain CSS @keyframes animation instead (see
             // .cine-frame-sweep.is-sweeping in cinematic-gallery.css).
+            // Preset D only ("light sweep with layered parallax").
             function playSweep(s) {
-                if (s.sweepPlayed || !s.sweep) return;
+                if (s.preset !== 'D' || s.sweepPlayed || !s.sweep) return;
                 s.sweepPlayed = true;
                 gsap.delayedCall(s.variant.sweepDelay, function () {
                     s.sweep.classList.add('is-sweeping');
@@ -246,28 +341,56 @@
                 });
             }
 
+            // Ongoing (while-active) motion, also preset-specific — see the
+            // note on PRESETS above for why each case only ever touches
+            // elements/properties its own entrance tween (addPresetReveal)
+            // left alone.
             function startAmbient(s) {
-                if (s.ambientTweens.length || !s.wrap) return;
-                s.ambientTweens.push(gsap.to(s.wrap, {
-                    y: '+=' + s.variant.floatAmp,
-                    duration: s.variant.floatDur, ease: 'sine.inOut',
-                    repeat: -1, yoyo: true,
-                }));
-                var glow = s.el.querySelector('.cine-frame-glow');
-                if (glow) {
-                    glow.classList.add('cine-glow-pulse');
-                    gsap.to(glow, { opacity: 1, duration: 0.6, ease: 'power2.out' });
+                if (s.ambientTweens.length) return;
+                switch (s.preset) {
+                    case 'A':
+                        if (s.wrap) s.ambientTweens.push(gsap.to(s.wrap, {
+                            y: '+=' + s.variant.floatAmp, rotation: '+=2.5',
+                            duration: s.variant.floatDur, ease: 'sine.inOut',
+                            repeat: -1, yoyo: true,
+                        }));
+                        pulseGlow(s);
+                        break;
+                    case 'C':
+                        pulseGlow(s);
+                        break;
+                    case 'D':
+                        if (s.glow) s.ambientTweens.push(gsap.to(s.glow, {
+                            y: '+=10',
+                            duration: s.variant.floatDur * 1.4, ease: 'sine.inOut',
+                            repeat: -1, yoyo: true,
+                        }));
+                        pulseGlow(s);
+                        break;
+                    // B relies on the existing, separate Ken Burns CSS
+                    // creep already applied sitewide to every .cine-frame
+                    // img — an ongoing subtle zoom is literally its theme,
+                    // for free, with nothing extra to start/stop here.
+                    // E stays deliberately still — a settled composition,
+                    // not a moving one, is the point of "stacked cards".
+                    default:
+                        break;
                 }
+                if (s.glow) gsap.to(s.glow, { opacity: 1, duration: 0.6, ease: 'power2.out' });
+            }
+
+            function pulseGlow(s) {
+                if (s.glow) s.glow.classList.add('cine-glow-pulse');
             }
 
             function stopAmbient(s) {
                 s.ambientTweens.forEach(function (tw) { tw.kill(); });
                 s.ambientTweens = [];
-                if (s.wrap) gsap.set(s.wrap, { y: 0 });
-                var glow = s.el.querySelector('.cine-frame-glow');
-                if (glow) {
-                    glow.classList.remove('cine-glow-pulse');
-                    gsap.to(glow, { opacity: 0, duration: 0.4, ease: 'power2.out' });
+                if (s.wrap) gsap.set(s.wrap, { y: 0, rotation: 0 });
+                if (s.glow) {
+                    gsap.set(s.glow, { y: 0 });
+                    s.glow.classList.remove('cine-glow-pulse');
+                    gsap.to(s.glow, { opacity: 0, duration: 0.4, ease: 'power2.out' });
                 }
             }
 
@@ -317,7 +440,6 @@
             var unit = 2;
             for (var i = 0; i < scenes.length - 1; i++) {
                 var t = i * unit;
-                var next = sceneData[i + 1];
                 tl.to(scenes[i], {
                     scale: 1.3, z: 260, filter: 'blur(13px)', autoAlpha: 0,
                     duration: 1, ease: 'power1.inOut',
@@ -327,20 +449,11 @@
                         {
                             autoAlpha: 1, scale: 1, z: 0, filter: 'blur(0px)',
                             duration: 1, ease: 'power1.inOut',
-                        }, t + 0.4)
-                    // Content settle — driven by the SAME timeline position as
-                    // the scene crossfade above, so it's scrubbed in lockstep
-                    // with scroll rather than autoplaying on its own clock.
-                    .fromTo(next.revealEls,
-                        { opacity: 0, y: 16, filter: 'blur(6px)' },
-                        { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1, ease: 'power1.inOut', stagger: 0.06 },
-                        t + 0.4);
-                if (next.img) {
-                    tl.fromTo(next.img, { filter: 'blur(8px)' }, { filter: 'blur(0px)', duration: 1, ease: 'power1.inOut' }, t + 0.4);
-                }
-                if (next.borderRect) {
-                    tl.fromTo(next.borderRect, { strokeDashoffset: 100 }, { strokeDashoffset: 0, duration: 1, ease: 'power1.inOut' }, t + 0.4);
-                }
+                        }, t + 0.4);
+                // Content settle — driven by the SAME timeline position as
+                // the scene crossfade above, so it's scrubbed in lockstep
+                // with scroll rather than autoplaying on its own clock.
+                addPresetReveal(tl, sceneData[i + 1], t + 0.4);
             }
 
             // Scene 0 has no crossfade to piggyback on (nothing scrolls it
@@ -348,14 +461,8 @@
             // plays once on its own short timeline instead. It's already
             // hidden behind the opening overlay for the first few seconds,
             // so there's no visible pop.
-            var first = sceneData[0];
-            gsap.timeline()
-                .fromTo(first.revealEls,
-                    { opacity: 0, y: 16, filter: 'blur(6px)' },
-                    { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1, ease: 'power1.inOut', stagger: 0.06 }, 0)
-                .fromTo(first.borderRect,
-                    { strokeDashoffset: 100 }, { strokeDashoffset: 0, duration: 1, ease: 'power1.inOut' }, 0);
-            playSweep(first);
+            addPresetReveal(gsap.timeline(), sceneData[0], 0);
+            playSweep(sceneData[0]);
         }
 
         ScrollTrigger.refresh();
