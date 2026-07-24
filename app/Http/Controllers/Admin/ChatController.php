@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Events\ChatMessageDeleted;
 use App\Events\ChatMessageSent;
 use App\Events\ChatMessageUpdated;
+use App\Events\ChatUserTyping;
 use App\Http\Controllers\Controller;
 use App\Mail\ChatMessageRepliedMail;
 use App\Models\ChatMessage;
@@ -138,6 +139,14 @@ class ChatController extends Controller
             ->update(['read_at' => now()]);
 
         return response()->json(['message' => 'Marked read.', 'count' => $count]);
+    }
+
+    /** Ephemeral "I'm typing" ping — nothing persisted, just relayed to whoever else is on this project's channel. */
+    public function typing(Project $project)
+    {
+        broadcast(new ChatUserTyping($project->id, false))->toOthers();
+
+        return response()->noContent();
     }
 
     private function authorizeTeamMessage(ChatMessage $message): void

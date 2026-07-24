@@ -714,6 +714,9 @@
                 chatChannel.bind('MessageDeleted', function (data) {
                     if (typeof applyAdminChatDeleted === 'function') applyAdminChatDeleted(data);
                 });
+                chatChannel.bind('UserTyping', function (data) {
+                    if (data.isFromClient && typeof showAdminTypingIndicator === 'function') showAdminTypingIndicator();
+                });
             }
 
             // Present on every /admin/chat page (list open or a thread open)

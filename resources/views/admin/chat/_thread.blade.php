@@ -65,7 +65,12 @@
         @endforelse
     </div>
 
-    <form id="chat-thread-form" data-mark-read-url="{{ route('admin.chat.read', $project) }}"
+    {{-- Typing indicator --}}
+    <div id="chat-typing-indicator" class="hidden shrink-0 px-5 pt-2 text-xs text-gray-400 dark:text-gray-500 italic">
+        {{ $project->user->name }} is typing…
+    </div>
+
+    <form id="chat-thread-form" data-mark-read-url="{{ route('admin.chat.read', $project) }}" data-typing-url="{{ route('admin.chat.typing', $project) }}"
           method="POST" action="{{ route('admin.chat.store', $project) }}"
           onsubmit="return submitAdminChatMessage(this, event)"
           class="shrink-0 flex items-center gap-2 px-5 py-4 border-t border-gray-200 dark:border-gray-700">
@@ -398,6 +403,45 @@ function submitAdminChatMessage(form, event) {
         });
 
     return false;
+}
+
+/**
+ * Typing indicator — sends at most one "I'm typing" ping every ~2s while
+ * the textarea has input (not one per keystroke), and shows the incoming
+ * indicator for a few seconds after the last ping received, auto-expiring
+ * rather than waiting on an explicit "stopped typing" signal that a closed
+ * tab or dropped connection would never send.
+ */
+(function () {
+    const form = document.getElementById('chat-thread-form');
+    const textarea = form?.querySelector('textarea[name="body"]');
+    if (!form || !textarea || !form.dataset.typingUrl) return;
+
+    let lastSentAt = 0;
+
+    textarea.addEventListener('input', function () {
+        const now = Date.now();
+        if (now - lastSentAt < 2000) return;
+        lastSentAt = now;
+
+        fetch(form.dataset.typingUrl, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': adminCsrfToken() },
+        });
+    });
+})();
+
+let adminTypingHideTimer = null;
+
+function showAdminTypingIndicator() {
+    const indicator = document.getElementById('chat-typing-indicator');
+    if (!indicator) return;
+
+    indicator.classList.remove('hidden');
+    clearTimeout(adminTypingHideTimer);
+    adminTypingHideTimer = setTimeout(function () {
+        indicator.classList.add('hidden');
+    }, 3500);
 }
 
 function markAdminChatRead() {

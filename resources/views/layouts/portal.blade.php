@@ -1240,6 +1240,9 @@
             chatChannel.bind('MessageDeleted', function (data) {
                 if (typeof applyPortalChatDeleted === 'function') applyPortalChatDeleted(data);
             });
+            chatChannel.bind('UserTyping', function (data) {
+                if (!data.isFromClient && typeof showPortalTypingIndicator === 'function') showPortalTypingIndicator();
+            });
         })();
         </script>
     @endif

@@ -74,8 +74,13 @@
             @endforelse
         </div>
 
+        {{-- Typing indicator --}}
+        <div id="chat-typing-indicator" class="hidden shrink-0 px-6 pt-2 text-xs text-gray-400 dark:text-gray-500 italic">
+            VisionBridge Team is typing…
+        </div>
+
         {{-- Composer --}}
-        <form id="chat-thread-form" data-mark-read-url="{{ route('portal.chat.read', $project) }}" data-no-loading-overlay
+        <form id="chat-thread-form" data-mark-read-url="{{ route('portal.chat.read', $project) }}" data-typing-url="{{ route('portal.chat.typing', $project) }}" data-no-loading-overlay
               method="POST" action="{{ route('portal.chat.store', $project) }}"
               onsubmit="return submitPortalChatMessage(this, event)"
               class="shrink-0 flex items-center gap-3 px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
@@ -380,6 +385,45 @@
             });
 
         return false;
+    }
+
+    /**
+     * Typing indicator — sends at most one "I'm typing" ping every ~2s while
+     * the textarea has input (not one per keystroke), and shows the
+     * incoming indicator for a few seconds after the last ping received,
+     * auto-expiring rather than waiting on an explicit "stopped typing"
+     * signal that a closed tab or dropped connection would never send.
+     */
+    (function () {
+        const form = document.getElementById('chat-thread-form');
+        const textarea = form?.querySelector('textarea[name="body"]');
+        if (!form || !textarea || !form.dataset.typingUrl) return;
+
+        let lastSentAt = 0;
+
+        textarea.addEventListener('input', function () {
+            const now = Date.now();
+            if (now - lastSentAt < 2000) return;
+            lastSentAt = now;
+
+            fetch(form.dataset.typingUrl, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrfToken() },
+            });
+        });
+    })();
+
+    let portalTypingHideTimer = null;
+
+    function showPortalTypingIndicator() {
+        const indicator = document.getElementById('chat-typing-indicator');
+        if (!indicator) return;
+
+        indicator.classList.remove('hidden');
+        clearTimeout(portalTypingHideTimer);
+        portalTypingHideTimer = setTimeout(function () {
+            indicator.classList.add('hidden');
+        }, 3500);
     }
 
     /** Applies a live edit or delete pushed over Pusher — same DOM update the local action handlers use. */
