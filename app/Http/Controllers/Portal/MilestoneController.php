@@ -24,8 +24,11 @@ class MilestoneController extends Controller
             // Milestone bar) still rely on staying oldest-first. Ordered by
             // created_at rather than position, since position is a manual
             // display-order counter that doesn't always match the actual
-            // order milestones were entered in.
-            $milestones = $project->milestones()->orderByDesc('created_at')->paginate(15);
+            // order milestones were entered in. reorder() is required here —
+            // the milestones() relation itself defines ->orderBy('position'),
+            // and a plain ->orderByDesc() would only stack on top of that
+            // (position ASC, created_at DESC) instead of replacing it.
+            $milestones = $project->milestones()->reorder('created_at', 'desc')->paginate(15);
             $total = $project->milestones()->count();
             $completed = $project->milestones()->where('status', 'completed')->count();
         }
