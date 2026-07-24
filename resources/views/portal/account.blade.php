@@ -10,8 +10,8 @@
     $twoFactorEnabled = $user->hasTwoFactorEnabled();
 @endphp
 
-{{-- Overview card --}}
-<div class="rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-6">
+{{-- Overview card — sticky just below the portal's own sticky top bar (h-16) so it stays visible while the settings content below scrolls --}}
+<div class="sticky top-16 z-10 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-6">
     <div class="px-6 py-6" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
         <div class="flex items-center gap-5">
             <div id="account-header-initials" class="w-16 h-16 rounded-full bg-gold/20 text-gold flex items-center justify-center shrink-0 text-xl font-bold font-display">
