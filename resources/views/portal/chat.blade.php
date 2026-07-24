@@ -75,7 +75,7 @@
         </div>
 
         {{-- Composer --}}
-        <form id="chat-thread-form" data-mark-read-url="{{ route('portal.chat.read', $project) }}"
+        <form id="chat-thread-form" data-mark-read-url="{{ route('portal.chat.read', $project) }}" data-no-loading-overlay
               method="POST" action="{{ route('portal.chat.store', $project) }}"
               onsubmit="return submitPortalChatMessage(this, event)"
               class="shrink-0 flex items-center gap-3 px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
