@@ -22,7 +22,7 @@
     <div id="chat-thread-messages" class="chat-thread-scroll flex-1 overflow-y-auto space-y-3 px-5 py-4">
         @forelse ($project->chatMessages as $chatMessage)
             @php $isClient = $chatMessage->user_id === $project->user_id; @endphp
-            <div class="chat-bubble flex items-start {{ $isClient ? '' : 'justify-end' }} gap-2.5 max-w-[75%] {{ $isClient ? '' : 'ml-auto' }}"
+            <div class="chat-bubble group flex items-start {{ $isClient ? '' : 'justify-end' }} gap-2.5 max-w-[75%] {{ $isClient ? '' : 'ml-auto' }}"
                  data-message-id="{{ $chatMessage->id }}" data-own="{{ $isClient ? '0' : '1' }}" data-deleted="{{ $chatMessage->isDeleted() ? '1' : '0' }}">
                 @if ($isClient)
                     <span class="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold flex items-center justify-center shrink-0">
@@ -42,7 +42,7 @@
                     </p>
 
                     @if (! $chatMessage->isDeleted())
-                        <button type="button" class="chat-bubble-menu-btn absolute -top-2 {{ $isClient ? '-right-2' : '-left-2' }} opacity-70 hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-200 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-opacity">
+                        <button type="button" class="chat-bubble-menu-btn absolute -top-2 {{ $isClient ? '-right-2' : '-left-2' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-200 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-opacity">
                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>
                         </button>
                         <div class="chat-bubble-menu hidden absolute z-20 {{ $isClient ? 'right-0' : 'left-0' }} top-6 w-40 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1">
@@ -98,7 +98,7 @@ function adminChatMessageUrl(id) {
 
 function buildAdminBubbleHtml(data) {
     const isClient = !!data.isFromClient;
-    let html = '<div class="chat-bubble flex items-start ' + (isClient ? '' : 'justify-end') + ' gap-2.5 max-w-[75%] ' + (isClient ? '' : 'ml-auto') + '" data-message-id="' + data.id + '" data-own="' + (isClient ? '0' : '1') + '" data-deleted="0">';
+    let html = '<div class="chat-bubble group flex items-start ' + (isClient ? '' : 'justify-end') + ' gap-2.5 max-w-[75%] ' + (isClient ? '' : 'ml-auto') + '" data-message-id="' + data.id + '" data-own="' + (isClient ? '0' : '1') + '" data-deleted="0">';
     if (isClient) {
         html += '<span class="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold flex items-center justify-center shrink-0"></span>';
     }
@@ -111,7 +111,7 @@ function buildAdminBubbleHtml(data) {
         '<span class="chat-bubble-timestamp"></span>' +
         '<span class="chat-bubble-edited hidden"></span>' +
     '</p>';
-    html += '<button type="button" class="chat-bubble-menu-btn absolute -top-2 ' + (isClient ? '-right-2' : '-left-2') + ' opacity-70 hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-200 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-opacity">' +
+    html += '<button type="button" class="chat-bubble-menu-btn absolute -top-2 ' + (isClient ? '-right-2' : '-left-2') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-200 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-opacity">' +
         '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>' +
     '</button>';
     html += '<div class="chat-bubble-menu hidden absolute z-20 ' + (isClient ? 'right-0' : 'left-0') + ' top-6 w-40 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1">';
