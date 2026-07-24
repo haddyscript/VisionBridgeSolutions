@@ -204,7 +204,7 @@
                     </svg>
                     <span class="flex-1">Chat</span>
                     @if (($unreadChatCount ?? 0) > 0)
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold text-navy-dark">{{ $unreadChatCount }}</span>
+                        <span id="portal-chat-nav-badge" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold text-navy-dark">{{ $unreadChatCount }}</span>
                     @endif
                 </a>
 

@@ -101,7 +101,21 @@
                 'Accept': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
             },
-        });
+        })
+            .then(function (response) { return response.ok ? response.json() : null; })
+            .then(function (data) {
+                if (!data || !data.count) return;
+                // The sidebar's own "Chat" badge is rendered once at page load
+                // and won't otherwise reflect that this thread was just read.
+                const badge = document.getElementById('portal-chat-nav-badge');
+                if (!badge) return;
+                const remaining = (parseInt(badge.textContent, 10) || 0) - data.count;
+                if (remaining > 0) {
+                    badge.textContent = remaining;
+                } else {
+                    badge.remove();
+                }
+            });
     })();
 
     function csrfToken() {

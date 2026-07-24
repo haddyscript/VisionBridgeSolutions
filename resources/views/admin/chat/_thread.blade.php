@@ -198,15 +198,44 @@ function submitAdminChatMessage(form, event) {
 
 function markAdminChatRead() {
     const form = document.getElementById('chat-thread-form');
-    if (form && form.dataset.markReadUrl) {
-        fetch(form.dataset.markReadUrl, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': adminCsrfToken(),
-            },
+    if (!form || !form.dataset.markReadUrl) return;
+
+    fetch(form.dataset.markReadUrl, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': adminCsrfToken(),
+        },
+    })
+        .then(function (response) { return response.ok ? response.json() : null; })
+        .then(function (data) {
+            if (!data || !data.count) return;
+
+            // This project's own row in the conversation list — rendered
+            // once at page load, otherwise stays stuck showing whatever was
+            // unread when the page opened even though it's now been read.
+            const projectId = document.getElementById('chat-thread')?.dataset.projectId;
+            const row = projectId && document.querySelector('.conversation-row[data-project-id="' + projectId + '"]');
+            if (row) {
+                const rowBadge = row.querySelector('.conversation-unread-badge');
+                if (rowBadge) {
+                    rowBadge.textContent = '0';
+                    rowBadge.classList.add('hidden');
+                }
+                row.querySelector('.conversation-name')?.classList.remove('font-bold');
+            }
+
+            // Same staleness problem for the "Chat" nav item's own badge.
+            const navBadge = document.getElementById('admin-chat-nav-badge');
+            if (navBadge) {
+                const remaining = (parseInt(navBadge.textContent, 10) || 0) - data.count;
+                if (remaining > 0) {
+                    navBadge.textContent = remaining;
+                } else {
+                    navBadge.remove();
+                }
+            }
         });
-    }
 }
 
 /** Applies a live edit or delete pushed over Pusher — same DOM update the local action handlers use. */

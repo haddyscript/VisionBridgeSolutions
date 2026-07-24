@@ -372,7 +372,7 @@
                         </svg>
                         <span class="flex-1">Chat</span>
                         @if ($unreadChatCount > 0)
-                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500 text-white">{{ $unreadChatCount }}</span>
+                            <span id="admin-chat-nav-badge" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500 text-white">{{ $unreadChatCount }}</span>
                         @endif
                     </a>
                 @endif
@@ -703,6 +703,10 @@
                 const chatChannel = pusher.subscribe('private-project.' + projectId + '.chat');
                 chatChannel.bind('MessageSent', function (data) {
                     if (typeof appendAdminChatBubble === 'function') appendAdminChatBubble(data);
+                    // The thread is already open, so treat a live client
+                    // message as read immediately — otherwise it'd sit
+                    // unread server-side and reappear as "unread" on reload.
+                    if (data.isFromClient && typeof markAdminChatRead === 'function') markAdminChatRead();
                 });
                 chatChannel.bind('MessageUpdated', function (data) {
                     if (typeof applyAdminChatUpdate === 'function') applyAdminChatUpdate(data);

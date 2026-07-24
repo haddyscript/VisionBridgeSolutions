@@ -132,12 +132,12 @@ class ChatController extends Controller
 
     public function markRead(Project $project)
     {
-        $project->chatMessages()
+        $count = $project->chatMessages()
             ->where('user_id', $project->user_id)
             ->whereNull('read_at')
             ->update(['read_at' => now()]);
 
-        return response()->json(['message' => 'Marked read.']);
+        return response()->json(['message' => 'Marked read.', 'count' => $count]);
     }
 
     private function authorizeTeamMessage(ChatMessage $message): void
