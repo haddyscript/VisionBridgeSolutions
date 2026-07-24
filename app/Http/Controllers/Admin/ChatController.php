@@ -34,7 +34,8 @@ class ChatController extends Controller
             ->get();
 
         if ($activeProject) {
-            $activeProject->load('user', [
+            $activeProject->load([
+                'user',
                 'chatMessages' => fn ($q) => $q->whereNull('hidden_for_admin_at')->with('user'),
             ]);
         }
