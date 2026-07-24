@@ -1230,10 +1230,16 @@
                 },
             });
 
-            pusher.subscribe('private-project.' + projectId + '.chat')
-                .bind('MessageSent', function (data) {
-                    if (typeof appendPortalChatBubble === 'function') appendPortalChatBubble(data);
-                });
+            const chatChannel = pusher.subscribe('private-project.' + projectId + '.chat');
+            chatChannel.bind('MessageSent', function (data) {
+                if (typeof appendPortalChatBubble === 'function') appendPortalChatBubble(data);
+            });
+            chatChannel.bind('MessageUpdated', function (data) {
+                if (typeof applyPortalChatUpdate === 'function') applyPortalChatUpdate(data);
+            });
+            chatChannel.bind('MessageDeleted', function (data) {
+                if (typeof applyPortalChatDeleted === 'function') applyPortalChatDeleted(data);
+            });
         })();
         </script>
     @endif

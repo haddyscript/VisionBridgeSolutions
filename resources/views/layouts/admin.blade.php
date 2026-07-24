@@ -698,10 +698,16 @@
                 },
             });
 
-            pusher.subscribe('private-project.' + projectId + '.chat')
-                .bind('MessageSent', function (data) {
-                    if (typeof appendAdminChatBubble === 'function') appendAdminChatBubble(data);
-                });
+            const chatChannel = pusher.subscribe('private-project.' + projectId + '.chat');
+            chatChannel.bind('MessageSent', function (data) {
+                if (typeof appendAdminChatBubble === 'function') appendAdminChatBubble(data);
+            });
+            chatChannel.bind('MessageUpdated', function (data) {
+                if (typeof applyAdminChatUpdate === 'function') applyAdminChatUpdate(data);
+            });
+            chatChannel.bind('MessageDeleted', function (data) {
+                if (typeof applyAdminChatDeleted === 'function') applyAdminChatDeleted(data);
+            });
         })();
         </script>
     @endif

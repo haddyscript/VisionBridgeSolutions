@@ -189,6 +189,9 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
     Route::get('/portal/chat', [PortalChatController::class, 'show'])->name('portal.chat.show');
     Route::post('/portal/projects/{project}/chat', [PortalChatController::class, 'store'])->name('portal.chat.store');
     Route::post('/portal/projects/{project}/chat/read', [PortalChatController::class, 'markRead'])->name('portal.chat.read');
+    Route::patch('/portal/chat-messages/{message}', [PortalChatController::class, 'update'])->name('portal.chat.update');
+    Route::delete('/portal/chat-messages/{message}', [PortalChatController::class, 'destroyForEveryone'])->name('portal.chat.destroy');
+    Route::post('/portal/chat-messages/{message}/hide', [PortalChatController::class, 'hideForMe'])->name('portal.chat.hide');
     Route::get('/portal/project-requests', [PortalProjectRequestController::class, 'show'])->name('portal.project-requests.show');
     Route::post('/portal/project-requests', [PortalProjectRequestController::class, 'store'])->name('portal.project-requests.store');
     Route::get('/portal/consultation', [PortalConsultationController::class, 'create'])->name('portal.consultation.create');
@@ -318,6 +321,9 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::get('/projects/{project}/chat', [AdminChatController::class, 'show'])->name('chat.show');
     Route::post('/projects/{project}/chat', [AdminChatController::class, 'store'])->name('chat.store');
     Route::post('/projects/{project}/chat/read', [AdminChatController::class, 'markRead'])->name('chat.read');
+    Route::patch('/chat-messages/{message}', [AdminChatController::class, 'update'])->name('chat.update');
+    Route::delete('/chat-messages/{message}', [AdminChatController::class, 'destroyForEveryone'])->name('chat.destroy');
+    Route::post('/chat-messages/{message}/hide', [AdminChatController::class, 'hideForMe'])->name('chat.hide');
 
     // ─── Projects & Milestones ───────────────────────────────────────────────
     Route::get('/projects/{project}', [AdminProjectController::class, 'show'])->name('projects.show');
