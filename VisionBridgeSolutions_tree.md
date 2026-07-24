@@ -1,6 +1,5 @@
 ```
 VisionBridgeSolutions/
-├── .claude/
 ├── app/
 │   ├── Console/
 │   │   └── Commands/
@@ -11,11 +10,16 @@ VisionBridgeSolutions/
 │   │       ├── SendRenewalReminders.php
 │   │       ├── SuspendOverdueProjects.php
 │   │       └── VerifyPartnerPayouts.php
+│   ├── Events/
+│   │   ├── ChatMessageDeleted.php
+│   │   ├── ChatMessageSent.php
+│   │   └── ChatMessageUpdated.php
 │   ├── Http/
 │   │   ├── Controllers/
 │   │   │   ├── Admin/
 │   │   │   │   ├── AnnouncementController.php
 │   │   │   │   ├── CalendarController.php
+│   │   │   │   ├── ChatController.php
 │   │   │   │   ├── ClientController.php
 │   │   │   │   ├── ConsultationController.php
 │   │   │   │   ├── ContactMessageController.php
@@ -56,6 +60,7 @@ VisionBridgeSolutions/
 │   │   │   │   ├── AssistantController.php
 │   │   │   │   ├── CarePlanAgreementController.php
 │   │   │   │   ├── CategoryController.php
+│   │   │   │   ├── ChatController.php
 │   │   │   │   ├── ConsultationController.php
 │   │   │   │   ├── DashboardController.php
 │   │   │   │   ├── DocumentController.php
@@ -101,6 +106,7 @@ VisionBridgeSolutions/
 │   │   ├── AccountPasswordChangedMail.php
 │   │   ├── AdminPaymentNotificationMail.php
 │   │   ├── CarePlanPaymentReminderMail.php
+│   │   ├── ChatMessageRepliedMail.php
 │   │   ├── ClientReplyMail.php
 │   │   ├── ConsultationCancelledMail.php
 │   │   ├── ConsultationConfirmedMail.php
@@ -110,6 +116,7 @@ VisionBridgeSolutions/
 │   │   ├── FaithStackPaymentReminderMail.php
 │   │   ├── IntakeConfirmationMail.php
 │   │   ├── InvoiceSentMail.php
+│   │   ├── NewClientChatMessageMail.php
 │   │   ├── NewClientRegistrationMail.php
 │   │   ├── NewClientUploadMail.php
 │   │   ├── NewConsultationMail.php
@@ -154,6 +161,7 @@ VisionBridgeSolutions/
 │   │   ├── AssistantMessage.php
 │   │   ├── CalendarEvent.php
 │   │   ├── CarePlanAgreement.php
+│   │   ├── ChatMessage.php
 │   │   ├── ClientNotification.php
 │   │   ├── Consultation.php
 │   │   ├── ContactMessage.php
@@ -207,6 +215,7 @@ VisionBridgeSolutions/
 ├── config/
 │   ├── app.php
 │   ├── auth.php
+│   ├── broadcasting.php
 │   ├── cache.php
 │   ├── database.php
 │   ├── dial_codes.php
@@ -217,6 +226,7 @@ VisionBridgeSolutions/
 │   ├── queue.php
 │   ├── services.php
 │   └── session.php
+├── cron/
 ├── database/
 │   ├── factories/
 │   │   └── UserFactory.php
@@ -330,13 +340,14 @@ VisionBridgeSolutions/
 │   │   ├── 2026_07_20_000001_add_title_to_uploads_table.php
 │   │   ├── 2026_07_22_000001_add_completion_note_to_uploads_table.php
 │   │   ├── 2026_07_22_000002_add_notifiable_columns_to_client_notifications_table.php
-│   │   └── 2026_07_22_000003_add_notification_email_to_users_table.php
+│   │   ├── 2026_07_22_000003_add_notification_email_to_users_table.php
+│   │   ├── 2026_07_24_000001_create_chat_messages_table.php
+│   │   └── 2026_07_24_000002_add_edit_delete_to_chat_messages_table.php
 │   ├── seeders/
 │   │   ├── DatabaseSeeder.php
 │   │   ├── MaintenancePlanSeeder.php
 │   │   └── ServiceAgreementTemplateSeeder.php
-│   ├── .gitignore
-│   └── database.sqlite
+│   └── .gitignore
 ├── docker/
 │   └── php/
 │       └── uploads.ini
@@ -344,12 +355,12 @@ VisionBridgeSolutions/
 │   └── default.conf
 ├── public/
 │   ├── client-uploads/
-│   │   ├── projects/
+│   │   ├── intake/
 │   │   │   └── 1/
-│   │   │       ├── document/
-│   │   │       ├── image/
 │   │   │       ├── logo/
-│   │   │       └── revision/
+│   │   │       │   └── QswBALnDdrXxbYmbvuXxUTzGRS8SstJUwEmykU8N.jpg
+│   │   │       └── photo/
+│   │   │           └── zPQOpqvRGsQoL5asfqKSONijx7791nUyA0GPMz4e.jpg
 │   │   └── .gitignore
 │   ├── image/
 │   │   ├── logo/
@@ -442,6 +453,9 @@ VisionBridgeSolutions/
 │       │   ├── care-plans/
 │       │   │   ├── _preview.blade.php
 │       │   │   └── index.blade.php
+│       │   ├── chat/
+│       │   │   ├── _thread.blade.php
+│       │   │   └── index.blade.php
 │       │   ├── clients/
 │       │   │   └── index.blade.php
 │       │   ├── consultations/
@@ -516,6 +530,7 @@ VisionBridgeSolutions/
 │       │   ├── account-password-changed.blade.php
 │       │   ├── admin-payment-notification.blade.php
 │       │   ├── care-plan-payment-reminder.blade.php
+│       │   ├── chat-message-replied.blade.php
 │       │   ├── client-reply.blade.php
 │       │   ├── consultation-cancelled.blade.php
 │       │   ├── consultation-confirmed.blade.php
@@ -525,6 +540,7 @@ VisionBridgeSolutions/
 │       │   ├── faithstack-payment-reminder.blade.php
 │       │   ├── intake-confirmation.blade.php
 │       │   ├── invoice-sent.blade.php
+│       │   ├── new-client-chat-message.blade.php
 │       │   ├── new-client-registration.blade.php
 │       │   ├── new-client-upload.blade.php
 │       │   ├── new-consultation.blade.php
@@ -597,6 +613,7 @@ VisionBridgeSolutions/
 │       │   ├── agreement.blade.php
 │       │   ├── care-plan-agreement.blade.php
 │       │   ├── category.blade.php
+│       │   ├── chat.blade.php
 │       │   ├── consultation.blade.php
 │       │   ├── dashboard.blade.php
 │       │   ├── documents.blade.php
@@ -620,8 +637,11 @@ VisionBridgeSolutions/
 │       ├── home.blade.php
 │       └── welcome.blade.php
 ├── routes/
+│   ├── channels.php
 │   ├── console.php
 │   └── web.php
+├── speckit/
+│   └── speckit.adversarial-review
 ├── specs/
 │   ├── GAP/
 │   │   ├── CARE_PLAN_TIER_CHANGE.md
@@ -658,34 +678,27 @@ VisionBridgeSolutions/
 │   │   │   └── .gitignore
 │   │   ├── sessions/
 │   │   │   ├── .gitignore
-│   │   │   ├── 7yDG76pFW6attL10BSV9NqjEtBQNO2n7uwAPSAxF
-│   │   │   ├── pTqDqOJ8NPHhrRkcNoRvtqmH3dHK2RigPOmSbZ4P
-│   │   │   ├── qKWFJUpGcCY4UiMSDXdVRHFOvW7gwwCajhKIRFKE
-│   │   │   ├── qx0IMQrkMlbNY7ZO6H4MRuC2elOACd6xcY4TAyi5
-│   │   │   └── R4fyWQwRYR8OJt8nDdCUCLDX2MgNEKzjV3OScSHK
+│   │   │   ├── 1dSBBWtCpvFmunJCww3Wwb25UzY09DrHgAjdVhOS
+│   │   │   ├── 3VHcaSCFJH6U2HeWr2EVWTln80yrAJ9JAk7zvDOz
+│   │   │   ├── hta4CvIF8CY6r8VQ3DI9crH8YQWbxe984ruzBdIv
+│   │   │   └── MFwEZsr22e2UjMUpMhN8Sa996hScOlJ5G9Xogl6W
 │   │   ├── testing/
 │   │   │   └── .gitignore
 │   │   ├── views/
 │   │   │   ├── .gitignore
-│   │   │   ├── 187f828346b000af3c7029fb05171792.php
-│   │   │   ├── 1b38c7ca485dad804641aa52cbb02c57.php
-│   │   │   ├── 1f01f63bfde5399b503525700dccfacb.php
-│   │   │   ├── 32b20c62cb6b20693d1fa7a678d9d9c1.php
-│   │   │   ├── 3a4287aed945b1785c4c7f46181cb68b.php
-│   │   │   ├── 410027ebf47c55a7dbcb71bcde6426d5.php
-│   │   │   ├── 59eab594168c481055975a689218b2ee.php
-│   │   │   ├── 5c3b6fa39746f5211a541fa628954dd5.php
-│   │   │   ├── 6676b3c448ba8089a9e13967158d946c.php
-│   │   │   ├── 7777fcbb2ee4f07a3f03e03c2db6b1a7.php
-│   │   │   ├── 79d077736a92f72faf4623831507bedb.php
-│   │   │   ├── 8a2ffb36f1d0410f5fedcd53a7125a92.php
-│   │   │   ├── 97570e7f401c1518e896fac0a72db289.php
-│   │   │   ├── aa1d07ece745088f5315aad7a139ef42.php
-│   │   │   ├── b95ea80a83614489f07ef0c2706c5a97.php
+│   │   │   ├── 318fd8c3c5d784c5ff19e4a489d13d67.php
+│   │   │   ├── 5625581f9cf0f93941c6e2b59bbede5c.php
+│   │   │   ├── 7ed2c59073c9d943375f7dd242e474e9.php
+│   │   │   ├── a38e7871fb9bb2fd3b6233cc590b68bc.php
+│   │   │   ├── a7564ec0bf6fa4e4894356b88b3ef890.php
+│   │   │   ├── baacf9a7341ab5621e9cc6a15fbff58a.php
 │   │   │   ├── c79b03b44b206c900eabdbea4cd7a6ca.php
 │   │   │   ├── cb97ddebfee9b4b4b142d9eda436b54b.php
-│   │   │   ├── e1a333eb20190c1dd9986c8891aed262.php
-│   │   │   └── e595db8bf302839146177c246bf88c0f.php
+│   │   │   ├── e2a5852d16137b81f87f6d13b2d3cf5d.php
+│   │   │   ├── e3aa6c2fd900150247d6e06b29b5b3a5.php
+│   │   │   ├── e3b3d26564384d79f089bf21325e973b.php
+│   │   │   ├── f4a32fb35d9d07cfb9d30dec360c8567.php
+│   │   │   └── f84e011069344423a6cb64bef2bb8de4.php
 │   │   └── .gitignore
 │   └── logs/
 │       ├── .gitignore
@@ -726,6 +739,7 @@ VisionBridgeSolutions/
 ├── tailwind.config.js
 ├── TODOS.txt
 ├── USER_GUIDE.md
+├── VisionBridgeSolutions_tree.html
 ├── VisionBridgeSolutions_tree.md
 └── vite.config.js
 ```

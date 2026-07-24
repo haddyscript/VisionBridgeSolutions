@@ -1,0 +1,2514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VisionBridgeSolutions — tree2guide</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #0f1117;
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding: 2rem;
+}
+h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1.25rem; color: #f8fafc; }
+.controls { margin-bottom: 1rem; display: flex; gap: 0.5rem; }
+button {
+    background: #1e2433;
+    color: #94a3b8;
+    border: 1px solid #2d3748;
+    border-radius: 6px;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+button:hover { background: #2d3748; color: #e2e8f0; }
+.tree {
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    background: #1a1f2e;
+    border: 1px solid #2d3748;
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+}
+ul { list-style: none; padding: 0; }
+li { white-space: nowrap; }
+.entry { display: inline-flex; align-items: center; gap: 0.3rem; }
+.connector { color: #4a5568; user-select: none; }
+.toggle {
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.toggle:hover .dirname { color: #7dd3fc; }
+.icon { font-size: 0.8em; color: #64748b; user-select: none; transition: transform 0.15s; }
+.collapsed > .children { display: none; }
+.collapsed .icon { transform: rotate(-90deg); }
+.dirname { color: #93c5fd; font-weight: 500; }
+.filename { color: #e2e8f0; }
+.symlink { color: #a78bfa; }
+.symlink-arrow { color: #64748b; }
+.root { color: #34d399; font-weight: 600; }
+footer {
+    margin-top: 1.5rem;
+    font-size: 0.78rem;
+    color: #4a5568;
+}
+footer a { color: #64748b; }
+
+</style>
+</head>
+<body>
+<div class="controls"><button onclick="expandAll()">Expand all</button><button onclick="collapseAll()">Collapse all</button></div>
+<div class="tree"><ul>
+<li class="dir-item">
+  <span class="entry"><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="root">VisionBridgeSolutions/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">app/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">Console/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   └── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">Commands/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │       ├── </span><span class="filename">BackfillSubscriptionPeriodEnds.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │       ├── </span><span class="filename">CancelDuplicateCarePlanSubscriptions.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │       ├── </span><span class="filename">RetryFailedPayments.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │       ├── </span><span class="filename">SendFaithStackPaymentReminder.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │       ├── </span><span class="filename">SendRenewalReminders.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │       ├── </span><span class="filename">SuspendOverdueProjects.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │       └── </span><span class="filename">VerifyPartnerPayouts.php</span></span>
+</li>
+  </ul>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">Events/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ChatMessageDeleted.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ChatMessageSent.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">ChatMessageUpdated.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">Http/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">Controllers/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">Admin/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">AnnouncementController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">CalendarController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">ChatController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">ClientController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">ConsultationController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">ContactMessageController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">DashboardController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">DeveloperController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">EmailTemplateController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">IntakeSubmissionController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">MaintenancePlanController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">MilestoneController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">OnboardingPreviewController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">PartnerPayoutController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">PaymentController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">ProjectController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">ProjectRequestController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">RecommendationController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">RefundRequestController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">RevisionController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">SatisfactionSurveyController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">ServiceAgreementController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">SubscriptionController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">SupportTicketController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">TeamController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">TwoFactorController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">UploadApprovalController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   └── </span><span class="filename">WorkOrderController.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">Auth/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">AuthenticatedSessionController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">EmailVerificationNotificationController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">EmailVerificationPromptController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">NewPasswordController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">PasswordResetLinkController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">RegisteredUserController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">TwoFactorChallengeController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   └── </span><span class="filename">VerifyEmailController.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">Portal/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">AccountController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">AnnouncementController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">AssistantController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">CarePlanAgreementController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">CategoryController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">ChatController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">ConsultationController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">DashboardController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">DocumentController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">FaqFeedbackController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">MilestoneController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">NotificationController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">PaymentController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">ProjectQuestionnaireController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">ProjectRequestController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">ProjectReviewController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">RefundRequestController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">SatisfactionSurveyController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">SearchController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">ServiceAgreementController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">SubscriptionController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">SupportTicketController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">SuspendedController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">TourController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">TwoFactorController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   ├── </span><span class="filename">UploadController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   └── </span><span class="filename">WebsiteTypeController.php</span></span>
+</li>
+  </ul>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">CarePlanSignupController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">ConsultationController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">ContactMessageController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">Controller.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">DatabaseResetController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">DeployerController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">ImpersonationController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">IntakeController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">StripeWebhookController.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   └── </span><span class="filename">ThemeController.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   └── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">Middleware/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │       ├── </span><span class="filename">EnsureOnboardingComplete.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │       ├── </span><span class="filename">EnsureProjectNotSuspended.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │       ├── </span><span class="filename">EnsureUserCanAccessAdminPage.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │       ├── </span><span class="filename">EnsureUserIsAdmin.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │       ├── </span><span class="filename">EnsureUserIsOwner.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │       ├── </span><span class="filename">EnsureUserIsSuperAdmin.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │       ├── </span><span class="filename">PreventStaleHtmlCaching.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │       └── </span><span class="filename">UpdateLastSeen.php</span></span>
+</li>
+  </ul>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">Mail/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">AccountEmailChangedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">AccountPasswordChangedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">AdminPaymentNotificationMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">CarePlanPaymentReminderMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ChatMessageRepliedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ClientReplyMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ConsultationCancelledMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ConsultationConfirmedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ConsultationReceivedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ConsultationRescheduledMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">FaithStackNewClientMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">FaithStackPaymentReminderMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">IntakeConfirmationMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">InvoiceSentMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">NewClientChatMessageMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">NewClientRegistrationMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">NewClientUploadMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">NewConsultationMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">NewContactMessageMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">NewIntakeSubmissionMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">NewProjectRequestMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">NewRefundRequestMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">NewSupportTicketMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">PaymentFailedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">PaymentReceiptMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">PhasedPaymentPlanMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ProjectApprovedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ProjectCanceledMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ProjectLaunchedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ProjectQuoteReadyMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ProjectRequestStatusChangedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ProjectRestoredMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ProjectSuspendedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">QuestionnaireCompletedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">RefundRequestApprovedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">RefundRequestDeclinedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">RevisionStatusChangedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ServiceAgreementSignedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">SubscriptionCreatedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">SubscriptionReceiptMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">SubscriptionRenewalReminderMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">SubscriptionStatusAlertMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">SupportTicketClientReplyMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">SupportTicketReplyMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">SystemAlertMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">UploadRepliedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">WelcomeClientMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">WorkOrderAssignedMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">WorkOrderInstructionsMail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">WorkOrderInternalUpdateMail.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">Models/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">AdminPagePermission.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Announcement.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">AnnouncementDismissal.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">AppSetting.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">AssistantConversation.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">AssistantMessage.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">CalendarEvent.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">CarePlanAgreement.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ChatMessage.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ClientNotification.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Consultation.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ContactMessage.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">FaqFeedback.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">IntakeFile.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">IntakeSubmission.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">LoginActivity.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">MaintenancePlan.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Milestone.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">PartnerPayout.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">PartnerPayoutReceipt.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Payment.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Project.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ProjectQuestionnaire.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ProjectRequest.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ProjectRequestAttachment.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Recommendation.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">RefundRequest.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">SatisfactionSurvey.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ServiceAgreementSignature.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">ServiceAgreementTemplate.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Subscription.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">SubscriptionPayment.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">SupportTicket.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">SupportTicketReply.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Upload.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">UploadAttachment.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">UploadReply.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">User.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">Providers/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">AppServiceProvider.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">Services/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">AgreementPdfFiller.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">AssistantService.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">PaymentReconciler.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">SubscriptionReconciler.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">TwoFactorAuthenticator.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   └── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">Support/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       ├── </span><span class="filename">AdminGreetings.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       ├── </span><span class="filename">AdminPermissions.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       ├── </span><span class="filename">AssetVersion.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       ├── </span><span class="filename">EmailPreviewStub.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       └── </span><span class="filename">IcsCalendar.php</span></span>
+</li>
+  </ul>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">bootstrap/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">cache/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">.gitignore</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">packages.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">services.php</span></span>
+</li>
+  </ul>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">app.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   └── </span><span class="filename">providers.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">config/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">app.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">auth.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">broadcasting.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">cache.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">database.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">dial_codes.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">filesystems.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">gallery.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">logging.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">mail.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">queue.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">services.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   └── </span><span class="filename">session.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">cron/</span></button></span>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">database/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">factories/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">UserFactory.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">migrations/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">0001_01_01_000000_create_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">0001_01_01_000001_create_cache_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">0001_01_01_000002_create_jobs_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_18_000001_add_role_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_18_000002_create_projects_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_18_000003_create_milestones_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_18_000004_create_uploads_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_18_000005_add_size_to_uploads_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_18_000006_create_intake_submissions_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_18_000007_create_intake_files_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_18_000008_add_approved_at_to_uploads_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_19_000001_create_contact_messages_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_19_000002_create_payments_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_19_000003_add_stripe_customer_id_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_19_000004_create_subscriptions_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_19_000005_create_maintenance_plans_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_19_000006_add_read_at_to_contact_messages_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_19_000007_add_theme_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_19_000008_add_project_id_to_intake_submissions_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_23_000001_create_consultations_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_23_000002_add_status_and_admin_notes_to_consultations_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_23_000003_add_meeting_link_to_consultations_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_23_000004_add_dates_to_milestones_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_23_000005_add_admin_reply_to_uploads_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_23_000006_add_preview_url_to_projects_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_23_000007_create_calendar_events_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_23_000008_add_stripe_receipt_url_to_payments_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_23_000009_create_faq_feedback_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_23_000010_add_cancel_at_period_end_to_subscriptions_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_24_000001_add_progress_override_to_projects_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_24_000002_create_upload_replies_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_24_000003_add_status_to_uploads_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_24_072552_add_last_seen_at_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_24_084403_add_activity_and_notification_preferences_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_25_053715_add_country_to_consultations_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_25_060354_add_timezone_to_consultations_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_27_000001_add_design_fields_to_maintenance_plans_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_28_000001_add_faithstack_compensation_to_maintenance_plans_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_28_000002_add_signup_fields_to_subscriptions_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_28_000003_create_subscription_payouts_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_29_000001_add_verification_fields_to_subscription_payouts_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_29_000001_expand_upload_status_values.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_29_000002_add_dev_instructions_to_uploads_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_29_000003_create_project_requests_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_29_000004_create_recommendations_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_29_000005_create_subscription_payments_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_30_000001_create_service_agreement_templates_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_30_000002_add_pdf_path_to_service_agreement_templates_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_06_30_000002_create_service_agreement_signatures_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_01_000001_add_onboarding_step_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_01_000001_create_project_questionnaires_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_01_000002_add_organization_name_and_title_to_service_agreement_signatures.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_01_000003_add_website_type_to_projects_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_02_000001_add_total_price_and_payment_kind.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_02_000002_generalize_subscription_payouts_to_partner_payouts.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_03_000001_add_review_and_refund_fields.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_03_062654_create_client_notifications_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_03_064735_add_tour_completed_at_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_03_065944_create_announcements_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_03_065945_create_announcement_dismissals_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_03_070500_create_satisfaction_surveys_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_03_071500_add_two_factor_columns_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_04_000001_create_care_plan_agreements_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_04_000002_add_suspension_fields.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_05_000001_add_welcomed_at_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_05_000002_add_phone_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_05_000003_create_login_activities_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_05_000004_create_app_settings_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_05_000005_add_filled_pdf_path_to_service_agreement_signatures_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_06_000001_add_renewal_reminder_period_end_to_subscriptions_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_06_000002_add_stripe_price_id_to_maintenance_plans_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_07_000001_create_refund_requests_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_08_000001_add_timezone_to_payments_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_08_000002_add_timezone_to_subscriptions_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_08_000003_add_impersonator_id_to_login_activities_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_09_000001_add_read_at_to_upload_replies_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_09_000002_add_is_super_admin_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_09_000003_create_admin_page_permissions_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_09_000004_add_is_active_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_09_000005_create_assistant_conversations_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_09_000006_create_assistant_messages_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_10_000000_add_job_title_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_10_000001_add_referrals_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_11_000000_add_developer_assignment_to_uploads_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_11_000001_add_developer_assignment_to_project_requests_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_11_000002_add_archived_and_featured_to_satisfaction_surveys_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_11_000003_add_attachment_to_project_requests_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_11_000004_create_upload_attachments_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_13_000001_add_description_to_milestones_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_13_100000_add_audiences_to_announcements_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_13_120000_add_metadata_to_announcements_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_14_000001_add_proposal_fields_to_project_requests_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_14_000002_create_support_tickets_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_14_000003_create_support_ticket_replies_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_15_100000_add_payment_reminder_shown_at_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_15_140000_add_discount_percent_to_projects_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_15_150000_add_category_to_payments_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_15_160000_add_status_message_to_projects_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_16_000000_add_last_login_at_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_16_010000_add_priority_fields_to_uploads_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_17_000001_add_completed_at_to_uploads_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_17_000001_add_manual_entry_fields_to_partner_payouts_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_17_000002_create_partner_payout_receipts_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_17_000003_add_edited_fields_to_partner_payouts_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_17_000004_add_internal_work_order_fields_to_project_requests_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_19_000001_create_project_request_attachments_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_20_000001_add_title_to_uploads_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_22_000001_add_completion_note_to_uploads_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_22_000002_add_notifiable_columns_to_client_notifications_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_22_000003_add_notification_email_to_users_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">2026_07_24_000001_create_chat_messages_table.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">2026_07_24_000002_add_edit_delete_to_chat_messages_table.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">seeders/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">DatabaseSeeder.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">MaintenancePlanSeeder.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">ServiceAgreementTemplateSeeder.php</span></span>
+</li>
+  </ul>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   └── </span><span class="filename">.gitignore</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">docker/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   └── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">php/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       └── </span><span class="filename">uploads.ini</span></span>
+</li>
+  </ul>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">nginx/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   └── </span><span class="filename">default.conf</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">public/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">client-uploads/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">intake/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   │   └── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">1/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   │       ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">logo/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   │       │   └── </span><span class="filename">QswBALnDdrXxbYmbvuXxUTzGRS8SstJUwEmykU8N.jpg</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   │       └── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">photo/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   │           └── </span><span class="filename">zPQOpqvRGsQoL5asfqKSONijx7791nUyA0GPMz4e.jpg</span></span>
+</li>
+  </ul>
+</li>
+  </ul>
+</li>
+  </ul>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">.gitignore</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">image/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">logo/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">vbs-logo-v3.jpeg</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">vbs-logo.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">visionbridgesolutions-logo-tagline.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   └── </span><span class="filename">visionbridgesolutions-logo.png</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">marketing/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   │   └── </span><span class="filename">JDGM-marketing.jpeg</span></span>
+</li>
+  </ul>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">bridge-background-image-v2.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">bridge-effects.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Call_us.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">care-plan.jpeg</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Church_website_development.jpeg</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Client_Ownership.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Custom_Solutions.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Custom_Website_Development.jpeg</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Email_us.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Faith_Base_Values.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">faithstack-thumbnail.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Fast_Reliable.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">founder-enhance-removebg.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">founder-enhance.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">founder.jpeg</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Free_Consultation.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Growth_Focused.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Hosting_Management.jpeg</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">johnnydavisglobalmission.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">johnnydavisministries.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">landing-glowing-bridge.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Landing_Page_Development.jpeg</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">laptop-tillted.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">lets-get-started.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Login_LeftSide_Image.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">logo-v2.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Long_Term_Stability.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">mascot-hi.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">mascut-hide.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">mascut-smile.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Ministry_Website_Development.jpeg</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Mobile_First_Design.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Nonprofit_Website_Development.jpeg</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Our_Mission.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Our_Vision.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Ownership_First.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">parallax-bg1.webp</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">parallax-bg2-enhance.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">parallax-bg2.jpeg</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">parallax-bg3-enhance.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">parallax-bg3.jpg</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">parallax-bg4-enhance.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">parallax-bg5-enhance.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">parallax-bg6-enhance.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">parallax-bg7-enhance.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Partnership_Approach.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Professional_Support.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">reminder-word-icon.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Small_Business_Website_Development.jpeg</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">vbs-logo-v2.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">VisionBridge_Solutions_1.jpeg</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">vission-bridge-htumbnail.png</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Website_Consulting.jpeg</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Website_Maintenance_Services.jpeg</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">Website_Redesign_Services.jpeg</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">whats-next.png</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">videos/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">VisionBridge_Solutions_welcome_v.mp4</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">Web_development_company_hero_video.mp4</span></span>
+</li>
+  </ul>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">.htaccess</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">cinematic-gallery.css</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">cinematic-gallery.js</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">favicon.ico</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">index.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">mobile-design.css</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">mobile-design.js</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   └── </span><span class="filename">robots.txt</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">resources/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">css/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">app.css</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">js/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">app.js</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">bootstrap.js</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   └── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">views/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">admin/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">announcements/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">history.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">calendar/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">care-plans/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">_preview.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">chat/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">_thread.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">clients/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">consultations/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">index.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">show.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">contact-messages/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">developers/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">_item-row.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">email-templates/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">index.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">render-error.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">intake-submissions/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">index.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">show.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">partner-payouts/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">payments/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">project-requests/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">_attachments-picker.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">_dropdown.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">index.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">show.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">projects/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">onboarding-steps/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   │   ├── </span><span class="filename">1-questionnaire.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   │   ├── </span><span class="filename">2-website-type.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   │   ├── </span><span class="filename">3-care-plan.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   │   ├── </span><span class="filename">4-agreement-summary.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   │   └── </span><span class="filename">5-agreement.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">_text-thread.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">onboarding-preview.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">show.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">recommendations/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">refund-requests/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">revisions/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">satisfaction-surveys/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">service-agreement/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">subscriptions/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">support-tickets/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">index.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">show.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">team/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">work-orders/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">_results.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">_dropdown.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">dashboard.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">faq.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   └── </span><span class="filename">two-factor.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">auth/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">forgot-password.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">login.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">register.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">reset-password.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">two-factor-challenge.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   └── </span><span class="filename">verify-email.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">care-plan-signup/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">confirmation.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   └── </span><span class="filename">create.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">emails/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">account-email-changed.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">account-password-changed.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">admin-payment-notification.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">care-plan-payment-reminder.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">chat-message-replied.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">client-reply.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">consultation-cancelled.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">consultation-confirmed.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">consultation-received.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">consultation-rescheduled.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">faithstack-new-client.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">faithstack-payment-reminder.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">intake-confirmation.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">invoice-sent.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">new-client-chat-message.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">new-client-registration.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">new-client-upload.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">new-consultation.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">new-contact-message.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">new-intake-submission.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">new-project-request.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">new-refund-request.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">new-support-ticket.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">payment-failed.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">payment-receipt.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">phased-payment-plan.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">project-approved.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">project-canceled.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">project-launched.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">project-quote-ready.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">project-request-status-changed.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">project-restored.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">project-suspended.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">questionnaire-completed.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">refund-request-approved.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">refund-request-declined.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">revision-status-changed.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">service-agreement-signed.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">subscription-created.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">subscription-receipt.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">subscription-renewal-reminder.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">subscription-status-alert.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">support-ticket-client-reply.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">support-ticket-reply.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">system-alert.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">upload-replied.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">welcome-client.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">work-order-assigned.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">work-order-instructions.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   └── </span><span class="filename">work-order-internal-update.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">errors/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">403.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">404.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   └── </span><span class="filename">maintenance.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">intake/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   └── </span><span class="filename">create.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">layouts/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">admin.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">app.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">auth.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   └── </span><span class="filename">portal.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">onboarding/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   └── </span><span class="filename">welcome.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">partials/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">announcement-banner.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">announcement-prose-styles.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   └── </span><span class="filename">getting-started.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">pdfs/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">service-agreement-certificate.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   └── </span><span class="filename">service-agreement.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">portal/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">announcements/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">index.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">partials/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">assistant-widget.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">file-upload-section.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">onboarding-progress.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">subscription-card.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">text-submission-section.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│       │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">support-tickets/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       │   │   ├── </span><span class="filename">index.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   │   └── </span><span class="filename">show.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">account.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">agreement-summary.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">agreement.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">care-plan-agreement.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">category.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">chat.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">consultation.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">dashboard.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">documents.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">faq.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">milestones.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">notifications.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">payment-checkout.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">payment-receipt.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">payments.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">project-request.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">questionnaire.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">subscription-billing.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">subscription-checkout.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">subscription-receipt.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">survey.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">suspended.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   ├── </span><span class="filename">two-factor.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       │   └── </span><span class="filename">website-type.blade.php</span></span>
+</li>
+  </ul>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       ├── </span><span class="filename">consultation.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       ├── </span><span class="filename">gallery.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       ├── </span><span class="filename">home.blade.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       └── </span><span class="filename">welcome.blade.php</span></span>
+</li>
+  </ul>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">routes/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">channels.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">console.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   └── </span><span class="filename">web.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">speckit/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   └── </span><span class="filename">speckit.adversarial-review</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">specs/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">GAP/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">CARE_PLAN_TIER_CHANGE.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   ├── </span><span class="filename">COUPON_PROMO_CODE_SUPPORT.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">MULTI_PROJECT_SUPPORT.md</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">LOGIN/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">LOGIN_FLOW.md</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">PAYMENT/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">PAYMENT_FLOW.md</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">structure/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">VisionBridgeSolutions_code_structure.md</span></span>
+</li>
+  </ul>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">AGREEMENT-PDF-FILLING.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">AI_ASSISTANT_KNOWLEDGE_BASE.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">ARTISAN_COMMANDS.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">CARE_PLAN_SUBSCRIPTION_FLOW.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">INTERACTIVE_PRODUCT_TOUR.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">PORTAL_ANNOUNCEMENTS.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">PORTAL_GLOBAL_SEARCH.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">POST_LAUNCH_SATISFACTION_SURVEY.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   ├── </span><span class="filename">SELF_SERVICE_REFUND_REQUEST.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   └── </span><span class="filename">TWO_FACTOR_AUTHENTICATION.md</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">storage/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">app/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">private/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">.gitignore</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   └── </span><span class="filename">CLIENT WEBSITE DEVELOPMENT &amp; WEBSITE CARE PLAN MASTER AGREEMENT-OFFICIAL 6.30.pdf</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">public/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   │   └── </span><span class="filename">.gitignore</span></span>
+</li>
+  </ul>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">.gitignore</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">framework/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">cache/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">data/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   │   │   └── </span><span class="filename">.gitignore</span></span>
+</li>
+  </ul>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   └── </span><span class="filename">.gitignore</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">sessions/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">.gitignore</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">1dSBBWtCpvFmunJCww3Wwb25UzY09DrHgAjdVhOS</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">3VHcaSCFJH6U2HeWr2EVWTln80yrAJ9JAk7zvDOz</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">hta4CvIF8CY6r8VQ3DI9crH8YQWbxe984ruzBdIv</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   └── </span><span class="filename">MFwEZsr22e2UjMUpMhN8Sa996hScOlJ5G9Xogl6W</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">testing/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   │   └── </span><span class="filename">.gitignore</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   │   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">views/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">.gitignore</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">318fd8c3c5d784c5ff19e4a489d13d67.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">5625581f9cf0f93941c6e2b59bbede5c.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">7ed2c59073c9d943375f7dd242e474e9.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">a38e7871fb9bb2fd3b6233cc590b68bc.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">a7564ec0bf6fa4e4894356b88b3ef890.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">baacf9a7341ab5621e9cc6a15fbff58a.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">c79b03b44b206c900eabdbea4cd7a6ca.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">cb97ddebfee9b4b4b142d9eda436b54b.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">e2a5852d16137b81f87f6d13b2d3cf5d.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">e3aa6c2fd900150247d6e06b29b5b3a5.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">e3b3d26564384d79f089bf21325e973b.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   ├── </span><span class="filename">f4a32fb35d9d07cfb9d30dec360c8567.php</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   │   └── </span><span class="filename">f84e011069344423a6cb64bef2bb8de4.php</span></span>
+</li>
+  </ul>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">.gitignore</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   └── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">logs/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│       ├── </span><span class="filename">.gitignore</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">│       └── </span><span class="filename">laravel.log</span></span>
+</li>
+  </ul>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">tests/</span></button></span>
+  <ul class="children">
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">Feature/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">ExampleTest.php</span></span>
+</li>
+  </ul>
+</li>
+<li class="dir-item">
+  <span class="entry"><span class="connector">│   ├── </span><button class="toggle" onclick="toggle(this)"><span class="icon">▾</span><span class="dirname">Unit/</span></button></span>
+  <ul class="children">
+<li>
+  <span class="entry"><span class="connector">│   │   └── </span><span class="filename">ExampleTest.php</span></span>
+</li>
+  </ul>
+</li>
+<li>
+  <span class="entry"><span class="connector">│   └── </span><span class="filename">TestCase.php</span></span>
+</li>
+  </ul>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">.dockerignore</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">.editorconfig</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">.env</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">.env.example</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">.gitattributes</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">.gitignore</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">artisan</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">build-set-up.txt</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">claude.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">composer.json</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">composer.lock</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">DEPLOYER-SETUP.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">docker-compose.yml</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">Dockerfile</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">docket-setup-inside-my-terminal.txt</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">FEATURES.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">grep-prompt.txt</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">landingpage-enhancement.txt</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">Maintenance_Plan.txt</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">MILESTONES.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">package.json</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">Phase2.txt</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">phpunit.xml</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">postcss.config.js</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">prompt.txt</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">README.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">stripe-webhook-setup.txt</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">tailwind.config.js</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">TODOS.txt</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">USER_GUIDE.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">├── </span><span class="filename">VisionBridgeSolutions_tree.md</span></span>
+</li>
+<li>
+  <span class="entry"><span class="connector">└── </span><span class="filename">vite.config.js</span></span>
+</li>
+  </ul>
+</li>
+</ul></div>
+<footer>Generated with <a href="https://github.com/law4percent/tree2guide">tree2guide</a> by <a href="https://github.com/law4percent">Lawrence Roble</a> — open source, MIT licensed.</footer>
+<script>
+function expandAll() {
+    document.querySelectorAll('.dir-item').forEach(el => el.classList.remove('collapsed'));
+}
+function collapseAll() {
+    document.querySelectorAll('.dir-item').forEach(el => el.classList.add('collapsed'));
+}
+function toggle(el) {
+    el.closest('.dir-item').classList.toggle('collapsed');
+}
+
+</script>
+</body>
+</html>
