@@ -678,10 +678,10 @@
     </script>
 
     {{-- Live chat delivery — only connects when a chat thread is actually on
-         the page (see resources/views/admin/projects/_chat-thread.blade.php),
-         not on every admin page load. Pusher (hosted), not self-hosted
-         Reverb — this app runs on Hostinger shared hosting with no
-         persistent-process support. --}}
+         the page (see resources/views/admin/chat/_thread.blade.php), not on
+         every admin page load. Pusher (hosted), not self-hosted Reverb —
+         this app runs on Hostinger shared hosting with no persistent-process
+         support. --}}
     @if (config('broadcasting.connections.pusher.key'))
         <script src="https://js.pusher.com/8.4/pusher.min.js"></script>
         <script>

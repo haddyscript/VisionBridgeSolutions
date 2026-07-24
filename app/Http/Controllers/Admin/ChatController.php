@@ -12,21 +12,30 @@ use Illuminate\Support\Facades\Mail;
 
 class ChatController extends Controller
 {
-    /** Global inbox — one row per project, most recent chat activity first. */
+    /** One centralized inbox — every client's conversation on the left, the selected one open on the right (see admin/chat/index.blade.php). */
     public function index()
     {
-        return view('admin.chat.index', [
-            'projects' => Project::with('user')
-                ->withMax('chatMessages', 'created_at')
-                ->orderByDesc('chat_messages_max_created_at')
-                ->paginate(15),
-        ]);
+        return $this->renderInbox(null);
     }
 
-    /** The chat thread itself lives as a tab on the project page (see admin/projects/_chat-thread.blade.php) — this just deep-links there. */
     public function show(Project $project)
     {
-        return redirect()->route('admin.projects.show', ['project' => $project, 'tab' => 'chat']);
+        return $this->renderInbox($project);
+    }
+
+    private function renderInbox(?Project $activeProject)
+    {
+        $projects = Project::with('user')
+            ->withMax('chatMessages', 'created_at')
+            ->orderByDesc('chat_messages_max_created_at')
+            ->get();
+
+        $activeProject?->loadMissing('user', 'chatMessages.user');
+
+        return view('admin.chat.index', [
+            'projects' => $projects,
+            'activeProject' => $activeProject,
+        ]);
     }
 
     public function store(Request $request, Project $project)

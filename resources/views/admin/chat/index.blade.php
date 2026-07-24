@@ -5,57 +5,90 @@
 
 @section('content')
 
-<p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Every client's chat thread, most recently active first.</p>
+<div class="flex h-[calc(100vh-160px)] min-h-[28rem] bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
 
-@if ($projects->isEmpty())
-    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
-        <p class="text-gray-500 dark:text-gray-400">No chat activity yet.</p>
-    </div>
-@else
-    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <table class="w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-navy-dark text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                <tr>
-                    <th class="px-5 py-3">Client</th>
-                    <th class="px-5 py-3">Project</th>
-                    <th class="px-5 py-3">Last Activity</th>
-                    <th class="px-5 py-3"></th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                @foreach ($projects as $project)
-                    @php $unread = $project->unreadClientChatMessagesCount(); @endphp
-                    <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-700/30">
-                        <td class="px-5 py-3.5 align-middle">
-                            <p class="font-medium text-navy dark:text-white">
-                                {{ $project->user->name }}
-                                @if ($unread > 0)
-                                    <span class="ml-1.5 inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">{{ $unread }} new</span>
-                                @endif
-                            </p>
-                        </td>
-                        <td class="px-5 py-3.5 align-middle text-gray-700 dark:text-gray-300">{{ $project->name }}</td>
-                        <td class="px-5 py-3.5 align-middle text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                            {{ $project->chat_messages_max_created_at ? \Illuminate\Support\Carbon::parse($project->chat_messages_max_created_at)->diffForHumans() : '—' }}
-                        </td>
-                        <td class="px-5 py-3.5 align-middle text-right">
-                            <a href="{{ route('admin.chat.show', $project) }}"
-                               class="inline-flex items-center gap-1.5 border border-gray-200 dark:border-gray-600 hover:border-gold hover:bg-gold/10 text-gray-600 dark:text-gray-300 hover:text-gold-dark text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                Open
-                            </a>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+    {{-- Conversation list --}}
+    <div class="w-full sm:w-80 shrink-0 border-r border-gray-200 dark:border-gray-700 flex-col {{ $activeProject ? 'hidden sm:flex' : 'flex' }}">
+        <div class="shrink-0 p-4 border-b border-gray-200 dark:border-gray-700">
+            <div class="relative">
+                <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10.5A6.5 6.5 0 114 10.5a6.5 6.5 0 0113 0z"/></svg>
+                <input type="text" id="chat-search" placeholder="Search clients or projects…"
+                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
+            </div>
+        </div>
+
+        <div id="chat-conversation-list" class="flex-1 overflow-y-auto">
+            @forelse ($projects as $proj)
+                @php
+                    $unread = $proj->unreadClientChatMessagesCount();
+                    $isActive = $activeProject && $activeProject->id === $proj->id;
+                @endphp
+                <a href="{{ route('admin.chat.show', $proj) }}"
+                   data-search="{{ strtolower($proj->user->name.' '.$proj->name) }}"
+                   class="conversation-row flex items-center gap-3 px-4 py-3 border-b border-gray-100 dark:border-gray-700/60 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors {{ $isActive ? 'bg-gold/10 dark:bg-gold/10' : '' }}">
+                    <span class="w-10 h-10 rounded-full bg-navy text-gold text-sm font-bold flex items-center justify-center shrink-0">
+                        {{ strtoupper(substr($proj->user->name, 0, 1)) }}
+                    </span>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="text-sm {{ $unread > 0 ? 'font-bold' : 'font-semibold' }} text-navy dark:text-white truncate">{{ $proj->user->name }}</p>
+                            <span class="text-xs text-gray-400 dark:text-gray-500 shrink-0">
+                                {{ $proj->chat_messages_max_created_at ? \Illuminate\Support\Carbon::parse($proj->chat_messages_max_created_at)->diffForHumans(null, true) : '' }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $proj->name }}</p>
+                    </div>
+                    @if ($unread > 0)
+                        <span class="shrink-0 min-w-[1.25rem] h-5 px-1.5 rounded-full bg-teal text-white text-xs font-semibold flex items-center justify-center">{{ $unread }}</span>
+                    @endif
+                </a>
+            @empty
+                <p class="text-sm text-gray-400 dark:text-gray-500 text-center py-10">No clients yet.</p>
+            @endforelse
+            <p id="chat-search-empty" class="hidden text-sm text-gray-400 dark:text-gray-500 text-center py-10">No conversations match "<span id="chat-search-empty-term"></span>".</p>
+        </div>
     </div>
 
-    <div class="mt-6">
-        {{ $projects->links() }}
+    {{-- Active conversation --}}
+    <div class="flex-1 min-w-0 flex-col {{ $activeProject ? 'flex' : 'hidden sm:flex' }}">
+        @if ($activeProject)
+            @include('admin.chat._thread', ['project' => $activeProject])
+        @else
+            <div class="h-full flex flex-col items-center justify-center text-center p-10">
+                <div class="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Select a conversation to start chatting.</p>
+            </div>
+        @endif
     </div>
-@endif
+</div>
+
+<script>
+(function () {
+    const search = document.getElementById('chat-search');
+    if (!search) return;
+
+    const rows = document.querySelectorAll('.conversation-row');
+    const emptyState = document.getElementById('chat-search-empty');
+    const emptyTerm = document.getElementById('chat-search-empty-term');
+
+    search.addEventListener('input', function () {
+        const term = search.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        rows.forEach(function (row) {
+            const show = !term || row.dataset.search.includes(term);
+            row.classList.toggle('hidden', !show);
+            if (show) visibleCount++;
+        });
+
+        if (emptyState) {
+            emptyState.classList.toggle('hidden', visibleCount > 0 || !term);
+            if (emptyTerm) emptyTerm.textContent = search.value.trim();
+        }
+    });
+})();
+</script>
 
 @endsection

@@ -1,0 +1,392 @@
+# VisionBridge Solutions
+## Spec Kit - Adversarial Review
+
+You are NOT implementing this feature.
+
+You are acting as the internal Engineering Review Board for VisionBridge Solutions.
+
+Your task is to aggressively criticize the proposed implementation before any code is written.
+
+Think like senior engineers responsible for a production SaaS platform.
+
+Assume the implementation WILL FAIL unless proven otherwise.
+
+---
+
+# Review Roles
+
+Review the implementation from each perspective.
+
+## 1. Software Architect
+
+Evaluate:
+
+- Architecture
+- SOLID
+- DRY
+- Separation of concerns
+- Laravel best practices
+- Scalability
+- Maintainability
+- Technical debt
+
+Questions
+
+- Will this architecture survive 5x more users?
+- Are responsibilities mixed?
+- Is this overly coupled?
+- Is there duplicated logic?
+- Are services reusable?
+
+---
+
+## 2. Database Engineer
+
+Review
+
+- migrations
+- indexes
+- foreign keys
+- cascade deletes
+- nullable columns
+- performance
+- query optimization
+
+Questions
+
+Will this become slow after
+
+100,000 users?
+
+1 million chat messages?
+
+10 million notifications?
+
+Find:
+
+- missing indexes
+- N+1 queries
+- unnecessary joins
+- table bloat
+- poor relationships
+
+---
+
+## 3. Security Engineer
+
+Assume attackers are targeting VisionBridge.
+
+Attempt to break the feature.
+
+Review
+
+Authentication
+
+Authorization
+
+Policies
+
+Permissions
+
+Rate limiting
+
+Validation
+
+Mass Assignment
+
+CSRF
+
+XSS
+
+SQL Injection
+
+File Uploads
+
+Storage
+
+Signed URLs
+
+Stripe
+
+Webhook verification
+
+API abuse
+
+Session handling
+
+Data exposure
+
+Secrets
+
+Environment variables
+
+Report every vulnerability.
+
+---
+
+## 4. Performance Engineer
+
+Review
+
+Response time
+
+Memory
+
+Queue usage
+
+Caching
+
+Redis
+
+Database load
+
+Laravel Events
+
+Broadcasting
+
+Polling
+
+WebSockets
+
+Questions
+
+Can this feature support
+
+100 concurrent users?
+
+1,000?
+
+10,000?
+
+Where are the bottlenecks?
+
+What should become async?
+
+---
+
+## 5. Frontend UX Engineer
+
+Review
+
+User Flow
+
+Loading States
+
+Skeleton Screens
+
+Animations
+
+Accessibility
+
+Responsiveness
+
+Keyboard Navigation
+
+Dark Mode
+
+Error States
+
+Empty States
+
+Offline Handling
+
+Ask
+
+Where will users become confused?
+
+Where can friction be removed?
+
+---
+
+## 6. QA Lead
+
+Generate
+
+Edge Cases
+
+Failure Cases
+
+Race Conditions
+
+Concurrency Problems
+
+Validation Issues
+
+Regression Risks
+
+Negative Tests
+
+Boundary Tests
+
+Browser Compatibility
+
+Mobile Issues
+
+Produce an extensive testing checklist.
+
+---
+
+## 7. DevOps Engineer
+
+Review
+
+Deployment Risk
+
+Rollback Strategy
+
+Feature Flags
+
+Logging
+
+Monitoring
+
+Observability
+
+Health Checks
+
+Queue Monitoring
+
+Laravel Horizon
+
+Redis
+
+Database Backups
+
+Zero Downtime Deployment
+
+Secrets
+
+Environment Variables
+
+Container Compatibility
+
+---
+
+## 8. AI Code Reviewer
+
+Review code generation risks.
+
+Identify
+
+Over-engineering
+
+Under-engineering
+
+Hallucinated Laravel APIs
+
+Incorrect package usage
+
+Deprecated APIs
+
+Unused abstractions
+
+Premature optimization
+
+Complexity
+
+Suggest simpler alternatives.
+
+---
+
+## 9. Product Manager
+
+Review
+
+Business Logic
+
+Missing Requirements
+
+Edge Cases
+
+Permission Rules
+
+Client Experience
+
+Admin Experience
+
+Developer Experience
+
+Ask
+
+What happens if...
+
+User deletes account?
+
+Subscription expires?
+
+Payment fails?
+
+Chat is archived?
+
+Developer leaves company?
+
+Client uploads 5GB files?
+
+Project is canceled?
+
+---
+
+## 10. Production Incident Simulator
+
+Imagine this feature has already been deployed.
+
+Generate the Top 25 most likely production incidents.
+
+For each incident include:
+
+- Severity
+- Probability
+- Root Cause
+- Detection
+- Prevention
+- Recovery
+
+---
+
+# Final Score
+
+Provide
+
+Architecture Score
+Security Score
+Performance Score
+Scalability Score
+Maintainability Score
+Developer Experience
+Production Readiness
+
+Rate each out of 10.
+
+---
+
+# Mandatory Improvements
+
+List improvements in order of impact.
+
+Critical
+
+High
+
+Medium
+
+Low
+
+---
+
+# Implementation Approval
+
+Choose ONLY one.
+
+❌ Reject
+
+⚠ Needs Revision
+
+✅ Approved
+
+Justify the decision.
+
+Do NOT implement code.
+
+Only review.
+
+Be brutally honest.

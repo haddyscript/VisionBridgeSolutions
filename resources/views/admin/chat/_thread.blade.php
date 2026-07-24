@@ -1,20 +1,29 @@
 {{--
-    Client <-> Admin chat for this project. Unlike the Uploads/Revisions
-    thread (_text-thread.blade.php), there's only ever one running
-    conversation per project, so no list/detail toggle is needed — just an
-    always-visible scrollback + composer, WhatsApp-style.
+    The active conversation pane of the centralized /admin/chat inbox.
+    $project is the selected conversation (see admin/chat/index.blade.php).
 --}}
-<div id="chat-thread" data-project-id="{{ $project->id }}" class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-    <div class="flex items-center justify-between mb-4">
-        <h3 class="font-semibold text-navy dark:text-white">Chat with {{ $project->user->name }}</h3>
-        <span class="text-xs text-gray-500 dark:text-gray-400">{{ $project->chatMessages->count() }} message{{ $project->chatMessages->count() === 1 ? '' : 's' }}</span>
+<div id="chat-thread" data-project-id="{{ $project->id }}" class="flex flex-col h-full">
+    <div class="shrink-0 flex items-center gap-3 px-5 py-4 border-b border-gray-200 dark:border-gray-700">
+        <a href="{{ route('admin.chat.index') }}" class="sm:hidden shrink-0 w-8 h-8 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </a>
+        <span class="w-9 h-9 rounded-full bg-navy text-gold text-sm font-bold flex items-center justify-center shrink-0">
+            {{ strtoupper(substr($project->user->name, 0, 1)) }}
+        </span>
+        <div class="min-w-0 flex-1">
+            <p class="text-sm font-semibold text-navy dark:text-white truncate">{{ $project->user->name }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $project->name }}</p>
+        </div>
+        <a href="{{ route('admin.projects.show', $project) }}" class="hidden sm:inline-flex shrink-0 items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-gold-dark border border-gray-200 dark:border-gray-600 hover:border-gold px-3 py-1.5 rounded-lg transition-colors">
+            View Project
+        </a>
     </div>
 
-    <div id="chat-thread-messages" class="chat-thread-scroll space-y-3 max-h-[calc(100vh-420px)] overflow-y-auto pr-1 mb-4">
+    <div id="chat-thread-messages" class="chat-thread-scroll flex-1 overflow-y-auto space-y-3 px-5 py-4">
         @forelse ($project->chatMessages as $chatMessage)
             @if ($chatMessage->user_id === $project->user_id)
                 {{-- Client bubble --}}
-                <div class="flex items-start gap-2.5 max-w-[85%]" data-message-id="{{ $chatMessage->id }}">
+                <div class="flex items-start gap-2.5 max-w-[75%]" data-message-id="{{ $chatMessage->id }}">
                     <span class="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold flex items-center justify-center shrink-0">
                         {{ strtoupper(substr($project->user->name, 0, 1)) }}
                     </span>
@@ -25,7 +34,7 @@
                 </div>
             @else
                 {{-- Admin bubble --}}
-                <div class="flex items-start justify-end gap-2.5 max-w-[85%] ml-auto" data-message-id="{{ $chatMessage->id }}">
+                <div class="flex items-start justify-end gap-2.5 max-w-[75%] ml-auto" data-message-id="{{ $chatMessage->id }}">
                     <div class="rounded-2xl rounded-tr-sm bg-navy text-white px-4 py-2.5">
                         <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>
                         <p class="text-sm whitespace-pre-line">{{ $chatMessage->body }}</p>
@@ -35,14 +44,16 @@
                 </div>
             @endif
         @empty
-            <p id="chat-thread-empty" class="text-sm text-gray-500 dark:text-gray-400 text-center py-6">No messages yet — say hello.</p>
+            <div id="chat-thread-empty" class="h-full flex items-center justify-center">
+                <p class="text-sm text-gray-400 dark:text-gray-500">No messages yet — say hello to {{ $project->user->name }}.</p>
+            </div>
         @endforelse
     </div>
 
     <form id="chat-thread-form" data-mark-read-url="{{ route('admin.chat.read', $project) }}"
           method="POST" action="{{ route('admin.chat.store', $project) }}"
           onsubmit="return submitAdminChatMessage(this, event)"
-          class="pt-3 border-t border-gray-200 dark:border-gray-700 flex items-center gap-2">
+          class="shrink-0 flex items-center gap-2 px-5 py-4 border-t border-gray-200 dark:border-gray-700">
         @csrf
         <textarea name="body" rows="1" placeholder="Message {{ $project->user->name }}…" required
                   class="flex-1 resize-none rounded-full border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500"></textarea>
@@ -55,6 +66,13 @@
 </div>
 
 <script>
+(function () {
+    const container = document.getElementById('chat-thread-messages');
+    if (container) container.scrollTop = container.scrollHeight;
+
+    if (typeof markAdminChatRead === 'function') markAdminChatRead();
+})();
+
 function appendAdminChatBubble(data) {
     const container = document.getElementById('chat-thread-messages');
     if (!container) return;
@@ -67,7 +85,7 @@ function appendAdminChatBubble(data) {
     bubble.dataset.messageId = data.id;
 
     if (data.isFromClient) {
-        bubble.className = 'flex items-start gap-2.5 max-w-[85%]';
+        bubble.className = 'flex items-start gap-2.5 max-w-[75%]';
         bubble.innerHTML =
             '<span class="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold flex items-center justify-center shrink-0"></span>' +
             '<div class="rounded-2xl rounded-tl-sm bg-gray-100 dark:bg-gray-700/60 px-4 py-2.5">' +
@@ -78,7 +96,7 @@ function appendAdminChatBubble(data) {
         bubble.querySelector('.text-sm').textContent = data.body;
         bubble.querySelector('.text-xs').textContent = data.sentAt;
     } else {
-        bubble.className = 'flex items-start justify-end gap-2.5 max-w-[85%] ml-auto';
+        bubble.className = 'flex items-start justify-end gap-2.5 max-w-[75%] ml-auto';
         bubble.innerHTML =
             '<div class="rounded-2xl rounded-tr-sm bg-navy text-white px-4 py-2.5">' +
                 '<p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold mb-1">VisionBridge Team</p>' +
