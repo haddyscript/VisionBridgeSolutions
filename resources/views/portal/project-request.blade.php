@@ -106,23 +106,27 @@
 <div id="request-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
     <div id="request-modal-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
 
-    <div id="request-modal-panel" class="relative w-full max-w-lg max-h-[80vh] overflow-y-auto transform scale-95 opacity-0 transition-all duration-200">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
-            <div class="flex items-start justify-between gap-4 mb-3">
-                <h2 id="request-modal-title" class="font-display text-lg font-bold text-navy dark:text-white"></h2>
-                <button type="button" id="request-modal-close" class="shrink-0 w-8 h-8 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-300 flex items-center justify-center transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+    <div id="request-modal-panel" class="relative w-full max-w-lg max-h-[80vh] transform scale-95 opacity-0 transition-all duration-200">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-h-[80vh] flex flex-col overflow-hidden">
+            <div class="shrink-0 px-6 pt-6 pb-4 border-b border-gray-100 dark:border-gray-700">
+                <div class="flex items-start justify-between gap-4 mb-3">
+                    <h2 id="request-modal-title" class="font-display text-lg font-bold text-navy dark:text-white"></h2>
+                    <button type="button" id="request-modal-close" class="shrink-0 w-8 h-8 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-300 flex items-center justify-center transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span id="request-modal-status" class="text-xs font-semibold uppercase tracking-wide px-2.5 py-0.5 rounded-full"></span>
+                    <span id="request-modal-date" class="text-xs text-gray-400 dark:text-gray-500"></span>
+                </div>
             </div>
-            <div class="flex items-center gap-3 mb-4">
-                <span id="request-modal-status" class="text-xs font-semibold uppercase tracking-wide px-2.5 py-0.5 rounded-full"></span>
-                <span id="request-modal-date" class="text-xs text-gray-400 dark:text-gray-500"></span>
+            <div class="overflow-y-auto px-6 py-4">
+                <p id="request-modal-description" class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line"></p>
+                <a id="request-modal-attachment" href="#" target="_blank" rel="noopener" class="hidden items-center gap-1.5 text-xs font-semibold text-gold-dark hover:underline mt-4">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                    <span id="request-modal-attachment-name"></span>
+                </a>
             </div>
-            <p id="request-modal-description" class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line"></p>
-            <a id="request-modal-attachment" href="#" target="_blank" rel="noopener" class="hidden items-center gap-1.5 text-xs font-semibold text-gold-dark hover:underline mt-4">
-                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                <span id="request-modal-attachment-name"></span>
-            </a>
         </div>
     </div>
 </div>
