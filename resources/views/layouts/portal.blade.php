@@ -197,6 +197,16 @@
                     </svg>
                     Support
                 </a>
+                <a href="{{ route('portal.chat.show') }}"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.chat.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                    <span class="flex-1">Chat</span>
+                    @if (($unreadChatCount ?? 0) > 0)
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold text-navy-dark">{{ $unreadChatCount }}</span>
+                    @endif
+                </a>
 
                 <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mt-5 mb-2">Project Files</p>
                 <a href="{{ route('portal.category', 'image') }}" data-tour="files"
@@ -1199,6 +1209,34 @@
     </script>
 
     @include('portal.partials.assistant-widget')
+
+    {{-- Live chat delivery — only connects when a chat thread is actually on
+         the page (see resources/views/portal/chat.blade.php), not on every
+         portal page load. Pusher (hosted), not self-hosted Reverb — this app
+         runs on Hostinger shared hosting with no persistent-process support. --}}
+    @if (config('broadcasting.connections.pusher.key'))
+        <script src="https://js.pusher.com/8.4/pusher.min.js"></script>
+        <script>
+        (function () {
+            const chatRoot = document.getElementById('chat-thread');
+            if (!chatRoot || typeof Pusher === 'undefined') return;
+
+            const projectId = chatRoot.dataset.projectId;
+            const pusher = new Pusher('{{ config('broadcasting.connections.pusher.key') }}', {
+                cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
+                authEndpoint: '{{ url('/broadcasting/auth') }}',
+                auth: {
+                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content },
+                },
+            });
+
+            pusher.subscribe('private-project.' + projectId + '.chat')
+                .bind('MessageSent', function (data) {
+                    if (typeof appendPortalChatBubble === 'function') appendPortalChatBubble(data);
+                });
+        })();
+        </script>
+    @endif
 
 </body>
 </html>

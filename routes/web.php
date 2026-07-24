@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
 use App\Http\Controllers\Admin\CalendarController as AdminCalendarController;
+use App\Http\Controllers\Admin\ChatController as AdminChatController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\ConsultationController as AdminConsultationController;
 use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
@@ -48,6 +49,7 @@ use App\Http\Controllers\Portal\AnnouncementController as PortalAnnouncementCont
 use App\Http\Controllers\Portal\AssistantController as PortalAssistantController;
 use App\Http\Controllers\Portal\CarePlanAgreementController as PortalCarePlanAgreementController;
 use App\Http\Controllers\Portal\CategoryController;
+use App\Http\Controllers\Portal\ChatController as PortalChatController;
 use App\Http\Controllers\Portal\ConsultationController as PortalConsultationController;
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\DocumentController as PortalDocumentController;
@@ -184,6 +186,9 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
     Route::post('/portal/support-tickets', [PortalSupportTicketController::class, 'store'])->name('portal.support-tickets.store');
     Route::get('/portal/support-tickets/{ticket}', [PortalSupportTicketController::class, 'show'])->name('portal.support-tickets.show');
     Route::post('/portal/support-tickets/{ticket}/reply', [PortalSupportTicketController::class, 'reply'])->name('portal.support-tickets.reply');
+    Route::get('/portal/chat', [PortalChatController::class, 'show'])->name('portal.chat.show');
+    Route::post('/portal/projects/{project}/chat', [PortalChatController::class, 'store'])->name('portal.chat.store');
+    Route::post('/portal/projects/{project}/chat/read', [PortalChatController::class, 'markRead'])->name('portal.chat.read');
     Route::get('/portal/project-requests', [PortalProjectRequestController::class, 'show'])->name('portal.project-requests.show');
     Route::post('/portal/project-requests', [PortalProjectRequestController::class, 'store'])->name('portal.project-requests.store');
     Route::get('/portal/consultation', [PortalConsultationController::class, 'create'])->name('portal.consultation.create');
@@ -308,6 +313,11 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::get('/support-tickets/{ticket}', [AdminSupportTicketController::class, 'show'])->name('support-tickets.show');
     Route::post('/support-tickets/{ticket}/reply', [AdminSupportTicketController::class, 'reply'])->name('support-tickets.reply');
     Route::patch('/support-tickets/{ticket}/status', [AdminSupportTicketController::class, 'updateStatus'])->name('support-tickets.status');
+
+    Route::get('/chat', [AdminChatController::class, 'index'])->name('chat.index');
+    Route::get('/projects/{project}/chat', [AdminChatController::class, 'show'])->name('chat.show');
+    Route::post('/projects/{project}/chat', [AdminChatController::class, 'store'])->name('chat.store');
+    Route::post('/projects/{project}/chat/read', [AdminChatController::class, 'markRead'])->name('chat.read');
 
     // ─── Projects & Milestones ───────────────────────────────────────────────
     Route::get('/projects/{project}', [AdminProjectController::class, 'show'])->name('projects.show');

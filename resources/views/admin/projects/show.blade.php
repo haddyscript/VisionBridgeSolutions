@@ -352,6 +352,14 @@
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">{{ $projectRequests->where('status', 'pending')->count() }}</span>
         @endif
     </button>
+    <button type="button" data-tab-button="chat" onclick="showProjectTab('chat')"
+            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
+        Chat
+        @php $unreadClientChatCount = $project->unreadClientChatMessagesCount(); @endphp
+        @if ($unreadClientChatCount > 0)
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">{{ $unreadClientChatCount }}</span>
+        @endif
+    </button>
 </div>
 
 <div id="panel-overview" data-tab-panel="overview">
@@ -1033,6 +1041,10 @@
     </div>
 </div>
 
+<div id="panel-chat" data-tab-panel="chat" class="hidden">
+    @include('admin.projects._chat-thread')
+</div>
+
 <script>
 // Admin Website Content / Revisions thread UI (list <-> detail, unread
 // badges, message truncation, always-visible composer). Defined here --
@@ -1393,7 +1405,7 @@ function submitAdminReply(form, event) {
 </script>
 
 <script>
-    const validProjectTabs = ['overview', 'billing', 'onboarding', 'files', 'content', 'revision', 'recommendations', 'workorders'];
+    const validProjectTabs = ['overview', 'billing', 'onboarding', 'files', 'content', 'revision', 'recommendations', 'workorders', 'chat'];
     let currentProjectTab = 'overview';
 
     // updateUrl=false is used for restoring state (initial deep-link load,
@@ -1402,6 +1414,12 @@ function submitAdminReply(form, event) {
     // another history entry or redundantly rewrite a URL we're already at.
     function showProjectTab(tab, updateUrl = true) {
         currentProjectTab = tab;
+
+        if (tab === 'chat') {
+            if (typeof markAdminChatRead === 'function') markAdminChatRead();
+            const chatScroll = document.getElementById('chat-thread-messages');
+            if (chatScroll) chatScroll.scrollTop = chatScroll.scrollHeight;
+        }
 
         document.querySelectorAll('[data-tab-panel]').forEach((el) => {
             el.classList.toggle('hidden', el.dataset.tabPanel !== tab);

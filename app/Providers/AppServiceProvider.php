@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\ChatMessage;
 use App\Models\ClientNotification;
 use App\Models\Consultation;
 use App\Models\ContactMessage;
@@ -60,6 +61,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with('pendingRecommendationCount', Recommendation::where('status', 'pending_review')->count());
             $view->with('pendingRefundRequestCount', RefundRequest::where('status', 'pending')->count());
             $view->with('openSupportTicketCount', SupportTicket::where('status', 'open')->count());
+            $view->with('unreadChatCount', $this->adminUnreadChatCount());
             $view->with('unreadContactCount', ContactMessage::whereNull('read_at')->count());
             $view->with('unreadConsultationCount', Consultation::whereNull('read_at')->count());
             $view->with('gettingStartedTasks', $this->adminGettingStartedTasks());
@@ -73,7 +75,32 @@ class AppServiceProvider extends ServiceProvider
             $view->with('notifications', $notifications);
             $view->with('unreadNotificationCount', $unreadNotificationCount);
             $view->with('upcomingConsultationCount', $this->clientUpcomingConsultationCount());
+            $view->with('unreadChatCount', $this->clientUnreadChatCount());
         });
+    }
+
+    /** Client messages no admin has opened chat to see yet, across every project. */
+    private function adminUnreadChatCount(): int
+    {
+        return ChatMessage::query()
+            ->join('projects', 'projects.id', '=', 'chat_messages.project_id')
+            ->whereColumn('chat_messages.user_id', 'projects.user_id')
+            ->whereNull('chat_messages.read_at')
+            ->count();
+    }
+
+    /** Messages from our team the logged-in client hasn't opened chat to see yet. */
+    private function clientUnreadChatCount(): int
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return 0;
+        }
+
+        $project = $user->projects()->first();
+
+        return $project?->unreadChatMessagesCount() ?? 0;
     }
 
     /** Items assigned to the logged-in developer that aren't marked completed yet. */

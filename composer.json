@@ -11,6 +11,7 @@
         "barryvdh/laravel-dompdf": "^3.1",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
+        "pusher/pusher-php-server": "^7.2",
         "setasign/fpdf": "^1.9",
         "setasign/fpdi": "^2.6",
         "stripe/stripe-php": "^20.2"

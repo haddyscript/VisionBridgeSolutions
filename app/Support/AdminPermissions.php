@@ -27,7 +27,7 @@ class AdminPermissions
     public const SECTIONS = [
         'dashboard' => ['label' => 'All Projects', 'routes' => ['admin.dashboard'], 'index' => 'admin.dashboard'],
         'team' => ['label' => 'Team Members', 'routes' => [], 'index' => 'admin.team.index'],
-        'clients' => ['label' => 'Clients & Projects', 'routes' => ['admin.clients.*', 'admin.projects.*', 'admin.milestones.*', 'admin.uploads.*'], 'index' => 'admin.clients.index'],
+        'clients' => ['label' => 'Clients & Projects', 'routes' => ['admin.clients.*', 'admin.projects.*', 'admin.milestones.*', 'admin.uploads.*', 'admin.chat.*'], 'index' => 'admin.clients.index'],
         'revisions' => ['label' => 'Revision Management', 'routes' => ['admin.revisions.*'], 'index' => 'admin.revisions.index'],
         'calendar' => ['label' => 'Calendar', 'routes' => ['admin.calendar', 'admin.calendar.*'], 'index' => 'admin.calendar'],
         'contact-messages' => ['label' => 'Contact Messages', 'routes' => ['admin.contact-messages.*'], 'index' => 'admin.contact-messages.index'],

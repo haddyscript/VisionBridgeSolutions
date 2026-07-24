@@ -75,6 +75,29 @@ class Project extends Model
         return $this->hasMany(SupportTicket::class)->latest();
     }
 
+    public function chatMessages()
+    {
+        return $this->hasMany(ChatMessage::class)->oldest();
+    }
+
+    /** Messages from our team the client hasn't opened chat to see yet. */
+    public function unreadChatMessagesCount(): int
+    {
+        return $this->chatMessages()
+            ->where('user_id', '!=', $this->user_id)
+            ->whereNull('read_at')
+            ->count();
+    }
+
+    /** Messages from the client no admin has opened chat to see yet. */
+    public function unreadClientChatMessagesCount(): int
+    {
+        return $this->chatMessages()
+            ->where('user_id', $this->user_id)
+            ->whereNull('read_at')
+            ->count();
+    }
+
     public function payments()
     {
         return $this->hasMany(Payment::class)->latest();
