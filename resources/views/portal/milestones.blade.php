@@ -14,14 +14,6 @@
 @else
 
     @php
-        // Newest first on this dedicated timeline page — the reverse of the
-        // relationship's default ascending order, which other views (admin
-        // edit list, the Overview "last 3" teaser, the Next Milestone bar)
-        // still rely on staying oldest-first, so this only reorders the
-        // collection here, not the relationship itself.
-        $milestones = $project->milestones->sortByDesc('position')->values();
-        $total = $milestones->count();
-        $completed = $milestones->where('status', 'completed')->count();
         $percent = $total > 0 ? (int) round($completed / $total * 100) : $project->progressPercent();
 
         $statusMeta = [
@@ -43,10 +35,10 @@
         </div>
 
         @if ($total > 0)
-            {{-- Status filter — client-side only, no new query --}}
+            {{-- Status filter — client-side only, scoped to the current page --}}
             <div id="milestone-filters" class="inline-flex flex-wrap items-center gap-1 bg-gray-100 dark:bg-gray-900 rounded-full p-1 mb-6">
-                <button type="button" data-filter="all" class="milestone-filter-btn is-active px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors">All ({{ $total }})</button>
-                <button type="button" data-filter="completed" class="milestone-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors">Completed ({{ $completed }})</button>
+                <button type="button" data-filter="all" class="milestone-filter-btn is-active px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors">All ({{ $milestones->count() }})</button>
+                <button type="button" data-filter="completed" class="milestone-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors">Completed ({{ $milestones->where('status', 'completed')->count() }})</button>
                 <button type="button" data-filter="in_progress" class="milestone-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors">In Progress ({{ $milestones->where('status', 'in_progress')->count() }})</button>
                 <button type="button" data-filter="pending" class="milestone-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors">Pending ({{ $milestones->where('status', 'pending')->count() }})</button>
             </div>
@@ -88,6 +80,10 @@
                 </ul>
 
                 <p id="milestone-empty-filter" class="hidden text-sm text-gray-400 dark:text-gray-500 text-center py-8">No milestones in this state.</p>
+            </div>
+
+            <div class="mt-6">
+                {{ $milestones->links() }}
             </div>
         @else
             <p class="text-sm text-gray-400 dark:text-gray-500 text-center py-8">No milestones have been added to your project yet.</p>
