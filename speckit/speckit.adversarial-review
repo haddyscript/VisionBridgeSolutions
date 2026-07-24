@@ -1,392 +1,243 @@
 # VisionBridge Solutions
-## Spec Kit - Adversarial Review
+## Spec Kit — Adversarial Review
 
-You are NOT implementing this feature.
+You are **NOT implementing this feature.**
 
-You are acting as the internal Engineering Review Board for VisionBridge Solutions.
+You are acting as the internal Engineering Review Board for VisionBridge Solutions, reviewing a proposed spec/plan/diff before a single line of it ships.
 
-Your task is to aggressively criticize the proposed implementation before any code is written.
+Assume the implementation **WILL FAIL** unless proven otherwise. Your job is to find the reasons it fails, not to be encouraging.
 
-Think like senior engineers responsible for a production SaaS platform.
+**Input to this review**: the spec, plan, or diff supplied alongside this prompt — not a finished, deployed feature. Where the input is ambiguous or silent on a point below, say so explicitly ("the spec doesn't say what happens if...") rather than assuming the best case.
 
-Assume the implementation WILL FAIL unless proven otherwise.
+---
+
+# Ground Truth — This Codebase's Real Constraints
+
+Anchor every section below to how this app *actually* runs, not generic Laravel-at-scale assumptions. A review that spends its Performance section worrying about Horizon queue depth or Redis eviction policy is worthless here — those don't exist in this stack. Get these facts wrong and the rest of the review is noise.
+
+- **Hosting**: Hostinger **shared hosting**, not a VPS/container. No root, no process supervisor, no persistent background processes.
+- **Deploy**: a GitHub webhook hits a password-protected `/deployer` route, which runs `git fetch` + `git reset --hard origin/main` + Laravel cache-clears over PHP-FPM. `composer install` and `php artisan migrate` are **off by default** (`DEPLOYER_RUN_COMPOSER`/`DEPLOYER_RUN_MIGRATIONS`) because shared-hosting PHP requests have a short execution timeout — both have to be run manually over SSH after most feature deploys.
+- **Queue**: `QUEUE_CONNECTION=sync`. There is no queue worker. Nothing marked `ShouldQueue` is actually deferred — it runs inline, in-request, synchronously, no matter what the code implies.
+- **Broadcasting**: Pusher Channels (hosted, free Sandbox tier: 200k messages/day, 100 concurrent connections), not self-hosted Reverb — chosen specifically because this host can't run a persistent WebSocket process. Broadcast events here use `ShouldBroadcastNow`, not `ShouldBroadcast`, for the same reason: there's no queue to eventually deliver a queued one.
+- **Cache/session**: file-based (`CACHE_STORE=file`, file sessions). No Redis, no Memcached in active use.
+- **Database**: MySQL. No read replicas, no sharding, no query cache layer beyond what MySQL itself does.
+- **Auth**: session-based (`auth`/`admin` middleware), not API tokens/Sanctum. A single `users` table serves both clients and admin/team members, distinguished by `role`/`is_super_admin`/`restricted_access` — there is no separate admin model or guard.
+- **Admin permissions**: a custom, hand-maintained map (`App\Support\AdminPermissions::SECTIONS`) of route-name-wildcard patterns to restrictable sections, enforced by `EnsureUserCanAccessAdminPage` middleware. **A new admin route that isn't added to this map is silently unrestricted** — the middleware only enforces sections it recognizes.
+- **Frontend**: server-rendered Blade, no SPA framework, no Vite build step running in production (Tailwind loads via CDN `<script>`; any new client-side dependency must be either vanilla-JS-CDN-loadable or the deploy pipeline needs rework). All existing JS is inline `<script>` per view — no bundler, no modules.
+- **Payments**: Stripe, webhook-driven subscription/one-time-payment state.
+- **Live data**: this system holds **real, paying client Stripe subscriptions today** — it is not a staging environment. Any destructive operation, migration touching existing rows, or billing-adjacent change carries real financial/legal weight, not just a bug-tracker ticket.
+
+If the spec being reviewed assumes any capability this stack doesn't have (a queue worker, Redis, a persistent process, an SPA data layer, Sanctum tokens), **that is itself a Critical finding**, not a detail to gloss over.
+
+---
+
+# Known Failure Patterns in This Codebase
+
+Before role-playing the review board, scan the spec/diff specifically for these — they are not hypothetical; each has already caused a real, shipped bug in this app, and the same shape of mistake is the single most likely way a new feature breaks here too.
+
+- **Synchronous side effects blocking the response.** Any `Mail::send()`, `broadcast()`, outbound HTTP call, or third-party SDK call that runs directly in a controller method — not wrapped in the established `dispatch(fn () => ...)->afterResponse()` idiom — can turn an unrelated failure (a bad SMTP config, a slow API) into a 500 on an otherwise-successful action. This exact bug shipped once already: a synchronous `Mail::send()` in an admin controller 500'd requests even after the primary DB write and broadcast had already succeeded.
+- **Malformed Eloquent eager-load calls.** `Model::load('a', ['b' => fn ($q) => ...])` (mixing a bare string arg with a constrained-relation array across *separate* arguments) silently mis-parses — it must be one array: `load(['a', 'b' => fn ($q) => ...])`. This exact mistake shipped once and crashed a whole page with an opaque "Method name must be a string" error.
+- **New admin routes missing from `AdminPermissions::SECTIONS`.** If a route name isn't in the map, the permission middleware treats it as unrestricted, not "deny by default." Every new `admin.*` route in the diff needs a matching section entry (new or existing) checked off explicitly.
+- **Global page-level JS silently fighting new AJAX code.** This app has a global capture-phase `document` listener that shows a full-screen loading overlay on *every* form submit unless the form opts out with `data-no-loading-overlay` — new AJAX-driven forms that forget this opt-out get a stuck "Processing…" overlay with no way to dismiss it, since it only clears on real navigation.
+- **Badges/counts computed once at page render, never live-updated.** Sidebar unread counts, list-row timestamps, and similar server-rendered-once values do not refresh themselves after an in-page action (marking read, a Pusher event, an AJAX update) unless explicit JS is written to patch that specific DOM node. Assume every such value is stale-by-default and demand the spec says how/when it's corrected.
+- **N+1s hidden inside Blade loops calling model helper methods.** e.g. `$project->unreadClientChatMessagesCount()` invoked once per row in a `@foreach` runs one query per row with no obvious "N+1" shape in the controller — these hide in the view layer here, not just the controller.
+- **Two nearly-identical Portal/Admin controller pairs for the same feature drifting apart.** This app consistently mirrors a feature into a `Portal\XController` and an `Admin\XController` (chat, uploads, support tickets). Check that authorization, validation limits, and side effects (notifications, emails, broadcasts) were actually mirrored, not just the happy path.
 
 ---
 
 # Review Roles
 
-Review the implementation from each perspective.
+Review the implementation from each perspective below. Where a question doesn't apply given the Ground Truth section above, say so explicitly rather than skipping it silently — "N/A, no queue worker exists" is a valid, useful answer.
 
 ## 1. Software Architect
 
-Evaluate:
+Review:
+- Architecture fit within this app's existing MVC/Blade structure (no service layer convention exists here beyond controllers + models — don't invent one unless the spec justifies it)
+- SOLID, DRY, separation of concerns
+- Whether the Portal/Admin mirror-pair convention (see above) is followed or diverges without reason
+- Coupling between new code and existing models/controllers
+- Duplicated logic that should reuse an existing helper/trait/scope
+- Technical debt introduced vs. technical debt paid down
 
-- Architecture
-- SOLID
-- DRY
-- Separation of concerns
-- Laravel best practices
-- Scalability
-- Maintainability
-- Technical debt
-
-Questions
-
-- Will this architecture survive 5x more users?
-- Are responsibilities mixed?
-- Is this overly coupled?
-- Is there duplicated logic?
-- Are services reusable?
+Questions:
+- Will this hold up if the client base grows 5–10x (still dozens-to-low-hundreds of accounts, not millions — don't score against hyperscale assumptions this app will never hit)?
+- Are responsibilities mixed between controller/model/view in a way that contradicts how the rest of this codebase is organized?
+- Is there duplicated logic that an existing model scope, trait, or shared Blade partial already covers?
+- Are new abstractions (services, jobs, interfaces) justified by real complexity, or premature for what this feature actually needs?
 
 ---
 
 ## 2. Database Engineer
 
-Review
+Review:
+- New/changed migrations — additive vs. destructive, and whether a destructive change is even safe given this app now holds live paying-client data
+- Indexes on any new foreign key or frequently-filtered/sorted column
+- `nullOnDelete`/`cascadeOnDelete` choices — does cascading actually match intent, or could it silently wipe related records no one meant to delete?
+- Nullable columns — is null used meaningfully, or as a lazy substitute for a default?
+- Whether a migration modifies a table that's already live in production (if so: is it purely additive, and does the plan account for `DEPLOYER_RUN_MIGRATIONS` being off by default, requiring a manual `php artisan migrate --force` over SSH)?
 
-- migrations
-- indexes
-- foreign keys
-- cascade deletes
-- nullable columns
-- performance
-- query optimization
-
-Questions
-
-Will this become slow after
-
-100,000 users?
-
-1 million chat messages?
-
-10 million notifications?
-
-Find:
-
-- missing indexes
-- N+1 queries
-- unnecessary joins
-- table bloat
-- poor relationships
+Questions — will this stay fast at realistic scale for this app specifically (dozens of clients, not millions):
+- At a few hundred thousand rows in the busiest new/changed table, does any query in the spec still have a usable index, or does it degrade to a table scan?
+- Any N+1 introduced by eager-loading assumptions that don't match how the view actually consumes the data?
+- Any query built inside a Blade `@foreach` rather than eager-loaded once beforehand?
 
 ---
 
 ## 3. Security Engineer
 
-Assume attackers are targeting VisionBridge.
+Assume attackers are specifically targeting VisionBridge, not a generic app.
 
-Attempt to break the feature.
+Review:
+- Authentication and session handling (session-based, file-driven — any assumption of stateless/token auth is wrong here)
+- Authorization — specifically: is every new admin route added to `AdminPermissions::SECTIONS`? Is every new portal route scoped to `$request->user()`'s own project, matching the existing `authorizeProject()`-style pattern?
+- Mass assignment — is `$fillable` scoped tightly, or does it expose a column that should never be client/admin-writable?
+- CSRF — is anything newly exempted in `bootstrap/app.php`'s `validateCsrfTokens(except: [...])`? If so, why, and is that exemption as narrow as possible?
+- The existing highly-privileged, password-gated, CSRF-exempt routes (`/deployer`, `/reset-database`, `/migrate`) — does this change touch, extend, or weaken any of them? Is the deploy/reset password ever logged, echoed, or exposed in an error page?
+- File uploads/storage — path traversal, MIME/type validation, disk visibility (public vs. private disks), signed URL expiry if used
+- Stripe — webhook signature verification intact, no trust of unauthenticated client-supplied prices/amounts
+- If this touches broadcasting: is the `routes/channels.php` authorization callback actually restrictive (owner-or-permitted-admin), or does it accidentally authorize any authenticated user?
+- Data exposure — does any API/JSON response leak fields that shouldn't cross the client/admin boundary (e.g., a client-facing endpoint returning admin-only annotations)?
+- Secrets/env vars — any new credential hardcoded instead of pulled from `.env`/`.env.example`?
 
-Review
-
-Authentication
-
-Authorization
-
-Policies
-
-Permissions
-
-Rate limiting
-
-Validation
-
-Mass Assignment
-
-CSRF
-
-XSS
-
-SQL Injection
-
-File Uploads
-
-Storage
-
-Signed URLs
-
-Stripe
-
-Webhook verification
-
-API abuse
-
-Session handling
-
-Data exposure
-
-Secrets
-
-Environment variables
-
-Report every vulnerability.
+Report every vulnerability found, however minor, with the specific file/route it lives in.
 
 ---
 
 ## 4. Performance Engineer
 
-Review
+Review, given there is **no queue worker and no Redis** in this stack:
+- Any synchronous `Mail::send()`, `broadcast()`, or outbound HTTP/API call sitting directly in the request path instead of behind the established `dispatch(fn () => ...)->afterResponse()` pattern (see Known Failure Patterns above) — this is the single most likely performance/reliability bug class here
+- Whether this feature's expected message/event volume is anywhere near Pusher's free-tier caps (200k messages/day, 100 concurrent connections) — flag if realistic usage could approach either
+- Caching — file-based cache only; is anything assumed to be fast-and-in-memory that will actually hit disk?
+- Database load — see Database Engineer section; performance and DB review overlap heavily in this app given there's no caching layer to hide a slow query behind
 
-Response time
-
-Memory
-
-Queue usage
-
-Caching
-
-Redis
-
-Database load
-
-Laravel Events
-
-Broadcasting
-
-Polling
-
-WebSockets
-
-Questions
-
-Can this feature support
-
-100 concurrent users?
-
-1,000?
-
-10,000?
-
-Where are the bottlenecks?
-
-What should become async?
+Questions:
+- Can this feature handle this app's actual realistic concurrency (a handful to a few dozen simultaneous users, not thousands) without a request blocking on a slow external call?
+- What in this spec, if it becomes slow, has no fallback — i.e., a single blocking call with no timeout, no retry limit, no async escape hatch?
 
 ---
 
 ## 5. Frontend UX Engineer
 
-Review
+Review:
+- User flow, loading states, and specifically: does every new form either handle its own submit feedback and opt out of the global loading overlay (`data-no-loading-overlay`), or intentionally rely on it?
+- Empty states, error states, and what a user sees if a Pusher connection drops mid-session (silent failure vs. visible reconnect state)
+- Accessibility — keyboard reachability of any new interactive element (menus, modals), focus handling on modal open/close, color contrast in both light and dark mode
+- Responsiveness — mobile layout for anything added to the two-pane/dashboard-style admin views
+- Whether any newly-added counter/badge is live-updated or silently stale after the triggering action (see Known Failure Patterns)
 
-User Flow
-
-Loading States
-
-Skeleton Screens
-
-Animations
-
-Accessibility
-
-Responsiveness
-
-Keyboard Navigation
-
-Dark Mode
-
-Error States
-
-Empty States
-
-Offline Handling
-
-Ask
-
-Where will users become confused?
-
-Where can friction be removed?
+Ask:
+- Where will a client vs. an admin get confused by the same feature behaving subtly differently between the portal and admin mirror-pair?
+- Where is a destructive action (delete, cancel, remove access) missing a confirmation step consistent with this app's existing modal pattern, rather than a native `confirm()`/`alert()`?
 
 ---
 
 ## 6. QA Lead
 
-Generate
+Generate concrete, this-feature-specific cases — not a generic checklist — for:
+- Edge cases in validation (empty/whitespace-only input, max-length boundaries matching what the model actually enforces)
+- Race conditions specific to this app's real concurrency shape: two browser tabs/sessions for the same user, an admin and a client acting on the same record simultaneously, a Pusher event arriving while a conflicting local action is mid-flight
+- What happens if the same destructive action is submitted twice in quick succession (double-click, slow network) — is it idempotent?
+- Regression risk against the existing Portal/Admin mirror-pair this feature sits next to
+- Browser coverage realistic for this app's actual audience (Chrome/Safari primarily; note explicitly if a feature silently degrades in Firefox, e.g. anything depending on `SpeechRecognition`)
+- Mobile Safari specifically, given iOS's stricter background/permission model (relevant for anything audio-, notification-, or PWA-related)
 
-Edge Cases
-
-Failure Cases
-
-Race Conditions
-
-Concurrency Problems
-
-Validation Issues
-
-Regression Risks
-
-Negative Tests
-
-Boundary Tests
-
-Browser Compatibility
-
-Mobile Issues
-
-Produce an extensive testing checklist.
+Produce an extensive, concrete testing checklist tied to the actual acceptance criteria in the spec — not a copy-paste of generic QA categories.
 
 ---
 
 ## 7. DevOps Engineer
 
-Review
-
-Deployment Risk
-
-Rollback Strategy
-
-Feature Flags
-
-Logging
-
-Monitoring
-
-Observability
-
-Health Checks
-
-Queue Monitoring
-
-Laravel Horizon
-
-Redis
-
-Database Backups
-
-Zero Downtime Deployment
-
-Secrets
-
-Environment Variables
-
-Container Compatibility
+Review against how this app *actually* deploys (see Ground Truth) — do not evaluate against Horizon/Kubernetes/zero-downtime blue-green assumptions that don't apply here:
+- Does this change require a new migration? If so, the plan must explicitly call out the manual `php artisan migrate --force` over SSH step, since `DEPLOYER_RUN_MIGRATIONS` is off by default.
+- Does this change require a new Composer package? Same as above — `DEPLOYER_RUN_COMPOSER` is off by default; the plan must call out the manual `composer update <package>` over SSH step.
+- Any new env var — is it added to `.env.example` (committed) with a safe blank/default, separately from the real value in the untracked server `.env`?
+- Rollback — this repo's sanctioned undo is `git revert` + push (which re-triggers the deploy webhook), never a force-push or history rewrite. Does the plan assume anything else?
+- Logging/observability — in production, uncaught 5xx errors render a generic maintenance page (`errors.maintenance`); does this feature's failure mode actually surface anywhere in `storage/logs/laravel.log`, or could it fail silently behind that page?
+- Could this feature's own request handling (a slow synchronous call, a large file operation) risk hitting the shared-hosting PHP execution timeout?
 
 ---
 
 ## 8. AI Code Reviewer
 
-Review code generation risks.
+Review the spec/diff itself for signs it was written without verifying against this actual codebase:
+- Hallucinated Laravel APIs, config keys, or package methods that don't exist in the versions actually pinned in `composer.json`/`composer.lock`
+- References to infrastructure this app doesn't have (Horizon, Redis, a queue worker, Docker, Sanctum, an SPA build step) presented as if they exist
+- Deprecated or version-mismatched API usage against the Laravel version actually in use
+- Over-engineering: new abstractions, service classes, or config layers beyond what this app's existing conventions use for comparable features
+- Under-engineering: missing validation, error handling, or authorization that an equivalent existing feature in this app already has
+- Unused code paths, dead abstractions, or speculative "future-proofing" not requested by the spec
 
-Identify
-
-Over-engineering
-
-Under-engineering
-
-Hallucinated Laravel APIs
-
-Incorrect package usage
-
-Deprecated APIs
-
-Unused abstractions
-
-Premature optimization
-
-Complexity
-
-Suggest simpler alternatives.
+Suggest the simplest change that actually satisfies the spec, referencing the closest existing equivalent feature in this codebase as the pattern to follow.
 
 ---
 
 ## 9. Product Manager
 
-Review
+Review:
+- Business logic completeness against the stated requirement — not just the happy path
+- Missing requirements the spec doesn't address
+- Permission/role rules — client vs. admin vs. super-admin vs. restricted-admin vs. developer, matching how this app's actual role system works (`isAdmin()`, `isSuperAdmin()`, `isDeveloper()`, `restricted_access`)
+- Client experience vs. admin/team experience vs. developer experience, if this feature touches more than one
 
-Business Logic
-
-Missing Requirements
-
-Edge Cases
-
-Permission Rules
-
-Client Experience
-
-Admin Experience
-
-Developer Experience
-
-Ask
-
-What happens if...
-
-User deletes account?
-
-Subscription expires?
-
-Payment fails?
-
-Chat is archived?
-
-Developer leaves company?
-
-Client uploads 5GB files?
-
-Project is canceled?
+Ask, using this app's actual concepts (not generic SaaS placeholders):
+- What happens if the client's project is suspended or canceled mid-use of this feature?
+- What happens if a Care Plan subscription lapses or a payment fails while this feature is in use?
+- What happens if the admin/team member who owns some piece of this (an assigned developer, a message sender) is deactivated or removed from Team afterward?
+- What happens on a client account closure request — does anything this feature created get orphaned, exposed, or need cleanup?
+- What happens if impersonation ("Log In as Client") is active while this feature is used — does anything misattribute an action to the wrong identity?
 
 ---
 
 ## 10. Production Incident Simulator
 
-Imagine this feature has already been deployed.
+Imagine this feature has already shipped to the live, paying-client environment.
 
-Generate the Top 25 most likely production incidents.
+Generate the **Top 15–25 most likely production incidents** (scale the number to the feature's actual surface area — a small feature doesn't need 25 padded, low-probability incidents invented to hit a quota).
 
 For each incident include:
-
-- Severity
-- Probability
-- Root Cause
-- Detection
-- Prevention
-- Recovery
+- **Severity** (Critical / High / Medium / Low)
+- **Probability** (given this app's actual scale and stack — not hyperscale assumptions)
+- **Root cause**
+- **Detection** — how it would actually be noticed given this app's real observability (a client/admin complaint, `laravel.log`, the maintenance-page fallback) — not "the monitoring dashboard alerts," since no such dashboard exists here
+- **Prevention**
+- **Recovery** — accounting for no queue/no worker to retry anything automatically, and manual SSH access as the actual recovery tool
 
 ---
 
 # Final Score
 
-Provide
+Score each out of 10, with a one-sentence justification anchored to a specific finding above — a bare number is not acceptable.
 
-Architecture Score
-Security Score
-Performance Score
-Scalability Score
-Maintainability Score
-Developer Experience
-Production Readiness
-
-Rate each out of 10.
+- Architecture Score
+- Security Score
+- Performance Score
+- Scalability Score (scaled to this app's real ceiling — dozens to low-hundreds of clients — not hyperscale)
+- Maintainability Score
+- Developer Experience
+- Production Readiness — explicitly state whether this is safe to ship against **live paying-client data**, not just "does it work"
 
 ---
 
 # Mandatory Improvements
 
-List improvements in order of impact.
+List improvements in order of impact, each tied to a specific finding above (not generic advice):
 
-Critical
-
-High
-
-Medium
-
-Low
+- Critical — must fix before this ships at all
+- High — must fix before this ships to the live environment
+- Medium — should fix soon after
+- Low — nice to have, no urgency
 
 ---
 
 # Implementation Approval
 
-Choose ONLY one.
+Choose ONLY one:
 
-❌ Reject
+- ❌ **Reject**
+- ⚠️ **Needs Revision**
+- ✅ **Approved**
 
-⚠ Needs Revision
+Justify the decision in terms of the Critical/High findings above, and explicitly address whether this is safe to deploy given this system holds real, active Stripe subscriptions today.
 
-✅ Approved
-
-Justify the decision.
-
-Do NOT implement code.
-
-Only review.
-
-Be brutally honest.
+Do NOT implement code. Only review. Be brutally honest.
