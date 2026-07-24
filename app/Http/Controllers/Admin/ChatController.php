@@ -53,7 +53,9 @@ class ChatController extends Controller
         broadcast(new ChatMessageSent($message))->toOthers();
 
         if ($project->user->notify_on_replies) {
-            Mail::to($project->user->email)->send(new ChatMessageRepliedMail($message));
+            dispatch(function () use ($project, $message) {
+                Mail::to($project->user->email)->send(new ChatMessageRepliedMail($message));
+            })->afterResponse();
         }
 
         ClientNotification::send(
