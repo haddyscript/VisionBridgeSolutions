@@ -72,10 +72,17 @@
         @csrf
         <textarea name="body" rows="1" placeholder="Message {{ $project->user->name }}…" required
                   class="flex-1 resize-none rounded-full border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500"></textarea>
-        <button type="button" id="chat-mic-btn" title="Voice input" class="hidden shrink-0 w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600 text-gray-400 hover:text-gold-dark hover:border-gold flex items-center justify-center transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button type="button" id="chat-mic-btn" title="Voice input" class="hidden relative shrink-0 w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600 text-gray-400 hover:text-gold-dark hover:border-gold flex items-center justify-center transition-colors">
+            <span id="chat-mic-ring" class="hidden absolute inset-0 rounded-full bg-red-400 opacity-75 animate-ping"></span>
+            <svg id="chat-mic-icon" class="w-4 h-4 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/>
             </svg>
+            <span id="chat-mic-bars" class="hidden relative items-end justify-center gap-0.5 h-4 w-4">
+                <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
+                <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
+                <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
+                <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
+            </span>
         </button>
         <button type="submit" title="Send" class="shrink-0 w-10 h-10 rounded-full bg-navy hover:bg-navy-light text-white flex items-center justify-center transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,6 +131,9 @@
  */
 (function () {
     const micBtn = document.getElementById('chat-mic-btn');
+    const micIcon = document.getElementById('chat-mic-icon');
+    const micBars = document.getElementById('chat-mic-bars');
+    const micRing = document.getElementById('chat-mic-ring');
     const textarea = document.querySelector('#chat-thread-form textarea[name="body"]');
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!micBtn || !textarea || !SpeechRecognition) return;
@@ -138,11 +148,73 @@
     let listening = false;
     let baseText = '';
 
+    // Real-time volume-reactive bars — separate from SpeechRecognition
+    // (which only exposes transcripts, not audio levels), so this opens
+    // its own short-lived getUserMedia stream purely for visualization.
+    // Since SpeechRecognition already required mic permission, this
+    // reuses that same grant rather than prompting again.
+    let audioCtx = null;
+    let analyser = null;
+    let micStream = null;
+    let rafId = null;
+
+    function startVisualizer() {
+        if (!navigator.mediaDevices?.getUserMedia) return;
+
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+            if (!listening) {
+                stream.getTracks().forEach(function (t) { t.stop(); });
+                return;
+            }
+
+            micStream = stream;
+            audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 64;
+            audioCtx.createMediaStreamSource(stream).connect(analyser);
+
+            const data = new Uint8Array(analyser.frequencyBinCount);
+            const bars = micBars.querySelectorAll('.chat-mic-bar');
+            const segment = Math.max(1, Math.floor(data.length / bars.length));
+
+            (function draw() {
+                analyser.getByteFrequencyData(data);
+                bars.forEach(function (bar, i) {
+                    let sum = 0;
+                    for (let j = i * segment; j < (i + 1) * segment; j++) sum += data[j];
+                    const scale = Math.max(0.25, Math.min(1, (sum / segment) / 130));
+                    bar.style.transform = 'scaleY(' + scale + ')';
+                });
+                rafId = requestAnimationFrame(draw);
+            })();
+        }).catch(function () {
+            // Visualization is decorative — voice-to-text itself still works without it.
+        });
+    }
+
+    function stopVisualizer() {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = null;
+        if (micStream) {
+            micStream.getTracks().forEach(function (t) { t.stop(); });
+            micStream = null;
+        }
+    }
+
     function setListeningUI(active) {
         listening = active;
+        micIcon.classList.toggle('hidden', active);
+        micBars.classList.toggle('hidden', !active);
+        micBars.classList.toggle('flex', active);
+        micRing.classList.toggle('hidden', !active);
         micBtn.classList.toggle('text-red-500', active);
         micBtn.classList.toggle('border-red-300', active);
-        micBtn.classList.toggle('animate-pulse', active);
+
+        if (active) {
+            startVisualizer();
+        } else {
+            stopVisualizer();
+        }
     }
 
     recognition.addEventListener('result', function (e) {
