@@ -27,7 +27,7 @@ class AdminPermissions
     public const SECTIONS = [
         'dashboard' => ['label' => 'All Projects', 'routes' => ['admin.dashboard'], 'index' => 'admin.dashboard'],
         'team' => ['label' => 'Team Members', 'routes' => [], 'index' => 'admin.team.index'],
-        'clients' => ['label' => 'Clients & Projects', 'routes' => ['admin.clients.*', 'admin.projects.*', 'admin.milestones.*', 'admin.uploads.*', 'admin.chat.*'], 'index' => 'admin.clients.index'],
+        'clients' => ['label' => 'Clients & Projects', 'routes' => ['admin.clients.*', 'admin.projects.*', 'admin.milestones.*', 'admin.uploads.*'], 'index' => 'admin.clients.index'],
         'revisions' => ['label' => 'Revision Management', 'routes' => ['admin.revisions.*'], 'index' => 'admin.revisions.index'],
         'calendar' => ['label' => 'Calendar', 'routes' => ['admin.calendar', 'admin.calendar.*'], 'index' => 'admin.calendar'],
         'contact-messages' => ['label' => 'Contact Messages', 'routes' => ['admin.contact-messages.*'], 'index' => 'admin.contact-messages.index'],
@@ -37,6 +37,7 @@ class AdminPermissions
         'developers' => ['label' => 'Developers', 'routes' => ['admin.developers.*'], 'index' => 'admin.developers.index'],
         'project-requests' => ['label' => 'Project Requests', 'routes' => ['admin.project-requests.*'], 'index' => 'admin.project-requests.index'],
         'support-tickets' => ['label' => 'Support Tickets', 'routes' => ['admin.support-tickets.*'], 'index' => 'admin.support-tickets.index'],
+        'chat' => ['label' => 'Chat', 'routes' => ['admin.chat.*'], 'index' => 'admin.chat.index'],
         'recommendations' => ['label' => 'Recommendations', 'routes' => ['admin.recommendations.*'], 'index' => 'admin.recommendations.index'],
         'payments' => ['label' => 'Payments', 'routes' => ['admin.payments.*'], 'index' => 'admin.payments.index'],
         'refund-requests' => ['label' => 'Refund Requests', 'routes' => ['admin.refund-requests.*'], 'index' => 'admin.refund-requests.index'],

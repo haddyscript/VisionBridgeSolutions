@@ -364,7 +364,7 @@
                         @endif
                     </a>
                 @endif
-                @if (auth()->user()->canAccessAdminPage('clients'))
+                @if (auth()->user()->canAccessAdminPage('chat'))
                     <a href="{{ route('admin.chat.index') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.chat.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
