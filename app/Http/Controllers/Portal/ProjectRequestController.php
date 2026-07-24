@@ -12,7 +12,7 @@ class ProjectRequestController extends Controller
     public function show(Request $request)
     {
         return view('portal.project-request', [
-            'requests' => $request->user()->projectRequests()->latest()->get(),
+            'requests' => $request->user()->projectRequests()->latest()->paginate(10),
         ]);
     }
 

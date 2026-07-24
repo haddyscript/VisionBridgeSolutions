@@ -98,6 +98,10 @@
     @endforelse
 </div>
 
+<div class="mt-6">
+    {{ $requests->links() }}
+</div>
+
 {{-- Request detail modal — one shared modal populated from the clicked row's data-* attributes --}}
 <div id="request-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
     <div id="request-modal-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
