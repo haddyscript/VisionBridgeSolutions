@@ -21,8 +21,11 @@ class MilestoneController extends Controller
             // Newest first on this dedicated timeline page — the reverse of
             // the relationship's default ascending order, which other views
             // (admin edit list, the Overview "last 3" teaser, the Next
-            // Milestone bar) still rely on staying oldest-first.
-            $milestones = $project->milestones()->orderByDesc('position')->paginate(15);
+            // Milestone bar) still rely on staying oldest-first. Ordered by
+            // created_at rather than position, since position is a manual
+            // display-order counter that doesn't always match the actual
+            // order milestones were entered in.
+            $milestones = $project->milestones()->orderByDesc('created_at')->paginate(15);
             $total = $project->milestones()->count();
             $completed = $project->milestones()->where('status', 'completed')->count();
         }
