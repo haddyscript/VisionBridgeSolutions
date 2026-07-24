@@ -82,6 +82,11 @@
             @csrf
             <textarea name="body" rows="1" placeholder="Type a message…" required
                       class="flex-1 resize-none rounded-full border border-gray-200 dark:border-gray-600 px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500 shadow-sm"></textarea>
+            <button type="button" id="chat-mic-btn" title="Voice input" class="hidden shrink-0 w-11 h-11 rounded-full border border-gray-200 dark:border-gray-600 text-gray-400 hover:text-gold-dark hover:border-gold flex items-center justify-center transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/>
+                </svg>
+            </button>
             <button type="submit" title="Send" class="shrink-0 w-11 h-11 rounded-full bg-gradient-to-br from-gold to-gold-dark hover:shadow-md text-navy-dark flex items-center justify-center transition-all shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
@@ -139,6 +144,70 @@
                     badge.remove();
                 }
             });
+    })();
+
+    /**
+     * Voice-to-text via the browser's own SpeechRecognition API — no
+     * third-party service, no API key, entirely client-side. Supported in
+     * Chrome/Edge/Safari; the mic button stays hidden in browsers without it
+     * (Firefox) rather than showing a button that wouldn't work.
+     */
+    (function () {
+        const micBtn = document.getElementById('chat-mic-btn');
+        const textarea = document.querySelector('#chat-thread-form textarea[name="body"]');
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!micBtn || !textarea || !SpeechRecognition) return;
+
+        micBtn.classList.remove('hidden');
+
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        let listening = false;
+        let baseText = '';
+
+        function setListeningUI(active) {
+            listening = active;
+            micBtn.classList.toggle('text-red-500', active);
+            micBtn.classList.toggle('border-red-300', active);
+            micBtn.classList.toggle('animate-pulse', active);
+        }
+
+        recognition.addEventListener('result', function (e) {
+            let transcript = '';
+            for (let i = 0; i < e.results.length; i++) {
+                transcript += e.results[i][0].transcript;
+            }
+            textarea.value = (baseText + transcript).trim();
+        });
+
+        recognition.addEventListener('error', function (e) {
+            setListeningUI(false);
+            if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+                alert('Microphone access was blocked. Please allow microphone access in your browser to use voice input.');
+            }
+        });
+
+        recognition.addEventListener('end', function () {
+            setListeningUI(false);
+        });
+
+        micBtn.addEventListener('click', function () {
+            if (listening) {
+                recognition.stop();
+                return;
+            }
+
+            baseText = textarea.value.trim() ? textarea.value.trim() + ' ' : '';
+            try {
+                recognition.start();
+                setListeningUI(true);
+            } catch (err) {
+                // Already running — ignore.
+            }
+        });
     })();
 
     function csrfToken() {
