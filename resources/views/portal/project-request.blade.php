@@ -59,25 +59,35 @@
     </form>
 </div>
 
+@php
+    $requestStatusMeta = [
+        'converted' => ['label' => 'Converted', 'pill' => 'bg-teal/10 text-teal-dark', 'dot' => 'bg-teal'],
+        'declined' => ['label' => 'Declined', 'pill' => 'bg-red-50 text-red-500', 'dot' => 'bg-red-400'],
+    ];
+@endphp
+
 <h3 class="font-semibold text-navy dark:text-white mb-3">Your Requests</h3>
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
     @forelse ($requests as $item)
-        <div class="px-6 py-4">
-            <div class="flex items-center justify-between gap-4 mb-1">
-                <p class="text-sm font-semibold text-navy dark:text-white">{{ $item->title }}</p>
-                <span class="text-xs font-semibold uppercase tracking-wide px-2.5 py-0.5 rounded-full {{ $item->status === 'converted' ? 'bg-teal/10 text-teal-dark' : ($item->status === 'declined' ? 'bg-red-50 text-red-500' : 'bg-gold/15 text-gold-dark') }}">
-                    {{ \App\Models\ProjectRequest::STATUSES[$item->status] ?? $item->status }}
-                </span>
-            </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400 whitespace-pre-line">{{ $item->description }}</p>
-            @if ($item->attachment_path)
-                <a href="{{ $item->attachmentUrl() }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-xs font-semibold text-gold-dark hover:underline mt-2">
-                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                    {{ $item->attachment_original_name }}
-                </a>
-            @endif
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">Submitted {{ $item->created_at->format('M j, Y') }}</p>
-        </div>
+        @php $meta = $requestStatusMeta[$item->status] ?? ['label' => \App\Models\ProjectRequest::STATUSES[$item->status] ?? $item->status, 'pill' => 'bg-gold/15 text-gold-dark', 'dot' => 'bg-gold']; @endphp
+        <button type="button" class="request-row w-full flex items-center gap-4 px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-colors"
+                data-title="{{ $item->title }}"
+                data-description="{{ $item->description }}"
+                data-status-label="{{ $meta['label'] }}"
+                data-status-pill="{{ $meta['pill'] }}"
+                data-date="{{ $item->created_at->format('M j, Y') }}"
+                data-attachment-url="{{ $item->attachment_path ? $item->attachmentUrl() : '' }}"
+                data-attachment-name="{{ $item->attachment_original_name }}">
+            <span class="w-2 h-2 rounded-full shrink-0 {{ $meta['dot'] }}"></span>
+            <span class="min-w-0 flex-1">
+                <span class="block text-sm font-semibold text-navy dark:text-white truncate">{{ $item->title }}</span>
+                <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">Submitted {{ $item->created_at->format('M j, Y') }}</span>
+            </span>
+            <span class="shrink-0 text-xs font-semibold uppercase tracking-wide px-2.5 py-0.5 rounded-full {{ $meta['pill'] }}">
+                {{ $meta['label'] }}
+            </span>
+            <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
     @empty
         <div class="text-center py-12">
             <div class="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
@@ -87,6 +97,89 @@
         </div>
     @endforelse
 </div>
+
+{{-- Request detail modal — one shared modal populated from the clicked row's data-* attributes --}}
+<div id="request-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div id="request-modal-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
+
+    <div id="request-modal-panel" class="relative w-full max-w-lg max-h-[80vh] overflow-y-auto transform scale-95 opacity-0 transition-all duration-200">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
+            <div class="flex items-start justify-between gap-4 mb-3">
+                <h2 id="request-modal-title" class="font-display text-lg font-bold text-navy dark:text-white"></h2>
+                <button type="button" id="request-modal-close" class="shrink-0 w-8 h-8 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-300 flex items-center justify-center transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="flex items-center gap-3 mb-4">
+                <span id="request-modal-status" class="text-xs font-semibold uppercase tracking-wide px-2.5 py-0.5 rounded-full"></span>
+                <span id="request-modal-date" class="text-xs text-gray-400 dark:text-gray-500"></span>
+            </div>
+            <p id="request-modal-description" class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line"></p>
+            <a id="request-modal-attachment" href="#" target="_blank" rel="noopener" class="hidden items-center gap-1.5 text-xs font-semibold text-gold-dark hover:underline mt-4">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                <span id="request-modal-attachment-name"></span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const modal = document.getElementById('request-modal');
+    const backdrop = document.getElementById('request-modal-backdrop');
+    const panel = document.getElementById('request-modal-panel');
+    const titleEl = document.getElementById('request-modal-title');
+    const statusEl = document.getElementById('request-modal-status');
+    const dateEl = document.getElementById('request-modal-date');
+    const descriptionEl = document.getElementById('request-modal-description');
+    const attachmentEl = document.getElementById('request-modal-attachment');
+    const attachmentNameEl = document.getElementById('request-modal-attachment-name');
+    const rows = document.querySelectorAll('.request-row');
+    if (!modal || !rows.length) return;
+
+    function openModal(row) {
+        titleEl.textContent = row.dataset.title;
+        dateEl.textContent = 'Submitted ' + row.dataset.date;
+        descriptionEl.textContent = row.dataset.description;
+
+        statusEl.textContent = row.dataset.statusLabel;
+        statusEl.className = 'text-xs font-semibold uppercase tracking-wide px-2.5 py-0.5 rounded-full ' + row.dataset.statusPill;
+
+        if (row.dataset.attachmentUrl) {
+            attachmentEl.href = row.dataset.attachmentUrl;
+            attachmentNameEl.textContent = row.dataset.attachmentName;
+            attachmentEl.classList.remove('hidden');
+            attachmentEl.classList.add('inline-flex');
+        } else {
+            attachmentEl.classList.add('hidden');
+            attachmentEl.classList.remove('inline-flex');
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        requestAnimationFrame(() => {
+            backdrop.classList.remove('opacity-0');
+            panel.classList.remove('scale-95', 'opacity-0');
+        });
+    }
+
+    function closeModal() {
+        backdrop.classList.add('opacity-0');
+        panel.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 200);
+    }
+
+    rows.forEach((row) => row.addEventListener('click', () => openModal(row)));
+    document.getElementById('request-modal-close').addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+    });
+})();
+</script>
 
 <script>
     (function () {
