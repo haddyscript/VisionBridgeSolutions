@@ -22,3 +22,13 @@ Broadcast::channel('project.{projectId}.chat', function (User $user, int $projec
 
     return $user->isAdmin() && $user->canAccessAdminPage('chat');
 });
+
+/**
+ * Shared by every admin viewing the centralized /admin/chat inbox — lets a
+ * new message bump/update that client's row in the conversation list even
+ * when the admin isn't currently looking at that specific project's thread
+ * (the per-project channel above only reaches someone already viewing it).
+ */
+Broadcast::channel('admin.chat-inbox', function (User $user) {
+    return $user->isAdmin() && $user->canAccessAdminPage('chat');
+});

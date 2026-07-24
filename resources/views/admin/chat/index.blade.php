@@ -25,22 +25,21 @@
                 @endphp
                 <a href="{{ route('admin.chat.show', $proj) }}"
                    data-search="{{ strtolower($proj->user->name.' '.$proj->name) }}"
+                   data-project-id="{{ $proj->id }}"
                    class="conversation-row flex items-center gap-3 px-4 py-3 border-b border-gray-100 dark:border-gray-700/60 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors {{ $isActive ? 'bg-gold/10 dark:bg-gold/10' : '' }}">
                     <span class="w-10 h-10 rounded-full bg-navy text-gold text-sm font-bold flex items-center justify-center shrink-0">
                         {{ strtoupper(substr($proj->user->name, 0, 1)) }}
                     </span>
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center justify-between gap-2">
-                            <p class="text-sm {{ $unread > 0 ? 'font-bold' : 'font-semibold' }} text-navy dark:text-white truncate">{{ $proj->user->name }}</p>
-                            <span class="text-xs text-gray-400 dark:text-gray-500 shrink-0">
+                            <p class="conversation-name text-sm {{ $unread > 0 ? 'font-bold' : 'font-semibold' }} text-navy dark:text-white truncate">{{ $proj->user->name }}</p>
+                            <span class="conversation-time text-xs text-gray-400 dark:text-gray-500 shrink-0">
                                 {{ $proj->chat_messages_max_created_at ? \Illuminate\Support\Carbon::parse($proj->chat_messages_max_created_at)->diffForHumans(null, true) : '' }}
                             </span>
                         </div>
                         <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $proj->name }}</p>
                     </div>
-                    @if ($unread > 0)
-                        <span class="shrink-0 min-w-[1.25rem] h-5 px-1.5 rounded-full bg-teal text-white text-xs font-semibold flex items-center justify-center">{{ $unread }}</span>
-                    @endif
+                    <span class="conversation-unread-badge shrink-0 min-w-[1.25rem] h-5 px-1.5 rounded-full bg-teal text-white text-xs font-semibold flex items-center justify-center {{ $unread > 0 ? '' : 'hidden' }}">{{ $unread }}</span>
                 </a>
             @empty
                 <p class="text-sm text-gray-400 dark:text-gray-500 text-center py-10">No clients yet.</p>
@@ -89,6 +88,40 @@
         }
     });
 })();
+
+/**
+ * Live-updates a client's row when a message comes in for a project that
+ * isn't the one currently open (see private-admin.chat-inbox in
+ * layouts/admin.blade.php) — bumps it to the top, refreshes the activity
+ * time, and increments the unread badge unless we're already viewing that
+ * project's thread. A brand-new client with no existing row is a no-op here
+ * (nothing to update) — that case still needs a reload.
+ */
+function bumpAdminChatInboxRow(data) {
+    const list = document.getElementById('chat-conversation-list');
+    if (!list) return;
+
+    const row = list.querySelector('.conversation-row[data-project-id="' + data.projectId + '"]');
+    if (!row) return;
+
+    const timeEl = row.querySelector('.conversation-time');
+    if (timeEl) timeEl.textContent = data.sentAt;
+
+    const activeProjectId = document.getElementById('chat-thread')?.dataset.projectId;
+    const isViewingThisProject = !!activeProjectId && String(activeProjectId) === String(data.projectId);
+
+    if (data.isFromClient && !isViewingThisProject) {
+        const badge = row.querySelector('.conversation-unread-badge');
+        if (badge) {
+            const current = parseInt(badge.textContent, 10) || 0;
+            badge.textContent = current + 1;
+            badge.classList.remove('hidden');
+        }
+        row.querySelector('.conversation-name')?.classList.add('font-bold');
+    }
+
+    list.prepend(row);
+}
 </script>
 
 @endsection

@@ -687,9 +687,9 @@
         <script>
         (function () {
             const chatRoot = document.getElementById('chat-thread');
-            if (!chatRoot || typeof Pusher === 'undefined') return;
+            const inboxList = document.getElementById('chat-conversation-list');
+            if ((!chatRoot && !inboxList) || typeof Pusher === 'undefined') return;
 
-            const projectId = chatRoot.dataset.projectId;
             const pusher = new Pusher('{{ config('broadcasting.connections.pusher.key') }}', {
                 cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
                 authEndpoint: '{{ url('/broadcasting/auth') }}',
@@ -698,16 +698,28 @@
                 },
             });
 
-            const chatChannel = pusher.subscribe('private-project.' + projectId + '.chat');
-            chatChannel.bind('MessageSent', function (data) {
-                if (typeof appendAdminChatBubble === 'function') appendAdminChatBubble(data);
-            });
-            chatChannel.bind('MessageUpdated', function (data) {
-                if (typeof applyAdminChatUpdate === 'function') applyAdminChatUpdate(data);
-            });
-            chatChannel.bind('MessageDeleted', function (data) {
-                if (typeof applyAdminChatDeleted === 'function') applyAdminChatDeleted(data);
-            });
+            if (chatRoot) {
+                const projectId = chatRoot.dataset.projectId;
+                const chatChannel = pusher.subscribe('private-project.' + projectId + '.chat');
+                chatChannel.bind('MessageSent', function (data) {
+                    if (typeof appendAdminChatBubble === 'function') appendAdminChatBubble(data);
+                });
+                chatChannel.bind('MessageUpdated', function (data) {
+                    if (typeof applyAdminChatUpdate === 'function') applyAdminChatUpdate(data);
+                });
+                chatChannel.bind('MessageDeleted', function (data) {
+                    if (typeof applyAdminChatDeleted === 'function') applyAdminChatDeleted(data);
+                });
+            }
+
+            // Present on every /admin/chat page (list open or a thread open)
+            // so a new message updates that client's row in the conversation
+            // list even when nobody's currently viewing that project's thread.
+            if (inboxList) {
+                pusher.subscribe('private-admin.chat-inbox').bind('MessageSent', function (data) {
+                    if (typeof bumpAdminChatInboxRow === 'function') bumpAdminChatInboxRow(data);
+                });
+            }
         })();
         </script>
     @endif

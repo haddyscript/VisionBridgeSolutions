@@ -24,7 +24,13 @@ class ChatMessageSent implements ShouldBroadcastNow
 
     public function broadcastOn(): array
     {
-        return [new PrivateChannel('project.'.$this->message->project_id.'.chat')];
+        return [
+            new PrivateChannel('project.'.$this->message->project_id.'.chat'),
+            // Lets the admin conversation list bump/update this client's row
+            // live even when nobody's currently looking at this project's
+            // own thread (the channel above only reaches an open thread).
+            new PrivateChannel('admin.chat-inbox'),
+        ];
     }
 
     public function broadcastAs(): string
@@ -36,6 +42,7 @@ class ChatMessageSent implements ShouldBroadcastNow
     {
         return [
             'id' => $this->message->id,
+            'projectId' => $this->message->project_id,
             'body' => $this->message->body,
             'userId' => $this->message->user_id,
             'senderName' => $this->message->user?->name,
