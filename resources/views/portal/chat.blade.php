@@ -90,6 +90,29 @@
         </form>
     </div>
 
+    {{-- Delete-for-everyone confirm modal — same backdrop-fade/scale-in pattern used on the Book a Consultation page --}}
+    <div id="chat-delete-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div id="chat-delete-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
+
+        <div id="chat-delete-panel" class="relative w-full max-w-sm transform scale-95 opacity-0 transition-all duration-200">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
+                <div class="w-11 h-11 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center mb-4">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16"/></svg>
+                </div>
+                <h2 class="font-display text-lg font-bold text-navy dark:text-white mb-2">Delete this message?</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">It'll be removed for everyone in this conversation. This can't be undone.</p>
+                <div class="flex justify-end gap-2.5">
+                    <button type="button" id="chat-delete-cancel" class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="button" id="chat-delete-confirm" class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-red-500 hover:bg-red-600 text-white transition-colors">
+                        Delete for Everyone
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
     (function () {
         const container = document.getElementById('chat-thread-messages');
@@ -243,6 +266,46 @@
         bubble.querySelector('.chat-bubble-menu')?.remove();
     }
 
+    let chatDeleteConfirmCallback = null;
+
+    function openChatDeleteModal(onConfirm) {
+        chatDeleteConfirmCallback = onConfirm;
+        const modal = document.getElementById('chat-delete-modal');
+        const backdrop = document.getElementById('chat-delete-backdrop');
+        const panel = document.getElementById('chat-delete-panel');
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        requestAnimationFrame(function () {
+            backdrop.classList.remove('opacity-0');
+            panel.classList.remove('scale-95', 'opacity-0');
+        });
+    }
+
+    function closeChatDeleteModal() {
+        const modal = document.getElementById('chat-delete-modal');
+        const backdrop = document.getElementById('chat-delete-backdrop');
+        const panel = document.getElementById('chat-delete-panel');
+
+        backdrop.classList.add('opacity-0');
+        panel.classList.add('scale-95', 'opacity-0');
+        setTimeout(function () {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 200);
+        chatDeleteConfirmCallback = null;
+    }
+
+    (function () {
+        document.getElementById('chat-delete-cancel')?.addEventListener('click', closeChatDeleteModal);
+        document.getElementById('chat-delete-backdrop')?.addEventListener('click', closeChatDeleteModal);
+        document.getElementById('chat-delete-confirm')?.addEventListener('click', function () {
+            const callback = chatDeleteConfirmCallback;
+            closeChatDeleteModal();
+            if (callback) callback();
+        });
+    })();
+
     (function () {
         const container = document.getElementById('chat-thread-messages');
         if (!container) return;
@@ -270,9 +333,10 @@
             const deleteEveryoneBtn = e.target.closest('.chat-action-delete-everyone');
             if (deleteEveryoneBtn) {
                 deleteEveryoneBtn.closest('.chat-bubble-menu').classList.add('hidden');
-                if (confirm('Delete this message for everyone? This cannot be undone.')) {
-                    deleteBubbleForEveryone(deleteEveryoneBtn.closest('.chat-bubble'));
-                }
+                const bubbleToDelete = deleteEveryoneBtn.closest('.chat-bubble');
+                openChatDeleteModal(function () {
+                    deleteBubbleForEveryone(bubbleToDelete);
+                });
                 return;
             }
 
