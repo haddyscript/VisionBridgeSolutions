@@ -280,34 +280,41 @@ function applyAdminChatDeleted(data) {
     });
 })();
 
+const CHAT_EDIT_WIDTH_CLASSES = ['w-72', 'sm:w-96', 'max-w-full'];
+
 function startEditingAdminBubble(bubble) {
     const id = bubble.dataset.messageId;
     const bodyEl = bubble.querySelector('.chat-bubble-body');
     const originalText = bodyEl.textContent.trim();
     const isOwn = bubble.dataset.own === '1';
+    const card = bubble.querySelector('.chat-bubble-card');
 
     const form = document.createElement('div');
     form.className = 'chat-bubble-edit-form';
     form.innerHTML =
-        '<textarea rows="2" class="w-full min-w-[12rem] resize-none rounded-lg border-0 px-2 py-1.5 text-sm ' + (isOwn ? 'bg-white/10 text-white placeholder-white/50' : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200') + ' focus:outline-none focus:ring-2 focus:ring-gold/50"></textarea>' +
+        '<textarea rows="4" class="w-full resize-y rounded-lg border-0 px-2 py-1.5 text-sm ' + (isOwn ? 'bg-white/10 text-white placeholder-white/50' : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200') + ' focus:outline-none focus:ring-2 focus:ring-gold/50"></textarea>' +
         '<div class="flex items-center justify-end gap-2 mt-1.5">' +
             '<button type="button" class="chat-edit-cancel text-xs font-semibold ' + (isOwn ? 'text-white/70' : 'text-gray-500 dark:text-gray-400') + ' hover:underline">Cancel</button>' +
             '<button type="button" class="chat-edit-save text-xs font-semibold ' + (isOwn ? 'text-gold' : 'text-gold-dark') + ' hover:underline">Save</button>' +
         '</div>';
 
+    card.classList.add(...CHAT_EDIT_WIDTH_CLASSES);
     bodyEl.classList.add('hidden');
     bubble.querySelector('.chat-bubble-time').classList.add('hidden');
-    bubble.querySelector('.chat-bubble-card').appendChild(form);
+    card.appendChild(form);
 
     const textarea = form.querySelector('textarea');
     textarea.value = originalText;
     textarea.focus();
 
-    form.querySelector('.chat-edit-cancel').addEventListener('click', function () {
+    function exitEditMode() {
         form.remove();
+        card.classList.remove(...CHAT_EDIT_WIDTH_CLASSES);
         bodyEl.classList.remove('hidden');
         bubble.querySelector('.chat-bubble-time').classList.remove('hidden');
-    });
+    }
+
+    form.querySelector('.chat-edit-cancel').addEventListener('click', exitEditMode);
 
     form.querySelector('.chat-edit-save').addEventListener('click', function () {
         const newBody = textarea.value.trim();
@@ -330,9 +337,7 @@ function startEditingAdminBubble(bubble) {
                 const edited = bubble.querySelector('.chat-bubble-edited');
                 edited.textContent = ' · edited ' + data.editedAt;
                 edited.classList.remove('hidden');
-                form.remove();
-                bodyEl.classList.remove('hidden');
-                bubble.querySelector('.chat-bubble-time').classList.remove('hidden');
+                exitEditMode();
             })
             .catch(function () {
                 alert('Could not save the edit. Please try again.');
