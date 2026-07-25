@@ -32,16 +32,72 @@
          class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700/60 shadow-sm overflow-hidden flex flex-col h-[calc(100vh-180px)] min-h-[28rem] transition-colors duration-200">
 
         {{-- Header --}}
-        <div class="shrink-0 flex items-center gap-3.5 px-6 sm:px-8 py-5 border-b border-gray-100 dark:border-gray-700/60">
-            <span class="relative w-12 h-12 rounded-full bg-navy flex items-center justify-center shrink-0 shadow-sm">
-                <span class="text-gold text-sm font-bold tracking-tight">VB</span>
-                <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-teal border-2 border-white dark:border-gray-800"></span>
-            </span>
-            <div class="min-w-0 flex-1">
-                <p class="text-[0.95rem] font-semibold text-navy dark:text-white tracking-tight">VisionBridge Team</p>
-                <p class="text-xs text-teal-dark dark:text-teal-light">Usually replies within a few hours</p>
+        @php
+            // Reuses the exact same status labels/colors the portal's own top
+            // bar already shows for this project (layouts/portal.blade.php),
+            // so "project phase" here is real data, not invented — just
+            // surfaced again in this card for Intercom-style self-contained
+            // context. "Last active" is derived from the most recent
+            // team-authored message already loaded into $messages, not a new
+            // query. "Active" (conversation status) and "Support Team" (role)
+            // are honest static labels, not fabricated metrics — this app has
+            // no per-admin identity or open/closed state on chat threads to
+            // draw a more specific claim from.
+            $chatPhaseLabels = [
+                'onboarding' => 'Onboarding',
+                'in_progress' => 'In Development',
+                'review' => 'Under Review',
+                'launched' => 'Launched',
+                'maintenance' => 'Care Plan',
+            ];
+            $chatPhaseColors = [
+                'onboarding' => 'bg-gold/10 text-gold-dark',
+                'in_progress' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300',
+                'review' => 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-300',
+                'launched' => 'bg-teal/10 text-teal-dark',
+                'maintenance' => 'bg-teal/10 text-teal-dark',
+            ];
+            $chatPhaseLabel = $chatPhaseLabels[$project->status] ?? ucfirst($project->status);
+            $chatPhaseColor = $chatPhaseColors[$project->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400';
+            $lastTeamMessage = $messages->where('user_id', '!=', $project->user_id)->last();
+        @endphp
+        <div class="shrink-0 border-b border-gray-100 dark:border-gray-700/60">
+            <div class="flex items-center gap-3.5 px-6 sm:px-8 pt-5 pb-3">
+                <span class="relative w-14 h-14 rounded-full bg-navy flex items-center justify-center shrink-0 shadow-sm">
+                    <span class="text-gold text-base font-bold tracking-tight">VB</span>
+                    <span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-teal border-2 border-white dark:border-gray-800"></span>
+                </span>
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-2">
+                        <p class="text-base font-semibold text-navy dark:text-white tracking-tight">VisionBridge Team</p>
+                        <span class="inline-flex items-center gap-1 text-[0.65rem] font-semibold text-teal-dark dark:text-teal-light shrink-0">
+                            <span class="w-1.5 h-1.5 rounded-full bg-teal"></span> Online
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-400 dark:text-gray-500">Support Team</p>
+                </div>
+                <span class="shrink-0 inline-flex items-center gap-1.5 text-[0.65rem] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-teal/10 text-teal-dark">
+                    <span class="w-1.5 h-1.5 rounded-full bg-teal"></span> Active
+                </span>
             </div>
-            <span class="text-[0.7rem] font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 shrink-0">{{ $messages->count() }} message{{ $messages->count() === 1 ? '' : 's' }}</span>
+
+            <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-6 sm:px-8 pb-3 text-xs text-gray-400 dark:text-gray-500">
+                <span class="inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Usually replies within a few hours
+                </span>
+                <span>Last active {{ $lastTeamMessage?->created_at->diffForHumans() ?? 'not yet in this conversation' }}</span>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 px-6 sm:px-8 pb-4">
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 px-2.5 py-1 rounded-full border border-gray-100 dark:border-gray-700">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                    <span class="truncate max-w-[10rem]">{{ $project->name }}</span>
+                </span>
+                <span class="inline-flex items-center text-[0.65rem] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $chatPhaseColor }}">
+                    {{ $chatPhaseLabel }}
+                </span>
+            </div>
         </div>
 
         {{-- Messages --}}
