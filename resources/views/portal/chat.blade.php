@@ -7,66 +7,81 @@
 
 @if (! $project)
 
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-10 text-center">
         <p class="text-gray-500 dark:text-gray-400">No project has been set up for your account yet. Please contact your VisionBridge representative.</p>
     </div>
 
 @else
 
+    <style>
+        @keyframes chatBubbleIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .chat-bubble-enter { animation: chatBubbleIn 200ms ease-out; }
+        .chat-typing-dot { display: inline-block; animation: chatTypingBounce 1.2s ease-in-out infinite; }
+        .chat-typing-dot:nth-child(2) { animation-delay: 0.15s; }
+        .chat-typing-dot:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes chatTypingBounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
+            30% { transform: translateY(-2px); opacity: 1; }
+        }
+    </style>
+
     <div id="chat-thread" data-project-id="{{ $project->id }}" data-message-base-url="{{ url('/portal/chat-messages') }}"
-         class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden flex flex-col h-[calc(100vh-180px)] min-h-[28rem]">
+         class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700/60 shadow-sm overflow-hidden flex flex-col h-[calc(100vh-180px)] min-h-[28rem] transition-colors duration-200">
 
         {{-- Header --}}
-        <div class="shrink-0 flex items-center gap-3 px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-            <span class="relative w-11 h-11 rounded-full bg-gradient-to-br from-navy to-navy-light flex items-center justify-center shrink-0 shadow-sm">
-                <span class="text-gold text-sm font-bold">VB</span>
+        <div class="shrink-0 flex items-center gap-3.5 px-6 sm:px-8 py-5 border-b border-gray-100 dark:border-gray-700/60">
+            <span class="relative w-12 h-12 rounded-full bg-navy flex items-center justify-center shrink-0 shadow-sm">
+                <span class="text-gold text-sm font-bold tracking-tight">VB</span>
                 <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-teal border-2 border-white dark:border-gray-800"></span>
             </span>
             <div class="min-w-0 flex-1">
-                <p class="text-sm font-semibold text-navy dark:text-white">VisionBridge Team</p>
+                <p class="text-[0.95rem] font-semibold text-navy dark:text-white tracking-tight">VisionBridge Team</p>
                 <p class="text-xs text-teal-dark dark:text-teal-light">Usually replies within a few hours</p>
             </div>
-            <span class="text-xs text-gray-400 dark:text-gray-500 shrink-0">{{ $messages->count() }} message{{ $messages->count() === 1 ? '' : 's' }}</span>
+            <span class="text-[0.7rem] font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 shrink-0">{{ $messages->count() }} message{{ $messages->count() === 1 ? '' : 's' }}</span>
         </div>
 
         {{-- Messages --}}
-        <div id="chat-thread-messages" class="chat-thread-scroll flex-1 overflow-y-auto space-y-4 px-6 py-5 bg-gray-50/60 dark:bg-gray-900/30">
+        <div id="chat-thread-messages" class="chat-thread-scroll flex-1 overflow-y-auto space-y-6 px-6 sm:px-8 py-7 bg-gray-50/70 dark:bg-gray-900/40">
             @forelse ($messages as $chatMessage)
                 @php $isOwn = $chatMessage->user_id === $project->user_id; @endphp
-                <div class="chat-bubble group flex items-end {{ $isOwn ? 'justify-end' : '' }} gap-2 max-w-[75%] {{ $isOwn ? 'ml-auto' : '' }}"
+                <div class="chat-bubble group flex items-end {{ $isOwn ? 'justify-end' : '' }} gap-2.5 max-w-[75%] {{ $isOwn ? 'ml-auto' : '' }}"
                      data-message-id="{{ $chatMessage->id }}" data-own="{{ $isOwn ? '1' : '0' }}" data-deleted="{{ $chatMessage->isDeleted() ? '1' : '0' }}">
                     @unless ($isOwn)
-                        <span class="w-8 h-8 rounded-full bg-gradient-to-br from-navy to-navy-light text-gold text-xs font-bold flex items-center justify-center shrink-0 shadow-sm">VB</span>
+                        <span class="w-9 h-9 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0 shadow-sm">VB</span>
                     @endunless
-                    <div class="chat-bubble-card relative rounded-2xl {{ $isOwn ? 'rounded-br-md bg-gradient-to-br from-gold to-gold-dark' : 'rounded-bl-md bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700' }} px-4 py-2.5 shadow-sm">
+                    <div class="chat-bubble-card relative rounded-3xl {{ $isOwn ? 'rounded-br-lg bg-gold' : 'rounded-bl-lg bg-white dark:bg-gray-800/90 border border-gray-100 dark:border-gray-700/60' }} px-5 py-3.5 shadow-sm hover:shadow-md transition-shadow duration-200">
                         @unless ($isOwn)
-                            <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold-dark mb-1">VisionBridge Team</p>
+                            <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold-dark mb-1.5">VisionBridge Team</p>
                         @endunless
 
-                        <p class="chat-bubble-body text-sm {{ $isOwn ? 'text-navy-dark font-medium' : 'text-gray-700 dark:text-gray-200' }} whitespace-pre-line {{ $chatMessage->isDeleted() ? 'italic opacity-70' : '' }}">{{ $chatMessage->isDeleted() ? 'This message was deleted' : $chatMessage->body }}</p>
+                        <p class="chat-bubble-body text-sm leading-relaxed {{ $isOwn ? 'text-navy-dark font-medium' : 'text-gray-700 dark:text-gray-200' }} whitespace-pre-line {{ $chatMessage->isDeleted() ? 'italic opacity-70' : '' }}">{{ $chatMessage->isDeleted() ? 'This message was deleted' : $chatMessage->body }}</p>
 
-                        <p class="chat-bubble-time text-[0.7rem] {{ $isOwn ? 'text-navy-dark/60 text-right' : 'text-gray-400 dark:text-gray-500' }} mt-1">
+                        <p class="chat-bubble-time text-[0.65rem] {{ $isOwn ? 'text-navy-dark/50 text-right' : 'text-gray-400 dark:text-gray-500' }} mt-1.5">
                             <span class="chat-bubble-timestamp">{{ $chatMessage->created_at->diffForHumans() }}</span>
                             <span class="chat-bubble-edited {{ $chatMessage->isEdited() ? '' : 'hidden' }}"> · edited {{ $chatMessage->edited_at?->diffForHumans() }}</span>
                         </p>
 
                         @if (! $chatMessage->isDeleted())
-                            <button type="button" class="chat-bubble-menu-btn absolute -top-2 {{ $isOwn ? '-left-2' : '-right-2' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-200 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-opacity">
+                            <button type="button" class="chat-bubble-menu-btn absolute -top-2 {{ $isOwn ? '-left-2' : '-right-2' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40">
                                 <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>
                             </button>
-                            <div class="chat-bubble-menu hidden absolute z-20 {{ $isOwn ? 'left-0' : 'right-0' }} top-6 w-40 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1">
+                            <div class="chat-bubble-menu hidden absolute z-20 {{ $isOwn ? 'left-0' : 'right-0' }} top-7 w-44 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg py-1.5">
                                 @if ($isOwn)
-                                    <button type="button" class="chat-action-edit w-full text-left px-3 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark transition-colors">Edit</button>
-                                    <button type="button" class="chat-action-delete-everyone w-full text-left px-3 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">Delete for everyone</button>
+                                    <button type="button" class="chat-action-edit w-full text-left px-3.5 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark transition-colors duration-200 rounded-lg mx-1 w-[calc(100%-0.5rem)]">Edit</button>
+                                    <button type="button" class="chat-action-delete-everyone w-full text-left px-3.5 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors duration-200 rounded-lg mx-1 w-[calc(100%-0.5rem)]">Delete for everyone</button>
                                 @endif
-                                <button type="button" class="chat-action-delete-me w-full text-left px-3 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark transition-colors">Delete for me</button>
+                                <button type="button" class="chat-action-delete-me w-full text-left px-3.5 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark transition-colors duration-200 rounded-lg mx-1 w-[calc(100%-0.5rem)]">Delete for me</button>
                             </div>
                         @endif
                     </div>
                 </div>
             @empty
                 <div id="chat-thread-empty" class="h-full flex flex-col items-center justify-center text-center">
-                    <div class="w-14 h-14 rounded-full bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center mb-3">
+                    <div class="w-16 h-16 rounded-full bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center mb-4">
                         <svg class="w-6 h-6 text-gold-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                     </div>
                     <p class="text-sm text-gray-500 dark:text-gray-400">No messages yet — say hello, we're here to help.</p>
@@ -75,19 +90,24 @@
         </div>
 
         {{-- Typing indicator --}}
-        <div id="chat-typing-indicator" class="hidden shrink-0 px-6 pt-2 text-xs text-gray-400 dark:text-gray-500 italic">
-            VisionBridge Team is typing…
+        <div id="chat-typing-indicator" class="hidden shrink-0 px-6 sm:px-8 pt-3 flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 italic">
+            <span>VisionBridge Team is typing</span>
+            <span class="inline-flex items-center gap-0.5">
+                <span class="chat-typing-dot w-1 h-1 rounded-full bg-current"></span>
+                <span class="chat-typing-dot w-1 h-1 rounded-full bg-current"></span>
+                <span class="chat-typing-dot w-1 h-1 rounded-full bg-current"></span>
+            </span>
         </div>
 
         {{-- Composer --}}
         <form id="chat-thread-form" data-mark-read-url="{{ route('portal.chat.read', $project) }}" data-typing-url="{{ route('portal.chat.typing', $project) }}" data-no-loading-overlay
               method="POST" action="{{ route('portal.chat.store', $project) }}"
               onsubmit="return submitPortalChatMessage(this, event)"
-              class="shrink-0 flex items-center gap-3 px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
+              class="shrink-0 flex items-center gap-3 px-6 sm:px-8 py-5 border-t border-gray-100 dark:border-gray-700/60 bg-white dark:bg-gray-800">
             @csrf
             <textarea name="body" rows="1" placeholder="Type a message…" required
-                      class="flex-1 resize-none rounded-full border border-gray-200 dark:border-gray-600 px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500 shadow-sm"></textarea>
-            <button type="button" id="chat-mic-btn" title="Voice input" class="hidden relative shrink-0 w-11 h-11 rounded-full border border-gray-200 dark:border-gray-600 text-gray-400 hover:text-gold-dark hover:border-gold flex items-center justify-center transition-colors">
+                      class="flex-1 resize-none rounded-full border border-gray-200 dark:border-gray-600 px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500 shadow-sm transition-all duration-200"></textarea>
+            <button type="button" id="chat-mic-btn" title="Voice input" class="hidden relative shrink-0 w-12 h-12 rounded-full border border-gray-200 dark:border-gray-600 text-gray-400 hover:text-gold-dark hover:border-gold flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40">
                 <span id="chat-mic-ring" class="hidden absolute inset-0 rounded-full bg-red-400 opacity-75 animate-ping"></span>
                 <svg id="chat-mic-icon" class="w-4 h-4 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/>
@@ -99,7 +119,7 @@
                     <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
                 </span>
             </button>
-            <button type="submit" title="Send" class="shrink-0 w-11 h-11 rounded-full bg-gradient-to-br from-gold to-gold-dark hover:shadow-md text-navy-dark flex items-center justify-center transition-all shadow-sm">
+            <button type="submit" title="Send" class="shrink-0 w-12 h-12 rounded-full bg-gold hover:bg-gold-dark text-navy-dark flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gold/40 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                 </svg>
@@ -112,17 +132,17 @@
         <div id="chat-delete-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
 
         <div id="chat-delete-panel" class="relative w-full max-w-sm transform scale-95 opacity-0 transition-all duration-200">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
+            <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-7">
                 <div class="w-11 h-11 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center mb-4">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16"/></svg>
                 </div>
                 <h2 class="font-display text-lg font-bold text-navy dark:text-white mb-2">Delete this message?</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">It'll be removed for everyone in this conversation. This can't be undone.</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">It'll be removed for everyone in this conversation. This can't be undone.</p>
                 <div class="flex justify-end gap-2.5">
-                    <button type="button" id="chat-delete-cancel" class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <button type="button" id="chat-delete-cancel" class="px-4 py-2.5 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                         Cancel
                     </button>
-                    <button type="button" id="chat-delete-confirm" class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-red-500 hover:bg-red-600 text-white transition-colors">
+                    <button type="button" id="chat-delete-confirm" class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-red-500 hover:bg-red-600 text-white transition-colors duration-200">
                         Delete for Everyone
                     </button>
                 </div>
@@ -297,28 +317,28 @@
 
     function buildPortalBubbleHtml(data) {
         const isOwn = !!data.isFromClient;
-        let html = '<div class="chat-bubble group flex items-end ' + (isOwn ? 'justify-end' : '') + ' gap-2 max-w-[75%] ' + (isOwn ? 'ml-auto' : '') + '" data-message-id="' + data.id + '" data-own="' + (isOwn ? '1' : '0') + '" data-deleted="0">';
+        let html = '<div class="chat-bubble chat-bubble-enter group flex items-end ' + (isOwn ? 'justify-end' : '') + ' gap-2.5 max-w-[75%] ' + (isOwn ? 'ml-auto' : '') + '" data-message-id="' + data.id + '" data-own="' + (isOwn ? '1' : '0') + '" data-deleted="0">';
         if (!isOwn) {
-            html += '<span class="w-8 h-8 rounded-full bg-gradient-to-br from-navy to-navy-light text-gold text-xs font-bold flex items-center justify-center shrink-0 shadow-sm">VB</span>';
+            html += '<span class="w-9 h-9 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0 shadow-sm">VB</span>';
         }
-        html += '<div class="chat-bubble-card relative rounded-2xl ' + (isOwn ? 'rounded-br-md bg-gradient-to-br from-gold to-gold-dark' : 'rounded-bl-md bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700') + ' px-4 py-2.5 shadow-sm">';
+        html += '<div class="chat-bubble-card relative rounded-3xl ' + (isOwn ? 'rounded-br-lg bg-gold' : 'rounded-bl-lg bg-white dark:bg-gray-800/90 border border-gray-100 dark:border-gray-700/60') + ' px-5 py-3.5 shadow-sm hover:shadow-md transition-shadow duration-200">';
         if (!isOwn) {
-            html += '<p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold-dark mb-1">VisionBridge Team</p>';
+            html += '<p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold-dark mb-1.5">VisionBridge Team</p>';
         }
-        html += '<p class="chat-bubble-body text-sm ' + (isOwn ? 'text-navy-dark font-medium' : 'text-gray-700 dark:text-gray-200') + ' whitespace-pre-line"></p>';
-        html += '<p class="chat-bubble-time text-[0.7rem] ' + (isOwn ? 'text-navy-dark/60 text-right' : 'text-gray-400 dark:text-gray-500') + ' mt-1">' +
+        html += '<p class="chat-bubble-body text-sm leading-relaxed ' + (isOwn ? 'text-navy-dark font-medium' : 'text-gray-700 dark:text-gray-200') + ' whitespace-pre-line"></p>';
+        html += '<p class="chat-bubble-time text-[0.65rem] ' + (isOwn ? 'text-navy-dark/50 text-right' : 'text-gray-400 dark:text-gray-500') + ' mt-1.5">' +
             '<span class="chat-bubble-timestamp"></span>' +
             '<span class="chat-bubble-edited hidden"></span>' +
         '</p>';
-        html += '<button type="button" class="chat-bubble-menu-btn absolute -top-2 ' + (isOwn ? '-left-2' : '-right-2') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-200 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-opacity">' +
+        html += '<button type="button" class="chat-bubble-menu-btn absolute -top-2 ' + (isOwn ? '-left-2' : '-right-2') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40">' +
             '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>' +
         '</button>';
-        html += '<div class="chat-bubble-menu hidden absolute z-20 ' + (isOwn ? 'left-0' : 'right-0') + ' top-6 w-40 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1">';
+        html += '<div class="chat-bubble-menu hidden absolute z-20 ' + (isOwn ? 'left-0' : 'right-0') + ' top-7 w-44 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg py-1.5">';
         if (isOwn) {
-            html += '<button type="button" class="chat-action-edit w-full text-left px-3 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark transition-colors">Edit</button>';
-            html += '<button type="button" class="chat-action-delete-everyone w-full text-left px-3 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">Delete for everyone</button>';
+            html += '<button type="button" class="chat-action-edit w-[calc(100%-0.5rem)] mx-1 text-left px-3.5 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark transition-colors duration-200 rounded-lg">Edit</button>';
+            html += '<button type="button" class="chat-action-delete-everyone w-[calc(100%-0.5rem)] mx-1 text-left px-3.5 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors duration-200 rounded-lg">Delete for everyone</button>';
         }
-        html += '<button type="button" class="chat-action-delete-me w-full text-left px-3 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark transition-colors">Delete for me</button>';
+        html += '<button type="button" class="chat-action-delete-me w-[calc(100%-0.5rem)] mx-1 text-left px-3.5 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark transition-colors duration-200 rounded-lg">Delete for me</button>';
         html += '</div></div></div>';
         return html;
     }
@@ -489,6 +509,11 @@
             closeChatDeleteModal();
             if (callback) callback();
         });
+
+        document.addEventListener('keydown', function (e) {
+            const modal = document.getElementById('chat-delete-modal');
+            if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) closeChatDeleteModal();
+        });
     })();
 
     (function () {
@@ -550,10 +575,10 @@
         const form = document.createElement('div');
         form.className = 'chat-bubble-edit-form';
         form.innerHTML =
-            '<textarea rows="4" class="w-full resize-y rounded-lg border-0 px-2 py-1.5 text-sm ' + (isOwn ? 'bg-white/60 text-navy-dark placeholder-navy-dark/50' : 'bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-200') + ' focus:outline-none focus:ring-2 focus:ring-gold/50"></textarea>' +
-            '<div class="flex items-center justify-end gap-2 mt-1.5">' +
-                '<button type="button" class="chat-edit-cancel text-xs font-semibold ' + (isOwn ? 'text-navy-dark/70' : 'text-gray-500 dark:text-gray-400') + ' hover:underline">Cancel</button>' +
-                '<button type="button" class="chat-edit-save text-xs font-semibold ' + (isOwn ? 'text-navy-dark' : 'text-gold-dark') + ' hover:underline">Save</button>' +
+            '<textarea rows="4" class="w-full resize-y rounded-xl border-0 px-2.5 py-2 text-sm ' + (isOwn ? 'bg-white/60 text-navy-dark placeholder-navy-dark/50' : 'bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-200') + ' focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all duration-200"></textarea>' +
+            '<div class="flex items-center justify-end gap-2 mt-2">' +
+                '<button type="button" class="chat-edit-cancel text-xs font-semibold ' + (isOwn ? 'text-navy-dark/70' : 'text-gray-500 dark:text-gray-400') + ' hover:underline transition-colors duration-200">Cancel</button>' +
+                '<button type="button" class="chat-edit-save text-xs font-semibold ' + (isOwn ? 'text-navy-dark' : 'text-gold-dark') + ' hover:underline transition-colors duration-200">Save</button>' +
             '</div>';
 
         card.classList.add(...CHAT_EDIT_WIDTH_CLASSES);
