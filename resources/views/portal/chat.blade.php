@@ -63,6 +63,27 @@
             transform: scale(0.96);
             transition: transform 150ms ease-out;
         }
+
+        #chat-toast:not(.hidden) { animation: chatPopoverIn 200ms ease-out; }
+
+        {{-- Phase 10 — a user with reduced-motion enabled gets every
+             animation on this page reduced to a near-instant fade instead
+             of movement/scaling, without needing to touch every individual
+             animation rule above. --}}
+        @media (prefers-reduced-motion: reduce) {
+            .chat-bubble-enter, .chat-typing-dot, #chat-send-btn.chat-send-launch,
+            #chat-emoji-picker, #chat-templates-picker, #chat-attachment-picker,
+            #chat-mention-picker, .chat-bubble-menu, .chat-reaction-picker,
+            .chat-reaction-pill, #chat-toast {
+                animation-duration: 1ms !important;
+                animation-iteration-count: 1 !important;
+            }
+            .chat-bubble-card, .chat-bubble-card.chat-bubble-hoverable:hover,
+            #chat-typing-indicator, #chat-scroll-to-bottom-btn, #chat-thread button:active {
+                transition-duration: 1ms !important;
+                transform: none !important;
+            }
+        }
     </style>
 
     <div id="chat-thread" data-project-id="{{ $project->id }}" data-message-base-url="{{ url('/portal/chat-messages') }}"
@@ -284,16 +305,16 @@
                                     <span class="chat-reaction-pill flex items-center justify-center w-6 h-6 rounded-full bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 shadow-sm text-sm">{{ $chatMessage->reaction }}</span>
                                 </div>
 
-                                <button type="button" class="chat-bubble-react-btn absolute -top-2 {{ $isOwn ? '-left-9' : '-right-9' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gold-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40" title="React">
+                                <button type="button" class="chat-bubble-react-btn absolute -top-2 {{ $isOwn ? '-left-9' : '-right-9' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gold-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40" title="React" aria-label="React to this message">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 </button>
                                 <div class="chat-reaction-picker hidden absolute z-20 {{ $isOwn ? 'right-8' : 'left-8' }} -top-11 items-center gap-0.5 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-full shadow-lg px-1.5 py-1">
                                     @foreach (\App\Models\ChatMessage::REACTIONS as $chatReactionEmoji)
-                                        <button type="button" class="chat-reaction-option w-7 h-7 rounded-full flex items-center justify-center text-base hover:bg-gold/10 hover:scale-110 transition-all duration-150">{{ $chatReactionEmoji }}</button>
+                                        <button type="button" class="chat-reaction-option w-7 h-7 rounded-full flex items-center justify-center text-base hover:bg-gold/10 hover:scale-110 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-gold/50" aria-label="{{ ['👍' => 'Thumbs up', '❤️' => 'Heart', '😂' => 'Laughing', '😮' => 'Surprised', '😢' => 'Crying', '🙏' => 'Pray'][$chatReactionEmoji] ?? $chatReactionEmoji }}">{{ $chatReactionEmoji }}</button>
                                     @endforeach
                                 </div>
 
-                                <button type="button" class="chat-bubble-menu-btn absolute -top-2 {{ $isOwn ? '-left-2' : '-right-2' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40">
+                                <button type="button" class="chat-bubble-menu-btn absolute -top-2 {{ $isOwn ? '-left-2' : '-right-2' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40" aria-label="Message options">
                                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>
                                 </button>
                                 <div class="chat-bubble-menu hidden absolute z-20 {{ $isOwn ? 'left-0' : 'right-0' }} top-7 w-44 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg py-1.5">
@@ -322,7 +343,7 @@
              they're never yanked back down against their will; badges a
              count when new messages arrive while scrolled away. --}}
         <div id="chat-scroll-to-bottom" class="hidden absolute bottom-4 right-6 sm:right-8 z-20">
-            <button type="button" id="chat-scroll-to-bottom-btn" class="flex items-center gap-1.5 pl-3 pr-3.5 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-lg hover:shadow-xl text-xs font-semibold text-gray-600 dark:text-gray-300">
+            <button type="button" id="chat-scroll-to-bottom-btn" aria-label="Scroll to newest message" class="flex items-center gap-1.5 pl-3 pr-3.5 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-lg hover:shadow-xl text-xs font-semibold text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-gold/40">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
                 <span id="chat-scroll-to-bottom-count" class="hidden inline-flex items-center justify-center min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-gold text-navy-dark text-[0.6rem] font-bold leading-none"></span>
             </button>
@@ -366,18 +387,18 @@
                 @csrf
 
                 {{-- Emoji picker --}}
-                <div id="chat-emoji-picker" class="hidden absolute bottom-full left-2 mb-2 w-72 max-h-56 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl p-2.5 z-30">
+                <div id="chat-emoji-picker" class="hidden absolute bottom-full left-2 mb-2 w-72 max-w-[calc(100vw-2rem)] max-h-56 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl p-2.5 z-30">
                     <div class="grid grid-cols-8 gap-0.5">
                         @foreach ($chatEmojiSet as $chatEmoji)
-                            <button type="button" class="chat-emoji-option w-7 h-7 rounded-lg flex items-center justify-center text-lg hover:bg-gold/10 transition-colors duration-150">{{ $chatEmoji }}</button>
+                            <button type="button" class="chat-emoji-option w-7 h-7 rounded-lg flex items-center justify-center text-lg hover:bg-gold/10 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-gold/50">{{ $chatEmoji }}</button>
                         @endforeach
                     </div>
                 </div>
 
                 {{-- Quick-reply templates --}}
-                <div id="chat-templates-picker" class="hidden absolute bottom-full left-2 mb-2 w-80 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl p-1.5 z-30">
+                <div id="chat-templates-picker" class="hidden absolute bottom-full left-2 mb-2 w-80 max-w-[calc(100vw-2rem)] max-h-56 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl p-1.5 z-30">
                     @foreach ($chatQuickReplies as $chatQuickReply)
-                        <button type="button" class="chat-template-option block w-full text-left px-3 py-2 text-xs text-gray-600 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark rounded-xl transition-colors duration-150">{{ $chatQuickReply }}</button>
+                        <button type="button" class="chat-template-option block w-full text-left px-3 py-2 text-xs text-gray-600 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark rounded-xl transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-gold/50">{{ $chatQuickReply }}</button>
                     @endforeach
                 </div>
 
@@ -385,7 +406,7 @@
                      this inserts a link rather than pretending to upload a
                      file; Phase 3's existing whole-body-is-a-link rendering
                      turns it into an inline image/file preview once sent. --}}
-                <div id="chat-attachment-picker" class="hidden absolute bottom-full left-2 mb-2 w-80 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl p-4 z-30">
+                <div id="chat-attachment-picker" class="hidden absolute bottom-full left-2 mb-2 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl p-4 z-30">
                     <p class="text-xs font-semibold text-navy dark:text-white mb-2">Share a link</p>
                     <div class="flex items-center gap-2">
                         <input type="url" id="chat-attachment-url" placeholder="Paste an image or file link…" class="flex-1 min-w-0 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold">
@@ -399,8 +420,8 @@
                      per-admin identity anywhere else in chat either, see
                      Phase 2/3), so this is a plain-text insertion helper,
                      not a real @-tagging/notification system. --}}
-                <div id="chat-mention-picker" class="hidden absolute bottom-full left-2 mb-2 w-56 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl py-1.5 z-30">
-                    <button type="button" class="chat-mention-option flex items-center gap-2 w-full text-left px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gold/10 hover:text-gold-dark rounded-xl transition-colors duration-150">
+                <div id="chat-mention-picker" class="hidden absolute bottom-full left-2 mb-2 w-56 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl py-1.5 z-30">
+                    <button type="button" class="chat-mention-option flex items-center gap-2 w-full text-left px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gold/10 hover:text-gold-dark rounded-xl transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-gold/50">
                         <span class="w-5 h-5 rounded-full bg-navy text-gold text-[0.55rem] font-bold flex items-center justify-center shrink-0">VB</span>
                         VisionBridge Team
                     </button>
@@ -412,16 +433,16 @@
 
                 <div class="flex items-end justify-between gap-2 px-2.5 sm:px-3.5 pb-2.5">
                     <div class="flex items-center gap-0.5">
-                        <button type="button" id="chat-emoji-btn" title="Emoji" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
+                        <button type="button" id="chat-emoji-btn" title="Emoji" aria-label="Insert emoji" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
                             <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </button>
-                        <button type="button" id="chat-attachment-btn" title="Share a link" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
+                        <button type="button" id="chat-attachment-btn" title="Share a link" aria-label="Share a link" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
                             <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
                         </button>
-                        <button type="button" id="chat-templates-btn" title="Quick replies" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
+                        <button type="button" id="chat-templates-btn" title="Quick replies" aria-label="Quick reply templates" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
                             <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                         </button>
-                        <button type="button" id="chat-mic-btn" title="Voice input" class="hidden relative w-9 h-9 rounded-full text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
+                        <button type="button" id="chat-mic-btn" title="Voice input" aria-label="Voice input" class="hidden relative w-9 h-9 rounded-full text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
                             <span id="chat-mic-ring" class="hidden absolute inset-0 rounded-full bg-red-400 opacity-75 animate-ping"></span>
                             <svg id="chat-mic-icon" class="w-4 h-4 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/>
@@ -437,7 +458,7 @@
 
                     <div class="flex items-center gap-3 pb-1">
                         <span id="chat-char-counter" class="text-[0.65rem] font-medium text-gray-300 dark:text-gray-600 tabular-nums select-none transition-colors duration-200">0/5000</span>
-                        <button type="submit" id="chat-send-btn" title="Send" class="shrink-0 w-10 h-10 rounded-full bg-gold hover:bg-gold-dark text-navy-dark flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold/40 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                        <button type="submit" id="chat-send-btn" title="Send" aria-label="Send message" class="shrink-0 w-10 h-10 rounded-full bg-gold hover:bg-gold-dark text-navy-dark flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold/40 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                             </svg>
@@ -469,6 +490,14 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    {{-- Non-blocking error/status toast — replaces the native alert()s that
+         used to interrupt the whole page on a failed send/edit/delete/mic
+         permission. Positioned inside #chat-thread (already relative) so it
+         floats above the composer regardless of scroll position. --}}
+    <div id="chat-toast" class="hidden fixed z-40 bottom-24 left-1/2 -translate-x-1/2 max-w-[90%] sm:max-w-sm" role="alert" aria-live="assertive">
+        <p id="chat-toast-body" class="px-4 py-2.5 rounded-full shadow-lg text-sm font-medium text-center"></p>
     </div>
 
     <script>
@@ -669,7 +698,7 @@
         recognition.addEventListener('error', function (e) {
             setListeningUI(false);
             if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
-                alert('Microphone access was blocked. Please allow microphone access in your browser to use voice input.');
+                showChatToast('Microphone access was blocked. Please allow microphone access in your browser to use voice input.', true);
             }
         });
 
@@ -871,6 +900,25 @@
         return document.getElementById('chat-thread').dataset.messageBaseUrl + '/' + id;
     }
 
+    let chatToastHideTimer = null;
+
+    /** Non-blocking status/error toast — see the markup comment on #chat-toast for why this replaced alert(). */
+    function showChatToast(message, isError) {
+        const toast = document.getElementById('chat-toast');
+        const body = document.getElementById('chat-toast-body');
+        if (!toast || !body) return;
+
+        body.textContent = message;
+        body.className = 'px-4 py-2.5 rounded-full shadow-lg text-sm font-medium text-center ' +
+            (isError ? 'bg-red-500 text-white' : 'bg-navy text-white dark:bg-white dark:text-navy');
+
+        toast.classList.remove('hidden');
+        clearTimeout(chatToastHideTimer);
+        chatToastHideTimer = setTimeout(function () {
+            toast.classList.add('hidden');
+        }, 3500);
+    }
+
     /**
      * Whole-body-is-a-link detection, mirrored from the Blade template's
      * $chatLinkKind closure — kept in sync by hand since Blade (initial
@@ -968,15 +1016,16 @@
             (isOwn ? '<span class="chat-bubble-ticks inline-flex shrink-0"></span>' : '') +
         '</p>';
         html += '<div class="chat-reaction-display hidden absolute z-10 -bottom-2.5 ' + (isOwn ? 'right-3' : 'left-3') + '"><span class="chat-reaction-pill flex items-center justify-center w-6 h-6 rounded-full bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 shadow-sm text-sm"></span></div>';
-        html += '<button type="button" class="chat-bubble-react-btn absolute -top-2 ' + (isOwn ? '-left-9' : '-right-9') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gold-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40" title="React">' +
+        html += '<button type="button" class="chat-bubble-react-btn absolute -top-2 ' + (isOwn ? '-left-9' : '-right-9') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gold-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40" title="React" aria-label="React to this message">' +
             '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' +
         '</button>';
         html += '<div class="chat-reaction-picker hidden absolute z-20 ' + (isOwn ? 'right-8' : 'left-8') + ' -top-11 items-center gap-0.5 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-full shadow-lg px-1.5 py-1">';
+        const chatReactionLabels = { '👍': 'Thumbs up', '❤️': 'Heart', '😂': 'Laughing', '😮': 'Surprised', '😢': 'Crying', '🙏': 'Pray' };
         ['👍', '❤️', '😂', '😮', '😢', '🙏'].forEach(function (emoji) {
-            html += '<button type="button" class="chat-reaction-option w-7 h-7 rounded-full flex items-center justify-center text-base hover:bg-gold/10 hover:scale-110 transition-all duration-150">' + emoji + '</button>';
+            html += '<button type="button" class="chat-reaction-option w-7 h-7 rounded-full flex items-center justify-center text-base hover:bg-gold/10 hover:scale-110 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-gold/50" aria-label="' + (chatReactionLabels[emoji] || emoji) + '">' + emoji + '</button>';
         });
         html += '</div>';
-        html += '<button type="button" class="chat-bubble-menu-btn absolute -top-2 ' + (isOwn ? '-left-2' : '-right-2') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40">' +
+        html += '<button type="button" class="chat-bubble-menu-btn absolute -top-2 ' + (isOwn ? '-left-2' : '-right-2') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40" aria-label="Message options">' +
             '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>' +
         '</button>';
         html += '<div class="chat-bubble-menu hidden absolute z-20 ' + (isOwn ? 'left-0' : 'right-0') + ' top-7 w-44 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg py-1.5">';
@@ -1440,7 +1489,7 @@
                 applyPortalChatReaction({ id: messageId, reaction: data.reaction });
             })
             .catch(function () {
-                alert('Could not save the reaction. Please try again.');
+                showChatToast('Could not save the reaction. Please try again.', true);
             });
     }
 
@@ -1498,9 +1547,15 @@
 
         form.querySelector('.chat-edit-cancel').addEventListener('click', exitEditMode);
 
-        form.querySelector('.chat-edit-save').addEventListener('click', function () {
+        const saveBtn = form.querySelector('.chat-edit-save');
+        const saveBtnOriginalText = saveBtn.textContent;
+
+        saveBtn.addEventListener('click', function () {
             const newBody = textarea.value.trim();
             if (!newBody) return;
+
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving…';
 
             fetch(chatMessageUrl(id), {
                 method: 'PATCH',
@@ -1522,7 +1577,9 @@
                     exitEditMode();
                 })
                 .catch(function () {
-                    alert('Could not save the edit. Please try again.');
+                    showChatToast('Could not save the edit. Please try again.', true);
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = saveBtnOriginalText;
                 });
         });
     }
@@ -1542,7 +1599,7 @@
                 applyPortalChatDeleted({ id: id });
             })
             .catch(function () {
-                alert('Could not delete the message. Please try again.');
+                showChatToast('Could not delete the message. Please try again.', true);
             });
     }
 
@@ -1561,7 +1618,7 @@
                 bubble.remove();
             })
             .catch(function () {
-                alert('Could not remove the message. Please try again.');
+                showChatToast('Could not remove the message. Please try again.', true);
             });
     }
     </script>
