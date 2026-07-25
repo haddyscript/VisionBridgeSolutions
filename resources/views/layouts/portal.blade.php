@@ -568,14 +568,24 @@
                     </div>
                 </div>
 
+                {{-- A plain gray icon button (matching the bell/help/link
+                     buttons) blended into the header and was easy to miss —
+                     this is now a colored sun/moon switch instead: the track
+                     color itself signals the current mode (warm amber for
+                     light, deep indigo for dark), and the white thumb slides
+                     side to side, matching the universally-recognized
+                     iOS/macOS-style light/dark toggle pattern instead of a
+                     single ambiguous icon. --}}
                 <button id="theme-toggle" type="button" data-tooltip="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false"
-                        class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                    <svg id="theme-icon-light" class="w-5 h-5 hidden transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
-                    <svg id="theme-icon-dark" class="w-5 h-5 hidden transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                    </svg>
+                        class="relative w-14 h-8 rounded-full shrink-0 bg-gradient-to-r from-amber-300 to-amber-500 dark:from-indigo-800 dark:to-navy-dark shadow-inner transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                    <span id="theme-toggle-thumb" class="absolute top-1 left-1 w-6 h-6 rounded-full bg-white shadow-md flex items-center justify-center transition-transform duration-300 ease-out">
+                        <svg id="theme-icon-light" class="w-3.5 h-3.5 text-amber-500 absolute transition-opacity duration-200" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 3a1 1 0 011 1v1a1 1 0 11-2 0V4a1 1 0 011-1zm0 4a5 5 0 100 10 5 5 0 000-10zm9 5a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM4 12a1 1 0 01-1 1H2a1 1 0 110-2h1a1 1 0 011 1zm14.657-6.657a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM7.464 17.536a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zm11.193 1.414a1 1 0 01-1.414 0l-.707-.707a1 1 0 111.414-1.414l.707.707a1 1 0 010 1.414zM6.757 6.757a1 1 0 01-1.414 0l-.707-.707A1 1 0 015.05 4.636l.707.707a1 1 0 010 1.414zM12 19a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1z"/>
+                        </svg>
+                        <svg id="theme-icon-dark" class="w-3.5 h-3.5 text-indigo-600 absolute opacity-0 transition-opacity duration-200" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+                    </span>
                 </button>
             </header>
 
@@ -665,14 +675,18 @@
 
         // Theme toggle
         const themeToggle = document.getElementById('theme-toggle');
+        const themeToggleThumb = document.getElementById('theme-toggle-thumb');
         const iconLight = document.getElementById('theme-icon-light');
         const iconDark = document.getElementById('theme-icon-dark');
 
         function syncThemeIcon() {
             const isDark = document.documentElement.classList.contains('dark');
-            iconLight.classList.toggle('hidden', !isDark);
-            iconDark.classList.toggle('hidden', isDark);
+            iconLight.classList.toggle('opacity-0', isDark);
+            iconDark.classList.toggle('opacity-0', !isDark);
+            themeToggleThumb?.classList.toggle('translate-x-6', isDark);
             themeToggle?.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+            themeToggle?.setAttribute('data-tooltip', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+            themeToggle?.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
         }
         syncThemeIcon();
 
