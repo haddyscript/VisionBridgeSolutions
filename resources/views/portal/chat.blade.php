@@ -15,10 +15,10 @@
 
     <style>
         @keyframes chatBubbleIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(8px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .chat-bubble-enter { animation: chatBubbleIn 200ms ease-out; }
+        .chat-bubble-enter { animation: chatBubbleIn 220ms cubic-bezier(0.2, 0.8, 0.2, 1); }
         .chat-typing-dot { display: inline-block; animation: chatTypingBounce 1.2s ease-in-out infinite; }
         .chat-typing-dot:nth-child(2) { animation-delay: 0.15s; }
         .chat-typing-dot:nth-child(3) { animation-delay: 0.3s; }
@@ -26,6 +26,8 @@
             0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
             30% { transform: translateY(-2px); opacity: 1; }
         }
+        .chat-bubble-card { transition: transform 200ms ease, box-shadow 200ms ease, background-color 200ms ease; }
+        .chat-bubble-card.chat-bubble-hoverable:hover { transform: translateY(-1px); }
     </style>
 
     <div id="chat-thread" data-project-id="{{ $project->id }}" data-message-base-url="{{ url('/portal/chat-messages') }}"
@@ -101,40 +103,126 @@
         </div>
 
         {{-- Messages --}}
-        <div id="chat-thread-messages" class="chat-thread-scroll flex-1 overflow-y-auto space-y-6 px-6 sm:px-8 py-7 bg-gray-50/70 dark:bg-gray-900/40">
+        @php
+            // Whole-body-is-a-link detection — lets a plain pasted URL render as
+            // an inline image or a file card without any attachment/upload
+            // infrastructure behind it. Deliberately narrow (the entire
+            // trimmed body must be nothing but an http(s) URL) so ordinary
+            // sentences that merely contain a link are left as plain text.
+            $chatMediaExt = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+            $chatFileExt = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'csv', 'txt'];
+            $chatLinkKind = function (?string $body) use ($chatMediaExt, $chatFileExt) {
+                $trimmed = trim((string) $body);
+                if ($trimmed === '' || preg_match('/\s/', $trimmed) || ! preg_match('#^https?://#i', $trimmed)) {
+                    return null;
+                }
+                $ext = strtolower(pathinfo(parse_url($trimmed, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION));
+                if (in_array($ext, $chatMediaExt, true)) return 'image';
+                if (in_array($ext, $chatFileExt, true)) return 'file';
+                return null;
+            };
+            // First team message the client hasn't opened Chat to see yet, as of
+            // this page load (before the "mark read" call below fires) — draws
+            // an iMessage-style "New" divider at the right spot using data that
+            // already exists (read_at), not a fabricated indicator.
+            $chatFirstUnreadId = $messages->first(function ($m) use ($project) {
+                return $m->user_id !== $project->user_id && ! $m->read_at && ! $m->isDeleted();
+            })?->id;
+        @endphp
+        <div id="chat-thread-messages" class="chat-thread-scroll flex-1 overflow-y-auto px-6 sm:px-8 py-7 bg-gray-50/70 dark:bg-gray-900/40">
             @forelse ($messages as $chatMessage)
-                @php $isOwn = $chatMessage->user_id === $project->user_id; @endphp
-                <div class="chat-bubble group flex items-end {{ $isOwn ? 'justify-end' : '' }} gap-2.5 max-w-[75%] {{ $isOwn ? 'ml-auto' : '' }}"
-                     data-message-id="{{ $chatMessage->id }}" data-own="{{ $isOwn ? '1' : '0' }}" data-deleted="{{ $chatMessage->isDeleted() ? '1' : '0' }}">
-                    @unless ($isOwn)
-                        <span class="w-9 h-9 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0 shadow-sm">VB</span>
-                    @endunless
-                    <div class="chat-bubble-card relative rounded-3xl {{ $isOwn ? 'rounded-br-lg bg-gold' : 'rounded-bl-lg bg-white dark:bg-gray-800/90 border border-gray-100 dark:border-gray-700/60' }} px-5 py-3.5 shadow-sm hover:shadow-md transition-shadow duration-200">
-                        @unless ($isOwn)
-                            <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold-dark mb-1.5">VisionBridge Team</p>
-                        @endunless
+                @php
+                    $isOwn = $chatMessage->user_id === $project->user_id;
+                    $isSystem = $chatMessage->user_id === null;
+                    $prevMessage = $messages->get($loop->index - 1);
+                    $isGrouped = $prevMessage && $prevMessage->user_id === $chatMessage->user_id;
+                    $chatLink = $chatMessage->isDeleted() ? null : $chatLinkKind($chatMessage->body);
+                @endphp
 
-                        <p class="chat-bubble-body text-sm leading-relaxed {{ $isOwn ? 'text-navy-dark font-medium' : 'text-gray-700 dark:text-gray-200' }} whitespace-pre-line {{ $chatMessage->isDeleted() ? 'italic opacity-70' : '' }}">{{ $chatMessage->isDeleted() ? 'This message was deleted' : $chatMessage->body }}</p>
-
-                        <p class="chat-bubble-time text-[0.65rem] {{ $isOwn ? 'text-navy-dark/50 text-right' : 'text-gray-400 dark:text-gray-500' }} mt-1.5">
-                            <span class="chat-bubble-timestamp">{{ $chatMessage->created_at->diffForHumans() }}</span>
-                            <span class="chat-bubble-edited {{ $chatMessage->isEdited() ? '' : 'hidden' }}"> · edited {{ $chatMessage->edited_at?->diffForHumans() }}</span>
-                        </p>
-
-                        @if (! $chatMessage->isDeleted())
-                            <button type="button" class="chat-bubble-menu-btn absolute -top-2 {{ $isOwn ? '-left-2' : '-right-2' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40">
-                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>
-                            </button>
-                            <div class="chat-bubble-menu hidden absolute z-20 {{ $isOwn ? 'left-0' : 'right-0' }} top-7 w-44 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg py-1.5">
-                                @if ($isOwn)
-                                    <button type="button" class="chat-action-edit w-full text-left px-3.5 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark transition-colors duration-200 rounded-lg mx-1 w-[calc(100%-0.5rem)]">Edit</button>
-                                    <button type="button" class="chat-action-delete-everyone w-full text-left px-3.5 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors duration-200 rounded-lg mx-1 w-[calc(100%-0.5rem)]">Delete for everyone</button>
-                                @endif
-                                <button type="button" class="chat-action-delete-me w-full text-left px-3.5 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark transition-colors duration-200 rounded-lg mx-1 w-[calc(100%-0.5rem)]">Delete for me</button>
-                            </div>
-                        @endif
+                @if ($chatMessage->id === $chatFirstUnreadId)
+                    <div class="flex items-center gap-3 {{ $loop->first ? '' : 'mt-5' }} mb-2">
+                        <div class="flex-1 h-px bg-gold/30"></div>
+                        <span class="text-[0.6rem] font-semibold uppercase tracking-widest text-gold-dark">New</span>
+                        <div class="flex-1 h-px bg-gold/30"></div>
                     </div>
-                </div>
+                @endif
+
+                @if ($isSystem)
+                    {{-- Forward-compatible styling only — no code path in this app currently creates a message with a null user_id, so this never renders today. --}}
+                    <div class="chat-bubble flex justify-center {{ $loop->first ? '' : 'mt-3' }}"
+                         data-message-id="{{ $chatMessage->id }}" data-own="0" data-deleted="0" data-sender="system">
+                        <span class="inline-flex items-center gap-1.5 text-[0.7rem] font-medium text-gray-400 dark:text-gray-500 bg-gray-100/80 dark:bg-gray-800/60 px-3.5 py-1.5 rounded-full">
+                            {{ $chatMessage->body }}
+                            <span class="chat-bubble-timestamp text-gray-300 dark:text-gray-600">· {{ $chatMessage->created_at->diffForHumans() }}</span>
+                        </span>
+                    </div>
+                @else
+                    <div class="chat-bubble group flex items-end {{ $isOwn ? 'justify-end' : '' }} gap-2.5 max-w-[75%] lg:max-w-[560px] {{ $isOwn ? 'ml-auto' : '' }} {{ $isGrouped ? 'mt-1' : ($loop->first ? '' : 'mt-5') }}"
+                         data-message-id="{{ $chatMessage->id }}" data-own="{{ $isOwn ? '1' : '0' }}" data-deleted="{{ $chatMessage->isDeleted() ? '1' : '0' }}"
+                         data-sender="{{ $isOwn ? 'own' : 'team' }}" data-raw-body="{{ $chatMessage->body }}">
+                        @if (! $isOwn && ! $isGrouped)
+                            <span class="w-9 h-9 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0 shadow-sm">VB</span>
+                        @elseif (! $isOwn)
+                            <span class="w-9 shrink-0"></span>
+                        @endif
+                        <div class="chat-bubble-card relative rounded-[1.375rem] {{ $isOwn ? 'rounded-br-md bg-gold' : 'rounded-bl-md bg-white dark:bg-gray-800/90 border border-gray-100 dark:border-gray-700/60' }} {{ $chatMessage->isDeleted() ? 'border border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-900/30 shadow-none' : 'shadow-sm chat-bubble-hoverable hover:shadow-md' }} px-5 py-3.5">
+                            @if (! $isOwn && ! $isGrouped)
+                                <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold-dark mb-1.5">VisionBridge Team</p>
+                            @endif
+
+                            @if ($chatMessage->isDeleted())
+                                <p class="chat-bubble-body flex items-center gap-1.5 text-sm italic text-gray-400 dark:text-gray-500">
+                                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16"/></svg>
+                                    This message was deleted
+                                </p>
+                            @elseif ($chatLink === 'image')
+                                <a href="{{ $chatMessage->body }}" target="_blank" rel="noopener noreferrer" class="chat-bubble-body block rounded-xl overflow-hidden mb-1">
+                                    <img src="{{ $chatMessage->body }}" alt="Shared image" loading="lazy" class="max-w-full max-h-72 w-auto object-cover">
+                                </a>
+                            @elseif ($chatLink === 'file')
+                                @php $chatFileName = basename(parse_url($chatMessage->body, PHP_URL_PATH) ?: '') ?: 'Shared file'; @endphp
+                                <a href="{{ $chatMessage->body }}" target="_blank" rel="noopener noreferrer" class="chat-bubble-body flex items-center gap-3 rounded-xl {{ $isOwn ? 'bg-white/30 hover:bg-white/40' : 'bg-gray-50 dark:bg-gray-900/40 hover:bg-gray-100 dark:hover:bg-gray-900/70' }} px-3.5 py-3 transition-colors duration-200">
+                                    <span class="w-9 h-9 rounded-lg {{ $isOwn ? 'bg-navy-dark/10 text-navy-dark' : 'bg-gold/15 text-gold-dark' }} flex items-center justify-center shrink-0">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    </span>
+                                    <span class="min-w-0 flex-1">
+                                        <span class="block text-xs font-semibold truncate {{ $isOwn ? 'text-navy-dark' : 'text-gray-700 dark:text-gray-200' }}">{{ $chatFileName }}</span>
+                                        <span class="block text-[0.6rem] uppercase tracking-wide {{ $isOwn ? 'text-navy-dark/50' : 'text-gray-400' }}">Open file</span>
+                                    </span>
+                                </a>
+                            @else
+                                <p class="chat-bubble-body text-sm leading-relaxed {{ $isOwn ? 'text-navy-dark font-medium' : 'text-gray-700 dark:text-gray-200' }} whitespace-pre-line">{{ $chatMessage->body }}</p>
+                            @endif
+
+                            <p class="chat-bubble-time flex items-center gap-1 text-[0.65rem] {{ $isOwn ? 'text-navy-dark/50 justify-end' : 'text-gray-400 dark:text-gray-500' }} mt-1.5">
+                                <span class="chat-bubble-timestamp">{{ $chatMessage->created_at->diffForHumans() }}</span>
+                                <span class="chat-bubble-edited {{ $chatMessage->isEdited() ? '' : 'hidden' }}"> · edited {{ $chatMessage->edited_at?->diffForHumans() }}</span>
+                                @if ($isOwn && ! $chatMessage->isDeleted())
+                                    <span class="chat-bubble-ticks inline-flex shrink-0">
+                                        @if ($chatMessage->read_at)
+                                            <svg class="w-3.5 h-3.5 text-teal-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Read</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2 13l4 4L15 8M9 13l4 4L22 8"/></svg>
+                                        @else
+                                            <svg class="w-3.5 h-3.5 text-navy-dark/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Sent</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                        @endif
+                                    </span>
+                                @endif
+                            </p>
+
+                            @if (! $chatMessage->isDeleted())
+                                <button type="button" class="chat-bubble-menu-btn absolute -top-2 {{ $isOwn ? '-left-2' : '-right-2' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40">
+                                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>
+                                </button>
+                                <div class="chat-bubble-menu hidden absolute z-20 {{ $isOwn ? 'left-0' : 'right-0' }} top-7 w-44 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg py-1.5">
+                                    @if ($isOwn)
+                                        <button type="button" class="chat-action-edit w-full text-left px-3.5 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark transition-colors duration-200 rounded-lg mx-1 w-[calc(100%-0.5rem)]">Edit</button>
+                                        <button type="button" class="chat-action-delete-everyone w-full text-left px-3.5 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors duration-200 rounded-lg mx-1 w-[calc(100%-0.5rem)]">Delete for everyone</button>
+                                    @endif
+                                    <button type="button" class="chat-action-delete-me w-full text-left px-3.5 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark transition-colors duration-200 rounded-lg mx-1 w-[calc(100%-0.5rem)]">Delete for me</button>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endif
             @empty
                 <div id="chat-thread-empty" class="h-full flex flex-col items-center justify-center text-center">
                     <div class="w-16 h-16 rounded-full bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center mb-4">
@@ -371,20 +459,101 @@
         return document.getElementById('chat-thread').dataset.messageBaseUrl + '/' + id;
     }
 
-    function buildPortalBubbleHtml(data) {
-        const isOwn = !!data.isFromClient;
-        let html = '<div class="chat-bubble chat-bubble-enter group flex items-end ' + (isOwn ? 'justify-end' : '') + ' gap-2.5 max-w-[75%] ' + (isOwn ? 'ml-auto' : '') + '" data-message-id="' + data.id + '" data-own="' + (isOwn ? '1' : '0') + '" data-deleted="0">';
-        if (!isOwn) {
-            html += '<span class="w-9 h-9 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0 shadow-sm">VB</span>';
+    /**
+     * Whole-body-is-a-link detection, mirrored from the Blade template's
+     * $chatLinkKind closure — kept in sync by hand since Blade (initial
+     * render) and this script (live-appended/edited bubbles) are separate
+     * languages with no shared source of truth.
+     */
+    function detectPortalChatLink(body) {
+        const trimmed = (body || '').trim();
+        if (!trimmed || /\s/.test(trimmed) || !/^https?:\/\//i.test(trimmed)) return null;
+
+        let path = '';
+        try { path = new URL(trimmed).pathname; } catch (e) { return null; }
+        const ext = (path.split('.').pop() || '').toLowerCase();
+        const mediaExt = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+        const fileExt = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'csv', 'txt'];
+        if (mediaExt.includes(ext)) return 'image';
+        if (fileExt.includes(ext)) return 'file';
+        return null;
+    }
+
+    /** Builds the actual .chat-bubble-body element for a message — plain text, or an image/file preview when the body is nothing but a link. */
+    function buildPortalChatBodyEl(body, isOwn) {
+        const kind = detectPortalChatLink(body);
+
+        if (kind === 'image') {
+            const a = document.createElement('a');
+            a.href = body;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            a.className = 'chat-bubble-body block rounded-xl overflow-hidden mb-1';
+            const img = document.createElement('img');
+            img.src = body;
+            img.alt = 'Shared image';
+            img.loading = 'lazy';
+            img.className = 'max-w-full max-h-72 w-auto object-cover';
+            a.appendChild(img);
+            return a;
         }
-        html += '<div class="chat-bubble-card relative rounded-3xl ' + (isOwn ? 'rounded-br-lg bg-gold' : 'rounded-bl-lg bg-white dark:bg-gray-800/90 border border-gray-100 dark:border-gray-700/60') + ' px-5 py-3.5 shadow-sm hover:shadow-md transition-shadow duration-200">';
+
+        if (kind === 'file') {
+            let fileName = 'Shared file';
+            try { fileName = decodeURIComponent(new URL(body).pathname.split('/').pop()) || fileName; } catch (e) {}
+
+            const a = document.createElement('a');
+            a.href = body;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            a.className = 'chat-bubble-body flex items-center gap-3 rounded-xl ' + (isOwn ? 'bg-white/30 hover:bg-white/40' : 'bg-gray-50 dark:bg-gray-900/40 hover:bg-gray-100 dark:hover:bg-gray-900/70') + ' px-3.5 py-3 transition-colors duration-200';
+            a.innerHTML = '<span class="w-9 h-9 rounded-lg ' + (isOwn ? 'bg-navy-dark/10 text-navy-dark' : 'bg-gold/15 text-gold-dark') + ' flex items-center justify-center shrink-0">' +
+                '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>' +
+                '</span><span class="min-w-0 flex-1"></span>';
+            const nameWrap = a.querySelector('span.min-w-0');
+            const nameEl = document.createElement('span');
+            nameEl.className = 'block text-xs font-semibold truncate ' + (isOwn ? 'text-navy-dark' : 'text-gray-700 dark:text-gray-200');
+            nameEl.textContent = fileName;
+            const subEl = document.createElement('span');
+            subEl.className = 'block text-[0.6rem] uppercase tracking-wide ' + (isOwn ? 'text-navy-dark/50' : 'text-gray-400');
+            subEl.textContent = 'Open file';
+            nameWrap.appendChild(nameEl);
+            nameWrap.appendChild(subEl);
+            return a;
+        }
+
+        const p = document.createElement('p');
+        p.className = 'chat-bubble-body text-sm leading-relaxed ' + (isOwn ? 'text-navy-dark font-medium' : 'text-gray-700 dark:text-gray-200') + ' whitespace-pre-line';
+        p.textContent = body;
+        return p;
+    }
+
+    /** Swaps a bubble's body element for the right rendering (text vs. image/file) after a send or a live edit, and keeps data-raw-body in sync for the edit composer. */
+    function updatePortalChatBubbleBody(bubble, body) {
+        bubble.dataset.rawBody = body;
+        const bodyEl = bubble.querySelector('.chat-bubble-body');
+        if (!bodyEl) return;
+        bodyEl.replaceWith(buildPortalChatBodyEl(body, bubble.dataset.own === '1'));
+    }
+
+    function buildPortalBubbleHtml(data, grouped) {
+        const isOwn = !!data.isFromClient;
+        const marginClass = grouped ? 'mt-1' : 'mt-5';
+        let html = '<div class="chat-bubble chat-bubble-enter group flex items-end ' + (isOwn ? 'justify-end' : '') + ' gap-2.5 max-w-[75%] lg:max-w-[560px] ' + (isOwn ? 'ml-auto' : '') + ' ' + marginClass + '" data-message-id="' + data.id + '" data-own="' + (isOwn ? '1' : '0') + '" data-deleted="0">';
         if (!isOwn) {
+            html += grouped
+                ? '<span class="w-9 shrink-0"></span>'
+                : '<span class="w-9 h-9 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0 shadow-sm">VB</span>';
+        }
+        html += '<div class="chat-bubble-card relative rounded-[1.375rem] ' + (isOwn ? 'rounded-br-md bg-gold' : 'rounded-bl-md bg-white dark:bg-gray-800/90 border border-gray-100 dark:border-gray-700/60') + ' shadow-sm chat-bubble-hoverable hover:shadow-md px-5 py-3.5">';
+        if (!isOwn && !grouped) {
             html += '<p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold-dark mb-1.5">VisionBridge Team</p>';
         }
         html += '<p class="chat-bubble-body text-sm leading-relaxed ' + (isOwn ? 'text-navy-dark font-medium' : 'text-gray-700 dark:text-gray-200') + ' whitespace-pre-line"></p>';
-        html += '<p class="chat-bubble-time text-[0.65rem] ' + (isOwn ? 'text-navy-dark/50 text-right' : 'text-gray-400 dark:text-gray-500') + ' mt-1.5">' +
+        html += '<p class="chat-bubble-time flex items-center gap-1 text-[0.65rem] ' + (isOwn ? 'text-navy-dark/50 justify-end' : 'text-gray-400 dark:text-gray-500') + ' mt-1.5">' +
             '<span class="chat-bubble-timestamp"></span>' +
             '<span class="chat-bubble-edited hidden"></span>' +
+            (isOwn ? '<span class="chat-bubble-ticks inline-flex shrink-0"><svg class="w-3.5 h-3.5 text-navy-dark/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Sent</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></span>' : '') +
         '</p>';
         html += '<button type="button" class="chat-bubble-menu-btn absolute -top-2 ' + (isOwn ? '-left-2' : '-right-2') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40">' +
             '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>' +
@@ -407,10 +576,17 @@
         const empty = document.getElementById('chat-thread-empty');
         if (empty) empty.remove();
 
+        const isOwn = !!data.isFromClient;
+        const sender = isOwn ? 'own' : 'team';
+        const prevBubble = container.lastElementChild && container.lastElementChild.classList.contains('chat-bubble') ? container.lastElementChild : null;
+        const grouped = !!prevBubble && prevBubble.dataset.sender === sender;
+
         const wrapper = document.createElement('div');
-        wrapper.innerHTML = buildPortalBubbleHtml(data);
+        wrapper.innerHTML = buildPortalBubbleHtml(data, grouped);
         const bubble = wrapper.firstElementChild;
-        bubble.querySelector('.chat-bubble-body').textContent = data.body;
+        bubble.dataset.sender = sender;
+        bubble.dataset.rawBody = data.body;
+        bubble.querySelector('.chat-bubble-body').replaceWith(buildPortalChatBodyEl(data.body, isOwn));
         bubble.querySelector('.chat-bubble-timestamp').textContent = data.sentAt;
 
         container.appendChild(bubble);
@@ -507,7 +683,7 @@
         const bubble = document.querySelector('.chat-bubble[data-message-id="' + data.id + '"]');
         if (!bubble) return;
 
-        bubble.querySelector('.chat-bubble-body').textContent = data.body;
+        updatePortalChatBubbleBody(bubble, data.body);
         const edited = bubble.querySelector('.chat-bubble-edited');
         if (edited) {
             edited.textContent = ' · edited ' + data.editedAt;
@@ -519,10 +695,22 @@
         const bubble = document.querySelector('.chat-bubble[data-message-id="' + data.id + '"]');
         if (!bubble) return;
 
+        const isOwn = bubble.dataset.own === '1';
         bubble.dataset.deleted = '1';
+
+        const card = bubble.querySelector('.chat-bubble-card');
+        if (card) {
+            card.className = 'chat-bubble-card relative rounded-[1.375rem] ' + (isOwn ? 'rounded-br-md' : 'rounded-bl-md') + ' border border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-900/30 shadow-none px-5 py-3.5';
+        }
+
         const body = bubble.querySelector('.chat-bubble-body');
-        body.textContent = 'This message was deleted';
-        body.classList.add('italic', 'opacity-70');
+        if (body) {
+            body.outerHTML = '<p class="chat-bubble-body flex items-center gap-1.5 text-sm italic text-gray-400 dark:text-gray-500">' +
+                '<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16"/></svg>' +
+                'This message was deleted</p>';
+        }
+
+        bubble.querySelector('.chat-bubble-ticks')?.remove();
         bubble.querySelector('.chat-bubble-menu-btn')?.remove();
         bubble.querySelector('.chat-bubble-menu')?.remove();
     }
@@ -624,7 +812,7 @@
     function startEditingBubble(bubble) {
         const id = bubble.dataset.messageId;
         const bodyEl = bubble.querySelector('.chat-bubble-body');
-        const originalText = bodyEl.textContent.trim();
+        const originalText = bubble.dataset.rawBody || '';
         const isOwn = bubble.dataset.own === '1';
         const card = bubble.querySelector('.chat-bubble-card');
 
@@ -672,7 +860,7 @@
                     return response.json();
                 })
                 .then(function (data) {
-                    bodyEl.textContent = data.body;
+                    updatePortalChatBubbleBody(bubble, data.body);
                     const edited = bubble.querySelector('.chat-bubble-edited');
                     edited.textContent = ' · edited ' + data.editedAt;
                     edited.classList.remove('hidden');
