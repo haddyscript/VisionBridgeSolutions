@@ -1,5 +1,7 @@
 ```
 VisionBridgeSolutions/
+├── .claude/
+│   └── settings.local.json
 ├── app/
 │   ├── Console/
 │   │   └── Commands/
@@ -12,6 +14,7 @@ VisionBridgeSolutions/
 │   │       └── VerifyPartnerPayouts.php
 │   ├── Events/
 │   │   ├── ChatMessageDeleted.php
+│   │   ├── ChatMessageReacted.php
 │   │   ├── ChatMessageSent.php
 │   │   ├── ChatMessageUpdated.php
 │   │   └── ChatUserTyping.php
@@ -343,7 +346,8 @@ VisionBridgeSolutions/
 │   │   ├── 2026_07_22_000002_add_notifiable_columns_to_client_notifications_table.php
 │   │   ├── 2026_07_22_000003_add_notification_email_to_users_table.php
 │   │   ├── 2026_07_24_000001_create_chat_messages_table.php
-│   │   └── 2026_07_24_000002_add_edit_delete_to_chat_messages_table.php
+│   │   ├── 2026_07_24_000002_add_edit_delete_to_chat_messages_table.php
+│   │   └── 2026_07_25_000001_add_reaction_to_chat_messages_table.php
 │   ├── seeders/
 │   │   ├── DatabaseSeeder.php
 │   │   ├── MaintenancePlanSeeder.php

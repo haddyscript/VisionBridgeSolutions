@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Events\ChatMessageDeleted;
+use App\Events\ChatMessageReacted;
 use App\Events\ChatMessageSent;
 use App\Events\ChatMessageUpdated;
 use App\Events\ChatUserTyping;
@@ -14,6 +15,7 @@ use App\Models\Project;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 use Throwable;
 
 class ChatController extends Controller
@@ -136,6 +138,30 @@ class ChatController extends Controller
         $message->save();
 
         return response()->json(['message' => 'Removed.']);
+    }
+
+    /**
+     * Sets or clears this message's single shared reaction — any admin can
+     * react to any message (the team's own or the client's, see
+     * ChatMessage::REACTIONS); sending the same emoji that's already set
+     * clears it (a toggle, resolved server-side so it stays correct even
+     * with two admins/tabs open). Broadcasts live so the client sees it
+     * without a reload.
+     */
+    public function react(Request $request, ChatMessage $message)
+    {
+        abort_if($message->isDeleted(), 422);
+
+        $validated = $request->validate([
+            'reaction' => ['required', Rule::in(ChatMessage::REACTIONS)],
+        ]);
+
+        $message->reaction = $message->reaction === $validated['reaction'] ? null : $validated['reaction'];
+        $message->save();
+
+        $this->broadcastSafely(new ChatMessageReacted($message));
+
+        return response()->json(['reaction' => $message->reaction]);
     }
 
     public function markRead(Project $project)

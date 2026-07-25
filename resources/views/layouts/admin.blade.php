@@ -714,6 +714,9 @@
                 chatChannel.bind('MessageDeleted', function (data) {
                     if (typeof applyAdminChatDeleted === 'function') applyAdminChatDeleted(data);
                 });
+                chatChannel.bind('MessageReacted', function (data) {
+                    if (typeof applyAdminChatReaction === 'function') applyAdminChatReaction(data);
+                });
                 chatChannel.bind('UserTyping', function (data) {
                     if (data.isFromClient && typeof showAdminTypingIndicator === 'function') showAdminTypingIndicator();
                 });

@@ -42,6 +42,23 @@
                     </p>
 
                     @if (! $chatMessage->isDeleted())
+                        {{-- Real, persisted reaction (chat_messages.reaction +
+                             ChatMessageReacted broadcast) — overlaps the bubble's
+                             bottom corner like an iMessage tapback. Either side
+                             can react to any message; see ChatMessage::REACTIONS. --}}
+                        <div class="chat-reaction-display {{ $chatMessage->reaction ? '' : 'hidden' }} absolute z-10 -bottom-2.5 {{ $isClient ? 'left-3' : 'right-3' }}">
+                            <span class="chat-reaction-pill flex items-center justify-center w-6 h-6 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm text-sm">{{ $chatMessage->reaction }}</span>
+                        </div>
+
+                        <button type="button" class="chat-bubble-react-btn absolute -top-2 {{ $isClient ? '-right-9' : '-left-9' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-200 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gold-dark transition-opacity" title="React">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </button>
+                        <div class="chat-reaction-picker hidden absolute z-20 {{ $isClient ? 'left-8' : 'right-8' }} -top-11 items-center gap-0.5 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-full shadow-lg px-1.5 py-1">
+                            @foreach (\App\Models\ChatMessage::REACTIONS as $chatReactionEmoji)
+                                <button type="button" class="chat-reaction-option w-7 h-7 rounded-full flex items-center justify-center text-base hover:bg-gold/10 hover:scale-110 transition-all duration-150">{{ $chatReactionEmoji }}</button>
+                            @endforeach
+                        </div>
+
                         <button type="button" class="chat-bubble-menu-btn absolute -top-2 {{ $isClient ? '-right-2' : '-left-2' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-200 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-opacity">
                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>
                         </button>
@@ -305,6 +322,9 @@ function adminChatMessageUrl(id) {
     return document.getElementById('chat-thread').dataset.messageBaseUrl + '/' + id;
 }
 
+/** Mirrors ChatMessage::REACTIONS (app/Models/ChatMessage.php) — kept in sync by hand since Blade and this script share no runtime. */
+const ChatMessageReactions = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
+
 function buildAdminBubbleHtml(data) {
     const isClient = !!data.isFromClient;
     let html = '<div class="chat-bubble group flex items-start ' + (isClient ? '' : 'justify-end') + ' gap-2.5 max-w-[75%] ' + (isClient ? '' : 'ml-auto') + '" data-message-id="' + data.id + '" data-own="' + (isClient ? '0' : '1') + '" data-deleted="0">';
@@ -320,6 +340,15 @@ function buildAdminBubbleHtml(data) {
         '<span class="chat-bubble-timestamp"></span>' +
         '<span class="chat-bubble-edited hidden"></span>' +
     '</p>';
+    html += '<div class="chat-reaction-display hidden absolute z-10 -bottom-2.5 ' + (isClient ? 'left-3' : 'right-3') + '"><span class="chat-reaction-pill flex items-center justify-center w-6 h-6 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm text-sm"></span></div>';
+    html += '<button type="button" class="chat-bubble-react-btn absolute -top-2 ' + (isClient ? '-right-9' : '-left-9') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-200 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gold-dark transition-opacity" title="React">' +
+        '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' +
+    '</button>';
+    html += '<div class="chat-reaction-picker hidden absolute z-20 ' + (isClient ? 'left-8' : 'right-8') + ' -top-11 items-center gap-0.5 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-full shadow-lg px-1.5 py-1">';
+    ChatMessageReactions.forEach(function (emoji) {
+        html += '<button type="button" class="chat-reaction-option w-7 h-7 rounded-full flex items-center justify-center text-base hover:bg-gold/10 hover:scale-110 transition-all duration-150">' + emoji + '</button>';
+    });
+    html += '</div>';
     html += '<button type="button" class="chat-bubble-menu-btn absolute -top-2 ' + (isClient ? '-right-2' : '-left-2') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-200 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-opacity">' +
         '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>' +
     '</button>';
@@ -509,11 +538,69 @@ function applyAdminChatDeleted(data) {
     body.classList.add('italic', 'opacity-70');
     bubble.querySelector('.chat-bubble-menu-btn')?.remove();
     bubble.querySelector('.chat-bubble-menu')?.remove();
+    bubble.querySelector('.chat-bubble-react-btn')?.remove();
+    bubble.querySelector('.chat-reaction-picker')?.remove();
+    bubble.querySelector('.chat-reaction-display')?.remove();
+}
+
+/** Posts the picked emoji to the real /react endpoint — the server decides whether that sets or clears the reaction (same emoji again toggles it off). */
+function sendAdminChatReaction(bubble, emoji) {
+    const messageId = bubble.dataset.messageId;
+
+    fetch(adminChatMessageUrl(messageId) + '/react', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': adminCsrfToken(),
+        },
+        body: new URLSearchParams({ reaction: emoji }),
+    })
+        .then(function (response) {
+            if (!response.ok) throw new Error('Request failed');
+            return response.json();
+        })
+        .then(function (data) {
+            applyAdminChatReaction({ id: messageId, reaction: data.reaction });
+        })
+        .catch(function () {
+            alert('Could not save the reaction. Please try again.');
+        });
+}
+
+/** Applies a reaction change (from this tab's own request, another admin, or the client) — arrives over Pusher as MessageReacted for anyone not the one who made the request. */
+function applyAdminChatReaction(data) {
+    const bubble = document.querySelector('.chat-bubble[data-message-id="' + data.id + '"]');
+    if (!bubble) return;
+
+    const display = bubble.querySelector('.chat-reaction-display');
+    const pill = bubble.querySelector('.chat-reaction-pill');
+    if (!display || !pill) return;
+
+    if (data.reaction) {
+        pill.textContent = data.reaction;
+        display.classList.remove('hidden');
+    } else {
+        pill.textContent = '';
+        display.classList.add('hidden');
+    }
 }
 
 (function () {
     const container = document.getElementById('chat-thread-messages');
     if (!container) return;
+
+    // A reaction picker's root needs to actually be a flex row (to lay its
+    // emoji buttons out side by side), unlike a plain dropdown menu — so
+    // closing/opening it also has to toggle a 'flex' class, not just
+    // 'hidden'. Mirrors the exact hidden/flex pairing this file already
+    // uses for #chat-delete-modal.
+    function closeAllAdminChatBubblePopovers() {
+        container.querySelectorAll('.chat-bubble-menu').forEach(function (m) { m.classList.add('hidden'); });
+        container.querySelectorAll('.chat-reaction-picker').forEach(function (m) {
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        });
+    }
 
     // Menu buttons/dropdowns are built per-bubble (server-rendered and
     // JS-appended alike), so delegation on the scroll container catches
@@ -523,8 +610,29 @@ function applyAdminChatDeleted(data) {
         if (menuBtn) {
             const menu = menuBtn.nextElementSibling;
             const alreadyOpen = !menu.classList.contains('hidden');
-            container.querySelectorAll('.chat-bubble-menu').forEach(function (m) { m.classList.add('hidden'); });
+            closeAllAdminChatBubblePopovers();
             if (!alreadyOpen) menu.classList.remove('hidden');
+            return;
+        }
+
+        const reactBtn = e.target.closest('.chat-bubble-react-btn');
+        if (reactBtn) {
+            const picker = reactBtn.nextElementSibling;
+            const alreadyOpen = !picker.classList.contains('hidden');
+            closeAllAdminChatBubblePopovers();
+            if (!alreadyOpen) {
+                picker.classList.remove('hidden');
+                picker.classList.add('flex');
+            }
+            return;
+        }
+
+        const reactionOption = e.target.closest('.chat-reaction-option');
+        if (reactionOption) {
+            const picker = reactionOption.closest('.chat-reaction-picker');
+            picker.classList.add('hidden');
+            picker.classList.remove('flex');
+            sendAdminChatReaction(reactionOption.closest('.chat-bubble'), reactionOption.textContent.trim());
             return;
         }
 
@@ -552,8 +660,8 @@ function applyAdminChatDeleted(data) {
             return;
         }
 
-        if (!e.target.closest('.chat-bubble-menu')) {
-            container.querySelectorAll('.chat-bubble-menu').forEach(function (m) { m.classList.add('hidden'); });
+        if (!e.target.closest('.chat-bubble-menu') && !e.target.closest('.chat-reaction-picker')) {
+            closeAllAdminChatBubblePopovers();
         }
     });
 })();

@@ -1254,6 +1254,9 @@
             chatChannel.bind('MessageDeleted', function (data) {
                 if (typeof applyPortalChatDeleted === 'function') applyPortalChatDeleted(data);
             });
+            chatChannel.bind('MessageReacted', function (data) {
+                if (typeof applyPortalChatReaction === 'function') applyPortalChatReaction(data);
+            });
             chatChannel.bind('UserTyping', function (data) {
                 if (!data.isFromClient && typeof showPortalTypingIndicator === 'function') showPortalTypingIndicator();
             });

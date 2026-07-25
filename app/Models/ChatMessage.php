@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class ChatMessage extends Model
 {
+    /** The only emojis either side can react with — matches the composer's own reaction-picker options (resources/views/portal/chat.blade.php). Kept as one small fixed set rather than free-form input. */
+    public const REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
+
     // Deliberately excludes read_at/edited_at/deleted_at/hidden_for_*_at —
     // these are lifecycle state, never user-supplied input, and are always
     // set via direct property assignment (`$message->deleted_at = now();
@@ -47,5 +50,11 @@ class ChatMessage extends Model
     public function isEdited(): bool
     {
         return $this->edited_at !== null;
+    }
+
+    /** One shared reaction emoji per message (not per-viewer — see the reaction migration's own comment for why). */
+    public function hasReaction(): bool
+    {
+        return $this->reaction !== null;
     }
 }

@@ -273,24 +273,22 @@
                                 @endif
                             </p>
 
-                            {{-- Reaction pill — client-side/session-only,
-                                 see the react button's own comment below. --}}
-                            <div class="chat-reaction-display hidden mt-1 {{ $isOwn ? 'justify-end' : '' }}">
-                                <span class="chat-reaction-pill inline-flex items-center gap-1 text-xs bg-gold/10 dark:bg-gold/15 text-gold-dark px-2 py-0.5 rounded-full border border-gold/20"></span>
-                            </div>
-
                             @if (! $chatMessage->isDeleted())
-                                {{-- Reactions here are deliberately not persisted or
-                                     broadcast — there's no chat_message_reactions
-                                     table or event (that's a real backend change,
-                                     out of scope this pass). Picking one just shows
-                                     a pill locally for this page view; it's gone on
-                                     reload and no one else sees it. --}}
+                                {{-- Real, persisted reaction (chat_messages.reaction +
+                                     ChatMessageReacted broadcast) — overlaps the
+                                     bubble's bottom corner like an iMessage tapback
+                                     instead of pushing a whole extra row below the
+                                     timestamp, so it reads as attached to the
+                                     message rather than a separate block. --}}
+                                <div class="chat-reaction-display {{ $chatMessage->reaction ? '' : 'hidden' }} absolute z-10 -bottom-2.5 {{ $isOwn ? 'right-3' : 'left-3' }}">
+                                    <span class="chat-reaction-pill flex items-center justify-center w-6 h-6 rounded-full bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 shadow-sm text-sm">{{ $chatMessage->reaction }}</span>
+                                </div>
+
                                 <button type="button" class="chat-bubble-react-btn absolute -top-2 {{ $isOwn ? '-left-9' : '-right-9' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gold-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40" title="React">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 </button>
                                 <div class="chat-reaction-picker hidden absolute z-20 {{ $isOwn ? 'right-8' : 'left-8' }} -top-11 items-center gap-0.5 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-full shadow-lg px-1.5 py-1">
-                                    @foreach (['👍', '❤️', '😂', '😮', '😢', '🙏'] as $chatReactionEmoji)
+                                    @foreach (\App\Models\ChatMessage::REACTIONS as $chatReactionEmoji)
                                         <button type="button" class="chat-reaction-option w-7 h-7 rounded-full flex items-center justify-center text-base hover:bg-gold/10 hover:scale-110 transition-all duration-150">{{ $chatReactionEmoji }}</button>
                                     @endforeach
                                 </div>
@@ -969,7 +967,7 @@
             '<span class="chat-bubble-edited hidden"></span>' +
             (isOwn ? '<span class="chat-bubble-ticks inline-flex shrink-0"></span>' : '') +
         '</p>';
-        html += '<div class="chat-reaction-display hidden mt-1 ' + (isOwn ? 'justify-end' : '') + '"><span class="chat-reaction-pill inline-flex items-center gap-1 text-xs bg-gold/10 dark:bg-gold/15 text-gold-dark px-2 py-0.5 rounded-full border border-gold/20"></span></div>';
+        html += '<div class="chat-reaction-display hidden absolute z-10 -bottom-2.5 ' + (isOwn ? 'right-3' : 'left-3') + '"><span class="chat-reaction-pill flex items-center justify-center w-6 h-6 rounded-full bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 shadow-sm text-sm"></span></div>';
         html += '<button type="button" class="chat-bubble-react-btn absolute -top-2 ' + (isOwn ? '-left-9' : '-right-9') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gold-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40" title="React">' +
             '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' +
         '</button>';
@@ -1031,12 +1029,15 @@
     function setChatTickState(bubble, state) {
         const ticks = bubble.querySelector('.chat-bubble-ticks');
         const menuBtn = bubble.querySelector('.chat-bubble-menu-btn');
+        const reactBtn = bubble.querySelector('.chat-bubble-react-btn');
         if (!ticks) return;
 
         // A still-sending or failed message has no real message id yet (or
-        // never got one) — editing/deleting it would PATCH/DELETE a
-        // nonsense URL, so the menu stays hidden until it's actually sent.
+        // never got one) — editing/deleting/reacting to it would
+        // PATCH/DELETE/POST a nonsense URL, so the menu and react button
+        // stay hidden until it's actually sent.
         menuBtn?.classList.toggle('hidden', state === 'sending' || state === 'failed');
+        reactBtn?.classList.toggle('hidden', state === 'sending' || state === 'failed');
 
         if (state === 'sending') {
             ticks.innerHTML = '<svg class="w-3.5 h-3.5 text-navy-dark/30 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Sending…</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
@@ -1378,7 +1379,7 @@
                 const picker = reactionOption.closest('.chat-reaction-picker');
                 picker.classList.add('hidden');
                 picker.classList.remove('flex');
-                setChatBubbleReaction(reactionOption.closest('.chat-bubble'), reactionOption.textContent.trim());
+                sendChatReaction(reactionOption.closest('.chat-bubble'), reactionOption.textContent.trim());
                 return;
             }
 
@@ -1413,28 +1414,52 @@
     })();
 
     /**
-     * Sets (or, clicking the same emoji again, clears) this bubble's
-     * reaction pill. Deliberately client-side/session-only — see the
-     * react button's markup comment for why nothing here is persisted or
-     * broadcast to the other side of the conversation.
+     * Posts the picked emoji to the real /react endpoint — the server (not
+     * this function) decides whether that sets or clears the reaction
+     * (clicking the same emoji that's already set toggles it off), so this
+     * stays correct even with two tabs open. Real messages only: a
+     * still-"Sending…" bubble has no server id yet, so its react button is
+     * hidden by setChatTickState() the same way the edit/delete menu is.
      */
-    function setChatBubbleReaction(bubble, emoji) {
+    function sendChatReaction(bubble, emoji) {
+        const messageId = bubble.dataset.messageId;
+
+        fetch(chatMessageUrl(messageId) + '/react', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': chatCsrfToken(),
+            },
+            body: new URLSearchParams({ reaction: emoji }),
+        })
+            .then(function (response) {
+                if (!response.ok) throw new Error('Request failed');
+                return response.json();
+            })
+            .then(function (data) {
+                applyPortalChatReaction({ id: messageId, reaction: data.reaction });
+            })
+            .catch(function () {
+                alert('Could not save the reaction. Please try again.');
+            });
+    }
+
+    /** Applies a reaction change (from this tab's own request, another tab, or the other side of the conversation via Pusher's MessageReacted). */
+    function applyPortalChatReaction(data) {
+        const bubble = document.querySelector('.chat-bubble[data-message-id="' + data.id + '"]');
+        if (!bubble) return;
+
         const display = bubble.querySelector('.chat-reaction-display');
         const pill = bubble.querySelector('.chat-reaction-pill');
         if (!display || !pill) return;
 
-        if (bubble.dataset.reaction === emoji) {
-            bubble.dataset.reaction = '';
+        if (data.reaction) {
+            pill.textContent = data.reaction;
+            display.classList.remove('hidden');
+        } else {
             pill.textContent = '';
             display.classList.add('hidden');
-            display.classList.remove('flex');
-            return;
         }
-
-        bubble.dataset.reaction = emoji;
-        pill.textContent = emoji;
-        display.classList.remove('hidden');
-        display.classList.add('flex');
     }
 
     const CHAT_EDIT_WIDTH_CLASSES = ['w-72', 'sm:w-96', 'max-w-full'];
