@@ -26,23 +26,42 @@
             0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
             30% { transform: translateY(-2px); opacity: 1; }
         }
-        .chat-bubble-card { transition: transform 200ms ease, box-shadow 200ms ease, background-color 200ms ease; }
+        .chat-bubble-card { transition: transform 200ms ease-out, box-shadow 200ms ease-out, background-color 200ms ease-out; }
         .chat-bubble-card.chat-bubble-hoverable:hover { transform: translateY(-1px); }
-        #chat-typing-indicator { transition: opacity 200ms ease, transform 200ms ease; }
-        #chat-scroll-to-bottom-btn { transition: opacity 200ms ease, transform 200ms ease, box-shadow 200ms ease; }
+        #chat-typing-indicator { transition: opacity 200ms ease-out, transform 200ms ease-out; }
+        #chat-scroll-to-bottom-btn { transition: opacity 200ms ease-out, transform 200ms ease-out, box-shadow 200ms ease-out; }
+        {{-- Phase 9 note: previously this used rotate() and an overshooting
+             cubic-bezier at 380ms — outside the "opacity/translateY/scale
+             only", "ease-out", "150-250ms" rules this pass set, so it's
+             tightened here rather than left as an exception. --}}
         @keyframes chatSendLaunch {
-            0% { transform: scale(1) rotate(0deg); }
-            35% { transform: scale(0.85) rotate(-8deg); }
-            65% { transform: scale(1.12) rotate(4deg); }
-            100% { transform: scale(1) rotate(0deg); }
+            0% { transform: scale(1); }
+            40% { transform: scale(0.86); }
+            100% { transform: scale(1); }
         }
-        #chat-send-btn.chat-send-launch { animation: chatSendLaunch 380ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+        #chat-send-btn.chat-send-launch { animation: chatSendLaunch 220ms ease-out; }
+
+        {{-- Shared entrance for every popover/dropdown/reaction-picker on
+             this page — one keyframe, one duration, reused everywhere
+             rather than a bespoke animation per widget. --}}
         @keyframes chatPopoverIn {
             from { opacity: 0; transform: translateY(6px) scale(0.98); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
-        #chat-emoji-picker:not(.hidden), #chat-templates-picker:not(.hidden), #chat-attachment-picker:not(.hidden), #chat-mention-picker:not(.hidden) {
-            animation: chatPopoverIn 150ms ease-out;
+        #chat-emoji-picker:not(.hidden), #chat-templates-picker:not(.hidden), #chat-attachment-picker:not(.hidden),
+        #chat-mention-picker:not(.hidden), .chat-bubble-menu:not(.hidden), .chat-reaction-picker:not(.hidden) {
+            animation: chatPopoverIn 180ms ease-out;
+        }
+        .chat-reaction-pill { animation: chatPopoverIn 180ms ease-out; }
+
+        {{-- Button press feedback — every button inside the thread or its
+             modal gets a quick, subtle compress on press, distinct from
+             (and layered on top of) whatever hover treatment it already
+             has. Scale-only, no color/shadow change here, so it never
+             fights with a button's own hover state. --}}
+        #chat-thread button:active, #chat-delete-modal button:active {
+            transform: scale(0.96);
+            transition: transform 150ms ease-out;
         }
     </style>
 
@@ -254,7 +273,28 @@
                                 @endif
                             </p>
 
+                            {{-- Reaction pill — client-side/session-only,
+                                 see the react button's own comment below. --}}
+                            <div class="chat-reaction-display hidden mt-1 {{ $isOwn ? 'justify-end' : '' }}">
+                                <span class="chat-reaction-pill inline-flex items-center gap-1 text-xs bg-gold/10 dark:bg-gold/15 text-gold-dark px-2 py-0.5 rounded-full border border-gold/20"></span>
+                            </div>
+
                             @if (! $chatMessage->isDeleted())
+                                {{-- Reactions here are deliberately not persisted or
+                                     broadcast — there's no chat_message_reactions
+                                     table or event (that's a real backend change,
+                                     out of scope this pass). Picking one just shows
+                                     a pill locally for this page view; it's gone on
+                                     reload and no one else sees it. --}}
+                                <button type="button" class="chat-bubble-react-btn absolute -top-2 {{ $isOwn ? '-left-9' : '-right-9' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gold-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40" title="React">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </button>
+                                <div class="chat-reaction-picker hidden absolute z-20 {{ $isOwn ? 'right-8' : 'left-8' }} -top-11 items-center gap-0.5 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-full shadow-lg px-1.5 py-1">
+                                    @foreach (['👍', '❤️', '😂', '😮', '😢', '🙏'] as $chatReactionEmoji)
+                                        <button type="button" class="chat-reaction-option w-7 h-7 rounded-full flex items-center justify-center text-base hover:bg-gold/10 hover:scale-110 transition-all duration-150">{{ $chatReactionEmoji }}</button>
+                                    @endforeach
+                                </div>
+
                                 <button type="button" class="chat-bubble-menu-btn absolute -top-2 {{ $isOwn ? '-left-2' : '-right-2' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40">
                                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>
                                 </button>
@@ -929,6 +969,15 @@
             '<span class="chat-bubble-edited hidden"></span>' +
             (isOwn ? '<span class="chat-bubble-ticks inline-flex shrink-0"></span>' : '') +
         '</p>';
+        html += '<div class="chat-reaction-display hidden mt-1 ' + (isOwn ? 'justify-end' : '') + '"><span class="chat-reaction-pill inline-flex items-center gap-1 text-xs bg-gold/10 dark:bg-gold/15 text-gold-dark px-2 py-0.5 rounded-full border border-gold/20"></span></div>';
+        html += '<button type="button" class="chat-bubble-react-btn absolute -top-2 ' + (isOwn ? '-left-9' : '-right-9') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gold-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40" title="React">' +
+            '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' +
+        '</button>';
+        html += '<div class="chat-reaction-picker hidden absolute z-20 ' + (isOwn ? 'right-8' : 'left-8') + ' -top-11 items-center gap-0.5 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-full shadow-lg px-1.5 py-1">';
+        ['👍', '❤️', '😂', '😮', '😢', '🙏'].forEach(function (emoji) {
+            html += '<button type="button" class="chat-reaction-option w-7 h-7 rounded-full flex items-center justify-center text-base hover:bg-gold/10 hover:scale-110 transition-all duration-150">' + emoji + '</button>';
+        });
+        html += '</div>';
         html += '<button type="button" class="chat-bubble-menu-btn absolute -top-2 ' + (isOwn ? '-left-2' : '-right-2') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40">' +
             '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>' +
         '</button>';
@@ -1226,6 +1275,9 @@
         bubble.querySelector('.chat-bubble-ticks')?.remove();
         bubble.querySelector('.chat-bubble-menu-btn')?.remove();
         bubble.querySelector('.chat-bubble-menu')?.remove();
+        bubble.querySelector('.chat-bubble-react-btn')?.remove();
+        bubble.querySelector('.chat-reaction-picker')?.remove();
+        bubble.querySelector('.chat-reaction-display')?.remove();
     }
 
     let chatDeleteConfirmCallback = null;
@@ -1277,6 +1329,19 @@
         const container = document.getElementById('chat-thread-messages');
         if (!container) return;
 
+        // A reaction picker's root needs to actually be a flex row (to lay
+        // its emoji buttons out side by side), unlike a plain dropdown menu
+        // — so unlike .chat-bubble-menu, closing/opening it also has to
+        // toggle a 'flex' class, not just 'hidden'. Mirrors the exact
+        // hidden/flex pairing this file already uses for #chat-delete-modal.
+        function closeAllChatBubblePopovers() {
+            container.querySelectorAll('.chat-bubble-menu').forEach(function (m) { m.classList.add('hidden'); });
+            container.querySelectorAll('.chat-reaction-picker').forEach(function (m) {
+                m.classList.add('hidden');
+                m.classList.remove('flex');
+            });
+        }
+
         // Menu buttons/dropdowns are built per-bubble (server-rendered and
         // JS-appended alike), so delegation on the scroll container catches
         // every one without needing to re-bind after each append.
@@ -1291,8 +1356,29 @@
             if (menuBtn) {
                 const menu = menuBtn.nextElementSibling;
                 const alreadyOpen = !menu.classList.contains('hidden');
-                container.querySelectorAll('.chat-bubble-menu').forEach(function (m) { m.classList.add('hidden'); });
+                closeAllChatBubblePopovers();
                 if (!alreadyOpen) menu.classList.remove('hidden');
+                return;
+            }
+
+            const reactBtn = e.target.closest('.chat-bubble-react-btn');
+            if (reactBtn) {
+                const picker = reactBtn.nextElementSibling;
+                const alreadyOpen = !picker.classList.contains('hidden');
+                closeAllChatBubblePopovers();
+                if (!alreadyOpen) {
+                    picker.classList.remove('hidden');
+                    picker.classList.add('flex');
+                }
+                return;
+            }
+
+            const reactionOption = e.target.closest('.chat-reaction-option');
+            if (reactionOption) {
+                const picker = reactionOption.closest('.chat-reaction-picker');
+                picker.classList.add('hidden');
+                picker.classList.remove('flex');
+                setChatBubbleReaction(reactionOption.closest('.chat-bubble'), reactionOption.textContent.trim());
                 return;
             }
 
@@ -1320,11 +1406,36 @@
                 return;
             }
 
-            if (!e.target.closest('.chat-bubble-menu')) {
-                container.querySelectorAll('.chat-bubble-menu').forEach(function (m) { m.classList.add('hidden'); });
+            if (!e.target.closest('.chat-bubble-menu') && !e.target.closest('.chat-reaction-picker')) {
+                closeAllChatBubblePopovers();
             }
         });
     })();
+
+    /**
+     * Sets (or, clicking the same emoji again, clears) this bubble's
+     * reaction pill. Deliberately client-side/session-only — see the
+     * react button's markup comment for why nothing here is persisted or
+     * broadcast to the other side of the conversation.
+     */
+    function setChatBubbleReaction(bubble, emoji) {
+        const display = bubble.querySelector('.chat-reaction-display');
+        const pill = bubble.querySelector('.chat-reaction-pill');
+        if (!display || !pill) return;
+
+        if (bubble.dataset.reaction === emoji) {
+            bubble.dataset.reaction = '';
+            pill.textContent = '';
+            display.classList.add('hidden');
+            display.classList.remove('flex');
+            return;
+        }
+
+        bubble.dataset.reaction = emoji;
+        pill.textContent = emoji;
+        display.classList.remove('hidden');
+        display.classList.add('flex');
+    }
 
     const CHAT_EDIT_WIDTH_CLASSES = ['w-72', 'sm:w-96', 'max-w-full'];
 
