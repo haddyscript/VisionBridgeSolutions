@@ -2,6 +2,28 @@
     The active conversation pane of the centralized /admin/chat inbox.
     $project is the selected conversation (see admin/chat/index.blade.php).
 --}}
+<style>
+    @keyframes chatPopoverIn {
+        from { opacity: 0; transform: translateY(6px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    #chat-emoji-picker:not(.hidden), #chat-templates-picker:not(.hidden), #chat-attachment-picker:not(.hidden),
+    #chat-mention-picker:not(.hidden), .chat-bubble-menu:not(.hidden), .chat-reaction-picker:not(.hidden) {
+        animation: chatPopoverIn 180ms ease-out;
+    }
+    .chat-reaction-pill { animation: chatPopoverIn 180ms ease-out; }
+    @keyframes chatSendLaunch {
+        0% { transform: scale(1); }
+        40% { transform: scale(0.86); }
+        100% { transform: scale(1); }
+    }
+    #chat-send-btn.chat-send-launch { animation: chatSendLaunch 220ms ease-out; }
+    #chat-thread button:active, #chat-delete-modal button:active {
+        transform: scale(0.96);
+        transition: transform 150ms ease-out;
+    }
+</style>
+
 <div id="chat-thread" data-project-id="{{ $project->id }}" data-message-base-url="{{ url('/admin/chat-messages') }}" class="flex flex-col h-full">
     <div class="shrink-0 flex items-center gap-3 px-5 py-4 border-b border-gray-200 dark:border-gray-700">
         <a href="{{ route('admin.chat.index') }}" class="sm:hidden shrink-0 w-8 h-8 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center transition-colors">
@@ -87,31 +109,107 @@
         {{ $project->user->name }} is typing…
     </div>
 
-    <form id="chat-thread-form" data-mark-read-url="{{ route('admin.chat.read', $project) }}" data-typing-url="{{ route('admin.chat.typing', $project) }}"
-          method="POST" action="{{ route('admin.chat.store', $project) }}"
-          onsubmit="return submitAdminChatMessage(this, event)"
-          class="shrink-0 flex items-center gap-2 px-5 py-4 border-t border-gray-200 dark:border-gray-700">
-        @csrf
-        <textarea name="body" rows="1" placeholder="Message {{ $project->user->name }}…" required
-                  class="flex-1 resize-none rounded-full border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500"></textarea>
-        <button type="button" id="chat-mic-btn" title="Voice input" class="hidden relative shrink-0 w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600 text-gray-400 hover:text-gold-dark hover:border-gold flex items-center justify-center transition-colors">
-            <span id="chat-mic-ring" class="hidden absolute inset-0 rounded-full bg-red-400 opacity-75 animate-ping"></span>
-            <svg id="chat-mic-icon" class="w-4 h-4 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/>
-            </svg>
-            <span id="chat-mic-bars" class="hidden relative items-end justify-center gap-0.5 h-4 w-4">
-                <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
-                <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
-                <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
-                <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
-            </span>
-        </button>
-        <button type="submit" title="Send" class="shrink-0 w-10 h-10 rounded-full bg-navy hover:bg-navy-light text-white flex items-center justify-center transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-            </svg>
-        </button>
-    </form>
+    @php
+        // Same 48-emoji set as the portal composer (kept in sync by hand —
+        // there's no shared partial between the two chat views, same
+        // convention as everything else in this feature).
+        $adminChatEmojiSet = ['👍', '👎', '🙏', '👏', '🙌', '💪', '🤝', '🎉', '😀', '😄', '😁', '😊', '🙂', '😉', '😍', '😘', '😎', '🤔', '😅', '😂', '🤣', '😢', '😭', '😮', '😲', '😴', '🙄', '👀', '💡', '🔥', '✨', '💯', '✅', '❌', '⚠️', '❤️', '💙', '💛', '💚', '🧡', '📌', '📎', '📅', '⏰', '💬', '📞', '🚀', '🙋'];
+        $adminChatQuickReplies = [
+            "Thanks for reaching out — we'll take a look and get back to you shortly.",
+            'Good news — this has been completed. Let us know what you think!',
+            'Could you clarify what you\'d like us to prioritize here?',
+            "We've made the requested changes — please review when you have a moment.",
+            'Just checking in — any updates on your end?',
+        ];
+    @endphp
+    <div class="shrink-0 px-3.5 sm:px-5 py-4 border-t border-gray-200 dark:border-gray-700">
+        <form id="chat-thread-form" data-mark-read-url="{{ route('admin.chat.read', $project) }}" data-typing-url="{{ route('admin.chat.typing', $project) }}"
+              method="POST" action="{{ route('admin.chat.store', $project) }}"
+              onsubmit="return submitAdminChatMessage(this, event)"
+              class="chat-composer relative rounded-[1.75rem] border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-navy-dark shadow-sm transition-all duration-200 focus-within:border-gold focus-within:ring-4 focus-within:ring-gold/10 focus-within:bg-white dark:focus-within:bg-navy-dark">
+            @csrf
+
+            {{-- Emoji picker --}}
+            <div id="chat-emoji-picker" class="hidden absolute bottom-full left-2 mb-2 w-72 max-h-56 overflow-y-auto bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-2.5 z-30">
+                <div class="grid grid-cols-8 gap-0.5">
+                    @foreach ($adminChatEmojiSet as $adminChatEmoji)
+                        <button type="button" class="chat-emoji-option w-7 h-7 rounded-lg flex items-center justify-center text-lg hover:bg-gold/10 transition-colors duration-150">{{ $adminChatEmoji }}</button>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- Quick-reply templates --}}
+            <div id="chat-templates-picker" class="hidden absolute bottom-full left-2 mb-2 w-80 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-1.5 z-30">
+                @foreach ($adminChatQuickReplies as $adminChatQuickReply)
+                    <button type="button" class="chat-template-option block w-full text-left px-3 py-2 text-xs text-gray-600 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark rounded-xl transition-colors duration-150">{{ $adminChatQuickReply }}</button>
+                @endforeach
+            </div>
+
+            {{-- Attachment — no file-upload backend exists for chat (same
+                 scoping as the portal composer's own Phase 6) — inserts a
+                 link instead, which the existing whole-body-is-a-link
+                 rendering turns into an inline image/file preview. --}}
+            <div id="chat-attachment-picker" class="hidden absolute bottom-full left-2 mb-2 w-80 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-4 z-30">
+                <p class="text-xs font-semibold text-navy dark:text-white mb-2">Share a link</p>
+                <div class="flex items-center gap-2">
+                    <input type="url" id="chat-attachment-url" placeholder="Paste an image or file link…" class="flex-1 min-w-0 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-navy px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold">
+                    <button type="button" id="chat-attachment-insert" class="shrink-0 px-3 py-2 rounded-lg bg-gold hover:bg-gold-dark text-navy-dark text-xs font-semibold transition-colors duration-200">Insert</button>
+                </div>
+                <p class="text-[0.65rem] text-gray-400 dark:text-gray-500 mt-2 leading-relaxed">File uploads aren't available yet — paste a link and it'll preview in the conversation.</p>
+            </div>
+
+            {{-- Mentions — plain-text insertion, not real @-tagging (no
+                 notification/routing behind it, same as the portal's own
+                 mention picker). Offers the actual client's name here since,
+                 unlike the portal side, there's a specific named person to
+                 reference rather than a single shared team identity. --}}
+            <div id="chat-mention-picker" class="hidden absolute bottom-full left-2 mb-2 w-56 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl py-1.5 z-30">
+                <button type="button" class="chat-mention-option flex items-center gap-2 w-full text-left px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gold/10 hover:text-gold-dark rounded-xl transition-colors duration-150" data-mention-name="{{ $project->user->name }}">
+                    <span class="w-5 h-5 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 text-[0.55rem] font-bold flex items-center justify-center shrink-0">{{ strtoupper(substr($project->user->name, 0, 1)) }}</span>
+                    {{ $project->user->name }}
+                </button>
+            </div>
+
+            <textarea name="body" id="chat-composer-textarea" rows="1" maxlength="5000" placeholder="Message {{ $project->user->name }}…" required
+                      class="w-full resize-none bg-transparent px-5 pt-4 pb-1.5 text-sm text-navy dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none transition-all duration-150"
+                      style="max-height: 9.5rem;"></textarea>
+
+            <div class="flex items-end justify-between gap-2 px-2.5 sm:px-3.5 pb-2.5">
+                <div class="flex items-center gap-0.5">
+                    <button type="button" id="chat-emoji-btn" title="Emoji" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
+                        <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </button>
+                    <button type="button" id="chat-attachment-btn" title="Share a link" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
+                        <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                    </button>
+                    <button type="button" id="chat-templates-btn" title="Quick replies" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
+                        <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </button>
+                    <button type="button" id="chat-mic-btn" title="Voice input" class="hidden relative w-9 h-9 rounded-full text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
+                        <span id="chat-mic-ring" class="hidden absolute inset-0 rounded-full bg-red-400 opacity-75 animate-ping"></span>
+                        <svg id="chat-mic-icon" class="w-4 h-4 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/>
+                        </svg>
+                        <span id="chat-mic-bars" class="hidden relative items-end justify-center gap-0.5 h-4 w-4">
+                            <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
+                            <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
+                            <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
+                            <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
+                        </span>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-3 pb-1">
+                    <span id="chat-char-counter" class="text-[0.65rem] font-medium text-gray-300 dark:text-gray-600 tabular-nums select-none transition-colors duration-200">0/5000</span>
+                    <button type="submit" id="chat-send-btn" title="Send" class="shrink-0 w-10 h-10 rounded-full bg-navy hover:bg-navy-light text-white flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold/40 focus:ring-offset-2 dark:focus:ring-offset-navy-dark">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 {{-- Delete-for-everyone confirm modal — same backdrop-fade/scale-in pattern as the "Reset client password?" modal on the project page --}}
@@ -274,6 +372,168 @@
     });
 })();
 
+/**
+ * Composer — auto-expand, character counter, Enter-to-send /
+ * Shift+Enter-newline, and the emoji/attachment/templates/mention
+ * popovers. Ported from the portal composer (Phase 6) so both sides of
+ * the conversation feel the same; all plain client-side text insertion
+ * into the same textarea the existing send flow already posts.
+ */
+(function () {
+    const textarea = document.getElementById('chat-composer-textarea');
+    const counter = document.getElementById('chat-char-counter');
+    const form = document.getElementById('chat-thread-form');
+    if (!textarea || !form) return;
+
+    const MAX_LENGTH = 5000;
+    const MAX_TEXTAREA_HEIGHT = 152;
+
+    function autoExpand() {
+        textarea.style.height = 'auto';
+        textarea.style.height = Math.min(textarea.scrollHeight, MAX_TEXTAREA_HEIGHT) + 'px';
+    }
+
+    function updateCounter() {
+        const len = textarea.value.length;
+        if (!counter) return;
+        counter.textContent = len + '/' + MAX_LENGTH;
+        counter.classList.toggle('text-red-500', len >= MAX_LENGTH);
+        counter.classList.toggle('dark:text-red-400', len >= MAX_LENGTH);
+        counter.classList.toggle('text-amber-500', len >= MAX_LENGTH * 0.9 && len < MAX_LENGTH);
+        counter.classList.toggle('text-gray-300', len < MAX_LENGTH * 0.9);
+        counter.classList.toggle('dark:text-gray-600', len < MAX_LENGTH * 0.9);
+    }
+
+    window.adminResetComposerTextarea = function () {
+        textarea.style.height = 'auto';
+        updateCounter();
+    };
+
+    textarea.addEventListener('input', function () {
+        autoExpand();
+        updateCounter();
+        maybeShowMentionPicker();
+    });
+    autoExpand();
+    updateCounter();
+
+    textarea.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+            e.preventDefault();
+            if (!closeAdminComposerPopovers()) {
+                form.requestSubmit ? form.requestSubmit() : submitAdminChatMessage(form, { preventDefault: function () {} });
+            }
+            return;
+        }
+        if (e.key === 'Escape') {
+            closeAdminComposerPopovers();
+        }
+    });
+
+    const popoverIds = ['chat-emoji-picker', 'chat-templates-picker', 'chat-attachment-picker', 'chat-mention-picker'];
+
+    function closeAdminComposerPopovers() {
+        let wasOpen = false;
+        popoverIds.forEach(function (id) {
+            const el = document.getElementById(id);
+            if (el && !el.classList.contains('hidden')) {
+                el.classList.add('hidden');
+                wasOpen = true;
+            }
+        });
+        return wasOpen;
+    }
+
+    function toggleAdminComposerPopover(id) {
+        const target = document.getElementById(id);
+        if (!target) return;
+        const alreadyOpen = !target.classList.contains('hidden');
+        closeAdminComposerPopovers();
+        if (!alreadyOpen) target.classList.remove('hidden');
+    }
+
+    function insertAtCursor(text) {
+        const start = textarea.selectionStart ?? textarea.value.length;
+        const end = textarea.selectionEnd ?? textarea.value.length;
+        textarea.value = textarea.value.slice(0, start) + text + textarea.value.slice(end);
+        const cursor = start + text.length;
+        textarea.setSelectionRange(cursor, cursor);
+        textarea.focus();
+        autoExpand();
+        updateCounter();
+    }
+
+    document.getElementById('chat-emoji-btn')?.addEventListener('click', function () {
+        toggleAdminComposerPopover('chat-emoji-picker');
+    });
+    document.getElementById('chat-templates-btn')?.addEventListener('click', function () {
+        toggleAdminComposerPopover('chat-templates-picker');
+    });
+    document.getElementById('chat-attachment-btn')?.addEventListener('click', function () {
+        toggleAdminComposerPopover('chat-attachment-picker');
+        document.getElementById('chat-attachment-url')?.focus();
+    });
+
+    document.getElementById('chat-emoji-picker')?.addEventListener('click', function (e) {
+        const btn = e.target.closest('.chat-emoji-option');
+        if (!btn) return;
+        insertAtCursor(btn.textContent);
+    });
+
+    document.getElementById('chat-templates-picker')?.addEventListener('click', function (e) {
+        const btn = e.target.closest('.chat-template-option');
+        if (!btn) return;
+        textarea.value = btn.textContent.trim();
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+        textarea.focus();
+        autoExpand();
+        updateCounter();
+        closeAdminComposerPopovers();
+    });
+
+    document.getElementById('chat-attachment-insert')?.addEventListener('click', function () {
+        const urlInput = document.getElementById('chat-attachment-url');
+        const url = urlInput?.value.trim();
+        if (!url) return;
+        insertAtCursor((textarea.value && !textarea.value.endsWith(' ') && !textarea.value.endsWith('\n') ? ' ' : '') + url);
+        urlInput.value = '';
+        closeAdminComposerPopovers();
+    });
+
+    document.getElementById('chat-mention-picker')?.addEventListener('click', function (e) {
+        const btn = e.target.closest('.chat-mention-option');
+        if (!btn) return;
+        const mentionName = btn.dataset.mentionName || '';
+        textarea.value = textarea.value.replace(/@$/, '@' + mentionName + ' ');
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+        textarea.focus();
+        autoExpand();
+        updateCounter();
+        closeAdminComposerPopovers();
+    });
+
+    /** Typing "@" at the start of the message or right after whitespace opens the mention picker — plain-text insertion only, see the markup comment above. */
+    function maybeShowMentionPicker() {
+        const value = textarea.value;
+        const triggered = /(^|\s)@$/.test(value);
+        const picker = document.getElementById('chat-mention-picker');
+        if (!picker) return;
+        if (triggered) {
+            closeAdminComposerPopovers();
+            picker.classList.remove('hidden');
+        } else if (!picker.classList.contains('hidden')) {
+            picker.classList.add('hidden');
+        }
+    }
+
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('#chat-emoji-btn, #chat-templates-btn, #chat-attachment-btn, #chat-emoji-picker, #chat-templates-picker, #chat-attachment-picker, #chat-mention-picker, #chat-composer-textarea')) {
+            return;
+        }
+        closeAdminComposerPopovers();
+    });
+})();
+
 let adminChatDeleteConfirmCallback = null;
 
 function openAdminChatDeleteModal(onConfirm) {
@@ -395,6 +655,10 @@ function submitAdminChatMessage(form, event) {
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalBtnHtml = submitBtn.innerHTML;
 
+    submitBtn.classList.remove('chat-send-launch');
+    void submitBtn.offsetWidth; // forces a reflow so the animation replays on every send, not just the first
+    submitBtn.classList.add('chat-send-launch');
+
     submitBtn.disabled = true;
     submitBtn.innerHTML =
         '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">' +
@@ -422,6 +686,7 @@ function submitAdminChatMessage(form, event) {
                 isFromClient: false,
             });
             textarea.value = '';
+            if (typeof window.adminResetComposerTextarea === 'function') window.adminResetComposerTextarea();
         })
         .catch(function () {
             alert('Could not send the message. Please try again.');
