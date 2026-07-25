@@ -13,7 +13,8 @@ VisionBridgeSolutions/
 │   ├── Events/
 │   │   ├── ChatMessageDeleted.php
 │   │   ├── ChatMessageSent.php
-│   │   └── ChatMessageUpdated.php
+│   │   ├── ChatMessageUpdated.php
+│   │   └── ChatUserTyping.php
 │   ├── Http/
 │   │   ├── Controllers/
 │   │   │   ├── Admin/

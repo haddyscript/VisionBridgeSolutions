@@ -28,10 +28,12 @@
         }
         .chat-bubble-card { transition: transform 200ms ease, box-shadow 200ms ease, background-color 200ms ease; }
         .chat-bubble-card.chat-bubble-hoverable:hover { transform: translateY(-1px); }
+        #chat-typing-indicator { transition: opacity 200ms ease, transform 200ms ease; }
+        #chat-scroll-to-bottom-btn { transition: opacity 200ms ease, transform 200ms ease, box-shadow 200ms ease; }
     </style>
 
     <div id="chat-thread" data-project-id="{{ $project->id }}" data-message-base-url="{{ url('/portal/chat-messages') }}"
-         class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700/60 shadow-sm overflow-hidden flex flex-col h-[calc(100vh-180px)] min-h-[28rem] transition-colors duration-200">
+         class="relative bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700/60 shadow-sm overflow-hidden flex flex-col h-[calc(100vh-180px)] min-h-[28rem] transition-colors duration-200">
 
         {{-- Header --}}
         @php
@@ -128,19 +130,49 @@
             $chatFirstUnreadId = $messages->first(function ($m) use ($project) {
                 return $m->user_id !== $project->user_id && ! $m->read_at && ! $m->isDeleted();
             })?->id;
+            // Reusable date-separator label — mirrored by chatDateLabel() in the
+            // script below for live-appended messages, same "Today"/"Yesterday"
+            // rule on both sides.
+            $chatDateLabel = function ($date) {
+                if ($date->isToday()) return 'Today';
+                if ($date->isYesterday()) return 'Yesterday';
+                return $date->format('F j, Y');
+            };
         @endphp
+        {{-- Wraps the scroll area and its floating "scroll to newest" button
+             together so the button positions relative to the message list's
+             own bottom edge (right above the composer), not the whole card. --}}
+        <div class="relative flex-1 min-h-0 flex flex-col">
         <div id="chat-thread-messages" class="chat-thread-scroll flex-1 overflow-y-auto px-6 sm:px-8 py-7 bg-gray-50/70 dark:bg-gray-900/40">
             @forelse ($messages as $chatMessage)
                 @php
                     $isOwn = $chatMessage->user_id === $project->user_id;
                     $isSystem = $chatMessage->user_id === null;
                     $prevMessage = $messages->get($loop->index - 1);
-                    $isGrouped = $prevMessage && $prevMessage->user_id === $chatMessage->user_id;
                     $chatLink = $chatMessage->isDeleted() ? null : $chatLinkKind($chatMessage->body);
+                    $chatShowDateSeparator = ! $prevMessage || ! $prevMessage->created_at->isSameDay($chatMessage->created_at);
+                    // Never grouped across a date separator — matches the
+                    // JS-append path, where a freshly-inserted date
+                    // separator becomes the new "last element", naturally
+                    // resetting grouping for whatever message follows it.
+                    $isGrouped = $prevMessage && $prevMessage->user_id === $chatMessage->user_id && ! $chatShowDateSeparator;
                 @endphp
 
+                @if ($chatShowDateSeparator)
+                    {{-- position:sticky (no JS) makes this float/pin at the top
+                         of the scroll container while its day's messages are in
+                         view, then get pushed out by the next day's separator —
+                         the same trick WhatsApp/Telegram use for a "floating
+                         date" header. --}}
+                    <div class="chat-date-separator sticky top-0 z-10 -mx-6 sm:-mx-8 flex justify-center py-2 {{ $loop->first ? '' : 'mt-5' }} pointer-events-none" data-date="{{ $chatMessage->created_at->format('Y-m-d') }}">
+                        <span class="pointer-events-auto inline-flex items-center text-[0.65rem] font-semibold uppercase tracking-wide px-3 py-1 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm text-gray-500 dark:text-gray-400 shadow-sm border border-gray-100 dark:border-gray-700">
+                            {{ $chatDateLabel($chatMessage->created_at) }}
+                        </span>
+                    </div>
+                @endif
+
                 @if ($chatMessage->id === $chatFirstUnreadId)
-                    <div class="flex items-center gap-3 {{ $loop->first ? '' : 'mt-5' }} mb-2">
+                    <div id="chat-unread-divider" class="sticky top-9 z-[9] flex items-center gap-3 {{ $chatShowDateSeparator ? '' : ($loop->first ? '' : 'mt-5') }} mb-2 py-1 bg-gray-50/95 dark:bg-gray-900/80 backdrop-blur-sm transition-opacity duration-300">
                         <div class="flex-1 h-px bg-gold/30"></div>
                         <span class="text-[0.6rem] font-semibold uppercase tracking-widest text-gold-dark">New</span>
                         <div class="flex-1 h-px bg-gold/30"></div>
@@ -233,8 +265,20 @@
             @endforelse
         </div>
 
+        {{-- Scroll-to-newest affordance — hidden while already near the
+             bottom, shown once the client has scrolled up into history so
+             they're never yanked back down against their will; badges a
+             count when new messages arrive while scrolled away. --}}
+        <div id="chat-scroll-to-bottom" class="hidden absolute bottom-4 right-6 sm:right-8 z-20">
+            <button type="button" id="chat-scroll-to-bottom-btn" class="flex items-center gap-1.5 pl-3 pr-3.5 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-lg hover:shadow-xl text-xs font-semibold text-gray-600 dark:text-gray-300">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                <span id="chat-scroll-to-bottom-count" class="hidden inline-flex items-center justify-center min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-gold text-navy-dark text-[0.6rem] font-bold leading-none"></span>
+            </button>
+        </div>
+        </div>
+
         {{-- Typing indicator --}}
-        <div id="chat-typing-indicator" class="hidden shrink-0 px-6 sm:px-8 pt-3 flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 italic">
+        <div id="chat-typing-indicator" class="hidden opacity-0 -translate-y-1 shrink-0 px-6 sm:px-8 pt-3 flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 italic">
             <span>VisionBridge Team is typing</span>
             <span class="inline-flex items-center gap-0.5">
                 <span class="chat-typing-dot w-1 h-1 rounded-full bg-current"></span>
@@ -320,6 +364,71 @@
                     badge.remove();
                 }
             });
+    })();
+
+    /**
+     * Scroll intelligence for the thread: never yanks the client back to the
+     * bottom while they're reading up through history, but auto-follows
+     * (smoothly, not an instant jump) when they're already at/near the
+     * bottom and a new message arrives. Exposes window.chatScrollToNewMessage
+     * so appendPortalChatBubble (below) can decide per-message rather than
+     * always forcing scrollTop like it used to.
+     */
+    (function () {
+        const container = document.getElementById('chat-thread-messages');
+        const jumpWrap = document.getElementById('chat-scroll-to-bottom');
+        const jumpBtn = document.getElementById('chat-scroll-to-bottom-btn');
+        const jumpCount = document.getElementById('chat-scroll-to-bottom-count');
+        if (!container || !jumpWrap || !jumpBtn) return;
+
+        const NEAR_BOTTOM_THRESHOLD = 120;
+        let unseenCount = 0;
+
+        function isNearBottom() {
+            return container.scrollHeight - container.scrollTop - container.clientHeight < NEAR_BOTTOM_THRESHOLD;
+        }
+
+        function clearUnseen() {
+            unseenCount = 0;
+            jumpCount.classList.add('hidden');
+            jumpCount.textContent = '';
+        }
+
+        function refreshJumpAffordance() {
+            const nearBottom = isNearBottom();
+            jumpWrap.classList.toggle('hidden', nearBottom);
+            if (nearBottom) {
+                clearUnseen();
+                // The unread marker only matters until the client has
+                // actually scrolled down through it — once they're caught
+                // up to the bottom it just fades away rather than sitting
+                // there stale for the rest of the page view.
+                const unreadDivider = document.getElementById('chat-unread-divider');
+                if (unreadDivider) {
+                    unreadDivider.classList.add('opacity-0');
+                    setTimeout(function () { unreadDivider.remove(); }, 300);
+                }
+            }
+        }
+
+        container.addEventListener('scroll', refreshJumpAffordance);
+        refreshJumpAffordance();
+
+        jumpBtn.addEventListener('click', function () {
+            container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+        });
+
+        window.chatScrollToNewMessage = function (isOwnMessage) {
+            if (isOwnMessage || isNearBottom()) {
+                container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+                refreshJumpAffordance();
+                return;
+            }
+            unseenCount++;
+            jumpCount.textContent = unseenCount > 9 ? '9+' : String(unseenCount);
+            jumpCount.classList.remove('hidden');
+            jumpWrap.classList.remove('hidden');
+        };
     })();
 
     /**
@@ -557,7 +666,7 @@
         html += '<p class="chat-bubble-time flex items-center gap-1 text-[0.65rem] ' + (isOwn ? 'text-navy-dark/50 justify-end' : 'text-gray-400 dark:text-gray-500') + ' mt-1.5">' +
             '<span class="chat-bubble-timestamp"></span>' +
             '<span class="chat-bubble-edited hidden"></span>' +
-            (isOwn ? '<span class="chat-bubble-ticks inline-flex shrink-0"><svg class="w-3.5 h-3.5 text-navy-dark/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Sent</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></span>' : '') +
+            (isOwn ? '<span class="chat-bubble-ticks inline-flex shrink-0"></span>' : '') +
         '</p>';
         html += '<button type="button" class="chat-bubble-menu-btn absolute -top-2 ' + (isOwn ? '-left-2' : '-right-2') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40">' +
             '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>' +
@@ -572,6 +681,64 @@
         return html;
     }
 
+    /**
+     * "Today"/"Yesterday"/full-date label, mirrored from the Blade
+     * template's $chatDateLabel closure — same rule on both sides, kept in
+     * sync by hand since Blade and this script share no runtime.
+     */
+    function chatDateLabel(date) {
+        const now = new Date();
+        const startOfDay = function (d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); };
+        const diffDays = Math.round((startOfDay(now) - startOfDay(date)) / 86400000);
+        if (diffDays === 0) return 'Today';
+        if (diffDays === 1) return 'Yesterday';
+        return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    }
+
+    function buildDateSeparatorHtml(date) {
+        const iso = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+        return '<div class="chat-date-separator sticky top-0 z-10 -mx-6 sm:-mx-8 flex justify-center py-2 mt-5 pointer-events-none" data-date="' + iso + '">' +
+            '<span class="pointer-events-auto inline-flex items-center text-[0.65rem] font-semibold uppercase tracking-wide px-3 py-1 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm text-gray-500 dark:text-gray-400 shadow-sm border border-gray-100 dark:border-gray-700">' +
+                chatDateLabel(date) +
+            '</span>' +
+        '</div>';
+    }
+
+    /** Inserts a new floating date separator if the last one on the page isn't for today — covers a tab left open across midnight. */
+    function insertDateSeparatorIfNeeded(container) {
+        const separators = container.querySelectorAll('.chat-date-separator');
+        const last = separators.length ? separators[separators.length - 1] : null;
+        const now = new Date();
+        const todayIso = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+        if (last && last.dataset.date === todayIso) return;
+
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = buildDateSeparatorHtml(now);
+        container.appendChild(wrapper.firstElementChild);
+    }
+
+    /** Single source of truth for an outgoing bubble's tick/status icon — sending (optimistic), sent, read, or failed-with-retry. */
+    function setChatTickState(bubble, state) {
+        const ticks = bubble.querySelector('.chat-bubble-ticks');
+        const menuBtn = bubble.querySelector('.chat-bubble-menu-btn');
+        if (!ticks) return;
+
+        // A still-sending or failed message has no real message id yet (or
+        // never got one) — editing/deleting it would PATCH/DELETE a
+        // nonsense URL, so the menu stays hidden until it's actually sent.
+        menuBtn?.classList.toggle('hidden', state === 'sending' || state === 'failed');
+
+        if (state === 'sending') {
+            ticks.innerHTML = '<svg class="w-3.5 h-3.5 text-navy-dark/30 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Sending…</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+        } else if (state === 'read') {
+            ticks.innerHTML = '<svg class="w-3.5 h-3.5 text-teal-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Read</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2 13l4 4L15 8M9 13l4 4L22 8"/></svg>';
+        } else if (state === 'failed') {
+            ticks.innerHTML = '<button type="button" class="chat-retry-send text-red-500 text-[0.65rem] font-semibold underline">Retry</button>';
+        } else {
+            ticks.innerHTML = '<svg class="w-3.5 h-3.5 text-navy-dark/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Sent</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>';
+        }
+    }
+
     function appendPortalChatBubble(data) {
         const container = document.getElementById('chat-thread-messages');
         if (!container) return;
@@ -579,6 +746,8 @@
 
         const empty = document.getElementById('chat-thread-empty');
         if (empty) empty.remove();
+
+        insertDateSeparatorIfNeeded(container);
 
         const isOwn = !!data.isFromClient;
         const sender = isOwn ? 'own' : 'team';
@@ -592,24 +761,33 @@
         bubble.dataset.rawBody = data.body;
         bubble.querySelector('.chat-bubble-body').replaceWith(buildPortalChatBodyEl(data.body, isOwn));
         bubble.querySelector('.chat-bubble-timestamp').textContent = data.sentAt;
+        if (isOwn) setChatTickState(bubble, data.status || 'sent');
 
         container.appendChild(bubble);
-        container.scrollTop = container.scrollHeight;
+
+        if (typeof window.chatScrollToNewMessage === 'function') {
+            window.chatScrollToNewMessage(isOwn);
+        } else {
+            container.scrollTop = container.scrollHeight;
+        }
     }
 
-    function submitPortalChatMessage(form, event) {
-        event.preventDefault();
+    /**
+     * Sends a message optimistically: the bubble appears immediately in a
+     * "Sending…" state (clock icon, no menu) rather than waiting on the
+     * network round-trip, then gets upgraded in place to "Sent" on success
+     * or "Failed — Retry" on failure. This app's broadcasting is
+     * synchronous (ShouldBroadcastNow, no queue worker — see
+     * ChatController::broadcastSafely()) so the round-trip is normally
+     * fast, but a slow/dropped connection previously gave zero feedback
+     * until either an alert() fired or the message silently appeared.
+     */
+    function sendChatMessage(bodyText) {
+        const form = document.getElementById('chat-thread-form');
+        if (!form || !bodyText.trim()) return;
 
-        const textarea = form.querySelector('textarea[name="body"]');
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalBtnHtml = submitBtn.innerHTML;
-
-        submitBtn.disabled = true;
-        submitBtn.innerHTML =
-            '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">' +
-                '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>' +
-                '<path class="opacity-75" fill="currentColor" d="M12 2a10 10 0 0110 10h-4a6 6 0 00-6-6V2z"></path>' +
-            '</svg>';
+        const tempId = 'pending-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+        appendPortalChatBubble({ id: tempId, body: bodyText, sentAt: 'Sending…', isFromClient: true, status: 'sending' });
 
         fetch(form.action, {
             method: 'POST',
@@ -617,28 +795,56 @@
                 'Accept': 'application/json',
                 'X-CSRF-TOKEN': chatCsrfToken(),
             },
-            body: new FormData(form),
+            body: new URLSearchParams({ body: bodyText }),
         })
             .then(function (response) {
                 if (!response.ok) throw new Error('Request failed');
                 return response.json();
             })
             .then(function (data) {
-                appendPortalChatBubble({
-                    id: data.id,
-                    body: data.body,
-                    sentAt: data.sentAt,
-                    isFromClient: true,
-                });
-                textarea.value = '';
+                resolvePendingChatBubble(tempId, data);
             })
             .catch(function () {
-                alert('Could not send the message. Please try again.');
-            })
-            .finally(function () {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnHtml;
+                failPendingChatBubble(tempId);
             });
+    }
+
+    function resolvePendingChatBubble(tempId, data) {
+        const bubble = document.querySelector('.chat-bubble[data-message-id="' + tempId + '"]');
+        if (!bubble) return;
+
+        bubble.dataset.messageId = data.id;
+        const timestamp = bubble.querySelector('.chat-bubble-timestamp');
+        if (timestamp) timestamp.textContent = data.sentAt;
+        setChatTickState(bubble, 'sent');
+    }
+
+    function failPendingChatBubble(tempId) {
+        const bubble = document.querySelector('.chat-bubble[data-message-id="' + tempId + '"]');
+        if (!bubble) return;
+
+        const timestamp = bubble.querySelector('.chat-bubble-timestamp');
+        if (timestamp) timestamp.textContent = 'Not delivered';
+        setChatTickState(bubble, 'failed');
+    }
+
+    /** Re-sends a failed message's original text as a brand-new send attempt, replacing the failed bubble. */
+    function retrySendChatMessage(bubble) {
+        const bodyText = bubble.dataset.rawBody || '';
+        if (!bodyText) return;
+        bubble.remove();
+        sendChatMessage(bodyText);
+    }
+
+    function submitPortalChatMessage(form, event) {
+        event.preventDefault();
+
+        const textarea = form.querySelector('textarea[name="body"]');
+        const bodyText = textarea.value.trim();
+        if (!bodyText) return false;
+
+        textarea.value = '';
+        sendChatMessage(bodyText);
 
         return false;
     }
@@ -675,11 +881,25 @@
         const indicator = document.getElementById('chat-typing-indicator');
         if (!indicator) return;
 
-        indicator.classList.remove('hidden');
         clearTimeout(portalTypingHideTimer);
-        portalTypingHideTimer = setTimeout(function () {
-            indicator.classList.add('hidden');
-        }, 3500);
+        if (indicator.classList.contains('hidden')) {
+            indicator.classList.remove('hidden');
+            // Force the "hidden" state to apply before removing it a frame
+            // later, so the browser actually animates the fade+rise instead
+            // of skipping straight to the end state.
+            requestAnimationFrame(function () {
+                indicator.classList.remove('opacity-0', '-translate-y-1');
+            });
+        }
+        portalTypingHideTimer = setTimeout(hidePortalTypingIndicator, 3500);
+    }
+
+    function hidePortalTypingIndicator() {
+        const indicator = document.getElementById('chat-typing-indicator');
+        if (!indicator) return;
+
+        indicator.classList.add('opacity-0', '-translate-y-1');
+        setTimeout(function () { indicator.classList.add('hidden'); }, 200);
     }
 
     /** Applies a live edit or delete pushed over Pusher — same DOM update the local action handlers use. */
@@ -772,6 +992,12 @@
         // JS-appended alike), so delegation on the scroll container catches
         // every one without needing to re-bind after each append.
         container.addEventListener('click', function (e) {
+            const retryBtn = e.target.closest('.chat-retry-send');
+            if (retryBtn) {
+                retrySendChatMessage(retryBtn.closest('.chat-bubble'));
+                return;
+            }
+
             const menuBtn = e.target.closest('.chat-bubble-menu-btn');
             if (menuBtn) {
                 const menu = menuBtn.nextElementSibling;
