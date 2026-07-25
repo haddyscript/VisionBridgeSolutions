@@ -226,6 +226,31 @@ class ProjectRequestController extends Controller
     }
 
     /**
+     * Permanently deletes the whole Work Order/Project Request — super-admin
+     * only (see routes/web.php), unlike everything else here (support
+     * tickets, chat messages, revisions) which prefers a status change or a
+     * tombstone over a real delete. Supporting-document rows cascade-delete
+     * automatically (project_request_attachments.project_request_id has
+     * cascadeOnDelete()), but that only removes the DB rows — the actual
+     * files have to be cleaned up here first, before their path values are
+     * gone.
+     */
+    public function destroy(ProjectRequest $projectRequest)
+    {
+        if ($projectRequest->proposal_document_path) {
+            Storage::disk('client_uploads')->delete($projectRequest->proposal_document_path);
+        }
+
+        foreach ($projectRequest->attachments as $attachment) {
+            Storage::disk('client_uploads')->delete($attachment->path);
+        }
+
+        $projectRequest->delete();
+
+        return redirect()->route('admin.project-requests.index')->with('status', 'Project request deleted.');
+    }
+
+    /**
      * Assign or unassign the developer responsible for this Work Order —
      * mirrors Upload::assignDeveloper(), including the same super-admin-only
      * restriction on reassigning/unassigning an already-assigned one.

@@ -256,10 +256,51 @@
                     Save Changes
                 </button>
                 <p class="text-xs text-gray-500 dark:text-gray-400 text-center">Saves status, proposal, and internal notes together.</p>
+
+                @if (auth()->user()->isSuperAdmin())
+                    <div class="pt-3 border-t border-gray-100 dark:border-gray-700 text-center">
+                        <button type="button" id="project-request-delete-btn" class="text-xs font-semibold text-red-500 hover:text-red-600 dark:hover:text-red-400 hover:underline transition-colors">
+                            Delete this project request
+                        </button>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
 </form>
+
+@if (auth()->user()->isSuperAdmin())
+    {{-- Same backdrop-fade/scale-in confirm pattern used elsewhere in admin
+         (e.g. the project page's "Reset client password?" modal) — a
+         permanent delete like this warrants more than a native confirm(). --}}
+    <div id="project-request-delete-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div id="project-request-delete-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
+
+        <div id="project-request-delete-panel" class="relative w-full max-w-sm transform scale-95 opacity-0 transition-all duration-200">
+            <div class="bg-white dark:bg-navy rounded-2xl shadow-2xl p-7">
+                <div class="w-11 h-11 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center mb-4">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16"/></svg>
+                </div>
+                <h2 class="font-semibold text-lg text-navy dark:text-white mb-2">Delete this project request?</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
+                    "{{ $projectRequest->title }}" — including its proposal document and any supporting files — will be permanently removed. This can't be undone.
+                </p>
+                <div class="flex justify-end gap-2.5">
+                    <button type="button" id="project-request-delete-cancel" class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        Cancel
+                    </button>
+                    <form method="POST" action="{{ route('admin.project-requests.destroy', $projectRequest) }}">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-red-500 hover:bg-red-600 text-white transition-colors">
+                            Delete Permanently
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
 
 {{-- Custom-dropdown behavior is wired up automatically by admin/_dropdown.blade.php (@once script). --}}
 <script>
@@ -353,6 +394,41 @@
             }
         });
     })();
+})();
+
+(function () {
+    const btn = document.getElementById('project-request-delete-btn');
+    const modal = document.getElementById('project-request-delete-modal');
+    if (!btn || !modal) return;
+
+    const backdrop = document.getElementById('project-request-delete-backdrop');
+    const panel = document.getElementById('project-request-delete-panel');
+    const cancelBtn = document.getElementById('project-request-delete-cancel');
+
+    function openModal() {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        requestAnimationFrame(function () {
+            backdrop.classList.remove('opacity-0');
+            panel.classList.remove('scale-95', 'opacity-0');
+        });
+    }
+
+    function closeModal() {
+        backdrop.classList.add('opacity-0');
+        panel.classList.add('scale-95', 'opacity-0');
+        setTimeout(function () {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 200);
+    }
+
+    btn.addEventListener('click', openModal);
+    cancelBtn?.addEventListener('click', closeModal);
+    backdrop?.addEventListener('click', closeModal);
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+    });
 })();
 </script>
 
