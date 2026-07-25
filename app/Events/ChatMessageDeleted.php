@@ -19,7 +19,13 @@ class ChatMessageDeleted implements ShouldBroadcastNow
 
     public function broadcastOn(): array
     {
-        return [new PrivateChannel('project.'.$this->message->project_id.'.chat')];
+        return [
+            new PrivateChannel('project.'.$this->message->project_id.'.chat'),
+            // Same reasoning as ChatMessageSent/ChatMessageUpdated — keeps
+            // the admin conversation list in sync even when the deleting
+            // thread isn't the one currently open.
+            new PrivateChannel('admin.chat-inbox'),
+        ];
     }
 
     public function broadcastAs(): string
@@ -32,6 +38,7 @@ class ChatMessageDeleted implements ShouldBroadcastNow
     {
         return [
             'id' => $this->message->id,
+            'projectId' => $this->message->project_id,
         ];
     }
 }

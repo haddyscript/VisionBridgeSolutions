@@ -6,15 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class ChatMessage extends Model
 {
+    // Deliberately excludes read_at/edited_at/deleted_at/hidden_for_*_at —
+    // these are lifecycle state, never user-supplied input, and are always
+    // set via direct property assignment (`$message->deleted_at = now();
+    // $message->save();`) or a query-builder bulk update(), neither of which
+    // needs (or should have) mass-assignment access to them.
     protected $fillable = [
         'project_id',
         'user_id',
         'body',
-        'read_at',
-        'edited_at',
-        'deleted_at',
-        'hidden_for_client_at',
-        'hidden_for_admin_at',
     ];
 
     protected function casts(): array

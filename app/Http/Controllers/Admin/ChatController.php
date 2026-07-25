@@ -11,8 +11,10 @@ use App\Mail\ChatMessageRepliedMail;
 use App\Models\ChatMessage;
 use App\Models\ClientNotification;
 use App\Models\Project;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Throwable;
 
 class ChatController extends Controller
 {
@@ -59,7 +61,7 @@ class ChatController extends Controller
         ]);
         $message->setRelation('project', $project);
 
-        broadcast(new ChatMessageSent($message))->toOthers();
+        $this->broadcastSafely(new ChatMessageSent($message));
 
         if ($project->user->notify_on_replies) {
             dispatch(function () use ($project, $message) {
@@ -97,12 +99,15 @@ class ChatController extends Controller
             'body' => ['required', 'string', 'max:5000'],
         ]);
 
-        $message->update([
-            'body' => $validated['body'],
-            'edited_at' => now(),
-        ]);
+        // Direct property assignment, not update([...]) — edited_at/deleted_at/
+        // hidden_for_*_at are deliberately not mass-assignable (see
+        // ChatMessage::$fillable), so lifecycle timestamps are only ever set
+        // this way, never from an array that could trace back to request input.
+        $message->body = $validated['body'];
+        $message->edited_at = now();
+        $message->save();
 
-        broadcast(new ChatMessageUpdated($message))->toOthers();
+        $this->broadcastSafely(new ChatMessageUpdated($message));
 
         return response()->json([
             'message' => 'Updated.',
@@ -116,9 +121,10 @@ class ChatController extends Controller
     {
         $this->authorizeTeamMessage($message);
 
-        $message->update(['deleted_at' => now()]);
+        $message->deleted_at = now();
+        $message->save();
 
-        broadcast(new ChatMessageDeleted($message))->toOthers();
+        $this->broadcastSafely(new ChatMessageDeleted($message));
 
         return response()->json(['message' => 'Deleted.']);
     }
@@ -126,7 +132,8 @@ class ChatController extends Controller
     /** "Delete for me" — hides this one message from the admin/team side only; the client's copy is unaffected. Never broadcasts. */
     public function hideForMe(ChatMessage $message)
     {
-        $message->update(['hidden_for_admin_at' => now()]);
+        $message->hidden_for_admin_at = now();
+        $message->save();
 
         return response()->json(['message' => 'Removed.']);
     }
@@ -144,7 +151,7 @@ class ChatController extends Controller
     /** Ephemeral "I'm typing" ping — nothing persisted, just relayed to whoever else is on this project's channel. */
     public function typing(Project $project)
     {
-        broadcast(new ChatUserTyping($project->id, false))->toOthers();
+        $this->broadcastSafely(new ChatUserTyping($project->id, false));
 
         return response()->noContent();
     }
@@ -153,5 +160,20 @@ class ChatController extends Controller
     {
         abort_if($message->user_id === $message->project->user_id, 403);
         abort_if($message->isDeleted(), 422);
+    }
+
+    /**
+     * A Pusher hiccup (latency, a transient outage) is a third-party problem
+     * with a side effect — it must never fail the request for an action
+     * (send/edit/delete/typing) that already succeeded in the database
+     * before this runs. Failures are logged, never surfaced as a 500.
+     */
+    private function broadcastSafely(ShouldBroadcastNow $event): void
+    {
+        try {
+            broadcast($event)->toOthers();
+        } catch (Throwable $e) {
+            report($e);
+        }
     }
 }
