@@ -451,7 +451,11 @@
         });
     })();
 
-    function csrfToken() {
+    // Named distinctly from the layout's own top-level `const csrfToken` (layouts/portal.blade.php)
+    // — classic <script> tags share one global scope, so a same-named function
+    // declaration here previously collided with it and threw a page-wide
+    // SyntaxError that silently broke every chat action on this page.
+    function chatCsrfToken() {
         return document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
     }
 
@@ -611,7 +615,7 @@
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken(),
+                'X-CSRF-TOKEN': chatCsrfToken(),
             },
             body: new FormData(form),
         })
@@ -660,7 +664,7 @@
 
             fetch(form.dataset.typingUrl, {
                 method: 'POST',
-                headers: { 'X-CSRF-TOKEN': csrfToken() },
+                headers: { 'X-CSRF-TOKEN': chatCsrfToken() },
             });
         });
     })();
@@ -851,7 +855,7 @@
                 method: 'PATCH',
                 headers: {
                     'Accept': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken(),
+                    'X-CSRF-TOKEN': chatCsrfToken(),
                 },
                 body: new URLSearchParams({ body: newBody }),
             })
@@ -879,7 +883,7 @@
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken(),
+                'X-CSRF-TOKEN': chatCsrfToken(),
             },
         })
             .then(function (response) {
@@ -898,7 +902,7 @@
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken(),
+                'X-CSRF-TOKEN': chatCsrfToken(),
             },
         })
             .then(function (response) {
