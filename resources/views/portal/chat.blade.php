@@ -1005,6 +1005,25 @@
         if (!container) return;
         if (container.querySelector('[data-message-id="' + data.id + '"]')) return; // already rendered — avoid double-append (own send + Pusher echo)
 
+        // A Pusher echo of a message THIS tab just sent optimistically can
+        // arrive before the fetch response that renames the pending bubble
+        // from its temporary "pending-…" id to the real one — the check
+        // above alone wouldn't catch that race, since the pending bubble
+        // doesn't have the real id yet. Reconcile by raw body text instead
+        // of rendering what would look like a second, separate copy of the
+        // same message (it only ever affects "sending…" bubbles, so a
+        // second *different* message with identical text sent moments
+        // apart is never mistaken for this one).
+        if (data.isFromClient) {
+            const pending = Array.from(container.querySelectorAll('.chat-bubble[data-own="1"]')).find(function (el) {
+                return el.dataset.messageId && el.dataset.messageId.indexOf('pending-') === 0 && el.dataset.rawBody === data.body;
+            });
+            if (pending) {
+                resolvePendingChatBubble(pending.dataset.messageId, data);
+                return;
+            }
+        }
+
         const empty = document.getElementById('chat-thread-empty');
         if (empty) empty.remove();
 
