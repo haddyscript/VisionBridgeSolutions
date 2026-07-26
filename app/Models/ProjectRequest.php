@@ -37,6 +37,14 @@ class ProjectRequest extends Model
         'urgent' => 'Urgent',
     ];
 
+    /**
+     * Deliberately excludes `estimated_value` — it's staff-only (see
+     * Admin\ProjectRequestController::update()) and this way that
+     * restriction is structural: no update()/create() mass-assignment
+     * anywhere in the codebase can ever set it, even if a future call site
+     * forgets to strip it from validated input the way update() does today.
+     * It can only be set via a direct property assignment.
+     */
     protected $fillable = [
         'user_id',
         'created_by_admin_id',
@@ -51,7 +59,6 @@ class ProjectRequest extends Model
         'attachment_path',
         'attachment_original_name',
         'proposal_status',
-        'estimated_value',
         'recommended_care_plan_id',
         'proposal_document_path',
         'proposal_document_original_name',

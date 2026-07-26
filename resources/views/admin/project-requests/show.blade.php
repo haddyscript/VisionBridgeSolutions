@@ -205,35 +205,52 @@
             <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Assign Developer (Work Order)</label>
-                    <form method="POST" action="{{ route('admin.project-requests.assign-developer', $projectRequest) }}">
-                        @csrf
-                        @method('PATCH')
+                    {{-- Reassigning an already-assigned developer is
+                         super-admin only (assignDeveloper()'s own
+                         abort_unless) — shown read-only instead of an
+                         interactive control a regular admin could click
+                         into only to hit a bare 403. --}}
+                    @if ($projectRequest->assigned_developer_id && ! auth()->user()->isSuperAdmin())
+                        <div class="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-navy-dark/50 px-4 py-2.5 text-sm text-navy dark:text-white">
+                            <span class="w-2 h-2 rounded-full shrink-0 bg-gold"></span>
+                            {{ $projectRequest->assignedDeveloper->name ?? 'Unknown developer' }}
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5">Only a super admin can reassign an already-assigned developer.</p>
+                    @else
+                        {{-- Saves via fetch (see script below), same in-place
+                             pattern as Developer Status right beneath it —
+                             no wrapping <form>/autoSubmit, which used to
+                             full-page-reload on every selection and silently
+                             discard any unsaved Priority/Due Date/Proposal/
+                             Notes/staged-attachment state elsewhere on this
+                             page. --}}
                         @include('admin._dropdown', [
                             'name' => 'assigned_developer_id',
                             'domId' => 'assigned-developer',
                             'options' => \App\Models\User::developers()->map(fn ($d) => ['value' => $d->id, 'label' => $d->name])->all(),
                             'selected' => $projectRequest->assigned_developer_id,
                             'placeholder' => 'Unassigned',
-                            'autoSubmit' => true,
                         ])
-                    </form>
+                        <p id="assigned-developer-toast" class="hidden text-xs mt-1.5"></p>
+                    @endif
                 </div>
-                @if ($projectRequest->assigned_developer_id)
-                    <div>
-                        <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Developer Status</label>
-                        @include('admin._dropdown', [
-                            'name' => 'developer_status',
-                            'domId' => 'developer-status',
-                            'options' => collect(\App\Models\ProjectRequest::DEVELOPER_STATUSES)->map(fn ($label, $value) => [
-                                'value' => $value,
-                                'label' => $label,
-                                'dot' => ['in_progress' => 'bg-gold', 'waiting_on_visionbridge' => 'bg-purple-400', 'completed' => 'bg-teal'][$value] ?? 'bg-gray-400',
-                            ])->values()->all(),
-                            'selected' => $projectRequest->developer_status,
-                        ])
-                        <p id="developer-status-toast" class="hidden text-xs mt-1.5"></p>
-                    </div>
-                @endif
+                {{-- Always rendered (not @if-gated) so assigning a developer
+                     for the first time via the fetch() above can reveal this
+                     card in place, without a page reload. --}}
+                <div id="developer-status-wrap" class="{{ $projectRequest->assigned_developer_id ? '' : 'hidden' }}">
+                    <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Developer Status</label>
+                    @include('admin._dropdown', [
+                        'name' => 'developer_status',
+                        'domId' => 'developer-status',
+                        'options' => collect(\App\Models\ProjectRequest::DEVELOPER_STATUSES)->map(fn ($label, $value) => [
+                            'value' => $value,
+                            'label' => $label,
+                            'dot' => ['in_progress' => 'bg-gold', 'waiting_on_visionbridge' => 'bg-purple-400', 'completed' => 'bg-teal'][$value] ?? 'bg-gray-400',
+                        ])->values()->all(),
+                        'selected' => $projectRequest->developer_status,
+                    ])
+                    <p id="developer-status-toast" class="hidden text-xs mt-1.5"></p>
+                </div>
             </div>
 
             <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
@@ -350,6 +367,59 @@
             const revertOption = document.querySelector('#developer-status-menu [data-select-option="' + savedPreviousValue + '"]');
             if (revertOption) revertOption.click();
             showDevStatusToast('That change could not be saved — please try again.', true);
+        });
+    });
+})();
+
+(function () {
+    // Assign Developer — same in-place fetch() pattern as Developer Status
+    // above, replacing the old auto-submitting <form> that full-page-reloaded
+    // on every selection and silently discarded any unsaved Priority/Due
+    // Date/Proposal/Notes/staged-attachment state elsewhere on this page.
+    const assignInput = document.getElementById('assigned-developer-input');
+    const assignToast = document.getElementById('assigned-developer-toast');
+    const devStatusWrap = document.getElementById('developer-status-wrap');
+    if (!assignInput) return;
+
+    let previousAssignValue = assignInput.value;
+
+    function showAssignToast(message, isError) {
+        if (!assignToast) return;
+        assignToast.textContent = message;
+        assignToast.className = 'text-xs mt-1.5 ' + (isError ? 'text-red-500' : 'text-teal-dark dark:text-teal-light');
+        clearTimeout(assignToast._hideTimer);
+        assignToast._hideTimer = setTimeout(function () {
+            assignToast.classList.add('hidden');
+        }, 3000);
+    }
+
+    assignInput.addEventListener('change', function () {
+        const value = assignInput.value;
+        const savedPreviousValue = previousAssignValue;
+        previousAssignValue = value;
+
+        fetch('{{ route('admin.project-requests.assign-developer', $projectRequest) }}', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            },
+            body: JSON.stringify({ assigned_developer_id: value || null }),
+        })
+        .then(function (res) {
+            if (!res.ok) throw new Error('Failed to update');
+            showAssignToast('Developer assignment saved.', false);
+            // Reveal (or hide) the Developer Status card in place — it used
+            // to only ever appear after the full-page reload this fetch()
+            // call replaces.
+            if (devStatusWrap) devStatusWrap.classList.toggle('hidden', !value);
+        })
+        .catch(function () {
+            previousAssignValue = savedPreviousValue;
+            const revertOption = document.querySelector('#assigned-developer-menu [data-select-option="' + savedPreviousValue + '"]');
+            if (revertOption) revertOption.click();
+            showAssignToast('That change could not be saved — please try again.', true);
         });
     });
 })();

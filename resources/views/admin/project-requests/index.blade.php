@@ -210,7 +210,7 @@
         </div>
 
         <div class="flex items-center justify-between gap-4 px-5 py-3 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
-            <span id="requests-count-label">Showing {{ $requests->count() }} of {{ $requests->total() }} request{{ $requests->total() === 1 ? '' : 's' }}</span>
+            <span id="requests-count-label">Showing {{ $requests->count() }} request{{ $requests->count() === 1 ? '' : 's' }}</span>
         </div>
     </div>
 
@@ -279,10 +279,6 @@
         </div>
     </div>
 
-    <div class="mt-6">
-        {{ $requests->links() }}
-    </div>
-
     <script>
         (function () {
             const search = document.getElementById('request-search');
@@ -293,7 +289,9 @@
             // Both the desktop <tr> rows and mobile <a> cards share the same
             // [data-search]/[data-status] contract, so one filter pass drives both.
             const items = Array.from(document.querySelectorAll('[data-search]'));
-            const totalCount = {{ $requests->total() }};
+            // Every request is loaded onto this one page (see index() —
+            // no server pagination), so this is a real total, not "this page".
+            const totalCount = items.length / 2;
 
             function apply() {
                 const q = (search.value || '').trim().toLowerCase();
@@ -316,8 +314,8 @@
 
                 if (countLabel) {
                     countLabel.textContent = (q || status)
-                        ? 'Showing ' + visibleDesktop + ' of ' + (items.length / 2) + ' on this page'
-                        : 'Showing ' + (items.length / 2) + ' of ' + totalCount + ' request' + (totalCount === 1 ? '' : 's');
+                        ? 'Showing ' + visibleDesktop + ' of ' + totalCount + ' request' + (totalCount === 1 ? '' : 's')
+                        : 'Showing ' + totalCount + ' request' + (totalCount === 1 ? '' : 's');
                 }
             }
 

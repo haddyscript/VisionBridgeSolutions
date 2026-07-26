@@ -22,7 +22,14 @@ class ProjectRequestController extends Controller
 
     public function index()
     {
-        $requests = ProjectRequest::with('user', 'createdByAdmin')->latest()->paginate(15)->withQueryString();
+        // Loaded in full (not server-paginated) so the search/status-filter
+        // JS on this page — which only ever operates on rows already in the
+        // DOM — can't silently miss a real match that would otherwise have
+        // landed on a different page. Same "load everything, filter/paginate
+        // client-side" pattern already used for Revision Management, and
+        // fine at this app's real scale (dozens-to-low-hundreds of clients,
+        // not millions of requests).
+        $requests = ProjectRequest::with('user', 'createdByAdmin')->latest()->get();
 
         // Read-only counts for the header KPI cards / filter dropdown —
         // additive queries alongside the existing one above, nothing about
@@ -95,13 +102,15 @@ class ProjectRequestController extends Controller
         if ($projectRequest->assigned_developer_id) {
             $developer = User::find($projectRequest->assigned_developer_id);
 
-            Mail::to($developer->email)->send(new WorkOrderAssignedMail(
-                $developer,
-                $projectRequest->title,
-                'new project request',
-                $projectRequest->user->name,
-                route('admin.project-requests.show', $projectRequest),
-            ));
+            dispatch(function () use ($developer, $projectRequest) {
+                Mail::to($developer->email)->send(new WorkOrderAssignedMail(
+                    $developer,
+                    $projectRequest->title,
+                    'new project request',
+                    $projectRequest->user->name,
+                    route('admin.project-requests.show', $projectRequest),
+                ));
+            })->afterResponse();
         }
 
         return redirect()->route('admin.project-requests.show', $projectRequest)
@@ -140,13 +149,17 @@ class ProjectRequestController extends Controller
             'attachments.*' => ['file', 'mimes:'.self::DOCUMENT_MIMES, 'max:25600'],
         ]);
 
-        if ($request->user()->isSuperAdmin()) {
-            $validated['estimated_value'] = isset($validated['estimated_value'])
-                ? (int) round($validated['estimated_value'] * 100)
-                : null;
-        } else {
-            unset($validated['estimated_value']);
-        }
+        // estimated_value is deliberately NOT in ProjectRequest::$fillable —
+        // structural protection (not just this unset()) against any future
+        // update() call anywhere in the codebase accidentally mass-assigning
+        // it for a non-super-admin. Setting it below is a direct property
+        // assignment, which bypasses $fillable intentionally, gated by the
+        // same isSuperAdmin() check.
+        $isSuperAdmin = $request->user()->isSuperAdmin();
+        $estimatedValueCents = $isSuperAdmin && isset($validated['estimated_value'])
+            ? (int) round($validated['estimated_value'] * 100)
+            : null;
+        unset($validated['estimated_value']);
 
         if ($request->hasFile('proposal_document')) {
             $file = $request->file('proposal_document');
@@ -158,7 +171,11 @@ class ProjectRequestController extends Controller
 
         $previousStatus = $projectRequest->status;
 
-        $projectRequest->update($validated);
+        $projectRequest->fill($validated);
+        if ($isSuperAdmin) {
+            $projectRequest->estimated_value = $estimatedValueCents;
+        }
+        $projectRequest->save();
 
         $this->storeAttachments($request, $projectRequest);
 
@@ -201,7 +218,9 @@ class ProjectRequestController extends Controller
         );
 
         if ($projectRequest->user->notify_on_replies) {
-            Mail::to($projectRequest->user->email)->send(new ProjectRequestStatusChangedMail($projectRequest));
+            dispatch(function () use ($projectRequest) {
+                Mail::to($projectRequest->user->email)->send(new ProjectRequestStatusChangedMail($projectRequest));
+            })->afterResponse();
         }
     }
 
@@ -271,13 +290,19 @@ class ProjectRequestController extends Controller
         if (! empty($validated['assigned_developer_id'])) {
             $developer = User::find($validated['assigned_developer_id']);
 
-            Mail::to($developer->email)->send(new WorkOrderAssignedMail(
-                $developer,
-                $projectRequest->title,
-                'new project request',
-                $projectRequest->user->name,
-                route('admin.project-requests.show', $projectRequest),
-            ));
+            dispatch(function () use ($developer, $projectRequest) {
+                Mail::to($developer->email)->send(new WorkOrderAssignedMail(
+                    $developer,
+                    $projectRequest->title,
+                    'new project request',
+                    $projectRequest->user->name,
+                    route('admin.project-requests.show', $projectRequest),
+                ));
+            })->afterResponse();
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Developer assignment updated.']);
         }
 
         return back()->with('status', 'Developer assignment updated.');
@@ -293,15 +318,17 @@ class ProjectRequestController extends Controller
         $projectRequest->update($validated);
 
         if (in_array($validated['developer_status'], ['in_progress', 'completed'], true)) {
-            Mail::to(config('mail.support_address'))->send(new WorkOrderInternalUpdateMail(
-                $projectRequest->title,
-                'new project request',
-                $projectRequest->user->name,
-                $projectRequest->assignedDeveloper->name ?? 'A developer',
-                $validated['developer_status'] === 'in_progress' ? 'started work' : 'marked their work completed',
-                null,
-                route('admin.project-requests.show', $projectRequest),
-            ));
+            dispatch(function () use ($projectRequest, $validated) {
+                Mail::to(config('mail.support_address'))->send(new WorkOrderInternalUpdateMail(
+                    $projectRequest->title,
+                    'new project request',
+                    $projectRequest->user->name,
+                    $projectRequest->assignedDeveloper->name ?? 'A developer',
+                    $validated['developer_status'] === 'in_progress' ? 'started work' : 'marked their work completed',
+                    null,
+                    route('admin.project-requests.show', $projectRequest),
+                ));
+            })->afterResponse();
         }
 
         if ($request->wantsJson()) {
