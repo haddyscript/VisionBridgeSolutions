@@ -21,7 +21,7 @@ class IntakeFile extends Model
 
     public function url(): ?string
     {
-        return $this->path ? asset('client-uploads/'.$this->path) : null;
+        return $this->path ? route('files.intake.show', $this) : null;
     }
 
     public function extension(): string

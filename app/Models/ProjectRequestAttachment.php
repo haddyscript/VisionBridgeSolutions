@@ -24,7 +24,7 @@ class ProjectRequestAttachment extends Model
 
     public function url(): string
     {
-        return asset('client-uploads/'.$this->path);
+        return route('files.project-request-attachments.show', $this);
     }
 
     public function extension(): string

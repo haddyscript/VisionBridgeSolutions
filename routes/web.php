@@ -41,6 +41,7 @@ use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\DatabaseResetController;
 use App\Http\Controllers\DeployerController;
+use App\Http\Controllers\FileDownloadController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\IntakeController;
 use App\Models\MaintenancePlan;
@@ -172,6 +173,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // an admin) — this is how an admin viewing-as-client gets back to their
     // own session, so it deliberately sits outside the admin-only route group.
     Route::post('/impersonate/stop', [ImpersonationController::class, 'stop'])->name('impersonate.stop');
+
+    // client_uploads-disk files, gated per-file (owning client OR any admin)
+    // inside FileDownloadController rather than by route middleware —
+    // deliberately outside the portal/admin-prefixed groups below so neither
+    // audience's extra gates (onboarding steps, admin section permissions)
+    // block the other side from viewing a file it's otherwise allowed to see.
+    Route::get('/files/uploads/{upload}', [FileDownloadController::class, 'upload'])->name('files.uploads.show');
+    Route::get('/files/upload-attachments/{uploadAttachment}', [FileDownloadController::class, 'uploadAttachment'])->name('files.upload-attachments.show');
+    Route::get('/files/project-request-attachments/{projectRequestAttachment}', [FileDownloadController::class, 'projectRequestAttachment'])->name('files.project-request-attachments.show');
+    Route::get('/files/project-requests/{projectRequest}/attachment', [FileDownloadController::class, 'projectRequestAttachmentField'])->name('files.project-requests.attachment');
+    Route::get('/files/project-requests/{projectRequest}/proposal-document', [FileDownloadController::class, 'proposalDocument'])->name('files.project-requests.proposal-document');
+    Route::get('/files/intake/{intakeFile}', [FileDownloadController::class, 'intakeFile'])->name('files.intake.show');
 });
 
 Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.complete'])->group(function () {

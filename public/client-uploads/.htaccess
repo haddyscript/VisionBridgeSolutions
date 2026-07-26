@@ -1,13 +1,13 @@
-# Defense-in-depth for any Apache-served deployment of this directory:
-# uploaded files must never be executed as scripts, only served statically.
+# Client-uploaded files are served exclusively through authenticated
+# Laravel routes (FileDownloadController) now, which check the request
+# belongs to the file's owner or an admin before streaming it from this
+# same on-disk location. Deny all direct access to this directory, on any
+# Apache-served deployment, so that auth check can't be bypassed via the
+# raw URL.
 <IfModule mod_authz_core.c>
-    <FilesMatch "\.(php\d?|phtml|pl|py|cgi|asp|aspx|sh|cshtml)$">
-        Require all denied
-    </FilesMatch>
+    Require all denied
 </IfModule>
 <IfModule !mod_authz_core.c>
-    <FilesMatch "\.(php\d?|phtml|pl|py|cgi|asp|aspx|sh|cshtml)$">
-        Order allow,deny
-        Deny from all
-    </FilesMatch>
+    Order allow,deny
+    Deny from all
 </IfModule>

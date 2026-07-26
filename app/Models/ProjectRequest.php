@@ -106,12 +106,12 @@ class ProjectRequest extends Model
 
     public function attachmentUrl(): ?string
     {
-        return $this->attachment_path ? asset('client-uploads/'.$this->attachment_path) : null;
+        return $this->attachment_path ? route('files.project-requests.attachment', $this) : null;
     }
 
     public function proposalDocumentUrl(): ?string
     {
-        return $this->proposal_document_path ? asset('client-uploads/'.$this->proposal_document_path) : null;
+        return $this->proposal_document_path ? route('files.project-requests.proposal-document', $this) : null;
     }
 
     public function formattedEstimatedValue(): ?string
