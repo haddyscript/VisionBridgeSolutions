@@ -818,6 +818,18 @@ function markAdminChatRead() {
                     navBadge.remove();
                 }
             }
+
+            // ...and the header icon's badge, same staleness problem.
+            const headerBadge = document.getElementById('admin-chat-header-badge');
+            if (headerBadge) {
+                const currentCount = headerBadge.textContent === '9+' ? 10 : (parseInt(headerBadge.textContent, 10) || 0);
+                const remaining = currentCount - data.count;
+                if (remaining > 0) {
+                    headerBadge.textContent = remaining > 9 ? '9+' : remaining;
+                } else {
+                    headerBadge.remove();
+                }
+            }
         });
 }
 

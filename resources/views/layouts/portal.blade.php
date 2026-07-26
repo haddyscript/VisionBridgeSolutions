@@ -506,6 +506,22 @@
                      same branded look already used for the collapsed sidebar
                      rail's icon labels. aria-label carries the accessible
                      name either way. --}}
+                {{-- Same speech-bubble glyph as the sidebar's own Chat link,
+                     for a quick-access route to it that doesn't require the
+                     sidebar to be open (e.g. collapsed rail, or mid-scroll on
+                     a long page). Badge mirrors the sidebar's own unread
+                     count and is kept in sync with it by the same mark-read
+                     script in portal/chat.blade.php. --}}
+                <a href="{{ route('portal.chat.show') }}" data-tooltip="Chat" aria-label="Chat"
+                   class="relative w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                    @if (($unreadChatCount ?? 0) > 0)
+                        <span id="portal-chat-header-badge" class="absolute -top-1 -right-1 min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-red-500 text-white text-[0.65rem] font-bold leading-none flex items-center justify-center">{{ $unreadChatCount > 9 ? '9+' : $unreadChatCount }}</span>
+                    @endif
+                </a>
+
                 <a href="{{ route('portal.faq') }}" data-tooltip="Help &amp; Support" aria-label="Help &amp; Support"
                    class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

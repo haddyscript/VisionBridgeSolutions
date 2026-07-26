@@ -613,15 +613,27 @@
             .then(function (response) { return response.ok ? response.json() : null; })
             .then(function (data) {
                 if (!data || !data.count) return;
-                // The sidebar's own "Chat" badge is rendered once at page load
-                // and won't otherwise reflect that this thread was just read.
-                const badge = document.getElementById('portal-chat-nav-badge');
-                if (!badge) return;
-                const remaining = (parseInt(badge.textContent, 10) || 0) - data.count;
-                if (remaining > 0) {
-                    badge.textContent = remaining;
-                } else {
-                    badge.remove();
+                // Both the sidebar's and header's "Chat" badges are rendered
+                // once at page load and won't otherwise reflect that this
+                // thread was just read.
+                const sidebarBadge = document.getElementById('portal-chat-nav-badge');
+                if (sidebarBadge) {
+                    const remaining = (parseInt(sidebarBadge.textContent, 10) || 0) - data.count;
+                    if (remaining > 0) {
+                        sidebarBadge.textContent = remaining;
+                    } else {
+                        sidebarBadge.remove();
+                    }
+                }
+                const headerBadge = document.getElementById('portal-chat-header-badge');
+                if (headerBadge) {
+                    const currentCount = headerBadge.textContent === '9+' ? 10 : (parseInt(headerBadge.textContent, 10) || 0);
+                    const remaining = currentCount - data.count;
+                    if (remaining > 0) {
+                        headerBadge.textContent = remaining > 9 ? '9+' : remaining;
+                    } else {
+                        headerBadge.remove();
+                    }
                 }
             });
     })();

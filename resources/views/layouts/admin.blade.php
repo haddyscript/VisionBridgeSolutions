@@ -550,6 +550,23 @@
                     </svg>
                 </button>
                 <h1 class="font-display text-lg font-bold text-navy dark:text-white flex-1">@yield('page-title', 'Admin')</h1>
+                {{-- Same speech-bubble glyph and permission gate as the
+                     sidebar's own Chat link (auth()->user()->canAccessAdminPage('chat'))
+                     — hidden entirely for an admin/team member who hasn't
+                     been granted the chat section, same as the sidebar item
+                     already is. Quick-access route to it that doesn't
+                     require the sidebar to be open. --}}
+                @if (auth()->user()->canAccessAdminPage('chat'))
+                    <a href="{{ route('admin.chat.index') }}" title="Chat" aria-label="Chat"
+                       class="relative w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                        @if ($unreadChatCount > 0)
+                            <span id="admin-chat-header-badge" class="absolute -top-1 -right-1 min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-red-500 text-white text-[0.65rem] font-bold leading-none flex items-center justify-center">{{ $unreadChatCount > 9 ? '9+' : $unreadChatCount }}</span>
+                        @endif
+                    </a>
+                @endif
                 <div class="flex items-center gap-2.5 pl-3 pr-1.5 py-1.5 rounded-full bg-gray-50 dark:bg-navy-dark/50 border border-gray-200 dark:border-gray-700 shadow-sm">
                     <span id="theme-toggle-label" class="hidden sm:inline text-xs font-bold uppercase tracking-wider text-navy dark:text-gold select-none transition-colors">Light Mode</span>
                     <button id="theme-toggle" type="button" title="Toggle dark mode" aria-label="Toggle light and dark mode"
