@@ -556,9 +556,9 @@
 
                     <div class="flex items-center gap-3 pb-1">
                         <span id="chat-char-counter" class="text-[0.65rem] font-medium text-gray-300 dark:text-gray-600 tabular-nums select-none transition-colors duration-200">0/5000</span>
-                        <button type="submit" id="chat-send-btn" title="Send" aria-label="Send message" class="shrink-0 w-11 h-11 sm:w-10 sm:h-10 rounded-full bg-gold hover:bg-gold-dark text-navy-dark flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold/40 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                        <button type="submit" id="chat-send-btn" title="Send" aria-label="Send message" class="shrink-0 w-11 h-11 sm:w-10 sm:h-10 rounded-full bg-navy-dark hover:bg-navy text-white flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold/40 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
                             <svg class="w-[1.125rem] h-[1.125rem] sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-7 7m7-7l7 7"/>
                             </svg>
                         </button>
                     </div>
