@@ -22,12 +22,24 @@ class DeveloperController extends Controller
     public function index()
     {
         $developers = User::developers();
+        $developerIds = $developers->pluck('id');
 
-        $roster = $developers->map(function (User $developer) {
-            $items = Upload::where('assigned_developer_id', $developer->id)->with('user', 'project')->get()
+        // Batched once for the whole roster — was two fresh queries per
+        // developer inside the map() below (an N+1 that scales with team
+        // size), now two queries total regardless of how many developers
+        // there are.
+        $uploadsByDeveloper = Upload::whereIn('assigned_developer_id', $developerIds)
+            ->with('user', 'project')->get()
+            ->groupBy('assigned_developer_id');
+        $projectRequestsByDeveloper = ProjectRequest::whereIn('assigned_developer_id', $developerIds)
+            ->with('user')->get()
+            ->groupBy('assigned_developer_id');
+
+        $roster = $developers->map(function (User $developer) use ($uploadsByDeveloper, $projectRequestsByDeveloper) {
+            $items = ($uploadsByDeveloper->get($developer->id) ?? collect())
                 ->map(fn (Upload $upload) => $this->formatUpload($upload, $developer->name))
                 ->concat(
-                    ProjectRequest::where('assigned_developer_id', $developer->id)->with('user')->get()
+                    ($projectRequestsByDeveloper->get($developer->id) ?? collect())
                         ->map(fn (ProjectRequest $request) => $this->formatProjectRequest($request, $developer->name))
                 );
 
@@ -73,10 +85,18 @@ class DeveloperController extends Controller
             ->sortByDesc('created_at')
             ->values();
 
+        // Deliberately separate from $developers below: the roster keeps
+        // showing every developer (including inactive ones) since their
+        // existing assignments/history still need to display, but a
+        // deactivated developer shouldn't be offered as a target for a
+        // brand-new (or reassigned) piece of work.
+        $assignableDevelopers = $developers->filter(fn (User $developer) => $developer->is_active ?? true)->values();
+
         return view('admin.developers.index', [
             'roster' => $roster,
             'unassigned' => $unassigned,
             'developers' => $developers,
+            'assignableDevelopers' => $assignableDevelopers,
             'recentActivity' => $recentActivity,
             'timelineMonths' => $timelineMonths,
         ]);

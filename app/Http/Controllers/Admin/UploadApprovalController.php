@@ -115,7 +115,9 @@ class UploadApprovalController extends Controller
         );
 
         if ($upload->user->notify_on_replies) {
-            Mail::to($upload->user->email)->send(new RevisionStatusChangedMail($upload));
+            dispatch(function () use ($upload) {
+                Mail::to($upload->user->email)->send(new RevisionStatusChangedMail($upload));
+            })->afterResponse();
         }
     }
 
@@ -147,12 +149,14 @@ class UploadApprovalController extends Controller
         $upload->update($validated);
 
         if ($upload->assigned_developer_id && $validated['dev_instructions']) {
-            Mail::to($upload->assignedDeveloper->email)->send(new WorkOrderInstructionsMail(
-                $upload->assignedDeveloper,
-                $this->workOrderTitle($upload),
-                $validated['dev_instructions'],
-                route('admin.projects.show', $upload->project),
-            ));
+            dispatch(function () use ($upload, $validated) {
+                Mail::to($upload->assignedDeveloper->email)->send(new WorkOrderInstructionsMail(
+                    $upload->assignedDeveloper,
+                    $this->workOrderTitle($upload),
+                    $validated['dev_instructions'],
+                    route('admin.projects.show', $upload->project),
+                ));
+            })->afterResponse();
         }
 
         if ($request->wantsJson()) {
@@ -198,13 +202,15 @@ class UploadApprovalController extends Controller
         if (! empty($validated['assigned_developer_id'])) {
             $developer = User::find($validated['assigned_developer_id']);
 
-            Mail::to($developer->email)->send(new WorkOrderAssignedMail(
-                $developer,
-                $this->workOrderTitle($upload),
-                $upload->category === 'revision' ? 'revision request' : 'content request',
-                $upload->user->name,
-                route('admin.projects.show', $upload->project),
-            ));
+            dispatch(function () use ($developer, $upload) {
+                Mail::to($developer->email)->send(new WorkOrderAssignedMail(
+                    $developer,
+                    $this->workOrderTitle($upload),
+                    $upload->category === 'revision' ? 'revision request' : 'content request',
+                    $upload->user->name,
+                    route('admin.projects.show', $upload->project),
+                ));
+            })->afterResponse();
         }
 
         if ($request->wantsJson()) {
@@ -246,15 +252,17 @@ class UploadApprovalController extends Controller
         }
 
         if (in_array($validated['developer_status'], ['in_progress', 'completed'], true)) {
-            Mail::to(config('mail.support_address'))->send(new WorkOrderInternalUpdateMail(
-                $this->workOrderTitle($upload),
-                $upload->category === 'revision' ? 'revision request' : 'content request',
-                $upload->user->name,
-                $upload->assignedDeveloper->name ?? 'A developer',
-                $validated['developer_status'] === 'in_progress' ? 'started work' : 'marked their work completed',
-                null,
-                route('admin.projects.show', $upload->project),
-            ));
+            dispatch(function () use ($upload, $validated) {
+                Mail::to(config('mail.support_address'))->send(new WorkOrderInternalUpdateMail(
+                    $this->workOrderTitle($upload),
+                    $upload->category === 'revision' ? 'revision request' : 'content request',
+                    $upload->user->name,
+                    $upload->assignedDeveloper->name ?? 'A developer',
+                    $validated['developer_status'] === 'in_progress' ? 'started work' : 'marked their work completed',
+                    null,
+                    route('admin.projects.show', $upload->project),
+                ));
+            })->afterResponse();
         }
 
         if ($request->wantsJson()) {
@@ -291,7 +299,9 @@ class UploadApprovalController extends Controller
         ]);
 
         if ($upload->user->notify_on_replies) {
-            Mail::to($upload->user->email)->send(new UploadRepliedMail($reply));
+            dispatch(function () use ($upload, $reply) {
+                Mail::to($upload->user->email)->send(new UploadRepliedMail($reply));
+            })->afterResponse();
         }
 
         $label = CategoryController::CATEGORIES[$upload->category]['label'] ?? 'submission';
@@ -309,15 +319,19 @@ class UploadApprovalController extends Controller
         // as "asking a question" for the boss's internal notification list —
         // regular admin/support replies don't fire this (they ARE support).
         if ($request->user()->isDeveloper() && $upload->assigned_developer_id === $request->user()->id) {
-            Mail::to(config('mail.support_address'))->send(new WorkOrderInternalUpdateMail(
-                $this->workOrderTitle($upload),
-                $upload->category === 'revision' ? 'revision request' : 'content request',
-                $upload->user->name,
-                $request->user()->name,
-                'asked a question',
-                $reply->body,
-                route('admin.projects.show', $upload->project),
-            ));
+            $developerName = $request->user()->name;
+
+            dispatch(function () use ($upload, $reply, $developerName) {
+                Mail::to(config('mail.support_address'))->send(new WorkOrderInternalUpdateMail(
+                    $this->workOrderTitle($upload),
+                    $upload->category === 'revision' ? 'revision request' : 'content request',
+                    $upload->user->name,
+                    $developerName,
+                    'asked a question',
+                    $reply->body,
+                    route('admin.projects.show', $upload->project),
+                ));
+            })->afterResponse();
         }
 
         if ($request->wantsJson()) {

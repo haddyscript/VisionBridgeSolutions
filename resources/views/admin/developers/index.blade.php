@@ -132,6 +132,17 @@
                         $capacityTextColor = $capacityPct > 85 ? 'text-red-500' : ($capacityPct > 50 ? 'text-gold-dark' : 'text-teal-dark');
                         $currentItem = $row['activeItems']->first();
                         $restActiveItems = $row['activeItems']->slice(1);
+                        // Reassign-dropdown options for this card: active
+                        // developers only (so a deactivated one is never a
+                        // reassignment target), but the currently-assigned
+                        // developer (this card's own) is always included even
+                        // if inactive — otherwise the dropdown would silently
+                        // fall back to selecting whichever active developer
+                        // happens to be first, misrepresenting who this item
+                        // is actually assigned to.
+                        $reassignOptions = $assignableDevelopers->contains('id', $row['developer']->id)
+                            ? $assignableDevelopers
+                            : $assignableDevelopers->concat([$row['developer']])->sortBy('name')->values();
                     @endphp
                     <div class="developer-card bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 p-7 shadow-sm hover:shadow-lg hover:border-gold/40 dark:hover:border-gold/30 transition-all duration-200"
                          data-name="{{ strtolower($row['developer']->name) }}" data-has-active="{{ $hasActiveWork ? '1' : '0' }}">
@@ -190,13 +201,13 @@
                         <p class="text-[0.65rem] font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Current Work Order</p>
                         @if ($currentItem)
                             <div class="rounded-xl border border-gray-200 dark:border-gray-700 border-l-4 border-l-gold bg-gray-50/70 dark:bg-gray-900/40 px-2 mb-3">
-                                @include('admin.developers._item-row', ['item' => $currentItem, 'statusColors' => $statusColors, 'developers' => $developers, 'assignedDeveloperId' => $row['developer']->id])
+                                @include('admin.developers._item-row', ['item' => $currentItem, 'statusColors' => $statusColors, 'developers' => $reassignOptions, 'assignedDeveloperId' => $row['developer']->id])
                             </div>
                             @if ($restActiveItems->isNotEmpty())
                                 <p class="text-[0.65rem] font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Also Assigned ({{ $restActiveItems->count() }})</p>
                                 <div class="divide-y divide-gray-100 dark:divide-gray-700 max-h-48 overflow-y-auto pr-1 rounded-lg border border-gray-100 dark:border-gray-700/60 mb-4">
                                     @foreach ($restActiveItems as $item)
-                                        @include('admin.developers._item-row', ['item' => $item, 'statusColors' => $statusColors, 'developers' => $developers, 'assignedDeveloperId' => $row['developer']->id])
+                                        @include('admin.developers._item-row', ['item' => $item, 'statusColors' => $statusColors, 'developers' => $reassignOptions, 'assignedDeveloperId' => $row['developer']->id])
                                     @endforeach
                                 </div>
                             @endif
@@ -293,7 +304,10 @@
                             @include('admin._dropdown', [
                                 'name' => 'assigned_developer_id',
                                 'domId' => 'unassigned-assign-'.$loop->index,
-                                'options' => $developers->map(fn ($d) => ['value' => $d->id, 'label' => $d->name])->all(),
+                                {{-- Active developers only — a deactivated
+                                     one shouldn't be offered as a target for
+                                     brand-new work. --}}
+                                'options' => $assignableDevelopers->map(fn ($d) => ['value' => $d->id, 'label' => $d->name])->all(),
                                 'selected' => null,
                                 'placeholder' => 'Assign to…',
                                 'autoSubmit' => true,
