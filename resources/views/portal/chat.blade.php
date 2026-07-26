@@ -83,6 +83,90 @@
                 transition-duration: 1ms !important;
                 transform: none !important;
             }
+            .chat-online-pulse::after, .chat-img-loading, #chat-header-details {
+                animation-duration: 1ms !important;
+                transition-duration: 1ms !important;
+            }
+        }
+
+        {{-- ════════════════════════════════════════════════════════════
+             MOBILE UI REFINEMENT — everything below is scoped to mobile
+             (either by @media max-width:639px, or by being harmless/inert
+             above that width) and touches presentation only. Desktop's
+             existing Phase 6–10 design is untouched. ════════════════════ --}}
+
+        {{-- Collapsible header details (reply time, last active, project
+             name/phase) — collapsed by default on mobile to keep the
+             header compact; always expanded on desktop (sm: override
+             below, !important so it wins even if JS already set an inline
+             max-height from a mobile interaction before the viewport was
+             resized past the breakpoint). Animated via max-height/opacity
+             rather than the `hidden` utility, so the expand/collapse
+             actually animates instead of snapping. --}}
+        #chat-header-details {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 220ms ease-out, opacity 200ms ease-out;
+        }
+        @media (min-width: 640px) {
+            #chat-header-details { max-height: none !important; opacity: 1 !important; }
+        }
+
+        {{-- "Online" status dot — a subtle expanding-ring pulse (same
+             mechanic as the homepage's .live-dot) so presence reads at a
+             glance now that the mobile header hides the adjacent "Online"
+             text label to save space. Its own class rather than reusing
+             .live-dot so it can't be affected by unrelated changes to that
+             shared homepage class. --}}
+        .chat-online-pulse { position: relative; }
+        .chat-online-pulse::after {
+            content: ''; position: absolute; inset: -3px; border-radius: 9999px;
+            border: 1.5px solid rgba(44,166,164,0.55);
+            animation: chatOnlinePulse 2.2s ease-out infinite;
+        }
+        @keyframes chatOnlinePulse {
+            0%   { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2.1); opacity: 0; }
+        }
+
+        {{-- Skeleton shimmer behind a shared image while it loads (removed
+             via the `onload` handler on the <img> itself). The only place
+             this page has an async-loading asset — every other element is
+             already in the server-rendered HTML with nothing to skeleton. --}}
+        .chat-img-loading {
+            min-height: 7.5rem;
+            background: linear-gradient(100deg, rgba(17,29,51,0.05) 25%, rgba(17,29,51,0.09) 37%, rgba(17,29,51,0.05) 63%);
+            background-size: 400% 100%;
+            animation: chatImgShimmer 1.4s ease-in-out infinite;
+        }
+        .dark .chat-img-loading {
+            background: linear-gradient(100deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.12) 37%, rgba(255,255,255,0.06) 63%);
+            background-size: 400% 100%;
+        }
+        @keyframes chatImgShimmer {
+            0%   { background-position: 100% 50%; }
+            100% { background-position: 0 50%; }
+        }
+
+        @media (max-width: 639px) {
+            {{-- Static, softer shadow instead of relying on :hover (which
+                 never fires on touch) for depth. --}}
+            .chat-bubble-card {
+                box-shadow: 0 1px 2px rgba(17,29,51,0.04), 0 4px 14px rgba(17,29,51,0.06);
+            }
+            .chat-bubble-card.chat-bubble-hoverable:active {
+                transform: scale(0.99);
+            }
+            {{-- Slightly larger than the shared 0.65rem for legibility on a
+                 phone held at arm's length. --}}
+            .chat-bubble-time, .chat-bubble-timestamp { font-size: 0.7rem; }
+
+            {{-- Composer safe-area — the lowest interactive strip on the
+                 page; resolves to 0 on non-notched devices via max(). --}}
+            #chat-composer-wrap {
+                padding-bottom: max(1rem, env(safe-area-inset-bottom));
+            }
         }
     </style>
 
@@ -120,41 +204,55 @@
             $lastTeamMessage = $messages->where('user_id', '!=', $project->user_id)->last();
         @endphp
         <div class="shrink-0 border-b border-gray-100 dark:border-gray-700/60">
-            <div class="flex items-center gap-3.5 px-6 sm:px-8 pt-5 pb-3">
-                <span class="relative w-14 h-14 rounded-full bg-navy flex items-center justify-center shrink-0 shadow-sm">
-                    <span class="text-gold text-base font-bold tracking-tight">VB</span>
-                    <span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-teal border-2 border-white dark:border-gray-800"></span>
+            <div class="flex items-center gap-3 sm:gap-3.5 px-4 sm:px-8 pt-3 sm:pt-5 pb-2 sm:pb-3">
+                <span class="relative w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-navy flex items-center justify-center shrink-0 shadow-sm">
+                    <span class="text-gold text-sm sm:text-base font-bold tracking-tight">VB</span>
+                    <span class="chat-online-pulse absolute bottom-0 right-0 w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-teal border-2 border-white dark:border-gray-800">
+                        <span class="sr-only">Online</span>
+                    </span>
                 </span>
                 <div class="min-w-0 flex-1">
                     <div class="flex items-center gap-2">
-                        <p class="text-base font-semibold text-navy dark:text-white tracking-tight">VisionBridge Team</p>
-                        <span class="inline-flex items-center gap-1 text-[0.65rem] font-semibold text-teal-dark dark:text-teal-light shrink-0">
+                        <p class="text-sm sm:text-base font-semibold text-navy dark:text-white tracking-tight truncate">VisionBridge Team</p>
+                        <span class="hidden sm:inline-flex items-center gap-1 text-[0.65rem] font-semibold text-teal-dark dark:text-teal-light shrink-0">
                             <span class="w-1.5 h-1.5 rounded-full bg-teal"></span> Online
                         </span>
                     </div>
                     <p class="text-xs text-gray-400 dark:text-gray-500">Support Team</p>
                 </div>
-                <span class="shrink-0 inline-flex items-center gap-1.5 text-[0.65rem] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-teal/10 text-teal-dark">
+                <span class="hidden sm:inline-flex shrink-0 items-center gap-1.5 text-[0.65rem] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-teal/10 text-teal-dark">
                     <span class="w-1.5 h-1.5 rounded-full bg-teal"></span> Active
                 </span>
+                {{-- Mobile-only toggle for the details panel below (reply
+                     time, last active, project name/phase) — desktop
+                     always shows them (sm:block override in the CSS
+                     above), this just compacts the small viewport where
+                     vertical space is scarce. --}}
+                <button type="button" id="chat-header-toggle" aria-expanded="false" aria-controls="chat-header-details"
+                        class="sm:hidden shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40"
+                        aria-label="Show conversation details">
+                    <svg id="chat-header-chevron" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
             </div>
 
-            <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-6 sm:px-8 pb-3 text-xs text-gray-400 dark:text-gray-500">
-                <span class="inline-flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    Usually replies within a few hours
-                </span>
-                <span>Last active {{ $lastTeamMessage?->created_at->diffForHumans() ?? 'not yet in this conversation' }}</span>
-            </div>
+            <div id="chat-header-details">
+                <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 sm:px-8 pb-2 sm:pb-3 text-xs text-gray-400 dark:text-gray-500">
+                    <span class="inline-flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Usually replies within a few hours
+                    </span>
+                    <span>Last active {{ $lastTeamMessage?->created_at->diffForHumans() ?? 'not yet in this conversation' }}</span>
+                </div>
 
-            <div class="flex flex-wrap items-center gap-2 px-6 sm:px-8 pb-4">
-                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 px-2.5 py-1 rounded-full border border-gray-100 dark:border-gray-700">
-                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
-                    <span class="truncate max-w-[10rem]">{{ $project->name }}</span>
-                </span>
-                <span class="inline-flex items-center text-[0.65rem] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $chatPhaseColor }}">
-                    {{ $chatPhaseLabel }}
-                </span>
+                <div class="flex flex-wrap items-center gap-2 px-4 sm:px-8 pb-3 sm:pb-4">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 px-2.5 py-1 rounded-full border border-gray-100 dark:border-gray-700">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                        <span class="truncate max-w-[10rem]">{{ $project->name }}</span>
+                    </span>
+                    <span class="inline-flex items-center text-[0.65rem] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $chatPhaseColor }}">
+                        {{ $chatPhaseLabel }}
+                    </span>
+                </div>
             </div>
         </div>
 
@@ -263,7 +361,7 @@
                                 </p>
                             @elseif ($chatLink === 'image')
                                 <a href="{{ $chatMessage->body }}" target="_blank" rel="noopener noreferrer" class="chat-bubble-body block rounded-xl overflow-hidden mb-1">
-                                    <img src="{{ $chatMessage->body }}" alt="Shared image" loading="lazy" class="max-w-full max-h-72 w-auto object-cover">
+                                    <img src="{{ $chatMessage->body }}" alt="Shared image" loading="lazy" class="chat-img-loading max-w-full max-h-72 w-auto object-cover" onload="this.classList.remove('chat-img-loading')" onerror="this.classList.remove('chat-img-loading')">
                                 </a>
                             @elseif ($chatLink === 'file')
                                 @php $chatFileName = basename(parse_url($chatMessage->body, PHP_URL_PATH) ?: '') ?: 'Shared file'; @endphp
@@ -342,9 +440,9 @@
              bottom, shown once the client has scrolled up into history so
              they're never yanked back down against their will; badges a
              count when new messages arrive while scrolled away. --}}
-        <div id="chat-scroll-to-bottom" class="hidden absolute bottom-4 right-6 sm:right-8 z-20">
-            <button type="button" id="chat-scroll-to-bottom-btn" aria-label="Scroll to newest message" class="flex items-center gap-1.5 pl-3 pr-3.5 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-lg hover:shadow-xl text-xs font-semibold text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-gold/40">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+        <div id="chat-scroll-to-bottom" class="hidden absolute bottom-4 right-4 sm:right-8 z-20">
+            <button type="button" id="chat-scroll-to-bottom-btn" title="Jump to latest" aria-label="Scroll to newest message" class="flex items-center gap-1.5 pl-3.5 pr-4 sm:pl-3 sm:pr-3.5 py-2.5 sm:py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-lg hover:shadow-xl text-[0.8rem] sm:text-xs font-semibold text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-gold/40">
+                <svg class="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
                 <span id="chat-scroll-to-bottom-count" class="hidden inline-flex items-center justify-center min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-gold text-navy-dark text-[0.6rem] font-bold leading-none"></span>
             </button>
         </div>
@@ -379,7 +477,7 @@
                 "Sorry for the delay — I'll get back to you shortly.",
             ];
         @endphp
-        <div class="shrink-0 px-4 sm:px-6 py-4 border-t border-gray-100 dark:border-gray-700/60 bg-white dark:bg-gray-800">
+        <div id="chat-composer-wrap" class="shrink-0 px-4 sm:px-6 py-4 border-t border-gray-100 dark:border-gray-700/60 bg-white dark:bg-gray-800">
             <form id="chat-thread-form" data-mark-read-url="{{ route('portal.chat.read', $project) }}" data-typing-url="{{ route('portal.chat.typing', $project) }}" data-no-loading-overlay
                   method="POST" action="{{ route('portal.chat.store', $project) }}"
                   onsubmit="return submitPortalChatMessage(this, event)"
@@ -433,16 +531,16 @@
 
                 <div class="flex items-end justify-between gap-2 px-2.5 sm:px-3.5 pb-2.5">
                     <div class="flex items-center gap-0.5">
-                        <button type="button" id="chat-emoji-btn" title="Emoji" aria-label="Insert emoji" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
-                            <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <button type="button" id="chat-emoji-btn" title="Emoji" aria-label="Insert emoji" class="w-11 h-11 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
+                            <svg class="w-5 h-5 sm:w-[1.125rem] sm:h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </button>
-                        <button type="button" id="chat-attachment-btn" title="Share a link" aria-label="Share a link" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
-                            <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                        <button type="button" id="chat-attachment-btn" title="Share a link" aria-label="Share a link" class="w-11 h-11 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
+                            <svg class="w-5 h-5 sm:w-[1.125rem] sm:h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
                         </button>
-                        <button type="button" id="chat-templates-btn" title="Quick replies" aria-label="Quick reply templates" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
-                            <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        <button type="button" id="chat-templates-btn" title="Quick replies" aria-label="Quick reply templates" class="w-11 h-11 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
+                            <svg class="w-5 h-5 sm:w-[1.125rem] sm:h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                         </button>
-                        <button type="button" id="chat-mic-btn" title="Voice input" aria-label="Voice input" class="hidden relative w-9 h-9 rounded-full text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
+                        <button type="button" id="chat-mic-btn" title="Voice input" aria-label="Voice input" class="hidden relative w-11 h-11 sm:w-9 sm:h-9 rounded-full text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
                             <span id="chat-mic-ring" class="hidden absolute inset-0 rounded-full bg-red-400 opacity-75 animate-ping"></span>
                             <svg id="chat-mic-icon" class="w-4 h-4 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/>
@@ -458,8 +556,8 @@
 
                     <div class="flex items-center gap-3 pb-1">
                         <span id="chat-char-counter" class="text-[0.65rem] font-medium text-gray-300 dark:text-gray-600 tabular-nums select-none transition-colors duration-200">0/5000</span>
-                        <button type="submit" id="chat-send-btn" title="Send" aria-label="Send message" class="shrink-0 w-10 h-10 rounded-full bg-gold hover:bg-gold-dark text-navy-dark flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold/40 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button type="submit" id="chat-send-btn" title="Send" aria-label="Send message" class="shrink-0 w-11 h-11 sm:w-10 sm:h-10 rounded-full bg-gold hover:bg-gold-dark text-navy-dark flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold/40 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                            <svg class="w-[1.125rem] h-[1.125rem] sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                             </svg>
                         </button>
@@ -526,6 +624,31 @@
                     badge.remove();
                 }
             });
+    })();
+
+    /**
+     * Mobile-only collapsible header details (reply time, last active,
+     * project name/phase) — desktop always shows them via the CSS
+     * min-width:640px override, this only toggles it on a narrow viewport
+     * where the header would otherwise take up too much vertical space.
+     * Animated with max-height/opacity (set here, not via the `hidden`
+     * utility) so it actually collapses/expands instead of snapping.
+     */
+    (function () {
+        const toggle = document.getElementById('chat-header-toggle');
+        const details = document.getElementById('chat-header-details');
+        const chevron = document.getElementById('chat-header-chevron');
+        if (!toggle || !details) return;
+
+        let expanded = false;
+        toggle.addEventListener('click', function () {
+            expanded = !expanded;
+            details.style.maxHeight = expanded ? details.scrollHeight + 'px' : '0px';
+            details.style.opacity = expanded ? '1' : '0';
+            toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            toggle.setAttribute('aria-label', expanded ? 'Hide conversation details' : 'Show conversation details');
+            if (chevron) chevron.style.transform = expanded ? 'rotate(180deg)' : '';
+        });
     })();
 
     /**
@@ -953,7 +1076,10 @@
             img.src = body;
             img.alt = 'Shared image';
             img.loading = 'lazy';
-            img.className = 'max-w-full max-h-72 w-auto object-cover';
+            img.className = 'chat-img-loading max-w-full max-h-72 w-auto object-cover';
+            const clearLoading = function () { img.classList.remove('chat-img-loading'); };
+            img.addEventListener('load', clearLoading);
+            img.addEventListener('error', clearLoading);
             a.appendChild(img);
             return a;
         }
