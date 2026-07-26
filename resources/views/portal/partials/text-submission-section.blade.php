@@ -213,9 +213,9 @@
                                 @csrf
                                 <textarea name="body" rows="1" placeholder="Type a message…" required
                                           class="flex-1 resize-none bg-transparent border-0 py-2 text-sm text-navy dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-0"></textarea>
-                                <button type="submit" title="Send" class="shrink-0 w-9 h-9 rounded-full bg-navy hover:bg-navy-light text-white flex items-center justify-center transition-colors">
+                                <button type="submit" title="Send" class="shrink-0 w-9 h-9 rounded-full bg-navy-dark hover:bg-navy text-white flex items-center justify-center transition-colors">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-7 7m7-7l7 7"/>
                                     </svg>
                                 </button>
                             </form>
