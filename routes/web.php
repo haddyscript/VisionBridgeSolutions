@@ -173,12 +173,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // an admin) — this is how an admin viewing-as-client gets back to their
     // own session, so it deliberately sits outside the admin-only route group.
     Route::post('/impersonate/stop', [ImpersonationController::class, 'stop'])->name('impersonate.stop');
+});
 
-    // client_uploads-disk files, gated per-file (owning client OR any admin)
-    // inside FileDownloadController rather than by route middleware —
-    // deliberately outside the portal/admin-prefixed groups below so neither
-    // audience's extra gates (onboarding steps, admin section permissions)
-    // block the other side from viewing a file it's otherwise allowed to see.
+// client_uploads-disk files, gated per-file (owning client OR any admin)
+// inside FileDownloadController rather than by route middleware —
+// deliberately outside the portal/admin-prefixed groups below so neither
+// audience's extra gates (onboarding steps, admin section permissions)
+// block the other side from viewing a file it's otherwise allowed to see.
+// `auth` only, no `verified` — admin/team accounts are never required to
+// verify their email (only client accounts go through that flow), so an
+// admin viewing a file here must not be forced through email verification.
+Route::middleware(['auth'])->group(function () {
     Route::get('/files/uploads/{upload}', [FileDownloadController::class, 'upload'])->name('files.uploads.show');
     Route::get('/files/upload-attachments/{uploadAttachment}', [FileDownloadController::class, 'uploadAttachment'])->name('files.upload-attachments.show');
     Route::get('/files/project-request-attachments/{projectRequestAttachment}', [FileDownloadController::class, 'projectRequestAttachment'])->name('files.project-request-attachments.show');
