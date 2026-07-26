@@ -1,0 +1,13 @@
+# Defense-in-depth for any Apache-served deployment of this directory:
+# uploaded files must never be executed as scripts, only served statically.
+<IfModule mod_authz_core.c>
+    <FilesMatch "\.(php\d?|phtml|pl|py|cgi|asp|aspx|sh|cshtml)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+<IfModule !mod_authz_core.c>
+    <FilesMatch "\.(php\d?|phtml|pl|py|cgi|asp|aspx|sh|cshtml)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+</IfModule>

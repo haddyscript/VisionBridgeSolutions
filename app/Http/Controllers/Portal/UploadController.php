@@ -22,11 +22,13 @@ class UploadController extends Controller
     {
         $this->authorizeProject($request, $project);
 
+        $fileRules = $this->fileValidationRules($request->input('category'));
+
         $validated = $request->validate([
             'category' => ['required', 'in:image,video,logo,document,marketing,content,revision'],
-            'file' => ['nullable', 'file', 'max:51200'],
+            'file' => array_merge(['nullable'], $fileRules),
             'files' => ['nullable', 'array'],
-            'files.*' => ['file', 'max:51200'],
+            'files.*' => $fileRules,
             'title' => [Rule::requiredIf($request->input('category') === 'revision'), 'nullable', 'string', 'max:150'],
             'body' => ['nullable', 'string', 'max:5000'],
         ]);
@@ -121,6 +123,24 @@ class UploadController extends Controller
         }
 
         return back()->with('status', 'Submitted successfully.');
+    }
+
+    /**
+     * Content-sniffed MIME/extension allow-list per category, closing the gap
+     * where this endpoint previously accepted any file type onto the
+     * web-accessible client_uploads disk. `image` and `mimes`/`mimetypes`
+     * validate the file's real detected content, not the client-supplied
+     * name or Content-Type.
+     */
+    private function fileValidationRules(?string $category): array
+    {
+        return match ($category) {
+            'image', 'logo' => ['file', 'image', 'max:51200'],
+            'video' => ['file', 'mimetypes:video/mp4,video/quicktime,video/webm,video/x-msvideo,video/x-matroska', 'max:51200'],
+            'document' => ['file', 'mimes:pdf,doc,docx,txt,rtf,odt', 'max:51200'],
+            'marketing' => ['file', 'mimes:pdf,doc,docx,jpg,jpeg,png,gif,webp,svg,zip', 'max:51200'],
+            default => ['file', 'mimes:pdf,doc,docx,txt,rtf,odt,jpg,jpeg,png,gif,webp,mp4,mov,webm,zip', 'max:51200'],
+        };
     }
 
     private function errorResponse(Request $request, string $field, string $message)

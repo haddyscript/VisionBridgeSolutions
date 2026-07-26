@@ -17,6 +17,9 @@ use Illuminate\Validation\Rule;
 
 class ProjectRequestController extends Controller
 {
+    /** Content-sniffed allow-list for proposal documents and supporting attachments — these land on the web-accessible client_uploads disk. */
+    private const DOCUMENT_MIMES = 'pdf,doc,docx,xls,xlsx,txt,rtf,odt,jpg,jpeg,png,gif,webp,zip';
+
     public function index()
     {
         $requests = ProjectRequest::with('user', 'createdByAdmin')->latest()->paginate(15)->withQueryString();
@@ -62,9 +65,9 @@ class ProjectRequestController extends Controller
             'priority' => ['nullable', Rule::in(array_keys(ProjectRequest::PRIORITIES))],
             'due_date' => ['nullable', 'date'],
             'assigned_developer_id' => ['nullable', 'exists:users,id'],
-            'proposal_document' => ['nullable', 'file', 'max:25600'],
+            'proposal_document' => ['nullable', 'file', 'mimes:'.self::DOCUMENT_MIMES, 'max:25600'],
             'attachments' => ['nullable', 'array'],
-            'attachments.*' => ['file', 'max:25600'],
+            'attachments.*' => ['file', 'mimes:'.self::DOCUMENT_MIMES, 'max:25600'],
         ], [
             'title.unique' => 'A project request with this exact title already exists. Please use a more specific title so it can\'t be confused with the existing one.',
         ]);
@@ -132,9 +135,9 @@ class ProjectRequestController extends Controller
             'proposal_status' => ['required', Rule::in(array_keys(ProjectRequest::PROPOSAL_STATUSES))],
             'estimated_value' => ['nullable', 'numeric', 'min:0'],
             'recommended_care_plan_id' => ['nullable', 'exists:maintenance_plans,id'],
-            'proposal_document' => ['nullable', 'file', 'max:25600'],
+            'proposal_document' => ['nullable', 'file', 'mimes:'.self::DOCUMENT_MIMES, 'max:25600'],
             'attachments' => ['nullable', 'array'],
-            'attachments.*' => ['file', 'max:25600'],
+            'attachments.*' => ['file', 'mimes:'.self::DOCUMENT_MIMES, 'max:25600'],
         ]);
 
         if ($request->user()->isSuperAdmin()) {
