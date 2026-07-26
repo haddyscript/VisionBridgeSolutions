@@ -22,7 +22,9 @@ class ContactMessageController extends Controller
 
         $contactMessage = ContactMessage::create($validated);
 
-        Mail::to(config('mail.support_address'))->send(new NewContactMessageMail($contactMessage));
+        dispatch(function () use ($contactMessage) {
+            Mail::to(config('mail.support_address'))->send(new NewContactMessageMail($contactMessage));
+        })->afterResponse();
 
         if ($request->wantsJson()) {
             return response()->json([

@@ -25,6 +25,69 @@
     <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js">
     <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js">
 
+    {{-- Every entrance animation on this site (hero, nav, story overture,
+         founder section, About mosaic) starts life as opacity:0 in the raw
+         HTML/CSS and is only ever revealed by a GSAP timeline. If the GSAP
+         CDN above is blocked, slow, or fails, every one of those sections —
+         including the nav bar itself — previously stayed invisible forever,
+         with no way to recover. This watchdog gives GSAP a fair 6s window;
+         if it hasn't loaded by then (or the visitor has prefers-reduced-motion
+         set, which never needs GSAP at all), it force-reveals everything via
+         plain CSS instead. Deliberately a plain (non type="text/tailwindcss")
+         <style> tag below, so both this script and its CSS work even if the
+         Tailwind Play CDN itself is what's blocked. --}}
+    <script>
+    (function () {
+        var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var deadline = Date.now() + (reducedMotion ? 0 : 6000);
+
+        (function poll() {
+            var ready = reducedMotion || typeof gsap !== 'undefined' || Date.now() >= deadline;
+            if (!ready) { return setTimeout(poll, 150); }
+            if (!reducedMotion && typeof gsap !== 'undefined') { return; } // GSAP loaded fine — nothing to do.
+
+            document.documentElement.classList.add('motion-fallback');
+            // #story-overture reuses its own existing .story-reduced static
+            // layout (already handles the pinned-scroll-track collapse
+            // correctly) rather than duplicating that CSS here.
+            var overture = document.getElementById('story-overture');
+            if (overture) { overture.classList.add('story-reduced'); }
+            else { setTimeout(poll, 50); } // body not parsed yet this early — retry briefly.
+        })();
+    })();
+    </script>
+    <style>
+        html.motion-fallback #hero-bridge-left,
+        html.motion-fallback #hero-bridge-mobile,
+        html.motion-fallback #hero-badge,
+        html.motion-fallback #hero-glow-line,
+        html.motion-fallback #hero-subtext,
+        html.motion-fallback .hero-btn-primary,
+        html.motion-fallback .hero-btn-secondary,
+        html.motion-fallback #hero-trust,
+        html.motion-fallback #hero-halo-mobile,
+        html.motion-fallback #hero-halo-mobile-ring,
+        html.motion-fallback #hero-trail-mobile,
+        html.motion-fallback #hero-device-mobile,
+        html.motion-fallback #hero-halo,
+        html.motion-fallback #hero-orbit,
+        html.motion-fallback #hero-device,
+        html.motion-fallback #hero-support-card,
+        html.motion-fallback .hero-rating-card,
+        html.motion-fallback #hero-scroll-cue,
+        html.motion-fallback #nav-logo,
+        html.motion-fallback .nav-link-3d,
+        html.motion-fallback #nav-login,
+        html.motion-fallback .nav-cta-btn,
+        html.motion-fallback #founder-photo-frame,
+        html.motion-fallback [data-reveal-mobile-photo],
+        html.motion-fallback [data-reveal-content],
+        html.motion-fallback [data-reveal-stats],
+        html.motion-fallback .mosaic-panel {
+            opacity: 1 !important;
+        }
+    </style>
+
     <!-- Tailwind CDN with custom config -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -290,19 +353,6 @@
         }
 
         /* ─── Portfolio project cards — premium agency showcase ─── */
-        .portfolio-filter-btn {
-            padding:10px 22px; border-radius:9999px; font-size:0.85rem; font-weight:600;
-            letter-spacing:0.02em; color:rgba(21,32,44,0.62);
-            background:rgba(255,255,255,0.7); border:1.5px solid rgba(21,32,44,0.10);
-            cursor:pointer; transition:background .28s ease, color .28s ease, border-color .28s ease;
-        }
-        .portfolio-filter-btn:hover { border-color:rgba(201,168,76,0.45); color:#15202C; }
-        .portfolio-filter-btn.is-active {
-            background:#15202C; color:#C9A84C; border-color:#15202C;
-            box-shadow:0 8px 20px rgba(21,32,44,0.18);
-        }
-
-        .portfolio-hidden { display:none !important; }
 
         .portfolio-card-inner {
             display:flex; flex-direction:column; height:100%;
@@ -1727,8 +1777,10 @@
            entrance on the same cards/panel/frame, and the two systems
            fighting over the same transforms is what made the section
            look jumbled. That duplicate entrance was removed; only the
-           mouse-tilt hover (initPortfolioTilt()/initSpotlightTilt() in
-           home.blade.php) remains, since it drives rotationX/rotationY —
+           mouse-tilt hover (initSpotlightTilt() in home.blade.php; the
+           portfolio cards' own equivalent tilt was later removed as dead
+           code once they moved into the story overture's pinned scenes —
+           see home.blade.php) remains, since it drives rotationX/rotationY —
            a different transform axis than what the existing entrances
            already animate — so it layers on top safely instead of
            competing. `perspective`/`preserve-3d` below exist for that
@@ -1742,9 +1794,6 @@
            turned out to be from a smooth-scroll library tried alongside
            this work, since reverted — this blur removal
            is kept anyway as good practice, not as that fix.) */
-        #portfolio-grid {
-            perspective: 1400px;
-        }
         .portfolio-card {
             transform-style: preserve-3d;
             will-change: transform, opacity;
@@ -1754,7 +1803,7 @@
             will-change: transform, opacity;
         }
         @media (prefers-reduced-motion: reduce) {
-            .portfolio-card, .spotlight-frame, #portfolio-panel { opacity: 1 !important; transform: none !important; filter: none !important; }
+            .portfolio-card, .spotlight-frame { opacity: 1 !important; transform: none !important; filter: none !important; }
         }
     </style>
 </head>

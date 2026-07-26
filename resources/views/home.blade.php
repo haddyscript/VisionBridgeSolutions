@@ -2359,11 +2359,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                         <div id="service-select-panel" class="absolute left-0 right-0 mt-2 rounded-xl overflow-hidden origin-top"
                              style="background:#ffffff;border:1px solid rgba(201,168,76,0.30);box-shadow:0 24px 60px rgba(17,29,51,0.22);z-index:30;opacity:0;transform:scaleY(0.92) translateY(-4px);visibility:hidden;transition:opacity 0.22s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1);">
                             <ul id="service-select-list" role="listbox" class="max-h-64 overflow-y-auto py-2" style="scrollbar-width:thin;scrollbar-color:#C9A84C transparent;">
-                                <li data-value="" role="option" class="service-option px-4 py-2.5 text-sm cursor-pointer flex items-center justify-between transition-colors duration-150" style="color:rgba(47,58,69,0.55);">
+                                <li data-value="" role="option" tabindex="-1" class="service-option px-4 py-2.5 text-sm cursor-pointer flex items-center justify-between transition-colors duration-150" style="color:rgba(47,58,69,0.55);">
                                     Select a service...
                                 </li>
                                 @foreach ($serviceOptions as $option)
-                                    <li data-value="{{ $option }}" role="option" class="service-option px-4 py-2.5 text-sm cursor-pointer flex items-center justify-between transition-colors duration-150" style="color:#2F3A45;">
+                                    <li data-value="{{ $option }}" role="option" tabindex="-1" class="service-option px-4 py-2.5 text-sm cursor-pointer flex items-center justify-between transition-colors duration-150" style="color:#2F3A45;">
                                         <span>{{ $option }}</span>
                                         <svg class="service-option-check w-3.5 h-3.5 shrink-0" style="color:#C9A84C;opacity:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
@@ -2427,6 +2427,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                                 form.reset();
                             } else if (status === 422 && data.errors) {
                                 renderBanner('error', Object.values(data.errors).flat());
+                            } else if (data && data.message) {
+                                // Covers 419 (session expired) and 429 (rate
+                                // limited) among others — both already come
+                                // back from Laravel with a real, specific
+                                // message; showing it beats a generic
+                                // "something went wrong" that hides exactly
+                                // what the visitor needs to do next.
+                                renderBanner('error', [data.message]);
                             } else {
                                 renderBanner('error', ['Something went wrong. Please try again.']);
                             }
@@ -2464,6 +2472,10 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     trigger.classList.add('is-open');
                     chevron.classList.add('is-open');
                     trigger.setAttribute('aria-expanded', 'true');
+                    // Move focus into the list so a keyboard user isn't stuck
+                    // with an open panel and no way to reach an option.
+                    const current = options.find(o => o.classList.contains('is-selected')) || options[0];
+                    if (current) current.focus();
                 }
                 function close() {
                     panel.classList.remove('is-open');
@@ -2471,17 +2483,47 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     chevron.classList.remove('is-open');
                     trigger.setAttribute('aria-expanded', 'false');
                 }
+                function selectOption(opt) {
+                    native.value = opt.dataset.value;
+                    label.textContent = opt.dataset.value || 'Select a service...';
+                    syncSelected();
+                    close();
+                    trigger.focus();
+                }
 
                 trigger.addEventListener('click', () => {
                     panel.classList.contains('is-open') ? close() : open();
                 });
 
-                options.forEach(opt => {
-                    opt.addEventListener('click', () => {
-                        native.value = opt.dataset.value;
-                        label.textContent = opt.dataset.value || 'Select a service...';
-                        syncSelected();
-                        close();
+                options.forEach((opt, index) => {
+                    opt.addEventListener('click', () => selectOption(opt));
+
+                    // Roving keyboard support (ARIA listbox pattern) — options
+                    // are tabindex="-1" in the markup (not Tab-reachable
+                    // individually) and only ever get real keyboard focus via
+                    // open()'s current.focus() above, then Arrow/Home/End
+                    // move it between siblings, Enter/Space selects, Escape
+                    // closes and returns focus to the trigger button.
+                    opt.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            selectOption(opt);
+                        } else if (e.key === 'ArrowDown') {
+                            e.preventDefault();
+                            (options[index + 1] || options[0]).focus();
+                        } else if (e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            (options[index - 1] || options[options.length - 1]).focus();
+                        } else if (e.key === 'Home') {
+                            e.preventDefault();
+                            options[0].focus();
+                        } else if (e.key === 'End') {
+                            e.preventDefault();
+                            options[options.length - 1].focus();
+                        } else if (e.key === 'Escape') {
+                            close();
+                            trigger.focus();
+                        }
                     });
                 });
 
@@ -2821,41 +2863,10 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         })();
 
         // ============================================================
-        //  OUR WORK — hover-tilt only. Portfolio already has its own
-        //  well-tuned entrance system a bit further down this file
-        //  (runPortfolioAnimation(), IntersectionObserver-triggered: kicker
-        //  sweep → heading rise → cards zoom-in with a continuous idle
-        //  float). An earlier pass added a SECOND, scroll-scrubbed entrance
-        //  on the same cards/panel here, and the two fighting over the same
-        //  transforms is what made the section look jumbled. Only the
-        //  hover-tilt survives that cleanup — it's safe to keep because it
-        //  drives rotationX/rotationY, a different transform axis than the
-        //  existing float loop's `y`, so the two don't collide.
-        // ============================================================
-        (function initPortfolioTilt() {
-            if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-            const cards = Array.from(document.querySelectorAll('#portfolio-grid .portfolio-card'));
-            cards.forEach((card) => {
-                card.addEventListener('mousemove', (e) => {
-                    const r = card.getBoundingClientRect();
-                    const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
-                    const dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
-                    gsap.to(card, { rotationY: dx * 5, rotationX: -dy * 5, duration: 0.35, ease: 'power2.out', overwrite: 'auto' });
-                }, { passive: true });
-                card.addEventListener('mouseleave', () => {
-                    gsap.to(card, { rotationX: 0, rotationY: 0, duration: 0.6, ease: 'power2.out', overwrite: 'auto' });
-                }, { passive: true });
-            });
-        })();
-
-        // ============================================================
-        //  IN THE SPOTLIGHT — mouse-parallax tilt only, for the same
-        //  reason as initPortfolioTilt() above: Spotlight already has its
-        //  own cinematic entrance timeline further down this file (frame
-        //  slides in from the left, copy cascades in on the right). This
-        //  just adds the hover tilt on top of it — rotationX/rotationY,
+        //  IN THE SPOTLIGHT — mouse-parallax tilt only. Spotlight already
+        //  has its own cinematic entrance timeline further down this file
+        //  (frame slides in from the left, copy cascades in on the right).
+        //  This just adds the hover tilt on top of it — rotationX/rotationY,
         //  a different axis than the existing entrance's `rotate`.
         // ============================================================
         (function initSpotlightTilt() {
@@ -3308,61 +3319,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
             // Initial position once layout has settled
             requestAnimationFrame(() => goTo(currentIndex));
-        })();
-
-        // ============================================================
-        //  SCENE 4 (project cards) — scroll-scrubbed cinematic reveal so the
-        //  overture's scroll-driven camera feel carries into the cards
-        //  instead of a plain scroll. Each card rises + tilts + fades in,
-        //  tied directly to scroll position (scrub), the same language as
-        //  the pinned scenes 1–3 above.
-        // ============================================================
-        (function() {
-            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            const cards = gsap.utils.toArray('#portfolio-grid .portfolio-card');
-            if (!cards.length) return;
-
-            if (reduceMotion) {
-                gsap.set(cards, { opacity:1, y:0, scale:1, rotationX:0 });
-                return;
-            }
-
-            cards.forEach((card) => {
-                gsap.fromTo(card,
-                    { opacity:0, y:90, scale:0.9, rotationX:10, transformPerspective:1000, transformOrigin:'center bottom' },
-                    {
-                        opacity:1, y:0, scale:1, rotationX:0, ease:'none',
-                        scrollTrigger: { trigger: card, start: 'top 90%', end: 'top 52%', scrub: 0.6 },
-                    }
-                );
-            });
-
-            // Positions depend on the overture's pin spacer above — recompute
-            // once everything is laid out so the scrub starts/ends land right.
-            ScrollTrigger.refresh();
-        })();
-
-        // ============================================================
-        //  PORTFOLIO — category filter bar (All / Churches / Ministries /
-        //  Nonprofits / Businesses). The "Your Project Could Be Next" CTA
-        //  card is tagged data-category="evergreen" so it stays visible
-        //  no matter which filter is active.
-        // ============================================================
-        (function() {
-            const filterBtns = document.querySelectorAll('.portfolio-filter-btn');
-            const cards = document.querySelectorAll('#portfolio-grid .portfolio-card');
-
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const filter = btn.dataset.filter;
-                    filterBtns.forEach(b => b.classList.toggle('is-active', b === btn));
-                    cards.forEach(card => {
-                        const category = card.dataset.category;
-                        const match = filter === 'all' || category === filter || category === 'evergreen';
-                        card.classList.toggle('portfolio-hidden', !match);
-                    });
-                });
-            });
         })();
 
         // Portfolio numbered switcher: tap-to-activate, handled by
