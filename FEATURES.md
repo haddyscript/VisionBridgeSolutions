@@ -1475,3 +1475,10 @@ On both the admin (`admin/chat/_thread.blade.php`) and portal (`portal/chat.blad
 **Root cause**: the picker's horizontal anchor (`left-8`/`right-8`) was set to the *opposite* side from its own react button (`-left-9`/`-right-9`). The button is positioned just outside the bubble's edge — a fixed offset regardless of bubble width — but the picker's old anchor measured from the *other* edge of the bubble, so its position drifted further from the button as the message (and its bubble) got wider. Both were "correct" independently, they just didn't point at the same corner.
 
 **Fix**: the picker now anchors to the same side as its react button in all four places this markup exists (server-rendered and the JS that builds live-appended messages, on both the admin and portal sides) — it now stays a small, constant distance from the button no matter how long the message is.
+
+## 89. Client Portal Chat Header — Compacted on Desktop (2026-07-27)
+
+On desktop, the portal chat card's header (`portal/chat.blade.php`) always shows its full detail panel (reply time, last active, project name, project phase) — unlike mobile, which collapses it behind a toggle (§83). That detail panel used to be two separate stacked rows ("Usually replies…" / "Last active…" on one line, the project badge + phase pill on the line below), making the header taller than it needed to be and pushing the actual conversation further down the card. Client asked for it to read as one line instead.
+
+- All four pieces of info now sit in a single `flex-wrap` row instead of two, cutting one full row's worth of padding + line-height from the header's height on desktop. Same information, same data, no logic changes — purely a layout consolidation.
+- On a narrow-enough desktop window the row still wraps naturally (`flex-wrap`) rather than overflowing, and the mobile collapse/expand behavior (§83) is unaffected, since it just measures whatever content is in `#chat-header-details` at the time.

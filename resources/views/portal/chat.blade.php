@@ -236,20 +236,22 @@
             </div>
 
             <div id="chat-header-details">
-                <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 sm:px-8 pb-2 sm:pb-3 text-xs text-gray-400 dark:text-gray-500">
-                    <span class="inline-flex items-center gap-1.5">
+                {{-- All four bits of secondary context on one line instead of
+                     two stacked rows — same info, just packed inline so the
+                     header doesn't eat extra vertical space on desktop,
+                     where it's always expanded (see the sm: override on
+                     #chat-header-details above). --}}
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 px-4 sm:px-8 pb-3 sm:pb-4 text-xs text-gray-400 dark:text-gray-500">
+                    <span class="inline-flex items-center gap-1.5 shrink-0">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         Usually replies within a few hours
                     </span>
-                    <span>Last active {{ $lastTeamMessage?->created_at->diffForHumans() ?? 'not yet in this conversation' }}</span>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-2 px-4 sm:px-8 pb-3 sm:pb-4">
-                    <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 px-2.5 py-1 rounded-full border border-gray-100 dark:border-gray-700">
+                    <span class="shrink-0">Last active {{ $lastTeamMessage?->created_at->diffForHumans() ?? 'not yet in this conversation' }}</span>
+                    <span class="inline-flex items-center gap-1.5 font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 px-2.5 py-1 rounded-full border border-gray-100 dark:border-gray-700 shrink-0">
                         <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
                         <span class="truncate max-w-[10rem]">{{ $project->name }}</span>
                     </span>
-                    <span class="inline-flex items-center text-[0.65rem] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $chatPhaseColor }}">
+                    <span class="inline-flex items-center text-[0.65rem] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $chatPhaseColor }} shrink-0">
                         {{ $chatPhaseLabel }}
                     </span>
                 </div>
