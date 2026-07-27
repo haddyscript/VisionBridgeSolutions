@@ -159,7 +159,7 @@
                 @if ($projectRequest->attachments->isNotEmpty())
                     <div class="space-y-2 mb-4">
                         @foreach ($projectRequest->attachments as $attachment)
-                            <div class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-3.5 py-2.5">
+                            <div class="attachment-row flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-3.5 py-2.5">
                                 <a href="{{ $attachment->url() }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-sm text-navy dark:text-white hover:text-gold-dark min-w-0">
                                     <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                     <span class="truncate">{{ $attachment->original_name }}</span>
@@ -167,14 +167,18 @@
                                         <span class="text-xs text-gray-500 dark:text-gray-400 shrink-0">({{ $attachment->formattedSize() }})</span>
                                     @endif
                                 </a>
-                                <form method="POST" action="{{ route('admin.project-requests.attachments.destroy', [$projectRequest, $attachment]) }}"
-                                      onsubmit="return confirm('Remove this file?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors" title="Remove">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                    </button>
-                                </form>
+                                {{-- Plain button + fetch(), not a real <form> — a nested
+                                     <form> here (this card sits inside the page-wide
+                                     #request-form) is invalid HTML, and browsers silently
+                                     merge a nested form's fields into the outer form. That
+                                     caused this form's @method('DELETE') hidden input to
+                                     ride along with the outer form's own @method('PATCH')
+                                     one, and Save Changes ended up deleting the whole
+                                     project request instead of just updating it. --}}
+                                <button type="button" class="remove-attachment-btn text-gray-400 hover:text-red-500 transition-colors" title="Remove"
+                                        data-remove-attachment-url="{{ route('admin.project-requests.attachments.destroy', [$projectRequest, $attachment]) }}">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
                             </div>
                         @endforeach
                     </div>
@@ -420,6 +424,32 @@
             const revertOption = document.querySelector('#assigned-developer-menu [data-select-option="' + savedPreviousValue + '"]');
             if (revertOption) revertOption.click();
             showAssignToast('That change could not be saved — please try again.', true);
+        });
+    });
+})();
+
+(function () {
+    // Remove Supporting Document — fetch() instead of a real <form>, since
+    // this button lives inside the page-wide #request-form (see the comment
+    // by the button markup for why a nested <form> here was actively harmful).
+    document.querySelectorAll('.remove-attachment-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            if (!confirm('Remove this file?')) return;
+
+            fetch(btn.dataset.removeAttachmentUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                },
+            })
+            .then(function (res) {
+                if (!res.ok) throw new Error('Failed to remove');
+                btn.closest('.attachment-row')?.remove();
+            })
+            .catch(function () {
+                alert('That file could not be removed — please try again.');
+            });
         });
     });
 })();

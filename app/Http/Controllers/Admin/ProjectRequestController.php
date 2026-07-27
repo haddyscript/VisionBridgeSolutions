@@ -237,12 +237,16 @@ class ProjectRequestController extends Controller
     }
 
     /** Remove a single Supporting Document without deleting the whole Work Order. */
-    public function destroyAttachment(ProjectRequest $projectRequest, ProjectRequestAttachment $attachment)
+    public function destroyAttachment(Request $request, ProjectRequest $projectRequest, ProjectRequestAttachment $attachment)
     {
         abort_unless($attachment->project_request_id === $projectRequest->id, 404);
 
         Storage::disk('client_uploads')->delete($attachment->path);
         $attachment->delete();
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Attachment removed.']);
+        }
 
         return back()->with('status', 'Attachment removed.');
     }
