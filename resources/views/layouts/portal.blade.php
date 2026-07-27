@@ -149,8 +149,32 @@
             0%   { transform: scale(1); opacity: 1; }
             100% { transform: scale(2.2); opacity: 0; }
         }
+        {{-- On hover/keyboard-focus, the icon itself gives a small friendly
+             "wiggle" and the live-dot's pulse speeds up — a bit more playful
+             than this app's usual restrained hover treatment, deliberately,
+             since this is the one header icon meant to invite a click rather
+             than just sit there as a passive utility. --}}
+        @keyframes chatNavWiggle {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            20%      { transform: rotate(-11deg) scale(1.05); }
+            40%      { transform: rotate(9deg) scale(1.05); }
+            60%      { transform: rotate(-6deg) scale(1.03); }
+            80%      { transform: rotate(3deg) scale(1.02); }
+        }
+        .chat-nav-icon-btn:hover .chat-nav-icon-svg,
+        .chat-nav-icon-btn:focus-visible .chat-nav-icon-svg {
+            animation: chatNavWiggle 0.5s ease-in-out;
+        }
+        .chat-nav-icon-btn:hover .chat-nav-live-dot::after,
+        .chat-nav-icon-btn:focus-visible .chat-nav-live-dot::after {
+            animation-duration: 1.1s;
+        }
         @media (prefers-reduced-motion: reduce) {
             .chat-nav-live-dot::after { animation: none; }
+            .chat-nav-icon-btn:hover .chat-nav-icon-svg,
+            .chat-nav-icon-btn:focus-visible .chat-nav-icon-svg {
+                animation: none;
+            }
         }
     </style>
 </head>
@@ -535,8 +559,8 @@
                      count and is kept in sync with it by the same mark-read
                      script in portal/chat.blade.php. --}}
                 <a href="{{ route('portal.chat.show') }}" data-tooltip="Chat" aria-label="Chat"
-                   class="relative w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200 {{ request()->routeIs('portal.chat.*') ? 'bg-gold text-navy-dark shadow-sm' : 'bg-gold/10 text-gold-dark hover:bg-gold/20 hover:scale-105' }}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   class="chat-nav-icon-btn relative w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/60 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-800 {{ request()->routeIs('portal.chat.*') ? 'bg-gold text-navy-dark shadow-sm hover:shadow-[0_4px_16px_rgba(201,168,76,0.55)] hover:scale-105' : 'bg-gold/10 text-gold-dark hover:bg-gold/20 hover:scale-110 hover:shadow-[0_4px_14px_rgba(201,168,76,0.4)]' }}">
+                    <svg class="chat-nav-icon-svg w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                     </svg>
                     {{-- Pulsing teal "live" dot, same idea as the sidebar's
