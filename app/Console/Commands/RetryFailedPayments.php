@@ -75,6 +75,7 @@ class RetryFailedPayments extends Command
                 Log::warning('Retry attempt failed for past-due subscription.', [
                     'subscription_id' => $subscription->id,
                     'error' => $e->getMessage(),
+                    'exception' => $e,
                 ]);
 
                 $stillFailing++;

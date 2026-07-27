@@ -121,6 +121,7 @@ class ClientController extends Controller
                             'client_id' => $client->id,
                             'subscription_id' => $subscription->id,
                             'error' => $e->getMessage(),
+                            'exception' => $e,
                         ]);
                     }
                 }

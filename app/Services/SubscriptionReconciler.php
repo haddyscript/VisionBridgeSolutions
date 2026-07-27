@@ -30,7 +30,7 @@ class SubscriptionReconciler
         try {
             $session = Session::retrieve($subscription->stripe_checkout_session_id);
         } catch (ApiErrorException $e) {
-            Log::warning('Could not retrieve Stripe session during subscription sync.', ['error' => $e->getMessage()]);
+            Log::warning('Could not retrieve Stripe session during subscription sync.', ['error' => $e->getMessage(), 'exception' => $e]);
 
             return 'Could not reach Stripe to check this plan. Try again shortly.';
         }
@@ -58,7 +58,7 @@ class SubscriptionReconciler
         try {
             $stripeSubscription = \Stripe\Subscription::retrieve($subscription->stripe_subscription_id);
         } catch (ApiErrorException $e) {
-            Log::warning('Could not retrieve Stripe subscription during sync.', ['error' => $e->getMessage()]);
+            Log::warning('Could not retrieve Stripe subscription during sync.', ['error' => $e->getMessage(), 'exception' => $e]);
 
             return 'Could not reach Stripe to check this plan. Try again shortly.';
         }

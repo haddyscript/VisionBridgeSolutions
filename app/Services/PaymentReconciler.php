@@ -44,7 +44,7 @@ class PaymentReconciler
                 'expand' => ['latest_charge'],
             ]);
         } catch (ApiErrorException $e) {
-            Log::warning('Could not retrieve Stripe PaymentIntent during manual payment sync.', ['error' => $e->getMessage()]);
+            Log::warning('Could not retrieve Stripe PaymentIntent during manual payment sync.', ['error' => $e->getMessage(), 'exception' => $e]);
 
             return 'Could not reach Stripe to check this payment. Try again shortly.';
         }
@@ -69,7 +69,7 @@ class PaymentReconciler
                 'expand' => ['payment_intent.latest_charge'],
             ]);
         } catch (ApiErrorException $e) {
-            Log::warning('Could not retrieve Stripe session during manual payment sync.', ['error' => $e->getMessage()]);
+            Log::warning('Could not retrieve Stripe session during manual payment sync.', ['error' => $e->getMessage(), 'exception' => $e]);
 
             return 'Could not reach Stripe to check this payment. Try again shortly.';
         }

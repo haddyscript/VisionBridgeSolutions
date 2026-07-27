@@ -56,6 +56,7 @@ class SubscriptionController extends Controller
             Log::error('Stripe error starting maintenance plan checkout.', [
                 'subscription_id' => $subscription->id,
                 'error' => $e->getMessage(),
+                'exception' => $e,
             ]);
 
             abort(500, 'Could not reach Stripe to start this plan. Please try again shortly.');
@@ -166,6 +167,7 @@ class SubscriptionController extends Controller
             Log::error('Stripe error confirming maintenance plan subscription.', [
                 'subscription_id' => $subscription->id,
                 'error' => $e->getMessage(),
+                'exception' => $e,
             ]);
 
             return response()->json(['error' => 'Could not reach Stripe to finish setting up this plan. Please try again shortly.'], 500);
@@ -299,6 +301,7 @@ class SubscriptionController extends Controller
             Log::error('Stripe error loading billing management page.', [
                 'subscription_id' => $subscription->id,
                 'error' => $e->getMessage(),
+                'exception' => $e,
             ]);
 
             abort(500, 'Could not reach Stripe to load your billing details. Please try again shortly.');
@@ -350,6 +353,7 @@ class SubscriptionController extends Controller
             Log::error('Stripe error updating maintenance plan payment method.', [
                 'subscription_id' => $subscription->id,
                 'error' => $e->getMessage(),
+                'exception' => $e,
             ]);
 
             return response()->json(['error' => 'Could not reach Stripe to update your card. Please try again shortly.'], 500);
@@ -373,6 +377,7 @@ class SubscriptionController extends Controller
                 Log::error('Stripe error canceling maintenance plan.', [
                     'subscription_id' => $subscription->id,
                     'error' => $e->getMessage(),
+                    'exception' => $e,
                 ]);
 
                 return back()->withErrors(['subscription' => 'Could not reach Stripe to cancel this plan. Please try again or contact support.']);
@@ -467,6 +472,7 @@ class SubscriptionController extends Controller
                 'subscription_id' => $subscription->id,
                 'target_plan_id' => $targetPlan->id,
                 'error' => $e->getMessage(),
+                'exception' => $e,
             ]);
 
             return back()->withErrors(['subscription' => 'Could not reach Stripe to upgrade this plan. Please try again or contact support.']);

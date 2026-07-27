@@ -74,6 +74,7 @@ class SubscriptionController extends Controller
                     'subscription_id' => $subscription->id,
                     'stripe_subscription_id' => $subscription->stripe_subscription_id,
                     'error' => $e->getMessage(),
+                    'exception' => $e,
                 ]);
 
                 return back()->withErrors([

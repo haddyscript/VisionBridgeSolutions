@@ -64,6 +64,7 @@ class BackfillSubscriptionPeriodEnds extends Command
                 Log::warning('Could not backfill current_period_end.', [
                     'subscription_id' => $subscription->id,
                     'error' => $e->getMessage(),
+                    'exception' => $e,
                 ]);
                 $failed++;
             }

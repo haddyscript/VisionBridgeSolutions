@@ -39,7 +39,7 @@ class StripeWebhookController extends Controller
                 config('services.stripe.webhook_secret'),
             );
         } catch (SignatureVerificationException $e) {
-            Log::warning('Stripe webhook signature verification failed.', ['error' => $e->getMessage()]);
+            Log::warning('Stripe webhook signature verification failed.', ['error' => $e->getMessage(), 'exception' => $e]);
 
             if (Cache::add('system-alert:stripe-signature-failure', true, now()->addMinutes(15))) {
                 $errorMessage = $e->getMessage();
@@ -293,7 +293,7 @@ class StripeWebhookController extends Controller
 
             return $latestCharge?->receipt_url;
         } catch (ApiErrorException $e) {
-            Log::warning('Could not fetch Stripe receipt URL.', ['error' => $e->getMessage()]);
+            Log::warning('Could not fetch Stripe receipt URL.', ['error' => $e->getMessage(), 'exception' => $e]);
 
             return null;
         }
@@ -316,7 +316,7 @@ class StripeWebhookController extends Controller
 
             return $latestCharge?->receipt_url;
         } catch (ApiErrorException $e) {
-            Log::warning('Could not fetch Stripe receipt URL.', ['error' => $e->getMessage()]);
+            Log::warning('Could not fetch Stripe receipt URL.', ['error' => $e->getMessage(), 'exception' => $e]);
 
             return null;
         }
@@ -566,7 +566,7 @@ class StripeWebhookController extends Controller
         try {
             $charge = \Stripe\Charge::retrieve($dispute->charge);
         } catch (ApiErrorException $e) {
-            Log::warning('Could not retrieve disputed charge.', ['error' => $e->getMessage()]);
+            Log::warning('Could not retrieve disputed charge.', ['error' => $e->getMessage(), 'exception' => $e]);
 
             return;
         }
