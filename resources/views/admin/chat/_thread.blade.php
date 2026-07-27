@@ -60,7 +60,7 @@
     <div id="chat-thread-messages" class="chat-thread-scroll flex-1 overflow-y-auto space-y-3 px-5 py-4">
         @forelse ($project->chatMessages as $chatMessage)
             @php $isClient = $chatMessage->user_id === $project->user_id; @endphp
-            <div class="chat-bubble group flex items-start {{ $isClient ? '' : 'justify-end' }} gap-2.5 max-w-[75%] {{ $isClient ? '' : 'ml-auto' }}"
+            <div class="chat-bubble group flex items-end {{ $isClient ? '' : 'justify-end' }} gap-2.5 max-w-[75%] {{ $isClient ? '' : 'ml-auto' }}"
                  data-message-id="{{ $chatMessage->id }}" data-own="{{ $isClient ? '0' : '1' }}" data-deleted="{{ $chatMessage->isDeleted() ? '1' : '0' }}">
                 @if ($isClient)
                     <span class="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold flex items-center justify-center shrink-0">
@@ -633,7 +633,7 @@ const ChatMessageReactions = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
 
 function buildAdminBubbleHtml(data) {
     const isClient = !!data.isFromClient;
-    let html = '<div class="chat-bubble group flex items-start ' + (isClient ? '' : 'justify-end') + ' gap-2.5 max-w-[75%] ' + (isClient ? '' : 'ml-auto') + '" data-message-id="' + data.id + '" data-own="' + (isClient ? '0' : '1') + '" data-deleted="0">';
+    let html = '<div class="chat-bubble group flex items-end ' + (isClient ? '' : 'justify-end') + ' gap-2.5 max-w-[75%] ' + (isClient ? '' : 'ml-auto') + '" data-message-id="' + data.id + '" data-own="' + (isClient ? '0' : '1') + '" data-deleted="0">';
     if (isClient) {
         html += '<span class="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold flex items-center justify-center shrink-0"></span>';
     }
