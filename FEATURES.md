@@ -1467,3 +1467,11 @@ Follow-up polish to §84/§85's header Chat icon on both `layouts/portal.blade.p
 - **The live-dot's pulse speeds up on hover/focus** (2.2s → 1.1s) — a small "it noticed you" touch tying the icon and its status dot together as one interaction.
 - **Real fix, not just polish — added a focus-visible ring.** The icon previously had *no* focus styling at all (the plain `<a>` icon buttons in this header row never did), so a keyboard user tabbing to it got only the browser's inconsistent default outline instead of this app's usual `focus-visible:ring-2 ring-gold/60` treatment. Added here specifically since it was the icon actually being worked on; the same gap likely exists on the neighboring Help/Notifications/Visit-site icons but wasn't in scope for this pass.
 - All new motion (`chatNavWiggle`, the sped-up pulse) is disabled under `prefers-reduced-motion: reduce`, consistent with every other animation already on these pages.
+
+## 88. Fixed Chat Reaction Picker Appearing Far From the React Button (2026-07-27)
+
+On both the admin (`admin/chat/_thread.blade.php`) and portal (`portal/chat.blade.php`) chat threads, clicking a message's react button could open the emoji-picker popover far away from where the button actually was — the longer the message, the bigger the gap. Reported directly from the admin chat inbox.
+
+**Root cause**: the picker's horizontal anchor (`left-8`/`right-8`) was set to the *opposite* side from its own react button (`-left-9`/`-right-9`). The button is positioned just outside the bubble's edge — a fixed offset regardless of bubble width — but the picker's old anchor measured from the *other* edge of the bubble, so its position drifted further from the button as the message (and its bubble) got wider. Both were "correct" independently, they just didn't point at the same corner.
+
+**Fix**: the picker now anchors to the same side as its react button in all four places this markup exists (server-rendered and the JS that builds live-appended messages, on both the admin and portal sides) — it now stays a small, constant distance from the button no matter how long the message is.

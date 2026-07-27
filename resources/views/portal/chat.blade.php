@@ -406,7 +406,14 @@
                                 <button type="button" class="chat-bubble-react-btn absolute -top-2 {{ $isOwn ? '-left-9' : '-right-9' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gold-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40" title="React" aria-label="React to this message">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 </button>
-                                <div class="chat-reaction-picker hidden absolute z-20 {{ $isOwn ? 'right-8' : 'left-8' }} -top-11 items-center gap-0.5 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-full shadow-lg px-1.5 py-1">
+                                {{-- Anchored to the SAME side as the react button
+                                     above (not the opposite side) — otherwise the
+                                     gap between the button you click and the
+                                     picker that opens grows with the message's
+                                     width, since the button sits just outside the
+                                     bubble's edge while an opposite-side anchor is
+                                     measured from the bubble's own far edge. --}}
+                                <div class="chat-reaction-picker hidden absolute z-20 {{ $isOwn ? 'left-8' : 'right-8' }} -top-11 items-center gap-0.5 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-full shadow-lg px-1.5 py-1">
                                     @foreach (\App\Models\ChatMessage::REACTIONS as $chatReactionEmoji)
                                         <button type="button" class="chat-reaction-option w-7 h-7 rounded-full flex items-center justify-center text-base hover:bg-gold/10 hover:scale-110 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-gold/50" aria-label="{{ ['👍' => 'Thumbs up', '❤️' => 'Heart', '😂' => 'Laughing', '😮' => 'Surprised', '😢' => 'Crying', '🙏' => 'Pray'][$chatReactionEmoji] ?? $chatReactionEmoji }}">{{ $chatReactionEmoji }}</button>
                                     @endforeach
@@ -1157,7 +1164,7 @@
         html += '<button type="button" class="chat-bubble-react-btn absolute -top-2 ' + (isOwn ? '-left-9' : '-right-9') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gold-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40" title="React" aria-label="React to this message">' +
             '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' +
         '</button>';
-        html += '<div class="chat-reaction-picker hidden absolute z-20 ' + (isOwn ? 'right-8' : 'left-8') + ' -top-11 items-center gap-0.5 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-full shadow-lg px-1.5 py-1">';
+        html += '<div class="chat-reaction-picker hidden absolute z-20 ' + (isOwn ? 'left-8' : 'right-8') + ' -top-11 items-center gap-0.5 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-full shadow-lg px-1.5 py-1">';
         const chatReactionLabels = { '👍': 'Thumbs up', '❤️': 'Heart', '😂': 'Laughing', '😮': 'Surprised', '😢': 'Crying', '🙏': 'Pray' };
         ['👍', '❤️', '😂', '😮', '😢', '🙏'].forEach(function (emoji) {
             html += '<button type="button" class="chat-reaction-option w-7 h-7 rounded-full flex items-center justify-center text-base hover:bg-gold/10 hover:scale-110 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-gold/50" aria-label="' + (chatReactionLabels[emoji] || emoji) + '">' + emoji + '</button>';
