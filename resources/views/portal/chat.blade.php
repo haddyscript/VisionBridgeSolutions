@@ -201,33 +201,39 @@
             ];
             $chatPhaseLabel = $chatPhaseLabels[$project->status] ?? ucfirst($project->status);
             $chatPhaseColor = $chatPhaseColors[$project->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400';
-            $lastTeamMessage = $messages->where('user_id', '!=', $project->user_id)->last();
         @endphp
-        <div class="shrink-0 border-b border-gray-100 dark:border-gray-700/60">
-            <div class="flex items-center gap-3 sm:gap-3.5 px-4 sm:px-8 pt-3 sm:pt-5 pb-2 sm:pb-3">
+        {{-- Desktop: every piece of this header — avatar, name/online,
+             reply-time/project/phase, the Active pill — sits on one shared
+             flex row (sm:flex on the outer wrapper). The two inner wrappers
+             (row1, #chat-header-details) each go sm:contents at that
+             breakpoint, meaning they stop being boxes of their own and their
+             children join the outer row directly instead of stacking below
+             it — mobile is untouched (contents only applies at sm: and up),
+             so the existing collapse/expand toggle still works exactly as
+             before there. --}}
+        <div class="shrink-0 border-b border-gray-100 dark:border-gray-700/60 sm:flex sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-2 sm:px-8 sm:py-4">
+            <div class="flex items-center gap-3 px-4 pt-3 pb-2 sm:contents">
                 <span class="relative w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-navy flex items-center justify-center shrink-0 shadow-sm">
                     <span class="text-gold text-sm sm:text-base font-bold tracking-tight">VB</span>
                     <span class="chat-online-pulse absolute bottom-0 right-0 w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-teal border-2 border-white dark:border-gray-800">
                         <span class="sr-only">Online</span>
                     </span>
                 </span>
-                <div class="min-w-0 flex-1">
+                <div class="min-w-0 flex-1 sm:flex-initial">
                     <div class="flex items-center gap-2">
                         <p class="text-sm sm:text-base font-semibold text-navy dark:text-white tracking-tight truncate">VisionBridge Team</p>
                         <span class="hidden sm:inline-flex items-center gap-1 text-[0.65rem] font-semibold text-teal-dark dark:text-teal-light shrink-0">
                             <span class="w-1.5 h-1.5 rounded-full bg-teal"></span> Online
                         </span>
                     </div>
-                    <p class="text-xs text-gray-400 dark:text-gray-500">Support Team</p>
+                    {{-- Desktop already shows "Online" right next to the name
+                         above — this caption would just be redundant there. --}}
+                    <p class="text-xs text-gray-400 dark:text-gray-500 sm:hidden">Support Team</p>
                 </div>
-                <span class="hidden sm:inline-flex shrink-0 items-center gap-1.5 text-[0.65rem] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-teal/10 text-teal-dark">
-                    <span class="w-1.5 h-1.5 rounded-full bg-teal"></span> Active
-                </span>
                 {{-- Mobile-only toggle for the details panel below (reply
-                     time, last active, project name/phase) — desktop
-                     always shows them (sm:block override in the CSS
-                     above), this just compacts the small viewport where
-                     vertical space is scarce. --}}
+                     time, project name/phase) — desktop shows them inline
+                     in the same row instead, this just compacts the small
+                     viewport where vertical space is scarce. --}}
                 <button type="button" id="chat-header-toggle" aria-expanded="false" aria-controls="chat-header-details"
                         class="sm:hidden shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40"
                         aria-label="Show conversation details">
@@ -235,18 +241,12 @@
                 </button>
             </div>
 
-            <div id="chat-header-details">
-                {{-- All four bits of secondary context on one line instead of
-                     two stacked rows — same info, just packed inline so the
-                     header doesn't eat extra vertical space on desktop,
-                     where it's always expanded (see the sm: override on
-                     #chat-header-details above). --}}
-                <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 px-4 sm:px-8 pb-3 sm:pb-4 text-xs text-gray-400 dark:text-gray-500">
+            <div id="chat-header-details" class="sm:contents">
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 px-4 pb-3 sm:p-0 text-xs text-gray-400 dark:text-gray-500">
                     <span class="inline-flex items-center gap-1.5 shrink-0">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         Usually replies within a few hours
                     </span>
-                    <span class="shrink-0">Last active {{ $lastTeamMessage?->created_at->diffForHumans() ?? 'not yet in this conversation' }}</span>
                     <span class="inline-flex items-center gap-1.5 font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 px-2.5 py-1 rounded-full border border-gray-100 dark:border-gray-700 shrink-0">
                         <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
                         <span class="truncate max-w-[10rem]">{{ $project->name }}</span>
@@ -256,6 +256,14 @@
                     </span>
                 </div>
             </div>
+
+            {{-- Placed after the details block (not inside row1) so its
+                 sm:ml-auto pushes only itself to the far right of the
+                 merged row, not the detail items that come after it in DOM
+                 order otherwise. --}}
+            <span class="hidden sm:inline-flex sm:ml-auto shrink-0 items-center gap-1.5 text-[0.65rem] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-teal/10 text-teal-dark">
+                <span class="w-1.5 h-1.5 rounded-full bg-teal"></span> Active
+            </span>
         </div>
 
         {{-- Messages --}}

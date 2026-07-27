@@ -1482,3 +1482,16 @@ On desktop, the portal chat card's header (`portal/chat.blade.php`) always shows
 
 - All four pieces of info now sit in a single `flex-wrap` row instead of two, cutting one full row's worth of padding + line-height from the header's height on desktop. Same information, same data, no logic changes — purely a layout consolidation.
 - On a narrow-enough desktop window the row still wraps naturally (`flex-wrap`) rather than overflowing, and the mobile collapse/expand behavior (§83) is unaffected, since it just measures whatever content is in `#chat-header-details` at the time.
+
+## 90. Client Portal Chat Header — Dropped "Last Active" (2026-07-27)
+
+Same-day follow-up to §89: "Last active {time}" (derived from the most recent team-authored message) has been removed from the header's detail row entirely — presence is already covered at a glance by the "Online" label sitting right next to "VisionBridge Team" in the row above. The now-unused `$lastTeamMessage` query was removed along with it, rather than left as dead code.
+
+## 91. Client Portal Chat Header — Fully Merged into One Line on Desktop (2026-07-27)
+
+Further same-day follow-up: on desktop the header still rendered as two visually stacked rows (name/online on one, reply-time/project/phase on the one below) even after §89–90's trims. Client asked for everything — avatar, name, "Online", reply-time, project badge, phase pill, and the "Active" pill — to sit on one shared line.
+
+- **Technique**: the outer header wrapper becomes a `sm:flex` row at the desktop breakpoint; its two inner wrappers (the name/avatar block and `#chat-header-details`) each go `sm:contents` at that same breakpoint — meaning they stop being boxes of their own and their children join the outer row directly, instead of stacking as separate blocks beneath it.
+- **Mobile is completely unaffected**: `sm:contents` only applies at the `sm:` breakpoint and up, so on a phone these are still real, separate boxes — the existing collapse/expand toggle (§83) keeps animating `#chat-header-details`'s max-height exactly as it did before this change.
+- The "Active" pill moved after the details block in DOM order (still visually identical on mobile, since it's hidden there either way) specifically so its `sm:ml-auto` pushes only itself to the row's far right, rather than dragging the reply-time/project/phase group along with it.
+- The "Support Team" caption under the name is now `sm:hidden` — redundant once "Online" already sits inline next to the name on desktop, and there was no room for it on the single merged line anyway.
