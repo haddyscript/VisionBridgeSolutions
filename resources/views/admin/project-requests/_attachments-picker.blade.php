@@ -57,7 +57,15 @@
                             thumb.classList.remove('hidden');
                             chip.querySelector('.attach-icon').classList.add('hidden');
                         }
-                        chip.querySelector('.attach-remove').addEventListener('click', function () {
+                        chip.querySelector('.attach-remove').addEventListener('click', function (e) {
+                            // Stop this from bubbling to the modal's
+                            // backdrop-click-to-close listener — rebuilding
+                            // the chip list below detaches this very button
+                            // from the DOM, which breaks that listener's
+                            // e.target.closest() check and would otherwise
+                            // close the whole modal instead of just removing
+                            // this one file.
+                            e.stopPropagation();
                             selectedFiles.splice(index, 1);
                             syncInputFiles();
                             renderFileList();
