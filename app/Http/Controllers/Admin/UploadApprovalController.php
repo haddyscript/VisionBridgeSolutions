@@ -63,6 +63,7 @@ class UploadApprovalController extends Controller
 
         if ($validated['status'] !== $previousStatus) {
             $this->notifyClientOfStatusChange($upload);
+            $this->notifyAdminOfStatusChange($request, $upload);
         }
 
         if ($request->wantsJson()) {
@@ -70,6 +71,30 @@ class UploadApprovalController extends Controller
         }
 
         return back()->with('status', 'Status updated.');
+    }
+
+    /**
+     * Internal (support@) heads-up on every manual status change — the
+     * developer-driven path below already emails support on in_progress/
+     * completed, but a regular admin changing the status here previously
+     * only ever notified the client, leaving the team with no record of it.
+     */
+    private function notifyAdminOfStatusChange(Request $request, Upload $upload): void
+    {
+        $statusLabel = Upload::STATUSES[$upload->status] ?? $upload->status;
+        $actorName = $request->user()->name;
+
+        dispatch(function () use ($upload, $statusLabel, $actorName) {
+            Mail::to(config('mail.support_address'))->send(new WorkOrderInternalUpdateMail(
+                $this->workOrderTitle($upload),
+                $upload->category === 'revision' ? 'revision request' : 'content request',
+                $upload->user->name,
+                $actorName,
+                'changed the status to "'.$statusLabel.'"',
+                null,
+                route('admin.projects.show', $upload->project),
+            ));
+        })->afterResponse();
     }
 
     /** Sets completed_at the moment a status first becomes "completed," preserves it across no-op re-saves, and clears it if moved elsewhere. */

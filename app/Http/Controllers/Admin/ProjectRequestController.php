@@ -188,7 +188,30 @@ class ProjectRequestController extends Controller
             $this->notifyClientOfRequestResolution($projectRequest);
         }
 
+        if ($validated['status'] !== $previousStatus) {
+            $this->notifyAdminOfStatusChange($request, $projectRequest);
+        }
+
         return back()->with('status', 'Project request updated.');
+    }
+
+    /** Internal (support@) heads-up on every status change — previously only the client was ever notified, so the team had no way to know a request moved without opening the admin panel. */
+    private function notifyAdminOfStatusChange(Request $request, ProjectRequest $projectRequest): void
+    {
+        $statusLabel = ProjectRequest::STATUSES[$projectRequest->status] ?? $projectRequest->status;
+        $actorName = $request->user()->name;
+
+        dispatch(function () use ($projectRequest, $statusLabel, $actorName) {
+            Mail::to(config('mail.support_address'))->send(new WorkOrderInternalUpdateMail(
+                $projectRequest->title,
+                'project request',
+                $projectRequest->user->name,
+                $actorName,
+                'changed the status to "'.$statusLabel.'"',
+                null,
+                route('admin.project-requests.show', $projectRequest),
+            ));
+        })->afterResponse();
     }
 
     /** Client-facing resolution notice — fires once, when a request is finally Converted (their new project is being set up) or Declined. */
