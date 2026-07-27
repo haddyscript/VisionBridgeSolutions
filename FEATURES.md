@@ -1521,3 +1521,9 @@ The boss reported never receiving an email when a Project Request or a Revision'
 
 **Fix**: both controllers now additionally dispatch `WorkOrderInternalUpdateMail` to `config('mail.support_address')` whenever a Project Request's or Upload's status actually changes, naming the admin who made the change and the new status label, with a link back to the relevant admin page. Reuses the same mailable/template already used for developer activity — no new mail class or view needed.
 
+## 96. File Previews on Admin "New Project Request" Uploads (2026-07-27)
+
+The Proposal Document field in the admin "New Project Request" modal (`/admin/project-requests`) was a bare native file input showing only the browser's default "Choose File / No file chosen" — no way to confirm the right file was selected before submitting, which had caused mix-ups.
+
+**Fix**: the Proposal Document field now shows a preview card after a file is picked — filename, file size, a real image thumbnail for photo uploads, or a document icon otherwise, plus a remove button to reconsider before submitting. The shared Supporting Documents picker (`admin.project-requests._attachments-picker`, also used on the Project Request detail page and the Project detail page) got the same file-size-and-thumbnail treatment added to its existing filename chips. Purely client-side (vanilla JS, `URL.createObjectURL`) — no backend or validation changes.
+

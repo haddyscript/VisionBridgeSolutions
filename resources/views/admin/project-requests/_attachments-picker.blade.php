@@ -28,18 +28,35 @@
                     attachInput.files = dt.files;
                 }
 
+                function formatFileSize(bytes) {
+                    if (bytes < 1024) return bytes + ' B';
+                    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+                    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+                }
+
                 function renderFileList() {
                     listEl.innerHTML = '';
                     selectedFiles.forEach(function (file, index) {
                         const chip = document.createElement('span');
                         chip.className = 'inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 rounded-lg bg-gray-50 dark:bg-navy-dark/60 border border-gray-200 dark:border-gray-700 px-2.5 py-1.5';
                         chip.innerHTML =
-                            '<svg class="w-3.5 h-3.5 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>' +
-                            '<span class="truncate max-w-[160px]"></span>' +
+                            '<span class="shrink-0 w-5 h-5 rounded flex items-center justify-center bg-gold/15 text-gold-dark overflow-hidden">' +
+                                '<svg class="attach-icon w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>' +
+                                '<img class="attach-thumb hidden w-full h-full object-cover" alt="">' +
+                            '</span>' +
+                            '<span class="truncate max-w-[140px]"></span>' +
+                            '<span class="attach-size text-gray-400 dark:text-gray-500 shrink-0"></span>' +
                             '<button type="button" class="attach-remove text-gray-400 hover:text-red-500 transition-colors" title="Remove">' +
                                 '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>' +
                             '</button>';
                         chip.querySelector('span.truncate').textContent = file.name;
+                        chip.querySelector('.attach-size').textContent = formatFileSize(file.size);
+                        if (file.type.startsWith('image/')) {
+                            const thumb = chip.querySelector('.attach-thumb');
+                            thumb.src = URL.createObjectURL(file);
+                            thumb.classList.remove('hidden');
+                            chip.querySelector('.attach-icon').classList.add('hidden');
+                        }
                         chip.querySelector('.attach-remove').addEventListener('click', function () {
                             selectedFiles.splice(index, 1);
                             syncInputFiles();

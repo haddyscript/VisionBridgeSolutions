@@ -408,9 +408,29 @@
                 ])
             </div>
 
-            <div>
+            <div class="proposal-doc-picker">
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Proposal Document (optional)</label>
-                <input type="file" name="proposal_document" class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gold/15 file:text-gold-dark hover:file:bg-gold/25">
+                <label class="inline-flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark hover:border-gold hover:bg-gold/5 px-3.5 py-2 text-sm font-medium text-navy dark:text-white transition-colors">
+                    <input type="file" name="proposal_document" class="proposal-doc-input sr-only" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.rtf,.odt,.jpg,.jpeg,.png,.gif,.webp,.zip">
+                    <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>Choose file</span>
+                </label>
+                {{-- Hidden until a file is picked — shows exactly what will be uploaded (name, size, and a real thumbnail for images) so an admin can catch a wrong file before submitting, instead of trusting the browser's bare "No file chosen" text. --}}
+                <div class="proposal-doc-preview hidden mt-2 flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-navy-dark/60 px-3 py-2">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <span class="shrink-0 w-8 h-8 rounded flex items-center justify-center bg-gold/15 text-gold-dark overflow-hidden">
+                            <svg class="proposal-doc-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            <img class="proposal-doc-thumb hidden w-full h-full object-cover" alt="">
+                        </span>
+                        <div class="min-w-0">
+                            <p class="proposal-doc-name text-sm font-medium text-navy dark:text-white truncate"></p>
+                            <p class="proposal-doc-size text-xs text-gray-500 dark:text-gray-400"></p>
+                        </div>
+                    </div>
+                    <button type="button" class="proposal-doc-remove shrink-0 text-gray-400 hover:text-red-500 transition-colors" title="Remove">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
             </div>
 
             <div>
@@ -431,6 +451,49 @@
 </div>
 
 <script>
+    document.querySelectorAll('.proposal-doc-picker').forEach((wrap) => {
+        const input = wrap.querySelector('.proposal-doc-input');
+        const preview = wrap.querySelector('.proposal-doc-preview');
+        const nameEl = wrap.querySelector('.proposal-doc-name');
+        const sizeEl = wrap.querySelector('.proposal-doc-size');
+        const thumbImg = wrap.querySelector('.proposal-doc-thumb');
+        const thumbIcon = wrap.querySelector('.proposal-doc-icon');
+        const removeBtn = wrap.querySelector('.proposal-doc-remove');
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        input.addEventListener('change', () => {
+            const file = input.files[0];
+            if (!file) {
+                preview.classList.add('hidden');
+                return;
+            }
+
+            nameEl.textContent = file.name;
+            sizeEl.textContent = formatFileSize(file.size);
+
+            if (file.type.startsWith('image/')) {
+                thumbImg.src = URL.createObjectURL(file);
+                thumbImg.classList.remove('hidden');
+                thumbIcon.classList.add('hidden');
+            } else {
+                thumbImg.classList.add('hidden');
+                thumbIcon.classList.remove('hidden');
+            }
+
+            preview.classList.remove('hidden');
+        });
+
+        removeBtn.addEventListener('click', () => {
+            input.value = '';
+            preview.classList.add('hidden');
+        });
+    });
+
     document.querySelectorAll('.modal-trigger').forEach((trigger) => {
         trigger.addEventListener('click', () => {
             const modal = document.getElementById(trigger.dataset.modal);
