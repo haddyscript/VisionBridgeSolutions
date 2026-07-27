@@ -1445,6 +1445,42 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             @endforeach
         </div>
 
+        {{-- Security & Peace of Mind — a deliberately distinct, higher-contrast
+             banner (not just a 5th feature card) so it reads as its own
+             differentiator, per Johnny's note to showcase security/peace-of-mind
+             as a core part of the VisionBridge value prop, not a footnote. --}}
+        <div id="why-security-banner" class="mt-14 rounded-3xl relative overflow-hidden" style="background:linear-gradient(135deg,#15202C 0%,#1F2C3A 100%);padding:48px 40px;">
+            <div class="absolute pointer-events-none" style="width:420px;height:420px;top:-140px;right:-120px;background:radial-gradient(circle,rgba(201,168,76,0.16) 0%,transparent 70%);filter:blur(40px);"></div>
+
+            <div class="relative" style="z-index:1;">
+                <div class="flex items-center gap-4 mb-5">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style="background:rgba(201,168,76,0.14);border:1px solid rgba(201,168,76,0.35);">
+                        <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['shield'] !!}</svg>
+                    </div>
+                    <h3 class="font-display font-bold" style="font-size:clamp(1.5rem,2.6vw,2rem);color:#FFFFFF;">Your Security. Our Priority.</h3>
+                </div>
+                <p class="text-base font-medium leading-relaxed mb-10" style="color:rgba(255,255,255,0.68);max-width:640px;">We don't just build your website — we protect it. Every file that touches your site is checked and access-gated, so your content and data stay exactly where they belong: with you.</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+                    @foreach([
+                        ['icon'=>'check', 'title'=>'Verified Uploads',        'desc'=>"Every file is checked against its real content, not just its name, blocking disguised malicious files before they ever reach your site."],
+                        ['icon'=>'lock',  'title'=>'Login-Protected Access',  'desc'=>'Your files can only be viewed by you or an authorized admin — never by a public link.'],
+                        ['icon'=>'shield','title'=>'Layered Server Protection','desc'=>"Additional safeguards at the infrastructure level back up every check, so protection never relies on a single point of failure."],
+                    ] as $trustPoint)
+                    <div class="flex items-start gap-3">
+                        <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:rgba(63,189,187,0.14);border:1px solid rgba(63,189,187,0.32);">
+                            <svg class="w-4.5 h-4.5 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$trustPoint['icon']] !!}</svg>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm mb-1" style="color:#FFFFFF;">{{ $trustPoint['title'] }}</h4>
+                            <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,0.58);">{{ $trustPoint['desc'] }}</p>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
     </div>
 </section>
 
