@@ -710,7 +710,11 @@
                 </script>
             @endif
 
-            <main class="px-4 sm:px-6 lg:px-8 py-8">
+            {{-- The Chat page gets a much thinner top/bottom margin than
+                 every other portal page — its own card fills the rest of
+                 the viewport, so the usual generous py-8 would just be
+                 wasted space above/below a full-screen conversation. --}}
+            <main class="px-4 sm:px-6 lg:px-8 {{ request()->routeIs('portal.chat.show') ? 'py-3 sm:py-4' : 'py-8' }}">
                 @if (session('status'))
                     <div id="flash-status-banner" class="mb-6 text-sm text-teal-dark dark:text-teal-light bg-teal/10 border border-teal/30 rounded-lg px-4 py-3">
                         {{ session('status') }}
@@ -1296,7 +1300,12 @@
         })();
     </script>
 
-    @include('portal.partials.assistant-widget')
+    {{-- Redundant (and visually competing) on the real Chat page itself —
+         a floating "ask the assistant" bubble sitting on top of the actual
+         conversation the client is already looking at. --}}
+    @unless (request()->routeIs('portal.chat.show'))
+        @include('portal.partials.assistant-widget')
+    @endunless
 
     {{-- Live chat delivery — only connects when a chat thread is actually on
          the page (see resources/views/portal/chat.blade.php), not on every

@@ -1495,3 +1495,10 @@ Further same-day follow-up: on desktop the header still rendered as two visually
 - **Mobile is completely unaffected**: `sm:contents` only applies at the `sm:` breakpoint and up, so on a phone these are still real, separate boxes — the existing collapse/expand toggle (§83) keeps animating `#chat-header-details`'s max-height exactly as it did before this change.
 - The "Active" pill moved after the details block in DOM order (still visually identical on mobile, since it's hidden there either way) specifically so its `sm:ml-auto` pushes only itself to the row's far right, rather than dragging the reply-time/project/phase group along with it.
 - The "Support Team" caption under the name is now `sm:hidden` — redundant once "Online" already sits inline next to the name on desktop, and there was no room for it on the single merged line anyway.
+
+## 92. Client Portal Chat Page — Full-Screen Layout, Floating Assistant Hidden (2026-07-27)
+
+Two related requests for `/portal/chat` specifically (`layouts/portal.blade.php`, `portal/chat.blade.php`):
+
+- **The floating "ask the assistant" bubble (`portal/partials/assistant-widget`) no longer renders on the Chat page** — it's included on every other portal page via `layouts/portal.blade.php`, but on the page that *is* the real conversation with the team, a second floating chat bubble sitting on top of it was redundant and visually competing. Gated with `@unless (request()->routeIs('portal.chat.show'))` around the existing `@include`, rather than hiding it with CSS — it doesn't render into the DOM at all on this page.
+- **The chat card now uses more of the viewport.** `<main>`'s usual generous `py-8` (every other portal page) is now conditionally thinner (`py-3 sm:py-4`) only on the Chat route, and the chat card's own `h-[calc(100vh-180px)]` was tightened to `h-[calc(100vh-140px)]` to claim the space that padding used to reserve. This is an estimate based on the padding actually removed, not something verified pixel-by-pixel in a live browser — worth a quick visual check after deploying, and a small further adjustment to the `140px` constant if there's still a gap or slight overflow.
