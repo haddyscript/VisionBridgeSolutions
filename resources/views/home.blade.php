@@ -980,6 +980,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      WELCOME VIDEO SECTION
      ============================================================ --}}
 <section id="welcome" class="py-32 relative overflow-hidden" style="background:radial-gradient(ellipse 90% 70% at 50% 55%,#F4F9FC 0%,#EAF3F8 48%,#E2EEF5 100%);">
+    {{-- Ripple/water-drop GIF — white background in the source, so
+         mix-blend-mode:multiply (the light-section convention used for the
+         Why Choose Us and Plans GIFs) drops the white and leaves just the
+         faint concentric rings showing over the section's own gradient. --}}
+    <img src="@assetv('image/drop-wave-current-white.gif')" alt="" aria-hidden="true"
+         class="absolute inset-0 w-full h-full object-cover pointer-events-none"
+         style="opacity:.5;mix-blend-mode:multiply;">
     <div id="welcome-glow" class="absolute pointer-events-none" style="width:820px;height:820px;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.09) 0%,rgba(44,166,164,.07) 42%,transparent 70%);filter:blur(72px);will-change:transform;"></div>
     <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" style="z-index:2;">
         <span id="welcome-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-5" style="opacity:0;">The VisionBridge Story</span>
