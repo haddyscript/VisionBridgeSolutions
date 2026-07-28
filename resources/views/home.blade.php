@@ -879,6 +879,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      the "Our Team plaque" gold-on-dark aesthetic used above.
      ============================================================ --}}
 <section id="spotlight" class="py-28 relative overflow-hidden" style="background:linear-gradient(155deg,#0A0D11 0%,#171B21 40%,#0A0D11 72%,#15191F 100%);">
+    {{-- Glowing blue soundwave GIF — ambient backdrop behind the orbs/dot
+         texture/poster. Black background in the source + screen blend keeps
+         only the bright waveform visible; opacity set higher (.4, not the
+         .18 first tried on the /our-work comet GIF) since that lower value
+         made a black-background GIF nearly invisible under screen blending. --}}
+    <img src="@assetv('image/voice-recording-seiri-style.gif')" alt="" aria-hidden="true"
+         class="absolute inset-0 w-full h-full object-cover pointer-events-none"
+         style="opacity:.4;mix-blend-mode:screen;z-index:0;">
     {{-- Ambient orbs --}}
     <div class="hero-orb" style="width:560px;height:560px;top:-160px;left:-140px;background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,transparent 70%);filter:blur(70px);animation:orb-drift 22s ease-in-out infinite;"></div>
     <div class="hero-orb" style="width:460px;height:460px;bottom:-120px;right:-100px;background:radial-gradient(circle,rgba(42,157,143,0.10) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 18s ease-in-out infinite reverse 4s;"></div>
