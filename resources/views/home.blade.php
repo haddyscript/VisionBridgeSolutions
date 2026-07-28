@@ -1540,8 +1540,15 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- ============================================================
      MAINTENANCE PLANS SECTION
      ============================================================ --}}
-<section id="plans" class="py-24 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<section id="plans" class="py-24 bg-white relative overflow-hidden">
+    {{-- Abstract wave GIF — subtle animated backdrop for the whole plans
+         section. mix-blend-mode:multiply (same approach as the Why Choose
+         Us section's GIF) keeps the white section background showing
+         through instead of the GIF washing everything out. --}}
+    <img src="@assetv('image/Abstract-White-Blue-Purple-Wave-Digital.gif')" alt="" aria-hidden="true"
+         class="absolute inset-0 w-full h-full object-cover pointer-events-none"
+         style="opacity:.16;mix-blend-mode:multiply;z-index:0;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="position:relative;z-index:1;">
         <div class="relative mb-20 overflow-hidden" style="min-height:230px;">
             {{-- Decorative bridge photo — faded into the white background, echoes the
                  care-plan one-pager's header art without breaking the site's centered
