@@ -1396,6 +1396,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      WHY CHOOSE US SECTION
      ============================================================ --}}
 <section id="why" class="py-28 relative overflow-hidden" style="background:linear-gradient(160deg,#E3EBF1 0%,#ECF1F5 50%,#E0E8EE 100%);">
+    {{-- Soothing wavy-loops GIF — subtle animated backdrop, sits behind the
+         orbs/dot-texture/content below. mix-blend-mode:multiply (not screen,
+         used for the dark overture version) is the right analog for a light
+         section: it lets the section's own light gradient show through
+         instead of washing everything out white. --}}
+    <img src="@assetv('image/Eli-Lilly-Soothing-Loops.gif')" alt="" aria-hidden="true"
+         class="absolute inset-0 w-full h-full object-cover pointer-events-none"
+         style="opacity:.16;mix-blend-mode:multiply;z-index:0;">
     {{-- Ambient orbs --}}
     <div class="hero-orb" style="width:640px;height:640px;top:-180px;right:-160px;background:radial-gradient(circle,rgba(201,168,76,0.07) 0%,transparent 70%);animation:orb-drift 22s ease-in-out infinite;filter:blur(72px);"></div>
     <div class="hero-orb" style="width:480px;height:480px;bottom:-120px;left:-100px;background:radial-gradient(circle,rgba(42,157,143,0.06) 0%,transparent 70%);animation:orb-drift 18s ease-in-out infinite reverse 5s;filter:blur(58px);"></div>
