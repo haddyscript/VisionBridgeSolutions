@@ -66,7 +66,9 @@
         <div class="flex-1 flex items-center justify-center px-4 py-12 lg:ml-[58%]">
             <div class="w-full max-w-md">
                 <div class="flex items-center justify-center mb-8 lg:hidden">
-                    <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
+                    <a href="{{ route('home') }}">
+                        <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
+                    </a>
                 </div>
 
                 <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
