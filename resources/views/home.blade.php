@@ -211,7 +211,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
        mobile so both cards fit the pinned height (side-by-side, narrower);
        the static/reduced layout switches to a single readable column. */
     .story-cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch;
-        width:min(94vw,960px);}
+        width:min(94vw,960px);pointer-events:auto;}
     .story-reduced .story-cards-grid{grid-template-columns:1fr;gap:16px;width:min(88vw,420px);}
 
     /* Care Plans scene — the infographic image, sized to fit one pinned screen */
