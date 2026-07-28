@@ -41,7 +41,9 @@
 
             <div class="relative max-w-sm pl-4">
                 <div class="flex items-center mb-10">
-                    <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" class="h-28 w-auto object-contain rounded-md shadow-lg">
+                    <a href="{{ route('home') }}">
+                        <img src="{{ asset('image/logo/vbs-logo-v3.jpeg') }}" alt="VisionBridge Solutions" class="h-28 w-auto object-contain rounded-md shadow-lg">
+                    </a>
                 </div>
 
                 <h2 class="font-display text-3xl font-extrabold text-white mb-3" style="text-shadow:0 1px 3px rgba(0,0,0,0.35);">Your project, all in one place</h2>
