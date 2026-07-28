@@ -1527,3 +1527,9 @@ The Proposal Document field in the admin "New Project Request" modal (`/admin/pr
 
 **Fix**: the Proposal Document field now shows a preview card after a file is picked — filename, file size, a real image thumbnail for photo uploads, or a document icon otherwise, plus a remove button to reconsider before submitting. The shared Supporting Documents picker (`admin.project-requests._attachments-picker`, also used on the Project Request detail page and the Project detail page) got the same file-size-and-thumbnail treatment added to its existing filename chips. Purely client-side (vanilla JS, `URL.createObjectURL`) — no backend or validation changes.
 
+## 97. Homepage Hero — Ambient Digital-Sphere GIF Behind the Laptop Mockup (2026-07-27)
+
+Added `orb-shallow-white-animating.gif` (a glowing wireframe sphere on a black background) as a new ambient layer in the Hero section, `#hero-orb-sphere` in `resources/views/home.blade.php`, sitting behind the existing halo/orbit rings around the laptop mockup (`#hero-device-frame`). `mix-blend-mode:screen` keeps only the glowing lines visible against the dark hero backdrop — the same technique already used for the Spotlight and Story Overture GIFs — so it only works layered over a dark section background, which is why the Hero (not any of the page's white/light sections) was chosen.
+
+The rotation is a plain CSS animation (`hero-orb-spin`, added next to `orb-drift` in `resources/views/layouts/app.blade.php`, with a `prefers-reduced-motion` override) rather than anything GSAP/scroll-driven, so it runs independently of the Hero's existing entrance timeline. It's still hooked into that timeline for a single opacity fade-in (`heroTl.fromTo('#hero-orb-sphere', ...)`) alongside the halo, so it appears in sync with the rest of the device mockup reveal instead of popping in on its own.
+

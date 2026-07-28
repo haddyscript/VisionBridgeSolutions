@@ -555,6 +555,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                      orbit's percentage sizing tied to the laptop itself
                      instead of the much larger column wrapper around it. --}}
                 <div id="hero-device-frame" class="relative" style="aspect-ratio:4/3.3;transform:scale(1.12);transform-origin:center;">
+                    {{-- Digital sphere GIF — slow-rotating ambient tech accent sitting
+                         further back than the halo/orbit rings below. Black background
+                         in the source + screen blend keeps only the glowing wireframe
+                         visible against the dark hero backdrop (same technique as the
+                         Spotlight/Story Overture GIFs elsewhere on this page). --}}
+                    <img id="hero-orb-sphere" src="@assetv('image/orb-shallow-white-animating.gif')" alt="" aria-hidden="true"
+                         class="absolute opacity-0 pointer-events-none" style="
+                         width:170%;height:170%;top:50%;left:50%;transform:translate(-50%,-50%);
+                         z-index:-2;mix-blend-mode:screen;object-fit:contain;
+                         animation:hero-orb-spin 46s linear infinite;">
+
                     {{-- Halo — soft diffuse glow disc slowly rotating behind the laptop,
                          distinct from the thin sparkling orbit rings above it. A
                          conic-gradient (not a uniform radial one) so the rotation is
@@ -2745,6 +2756,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             .fromTo('#hero-halo-mobile',      { opacity:0 }, { opacity:1, duration:1.1 }, '-=0.60')
             .fromTo('#hero-halo-mobile-ring', { opacity:0 }, { opacity:1, duration:0.90 }, '-=0.95')
             .fromTo('#hero-trail-mobile',     { opacity:0 }, { opacity:1, duration:0.90 }, '-=0.75')
+            .fromTo('#hero-orb-sphere', { opacity:0 }, { opacity:0.32, duration:1.3 }, '-=0.60')
             .fromTo('#hero-halo',       { opacity:0 }, { opacity:1, duration:1.1 }, '-=0.60')
             .fromTo('#hero-orbit',      { opacity:0 }, { opacity:1, duration:0.90 }, '-=0.95')
             .fromTo('#hero-support-card', { opacity:0, y:-14 }, { opacity:1, y:0, duration:0.55 }, '-=0.45')
