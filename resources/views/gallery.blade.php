@@ -34,6 +34,7 @@
          initCineAtmosphere() in cinematic-gallery.js for the dust setup.
          ============================================================ --}}
     <div id="cine-atmosphere" aria-hidden="true">
+        <img class="cine-atmo-comet" src="@assetv('image/Comet-and-tail-animation.gif')" alt="" aria-hidden="true">
         <div class="cine-atmo-nebula cine-atmo-nebula-1"></div>
         <div class="cine-atmo-nebula cine-atmo-nebula-2"></div>
         {{-- Randomly-positioned star elements (populated by

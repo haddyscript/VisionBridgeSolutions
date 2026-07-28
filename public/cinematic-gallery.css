@@ -38,6 +38,21 @@
     --cine-atmo-speed: 1;
 }
 
+/* Comet-and-tail GIF — the deepest layer in the atmosphere stack, sitting
+   behind the nebula/starfield/rays/dust so those still read as the primary
+   texture. mix-blend-mode:screen (dark background, same convention as the
+   homepage story-overture's own GIF background) keeps it additive rather
+   than covering the #0B0F17 base. */
+.cine-atmo-comet {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: .18;
+    mix-blend-mode: screen;
+}
+
 /* Nebula wash — big, soft, gold/teal color fields. Their real strength is
    set directly on the gradient's own alpha below (not doubled up with a
    separate container opacity — that was the original bug: a .5 container
