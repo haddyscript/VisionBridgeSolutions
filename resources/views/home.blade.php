@@ -1169,6 +1169,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                  style="width:420px;height:240px;opacity:0.8;-webkit-mask-image:radial-gradient(ellipse 75% 75% at 65% 40%, black 35%, transparent 80%);mask-image:radial-gradient(ellipse 75% 75% at 65% 40%, black 35%, transparent 80%);">
                 <img src="@assetv('image/bridge-effects.png')" alt="" loading="lazy" decoding="async" class="w-full h-full object-contain">
             </div>
+            {{-- Decorative programmer photo — faded into the opposite corner,
+                 mirroring the bridge photo above so the panel reads as "who we
+                 are" (bridge) balanced against "what we build" (hands at work) --}}
+            <div class="hidden md:block absolute bottom-6 left-6 pointer-events-none" aria-hidden="true"
+                 style="width:360px;height:220px;opacity:0.8;-webkit-mask-image:radial-gradient(ellipse 75% 75% at 35% 60%, black 35%, transparent 80%);mask-image:radial-gradient(ellipse 75% 75% at 35% 60%, black 35%, transparent 80%);">
+                <img src="@assetv('image/closeup-programmer-man-hand-typing.jpg')" alt="" loading="lazy" decoding="async" class="w-full h-full object-cover rounded-2xl">
+            </div>
             {{-- Thin gold accent line across top --}}
             <div class="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" style="width:240px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.32),transparent);"></div>
             <div class="relative" style="z-index:1;">
