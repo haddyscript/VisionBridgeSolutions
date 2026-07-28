@@ -113,6 +113,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     .story-stars{position:absolute;inset:0;pointer-events:none;opacity:.5;
         background-image:radial-gradient(circle, rgba(255,255,255,.10) 1px, transparent 1px);
         background-size:46px 46px;}
+    /* Flowing wavy-lines GIF — subtle animated backdrop behind the pinned
+       scenes. Sits above .story-bg's opaque navy fill (later in DOM = higher
+       paint order) but stays low-opacity + screen-blended so the ambient
+       gold/teal glow still reads through and scene text keeps contrast. */
+    .story-gif-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+        opacity:.16;mix-blend-mode:screen;pointer-events:none;}
     .story-vignette{position:absolute;inset:0;pointer-events:none;
         background:radial-gradient(ellipse at 50% 50%, transparent 34%, rgba(0,0,0,.62) 100%);}
 
@@ -658,6 +664,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         <span id="portfolio" aria-hidden="true" style="position:absolute;top:50%;left:0;width:1px;height:1px;pointer-events:none;"></span>
     <div class="story-stage">
         <div class="story-bg"></div>
+        <img class="story-gif-bg" src="@assetv('image/Flowing-Wavy-Lines-in-After-Effects.gif')" alt="" aria-hidden="true">
         <div class="story-stars"></div>
         {{-- ambient drifting orbs (reuse Hero's orb styling/keyframes) --}}
         <div class="hero-orb" style="width:520px;height:520px;top:-120px;right:-100px;z-index:0;
