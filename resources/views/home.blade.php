@@ -1276,10 +1276,10 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     <p class="team-panel-line text-gold text-xs tracking-widest uppercase mt-1">Building Websites. Expanding Reach.</p>
                 </div>
 
-                {{-- Right: bridge photo circle-cropped, bleeding off the edge --}}
+                {{-- Right: landing-page-development photo circle-cropped, bleeding off the edge --}}
                 <div class="hidden lg:block relative" style="height:480px;">
                     <div class="absolute overflow-hidden" style="top:50%;right:-12%;transform:translateY(-50%);width:110%;aspect-ratio:1/1;border-radius:50%;box-shadow:0 30px 80px rgba(0,0,0,0.5);">
-                        <img src="@assetv('image/bridge-background-image-v2.png')" alt="" loading="lazy" decoding="async" class="w-full h-full object-cover" style="object-position:center 35%;">
+                        <img src="@assetv('image/Landing_Page_Development.jpeg')" alt="" loading="lazy" decoding="async" class="w-full h-full object-cover" style="object-position:62% 42%;">
                         <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(115deg,rgba(10,13,17,0.20) 0%,transparent 45%);"></div>
                     </div>
                 </div>
