@@ -872,12 +872,6 @@
         #service-select-list::-webkit-scrollbar { width: 6px; }
         #service-select-list::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.45); border-radius: 3px; }
 
-        /* ─── Our Team medallion: rotating gloss sweep ─── */
-        .medallion-sweep { animation: medallion-spin 6s linear infinite; }
-        @keyframes medallion-spin {
-            0%   { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
 
         /* ─── Glowing gold divider ─── */
         .glow-line {
@@ -3011,9 +3005,9 @@
     (function () {
         function initOffscreenAnimPause() {
             const selectors = [
-                '.hero-orb', '#svc-toggle-btn', '.wave-teal', '.wave-main',
+                '.hero-orb', '#svc-toggle-btn',
                 '.shimmer-gold', '.live-dot', '.float-card-1', '.float-card-2',
-                '#hscroll-edge-arrow', '.medallion-sweep',
+                '#hscroll-edge-arrow',
                 '.hero-gradient-shift', '.hero-ray', '#hero-orbit-glow', '#hero-orbit-bloom', '#hero-orbit-mid',
                 '#hero-orbit-inner-mid', '#hero-orbit-inner-glow', '#hero-halo',
             ];

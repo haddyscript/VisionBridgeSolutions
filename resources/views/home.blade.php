@@ -1230,15 +1230,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             </div>
         </div>
 
-        {{-- Our Team — styled like a glossy "award plaque" (YouTube Play
-             Button aesthetic): dark acrylic gradient, gold bevelled frame,
-             diagonal glass sheen, and a medallion play-button emblem. --}}
-        <div id="about-team-panel" class="mt-10 rounded-3xl relative overflow-hidden py-16 px-6 sm:py-20 sm:px-12 lg:py-24 lg:px-16" style="background:linear-gradient(155deg,#0A0D11 0%,#171B21 35%,#0A0D11 70%,#15191F 100%);border:1px solid rgba(201,168,76,0.28);box-shadow:0 0 0 1px rgba(201,168,76,0.10) inset, 0 30px 80px rgba(0,0,0,0.45);">
-            {{-- Bridge photo backdrop — ties the literal "VisionBridge" name
-                 + gold light flare into the panel, dimmed enough to keep the
-                 gold sheen/medallion/text in front fully legible. --}}
-            <div class="absolute inset-0 pointer-events-none" style="background-image:url('@assetv('image/bridge-background-image-v2.png')');background-size:cover;background-position:center 35%;opacity:0.55;"></div>
-            <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(155deg,rgba(10,13,17,0.68) 0%,rgba(23,27,33,0.58) 35%,rgba(10,13,17,0.74) 70%,rgba(21,25,31,0.68) 100%);"></div>
+        {{-- Our Team — redesigned as a dark "cover slide" card (reference:
+             a goodcarbon.earth deck cover) instead of the previous centered
+             award-plaque layout: copy left-aligned on the left, the bridge
+             photo circle-cropped and bleeding off the right edge, replacing
+             the old full-bleed dimmed background photo + medallion
+             play-button (dropped — doesn't fit this two-column layout). --}}
+        <div id="about-team-panel" class="mt-10 rounded-3xl relative overflow-hidden" style="background:linear-gradient(155deg,#0A0D11 0%,#171B21 35%,#0A0D11 70%,#15191F 100%);border:1px solid rgba(201,168,76,0.28);box-shadow:0 0 0 1px rgba(201,168,76,0.10) inset, 0 30px 80px rgba(0,0,0,0.45);">
             {{-- Diagonal glossy sheen — light catching an acrylic plaque --}}
             <div class="absolute inset-0 pointer-events-none" style="z-index:1;background:linear-gradient(115deg,transparent 28%,rgba(255,255,255,0.07) 47%,rgba(255,255,255,0.02) 53%,transparent 68%);"></div>
             {{-- One-time light-sweep that plays as the panel reveals itself —
@@ -1246,42 +1244,45 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <div id="about-team-shine" class="absolute inset-0 pointer-events-none" style="z-index:1;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,0.20) 48%,rgba(255,255,255,0.05) 54%,transparent 65%);transform:translateX(-130%) skewX(-12deg);"></div>
             <div class="hero-orb" style="width:480px;height:480px;top:-140px;left:-120px;background:radial-gradient(circle,rgba(201,168,76,0.10) 0%,transparent 70%);animation:orb-drift 24s ease-in-out infinite;filter:blur(58px);"></div>
             <div class="hero-orb" style="width:380px;height:380px;bottom:-100px;right:-80px;background:radial-gradient(circle,rgba(42,157,143,0.08) 0%,transparent 70%);animation:orb-drift 28s ease-in-out infinite reverse 3s;filter:blur(50px);"></div>
-            <div class="relative max-w-3xl mx-auto text-center" style="z-index:2;">
-                {{-- Medallion play-button emblem — glow halo + gold metal
-                     bezel + glass disc with a specular highlight, plus a
-                     slow rotating gloss sweep for that "catching light"
-                     trophy feel. --}}
-                <div id="about-team-medallion" class="mx-auto mb-7 relative" style="width:96px;height:96px;">
-                    <div id="about-team-medallion-glow" class="absolute inset-0 rounded-full medallion-glow" style="background:radial-gradient(circle, rgba(201,168,76,0.40) 0%, transparent 72%);filter:blur(14px);transform:scale(1.4);"></div>
-                    <div class="absolute inset-0 rounded-full medallion-sweep" style="background:conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.55) 6%, transparent 14%, transparent 100%);"></div>
-                    <div class="absolute rounded-full" style="inset:5px;background:linear-gradient(145deg,#F0E2B2 0%,#C9A84C 40%,#8C6F26 75%,#5E4A18 100%);box-shadow:0 6px 14px rgba(0,0,0,0.45);"></div>
-                    <div class="absolute rounded-full flex items-center justify-center overflow-hidden" style="inset:10px;background:radial-gradient(circle at 32% 26%, #4A4F56 0%, #181B20 55%, #07090B 100%);box-shadow:inset 0 2px 6px rgba(255,255,255,0.15), inset 0 -4px 10px rgba(0,0,0,0.65);">
-                        <div class="absolute rounded-full" style="top:8%;left:14%;width:48%;height:30%;background:linear-gradient(135deg,rgba(255,255,255,0.45),transparent 72%);filter:blur(1px);transform:rotate(-18deg);"></div>
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style="position:relative;z-index:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,0.5));">
-                            <path d="M8 5v14l11-7-11-7z" fill="#DFC06A" stroke="#C9A84C" stroke-width="0.5"/>
-                        </svg>
+            {{-- Soft ambient glow ring behind the whole card, echoing the reference --}}
+            <div class="absolute pointer-events-none" style="width:900px;height:900px;top:50%;left:38%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.04) 0%,transparent 70%);z-index:0;"></div>
+
+            <div class="relative grid grid-cols-1 lg:grid-cols-2 items-center gap-10 py-16 px-6 sm:py-20 sm:px-12 lg:py-0 lg:pl-16 lg:pr-0" style="z-index:2;min-height:480px;">
+                {{-- Left: copy, left-aligned instead of the old centered block --}}
+                <div class="text-left">
+                    <span class="team-panel-line inline-block text-gold text-sm font-semibold tracking-widest uppercase mb-3">Our Team</span>
+                    <p class="team-panel-line text-white/85 mb-5" style="font-size:1rem;line-height:1.8;max-width:32rem;">
+                        At VisionBridge Solutions, we believe every successful website is the result of collaboration.
+                    </p>
+                    <p class="team-panel-line text-white/85 mb-5" style="font-size:0.95rem;line-height:1.8;max-width:32rem;">
+                        Our experienced team of website designers, developers, technical specialists, and support professionals work together to deliver reliable, high-quality digital solutions for every client we serve.
+                    </p>
+                    <p class="team-panel-line text-white/85 mb-5" style="font-size:0.95rem;line-height:1.8;max-width:32rem;">
+                        From your initial consultation through website launch and ongoing care, our team is committed to providing professional service, dependable support, and long-term website stability.
+                    </p>
+                    <p class="team-panel-line text-white/85 mb-8" style="font-size:0.95rem;line-height:1.8;max-width:32rem;">
+                        Every project is managed through VisionBridge Solutions, giving our clients a single point of contact and a seamless experience from beginning to end.
+                    </p>
+                    <div class="team-panel-line glow-line" style="width:52px;margin-bottom:22px;"></div>
+                    <p class="team-panel-line font-display text-gold font-bold mb-1" style="font-size:1.1rem;">Our mission is simple:</p>
+                    <p class="team-panel-line text-white/85 mb-10" style="font-size:0.95rem;line-height:1.8;max-width:32rem;">
+                        To build professional websites that help churches, ministries, nonprofits, and businesses expand their reach while providing dependable long-term support.
+                    </p>
+                    {{-- Small caption detail, mirroring the reference's
+                         bottom-left "April 2024 / goodcarbon.earth" print —
+                         reuses the panel's existing brand/tagline copy rather
+                         than inventing new facts (e.g. a founding date). --}}
+                    <p class="team-panel-line font-display font-bold text-white" style="font-size:0.95rem;">VisionBridge Solutions</p>
+                    <p class="team-panel-line text-gold text-xs tracking-widest uppercase mt-1">Building Websites. Expanding Reach.</p>
+                </div>
+
+                {{-- Right: bridge photo circle-cropped, bleeding off the edge --}}
+                <div class="hidden lg:block relative" style="height:480px;">
+                    <div class="absolute overflow-hidden" style="top:50%;right:-12%;transform:translateY(-50%);width:110%;aspect-ratio:1/1;border-radius:50%;box-shadow:0 30px 80px rgba(0,0,0,0.5);">
+                        <img src="@assetv('image/bridge-background-image-v2.png')" alt="" loading="lazy" decoding="async" class="w-full h-full object-cover" style="object-position:center 35%;">
+                        <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(115deg,rgba(10,13,17,0.20) 0%,transparent 45%);"></div>
                     </div>
                 </div>
-                <span class="team-panel-line inline-block text-gold text-sm font-semibold tracking-widest uppercase mb-3">Our Team</span>
-                <p class="team-panel-line text-white/85 mb-5" style="font-size:1rem;line-height:1.8;">
-                    At VisionBridge Solutions, we believe every successful website is the result of collaboration.
-                </p>
-                <p class="team-panel-line text-white/85 mb-5" style="font-size:0.95rem;line-height:1.8;">
-                    Our experienced team of website designers, developers, technical specialists, and support professionals work together to deliver reliable, high-quality digital solutions for every client we serve.
-                </p>
-                <p class="team-panel-line text-white/85 mb-5" style="font-size:0.95rem;line-height:1.8;">
-                    From your initial consultation through website launch and ongoing care, our team is committed to providing professional service, dependable support, and long-term website stability.
-                </p>
-                <p class="team-panel-line text-white/85 mb-8" style="font-size:0.95rem;line-height:1.8;">
-                    Every project is managed through VisionBridge Solutions, giving our clients a single point of contact and a seamless experience from beginning to end.
-                </p>
-                <div class="team-panel-line glow-line" style="width:52px;margin:0 auto 22px;"></div>
-                <p class="team-panel-line font-display text-gold font-bold mb-1" style="font-size:1.1rem;">Our mission is simple:</p>
-                <p class="team-panel-line text-white/85 mb-8" style="font-size:0.95rem;line-height:1.8;">
-                    To build professional websites that help churches, ministries, nonprofits, and businesses expand their reach while providing dependable long-term support.
-                </p>
-                <p class="team-panel-line font-display font-bold text-white" style="font-size:1.05rem;">VisionBridge Solutions</p>
-                <p class="team-panel-line text-gold text-xs tracking-widest uppercase mt-1">Building Websites. Expanding Reach.</p>
             </div>
         </div>
     </div>
@@ -3203,21 +3204,19 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             });
         });
 
-        // ── Our Team panel: "award reveal" entrance — panel rises into
-        //    place, the medallion spins/snaps in with a glow flash, the
-        //    text cascades in, and a light sweep glides across the plaque. ──
+        // ── Our Team panel: card reveal — panel rises into place, the
+        //    text cascades in, and a light sweep glides across the plaque.
+        //    (Used to also spin in a medallion play-button emblem — dropped
+        //    along with the medallion itself when this panel was redesigned
+        //    from a centered layout to the two-column card + circle photo.) ──
         (function () {
-            const panel     = document.getElementById('about-team-panel');
-            const medallion = document.getElementById('about-team-medallion');
-            const glow      = document.getElementById('about-team-medallion-glow');
-            const shine     = document.getElementById('about-team-shine');
+            const panel = document.getElementById('about-team-panel');
+            const shine = document.getElementById('about-team-shine');
             if (!panel) return;
 
             const lines = panel.querySelectorAll('.team-panel-line');
 
             gsap.set(panel, { opacity: 0, scale: 0.92, y: 36 });
-            if (medallion) gsap.set(medallion, { opacity: 0, scale: 0.3, rotate: -200 });
-            if (glow)      gsap.set(glow, { opacity: 0.5 });
             gsap.set(lines, { opacity: 0, y: 16 });
 
             const tl = gsap.timeline({
@@ -3225,15 +3224,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             });
 
             tl.to(panel, { opacity: 1, scale: 1, y: 0, duration: 0.85, ease: 'power3.out' });
-
-            if (medallion) {
-                tl.to(medallion, { opacity: 1, scale: 1, rotate: 0, duration: 0.95, ease: 'back.out(1.7)' }, '-=0.55');
-                if (glow) {
-                    tl.to(glow, { opacity: 1, duration: 0.30, ease: 'power2.out' }, '-=0.45')
-                      .to(glow, { opacity: 0.5, duration: 0.55, ease: 'power2.out' });
-                }
-            }
-
             tl.to(lines, { opacity: 1, y: 0, duration: 0.55, stagger: 0.08, ease: 'power2.out' }, '-=0.55');
 
             if (shine) {
