@@ -1447,27 +1447,19 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
             {{-- Right: coding illustration (replaces the old text quote card).
                  The source PNG has a "Codeflow AI" label baked into its pixels
-                 (a different product's branding) and a transparent background,
-                 so a solid patch to cover it would show as a mismatched box
-                 against this section's gradient. Instead, a two-layer CSS mask
-                 punches a hole exactly over that label's coordinates (~40-68%
-                 across, ~48-57% down the 500×500 source) — that spot cuts to
-                 fully transparent regardless of what's actually there, letting
-                 the section's own background show through instead of a patch
-                 that would need to color-match. --}}
+                 (a different product's branding) — a two-layer CSS mask was
+                 tried first to cut that spot to transparent, but rendered as
+                 a solid white box instead (mask-composite isn't behaving as
+                 expected here), so instead this covers it with a soft patch
+                 colored to match this section's own gradient (#ECF1F5, its
+                 middle stop) with blurred edges, so it blends regardless of
+                 needing pixel-precise positioning. --}}
             <div id="why-quote-card" class="relative">
                 <img src="@assetv('image/code-flow-human-coding.png')" alt="Illustration of a developer writing code"
-                     loading="lazy" decoding="async" class="w-full h-auto max-w-md mx-auto lg:max-w-none" style="
-                     -webkit-mask-image:linear-gradient(#000,#000),linear-gradient(#000,#000);
-                     mask-image:linear-gradient(#000,#000),linear-gradient(#000,#000);
-                     -webkit-mask-size:100% 100%,28% 9%;
-                     mask-size:100% 100%,28% 9%;
-                     -webkit-mask-position:0 0,40% 48%;
-                     mask-position:0 0,40% 48%;
-                     -webkit-mask-repeat:no-repeat;
-                     mask-repeat:no-repeat;
-                     -webkit-mask-composite:source-out;
-                     mask-composite:exclude;">
+                     loading="lazy" decoding="async" class="w-full h-auto max-w-md mx-auto lg:max-w-none">
+                <div class="absolute pointer-events-none" aria-hidden="true" style="
+                     left:30%;top:45%;width:30%;height:16%;
+                     background:#ECF1F5;filter:blur(14px);"></div>
             </div>
         </div>
 
