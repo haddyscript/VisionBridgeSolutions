@@ -1910,8 +1910,16 @@
                  "#hero"), so clicking it replays the intro video even when
                  already on the homepage, matching the intro's own
                  route('home')-only trigger further down. --}}
+            {{-- The source logo file has its own dark navy background baked
+                 in (not transparent), so sitting directly in the white pill
+                 it read as a mismatched rectangle pasted on top rather than
+                 part of the design. Framing it in a matching dark badge with
+                 a thin gold border turns that into an intentional look
+                 instead of an accidental one. --}}
             <a id="nav-logo" href="{{ route('home') }}#hero" class="flex items-center shrink-0 opacity-0">
-                <img src="@assetv('image/logo/vbs-logo-v3.jpeg')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
+                <div class="rounded-xl" style="background:#0B0F17;padding:5px 9px;border:1px solid rgba(201,168,76,0.35);box-shadow:0 3px 10px rgba(0,0,0,0.20);">
+                    <img src="@assetv('image/logo/vbs-logo-v3.jpeg')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain block">
+                </div>
             </a>
 
             {{-- Desktop CTA + full-screen menu trigger. The inline capsule
