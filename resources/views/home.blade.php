@@ -2298,7 +2298,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
 
             {{-- ── Left: info panel ── --}}
-            <div class="flex flex-col gap-6">
+            <div class="flex flex-col gap-6 relative">
 
                 {{-- Badge --}}
                 <div class="inline-flex items-center gap-2 self-start px-4 py-2 rounded-full" style="background:rgba(255,255,255,0.70);border:1px solid rgba(47,58,69,0.10);">
@@ -2309,11 +2309,19 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 </div>
 
                 {{-- Heading --}}
-                <div>
+                <div class="relative">
                     <h2 class="font-display font-bold text-navy leading-tight mb-3" style="font-size:clamp(2.2rem,4.5vw,3.4rem);">
                         Get in<br><span style="color:#C9A84C;">Touch</span>
                     </h2>
                     <p class="text-base font-medium leading-relaxed" style="color:rgba(47,58,69,0.76);max-width:380px;">Have questions or ready to start your project? We'll get back to you within 24 hours.</p>
+
+                    {{-- Decorative "next step" accent — the GIF's own white canvas
+                         disappears via mix-blend-mode:multiply against this
+                         section's light background (#EAF3F8), leaving just the
+                         green circle + progress dots visible next to the heading. --}}
+                    <img src="@assetv('image/check-next-check-white-bg.gif')" alt="" aria-hidden="true"
+                         class="hidden sm:block absolute pointer-events-none"
+                         style="top:-28px;right:-30px;width:200px;mix-blend-mode:multiply;">
                 </div>
 
                 {{-- Contact cards --}}
