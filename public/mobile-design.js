@@ -339,8 +339,10 @@
 // route/anchor logic lives there, not duplicated here) so the pill always
 // points wherever "Get Started" points. Visible while scrolling through
 // content, hidden over the hero (own CTA already on screen), over #founder
-// (its story text/Read More toggle sit where the pill would land), and over
-// #contact (the real form is the better target there).
+// (its story text/Read More toggle sit where the pill would land), over
+// #contact (the real form is the better target there), and over the footer
+// (it has its own Get Started link, and the pill was overlapping the
+// wordmark/bottom bar).
 (function () {
     if (!window.matchMedia('(max-width: 768px)').matches) return;
     if (!('IntersectionObserver' in window)) return;
@@ -350,6 +352,12 @@
     var about = document.getElementById('about');
     var founder = document.getElementById('founder');
     var contact = document.getElementById('contact');
+    // #site-footer itself is position:fixed, so its box always sits within
+    // the viewport and would never register as "not intersecting" — observe
+    // #footer-spacer instead, the in-flow placeholder that only scrolls into
+    // view near the actual bottom of the page (same element the footer's own
+    // reveal animation uses as its ScrollTrigger).
+    var footerSpacer = document.getElementById('footer-spacer');
     if (!sourceCta || !hero) return;
 
     var pill = document.createElement('a');
@@ -362,9 +370,10 @@
     var hiddenByAbout = false;
     var hiddenByFounder = false;
     var hiddenByContact = false;
+    var hiddenByFooter = false;
 
     function updateVisibility() {
-        pill.classList.toggle('is-visible', !hiddenByHero && !hiddenByAbout && !hiddenByFounder && !hiddenByContact);
+        pill.classList.toggle('is-visible', !hiddenByHero && !hiddenByAbout && !hiddenByFounder && !hiddenByContact && !hiddenByFooter);
     }
 
     new IntersectionObserver(function (entries) {
@@ -394,6 +403,13 @@
             entries.forEach(function (entry) { hiddenByContact = entry.isIntersecting; });
             updateVisibility();
         }, { threshold: 0.1 }).observe(contact);
+    }
+
+    if (footerSpacer) {
+        new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) { hiddenByFooter = entry.isIntersecting; });
+            updateVisibility();
+        }, { threshold: 0 }).observe(footerSpacer);
     }
 })();
 

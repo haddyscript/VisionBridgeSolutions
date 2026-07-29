@@ -1136,6 +1136,17 @@
             -webkit-mask-image: linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%);
             mask-image: linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%);
         }
+        /* Below 640px the bleed effect would cut the word off entirely rather
+           than just fading its edges, so it shrinks to fit fully on-screen
+           instead — the edge fade mask is dropped too, since there's no
+           actual off-screen bleed left to soften. */
+        @media (max-width: 640px) {
+            .footer-wordmark {
+                font-size: clamp(2rem, 9vw, 3.2rem);
+                -webkit-mask-image: none;
+                mask-image: none;
+            }
+        }
 
         /* ─── Footer: link hover underline ─── */
         .footer-link {
@@ -2186,7 +2197,7 @@
 
         {{-- ── Main columns ── --}}
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr] gap-10 mb-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr] gap-x-10 gap-y-8 md:gap-y-10 mb-8 md:mb-12">
 
                 {{-- Column 1: Brand --}}
                 <div id="footer-col-1" class="footer-col">
