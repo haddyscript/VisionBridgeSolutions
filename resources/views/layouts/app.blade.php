@@ -2393,6 +2393,15 @@
         // existing attributes, children, or the listeners added below.
         document.body.appendChild(document.getElementById('mobile-menu'));
 
+        // Same containing-block issue, same fix — #desktop-menu was nested
+        // inside <nav>, whose will-change:transform made it the containing
+        // block for #desktop-menu's position:fixed;inset:0, resolving that
+        // against the nav bar's own ~72px height instead of the viewport.
+        // The dark background was genuinely filling that tiny box; the
+        // giant link text just overflowed past it with nothing behind it,
+        // exposing the real page underneath.
+        document.body.appendChild(document.getElementById('desktop-menu'));
+
         // Opening/closing itself (the .hidden toggle, the entrance/exit
         // animation, the backdrop, body/button state classes) is owned
         // entirely by mobile-design.js's initMobileMenu controller, which
