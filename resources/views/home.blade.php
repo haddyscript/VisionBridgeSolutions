@@ -1028,22 +1028,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     <div class="absolute pointer-events-none" style="width:700px;height:700px;top:-180px;right:-180px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.055) 0%,transparent 70%);filter:blur(80px);"></div>
     <div class="absolute pointer-events-none" style="width:500px;height:500px;bottom:-120px;left:-100px;border-radius:50%;background:radial-gradient(circle,rgba(42,157,143,0.045) 0%,transparent 70%);filter:blur(64px);"></div>
 
-    {{-- Digital sphere GIF — ambient rotating tech accent behind the section
-         content, moved here from the Hero. Uses the Hero's mix-blend-mode:screen
-         (not multiply) because #about-bg-overlay keeps this section's actual
-         background near-black for the entire mosaic + Mission/Vision card
-         span (see the scroll-scrubbed overlay tween above) — multiply against
-         that near-black backdrop crushed the GIF to invisible. Radial mask
-         still fades the GIF's square canvas edges before they reach the
-         corners. --}}
-    <img id="about-orb-sphere" src="@assetv('image/orb-shallow-white-animating.gif')" alt="" aria-hidden="true"
-         class="absolute pointer-events-none" style="
-         width:900px;height:900px;max-width:130%;max-height:130%;top:50%;left:50%;transform:translate(-50%,-50%);
-         z-index:0;opacity:.35;mix-blend-mode:screen;object-fit:contain;
-         -webkit-mask-image:radial-gradient(circle, black 45%, transparent 72%);
-         mask-image:radial-gradient(circle, black 45%, transparent 72%);
-         animation:hero-orb-spin 46s linear infinite;">
-
     {{-- Faint bridge watermark — signature brand motif --}}
     <div class="absolute pointer-events-none text-navy" style="width:900px;max-width:90%;height:220px;bottom:-10px;right:-60px;opacity:0.045;z-index:0;">
         {!! $bridgeSilhouette !!}
