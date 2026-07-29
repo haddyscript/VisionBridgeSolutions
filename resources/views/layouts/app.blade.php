@@ -1115,28 +1115,6 @@
             overflow: visible;
         }
 
-        /* ─── Footer: peeking mascot ─── */
-        #footer-mascot {
-            position: absolute;
-            /* Relative to #footer-col-1 (Brand column) now — sits just above
-               the logo. Stays within that column's own box (not poking above
-               the footer entirely) to avoid being clipped by the previous
-               section's content, which sits at a higher stacking order. */
-            top: -52px;
-            left: 0;
-            width: 60px;
-            z-index: 2;
-            pointer-events: none;
-        }
-        #footer-mascot img {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: auto;
-            transform: rotate(180deg);
-        }
-        #footer-mascot .mascot-smile { opacity: 0; }
-
         /* ─── Footer: giant bleeding wordmark ─── */
         .footer-wordmark-wrap {
             position: relative;
@@ -2211,14 +2189,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr] gap-10 mb-12">
 
                 {{-- Column 1: Brand --}}
-                <div id="footer-col-1" class="footer-col" style="position:relative;">
-                    {{-- ── Peeking mascot — hides shyly until the footer is
-                         scrolled into view, then smiles. Source images are
-                         authored upside-down, hence rotate(180deg). ── --}}
-                    <div id="footer-mascot" aria-hidden="true">
-                        <img src="@assetv('image/mascut-hide.png')" alt="" class="mascot-hide">
-                        <img src="@assetv('image/mascut-smile.png')" alt="" class="mascot-smile">
-                    </div>
+                <div id="footer-col-1" class="footer-col">
                     <div class="flex items-center mb-4">
                         <img src="@assetv('image/logo/vbs-logo-v3.jpeg')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
                     </div>
@@ -2855,9 +2826,6 @@
                     start:   'top 88%',
                     once:    true,
                     onEnter: () => {
-                        const mascotSmile = document.querySelector('#footer-mascot .mascot-smile');
-                        const mascotHide  = document.querySelector('#footer-mascot .mascot-hide');
-
                         gsap.timeline({ defaults: { ease: 'power3.out' } })
                             .to(cols, {
                                 opacity:  1,
@@ -2868,10 +2836,7 @@
                             .to(bottom, {
                                 opacity:  1,
                                 duration: 0.55,
-                            }, '-=0.20')
-                            // Mascot stops hiding and smiles once the footer is revealed
-                            .to(mascotSmile, { opacity: 1, duration: 0.45 }, '-=0.65')
-                            .to(mascotHide,  { opacity: 0, duration: 0.45 }, '<');
+                            }, '-=0.20');
                     },
                 });
             }
