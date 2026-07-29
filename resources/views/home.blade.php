@@ -1029,16 +1029,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     <div class="absolute pointer-events-none" style="width:500px;height:500px;bottom:-120px;left:-100px;border-radius:50%;background:radial-gradient(circle,rgba(42,157,143,0.045) 0%,transparent 70%);filter:blur(64px);"></div>
 
     {{-- Digital sphere GIF — ambient rotating tech accent behind the section
-         content, moved here from the Hero. mix-blend-mode:multiply (not the
-         Hero's screen) since this section sits on a white background —
-         multiply keeps the GIF's dark linework visible instead of washing
-         out the way screen would against white (same swap already used by
-         the Welcome section's ripple GIF above). Radial mask still fades the
-         GIF's square canvas edges before they reach the corners. --}}
+         content, moved here from the Hero. Uses the Hero's mix-blend-mode:screen
+         (not multiply) because #about-bg-overlay keeps this section's actual
+         background near-black for the entire mosaic + Mission/Vision card
+         span (see the scroll-scrubbed overlay tween above) — multiply against
+         that near-black backdrop crushed the GIF to invisible. Radial mask
+         still fades the GIF's square canvas edges before they reach the
+         corners. --}}
     <img id="about-orb-sphere" src="@assetv('image/orb-shallow-white-animating.gif')" alt="" aria-hidden="true"
          class="absolute pointer-events-none" style="
          width:900px;height:900px;max-width:130%;max-height:130%;top:50%;left:50%;transform:translate(-50%,-50%);
-         z-index:0;opacity:.35;mix-blend-mode:multiply;object-fit:contain;
+         z-index:0;opacity:.35;mix-blend-mode:screen;object-fit:contain;
          -webkit-mask-image:radial-gradient(circle, black 45%, transparent 72%);
          mask-image:radial-gradient(circle, black 45%, transparent 72%);
          animation:hero-orb-spin 46s linear infinite;">
