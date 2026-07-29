@@ -213,30 +213,49 @@
         }
 
         /* ─── Desktop full-screen menu trigger ───
-             Same 3-bar look as mobile's #menu-btn, but that button's actual
-             bar sizing/position rule lives in mobile-design.css, scoped both
-             to @media(max-width:768px) and to #menu-btn by ID — it never
-             reaches this button, so the box-model is redefined here rather
-             than widening that mobile-scoped rule (mobile stays untouched).
-             The color-over-dark-hero override just above already covers this
-             button too, since that rule targets the shared .hamburger-bar
-             class rather than an ID. */
-        #desktop-menu-btn { width: 24px; height: 18px; position: relative; }
+             Circular badge container (matches the #nav-login pill and the
+             logo badge next to it — everything else in the nav has a defined
+             shape/background, this used to be three bare lines floating with
+             nothing around them). Bar sizing/position math is centered within
+             the button now instead of stretching edge-to-edge, since the
+             button itself grew from a bare 24×18 hitbox to a 42×42 circle. */
+        #desktop-menu-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 999px;
+            position: relative;
+            background: rgba(21,32,44,0.06);
+            border: 1.5px solid rgba(21,32,44,0.14);
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        #desktop-menu-btn:hover {
+            background: rgba(201,168,76,0.14);
+            border-color: rgba(201,168,76,0.45);
+        }
+        .nav-on-dark-hero #nav-inner:not(.nav-pill) #desktop-menu-btn {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.22);
+        }
+        .nav-on-dark-hero #nav-inner:not(.nav-pill) #desktop-menu-btn:hover {
+            background: rgba(201,168,76,0.22);
+            border-color: rgba(201,168,76,0.55);
+        }
         #desktop-menu-btn .hamburger-bar {
             position: absolute;
-            left: 0;
-            width: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 18px;
             height: 2px;
             background-color: #2F3A45;
             border-radius: 2px;
             transition: transform 0.3s ease, opacity 0.3s ease, top 0.3s ease;
         }
-        #desktop-menu-btn .hamburger-bar:nth-child(1) { top: 0; }
-        #desktop-menu-btn .hamburger-bar:nth-child(2) { top: 8px; }
-        #desktop-menu-btn .hamburger-bar:nth-child(3) { top: 16px; }
-        #desktop-menu-btn.is-open .hamburger-bar:nth-child(1) { top: 8px; transform: rotate(45deg); }
+        #desktop-menu-btn .hamburger-bar:nth-child(1) { top: 15px; }
+        #desktop-menu-btn .hamburger-bar:nth-child(2) { top: 20px; }
+        #desktop-menu-btn .hamburger-bar:nth-child(3) { top: 25px; }
+        #desktop-menu-btn.is-open .hamburger-bar:nth-child(1) { top: 20px; transform: translateX(-50%) rotate(45deg); }
         #desktop-menu-btn.is-open .hamburger-bar:nth-child(2) { opacity: 0; }
-        #desktop-menu-btn.is-open .hamburger-bar:nth-child(3) { top: 8px; transform: rotate(-45deg); }
+        #desktop-menu-btn.is-open .hamburger-bar:nth-child(3) { top: 20px; transform: translateX(-50%) rotate(-45deg); }
 
         /* ─── Desktop full-screen menu ───
              Reference-matched layout: brand + contact top-left/middle, CLOSE
