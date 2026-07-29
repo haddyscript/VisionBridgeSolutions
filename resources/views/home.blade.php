@@ -1445,19 +1445,29 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <p class="text-lg font-medium leading-relaxed" style="color:rgba(17,29,51,0.72);max-width:390px;">We're not just a website agency — we're your long-term digital partner committed to your growth and lasting online stability.</p>
             </div>
 
-            {{-- Right: premium quote card --}}
+            {{-- Right: coding illustration (replaces the old text quote card).
+                 The source PNG has a "Codeflow AI" label baked into its pixels
+                 (a different product's branding) and a transparent background,
+                 so a solid patch to cover it would show as a mismatched box
+                 against this section's gradient. Instead, a two-layer CSS mask
+                 punches a hole exactly over that label's coordinates (~40-68%
+                 across, ~48-57% down the 500×500 source) — that spot cuts to
+                 fully transparent regardless of what's actually there, letting
+                 the section's own background show through instead of a patch
+                 that would need to color-match. --}}
             <div id="why-quote-card" class="relative">
-                {{-- Giant decorative quote mark --}}
-                <div class="absolute pointer-events-none select-none" style="font-size:12rem;line-height:1;color:rgba(201,168,76,0.08);font-family:'Playfair Display',serif;font-weight:700;top:-36px;left:-16px;z-index:0;">"</div>
-                <div class="relative rounded-3xl" style="z-index:1;background:#FFFFFF;border:1px solid rgba(201,168,76,0.18);border-left:4px solid #C9A84C;box-shadow:0 10px 52px rgba(201,168,76,0.10),0 2px 8px rgba(17,29,51,0.04);padding:36px 40px;">
-                    <p class="font-display font-bold leading-snug mb-7" style="font-size:1.2rem;color:#2F3A45;line-height:1.55;">
-                        "We don't just build custom websites — we help protect the long-term stability of our clients' online presence."
-                    </p>
-                    <div class="flex items-center gap-4">
-                        <div class="h-px flex-1" style="background:linear-gradient(90deg,rgba(201,168,76,0.42),transparent);"></div>
-                        <span class="text-xs font-semibold tracking-widest uppercase" style="color:rgba(201,168,76,0.68);">VisionBridge Solutions</span>
-                    </div>
-                </div>
+                <img src="@assetv('image/code-flow-human-coding.png')" alt="Illustration of a developer writing code"
+                     loading="lazy" decoding="async" class="w-full h-auto max-w-md mx-auto lg:max-w-none" style="
+                     -webkit-mask-image:linear-gradient(#000,#000),linear-gradient(#000,#000);
+                     mask-image:linear-gradient(#000,#000),linear-gradient(#000,#000);
+                     -webkit-mask-size:100% 100%,28% 9%;
+                     mask-size:100% 100%,28% 9%;
+                     -webkit-mask-position:0 0,40% 48%;
+                     mask-position:0 0,40% 48%;
+                     -webkit-mask-repeat:no-repeat;
+                     mask-repeat:no-repeat;
+                     -webkit-mask-composite:source-out;
+                     mask-composite:exclude;">
             </div>
         </div>
 
