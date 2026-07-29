@@ -1507,21 +1507,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
                     <div class="grid grid-cols-1 gap-6">
                         @foreach([
-                            ['icon'=>'check', 'title'=>'Verified Uploads',        'desc'=>"Every file is checked against its real content, not just its name, blocking disguised malicious files before they ever reach your site."],
-                            ['icon'=>'lock',  'title'=>'Login-Protected Access',  'desc'=>'Your files can only be viewed by you or an authorized admin — never by a public link.'],
-                            ['icon'=>'shield','image'=>'image/cloud-storage.gif','title'=>'Layered Server Protection','desc'=>"Additional safeguards at the infrastructure level back up every check, so protection never relies on a single point of failure."],
+                            ['icon'=>'check',  'title'=>'Verified Uploads',        'desc'=>"Every file is checked against its real content, not just its name, blocking disguised malicious files before they ever reach your site."],
+                            ['icon'=>'lock',   'title'=>'Login-Protected Access',  'desc'=>'Your files can only be viewed by you or an authorized admin — never by a public link.'],
+                            ['icon'=>'shield', 'title'=>'Layered Server Protection','desc'=>"Additional safeguards at the infrastructure level back up every check, so protection never relies on a single point of failure."],
                         ] as $trustPoint)
                         <div class="flex items-start gap-3">
                             <div class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 overflow-hidden" style="background:rgba(63,189,187,0.14);border:1px solid rgba(63,189,187,0.32);">
-                                @if (!empty($trustPoint['image']))
-                                    {{-- Source graphic has heavy whitespace padding around the
-                                         cloud mark itself, so plain object-cover left it tiny
-                                         and low-contrast inside the badge — scale zooms past
-                                         that padding to crop tight on the icon. --}}
-                                    <img src="@assetv($trustPoint['image'])" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;transform:scale(2.3);transform-origin:50% 42%;">
-                                @else
-                                    <svg class="w-4.5 h-4.5 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$trustPoint['icon']] !!}</svg>
-                                @endif
+                                <svg class="w-4.5 h-4.5 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$trustPoint['icon']] !!}</svg>
                             </div>
                             <div>
                                 <h4 class="font-bold text-sm mb-1" style="color:#FFFFFF;">{{ $trustPoint['title'] }}</h4>
