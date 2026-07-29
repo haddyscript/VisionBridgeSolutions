@@ -244,6 +244,11 @@
              bottom-left, a soft gold/teal glow bottom-right. Desktop-only —
              toggled by #desktop-menu-btn, entirely separate from mobile's
              own #mobile-menu. */
+        /* Opacity/visibility here are just the static hidden/shown end
+           states — no CSS transition, since the open/close JS drives a
+           GSAP timeline directly on these (and child) elements. A plain
+           CSS transition running alongside GSAP's own per-frame inline
+           styles on the same property fights it and reads as stutter. */
         #desktop-menu {
             position: fixed;
             inset: 0;
@@ -252,13 +257,11 @@
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
-            transition: opacity 0.35s ease, visibility 0s linear 0.35s;
         }
         #desktop-menu.is-visible {
             opacity: 1;
             visibility: visible;
             pointer-events: auto;
-            transition: opacity 0.35s ease, visibility 0s linear 0s;
         }
         /* Safety net — this menu is desktop-only (only #desktop-menu-btn,
            itself hidden below md, ever toggles it), but this guarantees it
@@ -2095,7 +2098,7 @@
             <div id="desktop-menu-glow" aria-hidden="true"></div>
             <div class="relative h-full max-w-7xl mx-auto px-10 lg:px-16 py-10 flex flex-col">
                 <div class="flex items-start justify-between">
-                    <div>
+                    <div id="desktop-menu-brand">
                         <p class="font-display text-2xl font-bold text-white leading-tight mb-4">VisionBridge</p>
                         <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,.55);">
                             <a href="mailto:support@visionbridgesolutions.com" class="hover:text-gold transition-colors">support@visionbridgesolutions.com</a><br>
@@ -2115,7 +2118,7 @@
                     <a href="{{ $homeAnchor }}#contact" class="desktop-menu-link">Contact</a>
                 </nav>
 
-                <p class="text-xs tracking-widest uppercase" style="color:rgba(201,168,76,0.7);">Building Websites. Expanding Reach.</p>
+                <p id="desktop-menu-tagline" class="text-xs tracking-widest uppercase" style="color:rgba(201,168,76,0.7);">Building Websites. Expanding Reach.</p>
             </div>
         </div>
     </nav>
@@ -2517,7 +2520,10 @@
     </script>
 
     <!-- Desktop full-screen menu — open/close controller, entirely separate
-         from mobile's #mobile-menu/#menu-btn logic further up. -->
+         from mobile's #mobile-menu/#menu-btn logic further up. Same overall
+         shape as that mobile controller (animating lock, gsap.set for the
+         hidden start state, a staggered timeline in, a faster un-staggered
+         fade out, graceful instant show/hide if GSAP hasn't loaded). -->
     <script defer>
     (function () {
         var btn      = document.getElementById('desktop-menu-btn');
@@ -2525,34 +2531,79 @@
         var closeBtn = document.getElementById('desktop-menu-close');
         if (!btn || !menu) return;
 
-        var isOpen = false;
+        var brand   = document.getElementById('desktop-menu-brand');
+        var tagline = document.getElementById('desktop-menu-tagline');
+        var glow    = document.getElementById('desktop-menu-glow');
+        var links   = Array.prototype.slice.call(menu.querySelectorAll('.desktop-menu-link'));
 
-        function open() {
+        var isOpen = false;
+        var animating = false;
+
+        function openMenu() {
+            if (isOpen || animating) return;
             isOpen = true;
+            animating = true;
+
             menu.classList.add('is-visible');
             btn.classList.add('is-open');
             btn.setAttribute('aria-expanded', 'true');
             document.body.style.overflow = 'hidden';
+
+            if (typeof gsap === 'undefined') { animating = false; return; }
+
+            gsap.set(menu, { opacity: 1 });
+            gsap.set(brand, { opacity: 0, y: -16 });
+            gsap.set(closeBtn, { opacity: 0, x: 16 });
+            gsap.set(links, { opacity: 0, y: 44 });
+            gsap.set(tagline, { opacity: 0 });
+            gsap.set(glow, { opacity: 0 });
+
+            gsap.timeline({ onComplete: function () { animating = false; } })
+                // Brand + Close settle in first, together
+                .to(brand,    { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 0.05)
+                .to(closeBtn, { opacity: 1, x: 0, duration: 0.4, ease: 'power3.out' }, 0.05)
+                // Giant links rise in one after another — the main event
+                .to(links,    { opacity: 1, y: 0, duration: 0.65, stagger: 0.07, ease: 'power3.out' }, 0.15)
+                // Tagline + ambient glow settle in last, overlapping the tail of the links
+                .to(tagline,  { opacity: 1, duration: 0.4, ease: 'power2.out' }, '-=0.25')
+                .to(glow,     { opacity: 1, duration: 0.8, ease: 'power2.out' }, '-=0.6');
         }
-        function close() {
+
+        function closeMenu() {
+            if (!isOpen || animating) return;
             isOpen = false;
-            menu.classList.remove('is-visible');
-            btn.classList.remove('is-open');
-            btn.setAttribute('aria-expanded', 'false');
-            document.body.style.overflow = '';
+            animating = true;
+
+            function finish() {
+                menu.classList.remove('is-visible');
+                btn.classList.remove('is-open');
+                btn.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+                animating = false;
+            }
+
+            if (typeof gsap === 'undefined') { finish(); return; }
+
+            // Close is deliberately quick and un-staggered (everything fades
+            // up together, same convention as the mobile menu's own close) —
+            // a staggered close reads as sluggish, not premium.
+            var everything = [brand, closeBtn].concat(links, [tagline, glow]).filter(Boolean);
+            gsap.timeline({ onComplete: finish })
+                .to(everything, { opacity: 0, y: -14, duration: 0.25, ease: 'power1.in' })
+                .to(menu, { opacity: 0, duration: 0.3, ease: 'power1.in' }, '-=0.1');
         }
 
         btn.addEventListener('click', function () {
-            if (isOpen) close(); else open();
+            if (isOpen) closeMenu(); else openMenu();
         });
-        if (closeBtn) closeBtn.addEventListener('click', close);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
 
-        menu.querySelectorAll('.desktop-menu-link').forEach(function (link) {
-            link.addEventListener('click', close);
+        links.forEach(function (link) {
+            link.addEventListener('click', closeMenu);
         });
 
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && isOpen) close();
+            if (e.key === 'Escape' && isOpen) closeMenu();
         });
 
         // The button itself is hidden below md, so this can only ever be
@@ -2560,7 +2611,7 @@
         // while it's open, this still closes it rather than leaving body
         // scroll locked with no visible way to close.
         window.addEventListener('resize', function () {
-            if (isOpen && window.innerWidth < 768) close();
+            if (isOpen && window.innerWidth < 768) closeMenu();
         });
     })();
     </script>
