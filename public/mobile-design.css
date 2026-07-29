@@ -963,4 +963,23 @@
         white-space: nowrap;
         box-shadow: 0 6px 16px rgba(201,168,76,0.35);
     }
+
+    /* Story Overture project cards — .story-cards-grid deliberately stays
+       2-up even on mobile (so both cards fit the pinned scroll-scrubbed
+       scene height), but .portfolio-card-* was only ever sized for a full
+       desktop-width card, not one squeezed into ~45vw. Shrinking padding/
+       font-size here (rather than dropping to 1-up, which would need
+       reworking the GSAP pinned-scene timeline) keeps the existing scroll
+       mechanics untouched while making the halved card actually legible. */
+    .portfolio-card-body { padding: 14px 14px 12px !important; }
+    .portfolio-card-num { font-size: 1.3rem !important; top: 8px !important; right: 10px !important; }
+    .portfolio-card-title { font-size: 0.92rem !important; margin-bottom: 3px !important; line-height: 1.2 !important; }
+    .portfolio-card-tagline { font-size: 0.68rem !important; margin-bottom: 7px !important; }
+    .portfolio-card-desc { font-size: 0.72rem !important; line-height: 1.5 !important; margin-bottom: 10px !important; }
+    .portfolio-card-features { gap: 5px !important; margin-bottom: 4px !important; }
+    .portfolio-card-features li { font-size: 0.58rem !important; padding: 3px 8px !important; }
+    .portfolio-card-btn-wrap { padding-top: 10px !important; }
+    .portfolio-card-btn { font-size: 0.7rem !important; padding: 8px 12px !important; gap: 5px !important; }
+    .portfolio-industry-badge,
+    .portfolio-status-pill { font-size: 0.56rem !important; padding: 4px 9px !important; }
 }

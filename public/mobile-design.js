@@ -340,9 +340,11 @@
 // points wherever "Get Started" points. Visible while scrolling through
 // content, hidden over the hero (own CTA already on screen), over #founder
 // (its story text/Read More toggle sit where the pill would land), over
-// #contact (the real form is the better target there), and over the footer
-// (it has its own Get Started link, and the pill was overlapping the
-// wordmark/bottom bar).
+// #contact (the real form is the better target there), the footer (it has
+// its own Get Started link, and the pill was overlapping the wordmark/bottom
+// bar), and #story-overture (the pinned project-card scenes are already
+// tight on space at half-width each, and the pill was overlapping their
+// tag pills/buttons).
 (function () {
     if (!window.matchMedia('(max-width: 768px)').matches) return;
     if (!('IntersectionObserver' in window)) return;
@@ -352,6 +354,7 @@
     var about = document.getElementById('about');
     var founder = document.getElementById('founder');
     var contact = document.getElementById('contact');
+    var overture = document.getElementById('story-overture');
     // #site-footer itself is position:fixed, so its box always sits within
     // the viewport and would never register as "not intersecting" — observe
     // #footer-spacer instead, the in-flow placeholder that only scrolls into
@@ -371,9 +374,10 @@
     var hiddenByFounder = false;
     var hiddenByContact = false;
     var hiddenByFooter = false;
+    var hiddenByOverture = false;
 
     function updateVisibility() {
-        pill.classList.toggle('is-visible', !hiddenByHero && !hiddenByAbout && !hiddenByFounder && !hiddenByContact && !hiddenByFooter);
+        pill.classList.toggle('is-visible', !hiddenByHero && !hiddenByAbout && !hiddenByFounder && !hiddenByContact && !hiddenByFooter && !hiddenByOverture);
     }
 
     new IntersectionObserver(function (entries) {
@@ -410,6 +414,13 @@
             entries.forEach(function (entry) { hiddenByFooter = entry.isIntersecting; });
             updateVisibility();
         }, { threshold: 0 }).observe(footerSpacer);
+    }
+
+    if (overture) {
+        new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) { hiddenByOverture = entry.isIntersecting; });
+            updateVisibility();
+        }, { threshold: 0.1 }).observe(overture);
     }
 })();
 
