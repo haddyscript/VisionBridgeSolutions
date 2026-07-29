@@ -1747,33 +1747,41 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <p class="section-subtitle">Every project is managed through VisionBridge Solutions, giving our clients one point of contact from beginning to end.</p>
         </div>
 
-        {{-- grid-cols-2 from the smallest breakpoint up (not just md:) so the
-             two cards sit side-by-side on mobile too, per request; cards drop
-             to a stacked icon-above-text layout + smaller type below md so
-             they still read cleanly at that width instead of cramming a
-             side-by-side icon+paragraph into half the screen. --}}
-        <div class="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 max-w-5xl mx-auto">
-            <div class="why-feature-card group flex flex-col md:flex-row items-start gap-2 md:gap-5 rounded-2xl p-4 md:p-7 hover:-translate-y-1.5 transition-all duration-300 cursor-default"
-                 style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.07);box-shadow:0 2px 12px rgba(17,29,51,0.05),0 1px 3px rgba(17,29,51,0.03);">
-                <div class="why-feature-icon w-9 h-9 md:w-14 md:h-14 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110"
-                     style="background:linear-gradient(135deg,rgba(201,168,76,0.14),rgba(42,157,143,0.12));border:1px solid rgba(201,168,76,0.18);">
-                    <svg class="w-4 h-4 md:w-6 md:h-6" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 100-8 4 4 0 000 8zm6 0a4 4 0 100-8"/></svg>
-                </div>
-                <div>
-                    <h4 class="font-extrabold text-sm md:text-lg mb-1 md:mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#15202C;">Unified Team</h4>
-                    <p class="text-xs md:text-base font-medium leading-relaxed" style="color:rgba(17,29,51,0.74);">Our experienced team of designers, developers, technical specialists, and support professionals works together behind the scenes to deliver reliable, high-quality digital solutions for every client we serve.</p>
-                </div>
-            </div>
+        {{-- Illustration beside the cards — image-left/cards-right below lg
+             (matches the same side-by-side pattern already used in the About
+             and Contact sections), stacked image-on-top on smaller screens.
+             The cards keep their own grid-cols-2 up through the lg breakpoint
+             (2-up even on mobile, per request) then drop to a single stacked
+             column at lg so each card still gets a comfortable width once
+             it's sharing the row with the illustration rather than the full
+             section width. --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14 items-center max-w-5xl mx-auto">
+            <img src="@assetv('image/cooperation.jpg')" alt="Illustration of a team collaborating"
+                 loading="lazy" decoding="async" class="w-full h-auto max-w-sm mx-auto lg:max-w-none">
 
-            <div class="why-feature-card group flex flex-col md:flex-row items-start gap-2 md:gap-5 rounded-2xl p-4 md:p-7 hover:-translate-y-1.5 transition-all duration-300 cursor-default"
-                 style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.07);box-shadow:0 2px 12px rgba(17,29,51,0.05),0 1px 3px rgba(17,29,51,0.03);">
-                <div class="why-feature-icon w-9 h-9 md:w-14 md:h-14 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110"
-                     style="background:linear-gradient(135deg,rgba(201,168,76,0.14),rgba(42,157,143,0.12));border:1px solid rgba(201,168,76,0.18);">
-                    <svg class="w-4 h-4 md:w-6 md:h-6" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <div class="grid grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-4 lg:gap-6">
+                <div class="why-feature-card group flex flex-col md:flex-row items-start gap-2 md:gap-5 rounded-2xl p-4 md:p-7 hover:-translate-y-1.5 transition-all duration-300 cursor-default"
+                     style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.07);box-shadow:0 2px 12px rgba(17,29,51,0.05),0 1px 3px rgba(17,29,51,0.03);">
+                    <div class="why-feature-icon w-9 h-9 md:w-14 md:h-14 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110"
+                         style="background:linear-gradient(135deg,rgba(201,168,76,0.14),rgba(42,157,143,0.12));border:1px solid rgba(201,168,76,0.18);">
+                        <svg class="w-4 h-4 md:w-6 md:h-6" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 100-8 4 4 0 000 8zm6 0a4 4 0 100-8"/></svg>
+                    </div>
+                    <div>
+                        <h4 class="font-extrabold text-sm md:text-lg mb-1 md:mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#15202C;">Unified Team</h4>
+                        <p class="text-xs md:text-base font-medium leading-relaxed" style="color:rgba(17,29,51,0.74);">Our experienced team of designers, developers, technical specialists, and support professionals works together behind the scenes to deliver reliable, high-quality digital solutions for every client we serve.</p>
+                    </div>
                 </div>
-                <div>
-                    <h4 class="font-extrabold text-sm md:text-lg mb-1 md:mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#15202C;">Full Ownership</h4>
-                    <p class="text-xs md:text-base font-medium leading-relaxed" style="color:rgba(17,29,51,0.74);">VisionBridge Solutions retains full ownership of all client websites, branding, hosting accounts, and associated assets.</p>
+
+                <div class="why-feature-card group flex flex-col md:flex-row items-start gap-2 md:gap-5 rounded-2xl p-4 md:p-7 hover:-translate-y-1.5 transition-all duration-300 cursor-default"
+                     style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.07);box-shadow:0 2px 12px rgba(17,29,51,0.05),0 1px 3px rgba(17,29,51,0.03);">
+                    <div class="why-feature-icon w-9 h-9 md:w-14 md:h-14 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110"
+                         style="background:linear-gradient(135deg,rgba(201,168,76,0.14),rgba(42,157,143,0.12));border:1px solid rgba(201,168,76,0.18);">
+                        <svg class="w-4 h-4 md:w-6 md:h-6" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    </div>
+                    <div>
+                        <h4 class="font-extrabold text-sm md:text-lg mb-1 md:mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#15202C;">Full Ownership</h4>
+                        <p class="text-xs md:text-base font-medium leading-relaxed" style="color:rgba(17,29,51,0.74);">VisionBridge Solutions retains full ownership of all client websites, branding, hosting accounts, and associated assets.</p>
+                    </div>
                 </div>
             </div>
         </div>
