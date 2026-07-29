@@ -2207,6 +2207,19 @@
          ═══════════════════════════════════════════════════════ -->
     <footer id="site-footer" class="text-white" style="background:#0B0F17;">
 
+        {{-- Ambient rotating-icosahedron GIF — centered behind the whole
+             footer, both desktop and mobile. Black background in the
+             source + mix-blend-mode:screen keeps only the glowing wireframe
+             visible against the footer's own near-black background (same
+             technique used for GIFs over dark sections elsewhere on the
+             site). Low opacity + centered so it reads as ambient depth
+             behind the columns/wordmark, not a distraction from the text. --}}
+        <img src="@assetv('image/times-keep-turning.gif')" alt="" aria-hidden="true"
+             class="absolute pointer-events-none" style="
+             top:50%;left:50%;transform:translate(-50%,-50%);
+             width:min(70vw,700px);height:auto;z-index:0;
+             opacity:.22;mix-blend-mode:screen;">
+
         {{-- ── Main columns ── --}}
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr] gap-x-10 gap-y-8 md:gap-y-10 mb-8 md:mb-12">
