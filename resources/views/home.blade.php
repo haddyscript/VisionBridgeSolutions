@@ -1247,9 +1247,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             {{-- Soft ambient glow ring behind the whole card, echoing the reference --}}
             <div class="absolute pointer-events-none" style="width:900px;height:900px;top:50%;left:38%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.04) 0%,transparent 70%);z-index:0;"></div>
 
-            <div class="relative grid grid-cols-1 lg:grid-cols-2 items-center gap-10 py-16 px-6 sm:py-20 sm:px-12 lg:py-0 lg:pl-16 lg:pr-0" style="z-index:2;min-height:480px;">
+            <div class="relative grid grid-cols-1 lg:grid-cols-2 items-stretch gap-10 py-16 px-6 sm:py-20 sm:px-12 lg:py-0 lg:pl-16 lg:pr-0" style="z-index:2;min-height:480px;">
                 {{-- Left: copy, left-aligned instead of the old centered block --}}
-                <div class="text-left">
+                <div class="text-left lg:flex lg:flex-col lg:justify-center">
                     <span class="team-panel-line inline-block text-gold text-sm font-semibold tracking-widest uppercase mb-3">Our Team</span>
                     <p class="team-panel-line text-white/85 mb-5" style="font-size:1rem;line-height:1.8;max-width:32rem;">
                         At VisionBridge Solutions, we believe every successful website is the result of collaboration.
@@ -1276,9 +1276,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     <p class="team-panel-line text-gold text-xs tracking-widest uppercase mt-1">Building Websites. Expanding Reach.</p>
                 </div>
 
-                {{-- Right: landing-page-development photo, oblong-cropped, bleeding off the edge --}}
-                <div class="hidden lg:block relative" style="height:480px;">
-                    <div class="absolute overflow-hidden" style="top:50%;right:-12%;transform:translateY(-50%);width:150%;height:100%;border-radius:50%;box-shadow:0 30px 80px rgba(0,0,0,0.5);">
+                {{-- Right: landing-page-development photo, oblong-cropped, bleeding off
+                     the edge — stretches the full card height (no gap above/below)
+                     since its parent grid cell now stretches (items-stretch) to match
+                     the left column's actual content height instead of a fixed px value. --}}
+                <div class="hidden lg:block relative">
+                    <div class="absolute overflow-hidden" style="inset:0;right:-12%;width:150%;border-radius:50%;box-shadow:0 30px 80px rgba(0,0,0,0.5);">
                         <img src="@assetv('image/Landing_Page_Development.jpeg')" alt="" loading="lazy" decoding="async" class="w-full h-full object-cover" style="object-position:62% 42%;">
                         <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(115deg,rgba(10,13,17,0.20) 0%,transparent 45%);"></div>
                     </div>
