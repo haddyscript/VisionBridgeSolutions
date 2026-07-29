@@ -212,6 +212,95 @@
             background: rgba(255,255,255,.12) !important;
         }
 
+        /* ─── Desktop full-screen menu trigger ───
+             Same 3-bar look as mobile's #menu-btn, but that button's actual
+             bar sizing/position rule lives in mobile-design.css, scoped both
+             to @media(max-width:768px) and to #menu-btn by ID — it never
+             reaches this button, so the box-model is redefined here rather
+             than widening that mobile-scoped rule (mobile stays untouched).
+             The color-over-dark-hero override just above already covers this
+             button too, since that rule targets the shared .hamburger-bar
+             class rather than an ID. */
+        #desktop-menu-btn { width: 24px; height: 18px; position: relative; }
+        #desktop-menu-btn .hamburger-bar {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #2F3A45;
+            border-radius: 2px;
+            transition: transform 0.3s ease, opacity 0.3s ease, top 0.3s ease;
+        }
+        #desktop-menu-btn .hamburger-bar:nth-child(1) { top: 0; }
+        #desktop-menu-btn .hamburger-bar:nth-child(2) { top: 8px; }
+        #desktop-menu-btn .hamburger-bar:nth-child(3) { top: 16px; }
+        #desktop-menu-btn.is-open .hamburger-bar:nth-child(1) { top: 8px; transform: rotate(45deg); }
+        #desktop-menu-btn.is-open .hamburger-bar:nth-child(2) { opacity: 0; }
+        #desktop-menu-btn.is-open .hamburger-bar:nth-child(3) { top: 8px; transform: rotate(-45deg); }
+
+        /* ─── Desktop full-screen menu ───
+             Reference-matched layout: brand + contact top-left/middle, CLOSE
+             top-right, giant stacked links filling the space, tagline
+             bottom-left, a soft gold/teal glow bottom-right. Desktop-only —
+             toggled by #desktop-menu-btn, entirely separate from mobile's
+             own #mobile-menu. */
+        #desktop-menu {
+            position: fixed;
+            inset: 0;
+            z-index: 60;
+            background: #05070B;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.35s ease, visibility 0s linear 0.35s;
+        }
+        #desktop-menu.is-visible {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transition: opacity 0.35s ease, visibility 0s linear 0s;
+        }
+        /* Safety net — this menu is desktop-only (only #desktop-menu-btn,
+           itself hidden below md, ever toggles it), but this guarantees it
+           can never show on a narrow screen even if resized while open. */
+        @media (max-width: 767px) {
+            #desktop-menu { display: none !important; }
+        }
+        #desktop-menu-glow {
+            position: absolute;
+            right: -10%;
+            bottom: -20%;
+            width: 46%;
+            height: 70%;
+            background: radial-gradient(ellipse at bottom right, rgba(201,168,76,0.30) 0%, rgba(44,166,164,0.14) 45%, transparent 75%);
+            filter: blur(40px);
+            pointer-events: none;
+        }
+        #desktop-menu-close {
+            color: rgba(255,255,255,.8);
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            transition: color 0.2s ease;
+        }
+        #desktop-menu-close:hover { color: #DFC06A; }
+        .desktop-menu-link {
+            display: block;
+            font-family: 'Playfair Display', serif;
+            font-weight: 800;
+            font-size: clamp(2.6rem, 6.4vw, 5.4rem);
+            line-height: 1.04;
+            letter-spacing: -0.01em;
+            color: rgba(255,255,255,.92);
+            text-align: right;
+            transition: color 0.25s ease, transform 0.25s ease;
+        }
+        .desktop-menu-link:hover {
+            color: #DFC06A;
+            transform: translateX(-6px);
+        }
+
         /* ─── Re-usable buttons (outside hero) ─── */
         .btn-gold    { @apply inline-block bg-gold hover:bg-gold-dark text-navy font-bold text-lg px-9 py-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg; }
         .btn-outline { @apply inline-block border-2 border-navy text-navy hover:bg-navy hover:text-white font-bold text-lg px-9 py-4 rounded-lg transition-all duration-200; }
@@ -1828,33 +1917,13 @@
                 <img src="@assetv('image/logo/vbs-logo-v3.jpeg')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
             </a>
 
-            {{-- Desktop links with sliding capsule --}}
-            <div id="nav-links" class="hidden md:flex items-center gap-0.5 relative">
-                <div id="nav-cursor"></div>
-                <div id="nav-active-dot"></div>
-                @php
-                    $navItems = [
-                        ['href' => '#about',     'label' => 'About'],
-                        ['href' => '#services',  'label' => 'Services'],
-                        ['href' => '#plans',     'label' => 'Plans'],
-                        ['href' => '#portfolio', 'label' => 'Portfolio'],
-                        // A real page (not a homepage anchor), so it skips the
-                        // $homeAnchor prefix the other items use below.
-                        ['href' => route('gallery'), 'label' => 'Our Work', 'absolute' => true],
-                    ];
-                @endphp
-                @foreach ($navItems as $navItem)
-                    <a href="{{ ($navItem['absolute'] ?? false) ? $navItem['href'] : $homeAnchor.$navItem['href'] }}" class="nav-link nav-link-3d relative z-10 opacity-0">
-                        <span class="nav-link-inner">
-                            <span class="nav-link-glass" aria-hidden="true"></span>
-                            <span class="nav-link-sweep" aria-hidden="true"></span>
-                            <span class="nav-link-label">{{ $navItem['label'] }}</span>
-                        </span>
-                    </a>
-                @endforeach
-            </div>
-
-            {{-- Desktop CTA --}}
+            {{-- Desktop CTA + full-screen menu trigger. The inline capsule
+                 nav links (About/Services/Plans/Portfolio/Our Work) that used
+                 to sit here on desktop are gone — those links now live inside
+                 #desktop-menu, the full-screen takeover opened by
+                 #desktop-menu-btn below. Login/Get Started stay put, exactly
+                 as before. Desktop only (hidden md:flex) — mobile keeps its
+                 own separate #mobile-menu/#menu-btn, untouched. --}}
             <div class="hidden md:flex items-center gap-4">
                 <a id="nav-login" href="{{ route('login') }}" class="relative z-10 opacity-0 inline-flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
@@ -1867,6 +1936,11 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                     </svg>
                 </a>
+                <button id="desktop-menu-btn" class="relative z-10 opacity-0 shrink-0" aria-label="Toggle menu" aria-expanded="false" aria-controls="desktop-menu">
+                    <span class="hamburger-bar"></span>
+                    <span class="hamburger-bar"></span>
+                    <span class="hamburger-bar"></span>
+                </button>
             </div>
 
             {{-- Mobile hamburger --}}
@@ -2010,6 +2084,38 @@
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                     </a>
                 </div>
+            </div>
+        </div>
+
+        {{-- Desktop full-screen menu — separate from #mobile-menu above,
+             opened by #desktop-menu-btn. Reference-matched layout: brand +
+             contact top-left, CLOSE top-right, giant stacked links, tagline
+             bottom-left, glow accent bottom-right. --}}
+        <div id="desktop-menu" aria-hidden="true">
+            <div id="desktop-menu-glow" aria-hidden="true"></div>
+            <div class="relative h-full max-w-7xl mx-auto px-10 lg:px-16 py-10 flex flex-col">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="font-display text-2xl font-bold text-white leading-tight mb-4">VisionBridge</p>
+                        <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,.55);">
+                            <a href="mailto:support@visionbridgesolutions.com" class="hover:text-gold transition-colors">support@visionbridgesolutions.com</a><br>
+                            <a href="tel:5550000000" class="hover:text-gold transition-colors">(404) 426-2856</a>
+                        </p>
+                    </div>
+                    <button id="desktop-menu-close" type="button" aria-label="Close menu">Close</button>
+                </div>
+
+                <nav class="flex-1 flex flex-col items-end justify-center gap-1" aria-label="Main">
+                    <a href="{{ route('home') }}#hero" class="desktop-menu-link">Home</a>
+                    <a href="{{ $homeAnchor }}#about" class="desktop-menu-link">About</a>
+                    <a href="{{ $homeAnchor }}#services" class="desktop-menu-link">Services</a>
+                    <a href="{{ $homeAnchor }}#plans" class="desktop-menu-link">Plans</a>
+                    <a href="{{ $homeAnchor }}#portfolio" class="desktop-menu-link">Portfolio</a>
+                    <a href="{{ route('gallery') }}" class="desktop-menu-link">Our Work</a>
+                    <a href="{{ $homeAnchor }}#contact" class="desktop-menu-link">Contact</a>
+                </nav>
+
+                <p class="text-xs tracking-widest uppercase" style="color:rgba(201,168,76,0.7);">Building Websites. Expanding Reach.</p>
             </div>
         </div>
     </nav>
@@ -2314,15 +2420,15 @@
             const logo     = document.getElementById('nav-logo');
             const cta      = document.getElementById('nav-cta');
             const login    = document.getElementById('nav-login');
+            const menuBtn  = document.getElementById('desktop-menu-btn');
             const navLinks = document.getElementById('nav-links');
             const cursor   = document.getElementById('nav-cursor');
             const linkEls  = navLinks ? Array.from(navLinks.querySelectorAll('a')) : [];
 
-            // ── Entry: logo → links stagger → CTA ──────────────────────
+            // ── Entry: logo → Login/Get Started/menu button ──────────────
             gsap.timeline({ delay: 0.15 })
-                .fromTo(logo,        { opacity:0, y:-14 }, { opacity:1, y:0, duration:0.55, ease:'power3.out' })
-                .fromTo(linkEls,     { opacity:0, y:-10 }, { opacity:1, y:0, duration:0.45, stagger:0.08, ease:'power2.out' }, '-=0.28')
-                .fromTo([login, cta],{ opacity:0, y:-10 }, { opacity:1, y:0, duration:0.40, stagger:0.08, ease:'power2.out' }, '-=0.20');
+                .fromTo(logo,               { opacity:0, y:-14 }, { opacity:1, y:0, duration:0.55, ease:'power3.out' })
+                .fromTo([login, cta, menuBtn], { opacity:0, y:-10 }, { opacity:1, y:0, duration:0.40, stagger:0.08, ease:'power2.out' }, '-=0.20');
 
             // ── Transparent → pill on scroll ────────────────────────────
             ScrollTrigger.create({
@@ -2398,6 +2504,55 @@
             }
         }
         initNav();
+    })();
+    </script>
+
+    <!-- Desktop full-screen menu — open/close controller, entirely separate
+         from mobile's #mobile-menu/#menu-btn logic further up. -->
+    <script defer>
+    (function () {
+        var btn      = document.getElementById('desktop-menu-btn');
+        var menu     = document.getElementById('desktop-menu');
+        var closeBtn = document.getElementById('desktop-menu-close');
+        if (!btn || !menu) return;
+
+        var isOpen = false;
+
+        function open() {
+            isOpen = true;
+            menu.classList.add('is-visible');
+            btn.classList.add('is-open');
+            btn.setAttribute('aria-expanded', 'true');
+            document.body.style.overflow = 'hidden';
+        }
+        function close() {
+            isOpen = false;
+            menu.classList.remove('is-visible');
+            btn.classList.remove('is-open');
+            btn.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+        }
+
+        btn.addEventListener('click', function () {
+            if (isOpen) close(); else open();
+        });
+        if (closeBtn) closeBtn.addEventListener('click', close);
+
+        menu.querySelectorAll('.desktop-menu-link').forEach(function (link) {
+            link.addEventListener('click', close);
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && isOpen) close();
+        });
+
+        // The button itself is hidden below md, so this can only ever be
+        // opened on desktop — but if the window is resized down to mobile
+        // while it's open, this still closes it rather than leaving body
+        // scroll locked with no visible way to close.
+        window.addEventListener('resize', function () {
+            if (isOpen && window.innerWidth < 768) close();
+        });
     })();
     </script>
 
