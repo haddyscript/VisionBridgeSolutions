@@ -2186,8 +2186,15 @@
 
                 {{-- Column 1: Brand --}}
                 <div id="footer-col-1" class="footer-col">
-                    <div class="flex items-center mb-4">
-                        <img src="@assetv('image/logo/vbs-logo-v3.jpeg')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
+                    {{-- Sized up from h-9 (36px) to h-20 (80px) so it actually
+                         reads as the brand mark for this whole footer, not a
+                         small thumbnail — plus a soft gold glow behind it
+                         (same radial-glow technique used elsewhere on the
+                         site, e.g. the medallion/halo treatments) so it lifts
+                         off the dark background instead of just being bigger. --}}
+                    <div class="relative flex items-center mb-6" style="width:fit-content;">
+                        <div class="absolute pointer-events-none" style="width:220px;height:220px;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.22) 0%,transparent 70%);filter:blur(20px);"></div>
+                        <img src="@assetv('image/logo/vbs-logo-v3.jpeg')" alt="VisionBridge Solutions" class="relative h-20 w-auto object-contain" style="filter:drop-shadow(0 8px 20px rgba(0,0,0,0.35));">
                     </div>
                     <p class="text-white/70 text-base font-medium leading-relaxed mb-5">Building Websites. Expanding Reach.<br>Helping organizations establish a professional online presence.</p>
                     <ul class="space-y-3 text-base font-medium text-white/70">
