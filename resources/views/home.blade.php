@@ -557,13 +557,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <div id="hero-device-frame" class="relative" style="aspect-ratio:4/3.3;transform:scale(1.12);transform-origin:center;">
                     {{-- Digital sphere GIF — slow-rotating ambient tech accent sitting
                          further back than the halo/orbit rings below. Black background
-                         in the source + screen blend keeps only the glowing wireframe
-                         visible against the dark hero backdrop (same technique as the
-                         Spotlight/Story Overture GIFs elsewhere on this page). --}}
+                         in the source + screen blend keeps most of it invisible against
+                         the dark hero backdrop, but the GIF's square canvas edges still
+                         aren't pure black (palette/dither noise), so a radial mask fades
+                         them out before they reach the corners — same masking technique
+                         already used on #hero-device below to hide its own square edges. --}}
                     <img id="hero-orb-sphere" src="@assetv('image/orb-shallow-white-animating.gif')" alt="" aria-hidden="true"
                          class="absolute opacity-0 pointer-events-none" style="
                          width:170%;height:170%;top:50%;left:50%;transform:translate(-50%,-50%);
                          z-index:-2;mix-blend-mode:screen;object-fit:contain;
+                         -webkit-mask-image:radial-gradient(circle, black 45%, transparent 72%);
+                         mask-image:radial-gradient(circle, black 45%, transparent 72%);
                          animation:hero-orb-spin 46s linear infinite;">
 
                     {{-- Halo — soft diffuse glow disc slowly rotating behind the laptop,
