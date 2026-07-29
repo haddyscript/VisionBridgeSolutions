@@ -2315,13 +2315,29 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     </h2>
                     <p class="text-base font-medium leading-relaxed" style="color:rgba(47,58,69,0.76);max-width:380px;">Have questions or ready to start your project? We'll get back to you within 24 hours.</p>
 
-                    {{-- Decorative "next step" accent — the GIF's own white canvas
-                         disappears via mix-blend-mode:multiply against this
-                         section's light background (#EAF3F8), leaving just the
-                         green circle + progress dots visible next to the heading. --}}
-                    <img src="@assetv('image/check-next-check-white-bg.gif')" alt="" aria-hidden="true"
-                         class="hidden sm:block absolute pointer-events-none"
-                         style="top:-28px;right:-30px;width:200px;mix-blend-mode:multiply;">
+                    {{-- Decorative "next step" accent. The source GIF is an 800×600
+                         canvas with a white background — mix-blend-mode:multiply
+                         didn't actually knock the white out (Chrome rendered it as
+                         a solid white box), so instead of blending, this crops the
+                         image down to a 150×80 window (top:-110px/left:-160px shifts
+                         the 400×300-scaled image so that window lands over the green
+                         circle + 3 dots) and masks it with 4 explicit circles sized
+                         around those shapes — everywhere else, including the corners
+                         and the white gaps between shapes, is masked to transparent,
+                         so no white ever renders regardless of the page background. --}}
+                    <div class="hidden sm:block absolute pointer-events-none" style="top:-14px;right:-6px;width:150px;height:80px;overflow:hidden;">
+                        <img src="@assetv('image/check-next-check-white-bg.gif')" alt="" aria-hidden="true"
+                             style="position:absolute;top:-110px;left:-160px;width:400px;height:300px;max-width:none;
+                             -webkit-mask-image:radial-gradient(circle 37.5px at 200px 150px, black 90%, transparent 100%),
+                                                  radial-gradient(circle 10px at 251.5px 150px, black 90%, transparent 100%),
+                                                  radial-gradient(circle 10px at 275.5px 150px, black 90%, transparent 100%),
+                                                  radial-gradient(circle 10px at 299.5px 150px, black 90%, transparent 100%);
+                             mask-image:radial-gradient(circle 37.5px at 200px 150px, black 90%, transparent 100%),
+                                          radial-gradient(circle 10px at 251.5px 150px, black 90%, transparent 100%),
+                                          radial-gradient(circle 10px at 275.5px 150px, black 90%, transparent 100%),
+                                          radial-gradient(circle 10px at 299.5px 150px, black 90%, transparent 100%);
+                             -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;">
+                    </div>
                 </div>
 
                 {{-- Contact cards --}}
