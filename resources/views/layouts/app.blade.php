@@ -432,7 +432,7 @@
             66%      { transform:translate(-18px,14px) scale(.96); }
         }
 
-        /* Slow continuous spin for the Hero's digital-sphere GIF (#hero-orb-sphere,
+        /* Slow continuous spin for the digital-sphere GIF (#about-orb-sphere,
            home.blade.php) — translate(-50%,-50%) is baked into every keyframe so
            the rotation doesn't fight the element's own centering transform. */
         @keyframes hero-orb-spin {
@@ -440,7 +440,7 @@
             to   { transform:translate(-50%,-50%) rotate(360deg); }
         }
         @media (prefers-reduced-motion: reduce) {
-            #hero-orb-sphere { animation:none; }
+            #about-orb-sphere { animation:none; }
         }
 
         /* ─── Hero background — ambient gradient drift ───

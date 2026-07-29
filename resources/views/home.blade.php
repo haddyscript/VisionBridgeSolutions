@@ -555,21 +555,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                      orbit's percentage sizing tied to the laptop itself
                      instead of the much larger column wrapper around it. --}}
                 <div id="hero-device-frame" class="relative" style="aspect-ratio:4/3.3;transform:scale(1.12);transform-origin:center;">
-                    {{-- Digital sphere GIF — slow-rotating ambient tech accent sitting
-                         further back than the halo/orbit rings below. Black background
-                         in the source + screen blend keeps most of it invisible against
-                         the dark hero backdrop, but the GIF's square canvas edges still
-                         aren't pure black (palette/dither noise), so a radial mask fades
-                         them out before they reach the corners — same masking technique
-                         already used on #hero-device below to hide its own square edges. --}}
-                    <img id="hero-orb-sphere" src="@assetv('image/orb-shallow-white-animating.gif')" alt="" aria-hidden="true"
-                         class="absolute opacity-0 pointer-events-none" style="
-                         width:170%;height:170%;top:50%;left:50%;transform:translate(-50%,-50%);
-                         z-index:-2;mix-blend-mode:screen;object-fit:contain;
-                         -webkit-mask-image:radial-gradient(circle, black 45%, transparent 72%);
-                         mask-image:radial-gradient(circle, black 45%, transparent 72%);
-                         animation:hero-orb-spin 46s linear infinite;">
-
                     {{-- Halo — soft diffuse glow disc slowly rotating behind the laptop,
                          distinct from the thin sparkling orbit rings above it. A
                          conic-gradient (not a uniform radial one) so the rotation is
@@ -1042,6 +1027,22 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     {{-- Ambient warmth — barely visible, just removes the cold white feel --}}
     <div class="absolute pointer-events-none" style="width:700px;height:700px;top:-180px;right:-180px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.055) 0%,transparent 70%);filter:blur(80px);"></div>
     <div class="absolute pointer-events-none" style="width:500px;height:500px;bottom:-120px;left:-100px;border-radius:50%;background:radial-gradient(circle,rgba(42,157,143,0.045) 0%,transparent 70%);filter:blur(64px);"></div>
+
+    {{-- Digital sphere GIF — ambient rotating tech accent behind the section
+         content, moved here from the Hero. mix-blend-mode:multiply (not the
+         Hero's screen) since this section sits on a white background —
+         multiply keeps the GIF's dark linework visible instead of washing
+         out the way screen would against white (same swap already used by
+         the Welcome section's ripple GIF above). Radial mask still fades the
+         GIF's square canvas edges before they reach the corners. --}}
+    <img id="about-orb-sphere" src="@assetv('image/orb-shallow-white-animating.gif')" alt="" aria-hidden="true"
+         class="absolute pointer-events-none" style="
+         width:900px;height:900px;max-width:130%;max-height:130%;top:50%;left:50%;transform:translate(-50%,-50%);
+         z-index:0;opacity:.35;mix-blend-mode:multiply;object-fit:contain;
+         -webkit-mask-image:radial-gradient(circle, black 45%, transparent 72%);
+         mask-image:radial-gradient(circle, black 45%, transparent 72%);
+         animation:hero-orb-spin 46s linear infinite;">
+
     {{-- Faint bridge watermark — signature brand motif --}}
     <div class="absolute pointer-events-none text-navy" style="width:900px;max-width:90%;height:220px;bottom:-10px;right:-60px;opacity:0.045;z-index:0;">
         {!! $bridgeSilhouette !!}
@@ -2760,7 +2761,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             .fromTo('#hero-halo-mobile',      { opacity:0 }, { opacity:1, duration:1.1 }, '-=0.60')
             .fromTo('#hero-halo-mobile-ring', { opacity:0 }, { opacity:1, duration:0.90 }, '-=0.95')
             .fromTo('#hero-trail-mobile',     { opacity:0 }, { opacity:1, duration:0.90 }, '-=0.75')
-            .fromTo('#hero-orb-sphere', { opacity:0 }, { opacity:0.32, duration:1.3 }, '-=0.60')
             .fromTo('#hero-halo',       { opacity:0 }, { opacity:1, duration:1.1 }, '-=0.60')
             .fromTo('#hero-orbit',      { opacity:0 }, { opacity:1, duration:0.90 }, '-=0.95')
             .fromTo('#hero-support-card', { opacity:0, y:-14 }, { opacity:1, y:0, duration:0.55 }, '-=0.45')
