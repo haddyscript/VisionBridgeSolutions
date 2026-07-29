@@ -2325,7 +2325,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                          around those shapes — everywhere else, including the corners
                          and the white gaps between shapes, is masked to transparent,
                          so no white ever renders regardless of the page background. --}}
-                    <div class="hidden sm:block absolute pointer-events-none" style="top:-14px;right:-6px;width:150px;height:80px;overflow:hidden;">
+                    <div class="block absolute pointer-events-none" style="top:-14px;right:-6px;width:150px;height:80px;overflow:hidden;">
                         <img src="@assetv('image/check-next-check-white-bg.gif')" alt="" aria-hidden="true"
                              style="position:absolute;top:-110px;left:-160px;width:400px;height:300px;max-width:none;
                              -webkit-mask-image:radial-gradient(circle 37.5px at 200px 150px, black 90%, transparent 100%),
