@@ -2149,148 +2149,19 @@
             @endforeach
         </nav>
 
-        {{-- Flying plane-over-bridge page transition — covers the screen,
-             jumps scroll position invisibly behind it, then reveals. --}}
-        <div id="flight-transition" style="position:fixed;inset:0;z-index:9990;opacity:0;pointer-events:none;background:#FFFFFF;overflow:hidden;">
-            <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;">
-                <defs>
-                    <linearGradient id="bridgeMetal" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#E6E9ED"/>
-                        <stop offset="100%" stop-color="#B9C1C9"/>
-                    </linearGradient>
-                    <linearGradient id="planeBody" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stop-color="#1F2730"/>
-                        <stop offset="100%" stop-color="#3F4C59"/>
-                    </linearGradient>
-                    <linearGradient id="trailFadeStrong" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stop-color="#C9A84C" stop-opacity="0"/>
-                        <stop offset="100%" stop-color="#C9A84C" stop-opacity="0.85"/>
-                    </linearGradient>
-                    <linearGradient id="trailFadeLight" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stop-color="#FFE9B0" stop-opacity="0"/>
-                        <stop offset="100%" stop-color="#FFE9B0" stop-opacity="0.7"/>
-                    </linearGradient>
-                    <linearGradient id="skyGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#EAF3F8"/>
-                        <stop offset="55%" stop-color="#F7FAFC"/>
-                        <stop offset="100%" stop-color="#FFFFFF"/>
-                    </linearGradient>
-                    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stop-color="#FFE9B0" stop-opacity="0.55"/>
-                        <stop offset="55%" stop-color="#C9A84C" stop-opacity="0.18"/>
-                        <stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/>
-                    </radialGradient>
-                    {{-- Premium golden wave sweep — deeper gold at the trailing
-                         (left) edge brightening to a near-white highlight at the
-                         leading (right) edge, so the wave reads as a glowing
-                         front sweeping across rather than a flat color fill.
-                         Same tonal family as the hero's .shimmer-gold text. --}}
-                    <linearGradient id="goldWaveSweep" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stop-color="#A8872E"/>
-                        <stop offset="45%" stop-color="#C9A84C"/>
-                        <stop offset="78%" stop-color="#DFC06A"/>
-                        <stop offset="100%" stop-color="#FFF2A8"/>
-                    </linearGradient>
-                </defs>
-                {{-- Soft sky backdrop + a warm gold glow the plane climbs
-                     toward — echoes the golden-hour bridge photo used
-                     elsewhere on the site, instead of a flat white void --}}
-                <rect width="1600" height="900" fill="url(#skyGradient)"/>
-                <circle cx="1320" cy="200" r="280" fill="url(#sunGlow)"/>
-                {{-- Soft clouds — each one drifts/parts away once the plane
-                     flies past it (synced in the JS timeline below). Varied
-                     opacity reads as atmospheric depth (farther = fainter). --}}
-                <g id="cloud-1" fill="#DCE3E9" opacity="0.65">
-                    <ellipse cx="260" cy="400" rx="55" ry="26"/>
-                    <ellipse cx="305" cy="388" rx="38" ry="22"/>
-                    <ellipse cx="215" cy="392" rx="34" ry="20"/>
-                </g>
-                <g id="cloud-2" fill="#DCE3E9" opacity="0.85">
-                    <ellipse cx="660" cy="370" rx="62" ry="28"/>
-                    <ellipse cx="712" cy="358" rx="40" ry="22"/>
-                    <ellipse cx="608" cy="362" rx="36" ry="20"/>
-                </g>
-                <g id="cloud-3" fill="#DCE3E9" opacity="0.72">
-                    <ellipse cx="1080" cy="360" rx="58" ry="26"/>
-                    <ellipse cx="1128" cy="348" rx="38" ry="20"/>
-                    <ellipse cx="1030" cy="352" rx="34" ry="19"/>
-                </g>
-                <g id="cloud-4" fill="#DCE3E9" opacity="0.92">
-                    <ellipse cx="1430" cy="340" rx="60" ry="27"/>
-                    <ellipse cx="1480" cy="328" rx="38" ry="21"/>
-                    <ellipse cx="1378" cy="332" rx="35" ry="19"/>
-                </g>
-                {{-- Minimalist bridge with twin-leg A-frame pylons (matches the
-                     hero/about bridge silhouette motif) and smooth sagging cables --}}
-                <g opacity="0.95">
-                    <rect x="40" y="616" width="1520" height="14" rx="7" fill="url(#bridgeMetal)"/>
-                    {{-- Tower 1: A-frame twin legs --}}
-                    <path d="M533,452 L505,628" stroke="url(#bridgeMetal)" stroke-width="15" stroke-linecap="round" fill="none"/>
-                    <path d="M533,452 L561,628" stroke="url(#bridgeMetal)" stroke-width="15" stroke-linecap="round" fill="none"/>
-                    <circle cx="533" cy="452" r="14" fill="#CCD2D8"/>
-                    {{-- Tower 2: A-frame twin legs --}}
-                    <path d="M1063,452 L1035,628" stroke="url(#bridgeMetal)" stroke-width="15" stroke-linecap="round" fill="none"/>
-                    <path d="M1063,452 L1091,628" stroke="url(#bridgeMetal)" stroke-width="15" stroke-linecap="round" fill="none"/>
-                    <circle cx="1063" cy="452" r="14" fill="#CCD2D8"/>
-                    {{-- Smooth cubic-bezier cables — each tower only sweeps toward
-                         its own nearer side, so they no longer cross mid-span --}}
-                    <path d="M533,462 C420,496 180,560 70,622"  fill="none" stroke="#C7CDD3" stroke-width="4"   stroke-linecap="round"/>
-                    <path d="M533,462 C450,490 260,538 160,608" fill="none" stroke="#D2D7DC" stroke-width="3"   stroke-linecap="round" opacity="0.7"/>
-                    <path d="M533,462 C580,486 650,548 700,612" fill="none" stroke="#C7CDD3" stroke-width="4"   stroke-linecap="round"/>
-                    <path d="M533,462 C570,484 600,530 620,600" fill="none" stroke="#D2D7DC" stroke-width="3"   stroke-linecap="round" opacity="0.7"/>
-                    <path d="M1063,462 C1016,486 950,548 900,612" fill="none" stroke="#C7CDD3" stroke-width="4" stroke-linecap="round"/>
-                    <path d="M1063,462 C1026,484 996,530 980,600" fill="none" stroke="#D2D7DC" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
-                    <path d="M1063,462 C1150,490 1320,560 1530,622" fill="none" stroke="#C7CDD3" stroke-width="4" stroke-linecap="round"/>
-                    <path d="M1063,462 C1146,490 1306,538 1450,608" fill="none" stroke="#D2D7DC" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
-                </g>
-                {{-- Plane group — GSAP animates x/y/rotation on this <g> --}}
-                <g id="flight-plane">
-                    {{-- Teal turbo streaks (smooth gradient fade, brand-consistent) + motion particles --}}
-                    <rect x="-175" y="591" width="190" height="9" rx="4.5" fill="url(#trailFadeStrong)"/>
-                    <rect x="-120" y="605" width="135" height="5" rx="2.5" fill="url(#trailFadeLight)"/>
-                    <rect x="-120" y="577" width="135" height="5" rx="2.5" fill="url(#trailFadeLight)"/>
-                    <circle cx="-190" cy="595" r="4" fill="#C9A84C" opacity="0.5"/>
-                    <circle cx="-212" cy="585" r="3" fill="#FFE9B0" opacity="0.4"/>
-                    <circle cx="-212" cy="605" r="3" fill="#FFE9B0" opacity="0.4"/>
-                    {{-- Bigger airplane with softly rounded wing/tail tips (no sharp points) --}}
-                    <path d="M14,588 Q-18,560 -10,548 Q16,562 52,588 Z" fill="url(#planeBody)"/>
-                    <path d="M78,614 Q46,644 42,652 Q70,630 124,614 Z" fill="url(#planeBody)"/>
-                    {{-- Tail fin + horizontal stabilizer — gives the silhouette
-                         a recognizable nose/tail instead of reading as a
-                         plain capsule from a distance --}}
-                    <path d="M16,589 L4,565 L26,586 Z" fill="url(#planeBody)" opacity="0.95"/>
-                    <path d="M10,597 Q-12,593 -22,598 Q-12,603 10,601 Z" fill="url(#planeBody)" opacity="0.9"/>
-                    <rect x="10" y="588" width="135" height="24" rx="12" fill="url(#planeBody)"/>
-                    {{-- Top-edge highlight — reads as cylindrical shading on the fuselage --}}
-                    <rect x="14" y="590" width="120" height="2.5" rx="1.2" fill="#6B7986" opacity="0.45"/>
-                    <ellipse cx="155" cy="600" rx="15" ry="13" fill="url(#planeBody)"/>
-                    <rect x="14" y="598" width="125" height="4" rx="2" fill="#C9A84C" opacity="0.85"/>
-                    <ellipse cx="115" cy="596" rx="11" ry="8" fill="#EAF3F8" opacity="0.92"/>
-                    <ellipse cx="119" cy="593" rx="4" ry="2.4" fill="#FFFFFF" opacity="0.6"/>
-                </g>
-                {{-- Golden wave sweep — a single wide band (local width 2300,
-                     viewport is 1600) with a wavy leading/trailing edge on
-                     both sides, translated across via GSAP in the script
-                     below. Declared after #flight-plane so it paints on top
-                     of the whole bridge/plane/cloud scene, fully covering it
-                     ("Golden Fullscreen") partway through its translation,
-                     then continuing to slide off and reveal the destination
-                     underneath ("Reveal New Page"). See initFlightTransition's
-                     comment on the wave tween for the coverage-range math. --}}
-                <g id="flight-wave">
-                    <path fill="url(#goldWaveSweep)" d="
-                        M 0,0
-                        C -40,120 60,180 20,300
-                        C -20,420 70,480 10,600
-                        C -50,720 50,780 0,900
-                        L 2300,900
-                        C 2250,780 2350,720 2290,600
-                        C 2230,480 2320,420 2280,300
-                        C 2240,180 2340,120 2300,0
-                        Z
-                    "/>
-                </g>
-            </svg>
+        {{-- GIF page transition — covers the screen, jumps scroll position
+             invisibly behind it, then reveals. Replaces the previous
+             hand-drawn "flying plane over bridge" SVG/GSAP animation with
+             website-animation-transition.gif. That file is 13.6MB, so it
+             isn't preloaded here directly — the script below fetches it in
+             the background shortly after the page settles (not blocking
+             initial render, but very likely cached before the first click),
+             rather than only fetching on first trigger, since a first-ever
+             transition on a slow connection would otherwise show a blank
+             overlay for however long the download takes. --}}
+        <div id="flight-transition" style="position:fixed;inset:0;z-index:9990;opacity:0;pointer-events:none;background:#05070B;overflow:hidden;">
+            <img id="flight-transition-gif" data-src="@assetv('image/website-animation-transition.gif')" alt=""
+                 style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
         </div>
     @endif
 
@@ -2737,10 +2608,9 @@
     })();
     </script>
 
-    {{-- Flying plane-over-bridge transition — covers the jump between
-         sections instead of a visible fast-scroll. Triggers on every
-         in-page anchor click (nav, mobile menu, footer Quick Links) plus
-         the section-rail dots below. --}}
+    {{-- GIF page transition — covers the jump between sections instead of a
+         visible fast-scroll. Triggers on every in-page anchor click (nav,
+         mobile menu, footer Quick Links) plus the section-rail dots below. --}}
     <script defer>
     (function () {
         function initFlightTransition() {
@@ -2749,67 +2619,43 @@
 
             if (typeof gsap === 'undefined') { setTimeout(initFlightTransition, 80); return; }
 
-            const plane  = document.getElementById('flight-plane');
-            const wave   = document.getElementById('flight-wave');
-            const clouds = ['cloud-1', 'cloud-2', 'cloud-3', 'cloud-4'].map(id => document.getElementById(id));
+            const gif = document.getElementById('flight-transition-gif');
             let flying = false;
+
+            // Fetch the 13.6MB GIF in the background shortly after the page
+            // settles — not blocking initial render, but almost certainly
+            // cached before anyone actually clicks a nav link, unlike
+            // fetching it only on the first transition (which would show a
+            // blank overlay for however long that download takes).
+            function preloadGif() {
+                if (gif && gif.dataset.src) {
+                    gif.src = gif.dataset.src;
+                    gif.removeAttribute('data-src');
+                }
+            }
+            if ('requestIdleCallback' in window) requestIdleCallback(preloadGif, { timeout: 4000 });
+            else setTimeout(preloadGif, 2000);
 
             window.flyTransition = function (targetEl) {
                 if (!targetEl) return;
                 // Below the same breakpoint the horizontal-wipe and section-rail
-                // already use as "desktop-only flourish" — on mobile this ~2.4s
+                // already use as "desktop-only flourish" — on mobile this
                 // full-screen takeover just reads as the page freezing, so fall
                 // back to a plain smooth scroll instead.
-                if (!plane || flying || window.innerWidth < 1024) {
+                if (!gif || flying || window.innerWidth < 1024) {
                     targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     return;
                 }
                 flying = true;
                 overlay.style.pointerEvents = 'all';
-                gsap.set(plane, { x: 0, y: 0, rotation: 0 });
-                gsap.set(clouds, { x: 0, y: 0, opacity: 0.85 });
-                // Wave's local shape spans x:[0,2300] (viewport is 0-1600), so
-                // starting it at x:-2500 puts it fully off-screen left with a
-                // little lead-in room before its leading edge starts entering.
-                gsap.set(wave, { x: -2500 });
+                preloadGif(); // no-op if already loaded; covers the rare case it wasn't yet
 
-                // Cloud reaction times approximate when the plane's x position
-                // (computed from each stage's easing curve) reaches that cloud.
                 const tl = gsap.timeline({ onComplete() { overlay.style.pointerEvents = 'none'; flying = false; } });
                 tl.to(overlay, { opacity: 1, duration: 0.25, ease: 'power2.out' })
-                    // Stage 1: accelerates along the bridge deck
-                    .to(plane, { x: 850, duration: 1.3, ease: 'power2.in' }, 0.1)
-                    // Stage 2: lifts off and climbs up into the sky
-                    .to(plane, { x: 1550, y: -750, rotation: -22, duration: 1.1, ease: 'power2.out' })
-                    .call(() => targetEl.scrollIntoView({ behavior: 'auto', block: 'start' }), null, 0.7)
-                    .to(overlay, { opacity: 0, duration: 0.4, ease: 'power2.in' }, '-=0.2');
-
-                // Each cloud drifts/parts away and fades as the plane flies past it
-                tl.to('#cloud-1', { x: 40,  y: -25, opacity: 0.3, duration: 0.5, ease: 'power2.out' }, 0.80)
-                  .to('#cloud-2', { x: 45,  y: -20, opacity: 0.3, duration: 0.5, ease: 'power2.out' }, 1.24)
-                  .to('#cloud-3', { x: 35,  y: -22, opacity: 0.3, duration: 0.5, ease: 'power2.out' }, 1.59)
-                  .to('#cloud-4', { x: 40,  y: -18, opacity: 0.3, duration: 0.5, ease: 'power2.out' }, 2.03);
-
-                // Golden wave sweep — one continuous rightward translation.
-                // The wave's local width (2300) minus the viewport width
-                // (1600) leaves a 700-unit range (x from -700 to 0) where its
-                // global span fully contains [0,1600] — i.e. genuinely 100%
-                // covers the screen, not just a single instant. Three legs:
-                // sweep in to the start of that range (matches the plane's
-                // own climb-out, so it visually "catches up" to the plane
-                // right as it exits), glide through the hold range (still
-                // full coverage throughout — this is where the scroll-jump
-                // at 0.7s above sits, safely hidden), then sweep the rest of
-                // the way off-screen to reveal the destination underneath.
-                // All three legs use explicit absolute start times (not
-                // relative '+=' offsets) — GSAP resolves a relative offset
-                // against the *whole timeline's* current end, not just the
-                // previous call in this chain, and the overlay/plane chain
-                // above already extends to ~2.7s, which would silently have
-                // pushed a relative offset here much later than intended.
-                tl.to(wave, { x: -700, duration: 1.1, ease: 'power2.in' }, 0.15)
-                  .to(wave, { x: 0, duration: 0.55, ease: 'sine.inOut' }, 1.25)
-                  .to(wave, { x: 1600, duration: 1.0, ease: 'power2.inOut' }, 1.95);
+                    // Scroll jump happens while the GIF is holding at full
+                    // opacity, fully hiding it, same as the old plane/wave version.
+                    .call(() => targetEl.scrollIntoView({ behavior: 'auto', block: 'start' }), null, 0.9)
+                    .to(overlay, { opacity: 0, duration: 0.4, ease: 'power2.in' }, 1.3);
             };
 
             // Intercept every in-page anchor click site-wide (nav, mobile
