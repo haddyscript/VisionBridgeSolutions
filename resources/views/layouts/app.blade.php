@@ -2095,6 +2095,17 @@
              contact top-left, CLOSE top-right, giant stacked links, tagline
              bottom-left, glow accent bottom-right. --}}
         <div id="desktop-menu" aria-hidden="true">
+            {{-- Ambient galaxy-particles GIF backdrop — mix-blend-mode:screen
+                 against this menu's near-black background so only the bright
+                 particles read (same technique used elsewhere on the site
+                 for GIFs over dark sections). The file is 4.7MB, so `src`
+                 is intentionally left unset here — the open/close controller
+                 script below only assigns it from data-src the first time
+                 the menu is actually opened, so desktop visitors who never
+                 open the menu never download it. --}}
+            <img id="desktop-menu-gif-bg" data-src="@assetv('image/galaxy-particles.gif')" alt="" aria-hidden="true"
+                 class="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                 style="opacity:0;mix-blend-mode:screen;">
             <div id="desktop-menu-glow" aria-hidden="true"></div>
             <div class="relative h-full max-w-7xl mx-auto px-10 lg:px-16 py-10 flex flex-col">
                 <div class="flex items-start justify-between">
@@ -2534,6 +2545,7 @@
         var brand   = document.getElementById('desktop-menu-brand');
         var tagline = document.getElementById('desktop-menu-tagline');
         var glow    = document.getElementById('desktop-menu-glow');
+        var gifBg   = document.getElementById('desktop-menu-gif-bg');
         var links   = Array.prototype.slice.call(menu.querySelectorAll('.desktop-menu-link'));
 
         var isOpen = false;
@@ -2541,6 +2553,14 @@
 
         function openMenu() {
             if (isOpen || animating) return;
+
+            // Lazy-load the 4.7MB galaxy-particles GIF only the first time
+            // the menu is actually opened, not on every page load.
+            if (gifBg && gifBg.dataset.src) {
+                gifBg.src = gifBg.dataset.src;
+                gifBg.removeAttribute('data-src');
+            }
+
             isOpen = true;
             animating = true;
 
@@ -2557,6 +2577,7 @@
             gsap.set(links, { opacity: 0, y: 44 });
             gsap.set(tagline, { opacity: 0 });
             gsap.set(glow, { opacity: 0 });
+            gsap.set(gifBg, { opacity: 0 });
 
             gsap.timeline({ onComplete: function () { animating = false; } })
                 // Brand + Close settle in first, together
@@ -2564,9 +2585,10 @@
                 .to(closeBtn, { opacity: 1, x: 0, duration: 0.4, ease: 'power3.out' }, 0.05)
                 // Giant links rise in one after another — the main event
                 .to(links,    { opacity: 1, y: 0, duration: 0.65, stagger: 0.07, ease: 'power3.out' }, 0.15)
-                // Tagline + ambient glow settle in last, overlapping the tail of the links
+                // Tagline + ambient glow/GIF backdrop settle in last, overlapping the tail of the links
                 .to(tagline,  { opacity: 1, duration: 0.4, ease: 'power2.out' }, '-=0.25')
-                .to(glow,     { opacity: 1, duration: 0.8, ease: 'power2.out' }, '-=0.6');
+                .to(glow,     { opacity: 1, duration: 0.8, ease: 'power2.out' }, '-=0.6')
+                .to(gifBg,    { opacity: 0.35, duration: 0.8, ease: 'power2.out' }, '-=0.8');
         }
 
         function closeMenu() {
@@ -2587,7 +2609,7 @@
             // Close is deliberately quick and un-staggered (everything fades
             // up together, same convention as the mobile menu's own close) —
             // a staggered close reads as sluggish, not premium.
-            var everything = [brand, closeBtn].concat(links, [tagline, glow]).filter(Boolean);
+            var everything = [brand, closeBtn].concat(links, [tagline, glow, gifBg]).filter(Boolean);
             gsap.timeline({ onComplete: finish })
                 .to(everything, { opacity: 0, y: -14, duration: 0.25, ease: 'power1.in' })
                 .to(menu, { opacity: 0, duration: 0.3, ease: 'power1.in' }, '-=0.1');
