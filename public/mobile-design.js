@@ -466,7 +466,7 @@
     if (!window.matchMedia('(max-width: 768px)').matches) return;
     if (!('IntersectionObserver' in window)) return;
 
-    var ids = ['about', 'services', 'why', 'plans', 'portfolio', 'partnership', 'contact'];
+    var ids = ['about', 'services', 'why', 'plans', 'portfolio', 'contact'];
     var io = new IntersectionObserver(function (entries, obs) {
         entries.forEach(function (entry) {
             if (entry.isIntersecting) {

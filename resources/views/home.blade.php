@@ -1747,28 +1747,33 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <p class="section-subtitle">Every project is managed through VisionBridge Solutions, giving our clients one point of contact from beginning to end.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            <div class="why-feature-card partnership-zoom-item group flex items-start gap-5 rounded-2xl p-7 hover:-translate-y-1.5 transition-all duration-300 cursor-default"
+        {{-- grid-cols-2 from the smallest breakpoint up (not just md:) so the
+             two cards sit side-by-side on mobile too, per request; cards drop
+             to a stacked icon-above-text layout + smaller type below md so
+             they still read cleanly at that width instead of cramming a
+             side-by-side icon+paragraph into half the screen. --}}
+        <div class="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 max-w-5xl mx-auto">
+            <div class="why-feature-card group flex flex-col md:flex-row items-start gap-2 md:gap-5 rounded-2xl p-4 md:p-7 hover:-translate-y-1.5 transition-all duration-300 cursor-default"
                  style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.07);box-shadow:0 2px 12px rgba(17,29,51,0.05),0 1px 3px rgba(17,29,51,0.03);">
-                <div class="why-feature-icon w-14 h-14 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110"
+                <div class="why-feature-icon w-9 h-9 md:w-14 md:h-14 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110"
                      style="background:linear-gradient(135deg,rgba(201,168,76,0.14),rgba(42,157,143,0.12));border:1px solid rgba(201,168,76,0.18);">
-                    <svg class="w-6 h-6" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 100-8 4 4 0 000 8zm6 0a4 4 0 100-8"/></svg>
+                    <svg class="w-4 h-4 md:w-6 md:h-6" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 100-8 4 4 0 000 8zm6 0a4 4 0 100-8"/></svg>
                 </div>
                 <div>
-                    <h4 class="font-extrabold text-lg mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#15202C;">Unified Team</h4>
-                    <p class="text-base font-medium leading-relaxed" style="color:rgba(17,29,51,0.74);">Our experienced team of designers, developers, technical specialists, and support professionals works together behind the scenes to deliver reliable, high-quality digital solutions for every client we serve.</p>
+                    <h4 class="font-extrabold text-sm md:text-lg mb-1 md:mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#15202C;">Unified Team</h4>
+                    <p class="text-xs md:text-base font-medium leading-relaxed" style="color:rgba(17,29,51,0.74);">Our experienced team of designers, developers, technical specialists, and support professionals works together behind the scenes to deliver reliable, high-quality digital solutions for every client we serve.</p>
                 </div>
             </div>
 
-            <div class="why-feature-card partnership-zoom-item group flex items-start gap-5 rounded-2xl p-7 hover:-translate-y-1.5 transition-all duration-300 cursor-default"
+            <div class="why-feature-card group flex flex-col md:flex-row items-start gap-2 md:gap-5 rounded-2xl p-4 md:p-7 hover:-translate-y-1.5 transition-all duration-300 cursor-default"
                  style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.07);box-shadow:0 2px 12px rgba(17,29,51,0.05),0 1px 3px rgba(17,29,51,0.03);">
-                <div class="why-feature-icon w-14 h-14 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110"
+                <div class="why-feature-icon w-9 h-9 md:w-14 md:h-14 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110"
                      style="background:linear-gradient(135deg,rgba(201,168,76,0.14),rgba(42,157,143,0.12));border:1px solid rgba(201,168,76,0.18);">
-                    <svg class="w-6 h-6" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    <svg class="w-4 h-4 md:w-6 md:h-6" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                 </div>
                 <div>
-                    <h4 class="font-extrabold text-lg mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#15202C;">Full Ownership</h4>
-                    <p class="text-base font-medium leading-relaxed" style="color:rgba(17,29,51,0.74);">VisionBridge Solutions retains full ownership of all client websites, branding, hosting accounts, and associated assets.</p>
+                    <h4 class="font-extrabold text-sm md:text-lg mb-1 md:mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#15202C;">Full Ownership</h4>
+                    <p class="text-xs md:text-base font-medium leading-relaxed" style="color:rgba(17,29,51,0.74);">VisionBridge Solutions retains full ownership of all client websites, branding, hosting accounts, and associated assets.</p>
                 </div>
             </div>
         </div>
@@ -3544,23 +3549,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 .to(features,{ opacity:1, x:0, duration:0.45, stagger:0.08, ease:'power2.out' }, '-=0.25')
                 .to(ctas,    { opacity:1, y:0, duration:0.5, stagger:0.1, ease:'power2.out' }, '-=0.15');
         })();
-
-        // ============================================================
-        //  PARTNERSHIP — zoom-out entrance: header + both cards + the
-        //  ownership note start oversized and settle down to normal size,
-        //  like gravity pulling them down to rest. power4.out gives a
-        //  strong deceleration with no bounce-back (true "falling" feel).
-        // ============================================================
-        gsap.fromTo('#partnership-header',
-            { opacity:0, scale:2.6 },
-            { opacity:1, scale:1, duration:1.8, ease:'power2.out',
-              scrollTrigger: { trigger:'#partnership', start:'top 78%', toggleActions: 'play none restart reverse' } }
-        );
-        gsap.fromTo('.partnership-zoom-item',
-            { opacity:0, scale:2.2 },
-            { opacity:1, scale:1, duration:1.8, stagger:0.22, ease:'power2.out',
-              scrollTrigger: { trigger:'#partnership', start:'top 70%', toggleActions: 'play none restart reverse' } }
-        );
 
         };
 
