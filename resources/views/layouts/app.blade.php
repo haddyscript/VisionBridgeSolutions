@@ -1115,40 +1115,13 @@
             overflow: visible;
         }
 
-        /* ─── Footer: flowing SVG wave ─── */
-        .footer-wave-top {
-            position: relative;
-            height: 72px;
-            overflow: hidden;
-            margin-bottom: -2px; /* seal gap to footer bg */
-            pointer-events: none;
-        }
-        .footer-wave-svg {
-            width: 300%;
-            height: 100%;
-            display: block;
-            position: relative;
-            will-change: transform;
-        }
-        .footer-wave-svg .wave-teal {
-            animation: wave-glide-teal 18s linear infinite;
-        }
-        .footer-wave-svg .wave-main {
-            animation: wave-glide-main 12s linear infinite;
-        }
-        @keyframes wave-glide-main {
-            0%   { transform: translateX(0); }
-            100% { transform: translateX(-33.333%); }
-        }
-
         /* ─── Footer: peeking mascot ─── */
         #footer-mascot {
             position: absolute;
-            /* Relative to #footer-col-3 (Contact column) now, not the whole
-               footer — sits just above the "Contact" heading. Stays within
-               that column's own box (not poking above the footer entirely)
-               to avoid being clipped by the previous section's content,
-               which sits at a higher stacking order. */
+            /* Relative to #footer-col-1 (Brand column) now — sits just above
+               the logo. Stays within that column's own box (not poking above
+               the footer entirely) to avoid being clipped by the previous
+               section's content, which sits at a higher stacking order. */
             top: -52px;
             left: 0;
             width: 60px;
@@ -1163,9 +1136,27 @@
             transform: rotate(180deg);
         }
         #footer-mascot .mascot-smile { opacity: 0; }
-        @keyframes wave-glide-teal {
-            0%   { transform: translateX(-8%); }
-            100% { transform: translateX(-41.333%); }
+
+        /* ─── Footer: giant bleeding wordmark ─── */
+        .footer-wordmark-wrap {
+            position: relative;
+            overflow: hidden;
+            height: clamp(70px, 13vw, 150px);
+            pointer-events: none;
+        }
+        .footer-wordmark {
+            display: block;
+            text-align: center;
+            white-space: nowrap;
+            line-height: 1;
+            font-size: clamp(5.5rem, 17vw, 12rem);
+            letter-spacing: -0.01em;
+            background: linear-gradient(180deg, #DFC06A 0%, #3FBDBB 130%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%);
         }
 
         /* ─── Footer: link hover underline ─── */
@@ -2213,62 +2204,14 @@
     <!-- ═══════════════════════════════════════════════════════
          FOOTER — fixed behind page content (unpeel reveal)
          ═══════════════════════════════════════════════════════ -->
-    <footer id="site-footer" class="text-navy" style="background:#FFFFFF;">
-
-        {{-- ── Flowing organic wave top border ── --}}
-        <div class="footer-wave-top" aria-hidden="true">
-            {{--
-                The SVG is 300% wide (3× tiled wave cycle).
-                The CSS translateX animations shift each layer by -33.333%
-                for a seamless, infinite horizontal glide.
-            --}}
-            <svg class="footer-wave-svg" viewBox="0 0 4320 72"
-                 preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                {{-- Teal ambient glow layer (behind) --}}
-                <path class="wave-teal"
-                    fill="rgba(44,166,164,0.22)"
-                    d="M0,42
-                       C180,14 360,66 540,42 C720,14 900,66 1080,42 C1260,14 1380,56 1440,42
-                       C1620,14 1800,66 1980,42 C2160,14 2340,66 2520,42 C2700,14 2820,56 2880,42
-                       C3060,14 3240,66 3420,42 C3600,14 3780,66 3960,42 C4140,14 4260,56 4320,42
-                       L4320,72 L0,72 Z"/>
-                {{-- Main footer-color wave (front, fills footer bg upward) --}}
-                <path class="wave-main"
-                    fill="#FFFFFF"
-                    d="M0,36
-                       C200,8  400,60 600,32 C800,5  1000,58 1200,32 C1340,14 1400,46 1440,36
-                       C1640,8  1840,60 2040,32 C2240,5  2440,58 2640,32 C2780,14 2840,46 2880,36
-                       C3080,8  3280,60 3480,32 C3680,5  3880,58 4080,32 C4220,14 4280,46 4320,36
-                       L4320,72 L0,72 Z"/>
-            </svg>
-        </div>
+    <footer id="site-footer" class="text-white" style="background:#0B0F17;">
 
         {{-- ── Main columns ── --}}
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr] gap-10 mb-12">
 
                 {{-- Column 1: Brand --}}
-                <div id="footer-col-1" class="footer-col">
-                    <div class="flex items-center mb-4">
-                        <img src="@assetv('image/logo/vbs-logo-v3.jpeg')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
-                    </div>
-                    <p class="text-navy/80 text-base font-medium leading-relaxed">Building Websites. Expanding Reach.<br>Helping organizations establish a professional online presence.</p>
-                </div>
-
-                {{-- Column 2: Quick Links --}}
-                <div id="footer-col-2" class="footer-col">
-                    <h4 class="font-semibold text-gold mb-4">Quick Links</h4>
-                    <ul class="space-y-3 text-base font-medium text-navy/80">
-                        <li><a href="{{ $homeAnchor }}#about"     class="footer-link hover:text-gold">About Us<span class="footer-link-bar"></span></a></li>
-                        <li><a href="{{ $homeAnchor }}#services"  class="footer-link hover:text-gold">Services<span class="footer-link-bar"></span></a></li>
-                        <li><a href="{{ $homeAnchor }}#plans"     class="footer-link hover:text-gold">Care Plans<span class="footer-link-bar"></span></a></li>
-                        <li><a href="{{ $homeAnchor }}#portfolio" class="footer-link hover:text-gold">Portfolio<span class="footer-link-bar"></span></a></li>
-                        <li><a href="{{ $homeAnchor }}#contact"   class="footer-link hover:text-gold">Contact<span class="footer-link-bar"></span></a></li>
-                    </ul>
-                </div>
-
-                {{-- Column 3: Contact --}}
-                <div id="footer-col-3" class="footer-col" style="position:relative;">
+                <div id="footer-col-1" class="footer-col" style="position:relative;">
                     {{-- ── Peeking mascot — hides shyly until the footer is
                          scrolled into view, then smiles. Source images are
                          authored upside-down, hence rotate(180deg). ── --}}
@@ -2276,8 +2219,11 @@
                         <img src="@assetv('image/mascut-hide.png')" alt="" class="mascot-hide">
                         <img src="@assetv('image/mascut-smile.png')" alt="" class="mascot-smile">
                     </div>
-                    <h4 class="font-semibold text-gold mb-4">Contact</h4>
-                    <ul class="space-y-3 text-base font-medium text-navy/80">
+                    <div class="flex items-center mb-4">
+                        <img src="@assetv('image/logo/vbs-logo-v3.jpeg')" alt="VisionBridge Solutions" class="h-9 w-auto object-contain">
+                    </div>
+                    <p class="text-white/70 text-base font-medium leading-relaxed mb-5">Building Websites. Expanding Reach.<br>Helping organizations establish a professional online presence.</p>
+                    <ul class="space-y-3 text-base font-medium text-white/70">
                         <li class="flex items-center gap-2">
                             <svg class="w-4 h-4 text-teal shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -2296,16 +2242,51 @@
                         </li>
                     </ul>
                 </div>
+
+                {{-- Column 2: Quick Links --}}
+                <div id="footer-col-2" class="footer-col">
+                    <h4 class="font-semibold text-gold mb-4">Quick Links</h4>
+                    <ul class="space-y-3 text-base font-medium text-white/70">
+                        <li><a href="{{ $homeAnchor }}#hero"      class="footer-link hover:text-gold">Home<span class="footer-link-bar"></span></a></li>
+                        <li><a href="{{ $homeAnchor }}#about"     class="footer-link hover:text-gold">About Us<span class="footer-link-bar"></span></a></li>
+                        <li><a href="{{ $homeAnchor }}#services"  class="footer-link hover:text-gold">Services<span class="footer-link-bar"></span></a></li>
+                        <li><a href="{{ $homeAnchor }}#portfolio" class="footer-link hover:text-gold">Portfolio<span class="footer-link-bar"></span></a></li>
+                        <li><a href="{{ $homeAnchor }}#contact"   class="footer-link hover:text-gold">Contact<span class="footer-link-bar"></span></a></li>
+                    </ul>
+                </div>
+
+                {{-- Column 3: Company --}}
+                <div id="footer-col-3" class="footer-col">
+                    <h4 class="font-semibold text-gold mb-4">Company</h4>
+                    <ul class="space-y-3 text-base font-medium text-white/70">
+                        <li><a href="{{ $homeAnchor }}#founder"     class="footer-link hover:text-gold">Meet the Founder<span class="footer-link-bar"></span></a></li>
+                        <li><a href="{{ $homeAnchor }}#partnership" class="footer-link hover:text-gold">Our Team<span class="footer-link-bar"></span></a></li>
+                        <li><a href="{{ $homeAnchor }}#plans"       class="footer-link hover:text-gold">Care Plans<span class="footer-link-bar"></span></a></li>
+                        <li><a href="{{ route('intake.create') }}"  class="footer-link hover:text-gold">Get Started<span class="footer-link-bar"></span></a></li>
+                    </ul>
+                </div>
+
+                {{-- Column 4: Others --}}
+                <div id="footer-col-4" class="footer-col">
+                    <h4 class="font-semibold text-gold mb-4">Others</h4>
+                    <ul class="space-y-3 text-base font-medium text-white/70">
+                        <li><a href="{{ route('login') }}" class="footer-link hover:text-gold">Login<span class="footer-link-bar"></span></a></li>
+                        <li><a href="#" class="footer-link hover:text-gold">Privacy Policy<span class="footer-link-bar"></span></a></li>
+                        <li><a href="#" class="footer-link hover:text-gold">Terms of Service<span class="footer-link-bar"></span></a></li>
+                    </ul>
+                </div>
             </div>
 
             {{-- Bottom bar --}}
-            <div id="footer-bottom" class="footer-bottom-bar border-t border-navy/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-medium text-navy/60">
+            <div id="footer-bottom" class="footer-bottom-bar border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-medium text-white/50">
                 <p>&copy; {{ date('Y') }} VisionBridge Solutions. All rights reserved.</p>
-                <div class="flex gap-6">
-                    <a href="#" class="footer-link hover:text-gold">Privacy Policy<span class="footer-link-bar"></span></a>
-                    <a href="#" class="footer-link hover:text-gold">Terms of Service<span class="footer-link-bar"></span></a>
-                </div>
+                <p class="text-xs tracking-widest uppercase" style="color:rgba(201,168,76,0.55);">Building Websites. Expanding Reach.</p>
             </div>
+        </div>
+
+        {{-- ── Giant bleeding wordmark ── --}}
+        <div class="footer-wordmark-wrap" aria-hidden="true">
+            <span class="footer-wordmark font-display font-extrabold">VISIONBRIDGE</span>
         </div>
     </footer>
 
@@ -2849,7 +2830,7 @@
 
             const footer  = document.getElementById('site-footer');
             const spacer  = document.getElementById('footer-spacer');
-            const cols    = ['footer-col-1', 'footer-col-2', 'footer-col-3'].map(id => document.getElementById(id));
+            const cols    = ['footer-col-1', 'footer-col-2', 'footer-col-3', 'footer-col-4'].map(id => document.getElementById(id));
             const bottom  = document.getElementById('footer-bottom');
 
             // ── 1. Spacer: keep bottom of page-wrapper = footer height ──
