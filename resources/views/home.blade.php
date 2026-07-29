@@ -1238,13 +1238,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                  + gold light flare into the panel, dimmed enough to keep the
                  gold sheen/medallion/text in front fully legible. --}}
             <div class="absolute inset-0 pointer-events-none" style="background-image:url('@assetv('image/bridge-background-image-v2.png')');background-size:cover;background-position:center 35%;opacity:0.55;"></div>
-            {{-- Growing blue circles GIF — screen-blended over the bridge
-                 photo so it adds a glow rather than replacing it; the dark
-                 gradient overlay right below still dims it for text
-                 legibility, same as it already dims the bridge photo. --}}
-            <img src="@assetv('image/Mesmerizing-growing-blue-circles-black-bg.gif')" alt="" aria-hidden="true"
-                 class="absolute inset-0 w-full h-full object-cover pointer-events-none"
-                 style="opacity:.5;mix-blend-mode:screen;">
             <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(155deg,rgba(10,13,17,0.68) 0%,rgba(23,27,33,0.58) 35%,rgba(10,13,17,0.74) 70%,rgba(21,25,31,0.68) 100%);"></div>
             {{-- Diagonal glossy sheen — light catching an acrylic plaque --}}
             <div class="absolute inset-0 pointer-events-none" style="z-index:1;background:linear-gradient(115deg,transparent 28%,rgba(255,255,255,0.07) 47%,rgba(255,255,255,0.02) 53%,transparent 68%);"></div>
