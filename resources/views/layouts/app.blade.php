@@ -2931,6 +2931,18 @@
                 '#hscroll-edge-arrow',
                 '.hero-gradient-shift', '.hero-ray', '#hero-orbit-glow', '#hero-orbit-bloom', '#hero-orbit-mid',
                 '#hero-orbit-inner-mid', '#hero-orbit-inner-glow', '#hero-halo',
+                // Desktop laptop idle float + rating-card floats — same
+                // always-on infinite CSS animations as the ones above, just
+                // missed when this list was first written.
+                '#hero-device-frame', '#hero-rating-1', '#hero-rating-2', '#hero-rating-3',
+                // Mobile equivalents of the desktop halo/orbit/device-frame
+                // animations above (see the matching comments in
+                // home.blade.php — mobile gets its own idle float, rotating
+                // halo ring, and orbit trail instead of reusing the desktop
+                // elements directly).
+                '#hero-device-mobile-frame', '#hero-halo-mobile-ring',
+                '#hero-trail-mobile-bloom', '#hero-trail-mobile-core',
+                '#hero-scroll-dot',
             ];
             const els = document.querySelectorAll(selectors.join(','));
             if (!els.length) return;

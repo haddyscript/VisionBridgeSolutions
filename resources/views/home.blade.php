@@ -634,7 +634,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         <span class="text-xs tracking-widest uppercase" style="color:rgba(255,255,255,.70);">Scroll</span>
         <div class="w-5 h-8 rounded-full flex items-start justify-center pt-1.5"
              style="border:1.5px solid rgba(255,255,255,.40);">
-            <div class="w-1 h-2 rounded-full" style="background:rgba(201,168,76,.9);animation:scroll-dot 1.9s ease-in-out infinite;"></div>
+            <div id="hero-scroll-dot" class="w-1 h-2 rounded-full" style="background:rgba(201,168,76,.9);animation:scroll-dot 1.9s ease-in-out infinite;"></div>
         </div>
     </div>
 </section>
