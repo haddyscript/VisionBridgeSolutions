@@ -613,7 +613,11 @@
         // frames (via requestAnimationFrame's own timestamp), so this stays
         // consistent whether the display is 60Hz, 120Hz, etc. instead of
         // implicitly assuming 60fps like a fixed per-frame multiplier would.
-        var DELAY = 0.02; // seconds
+        // 0.15s ≈ Lenis's own default (lerp: 0.1 per frame at ~60fps,
+        // converted to this time-constant form) — Lenis is what Framer's
+        // built-in "Smooth Scrolling" feature runs on, which is the
+        // buttery feel being matched here.
+        var DELAY = 0.15; // seconds
         var current = window.scrollY;
         var target = window.scrollY;
         var ticking = false;
