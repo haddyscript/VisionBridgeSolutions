@@ -198,12 +198,16 @@
     }
     .contact-textarea { resize: none; }
 
-    /* Color/gradient/shimmer/hover-fill all come from the sitewide
-       .contact-submit-btn class already defined in layouts/app.blade.php
-       (the exact same gold button the old contact form used) — this local
-       rule only adds the corner-cut shape + type treatment on top of it,
-       so it inherits the site's real button styling instead of a one-off
-       recolor. */
+    /* Base gradient/color still comes from the sitewide .contact-submit-btn
+       class in layouts/app.blade.php — this local rule adds the corner-cut
+       shape + type treatment on top of it. The HOVER state, though, is
+       defined directly here rather than relying on that shared class's own
+       hover mechanism (a ::after white fill sliding in + a constantly
+       animating ::before shine sweep) — those two pseudo-elements were
+       compositing into a muddy grey against this button's clip-path shape
+       instead of the clean white the shared button gets elsewhere on the
+       site, so a plain, direct background/color transition replaces it
+       here instead of debugging that pseudo-element stack. */
     #contact-submit.contact-submit-btn {
         font-weight: 800;
         letter-spacing: .08em;
@@ -211,8 +215,13 @@
         font-size: .88rem;
         padding: 16px;
         clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+        transition: transform .2s ease, background .3s ease, color .3s ease;
     }
-    #contact-submit.contact-submit-btn:hover { transform: translateY(-1px); }
+    #contact-submit.contact-submit-btn:hover {
+        background: #ffffff;
+        color: #15202C;
+        transform: translateY(-1px);
+    }
     #contact-submit.contact-submit-btn:disabled { transform: none; }
 
     /* ── Custom "Project Type" dropdown — same JS-driven behavior as
