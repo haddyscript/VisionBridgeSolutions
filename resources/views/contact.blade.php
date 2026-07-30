@@ -270,6 +270,123 @@
         z-index: 2;
     }
 
+    /* ── FAQ section ── */
+    .faq-divider {
+        width: 64px; height: 2px;
+        background: linear-gradient(90deg, var(--vb-gold), transparent);
+        margin-top: 18px;
+    }
+    .faq-cta-card {
+        position: relative;
+        background: rgba(255,255,255,.02);
+        border: 1px solid rgba(255,255,255,.10);
+        padding: 26px;
+        margin-top: 40px;
+        clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+    }
+    .faq-cta-card::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 24px; height: 24px;
+        background: linear-gradient(135deg, transparent 49%, var(--vb-gold) 50%, transparent 51%);
+        opacity: .9;
+    }
+    .faq-cta-icon {
+        width: 50px; height: 50px;
+        border: 1px solid rgba(201,168,76,.4);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--vb-gold);
+        flex-shrink: 0;
+    }
+    .faq-cta-link {
+        display: inline-flex; align-items: center; gap: 6px;
+        color: var(--vb-gold);
+        font-weight: 700; font-size: .82rem; letter-spacing: .06em; text-transform: uppercase;
+        transition: gap .25s ease, color .25s ease;
+    }
+    .faq-cta-link:hover { gap: 12px; color: var(--vb-gold-light); }
+
+    .faq-item {
+        position: relative;
+        border: 1px solid rgba(255,255,255,.12);
+        background: rgba(255,255,255,.015);
+        clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
+        transition: border-color .3s ease, background .3s ease;
+    }
+    .faq-item::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 20px; height: 20px;
+        background: linear-gradient(135deg, transparent 49%, rgba(255,255,255,.16) 50%, transparent 51%);
+        transition: background .3s ease;
+        pointer-events: none;
+    }
+    .faq-item.is-open, .faq-item:hover {
+        border-color: rgba(201,168,76,.45);
+        background: rgba(201,168,76,.03);
+    }
+    .faq-item.is-open::before, .faq-item:hover::before {
+        background: linear-gradient(135deg, transparent 49%, var(--vb-gold) 50%, transparent 51%);
+    }
+    .faq-question-btn {
+        width: 100%;
+        display: flex; align-items: center; gap: 18px;
+        padding: 22px 26px;
+        background: none; border: none;
+        cursor: pointer;
+        text-align: left;
+    }
+    .faq-number {
+        font-family: 'Archivo Black', 'Inter', sans-serif;
+        font-size: 1.1rem;
+        color: rgba(255,255,255,.28);
+        flex-shrink: 0;
+        width: 34px;
+    }
+    .faq-divider-v {
+        width: 1px; height: 20px;
+        background: rgba(255,255,255,.14);
+        flex-shrink: 0;
+    }
+    .faq-question-text {
+        flex: 1;
+        font-weight: 700;
+        font-size: .95rem;
+        letter-spacing: .03em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,.88);
+        transform-origin: left center;
+        transition: transform .5s cubic-bezier(.16,1,.3,1), color .3s ease;
+    }
+    .faq-item.is-open .faq-question-text { color: var(--vb-gold-light); }
+    .faq-item:hover .faq-question-text { transform: scale(1.03); }
+    .faq-toggle-icon {
+        width: 22px; height: 22px;
+        flex-shrink: 0;
+        color: var(--vb-gold);
+        transition: transform .35s cubic-bezier(.22,1,.36,1);
+    }
+    .faq-item.is-open .faq-toggle-icon { transform: rotate(45deg); }
+    .faq-answer-wrap {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height .4s cubic-bezier(.22,1,.36,1);
+    }
+    .faq-answer {
+        padding: 0 26px 24px 78px;
+        font-size: .88rem;
+        line-height: 1.65;
+        color: rgba(255,255,255,.62);
+    }
+    @media (max-width: 640px) {
+        .faq-answer { padding-left: 26px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .faq-question-text, .faq-toggle-icon, .faq-answer-wrap { transition: none; }
+    }
+
     /* ── Custom "signal lock" cursor — a dot that snaps to the pointer plus
          a ring that eases behind it (gsap.quickTo, same lag technique as
          #hero-mouse-glow / the nav's 3D-tilt cards elsewhere on the site),
@@ -581,6 +698,68 @@
             </div>
 
         </div>
+
+        {{-- ── FAQ section — real answers about VisionBridge's own process
+             (Care Plans, ownership, hosting, revisions), not the reference
+             design's Framer-specific questions. Same visual language as
+             the hero above (bracket tag, headline, corner-cut cards). ── --}}
+        <div class="grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-14 items-start mt-28">
+            <div data-faq-left>
+                <div class="contact-tag self-start" data-faq-reveal>FAQs</div>
+
+                <div class="contact-headline-wrap mt-6" data-faq-reveal>
+                    <h2 class="contact-headline" style="font-size:clamp(2.1rem, 4.6vw, 3.4rem);">
+                        <span class="contact-headline-line">Clear Answers</span><br><span class="accent">Before We Build</span>
+                    </h2>
+                </div>
+
+                <div class="faq-divider" data-faq-reveal></div>
+
+                <p class="text-base leading-relaxed max-w-md mt-5 contact-subtext" style="color:rgba(255,255,255,.62);" data-faq-reveal>
+                    Everything you need to know about the process, timeline, ownership, and what happens after your site launches.
+                </p>
+
+                <div class="faq-cta-card flex items-center gap-4" data-faq-reveal>
+                    <div class="faq-cta-icon">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-bold tracking-wide uppercase" style="color:#fff;">Still Have Questions?</p>
+                        <p class="text-sm mt-0.5 mb-3" style="color:rgba(255,255,255,.55);">Let's talk about your project</p>
+                        <a href="{{ route('consultation.create') }}" class="faq-cta-link">
+                            Book a Consultation
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-3" data-faq-cards>
+                @php $faqs = [
+                    ['q' => 'How long does it take?', 'a' => "Timelines vary by scope and how quickly we receive your content, but every project moves through the same clear path — onboarding, design, revisions, and launch — with real milestones you can track the whole way through your client portal."],
+                    ['q' => 'Do I need a Care Plan?', 'a' => "Yes — a Website Care Plan is required for every site we build, agreed to during onboarding. It covers hosting, updates, and ongoing support, so nothing is left unmanaged after launch. Billing only starts once your site actually goes live."],
+                    ['q' => 'Will my site work on mobile?', 'a' => "Every site we build is mobile-first and tested to perform beautifully across phones, tablets, and desktops alike — not an afterthought bolted on at the end."],
+                    ['q' => 'Can I add pages or make changes later?', 'a' => "Yes. Once your site is live, you can request new pages, content updates, or design changes anytime through your client portal, and we track every request from submission through completion."],
+                    ['q' => 'Do you handle hosting and launch?', 'a' => "We do. Hosting management, security, and the launch itself are all handled for you as part of your Care Plan — you never need to touch a server."],
+                    ['q' => 'Who owns the website?', 'a' => "You do — 100%. Domain, content, hosting, and data all belong to you, always. We build it, but it's yours from day one."],
+                    ['q' => 'What happens after I submit this form?', 'a' => "We'll review your details and reply within 24 hours with next steps — usually a short consultation to scope out your project before any work begins."],
+                    ['q' => 'Do you offer support after launch?', 'a' => "Always. Every Care Plan includes ongoing updates, monitoring, and a direct line to our team for as long as you're with us."],
+                ]; @endphp
+                @foreach ($faqs as $index => $faq)
+                    <div class="faq-item">
+                        <button type="button" class="faq-question-btn" aria-expanded="false">
+                            <span class="faq-number">{{ sprintf('%02d', $index + 1) }}</span>
+                            <span class="faq-divider-v"></span>
+                            <span class="faq-question-text">{{ $faq['q'] }}</span>
+                            <svg class="faq-toggle-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>
+                        </button>
+                        <div class="faq-answer-wrap">
+                            <p class="faq-answer">{{ $faq['a'] }}</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
     </div>
 
     {{-- Soft dissolve into the footer below — a static gradient (no JS
@@ -756,6 +935,32 @@
         })();
     </script>
 
+    {{-- FAQ accordion — plain max-height transition, no GSAP dependency.
+         Each item toggles independently (multiple can be open at once). --}}
+    <script>
+    (function () {
+        document.querySelectorAll('.faq-item').forEach((item) => {
+            const btn  = item.querySelector('.faq-question-btn');
+            const wrap = item.querySelector('.faq-answer-wrap');
+            if (!btn || !wrap) return;
+
+            btn.addEventListener('click', () => {
+                const isOpen = item.classList.toggle('is-open');
+                btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                wrap.style.maxHeight = isOpen ? wrap.scrollHeight + 'px' : '0px';
+            });
+        });
+
+        // Keep open items sized correctly if the viewport resizes (answer
+        // text reflows to a different number of lines at different widths).
+        window.addEventListener('resize', () => {
+            document.querySelectorAll('.faq-item.is-open .faq-answer-wrap').forEach((wrap) => {
+                wrap.style.maxHeight = wrap.scrollHeight + 'px';
+            });
+        });
+    })();
+    </script>
+
     {{-- Custom "signal lock" cursor — dot snaps to the pointer instantly,
          the ring eases behind it, and expands over anything clickable.
          Desktop/fine-pointer only; native cursor is left completely alone
@@ -873,11 +1078,23 @@
             var sweep      = document.querySelector('.contact-headline-sweep');
             var contentWrap = document.querySelector('#contact-dark > .relative');
 
+            // FAQ section — same reveal pattern as the hero above, kept on
+            // its own data-faq-* attributes (not data-contact-*) since the
+            // querySelector calls above only ever grab the *first* match —
+            // reusing the hero's attribute names here would've silently
+            // wired these elements to the wrong (already-passed) trigger.
+            var faqLeft     = document.querySelector('[data-faq-left]');
+            var faqRevealEls = gsap.utils.toArray('[data-faq-reveal]');
+            var faqCardsWrap = document.querySelector('[data-faq-cards]');
+            var faqCardEls  = faqCardsWrap ? gsap.utils.toArray(faqCardsWrap.children) : [];
+
             gsap.set(revealEls, { opacity: 0, y: 22 });
             gsap.set(statusEls, { opacity: 0, x: -14 });
             gsap.set(cardEls,   { opacity: 0, y: 18 });
             gsap.set(formCard,  { opacity: 0, x: 46, filter: 'blur(8px)' });
             gsap.set(formFields, { opacity: 0, y: 14 });
+            gsap.set(faqRevealEls, { opacity: 0, y: 22 });
+            gsap.set(faqCardEls,   { opacity: 0, y: 18 });
 
             function sweepOnce() {
                 if (!sweep || sweep.classList.contains('is-sweeping')) return;
@@ -929,6 +1146,19 @@
                 })
                     .to(formCard, { opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.85, ease: 'power2.out', clearProps: 'transform,filter' })
                     .to(formFields, { opacity: 1, y: 0, duration: 0.45, stagger: 0.08, ease: 'power3.out', clearProps: 'transform' }, '-=0.5');
+            }
+
+            if (faqLeft) {
+                gsap.to(faqRevealEls, {
+                    opacity: 1, y: 0, duration: 0.65, stagger: 0.12, ease: 'power3.out', clearProps: 'transform',
+                    scrollTrigger: { trigger: faqLeft, start: 'top 85%', toggleActions: TOGGLE },
+                });
+            }
+            if (faqCardEls.length) {
+                gsap.to(faqCardEls, {
+                    opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: 'power3.out', clearProps: 'transform',
+                    scrollTrigger: { trigger: faqCardsWrap, start: 'top 88%', toggleActions: TOGGLE },
+                });
             }
 
             // Cinematic exit — as the section's bottom edge approaches, the
