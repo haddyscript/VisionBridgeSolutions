@@ -2,14 +2,6 @@
 
 @section('title', 'VisionBridge Solutions – Building Websites. Expanding Reach.')
 
-@push('head')
-    {{-- Bold condensed display font for the Hero headline — same one used
-         on the Contact page, for a consistent "signal channel" identity
-         across the two. Everything else on the homepage keeps Playfair
-         Display (font-display), unchanged. --}}
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
-@endpush
-
 @section('content')
 
 @php
@@ -361,145 +353,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 </script>
 
 {{-- ============================================================
-     HERO SECTION — dark theme, "signal channel" identity shared with
-     the Contact page (bracket-tag badge, Archivo Black headline,
-     corner-cut cards, trailing cursor, text zoom-on-hover). Scoped to
-     #hero only — the rest of the homepage (Services, Plans, Portfolio,
-     etc.) keeps its existing look untouched.
+     HERO SECTION — dark theme
      ============================================================ --}}
-<style>
-    /* ── Bracket-tag badge (replaces the old blurred rounded pill) —
-         same technique as .contact-tag in contact.blade.php. ── */
-    #hero-badge.hero-tag {
-        position: relative;
-        background: none;
-        border: 1px solid rgba(255,255,255,.22);
-        border-radius: 0;
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-        box-shadow: none;
-    }
-    #hero-badge.hero-tag::before, #hero-badge.hero-tag::after {
-        content: '';
-        position: absolute;
-        top: -1px; bottom: -1px;
-        width: 6px;
-        border-top: 1px solid #C9A84C;
-        border-bottom: 1px solid #C9A84C;
-    }
-    #hero-badge.hero-tag::before { left: -6px; border-left: 1px solid #C9A84C; }
-    #hero-badge.hero-tag::after  { right: -6px; border-right: 1px solid #C9A84C; }
-
-    /* ── Headline — Archivo Black, uppercase, tighter tracking; same
-         treatment as .contact-headline. Only the font/case/tracking
-         change here — the existing word-reveal GSAP entrance animation
-         (see @section('scripts')) is untouched, since it only animates
-         opacity/transform on the same .hero-word spans regardless of
-         their font. ── */
-    #hero-heading.hero-display {
-        font-family: 'Archivo Black', 'Inter', sans-serif;
-        text-transform: uppercase;
-        letter-spacing: -.01em;
-    }
-
-    /* ── Corner-cut accent on the rating cards + support card — same
-         clip-path technique as .contact-form-card, layered on top of
-         their existing glassmorphism instead of replacing it.
-         .hero-rating-card had no explicit `position` before (a flex item
-         defaults to static), which the corner ::before below needs to
-         anchor to the card itself rather than a distant positioned
-         ancestor — #hero-support-card already has position:absolute via
-         .float-card, so it didn't need the same fix. ── */
-    .hero-rating-card { position: relative; }
-    .hero-rating-card, #hero-support-card.hero-cut {
-        clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
-    }
-    .hero-rating-card::before, #hero-support-card.hero-cut::before {
-        content: '';
-        position: absolute;
-        top: 0; right: 0;
-        width: 14px; height: 14px;
-        background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
-        opacity: .85;
-        pointer-events: none;
-    }
-
-    /* ── Text zoom-on-hover — same slow/enlarged treatment as the
-         Contact page. !important is deliberate here (not the usual
-         convention elsewhere in this codebase) because several of these
-         elements are targets of the Hero's own GSAP entrance timeline
-         (see @section('scripts')), which leaves a resting inline
-         transform on them after animating in — a plain CSS :hover rule
-         would lose to that inline style's specificity otherwise. ── */
-    #hero-badge, .hero-word, #hero-subtext, .hero-btn-content,
-    #hero-trust p, .hero-rating-quote, .hero-rating-attr,
-    #hero-support-card .text-sm, #hero-support-card .text-xs {
-        transition: transform .55s cubic-bezier(.16,1,.3,1);
-    }
-    #hero-badge:hover { transform: scale(1.06) !important; }
-    .hero-word:hover { transform: scale(1.08) !important; }
-    #hero-subtext:hover { transform: scale(1.015) !important; }
-    .hero-btn-content:hover { transform: scale(1.05); }
-    #hero-trust p:hover { transform: scale(1.03) !important; }
-    .hero-rating-quote:hover, .hero-rating-attr:hover,
-    #hero-support-card .text-sm:hover, #hero-support-card .text-xs:hover {
-        transform: scale(1.05) !important;
-    }
-    @media (prefers-reduced-motion: reduce) {
-        #hero-badge, .hero-word, #hero-subtext, .hero-btn-content,
-        #hero-trust p, .hero-rating-quote, .hero-rating-attr,
-        #hero-support-card .text-sm, #hero-support-card .text-xs {
-            transition: none;
-        }
-    }
-
-    /* ── Custom trailing "signal lock" cursor — identical technique to
-         #contact-cursor-dot/ring in contact.blade.php (dot snaps to the
-         pointer, ring eases behind it and stretches with lag distance).
-         Lives as a sibling right after </section> (see the markup below
-         and the script that follows it), not nested inside #hero — kept
-         consistently outside every section it's scoped to, same as the
-         footer's and desktop menu's own cursor elements this session,
-         rather than re-verifying on a per-section basis whether anything
-         in that section's own transform/filter/will-change chain would
-         make position:fixed descendants resolve against the wrong
-         containing block. ── */
-    #hero-cursor-dot, #hero-cursor-ring {
-        position: fixed;
-        top: 0; left: 0;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 200;
-        opacity: 0;
-        transform: translate(-50%, -50%);
-    }
-    #hero-cursor-dot {
-        width: 6px; height: 6px;
-        background: #C9A84C;
-        box-shadow: 0 0 10px rgba(201,168,76,.85);
-    }
-    #hero-cursor-ring {
-        width: 46px; height: 46px;
-        border: 1.5px solid rgba(201,168,76,.55);
-        transition: width .3s cubic-bezier(.22,1,.36,1), height .3s cubic-bezier(.22,1,.36,1),
-                    border-color .3s ease, background-color .3s ease;
-    }
-    #hero-cursor-dot.is-visible, #hero-cursor-ring.is-visible { opacity: 1; }
-    #hero-cursor-ring.is-hovering {
-        width: 68px; height: 68px;
-        background: rgba(201,168,76,.12);
-        border-color: rgba(201,168,76,.85);
-    }
-    #hero.has-custom-cursor,
-    #hero.has-custom-cursor a,
-    #hero.has-custom-cursor button {
-        cursor: none;
-    }
-    @media (hover: none), (pointer: coarse) {
-        #hero-cursor-dot, #hero-cursor-ring { display: none; }
-    }
-</style>
-
 <section id="hero" class="hero-dark relative min-h-screen flex items-center overflow-hidden" style="background:#0B0F17;">
 
     {{-- Layer 0 — starfield (reuses the dot-grid texture, recolored via .hero-dark) --}}
@@ -565,14 +420,16 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <div class="text-left">
 
                 {{-- Badge --}}
-                <div id="hero-badge" class="hero-tag inline-flex items-center text-xs font-semibold tracking-widest uppercase px-5 py-2 mb-7 sm:mb-8 opacity-0"
-                     style="color:rgba(255,255,255,.85);">
+                <div id="hero-badge" class="inline-flex items-center text-xs font-semibold tracking-widest uppercase px-5 py-2 rounded-full mb-7 sm:mb-8 opacity-0"
+                     style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.85);
+                     backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+                     box-shadow:0 8px 24px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.14);">
                     <span class="live-dot"></span>
                     Website Development &amp; Management
                 </div>
 
                 {{-- Heading --}}
-                <h1 id="hero-heading" class="hero-display font-bold leading-tight mb-4 sm:mb-3"
+                <h1 id="hero-heading" class="font-display font-bold leading-tight mb-4 sm:mb-3"
                     style="font-size:clamp(2.6rem,5.2vw,4.2rem);">
                     <span style="white-space:nowrap;"><span class="word-wrap"><span class="hero-word text-white">Building</span></span><span class="word-wrap"><span class="hero-word text-white">Websites.</span></span></span><br>
                     <span style="white-space:nowrap;"><span class="word-wrap"><span class="hero-word shimmer-gold">Expanding</span></span><span class="word-wrap"><span class="hero-word shimmer-gold">Reach.</span></span></span>
@@ -738,7 +595,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     </div>
                 </div>
 
-                <div class="float-card float-card-2 hero-glass-card hero-cut opacity-0" id="hero-support-card" style="top:64%;right:-17%;width:168px;padding:14px 16px;">
+                <div class="float-card float-card-2 hero-glass-card opacity-0" id="hero-support-card" style="top:64%;right:-17%;width:168px;padding:14px 16px;">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#C9A84C 0%,#8B5A2B 100%);box-shadow:0 4px 10px rgba(0,0,0,.35);">
                             <svg class="w-5 h-5" fill="#FFFFFF" stroke="none" viewBox="0 0 24 24"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
@@ -781,76 +638,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         </div>
     </div>
 </section>
-
-{{-- Hero's custom trailing cursor elements — deliberately outside
-     <section id="hero"> (see the comment on #hero-cursor-dot/ring in the
-     <style> block above for why) — plus the script that drives them.
-     Identical technique to the Contact page's own cursor. --}}
-<div id="hero-cursor-dot" aria-hidden="true"></div>
-<div id="hero-cursor-ring" aria-hidden="true"></div>
-<script>
-(function () {
-    function initHeroCursor() {
-        if (typeof gsap === 'undefined') { setTimeout(initHeroCursor, 80); return; }
-
-        var section = document.getElementById('hero');
-        var dot = document.getElementById('hero-cursor-dot');
-        var ring = document.getElementById('hero-cursor-ring');
-        if (!section || !dot || !ring) return;
-        if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-        var moveDotX = gsap.quickTo(dot, 'x', { duration: 0.05, ease: 'power3.out' });
-        var moveDotY = gsap.quickTo(dot, 'y', { duration: 0.05, ease: 'power3.out' });
-
-        var mouseX = 0, mouseY = 0;
-        var ringX = 0, ringY = 0;
-        var ringReady = false;
-        var pressed = false;
-        var hovering = false;
-        var visible = false;
-
-        section.addEventListener('mousemove', function (e) {
-            mouseX = e.clientX; mouseY = e.clientY;
-            moveDotX(mouseX); moveDotY(mouseY);
-            if (!ringReady) { ringX = mouseX; ringY = mouseY; ringReady = true; }
-            if (!visible) {
-                visible = true;
-                section.classList.add('has-custom-cursor');
-                dot.classList.add('is-visible');
-                ring.classList.add('is-visible');
-            }
-        });
-
-        section.addEventListener('mouseleave', function () {
-            visible = false;
-            section.classList.remove('has-custom-cursor');
-            dot.classList.remove('is-visible');
-            ring.classList.remove('is-visible');
-        });
-
-        gsap.ticker.add(function () {
-            if (!visible) return;
-            ringX += (mouseX - ringX) * 0.1;
-            ringY += (mouseY - ringY) * 0.1;
-            var dist = Math.hypot(mouseX - ringX, mouseY - ringY);
-            var stretch = pressed ? 0.8 : gsap.utils.clamp(1, 1.7, 1 + dist / 130);
-            gsap.set(ring, { x: ringX, y: ringY, scale: hovering ? 1 : stretch });
-        });
-
-        var interactiveEls = section.querySelectorAll('a, button');
-        interactiveEls.forEach(function (el) {
-            el.addEventListener('mouseenter', function () { hovering = true; ring.classList.add('is-hovering'); });
-            el.addEventListener('mouseleave', function () { hovering = false; ring.classList.remove('is-hovering'); });
-        });
-
-        section.addEventListener('mousedown', function () { pressed = true; });
-        section.addEventListener('mouseup', function () { pressed = false; });
-    }
-    if (document.readyState !== 'loading') { initHeroCursor(); }
-    else { window.addEventListener('DOMContentLoaded', initHeroCursor); }
-})();
-</script>
 
 {{-- The 3D storytelling overture renders here — right after the Hero,
      before the arch transition into the light Our Work section. Its
