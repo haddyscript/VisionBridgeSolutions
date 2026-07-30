@@ -2943,6 +2943,10 @@
                 '#hero-device-mobile-frame', '#hero-halo-mobile-ring',
                 '#hero-trail-mobile-bloom', '#hero-trail-mobile-core',
                 '#hero-scroll-dot',
+                // Security banner's focal-shield orbit ring (home.blade.php,
+                // "Why VisionBridge" section) — same always-on decorative
+                // spin as the ones above.
+                '#security-glow-ring',
             ];
             const els = document.querySelectorAll(selectors.join(','));
             if (!els.length) return;

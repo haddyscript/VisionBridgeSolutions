@@ -1407,6 +1407,19 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- ============================================================
      WHY CHOOSE US SECTION
      ============================================================ --}}
+<style>
+    /* Security banner's focal shield — a plain circle (unlike the Hero's
+       flat-ellipse orbit rings), so a rigid transform:rotate() is safe here
+       and doesn't need the stroke-dashoffset/circumference-matching trick
+       those use. Same off-screen pause convention as the rest of the page's
+       continuous decorative animations (see the selector list in
+       layouts/app.blade.php). */
+    #security-glow-ring { animation: security-ring-spin 14s linear infinite; }
+    @keyframes security-ring-spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+        #security-glow-ring { animation: none; }
+    }
+</style>
 <section id="why" class="py-28 relative overflow-hidden" style="background:linear-gradient(160deg,#E3EBF1 0%,#ECF1F5 50%,#E0E8EE 100%);">
     {{-- Soothing wavy-loops GIF — subtle animated backdrop, sits behind the
          orbs/dot-texture/content below. mix-blend-mode:multiply (not screen,
@@ -1524,9 +1537,48 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     </div>
                 </div>
 
-                <div class="hidden lg:block rounded-2xl overflow-hidden" style="box-shadow:0 20px 60px rgba(0,0,0,0.4);">
-                    <img src="@assetv('image/security-works-in-office.gif')" alt="Illustration of secure website management work in an office"
-                         loading="lazy" decoding="async" class="w-full h-full object-cover">
+                {{-- On-brand focal shield, replacing the old stock GIF (a
+                     light/white "office worker" illustration that clashed
+                     with this banner's dark navy/gold palette and didn't
+                     read as "security"). Reuses the same halo + rotating
+                     orbit-ring motif already established for the Hero
+                     device and founder photo elsewhere on this page, so it
+                     reads as part of the same design system instead of a
+                     dropped-in stock asset — and ties directly to the three
+                     trust points beside it via matching lock/check accents. --}}
+                <div class="hidden lg:flex relative items-center justify-center" style="min-height:320px;">
+                    <div class="absolute pointer-events-none" style="width:300px;height:300px;border-radius:50%;
+                         background:radial-gradient(circle, rgba(201,168,76,.22) 0%, transparent 70%);filter:blur(42px);"></div>
+
+                    <svg id="security-glow-ring" viewBox="0 0 300 300" style="position:absolute;width:260px;height:260px;pointer-events:none;">
+                        <circle cx="150" cy="150" r="120" fill="none" stroke="rgba(201,168,76,.16)" stroke-width="1.5"/>
+                        <circle cx="150" cy="150" r="120" fill="none" stroke="#FF8C1A" stroke-width="7" stroke-linecap="round"
+                                stroke-dasharray="90 664" style="opacity:.55;filter:blur(6px) drop-shadow(0 0 14px rgba(255,140,20,.55));"/>
+                        <circle cx="150" cy="150" r="120" fill="none" stroke="#FFC94D" stroke-width="2.5" stroke-linecap="round"
+                                stroke-dasharray="90 664" style="opacity:.9;filter:drop-shadow(0 0 8px rgba(255,201,77,.7));"/>
+                    </svg>
+
+                    <div class="relative z-10 rounded-full flex items-center justify-center" style="width:164px;height:164px;
+                         background:linear-gradient(155deg, rgba(255,255,255,.09), rgba(255,255,255,.02));
+                         border:1px solid rgba(201,168,76,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+                         box-shadow:0 20px 50px rgba(0,0,0,.35);">
+                        <svg class="w-16 h-16 text-gold" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">{!! $svgIcons['shield'] !!}</svg>
+                    </div>
+
+                    <div class="absolute flex items-center gap-2 rounded-full" style="bottom:8%;left:2%;padding:9px 16px;
+                         background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);">
+                        <span class="live-dot"></span>
+                        <span class="text-xs font-semibold tracking-wide uppercase" style="color:rgba(255,255,255,.85);">Actively Protected</span>
+                    </div>
+
+                    <div class="absolute rounded-xl flex items-center justify-center" style="top:6%;right:8%;width:46px;height:46px;
+                         background:rgba(63,189,187,.14);border:1px solid rgba(63,189,187,.32);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);">
+                        <svg class="w-5 h-5 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['lock'] !!}</svg>
+                    </div>
+                    <div class="absolute rounded-xl flex items-center justify-center" style="bottom:4%;right:2%;width:46px;height:46px;
+                         background:rgba(201,168,76,.14);border:1px solid rgba(201,168,76,.32);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);">
+                        <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['check'] !!}</svg>
+                    </div>
                 </div>
             </div>
         </div>
