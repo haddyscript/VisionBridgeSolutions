@@ -580,6 +580,51 @@
          footer begins. --}}
     <div class="contact-footer-fade" aria-hidden="true"></div>
 
+    {{-- Smooth scroll — the real Lenis library (same one referenced, but
+         never actually initialized, in FaithStack's landing.blade.php),
+         rather than a hand-rolled approximation of it. Lenis intercepts
+         wheel/touch input and eases the *real* document scroll position
+         toward a target every frame (no CSS-transform virtual-scroll
+         wrapper involved with this default config), so ScrollTrigger and
+         the footer's fixed-position reveal keep working exactly as before.
+         duration/easing below are Lenis's own documented defaults — the
+         same "buttery" curve sites like the Framer/Lenis reference actually
+         ship with, not a guess at matching it. Touch devices keep their own
+         native momentum scrolling by default (Lenis's smoothTouch is off
+         unless explicitly enabled). --}}
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js" defer></script>
+    <script>
+    (function () {
+        function initLenis() {
+            if (typeof Lenis === 'undefined' || typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+                setTimeout(initLenis, 80);
+                return;
+            }
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            var lenis = new Lenis({
+                duration: 1.2,
+                easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+            });
+
+            // Official Lenis + GSAP ScrollTrigger integration: keep
+            // ScrollTrigger's own progress calculations synced to Lenis's
+            // eased position every scroll tick, and let Lenis drive GSAP's
+            // ticker (rather than its own separate rAF loop) so both stay
+            // on the same clock. lagSmoothing is disabled because GSAP's
+            // own "catch up after a dropped frame" behavior fights Lenis's
+            // delta-time handling otherwise.
+            lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add(function (time) {
+                lenis.raf(time * 1000);
+            });
+            gsap.ticker.lagSmoothing(0);
+        }
+        if (document.readyState !== 'loading') { initLenis(); }
+        else { window.addEventListener('DOMContentLoaded', initLenis); }
+    })();
+    </script>
+
     <script>
     (function () {
         var gif = document.getElementById('contact-galaxy-bg');
