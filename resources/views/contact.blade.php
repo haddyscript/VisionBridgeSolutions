@@ -70,6 +70,7 @@
     .contact-tag::after  { right: -6px; border-right: 1px solid var(--vb-orange); }
 
     /* ── Headline ── */
+    .contact-headline-wrap { position: relative; overflow: hidden; padding-bottom: 4px; margin-bottom: -4px; }
     .contact-headline {
         font-family: 'Archivo Black', 'Inter', sans-serif;
         text-transform: uppercase;
@@ -80,16 +81,46 @@
     }
     .contact-headline .accent { color: var(--vb-orange); }
 
+    /* One-shot "signal boot-up" sweep across the headline, played once by
+       JS after the headline itself has faded in — same technique as
+       .founder-photo-sweep / .story-logo-sweep elsewhere on the site
+       (a light streak skewed and translated across), just themed orange
+       here to read as a scan/signal flicker rather than a glass glint. */
+    .contact-headline-sweep { position: absolute; inset: 0; pointer-events: none; }
+    .contact-headline-sweep::before {
+        content: '';
+        position: absolute;
+        top: -20%; left: 0;
+        width: 30%; height: 140%;
+        background: linear-gradient(105deg, transparent, rgba(255,164,92,.55), transparent);
+        transform: translateX(-160%) skewX(-16deg);
+    }
+    .contact-headline-sweep.is-sweeping::before {
+        animation: contact-sweep-pass .9s ease-in-out forwards;
+    }
+    @keyframes contact-sweep-pass {
+        to { transform: translateX(360%) skewX(-16deg); }
+    }
+
+    /* Ambient orange glow (the ::after on #contact-dark) fades in once on
+       load instead of just being statically there from first paint. */
+    #contact-dark::after { opacity: 0; animation: contact-glow-in 1.8s ease-out .3s forwards; }
+    @keyframes contact-glow-in { to { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) {
+        #contact-dark::after { animation: none; opacity: 1; }
+        .contact-headline-sweep::before { display: none; }
+    }
+
     /* ── Status rows ── */
     .contact-status-row { display: flex; align-items: baseline; gap: 10px; font-size: .82rem; }
     .contact-status-label { color: rgba(255,255,255,.55); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
     .contact-status-value { color: var(--vb-orange-light); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
-    .contact-status-dot {
-        width: 7px; height: 7px; border-radius: 50%;
-        background: var(--vb-orange);
-        box-shadow: 0 0 8px rgba(255,124,31,.8);
-        flex-shrink: 0;
-    }
+    /* Reuses the sitewide .live-dot component (already pulses, already
+       registered with the off-screen animation-pause system in
+       layouts/app.blade.php) instead of a one-off dot, just recolored —
+       same pattern #hero-badge uses to recolor it gold. */
+    #contact-dark .live-dot { background: var(--vb-orange); }
+    #contact-dark .live-dot::after { border-color: rgba(255,124,31,.55); }
 
     /* ── Bottom info cards (Email / Call Us) ── */
     .contact-info-card {
@@ -214,35 +245,38 @@
 
             {{-- ── Left: pitch + status + info cards ── --}}
             <div class="flex flex-col gap-7">
-                <div class="contact-tag self-start">Contact Channel</div>
+                <div class="contact-tag self-start" data-contact-reveal>Contact Channel</div>
 
-                <h1 class="contact-headline">
-                    Let's Build<br><span class="accent">Something</span>
-                </h1>
+                <div class="contact-headline-wrap" data-contact-reveal>
+                    <h1 class="contact-headline">
+                        Let's Build<br><span class="accent">Something</span>
+                    </h1>
+                    <div class="contact-headline-sweep" aria-hidden="true"></div>
+                </div>
 
-                <p class="text-base leading-relaxed max-w-lg" style="color:rgba(255,255,255,.62);">
+                <p class="text-base leading-relaxed max-w-lg" style="color:rgba(255,255,255,.62);" data-contact-reveal>
                     Send a few details about your project, and we'll get back with a clear direction, scope, timeline, and practical next steps for building a website that's sharp, focused, and ready to launch.
                 </p>
 
                 <div class="flex flex-col gap-3 mt-2">
-                    <div class="contact-status-row">
-                        <span class="contact-status-dot"></span>
+                    <div class="contact-status-row" data-contact-status>
+                        <span class="live-dot"></span>
                         <span class="contact-status-label">Status:</span>
                         <span class="contact-status-value">Accepting New Projects</span>
                     </div>
-                    <div class="contact-status-row">
+                    <div class="contact-status-row" data-contact-status>
                         <svg class="w-3.5 h-3.5" style="color:rgba(255,255,255,.55);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 7v5l3 3"/></svg>
                         <span class="contact-status-label">Response:</span>
                         <span class="contact-status-value">Within 24 Hours</span>
                     </div>
-                    <div class="contact-status-row">
+                    <div class="contact-status-row" data-contact-status>
                         <svg class="w-3.5 h-3.5" style="color:rgba(255,255,255,.55);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 18h.01M9 18v-4M15 18V9M21 18V4"/></svg>
                         <span class="contact-status-label">Support:</span>
                         <span class="contact-status-value">Live</span>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4" data-contact-cards>
                     <a href="mailto:support@visionbridgesolutions.com" class="contact-info-card">
                         <div class="contact-info-icon">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -265,7 +299,7 @@
             </div>
 
             {{-- ── Right: Form ── --}}
-            <div class="contact-form-card">
+            <div class="contact-form-card" data-contact-form-card>
                 <div id="contact-feedback">
                     @if (session('status') === 'contact_sent')
                         <div class="mb-5 px-4 py-3.5 text-sm" style="background:rgba(255,124,31,0.10);border:1px solid rgba(255,124,31,0.35);color:var(--vb-orange-light,#FFA45C);">
@@ -538,6 +572,55 @@
                 if (e.key === 'Escape') close();
             });
         })();
+    </script>
+
+    {{-- On-load entrance — badge/headline/copy cascade in from the left,
+         status rows and info cards follow, the form card slides in from
+         the right and settles just as its own fields cascade in behind
+         it. Same fromTo/stagger/power3.out language already used
+         throughout the rest of the site (see home.blade.php), gated
+         behind GSAP being loaded and prefers-reduced-motion, exactly
+         like every other entrance timeline in this codebase. --}}
+    <script>
+    (function () {
+        function initContactEntrance() {
+            if (typeof gsap === 'undefined') { setTimeout(initContactEntrance, 80); return; }
+
+            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduce) return; // everything is already visible by default in CSS
+
+            var revealEls  = gsap.utils.toArray('[data-contact-reveal]');
+            var statusEls  = gsap.utils.toArray('[data-contact-status]');
+            var cardsWrap  = document.querySelector('[data-contact-cards]');
+            var cardEls    = cardsWrap ? gsap.utils.toArray(cardsWrap.children) : [];
+            var formCard   = document.querySelector('[data-contact-form-card]');
+            var formFields = formCard ? gsap.utils.toArray(formCard.querySelectorAll('#contact-form > div, #contact-form > button')) : [];
+            var sweep      = document.querySelector('.contact-headline-sweep');
+
+            gsap.set(revealEls, { opacity: 0, y: 22 });
+            gsap.set(statusEls, { opacity: 0, x: -14 });
+            gsap.set(cardEls,   { opacity: 0, y: 18 });
+            gsap.set(formCard,  { opacity: 0, x: 46, filter: 'blur(8px)' });
+            gsap.set(formFields, { opacity: 0, y: 14 });
+
+            gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.15 })
+                .to(revealEls, { opacity: 1, y: 0, duration: 0.65, stagger: 0.12 })
+                .call(function () {
+                    // One-shot light sweep across the headline, right as it settles.
+                    if (!sweep) return;
+                    sweep.classList.add('is-sweeping');
+                    sweep.addEventListener('animationend', function () {
+                        sweep.classList.remove('is-sweeping');
+                    }, { once: true });
+                }, null, '-=0.2')
+                .to(statusEls, { opacity: 1, x: 0, duration: 0.45, stagger: 0.1 }, '-=0.35')
+                .to(cardEls,   { opacity: 1, y: 0, duration: 0.5, stagger: 0.12 }, '-=0.25')
+                .to(formCard,  { opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.85, ease: 'power2.out' }, '-=0.55')
+                .to(formFields, { opacity: 1, y: 0, duration: 0.45, stagger: 0.08 }, '-=0.5');
+        }
+        if (document.readyState !== 'loading') { initContactEntrance(); }
+        else { window.addEventListener('DOMContentLoaded', initContactEntrance); }
+    })();
     </script>
 </section>
 
