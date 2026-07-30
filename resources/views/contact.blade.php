@@ -18,8 +18,17 @@
      ============================================================ --}}
 <style>
     #contact-dark {
-        --vb-orange: #FF7C1F;
-        --vb-orange-light: #FFA45C;
+        /* Brand colors — same tokens as the rest of the site (nav CTA,
+           footer wordmark/icons, tailwind.config in layouts/app.blade.php),
+           not the reference image's literal orange, which doesn't belong
+           to this brand at all. Gold stays the dominant accent (matches
+           the nav's gold "Get Started" button + footer's gold wordmark);
+           teal is used sparingly as the secondary accent, same ratio the
+           rest of the site already uses (nav's teal Login pill, footer's
+           teal email/phone icons). */
+        --vb-gold: #C9A84C;
+        --vb-gold-light: #DFC06A;
+        --vb-teal: #2CA6A4;
         background: #0A0A0A;
         position: relative;
         overflow: hidden;
@@ -42,7 +51,7 @@
         position: absolute;
         inset: 0;
         pointer-events: none;
-        background: radial-gradient(ellipse 70% 60% at 30% 20%, rgba(255,124,31,.08), transparent 60%);
+        background: radial-gradient(ellipse 70% 60% at 30% 20%, rgba(201,168,76,.09), transparent 60%);
     }
 
     /* ── Bracket-tag badge ("[ CONTACT CHANNEL ]") ── */
@@ -63,11 +72,11 @@
         position: absolute;
         top: -1px; bottom: -1px;
         width: 6px;
-        border-top: 1px solid var(--vb-orange);
-        border-bottom: 1px solid var(--vb-orange);
+        border-top: 1px solid var(--vb-gold);
+        border-bottom: 1px solid var(--vb-gold);
     }
-    .contact-tag::before { left: -6px; border-left: 1px solid var(--vb-orange); }
-    .contact-tag::after  { right: -6px; border-right: 1px solid var(--vb-orange); }
+    .contact-tag::before { left: -6px; border-left: 1px solid var(--vb-gold); }
+    .contact-tag::after  { right: -6px; border-right: 1px solid var(--vb-gold); }
 
     /* ── Headline ── */
     .contact-headline-wrap { position: relative; overflow: hidden; padding-bottom: 4px; margin-bottom: -4px; }
@@ -79,20 +88,20 @@
         font-size: clamp(2.6rem, 6vw, 4.6rem);
         color: #FFFFFF;
     }
-    .contact-headline .accent { color: var(--vb-orange); }
+    .contact-headline .accent { color: var(--vb-gold); }
 
     /* One-shot "signal boot-up" sweep across the headline, played once by
        JS after the headline itself has faded in — same technique as
        .founder-photo-sweep / .story-logo-sweep elsewhere on the site
-       (a light streak skewed and translated across), just themed orange
-       here to read as a scan/signal flicker rather than a glass glint. */
+       (a light streak skewed and translated across), themed gold to match
+       the brand instead of the reference's orange. */
     .contact-headline-sweep { position: absolute; inset: 0; pointer-events: none; }
     .contact-headline-sweep::before {
         content: '';
         position: absolute;
         top: -20%; left: 0;
         width: 30%; height: 140%;
-        background: linear-gradient(105deg, transparent, rgba(255,164,92,.55), transparent);
+        background: linear-gradient(105deg, transparent, rgba(223,192,106,.55), transparent);
         transform: translateX(-160%) skewX(-16deg);
     }
     .contact-headline-sweep.is-sweeping::before {
@@ -102,7 +111,7 @@
         to { transform: translateX(360%) skewX(-16deg); }
     }
 
-    /* Ambient orange glow (the ::after on #contact-dark) fades in once on
+    /* Ambient gold glow (the ::after on #contact-dark) fades in once on
        load instead of just being statically there from first paint. */
     #contact-dark::after { opacity: 0; animation: contact-glow-in 1.8s ease-out .3s forwards; }
     @keyframes contact-glow-in { to { opacity: 1; } }
@@ -114,15 +123,18 @@
     /* ── Status rows ── */
     .contact-status-row { display: flex; align-items: baseline; gap: 10px; font-size: .82rem; }
     .contact-status-label { color: rgba(255,255,255,.55); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-    .contact-status-value { color: var(--vb-orange-light); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    .contact-status-value { color: var(--vb-gold-light); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
     /* Reuses the sitewide .live-dot component (already pulses, already
        registered with the off-screen animation-pause system in
-       layouts/app.blade.php) instead of a one-off dot, just recolored —
-       same pattern #hero-badge uses to recolor it gold. */
-    #contact-dark .live-dot { background: var(--vb-orange); }
-    #contact-dark .live-dot::after { border-color: rgba(255,124,31,.55); }
+       layouts/app.blade.php), recolored to the exact same "hot gold" the
+       Hero badge's own live-dot already uses (#hero-badge .live-dot in
+       layouts/app.blade.php) for consistency across the two pages. */
+    #contact-dark .live-dot { background: #FFB627; }
+    #contact-dark .live-dot::after { border-color: rgba(255,182,39,.65); }
 
-    /* ── Bottom info cards (Email / Call Us) ── */
+    /* ── Bottom info cards (Email / Call Us) — teal accent here specifically,
+         mirroring the footer's own teal email/phone icons directly below
+         this section, so the two visually hand off to each other. ── */
     .contact-info-card {
         display: flex;
         align-items: center;
@@ -132,12 +144,12 @@
         border: 1px solid rgba(255,255,255,.10);
         transition: border-color .25s ease, background .25s ease;
     }
-    .contact-info-card:hover { border-color: rgba(255,124,31,.45); background: rgba(255,124,31,.04); }
+    .contact-info-card:hover { border-color: rgba(44,166,164,.45); background: rgba(44,166,164,.06); }
     .contact-info-icon {
         width: 38px; height: 38px; flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
         border: 1px solid rgba(255,255,255,.18);
-        color: var(--vb-orange);
+        color: var(--vb-teal);
     }
     .contact-info-label { font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.45); }
     .contact-info-value { font-size: .95rem; font-weight: 700; color: #FFFFFF; }
@@ -151,13 +163,13 @@
         clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 0 100%);
     }
     .contact-form-card::before {
-        /* Retraces the cut-corner edge in orange since clip-path removes
+        /* Retraces the cut-corner edge in gold since clip-path removes
            the border along the diagonal itself. */
         content: '';
         position: absolute;
         top: 0; right: 0;
         width: 30px; height: 30px;
-        background: linear-gradient(135deg, transparent 49%, var(--vb-orange) 50%, transparent 51%);
+        background: linear-gradient(135deg, transparent 49%, var(--vb-gold) 50%, transparent 51%);
         opacity: .9;
     }
     .contact-field-label {
@@ -181,44 +193,45 @@
     .contact-input::placeholder, .contact-textarea::placeholder { color: rgba(255,255,255,.32); }
     .contact-input:focus, .contact-textarea:focus {
         outline: none;
-        border-color: var(--vb-orange);
-        background: rgba(255,124,31,.05);
+        border-color: var(--vb-gold);
+        background: rgba(201,168,76,.05);
     }
     .contact-textarea { resize: none; }
 
+    /* Color/gradient/shimmer/hover-fill all come from the sitewide
+       .contact-submit-btn class already defined in layouts/app.blade.php
+       (the exact same gold button the old contact form used) — this local
+       rule only adds the corner-cut shape + type treatment on top of it,
+       so it inherits the site's real button styling instead of a one-off
+       recolor. */
     #contact-submit.contact-submit-btn {
-        position: relative;
-        background: linear-gradient(135deg, var(--vb-orange) 0%, var(--vb-orange-light) 100%);
-        color: #15130E;
         font-weight: 800;
         letter-spacing: .08em;
         text-transform: uppercase;
         font-size: .88rem;
         padding: 16px;
-        border: none;
         clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
-        transition: filter .2s ease, transform .2s ease;
     }
-    #contact-submit.contact-submit-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
-    #contact-submit.contact-submit-btn:disabled { opacity: .55; transform: none; }
+    #contact-submit.contact-submit-btn:hover { transform: translateY(-1px); }
+    #contact-submit.contact-submit-btn:disabled { transform: none; }
 
     /* ── Custom "Project Type" dropdown — same JS-driven behavior as
          before, restyled for the dark card. ── */
     .contact-select-trigger { display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; text-align: left; color: rgba(255,255,255,.55); }
-    .contact-select-trigger.is-open { border-color: var(--vb-orange); background: rgba(255,124,31,.05); }
+    .contact-select-trigger.is-open { border-color: var(--vb-gold); background: rgba(201,168,76,.05); }
     #service-select-chevron.is-open { transform: rotate(180deg); }
     #service-select-panel {
         background: #161616;
-        border: 1px solid rgba(255,124,31,.35);
+        border: 1px solid rgba(201,168,76,.35);
         box-shadow: 0 24px 60px rgba(0,0,0,.55);
     }
     #service-select-panel.is-open { opacity: 1 !important; transform: scaleY(1) translateY(0) !important; visibility: visible !important; }
     .service-option { color: rgba(255,255,255,.78); }
-    .service-option:hover { background: rgba(255,124,31,.10); }
-    .service-option.is-selected { background: rgba(255,124,31,.08); font-weight: 600; color: #fff; }
+    .service-option:hover { background: rgba(201,168,76,.10); }
+    .service-option.is-selected { background: rgba(201,168,76,.08); font-weight: 600; color: #fff; }
     .service-option.is-selected .service-option-check { opacity: 1 !important; }
     #service-select-list::-webkit-scrollbar { width: 6px; }
-    #service-select-list::-webkit-scrollbar-thumb { background: rgba(255,124,31,.45); border-radius: 3px; }
+    #service-select-list::-webkit-scrollbar-thumb { background: rgba(201,168,76,.45); border-radius: 3px; }
 
     /* ── Plain native selects for Budget Range / Timeline ── */
     .contact-native-select {
@@ -312,7 +325,7 @@
             <div class="contact-form-card" data-contact-form-card>
                 <div id="contact-feedback">
                     @if (session('status') === 'contact_sent')
-                        <div class="mb-5 px-4 py-3.5 text-sm" style="background:rgba(255,124,31,0.10);border:1px solid rgba(255,124,31,0.35);color:var(--vb-orange-light,#FFA45C);">
+                        <div class="mb-5 px-4 py-3.5 text-sm" style="background:rgba(44,166,164,0.12);border:1px solid rgba(44,166,164,0.30);color:#3FBDBB;">
                             Thanks for reaching out! We've received your message and will get back to you within 24 hours.
                         </div>
                     @endif
@@ -376,14 +389,14 @@
 
                             <div id="service-select-panel" class="absolute left-0 right-0 mt-2 rounded-xl overflow-hidden origin-top"
                                  style="opacity:0;transform:scaleY(0.92) translateY(-4px);visibility:hidden;transition:opacity 0.22s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1);z-index:30;">
-                                <ul id="service-select-list" role="listbox" class="max-h-64 overflow-y-auto py-2" style="scrollbar-width:thin;scrollbar-color:#FF7C1F transparent;">
+                                <ul id="service-select-list" role="listbox" class="max-h-64 overflow-y-auto py-2" style="scrollbar-width:thin;scrollbar-color:#C9A84C transparent;">
                                     <li data-value="" role="option" tabindex="-1" class="service-option px-4 py-2.5 text-sm cursor-pointer flex items-center justify-between transition-colors duration-150">
                                         Select...
                                     </li>
                                     @foreach ($serviceOptions as $option)
                                         <li data-value="{{ $option }}" role="option" tabindex="-1" class="service-option px-4 py-2.5 text-sm cursor-pointer flex items-center justify-between transition-colors duration-150">
                                             <span>{{ $option }}</span>
-                                            <svg class="service-option-check w-3.5 h-3.5 shrink-0" style="color:#FF7C1F;opacity:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="service-option-check w-3.5 h-3.5 shrink-0" style="color:#C9A84C;opacity:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
                                             </svg>
                                         </li>
@@ -454,7 +467,7 @@
 
             function renderBanner(type, lines) {
                 const palette = type === 'success'
-                    ? { bg: 'rgba(255,124,31,0.10)', border: 'rgba(255,124,31,0.35)', color: '#FFA45C' }
+                    ? { bg: 'rgba(44,166,164,0.12)', border: 'rgba(44,166,164,0.30)', color: '#3FBDBB' }
                     : { bg: 'rgba(220,38,38,0.10)', border: 'rgba(220,38,38,0.35)', color: '#fca5a5' };
 
                 const paragraphs = lines.map((line) => `<p>${line}</p>`).join('');
