@@ -372,6 +372,20 @@
 </style>
 
 <section id="contact-dark">
+    {{-- Ambient galaxy-particles GIF backdrop — reuses the same asset and
+         mix-blend-mode:screen technique as the desktop full-screen menu
+         (layouts/app.blade.php), so only the bright particles read against
+         this section's own near-black background. `src` is intentionally
+         left unset (see `data-src`) — the file is 4.7MB, so the script
+         below loads it during idle time after the page settles instead of
+         blocking initial render, and fades it in once it's actually ready
+         rather than popping in the instant the download finishes. Skipped
+         entirely for prefers-reduced-motion, same as this page's other
+         animated layers. --}}
+    <img id="contact-galaxy-bg" data-src="@assetv('image/galaxy-particles.gif')" alt="" aria-hidden="true"
+         class="absolute inset-0 w-full h-full object-cover pointer-events-none"
+         style="opacity:0;mix-blend-mode:screen;transition:opacity 1.4s ease;">
+
     <div id="contact-cursor-dot" aria-hidden="true"></div>
     <div id="contact-cursor-ring" aria-hidden="true"></div>
 
@@ -565,6 +579,24 @@
          its bottom edge instead of ending on a hard line right where the
          footer begins. --}}
     <div class="contact-footer-fade" aria-hidden="true"></div>
+
+    <script>
+    (function () {
+        var gif = document.getElementById('contact-galaxy-bg');
+        if (!gif || !gif.dataset.src) return;
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        function loadGalaxyBg() {
+            gif.addEventListener('load', function () {
+                gif.style.opacity = '0.28';
+            }, { once: true });
+            gif.src = gif.dataset.src;
+            gif.removeAttribute('data-src');
+        }
+        if ('requestIdleCallback' in window) requestIdleCallback(loadGalaxyBg, { timeout: 4000 });
+        else setTimeout(loadGalaxyBg, 2000);
+    })();
+    </script>
 
     <script>
         (function () {
