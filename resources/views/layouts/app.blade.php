@@ -1278,6 +1278,80 @@
             will-change: opacity;
         }
 
+        /* ─── Footer: custom trailing "signal lock" cursor — same lag-
+             stretch technique as the Contact page's own cursor (see
+             contact.blade.php), replicated here since the footer is one
+             shared component rendered on every page, not something a
+             single page's own script can reach. The dot/ring elements
+             themselves live outside <footer> in the markup (right after it
+             closes), not nested inside it — #site-footer has
+             will-change:transform, which per spec makes it a containing
+             block for position:fixed descendants exactly like an actual
+             transform would (the same class of bug this codebase already
+             hit and fixed once before for #desktop-menu/#mobile-menu, by
+             reparenting them to <body>). Nesting the cursor inside the
+             footer would silently offset it from the real mouse position
+             by however far the footer sits from the viewport's own
+             top-left corner. ─── */
+        #footer-cursor-dot, #footer-cursor-ring {
+            position: fixed;
+            top: 0; left: 0;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 200;
+            opacity: 0;
+            transform: translate(-50%, -50%);
+        }
+        #footer-cursor-dot {
+            width: 6px; height: 6px;
+            background: #C9A84C;
+            box-shadow: 0 0 10px rgba(201,168,76,.85);
+        }
+        #footer-cursor-ring {
+            width: 46px; height: 46px;
+            border: 1.5px solid rgba(201,168,76,.55);
+            transition: width .3s cubic-bezier(.22,1,.36,1), height .3s cubic-bezier(.22,1,.36,1),
+                        border-color .3s ease, background-color .3s ease;
+        }
+        #footer-cursor-dot.is-visible, #footer-cursor-ring.is-visible { opacity: 1; }
+        #footer-cursor-ring.is-hovering {
+            width: 68px; height: 68px;
+            background: rgba(201,168,76,.12);
+            border-color: rgba(201,168,76,.85);
+        }
+        #site-footer.has-custom-cursor,
+        #site-footer.has-custom-cursor a,
+        #site-footer.has-custom-cursor button {
+            cursor: none;
+        }
+        @media (hover: none), (pointer: coarse) {
+            #footer-cursor-dot, #footer-cursor-ring { display: none; }
+        }
+
+        /* ─── Footer: text zoom-on-hover — same slow/enlarged treatment as
+             the Contact page. .footer-link already has its own GSAP hover
+             tween (the underline draw + x nudge, see initFooter() below) —
+             that tween is extended to add `scale` directly rather than
+             layering a competing CSS :hover rule on top of it, since
+             GSAP's inline transform would just override a plain CSS
+             transform on every hover anyway. ─── */
+        .footer-link { transform-origin: left center; }
+        #footer-col-2 h4, #footer-col-3 h4, #footer-col-4 h4,
+        #footer-bottom p {
+            display: inline-block;
+            transition: transform .65s cubic-bezier(.16,1,.3,1);
+            transform-origin: left center;
+        }
+        #footer-col-2 h4:hover, #footer-col-3 h4:hover, #footer-col-4 h4:hover,
+        #footer-bottom p:hover {
+            transform: scale(1.2);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #footer-col-2 h4, #footer-col-3 h4, #footer-col-4 h4, #footer-bottom p {
+                transition: none;
+            }
+        }
+
         /* ════════════════════════════════════════════════════════════
            CORE VALUES — Light, smooth, welcoming cards
            ════════════════════════════════════════════════════════════ */
@@ -2307,6 +2381,12 @@
         </div>
     </footer>
 
+    {{-- Footer cursor elements — deliberately outside <footer> itself, see
+         the comment on #footer-cursor-dot/#footer-cursor-ring in the
+         <style> block above for why. --}}
+    <div id="footer-cursor-dot" aria-hidden="true"></div>
+    <div id="footer-cursor-ring" aria-hidden="true"></div>
+
     <script>
         // Re-parent the full-screen menu to the very end of the body element,
         // outside the navbar entirely. It needs to, not just could: the
@@ -3055,17 +3135,71 @@
 
                 link.addEventListener('mouseenter', () => {
                     gsap.killTweensOf([link, bar]);
-                    // Slight horizontal nudge on the text + underline draws in
-                    gsap.to(link, { x: 5, duration: 0.30, ease: 'power3.out' });
+                    // Horizontal nudge + zoom on the text (slowed/enlarged
+                    // to match the Contact page's own text zoom-on-hover),
+                    // underline draws in
+                    gsap.to(link, { x: 5, scale: 1.12, duration: 0.6, ease: 'power3.out' });
                     gsap.to(bar,  { scaleX: 1, duration: 0.34, ease: 'power3.out' });
                 });
 
                 link.addEventListener('mouseleave', () => {
                     gsap.killTweensOf([link, bar]);
-                    gsap.to(link, { x: 0, duration: 0.45, ease: 'power3.out' });
+                    gsap.to(link, { x: 0, scale: 1, duration: 0.6, ease: 'power3.out' });
                     gsap.to(bar,  { scaleX: 0, duration: 0.28, ease: 'power2.in' });
                 });
             });
+
+            // ── 4. Custom trailing cursor — same lag-stretch technique as
+            //    the Contact page (see contact.blade.php for the original
+            //    and its inline reasoning). Desktop/fine-pointer only.
+            const footerCursorDot  = document.getElementById('footer-cursor-dot');
+            const footerCursorRing = document.getElementById('footer-cursor-ring');
+            const reduceMotion     = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const finePointer      = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+            if (footer && footerCursorDot && footerCursorRing && finePointer && !reduceMotion) {
+                const moveDotX = gsap.quickTo(footerCursorDot, 'x', { duration: 0.05, ease: 'power3.out' });
+                const moveDotY = gsap.quickTo(footerCursorDot, 'y', { duration: 0.05, ease: 'power3.out' });
+
+                let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+                let ringReady = false, pressed = false, hovering = false, visible = false;
+
+                footer.addEventListener('mousemove', (e) => {
+                    mouseX = e.clientX; mouseY = e.clientY;
+                    moveDotX(mouseX); moveDotY(mouseY);
+                    if (!ringReady) { ringX = mouseX; ringY = mouseY; ringReady = true; }
+                    if (!visible) {
+                        visible = true;
+                        footer.classList.add('has-custom-cursor');
+                        footerCursorDot.classList.add('is-visible');
+                        footerCursorRing.classList.add('is-visible');
+                    }
+                });
+
+                footer.addEventListener('mouseleave', () => {
+                    visible = false;
+                    footer.classList.remove('has-custom-cursor');
+                    footerCursorDot.classList.remove('is-visible');
+                    footerCursorRing.classList.remove('is-visible');
+                });
+
+                gsap.ticker.add(() => {
+                    if (!visible) return;
+                    ringX += (mouseX - ringX) * 0.1;
+                    ringY += (mouseY - ringY) * 0.1;
+                    const dist = Math.hypot(mouseX - ringX, mouseY - ringY);
+                    const stretch = pressed ? 0.8 : gsap.utils.clamp(1, 1.7, 1 + dist / 130);
+                    gsap.set(footerCursorRing, { x: ringX, y: ringY, scale: hovering ? 1 : stretch });
+                });
+
+                footer.querySelectorAll('a, button').forEach((el) => {
+                    el.addEventListener('mouseenter', () => { hovering = true; footerCursorRing.classList.add('is-hovering'); });
+                    el.addEventListener('mouseleave', () => { hovering = false; footerCursorRing.classList.remove('is-hovering'); });
+                });
+
+                footer.addEventListener('mousedown', () => { pressed = true; });
+                footer.addEventListener('mouseup', () => { pressed = false; });
+            }
         }
         initFooter();
     })();
