@@ -237,6 +237,16 @@
         .contact-form-card::before { display: none; }
         #contact-submit.contact-submit-btn { clip-path: none; border-radius: 12px; }
     }
+
+    /* ── Dissolve into the footer ── */
+    .contact-footer-fade {
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        height: 240px;
+        background: linear-gradient(to bottom, transparent, #0A0A0A 88%);
+        pointer-events: none;
+        z-index: 2;
+    }
 </style>
 
 <section id="contact-dark">
@@ -244,7 +254,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
 
             {{-- ── Left: pitch + status + info cards ── --}}
-            <div class="flex flex-col gap-7">
+            <div class="flex flex-col gap-7" data-contact-left>
                 <div class="contact-tag self-start" data-contact-reveal>Contact Channel</div>
 
                 <div class="contact-headline-wrap" data-contact-reveal>
@@ -425,6 +435,12 @@
         </div>
     </div>
 
+    {{-- Soft dissolve into the footer below — a static gradient (no JS
+         needed for this part) so the section's own dark bg deepens toward
+         its bottom edge instead of ending on a hard line right where the
+         footer begins. --}}
+    <div class="contact-footer-fade" aria-hidden="true"></div>
+
     <script>
         (function () {
             const form = document.getElementById('contact-form');
@@ -574,28 +590,40 @@
         })();
     </script>
 
-    {{-- On-load entrance — badge/headline/copy cascade in from the left,
-         status rows and info cards follow, the form card slides in from
-         the right and settles just as its own fields cascade in behind
-         it. Same fromTo/stagger/power3.out language already used
-         throughout the rest of the site (see home.blade.php), gated
-         behind GSAP being loaded and prefers-reduced-motion, exactly
-         like every other entrance timeline in this codebase. --}}
+    {{-- Scroll-driven entrance — each group reveals as it scrolls into
+         view and elegantly un-reveals if you scroll back up past it
+         (toggleActions: 'play none none reverse', the same convention
+         used throughout home.blade.php — see its TOGGLE constant), rather
+         than a single fixed page-load timeline. The form card + its own
+         fields play as one mini-timeline together. Finishes with a
+         scroll-scrubbed "exit" — the whole page content gently fades/lifts
+         as you scroll past the section into the footer, same technique as
+         Hero's own exit transition in home.blade.php. Gated behind GSAP +
+         ScrollTrigger being loaded and prefers-reduced-motion, exactly
+         like every other scroll animation in this codebase. --}}
     <script>
     (function () {
-        function initContactEntrance() {
-            if (typeof gsap === 'undefined') { setTimeout(initContactEntrance, 80); return; }
+        function initContactScrollAnimations() {
+            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+                setTimeout(initContactScrollAnimations, 80); return;
+            }
 
             var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             if (reduce) return; // everything is already visible by default in CSS
 
+            gsap.registerPlugin(ScrollTrigger);
+            var TOGGLE = 'play none none reverse';
+
+            var leftCol    = document.querySelector('[data-contact-left]');
             var revealEls  = gsap.utils.toArray('[data-contact-reveal]');
+            var statusWrap = document.querySelector('[data-contact-status]') ? document.querySelector('[data-contact-status]').parentElement : leftCol;
             var statusEls  = gsap.utils.toArray('[data-contact-status]');
             var cardsWrap  = document.querySelector('[data-contact-cards]');
             var cardEls    = cardsWrap ? gsap.utils.toArray(cardsWrap.children) : [];
             var formCard   = document.querySelector('[data-contact-form-card]');
             var formFields = formCard ? gsap.utils.toArray(formCard.querySelectorAll('#contact-form > div, #contact-form > button')) : [];
             var sweep      = document.querySelector('.contact-headline-sweep');
+            var contentWrap = document.querySelector('#contact-dark > .relative');
 
             gsap.set(revealEls, { opacity: 0, y: 22 });
             gsap.set(statusEls, { opacity: 0, x: -14 });
@@ -603,23 +631,59 @@
             gsap.set(formCard,  { opacity: 0, x: 46, filter: 'blur(8px)' });
             gsap.set(formFields, { opacity: 0, y: 14 });
 
-            gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.15 })
-                .to(revealEls, { opacity: 1, y: 0, duration: 0.65, stagger: 0.12 })
-                .call(function () {
-                    // One-shot light sweep across the headline, right as it settles.
-                    if (!sweep) return;
-                    sweep.classList.add('is-sweeping');
-                    sweep.addEventListener('animationend', function () {
-                        sweep.classList.remove('is-sweeping');
-                    }, { once: true });
-                }, null, '-=0.2')
-                .to(statusEls, { opacity: 1, x: 0, duration: 0.45, stagger: 0.1 }, '-=0.35')
-                .to(cardEls,   { opacity: 1, y: 0, duration: 0.5, stagger: 0.12 }, '-=0.25')
-                .to(formCard,  { opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.85, ease: 'power2.out' }, '-=0.55')
-                .to(formFields, { opacity: 1, y: 0, duration: 0.45, stagger: 0.08 }, '-=0.5');
+            function sweepOnce() {
+                if (!sweep || sweep.classList.contains('is-sweeping')) return;
+                sweep.classList.add('is-sweeping');
+                sweep.addEventListener('animationend', function () {
+                    sweep.classList.remove('is-sweeping');
+                }, { once: true });
+            }
+
+            gsap.to(revealEls, {
+                opacity: 1, y: 0, duration: 0.65, stagger: 0.12, ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: leftCol, start: 'top 85%', toggleActions: TOGGLE,
+                    onEnter: sweepOnce, onEnterBack: sweepOnce,
+                },
+            });
+
+            if (statusEls.length) {
+                gsap.to(statusEls, {
+                    opacity: 1, x: 0, duration: 0.45, stagger: 0.1, ease: 'power3.out',
+                    scrollTrigger: { trigger: statusWrap, start: 'top 88%', toggleActions: TOGGLE },
+                });
+            }
+
+            if (cardEls.length) {
+                gsap.to(cardEls, {
+                    opacity: 1, y: 0, duration: 0.5, stagger: 0.12, ease: 'power3.out',
+                    scrollTrigger: { trigger: cardsWrap, start: 'top 92%', toggleActions: TOGGLE },
+                });
+            }
+
+            if (formCard) {
+                gsap.timeline({
+                    scrollTrigger: { trigger: formCard, start: 'top 85%', toggleActions: TOGGLE },
+                })
+                    .to(formCard, { opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.85, ease: 'power2.out' })
+                    .to(formFields, { opacity: 1, y: 0, duration: 0.45, stagger: 0.08, ease: 'power3.out' }, '-=0.5');
+            }
+
+            // Cinematic exit — as the section's bottom edge approaches, the
+            // content gently fades/lifts/scales down so the handoff into
+            // the footer below reads as one continuous motion instead of
+            // an abrupt cut.
+            if (contentWrap) {
+                gsap.to(contentWrap, {
+                    opacity: 0.2, y: -30, scale: 0.98, ease: 'none',
+                    scrollTrigger: { trigger: '#contact-dark', start: 'bottom 85%', end: 'bottom 35%', scrub: 1 },
+                });
+            }
+
+            ScrollTrigger.refresh();
         }
-        if (document.readyState !== 'loading') { initContactEntrance(); }
-        else { window.addEventListener('DOMContentLoaded', initContactEntrance); }
+        if (document.readyState !== 'loading') { initContactScrollAnimations(); }
+        else { window.addEventListener('DOMContentLoaded', initContactScrollAnimations); }
     })();
     </script>
 </section>
