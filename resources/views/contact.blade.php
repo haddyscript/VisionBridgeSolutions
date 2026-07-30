@@ -799,16 +799,6 @@
 
             var lenis = new Lenis({
                 lerp: 0.1, // higher = snappier/less smoothing, lower = heavier/more lag
-                // Lenis 1.1.x auto-starts its own internal requestAnimationFrame
-                // loop by default. Since this integration also manually drives
-                // it via gsap.ticker below (the correct way to keep it synced
-                // with ScrollTrigger), leaving autoRaf on meant Lenis was being
-                // updated twice per frame from two independent, slightly
-                // out-of-sync clocks — some frame pairs landing close together
-                // (barely any movement) and others with a gap (a burst to
-                // compensate), which is exactly what read as "delay then
-                // sudden/faster" scrolling.
-                autoRaf: false,
             });
 
             // Official Lenis + GSAP ScrollTrigger integration: keep
