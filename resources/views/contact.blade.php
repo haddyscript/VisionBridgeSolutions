@@ -797,24 +797,30 @@
             }
             if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-            // Deliberately the simpler integration — no manual gsap.ticker
-            // driving, no lagSmoothing(0). This page already runs a fair
-            // amount of per-frame work (the custom cursor's own ticker
-            // callback, several animated background layers, ScrollTrigger
-            // reveals), and disabling GSAP's lag-smoothing (as the
-            // "official" manual-ticker integration snippet calls for) meant
-            // any frame hiccup handed Lenis a larger time-delta on that
-            // tick, which it would then jump further to compensate for —
-            // exactly the "delay then sudden/faster" symptom reported.
-            // Letting Lenis drive its own internal rAF loop (autoRaf, on by
-            // default) keeps its timing independent of GSAP's ticker
-            // entirely; the one thing it still needs is telling
-            // ScrollTrigger to recheck its own trigger positions whenever
-            // Lenis's eased position actually changes.
+            // Lenis must be actively driven every frame or it freezes the
+            // page entirely — it intercepts wheel/touch input (blocking
+            // native scroll, which is core to how it works) whether or not
+            // anything is actually moving the position forward. Assuming
+            // autoRaf would handle that on its own (removed in the previous
+            // version of this code) was wrong for this build and left
+            // nothing driving it, which is why the page stopped scrolling
+            // completely. Explicitly driving it via gsap.ticker again here —
+            // but this time WITHOUT disabling GSAP's lag-smoothing (which
+            // the "official" integration snippet calls for, and which is
+            // what caused the earlier "delay then sudden/faster" jump: with
+            // it disabled, any frame hiccup on this fairly busy page handed
+            // Lenis a larger time-delta, and it jumped further to
+            // compensate). Leaving lag-smoothing at its default should
+            // absorb those hiccups instead of translating them into visible
+            // jumps, while still guaranteeing Lenis is reliably ticked.
             var lenis = new Lenis({
                 lerp: 0.1, // higher = snappier/less smoothing, lower = heavier/more lag
+                autoRaf: false,
             });
             lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add(function (time) {
+                lenis.raf(time * 1000);
+            });
         }
         if (document.readyState !== 'loading') { initLenis(); }
         else { window.addEventListener('DOMContentLoaded', initLenis); }
