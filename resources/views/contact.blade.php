@@ -260,9 +260,59 @@
         pointer-events: none;
         z-index: 2;
     }
+
+    /* ── Custom "signal lock" cursor — a dot that snaps to the pointer plus
+         a ring that eases behind it (gsap.quickTo, same lag technique as
+         #hero-mouse-glow / the nav's 3D-tilt cards elsewhere on the site),
+         expanding over anything clickable like a reticle acquiring a
+         target. Desktop/fine-pointer only — see the script below, which is
+         what actually turns this on (native cursor stays untouched until
+         JS confirms it can run, so a slow/blocked GSAP load never leaves a
+         visitor with no cursor at all). ── */
+    #contact-cursor-dot, #contact-cursor-ring {
+        position: fixed;
+        top: 0; left: 0;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 200;
+        opacity: 0;
+        transform: translate(-50%, -50%);
+    }
+    #contact-cursor-dot {
+        width: 6px; height: 6px;
+        background: var(--vb-gold, #C9A84C);
+        box-shadow: 0 0 10px rgba(201,168,76,.85);
+    }
+    #contact-cursor-ring {
+        width: 34px; height: 34px;
+        border: 1.5px solid rgba(201,168,76,.55);
+        transition: width .25s cubic-bezier(.22,1,.36,1), height .25s cubic-bezier(.22,1,.36,1),
+                    border-color .25s ease, background-color .25s ease;
+    }
+    #contact-cursor-dot.is-visible, #contact-cursor-ring.is-visible { opacity: 1; }
+    #contact-cursor-ring.is-hovering {
+        width: 54px; height: 54px;
+        background: rgba(201,168,76,.12);
+        border-color: rgba(201,168,76,.85);
+    }
+    #contact-dark.has-custom-cursor,
+    #contact-dark.has-custom-cursor a,
+    #contact-dark.has-custom-cursor button,
+    #contact-dark.has-custom-cursor input,
+    #contact-dark.has-custom-cursor textarea,
+    #contact-dark.has-custom-cursor select,
+    #contact-dark.has-custom-cursor [role="option"] {
+        cursor: none;
+    }
+    @media (hover: none), (pointer: coarse) {
+        #contact-cursor-dot, #contact-cursor-ring { display: none; }
+    }
 </style>
 
 <section id="contact-dark">
+    <div id="contact-cursor-dot" aria-hidden="true"></div>
+    <div id="contact-cursor-ring" aria-hidden="true"></div>
+
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
 
@@ -601,6 +651,69 @@
                 if (e.key === 'Escape') close();
             });
         })();
+    </script>
+
+    {{-- Custom "signal lock" cursor — dot snaps to the pointer instantly,
+         the ring eases behind it, and expands over anything clickable.
+         Desktop/fine-pointer only; native cursor is left completely alone
+         until this confirms it can actually run. --}}
+    <script>
+    (function () {
+        function initContactCursor() {
+            if (typeof gsap === 'undefined') { setTimeout(initContactCursor, 80); return; }
+
+            var section = document.getElementById('contact-dark');
+            var dot = document.getElementById('contact-cursor-dot');
+            var ring = document.getElementById('contact-cursor-ring');
+            if (!section || !dot || !ring) return;
+            if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            var moveDotX  = gsap.quickTo(dot, 'x', { duration: 0.05, ease: 'power3.out' });
+            var moveDotY  = gsap.quickTo(dot, 'y', { duration: 0.05, ease: 'power3.out' });
+            var moveRingX = gsap.quickTo(ring, 'x', { duration: 0.4, ease: 'power3.out' });
+            var moveRingY = gsap.quickTo(ring, 'y', { duration: 0.4, ease: 'power3.out' });
+
+            var visible = false;
+
+            section.addEventListener('mousemove', function (e) {
+                moveDotX(e.clientX); moveDotY(e.clientY);
+                moveRingX(e.clientX); moveRingY(e.clientY);
+                if (!visible) {
+                    visible = true;
+                    section.classList.add('has-custom-cursor');
+                    dot.classList.add('is-visible');
+                    ring.classList.add('is-visible');
+                }
+            });
+
+            section.addEventListener('mouseleave', function () {
+                visible = false;
+                section.classList.remove('has-custom-cursor');
+                dot.classList.remove('is-visible');
+                ring.classList.remove('is-visible');
+            });
+
+            // Reticle "acquires" anything clickable — links, buttons,
+            // inputs, the custom dropdown's options.
+            var interactiveEls = section.querySelectorAll('a, button, input, textarea, select, [role="option"]');
+            interactiveEls.forEach(function (el) {
+                el.addEventListener('mouseenter', function () { ring.classList.add('is-hovering'); });
+                el.addEventListener('mouseleave', function () { ring.classList.remove('is-hovering'); });
+            });
+
+            // Small press feedback on click — the ring dips and springs
+            // back, reading as the reticle "locking on".
+            section.addEventListener('mousedown', function () {
+                gsap.to(ring, { scale: 0.8, duration: 0.15, ease: 'power2.out' });
+            });
+            section.addEventListener('mouseup', function () {
+                gsap.to(ring, { scale: 1, duration: 0.35, ease: 'back.out(2.2)' });
+            });
+        }
+        if (document.readyState !== 'loading') { initContactCursor(); }
+        else { window.addEventListener('DOMContentLoaded', initContactCursor); }
+    })();
     </script>
 
     {{-- Scroll-driven entrance — each group reveals as it scrolls into
