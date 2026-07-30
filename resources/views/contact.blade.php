@@ -797,24 +797,32 @@
             }
             if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-            // Deliberately the simpler integration — no manual gsap.ticker
-            // driving, no lagSmoothing(0). This page already runs a fair
-            // amount of per-frame work (the custom cursor's own ticker
-            // callback, several animated background layers, ScrollTrigger
-            // reveals), and disabling GSAP's lag-smoothing (as the
-            // "official" manual-ticker integration snippet calls for) meant
-            // any frame hiccup handed Lenis a larger time-delta on that
-            // tick, which it would then jump further to compensate for —
-            // exactly the "delay then sudden/faster" symptom reported.
-            // Letting Lenis drive its own internal rAF loop (autoRaf, on by
-            // default) keeps its timing independent of GSAP's ticker
-            // entirely; the one thing it still needs is telling
-            // ScrollTrigger to recheck its own trigger positions whenever
-            // Lenis's eased position actually changes.
             var lenis = new Lenis({
                 lerp: 0.1, // higher = snappier/less smoothing, lower = heavier/more lag
+                // Lenis 1.1.x auto-starts its own internal requestAnimationFrame
+                // loop by default. Since this integration also manually drives
+                // it via gsap.ticker below (the correct way to keep it synced
+                // with ScrollTrigger), leaving autoRaf on meant Lenis was being
+                // updated twice per frame from two independent, slightly
+                // out-of-sync clocks — some frame pairs landing close together
+                // (barely any movement) and others with a gap (a burst to
+                // compensate), which is exactly what read as "delay then
+                // sudden/faster" scrolling.
+                autoRaf: false,
             });
+
+            // Official Lenis + GSAP ScrollTrigger integration: keep
+            // ScrollTrigger's own progress calculations synced to Lenis's
+            // eased position every scroll tick, and let Lenis drive GSAP's
+            // ticker (rather than its own separate rAF loop) so both stay
+            // on the same clock. lagSmoothing is disabled because GSAP's
+            // own "catch up after a dropped frame" behavior fights Lenis's
+            // delta-time handling otherwise.
             lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add(function (time) {
+                lenis.raf(time * 1000);
+            });
+            gsap.ticker.lagSmoothing(0);
         }
         if (document.readyState !== 'loading') { initLenis(); }
         else { window.addEventListener('DOMContentLoaded', initLenis); }
