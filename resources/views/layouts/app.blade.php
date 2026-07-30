@@ -1891,6 +1891,10 @@
             .portfolio-card, .spotlight-frame { opacity: 1 !important; transform: none !important; filter: none !important; }
         }
     </style>
+    {{-- Optional per-page extra <head> tags (e.g. a page-specific display
+         font) — empty by default, so this is a no-op on every page that
+         doesn't @push('head') anything. --}}
+    @stack('head')
 </head>
 <body class="font-sans antialiased text-gray-800 bg-white">
 
