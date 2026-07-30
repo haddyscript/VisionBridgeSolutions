@@ -307,6 +307,68 @@
     @media (hover: none), (pointer: coarse) {
         #contact-cursor-dot, #contact-cursor-ring { display: none; }
     }
+
+    /* ── Text "zoom" under the cursor — plain CSS :hover (not JS), so it's
+         tied to the pointer's real position exactly like the custom cursor
+         above, no extra tracking logic needed. Short, isolated text (badge,
+         headline words, labels, values) gets a clear zoom since there's no
+         neighbor to collide with; the paragraph — a wrapped multi-line
+         block — gets a much smaller lift instead, since scaling that far
+         starts misaligning its own wrapped lines. ── */
+    .contact-tag,
+    .contact-headline-line,
+    .contact-headline .accent,
+    .contact-status-label,
+    .contact-status-value,
+    .contact-field-label,
+    #service-select-label,
+    .service-option span,
+    #contact-submit-label {
+        display: inline-block;
+        transition: transform .28s cubic-bezier(.22,1,.36,1);
+        transform-origin: left center;
+    }
+    .contact-tag:hover,
+    .contact-headline-line:hover,
+    .contact-headline .accent:hover,
+    .contact-status-label:hover,
+    .contact-status-value:hover,
+    .contact-field-label:hover,
+    #service-select-label:hover,
+    .service-option span:hover,
+    #contact-submit-label:hover {
+        transform: scale(1.12);
+    }
+    #contact-submit-label { transform-origin: center; }
+
+    /* .contact-info-label / .contact-info-value are two stacked <p> tags in
+       a plain (non-flex) wrapper — forcing them to inline-block would let
+       them sit side-by-side instead of stacked, so these stay display:block
+       and still zoom fine (transform doesn't require inline-block; the
+       left-aligned text zooms from its own left edge either way). */
+    .contact-info-label, .contact-info-value {
+        transition: transform .28s cubic-bezier(.22,1,.36,1);
+        transform-origin: left center;
+    }
+    .contact-info-label:hover, .contact-info-value:hover {
+        transform: scale(1.12);
+    }
+
+    .contact-subtext {
+        display: inline-block;
+        transition: transform .3s ease;
+        transform-origin: left top;
+    }
+    .contact-subtext:hover { transform: scale(1.02); }
+
+    @media (prefers-reduced-motion: reduce) {
+        .contact-tag, .contact-headline-line, .contact-headline .accent,
+        .contact-status-label, .contact-status-value, .contact-field-label,
+        #service-select-label, .service-option span, #contact-submit-label,
+        .contact-info-label, .contact-info-value, .contact-subtext {
+            transition: none;
+        }
+    }
 </style>
 
 <section id="contact-dark">
@@ -322,12 +384,12 @@
 
                 <div class="contact-headline-wrap" data-contact-reveal>
                     <h1 class="contact-headline">
-                        Let's Build<br><span class="accent">Something</span>
+                        <span class="contact-headline-line">Let's Build</span><br><span class="accent">Something</span>
                     </h1>
                     <div class="contact-headline-sweep" aria-hidden="true"></div>
                 </div>
 
-                <p class="text-base leading-relaxed max-w-lg" style="color:rgba(255,255,255,.62);" data-contact-reveal>
+                <p class="text-base leading-relaxed max-w-lg contact-subtext" style="color:rgba(255,255,255,.62);" data-contact-reveal>
                     Send a few details about your project, and we'll get back with a clear direction, scope, timeline, and practical next steps for building a website that's sharp, focused, and ready to launch.
                 </p>
 
