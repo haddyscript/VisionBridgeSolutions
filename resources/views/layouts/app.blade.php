@@ -2493,6 +2493,17 @@
             btn.setAttribute('aria-expanded', 'true');
             document.body.style.overflow = 'hidden';
 
+            // Tells the Hero's continuously-running decorative animations
+            // (particles, orbit rings, gradient drift — see the offscreen
+            // anim-pause script below and initHeroParticles in home.blade.php)
+            // to pause while this opaque full-screen menu covers them. Left
+            // running, those layers kept compositing every frame underneath
+            // the menu's own open animation with nothing on screen to show
+            // for it — the GPU contention from both running at once is what
+            // was showing up as the Hero flickering (and the machine heating
+            // up) specifically while the menu was open.
+            window.dispatchEvent(new CustomEvent('desktopmenu:open'));
+
             if (typeof gsap === 'undefined') { animating = false; return; }
 
             gsap.set(menu, { opacity: 1 });
@@ -2526,6 +2537,11 @@
                 btn.setAttribute('aria-expanded', 'false');
                 document.body.style.overflow = '';
                 animating = false;
+                // Resume Hero's decorative animations only once the menu has
+                // actually finished fading out, not while it's still
+                // covering the screen — see the matching dispatch in
+                // openMenu() above for why these get paused in the first place.
+                window.dispatchEvent(new CustomEvent('desktopmenu:close'));
             }
 
             if (typeof gsap === 'undefined') { finish(); return; }
@@ -2919,13 +2935,39 @@
             const els = document.querySelectorAll(selectors.join(','));
             if (!els.length) return;
 
+            // Real on-screen state per element, tracked separately from
+            // `menuOpen` below so that closing the desktop full-screen menu
+            // restores each element to whatever state it actually had
+            // (still off-screen vs. genuinely back in view) instead of
+            // blindly resuming everything.
+            const intersecting = new WeakMap();
+            let menuOpen = false;
+
             const io = new IntersectionObserver(entries => {
                 entries.forEach(entry => {
-                    entry.target.classList.toggle('anim-paused', !entry.isIntersecting);
+                    intersecting.set(entry.target, entry.isIntersecting);
+                    entry.target.classList.toggle('anim-paused', menuOpen || !entry.isIntersecting);
                 });
             }, { rootMargin: '150px 0px' });
 
             els.forEach(el => io.observe(el));
+
+            // Force-pause everything while the desktop full-screen menu is
+            // open (it sits on an opaque layer directly over the Hero, so
+            // these animations keep compositing for nothing underneath it —
+            // see the dispatch in the menu open/close controller above for
+            // why), then restore each element's real on-screen state on
+            // close rather than assuming it's back in view.
+            window.addEventListener('desktopmenu:open', () => {
+                menuOpen = true;
+                els.forEach(el => el.classList.add('anim-paused'));
+            });
+            window.addEventListener('desktopmenu:close', () => {
+                menuOpen = false;
+                els.forEach(el => {
+                    el.classList.toggle('anim-paused', !(intersecting.get(el) ?? true));
+                });
+            });
         }
         initOffscreenAnimPause();
     })();

@@ -2885,13 +2885,28 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             }
 
             const hero = document.getElementById('hero');
+            let heroIntersecting = true;
             if (hero && 'IntersectionObserver' in window) {
                 new IntersectionObserver(entries => {
                     entries.forEach(entry => {
+                        heroIntersecting = entry.isIntersecting;
                         tweens.forEach(t => entry.isIntersecting ? t.play() : t.pause());
                     });
                 }, { rootMargin: '150px 0px' }).observe(hero);
             }
+
+            // Also pause while the desktop full-screen menu (layouts/app.blade.php)
+            // is open — it's an opaque layer directly over the Hero, so these
+            // tweens (each particle's drift/twinkle continuously updating a
+            // `filter:drop-shadow` across 20+ elements) were burning GPU/CPU
+            // for a fully hidden layer, fighting the menu's own open animation
+            // for frame budget. Resume on close only if the Hero is actually
+            // still the on-screen section, matching the IntersectionObserver
+            // state above instead of blindly restarting off-screen tweens.
+            window.addEventListener('desktopmenu:open', () => tweens.forEach(t => t.pause()));
+            window.addEventListener('desktopmenu:close', () => {
+                if (heroIntersecting) tweens.forEach(t => t.play());
+            });
         })();
 
         // ============================================================
