@@ -580,55 +580,6 @@
          footer begins. --}}
     <div class="contact-footer-fade" aria-hidden="true"></div>
 
-    {{-- Smooth scroll — the real Lenis library (same one referenced, but
-         never actually initialized, in FaithStack's landing.blade.php),
-         rather than a hand-rolled approximation of it. Lenis intercepts
-         wheel/touch input and eases the *real* document scroll position
-         toward a target every frame (no CSS-transform virtual-scroll
-         wrapper involved with this default config), so ScrollTrigger and
-         the footer's fixed-position reveal keep working exactly as before.
-         Configured with `lerp` (continuous per-frame catch-up) instead of
-         Lenis's other supported mode, `duration`+`easing` (which restarts
-         a whole ~1.2s eased animation on every single wheel tick) — that
-         duration-based mode is Lenis's own documented default, but with
-         wheel/trackpad input firing many events per second, repeatedly
-         restarting a heavy animation reads as a "wind-up" delay before
-         anything visibly moves. `lerp` avoids that entirely: no restarts,
-         just a steady percentage of the remaining distance closed every
-         frame. Touch devices keep their own native momentum scrolling by
-         default (Lenis's smoothTouch is off unless explicitly enabled). --}}
-    <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js" defer></script>
-    <script>
-    (function () {
-        function initLenis() {
-            if (typeof Lenis === 'undefined' || typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-                setTimeout(initLenis, 80);
-                return;
-            }
-            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-            var lenis = new Lenis({
-                lerp: 0.1, // higher = snappier/less smoothing, lower = heavier/more lag
-            });
-
-            // Official Lenis + GSAP ScrollTrigger integration: keep
-            // ScrollTrigger's own progress calculations synced to Lenis's
-            // eased position every scroll tick, and let Lenis drive GSAP's
-            // ticker (rather than its own separate rAF loop) so both stay
-            // on the same clock. lagSmoothing is disabled because GSAP's
-            // own "catch up after a dropped frame" behavior fights Lenis's
-            // delta-time handling otherwise.
-            lenis.on('scroll', ScrollTrigger.update);
-            gsap.ticker.add(function (time) {
-                lenis.raf(time * 1000);
-            });
-            gsap.ticker.lagSmoothing(0);
-        }
-        if (document.readyState !== 'loading') { initLenis(); }
-        else { window.addEventListener('DOMContentLoaded', initLenis); }
-    })();
-    </script>
-
     <script>
     (function () {
         var gif = document.getElementById('contact-galaxy-bg');
