@@ -306,7 +306,13 @@
             text-transform: uppercase;
             transition: color 0.2s ease;
         }
-        #desktop-menu-close:hover { color: #DFC06A; }
+        #desktop-menu-close {
+            transform-origin: right center;
+        }
+        #desktop-menu-close:hover {
+            color: #DFC06A;
+            transform: scale(1.15);
+        }
         .desktop-menu-link {
             display: block;
             font-family: 'Playfair Display', serif;
@@ -316,11 +322,80 @@
             letter-spacing: -0.01em;
             color: rgba(255,255,255,.92);
             text-align: right;
-            transition: color 0.25s ease, transform 0.25s ease;
+            transform-origin: right center;
+            /* Slowed/enlarged to match the same text zoom-on-hover
+               treatment as the Contact page and footer (see contact.blade.php
+               and the footer CSS above) — color/position keep their
+               original transition here, only the growth is new. */
+            transition: color .3s ease, transform .65s cubic-bezier(.16,1,.3,1);
         }
         .desktop-menu-link:hover {
             color: #DFC06A;
-            transform: translateX(-6px);
+            transform: translateX(-6px) scale(1.1);
+        }
+
+        /* ─── Desktop menu: brand name + contact links also get the slow
+             text zoom (same values as .desktop-menu-link above) ─── */
+        #desktop-menu-brand-name,
+        .desktop-menu-contact-link,
+        #desktop-menu-tagline {
+            display: inline-block;
+            transition: transform .65s cubic-bezier(.16,1,.3,1);
+            transform-origin: left center;
+        }
+        #desktop-menu-brand-name:hover,
+        .desktop-menu-contact-link:hover,
+        #desktop-menu-tagline:hover {
+            transform: scale(1.15);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #desktop-menu-close, .desktop-menu-link,
+            #desktop-menu-brand-name, .desktop-menu-contact-link, #desktop-menu-tagline {
+                transition: none;
+            }
+        }
+
+        /* ─── Desktop menu: custom trailing "signal lock" cursor — same
+             lag-stretch technique as Contact/footer. #desktop-menu itself
+             carries no transform/filter/will-change:transform, so unlike
+             the footer these are safe to nest directly inside it (still
+             correctly resolves position:fixed against the viewport). Also
+             needs no extra open/closed gating: #desktop-menu already has
+             pointer-events:none while closed, so mousemove simply never
+             reaches it until the menu is actually open. ─── */
+        #desktop-menu-cursor-dot, #desktop-menu-cursor-ring {
+            position: fixed;
+            top: 0; left: 0;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 200;
+            opacity: 0;
+            transform: translate(-50%, -50%);
+        }
+        #desktop-menu-cursor-dot {
+            width: 6px; height: 6px;
+            background: #C9A84C;
+            box-shadow: 0 0 10px rgba(201,168,76,.85);
+        }
+        #desktop-menu-cursor-ring {
+            width: 46px; height: 46px;
+            border: 1.5px solid rgba(201,168,76,.55);
+            transition: width .3s cubic-bezier(.22,1,.36,1), height .3s cubic-bezier(.22,1,.36,1),
+                        border-color .3s ease, background-color .3s ease;
+        }
+        #desktop-menu-cursor-dot.is-visible, #desktop-menu-cursor-ring.is-visible { opacity: 1; }
+        #desktop-menu-cursor-ring.is-hovering {
+            width: 68px; height: 68px;
+            background: rgba(201,168,76,.12);
+            border-color: rgba(201,168,76,.85);
+        }
+        #desktop-menu.has-custom-cursor,
+        #desktop-menu.has-custom-cursor a,
+        #desktop-menu.has-custom-cursor button {
+            cursor: none;
+        }
+        @media (hover: none), (pointer: coarse) {
+            #desktop-menu-cursor-dot, #desktop-menu-cursor-ring { display: none; }
         }
 
         /* ─── Re-usable buttons (outside hero) ─── */
@@ -2194,6 +2269,14 @@
              contact top-left, CLOSE top-right, giant stacked links, tagline
              bottom-left, glow accent bottom-right. --}}
         <div id="desktop-menu" aria-hidden="true">
+            {{-- Custom trailing cursor — see #desktop-menu-cursor-dot/ring
+                 in the <style> block above; safe to nest here since
+                 #desktop-menu itself has no transform/filter/will-change
+                 that would offset position:fixed descendants (unlike the
+                 footer, where these had to live outside it instead). --}}
+            <div id="desktop-menu-cursor-dot" aria-hidden="true"></div>
+            <div id="desktop-menu-cursor-ring" aria-hidden="true"></div>
+
             {{-- Ambient galaxy-particles GIF backdrop — mix-blend-mode:screen
                  against this menu's near-black background so only the bright
                  particles read (same technique used elsewhere on the site
@@ -2209,10 +2292,10 @@
             <div class="relative h-full max-w-7xl mx-auto px-10 lg:px-16 py-10 flex flex-col">
                 <div class="flex items-start justify-between">
                     <div id="desktop-menu-brand">
-                        <p class="font-display text-2xl font-bold text-white leading-tight mb-4">VisionBridge</p>
+                        <p id="desktop-menu-brand-name" class="font-display text-2xl font-bold text-white leading-tight mb-4">VisionBridge</p>
                         <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,.55);">
-                            <a href="mailto:support@visionbridgesolutions.com" class="hover:text-gold transition-colors">support@visionbridgesolutions.com</a><br>
-                            <a href="tel:5550000000" class="hover:text-gold transition-colors">(404) 426-2856</a>
+                            <a href="mailto:support@visionbridgesolutions.com" class="hover:text-gold transition-colors desktop-menu-contact-link">support@visionbridgesolutions.com</a><br>
+                            <a href="tel:5550000000" class="hover:text-gold transition-colors desktop-menu-contact-link">(404) 426-2856</a>
                         </p>
                     </div>
                     <button id="desktop-menu-close" type="button" aria-label="Close menu">Close</button>
@@ -2658,6 +2741,70 @@
         window.addEventListener('resize', function () {
             if (isOpen && window.innerWidth < 768) closeMenu();
         });
+    })();
+    </script>
+
+    {{-- Desktop full-screen menu — custom trailing cursor. Same lag-stretch
+         technique as Contact/footer (see contact.blade.php for the
+         original and its inline reasoning). No open/closed gating needed:
+         #desktop-menu has pointer-events:none while closed, so mousemove
+         simply can't reach it until the menu is actually open. --}}
+    <script defer>
+    (function () {
+        function initDesktopMenuCursor() {
+            if (typeof gsap === 'undefined') { setTimeout(initDesktopMenuCursor, 80); return; }
+
+            var menu = document.getElementById('desktop-menu');
+            var dot  = document.getElementById('desktop-menu-cursor-dot');
+            var ring = document.getElementById('desktop-menu-cursor-ring');
+            if (!menu || !dot || !ring) return;
+            if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            var moveDotX = gsap.quickTo(dot, 'x', { duration: 0.05, ease: 'power3.out' });
+            var moveDotY = gsap.quickTo(dot, 'y', { duration: 0.05, ease: 'power3.out' });
+
+            var mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+            var ringReady = false, pressed = false, hovering = false, visible = false;
+
+            menu.addEventListener('mousemove', function (e) {
+                mouseX = e.clientX; mouseY = e.clientY;
+                moveDotX(mouseX); moveDotY(mouseY);
+                if (!ringReady) { ringX = mouseX; ringY = mouseY; ringReady = true; }
+                if (!visible) {
+                    visible = true;
+                    menu.classList.add('has-custom-cursor');
+                    dot.classList.add('is-visible');
+                    ring.classList.add('is-visible');
+                }
+            });
+
+            menu.addEventListener('mouseleave', function () {
+                visible = false;
+                menu.classList.remove('has-custom-cursor');
+                dot.classList.remove('is-visible');
+                ring.classList.remove('is-visible');
+            });
+
+            gsap.ticker.add(function () {
+                if (!visible) return;
+                ringX += (mouseX - ringX) * 0.1;
+                ringY += (mouseY - ringY) * 0.1;
+                var dist = Math.hypot(mouseX - ringX, mouseY - ringY);
+                var stretch = pressed ? 0.8 : gsap.utils.clamp(1, 1.7, 1 + dist / 130);
+                gsap.set(ring, { x: ringX, y: ringY, scale: hovering ? 1 : stretch });
+            });
+
+            menu.querySelectorAll('a, button').forEach(function (el) {
+                el.addEventListener('mouseenter', function () { hovering = true; ring.classList.add('is-hovering'); });
+                el.addEventListener('mouseleave', function () { hovering = false; ring.classList.remove('is-hovering'); });
+            });
+
+            menu.addEventListener('mousedown', function () { pressed = true; });
+            menu.addEventListener('mouseup', function () { pressed = false; });
+        }
+        if (document.readyState !== 'loading') { initDesktopMenuCursor(); }
+        else { window.addEventListener('DOMContentLoaded', initDesktopMenuCursor); }
     })();
     </script>
 
