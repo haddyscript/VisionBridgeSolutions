@@ -2463,15 +2463,27 @@
         var isOpen = false;
         var animating = false;
 
-        function openMenu() {
-            if (isOpen || animating) return;
-
-            // Lazy-load the 4.7MB galaxy-particles GIF only the first time
-            // the menu is actually opened, not on every page load.
+        // Preload + decode the 4.7MB galaxy-particles GIF during idle time
+        // shortly after page load, instead of only assigning `src` the
+        // first time the menu opens. Assigning it at click time meant the
+        // download + decode of a file that size happened synchronously
+        // right as the GSAP entrance timeline started, which was blocking
+        // the render pipeline just long enough for the Hero behind the
+        // (fixed, full-screen) menu to flash through between frames —
+        // same idea as the flight-transition GIF preload further down.
+        function preloadGifBg() {
             if (gifBg && gifBg.dataset.src) {
                 gifBg.src = gifBg.dataset.src;
                 gifBg.removeAttribute('data-src');
             }
+        }
+        if ('requestIdleCallback' in window) requestIdleCallback(preloadGifBg, { timeout: 4000 });
+        else setTimeout(preloadGifBg, 2000);
+
+        function openMenu() {
+            if (isOpen || animating) return;
+
+            preloadGifBg(); // no-op if already loaded; covers opening before idle callback fires
 
             isOpen = true;
             animating = true;
