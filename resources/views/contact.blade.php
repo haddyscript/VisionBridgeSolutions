@@ -284,14 +284,14 @@
         box-shadow: 0 0 10px rgba(201,168,76,.85);
     }
     #contact-cursor-ring {
-        width: 34px; height: 34px;
+        width: 46px; height: 46px;
         border: 1.5px solid rgba(201,168,76,.55);
-        transition: width .25s cubic-bezier(.22,1,.36,1), height .25s cubic-bezier(.22,1,.36,1),
-                    border-color .25s ease, background-color .25s ease;
+        transition: width .3s cubic-bezier(.22,1,.36,1), height .3s cubic-bezier(.22,1,.36,1),
+                    border-color .3s ease, background-color .3s ease;
     }
     #contact-cursor-dot.is-visible, #contact-cursor-ring.is-visible { opacity: 1; }
     #contact-cursor-ring.is-hovering {
-        width: 54px; height: 54px;
+        width: 68px; height: 68px;
         background: rgba(201,168,76,.12);
         border-color: rgba(201,168,76,.85);
     }
@@ -731,16 +731,27 @@
             if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
             if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-            var moveDotX  = gsap.quickTo(dot, 'x', { duration: 0.05, ease: 'power3.out' });
-            var moveDotY  = gsap.quickTo(dot, 'y', { duration: 0.05, ease: 'power3.out' });
-            var moveRingX = gsap.quickTo(ring, 'x', { duration: 0.4, ease: 'power3.out' });
-            var moveRingY = gsap.quickTo(ring, 'y', { duration: 0.4, ease: 'power3.out' });
+            var moveDotX = gsap.quickTo(dot, 'x', { duration: 0.05, ease: 'power3.out' });
+            var moveDotY = gsap.quickTo(dot, 'y', { duration: 0.05, ease: 'power3.out' });
 
+            // The ring doesn't snap to the pointer like the dot does — it
+            // continuously eases toward it every frame (a lerp, not a
+            // fixed-duration tween), which is what makes the trail feel
+            // smooth rather than a single catch-up animation. The further
+            // behind/outside the pointer it currently is, the bigger it
+            // stretches, settling back to its base size right as it
+            // actually catches up.
+            var mouseX = 0, mouseY = 0;
+            var ringX = 0, ringY = 0;
+            var ringReady = false;
+            var pressed = false;
+            var hovering = false;
             var visible = false;
 
             section.addEventListener('mousemove', function (e) {
-                moveDotX(e.clientX); moveDotY(e.clientY);
-                moveRingX(e.clientX); moveRingY(e.clientY);
+                mouseX = e.clientX; mouseY = e.clientY;
+                moveDotX(mouseX); moveDotY(mouseY);
+                if (!ringReady) { ringX = mouseX; ringY = mouseY; ringReady = true; }
                 if (!visible) {
                     visible = true;
                     section.classList.add('has-custom-cursor');
@@ -756,22 +767,30 @@
                 ring.classList.remove('is-visible');
             });
 
-            // Reticle "acquires" anything clickable — links, buttons,
-            // inputs, the custom dropdown's options.
-            var interactiveEls = section.querySelectorAll('a, button, input, textarea, select, [role="option"]');
-            interactiveEls.forEach(function (el) {
-                el.addEventListener('mouseenter', function () { ring.classList.add('is-hovering'); });
-                el.addEventListener('mouseleave', function () { ring.classList.remove('is-hovering'); });
+            gsap.ticker.add(function () {
+                if (!visible) return;
+                // Lower factor = more lag = smoother/slower catch-up.
+                ringX += (mouseX - ringX) * 0.1;
+                ringY += (mouseY - ringY) * 0.1;
+                var dist = Math.hypot(mouseX - ringX, mouseY - ringY);
+                var stretch = pressed ? 0.8 : gsap.utils.clamp(1, 1.7, 1 + dist / 130);
+                gsap.set(ring, { x: ringX, y: ringY, scale: hovering ? 1 : stretch });
             });
 
-            // Small press feedback on click — the ring dips and springs
-            // back, reading as the reticle "locking on".
-            section.addEventListener('mousedown', function () {
-                gsap.to(ring, { scale: 0.8, duration: 0.15, ease: 'power2.out' });
+            // Reticle "acquires" anything clickable — links, buttons,
+            // inputs, the custom dropdown's options. Hover takes over the
+            // ring's sizing from the CSS .is-hovering class instead of the
+            // distance-based stretch above, so the two don't fight.
+            var interactiveEls = section.querySelectorAll('a, button, input, textarea, select, [role="option"]');
+            interactiveEls.forEach(function (el) {
+                el.addEventListener('mouseenter', function () { hovering = true; ring.classList.add('is-hovering'); });
+                el.addEventListener('mouseleave', function () { hovering = false; ring.classList.remove('is-hovering'); });
             });
-            section.addEventListener('mouseup', function () {
-                gsap.to(ring, { scale: 1, duration: 0.35, ease: 'back.out(2.2)' });
-            });
+
+            // Small press feedback on click — the ring dips, reading as the
+            // reticle "locking on".
+            section.addEventListener('mousedown', function () { pressed = true; });
+            section.addEventListener('mouseup', function () { pressed = false; });
         }
         if (document.readyState !== 'loading') { initContactCursor(); }
         else { window.addEventListener('DOMContentLoaded', initContactCursor); }
