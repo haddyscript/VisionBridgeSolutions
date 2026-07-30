@@ -580,6 +580,88 @@
          footer begins. --}}
     <div class="contact-footer-fade" aria-hidden="true"></div>
 
+    {{-- Damped wheel/trackpad scroll — hand-rolled, no GSAP/Lenis
+         dependency. Real native document scrolling the whole time (plain
+         requestAnimationFrame + direct scrollTop assignment), so
+         ScrollTrigger and the footer's fixed-position reveal keep working
+         untouched. Each wheel tick nudges a target position; the actual
+         scroll position continuously eases toward it every frame — never
+         restarting an animation per tick (unlike Lenis's duration/easing
+         mode, which is what caused the earlier "wind-up" lag), just a
+         steady, frame-rate-independent percentage of the remaining
+         distance closed each frame. scrollTop (not scrollTo()) is used
+         deliberately: this page's global scroll-behavior:smooth CSS
+         affects scrollTo() even with behavior:'auto' passed in some
+         browsers when called many times per second, which is what caused
+         an earlier version of this exact approach to stall and jump.
+         Desktop/fine-pointer only — touch devices keep their own native
+         momentum scrolling. Keyboard/scrollbar-drag scrolling is left
+         completely native (only 'wheel' is intercepted). --}}
+    <script>
+    (function () {
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        if (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+        // DELAY is a time constant in seconds (not a per-frame ratio — the
+        // catch-up factor is derived from actual elapsed time between
+        // frames, so this stays consistent at 60Hz, 120Hz, etc.). Tunable:
+        // lower = snappier, higher = heavier/more lag.
+        var DELAY = 0.12;
+        var current = window.scrollY;
+        var target = window.scrollY;
+        var ticking = false;
+        var lastTime = null;
+
+        function maxScroll() {
+            return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+        }
+
+        function setScroll(y) {
+            document.documentElement.scrollTop = y;
+            document.body.scrollTop = y; // belt-and-suspenders for older/quirks-mode engines
+        }
+
+        function raf(now) {
+            if (lastTime === null) lastTime = now;
+            var dt = (now - lastTime) / 1000;
+            lastTime = now;
+
+            var factor = 1 - Math.exp(-dt / DELAY);
+            current += (target - current) * factor;
+
+            if (Math.abs(target - current) < 0.5) {
+                current = target;
+                setScroll(current);
+                ticking = false;
+                lastTime = null;
+                return;
+            }
+            setScroll(current);
+            requestAnimationFrame(raf);
+        }
+
+        window.addEventListener('wheel', function (e) {
+            e.preventDefault();
+            target = Math.max(0, Math.min(maxScroll(), target + e.deltaY));
+            if (!ticking) {
+                ticking = true;
+                lastTime = null;
+                requestAnimationFrame(raf);
+            }
+        }, { passive: false });
+
+        // Keyboard/scrollbar-drag scrolling bypasses the wheel handler
+        // above entirely — this just keeps target/current in sync with
+        // those so the next wheel tick eases from the right place instead
+        // of snapping back to wherever the last wheel-driven position was.
+        window.addEventListener('scroll', function () {
+            if (ticking) return; // ignore scroll events this loop itself caused
+            target = window.scrollY;
+            current = window.scrollY;
+        }, { passive: true });
+    })();
+    </script>
+
     <script>
     (function () {
         var gif = document.getElementById('contact-galaxy-bg');
