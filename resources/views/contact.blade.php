@@ -827,8 +827,22 @@
                 }, { once: true });
             }
 
+            // clearProps on every one of these: GSAP leaves a non-"none"
+            // inline `transform` (and `filter`, for formCard) on an element
+            // even once a tween finishes at its rest position — and any
+            // element with a non-default transform/filter forces the
+            // browser to give it its own stacking context. Left in place,
+            // later form fields (Budget Range/Timeline, Project Details)
+            // would each become an isolated paint layer that sits above
+            // earlier ones purely by DOM order, completely burying the
+            // Project Type dropdown panel's own z-index. Clearing the
+            // inline style once each tween completes returns everything to
+            // normal stacking so the dropdown panel can actually render on
+            // top like it's supposed to. Doesn't affect the reverse replay
+            // on scroll-up — GSAP recalculates from its own tween data, not
+            // from whatever's currently on the inline style.
             gsap.to(revealEls, {
-                opacity: 1, y: 0, duration: 0.65, stagger: 0.12, ease: 'power3.out',
+                opacity: 1, y: 0, duration: 0.65, stagger: 0.12, ease: 'power3.out', clearProps: 'transform',
                 scrollTrigger: {
                     trigger: leftCol, start: 'top 85%', toggleActions: TOGGLE,
                     onEnter: sweepOnce, onEnterBack: sweepOnce,
@@ -837,14 +851,14 @@
 
             if (statusEls.length) {
                 gsap.to(statusEls, {
-                    opacity: 1, x: 0, duration: 0.45, stagger: 0.1, ease: 'power3.out',
+                    opacity: 1, x: 0, duration: 0.45, stagger: 0.1, ease: 'power3.out', clearProps: 'transform',
                     scrollTrigger: { trigger: statusWrap, start: 'top 88%', toggleActions: TOGGLE },
                 });
             }
 
             if (cardEls.length) {
                 gsap.to(cardEls, {
-                    opacity: 1, y: 0, duration: 0.5, stagger: 0.12, ease: 'power3.out',
+                    opacity: 1, y: 0, duration: 0.5, stagger: 0.12, ease: 'power3.out', clearProps: 'transform',
                     scrollTrigger: { trigger: cardsWrap, start: 'top 92%', toggleActions: TOGGLE },
                 });
             }
@@ -853,8 +867,8 @@
                 gsap.timeline({
                     scrollTrigger: { trigger: formCard, start: 'top 85%', toggleActions: TOGGLE },
                 })
-                    .to(formCard, { opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.85, ease: 'power2.out' })
-                    .to(formFields, { opacity: 1, y: 0, duration: 0.45, stagger: 0.08, ease: 'power3.out' }, '-=0.5');
+                    .to(formCard, { opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.85, ease: 'power2.out', clearProps: 'transform,filter' })
+                    .to(formFields, { opacity: 1, y: 0, duration: 0.45, stagger: 0.08, ease: 'power3.out', clearProps: 'transform' }, '-=0.5');
             }
 
             // Cinematic exit — as the section's bottom edge approaches, the
