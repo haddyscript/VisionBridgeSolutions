@@ -593,10 +593,16 @@
          their own native momentum scrolling, and hijacking wheel events
          there is unnecessary and error-prone. Keyboard/scrollbar-drag
          scrolling is left completely native (only 'wheel' is intercepted).
-         Every scrollTo call below forces behavior:'auto' — this page's
-         global `html { scroll-behavior: smooth }` CSS would otherwise also
-         smooth each individual per-frame jump on top of this loop's own
-         easing, double-smoothing into jank. --}}
+         Every frame sets scrollTop directly (a plain property assignment)
+         rather than calling scrollTo() — this page's global scroll-behavior:
+         smooth CSS affects scrollTo() even with behavior:'auto' passed in
+         some browsers when called many times per second, queuing/half-
+         applying a pile of tiny smooth-scroll requests instead of jumping
+         instantly like this loop needs each frame, which reads as the page
+         not responding and then snapping all at once once things catch up.
+         Direct scrollTop assignment has always been instant and is
+         completely unaffected by scroll-behavior — the same technique real
+         smooth-scroll libraries use under the hood for exactly this reason. --}}
     <script>
     (function () {
         if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -611,15 +617,20 @@
             return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
         }
 
+        function setScroll(y) {
+            document.documentElement.scrollTop = y;
+            document.body.scrollTop = y; // belt-and-suspenders for older/quirks-mode engines
+        }
+
         function raf() {
             current += (target - current) * EASE;
             if (Math.abs(target - current) < 0.5) {
                 current = target;
-                window.scrollTo({ top: current, behavior: 'auto' });
+                setScroll(current);
                 ticking = false;
                 return;
             }
-            window.scrollTo({ top: current, behavior: 'auto' });
+            setScroll(current);
             requestAnimationFrame(raf);
         }
 
