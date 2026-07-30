@@ -1076,7 +1076,6 @@
             var formCard   = document.querySelector('[data-contact-form-card]');
             var formFields = formCard ? gsap.utils.toArray(formCard.querySelectorAll('#contact-form > div, #contact-form > button')) : [];
             var sweep      = document.querySelector('.contact-headline-sweep');
-            var contentWrap = document.querySelector('#contact-dark > .relative');
 
             // FAQ section — same reveal pattern as the hero above, kept on
             // its own data-faq-* attributes (not data-contact-*) since the
@@ -1161,18 +1160,29 @@
                 });
             }
 
-            // Cinematic exit — as the section's bottom edge approaches, the
-            // content gently fades/lifts/scales down so the handoff into
-            // the footer below reads as one continuous motion instead of
-            // an abrupt cut.
-            if (contentWrap) {
-                gsap.to(contentWrap, {
-                    opacity: 0.2, y: -30, scale: 0.98, ease: 'none',
-                    scrollTrigger: { trigger: '#contact-dark', start: 'bottom 85%', end: 'bottom 35%', scrub: 1 },
-                });
-            }
-
+            // Note: this page previously also had a scroll-scrubbed
+            // "cinematic exit" that dimmed/lifted the whole page content as
+            // the footer approached, meant to reverse back to full opacity
+            // on scroll-up. Removed — with the FAQ section now making the
+            // page much taller, that scrub's start/end math got fragile
+            // (a likely cause: web fonts loading asynchronously and
+            // shifting the page's real height after GSAP had already
+            // calculated trigger positions, a known category of
+            // ScrollTrigger bug) and it was getting stuck at a dimmed
+            // opacity instead of reliably restoring on scroll-up. The
+            // static .contact-footer-fade gradient already provides a
+            // simple, JS-free dissolve into the footer with none of that
+            // risk.
             ScrollTrigger.refresh();
+
+            // Web fonts (Archivo Black) can finish loading after this
+            // script already ran and calculated trigger positions from the
+            // fallback font's shorter measurements — refreshing again once
+            // fonts are actually ready keeps every trigger above correctly
+            // aligned to the page's real, final layout.
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+            }
         }
         if (document.readyState !== 'loading') { initContactScrollAnimations(); }
         else { window.addEventListener('DOMContentLoaded', initContactScrollAnimations); }
