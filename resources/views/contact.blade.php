@@ -587,11 +587,16 @@
          toward a target every frame (no CSS-transform virtual-scroll
          wrapper involved with this default config), so ScrollTrigger and
          the footer's fixed-position reveal keep working exactly as before.
-         duration/easing below are Lenis's own documented defaults — the
-         same "buttery" curve sites like the Framer/Lenis reference actually
-         ship with, not a guess at matching it. Touch devices keep their own
-         native momentum scrolling by default (Lenis's smoothTouch is off
-         unless explicitly enabled). --}}
+         Configured with `lerp` (continuous per-frame catch-up) instead of
+         Lenis's other supported mode, `duration`+`easing` (which restarts
+         a whole ~1.2s eased animation on every single wheel tick) — that
+         duration-based mode is Lenis's own documented default, but with
+         wheel/trackpad input firing many events per second, repeatedly
+         restarting a heavy animation reads as a "wind-up" delay before
+         anything visibly moves. `lerp` avoids that entirely: no restarts,
+         just a steady percentage of the remaining distance closed every
+         frame. Touch devices keep their own native momentum scrolling by
+         default (Lenis's smoothTouch is off unless explicitly enabled). --}}
     <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js" defer></script>
     <script>
     (function () {
@@ -603,8 +608,7 @@
             if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
             var lenis = new Lenis({
-                duration: 1.2,
-                easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+                lerp: 0.1, // higher = snappier/less smoothing, lower = heavier/more lag
             });
 
             // Official Lenis + GSAP ScrollTrigger integration: keep
