@@ -608,10 +608,16 @@
         if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         if (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
-        var EASE = 0.08; // lower = slower/smoother catch-up, higher = snappier
+        // DELAY is a time constant in seconds, not a per-frame ratio — the
+        // catch-up factor below is derived from actual elapsed time between
+        // frames (via requestAnimationFrame's own timestamp), so this stays
+        // consistent whether the display is 60Hz, 120Hz, etc. instead of
+        // implicitly assuming 60fps like a fixed per-frame multiplier would.
+        var DELAY = 0.02; // seconds
         var current = window.scrollY;
         var target = window.scrollY;
         var ticking = false;
+        var lastTime = null;
 
         function maxScroll() {
             return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
@@ -622,12 +628,19 @@
             document.body.scrollTop = y; // belt-and-suspenders for older/quirks-mode engines
         }
 
-        function raf() {
-            current += (target - current) * EASE;
+        function raf(now) {
+            if (lastTime === null) lastTime = now;
+            var dt = (now - lastTime) / 1000; // seconds since last frame
+            lastTime = now;
+
+            var factor = 1 - Math.exp(-dt / DELAY);
+            current += (target - current) * factor;
+
             if (Math.abs(target - current) < 0.5) {
                 current = target;
                 setScroll(current);
                 ticking = false;
+                lastTime = null;
                 return;
             }
             setScroll(current);
@@ -639,6 +652,7 @@
             target = Math.max(0, Math.min(maxScroll(), target + e.deltaY));
             if (!ticking) {
                 ticking = true;
+                lastTime = null;
                 requestAnimationFrame(raf);
             }
         }, { passive: false });
