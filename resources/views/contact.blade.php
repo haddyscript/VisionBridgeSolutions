@@ -325,7 +325,7 @@
     .service-option span,
     #contact-submit-label {
         display: inline-block;
-        transition: transform .28s cubic-bezier(.22,1,.36,1);
+        transition: transform .65s cubic-bezier(.16,1,.3,1);
         transform-origin: left center;
     }
     .contact-tag:hover,
@@ -337,7 +337,7 @@
     #service-select-label:hover,
     .service-option span:hover,
     #contact-submit-label:hover {
-        transform: scale(1.12);
+        transform: scale(1.2);
     }
     #contact-submit-label { transform-origin: center; }
 
@@ -347,19 +347,19 @@
        and still zoom fine (transform doesn't require inline-block; the
        left-aligned text zooms from its own left edge either way). */
     .contact-info-label, .contact-info-value {
-        transition: transform .28s cubic-bezier(.22,1,.36,1);
+        transition: transform .65s cubic-bezier(.16,1,.3,1);
         transform-origin: left center;
     }
     .contact-info-label:hover, .contact-info-value:hover {
-        transform: scale(1.12);
+        transform: scale(1.2);
     }
 
     .contact-subtext {
         display: inline-block;
-        transition: transform .3s ease;
+        transition: transform .7s cubic-bezier(.16,1,.3,1);
         transform-origin: left top;
     }
-    .contact-subtext:hover { transform: scale(1.02); }
+    .contact-subtext:hover { transform: scale(1.04); }
 
     @media (prefers-reduced-motion: reduce) {
         .contact-tag, .contact-headline-line, .contact-headline .accent,
