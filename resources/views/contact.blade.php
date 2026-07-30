@@ -497,13 +497,6 @@
     }
 </style>
 
-{{-- ScrollSmoother's required structure — everything meant to scroll
-     smoothly lives inside #smooth-content, itself inside #smooth-wrapper.
-     Scoped to just this page's own markup (not the shared nav/footer),
-     since @section('content') only controls what renders here. --}}
-<div id="smooth-wrapper">
-<div id="smooth-content">
-
 <section id="contact-dark">
     {{-- Ambient galaxy-particles GIF backdrop — reuses the same asset and
          mix-blend-mode:screen technique as the desktop full-screen menu
@@ -518,6 +511,9 @@
     <img id="contact-galaxy-bg" data-src="@assetv('image/galaxy-particles.gif')" alt="" aria-hidden="true"
          class="absolute inset-0 w-full h-full object-cover pointer-events-none"
          style="opacity:0;mix-blend-mode:screen;transition:opacity 1.4s ease;">
+
+    <div id="contact-cursor-dot" aria-hidden="true"></div>
+    <div id="contact-cursor-ring" aria-hidden="true"></div>
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
@@ -772,22 +768,64 @@
          footer begins. --}}
     <div class="contact-footer-fade" aria-hidden="true"></div>
 
-    {{-- Smooth scroll — GSAP's own ScrollSmoother plugin (free since GSAP's
-         2025 licensing change), replacing the Lenis attempts above. Scoped
-         to this page only via the #smooth-wrapper/#smooth-content pair
-         further up (not a site-wide change) — per GSAP's own docs,
-         position:fixed elements must live OUTSIDE that wrapper/content
-         pair (the content gets a CSS transform applied, which makes it the
-         containing block for any fixed descendant otherwise — the same
-         category of bug this codebase already hit for #desktop-menu and
-         the footer's own cursor). That's why #contact-cursor-dot/ring were
-         moved below @endsection's wrapper closing, outside
-         #smooth-wrapper, instead of staying inside #contact-dark like
-         before. Registered/created inside initContactScrollAnimations()
-         below (not a separate script) specifically so it runs before that
-         function's own ScrollTrigger instances are created — ScrollTrigger
-         needs the smoother to already exist to sync with it correctly. --}}
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollSmoother.min.js" defer></script>
+    {{-- Smooth scroll — the real Lenis library, scoped to this page only
+         (not a site-wide ScrollSmoother restructuring — see the reasoning
+         in this conversation: that plugin requires wrapping the entire
+         <body>, including the shared nav/footer/menus, in its own
+         transform-driven wrapper, which is a much bigger, riskier change
+         than a single page's scroll feel). Lenis intercepts wheel/touch
+         input and eases the *real* document scroll position toward a
+         target every frame (no CSS-transform virtual-scroll wrapper with
+         this default config), so ScrollTrigger and the footer's
+         fixed-position reveal keep working exactly as before. Configured
+         with `lerp` (continuous per-frame catch-up), not Lenis's other
+         supported mode, `duration`+`easing` — that mode restarts a whole
+         ~1.2s eased animation on every single wheel tick, which with
+         wheel/trackpad input firing many events per second read as a
+         "wind-up" delay before anything visibly moved. `lerp` avoids that
+         entirely: no restarts, just a steady percentage of the remaining
+         distance closed every frame. Touch devices keep their own native
+         momentum scrolling by default (Lenis's smoothTouch is off unless
+         explicitly enabled). --}}
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js" defer></script>
+    <script>
+    (function () {
+        function initLenis() {
+            if (typeof Lenis === 'undefined' || typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+                setTimeout(initLenis, 80);
+                return;
+            }
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            // Lenis must be actively driven every frame or it freezes the
+            // page entirely — it intercepts wheel/touch input (blocking
+            // native scroll, which is core to how it works) whether or not
+            // anything is actually moving the position forward. Assuming
+            // autoRaf would handle that on its own (removed in the previous
+            // version of this code) was wrong for this build and left
+            // nothing driving it, which is why the page stopped scrolling
+            // completely. Explicitly driving it via gsap.ticker again here —
+            // but this time WITHOUT disabling GSAP's lag-smoothing (which
+            // the "official" integration snippet calls for, and which is
+            // what caused the earlier "delay then sudden/faster" jump: with
+            // it disabled, any frame hiccup on this fairly busy page handed
+            // Lenis a larger time-delta, and it jumped further to
+            // compensate). Leaving lag-smoothing at its default should
+            // absorb those hiccups instead of translating them into visible
+            // jumps, while still guaranteeing Lenis is reliably ticked.
+            var lenis = new Lenis({
+                lerp: 0.1, // higher = snappier/less smoothing, lower = heavier/more lag
+                autoRaf: false,
+            });
+            lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add(function (time) {
+                lenis.raf(time * 1000);
+            });
+        }
+        if (document.readyState !== 'loading') { initLenis(); }
+        else { window.addEventListener('DOMContentLoaded', initLenis); }
+    })();
+    </script>
 
     <script>
     (function () {
@@ -1078,28 +1116,14 @@
     <script>
     (function () {
         function initContactScrollAnimations() {
-            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || typeof ScrollSmoother === 'undefined') {
+            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
                 setTimeout(initContactScrollAnimations, 80); return;
             }
 
             var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             if (reduce) return; // everything is already visible by default in CSS
 
-            gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
-
-            // Created first, before any of the ScrollTrigger instances
-            // below — they need the smoother to already exist to sync
-            // with it correctly. smoothTouch stays off (the default) so
-            // touch devices keep their own native momentum scrolling,
-            // same convention as every other mouse-only effect on this
-            // page.
-            ScrollSmoother.create({
-                wrapper: '#smooth-wrapper',
-                content: '#smooth-content',
-                smooth: 0.6, // seconds to "catch up" — lower = snappier, higher = heavier/more lag
-                smoothTouch: false,
-            });
-
+            gsap.registerPlugin(ScrollTrigger);
             var TOGGLE = 'play none none reverse';
 
             var leftCol    = document.querySelector('[data-contact-left]');
@@ -1224,14 +1248,5 @@
     })();
     </script>
 </section>
-
-</div>
-</div>
-{{-- #smooth-content / #smooth-wrapper close here. The custom cursor
-     elements are deliberately OUTSIDE this pair — see the comment on the
-     ScrollSmoother script tag above for why position:fixed elements can't
-     stay inside it. --}}
-<div id="contact-cursor-dot" aria-hidden="true"></div>
-<div id="contact-cursor-ring" aria-hidden="true"></div>
 
 @endsection
