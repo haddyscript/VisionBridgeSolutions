@@ -580,6 +580,70 @@
          footer begins. --}}
     <div class="contact-footer-fade" aria-hidden="true"></div>
 
+    {{-- Damped wheel/trackpad scroll — the page still uses real native
+         scrolling (so ScrollTrigger, the footer's fixed-position reveal,
+         etc. all keep working untouched), but instead of jumping straight
+         to wherever the wheel says, each wheel tick nudges a target
+         position that the actual scroll position eases toward every frame
+         at a fixed rate. That's what makes it feel the same regardless of
+         how hard/fast the user scrolls — a big aggressive flick just moves
+         the target further away, not the per-frame speed, so the motion
+         itself stays consistent instead of jumping proportionally to input
+         force. Desktop/fine-pointer only — touch devices already have
+         their own native momentum scrolling, and hijacking wheel events
+         there is unnecessary and error-prone. Keyboard/scrollbar-drag
+         scrolling is left completely native (only 'wheel' is intercepted).
+         Every scrollTo call below forces behavior:'auto' — this page's
+         global `html { scroll-behavior: smooth }` CSS would otherwise also
+         smooth each individual per-frame jump on top of this loop's own
+         easing, double-smoothing into jank. --}}
+    <script>
+    (function () {
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        if (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+        var EASE = 0.08; // lower = slower/smoother catch-up, higher = snappier
+        var current = window.scrollY;
+        var target = window.scrollY;
+        var ticking = false;
+
+        function maxScroll() {
+            return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+        }
+
+        function raf() {
+            current += (target - current) * EASE;
+            if (Math.abs(target - current) < 0.5) {
+                current = target;
+                window.scrollTo({ top: current, behavior: 'auto' });
+                ticking = false;
+                return;
+            }
+            window.scrollTo({ top: current, behavior: 'auto' });
+            requestAnimationFrame(raf);
+        }
+
+        window.addEventListener('wheel', function (e) {
+            e.preventDefault();
+            target = Math.max(0, Math.min(maxScroll(), target + e.deltaY));
+            if (!ticking) {
+                ticking = true;
+                requestAnimationFrame(raf);
+            }
+        }, { passive: false });
+
+        // Keyboard/scrollbar-drag scrolling bypasses the wheel handler
+        // above entirely — this just keeps target/current in sync with
+        // those so the next wheel tick eases from the right place instead
+        // of snapping back to wherever the last wheel-driven position was.
+        window.addEventListener('scroll', function () {
+            if (ticking) return; // ignore scroll events this loop itself caused
+            target = window.scrollY;
+            current = window.scrollY;
+        }, { passive: true });
+    })();
+    </script>
+
     <script>
     (function () {
         var gif = document.getElementById('contact-galaxy-bg');
