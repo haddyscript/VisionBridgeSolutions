@@ -94,6 +94,7 @@ Route::get('/onboarding/start', function () {
 Route::get('/get-started', [IntakeController::class, 'create'])->name('intake.create');
 Route::post('/get-started', [IntakeController::class, 'store'])->name('intake.store');
 
+Route::view('/contact', 'contact')->name('contact');
 Route::post('/contact', [ContactMessageController::class, 'store'])->middleware('throttle:6,1')->name('contact.store');
 
 Route::get('/book-consultation', [ConsultationController::class, 'create'])->name('consultation.create');

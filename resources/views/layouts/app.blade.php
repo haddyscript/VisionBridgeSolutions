@@ -2147,7 +2147,7 @@
                     <a href="{{ $homeAnchor }}#plans" class="desktop-menu-link">Plans</a>
                     <a href="{{ $homeAnchor }}#portfolio" class="desktop-menu-link">Portfolio</a>
                     <a href="{{ route('gallery') }}" class="desktop-menu-link">Our Work</a>
-                    <a href="{{ $homeAnchor }}#contact" class="desktop-menu-link">Contact</a>
+                    <a href="{{ route('contact') }}" class="desktop-menu-link">Contact</a>
                 </nav>
 
                 <p id="desktop-menu-tagline" class="text-xs tracking-widest uppercase" style="color:rgba(201,168,76,0.7);">Building Websites. Expanding Reach.</p>
@@ -2168,7 +2168,6 @@
                 ['id' => 'why',         'label' => 'Why Us'],
                 ['id' => 'plans',       'label' => 'Plans'],
                 ['id' => 'partnership', 'label' => 'Partnership'],
-                ['id' => 'contact',     'label' => 'Contact'],
             ] as $rail)
                 <button type="button" class="rail-dot" data-rail-target="{{ $rail['id'] }}" aria-label="Jump to {{ $rail['label'] }}">
                     <span class="rail-dot-label">{{ $rail['label'] }}</span>
@@ -2265,7 +2264,7 @@
                         <li><a href="{{ $homeAnchor }}#about"     class="footer-link hover:text-gold">About Us<span class="footer-link-bar"></span></a></li>
                         <li><a href="{{ $homeAnchor }}#services"  class="footer-link hover:text-gold">Services<span class="footer-link-bar"></span></a></li>
                         <li><a href="{{ $homeAnchor }}#portfolio" class="footer-link hover:text-gold">Portfolio<span class="footer-link-bar"></span></a></li>
-                        <li><a href="{{ $homeAnchor }}#contact"   class="footer-link hover:text-gold">Contact<span class="footer-link-bar"></span></a></li>
+                        <li><a href="{{ route('contact') }}"      class="footer-link hover:text-gold">Contact<span class="footer-link-bar"></span></a></li>
                     </ul>
                 </div>
 
@@ -2598,7 +2597,6 @@
                 plans:       '#plans',
                 portfolio:   '#portfolio',
                 partnership: '#portfolio',
-                contact:     null,          // CTA button, not a nav-link
             };
 
             // Collect all trackable elements that exist in the DOM
