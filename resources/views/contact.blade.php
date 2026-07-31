@@ -424,14 +424,32 @@
         background: rgba(201,168,76,.12);
         border-color: rgba(201,168,76,.85);
     }
-    #contact-dark.has-custom-cursor,
-    #contact-dark.has-custom-cursor a,
-    #contact-dark.has-custom-cursor button,
-    #contact-dark.has-custom-cursor input,
-    #contact-dark.has-custom-cursor textarea,
-    #contact-dark.has-custom-cursor select,
-    #contact-dark.has-custom-cursor [role="option"] {
+    /* Scoped to <html> (not #contact-dark) — the cursor now tracks the
+       whole document, including the fixed nav bar above #contact-dark
+       (Login/Get Started/hamburger), which previously never saw this
+       reticle since it sits outside #contact-dark in the DOM and the
+       old #contact-dark-only mousemove listener never fired for it. */
+    html.has-custom-contact-cursor,
+    html.has-custom-contact-cursor a,
+    html.has-custom-contact-cursor button,
+    html.has-custom-contact-cursor input,
+    html.has-custom-contact-cursor textarea,
+    html.has-custom-contact-cursor select,
+    html.has-custom-contact-cursor [role="option"] {
         cursor: none;
+    }
+    /* Nav Login/Get Started also get the slow zoom-on-hover treatment used
+       throughout this page, so hovering the nav from Contact feels the same
+       as hovering its own content. Full transition lists repeated (not just
+       adding `transform`) since this rule is more specific than the shared
+       #nav-login/#nav-cta rules in layouts/app.blade.php and would otherwise
+       replace their existing color/background transitions outright. */
+    #nav-login, #nav-cta {
+        transition: background-color .2s ease, border-color .2s ease, color .2s ease,
+                    transform .5s cubic-bezier(.16,1,.3,1);
+    }
+    #nav-login:hover, #nav-cta:hover {
+        transform: scale(1.08);
     }
     @media (hover: none), (pointer: coarse) {
         #contact-cursor-dot, #contact-cursor-ring { display: none; }
@@ -980,6 +998,13 @@
             if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
             if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+            // The desktop full-screen menu and the site footer (both in
+            // layouts/app.blade.php) each have their own separate cursor —
+            // bail out over either so no two reticles ever show at once
+            // (same guard the homepage cursor uses, see home.blade.php).
+            var desktopMenu = document.getElementById('desktop-menu');
+            var footer = document.getElementById('site-footer');
+
             var moveDotX = gsap.quickTo(dot, 'x', { duration: 0.05, ease: 'power3.out' });
             var moveDotY = gsap.quickTo(dot, 'y', { duration: 0.05, ease: 'power3.out' });
 
@@ -997,24 +1022,37 @@
             var hovering = false;
             var visible = false;
 
-            section.addEventListener('mousemove', function (e) {
+            function hide() {
+                if (!visible) return;
+                visible = false;
+                document.documentElement.classList.remove('has-custom-contact-cursor');
+                dot.classList.remove('is-visible');
+                ring.classList.remove('is-visible');
+            }
+
+            // Tracks the whole document (not just #contact-dark) — the fixed
+            // nav bar above it (Login/Get Started/hamburger) sits outside
+            // #contact-dark in the DOM, so a section-scoped listener never
+            // saw mousemove events over it, leaving the reticle frozen and
+            // the nav without any of this page's cursor behavior.
+            document.addEventListener('mousemove', function (e) {
+                if ((desktopMenu && desktopMenu.classList.contains('is-visible')) ||
+                    (footer && e.target.closest && e.target.closest('#site-footer'))) {
+                    hide(); return;
+                }
+
                 mouseX = e.clientX; mouseY = e.clientY;
                 moveDotX(mouseX); moveDotY(mouseY);
                 if (!ringReady) { ringX = mouseX; ringY = mouseY; ringReady = true; }
                 if (!visible) {
                     visible = true;
-                    section.classList.add('has-custom-cursor');
+                    document.documentElement.classList.add('has-custom-contact-cursor');
                     dot.classList.add('is-visible');
                     ring.classList.add('is-visible');
                 }
             });
 
-            section.addEventListener('mouseleave', function () {
-                visible = false;
-                section.classList.remove('has-custom-cursor');
-                dot.classList.remove('is-visible');
-                ring.classList.remove('is-visible');
-            });
+            document.addEventListener('mouseleave', hide);
 
             // The element currently being "morphed" onto (Contact Channel
             // badge, form fields, Email/Call Us cards — see below), if any —
@@ -1094,6 +1132,14 @@
             // width (see .faq-question-btn's width:100% in the CSS above),
             // so hugging the button itself hugs the whole visible row.
             var faqMorphEls = section.querySelectorAll('.faq-question-btn');
+            // Nav Login/Get Started — outside #contact-dark, so queried from
+            // the document directly. Both are small corner-cut rects now
+            // (see layouts/app.blade.php), so they get the same gentle-radius
+            // hug as the form fields rather than a full pill.
+            var navFieldMorphEls = [document.getElementById('nav-login'), document.getElementById('nav-cta')].filter(Boolean);
+            // Hamburger trigger — squared off, not a circle, so the ring
+            // hugs it with a near-crisp corner instead of the default pill.
+            var navSquareMorphEls = [document.getElementById('desktop-menu-btn')].filter(Boolean);
 
             var morphedSet = new Set();
             pillMorphEls.forEach(function (el) {
@@ -1116,22 +1162,36 @@
                 el.addEventListener('mouseenter', function () { morphTo(el, { padX: 0, padY: 0, borderRadius: 14 }); });
                 el.addEventListener('mouseleave', unmorph);
             });
+            navFieldMorphEls.forEach(function (el) {
+                morphedSet.add(el);
+                el.addEventListener('mouseenter', function () { morphTo(el, { padX: 4, padY: 4, borderRadius: 8 }); });
+                el.addEventListener('mouseleave', unmorph);
+            });
+            navSquareMorphEls.forEach(function (el) {
+                morphedSet.add(el);
+                el.addEventListener('mouseenter', function () { morphTo(el, { padX: 2, padY: 2, borderRadius: 2 }); });
+                el.addEventListener('mouseleave', unmorph);
+            });
 
             // Reticle "acquires" everything else clickable — links, buttons,
             // the custom dropdown's options — with the original simple
             // circle-grow. Anything already bound to the morph treatment
-            // above is excluded so it doesn't get a second listener.
-            var interactiveEls = section.querySelectorAll('a, button, input, textarea, select, [role="option"]');
+            // above is excluded so it doesn't get a second listener. Scoped
+            // to the whole document now (not just #contact-dark) so the nav
+            // logo/mobile-hamburger etc. get the same acquire treatment too.
+            var interactiveEls = document.querySelectorAll('a, button, input, textarea, select, [role="option"]');
             interactiveEls.forEach(function (el) {
                 if (morphedSet.has(el)) return;
+                if (desktopMenu && desktopMenu.contains(el)) return;
+                if (footer && footer.contains(el)) return;
                 el.addEventListener('mouseenter', function () { hovering = true; ring.classList.add('is-hovering'); growRing(68, 68); });
                 el.addEventListener('mouseleave', function () { hovering = false; ring.classList.remove('is-hovering'); growRing(46, 46); });
             });
 
             // Small press feedback on click — the ring dips, reading as the
             // reticle "locking on".
-            section.addEventListener('mousedown', function () { pressed = true; });
-            section.addEventListener('mouseup', function () { pressed = false; });
+            document.addEventListener('mousedown', function () { pressed = true; });
+            document.addEventListener('mouseup', function () { pressed = false; });
         }
         if (document.readyState !== 'loading') { initContactCursor(); }
         else { window.addEventListener('DOMContentLoaded', initContactCursor); }
