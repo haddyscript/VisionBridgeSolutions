@@ -240,6 +240,49 @@
             background: rgba(201,168,76,0.22);
             border-color: rgba(201,168,76,0.55);
         }
+
+        /* ─── Nav over a dark page (Contact — dark top to bottom, not just
+             a hero) ─── Unlike .nav-on-dark-hero above, these overrides are
+             NOT scoped to :not(.nav-pill): the homepage's white pill makes
+             sense once you've scrolled past its dark hero into lighter
+             sections, but Contact never reaches a light section, so the
+             solid white pill it would otherwise get on scroll read as a
+             soft, mismatched card sitting on top of the page's dark/gold
+             "signal channel" redesign (contact.blade.php). This keeps the
+             nav a dark glass pill at every scroll position instead. */
+        .nav-force-dark #nav-inner .nav-link,
+        .nav-force-dark #nav-inner #nav-login,
+        .nav-force-dark #nav-inner #menu-btn {
+            color: rgba(255,255,255,.85);
+        }
+        .nav-force-dark #nav-inner .hamburger-bar {
+            background-color: rgba(255,255,255,.85) !important;
+        }
+        .nav-force-dark #nav-inner #nav-cursor {
+            background: rgba(255,255,255,.12) !important;
+        }
+        .nav-force-dark #nav-inner #nav-login {
+            border-color: rgba(111,216,203,0.55);
+            background: rgba(111,216,203,0.12);
+        }
+        .nav-force-dark #nav-inner #nav-login:hover {
+            background: rgba(111,216,203,0.22);
+            border-color: rgba(111,216,203,0.85);
+        }
+        .nav-force-dark #nav-inner #desktop-menu-btn {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.22);
+        }
+        .nav-force-dark #nav-inner #desktop-menu-btn:hover {
+            background: rgba(201,168,76,0.22);
+            border-color: rgba(201,168,76,0.55);
+        }
+        .nav-force-dark #nav-inner.nav-pill {
+            background: rgba(10,10,10,0.75);
+            border-color: rgba(201,168,76,0.25);
+            box-shadow: 0 8px 36px rgba(0,0,0,0.50), 0 0 0 1px rgba(201,168,76,0.14);
+        }
+
         #desktop-menu-btn .hamburger-bar {
             position: absolute;
             left: 50%;
@@ -2098,7 +2141,7 @@
     @php $homeAnchor = request()->routeIs('home') ? '' : route('home'); @endphp
 
     <!-- Navigation -->
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 @if(request()->routeIs('home')) nav-on-dark-hero @endif" style="padding:12px 16px 0;will-change:transform;">
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 @if(request()->routeIs('home')) nav-on-dark-hero @endif @if(request()->routeIs('contact')) nav-force-dark @endif" style="padding:12px 16px 0;will-change:transform;">
 
         {{-- Floating pill inner wrapper --}}
         <div id="nav-inner" class="mx-auto flex items-center justify-between px-5 sm:px-7" style="height:60px;">
