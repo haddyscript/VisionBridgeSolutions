@@ -323,14 +323,15 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         // two parallax-divider CTAs ("See Why VisionBridge" / "View Plans").
         var pillMorphEls = document.querySelectorAll('.spotlight-cta-primary, .spotlight-cta-outline, #svc-toggle-btn, #desktop-menu-btn, .parallax-cta-btn');
         // The 10 service cards, the "Why VisionBridge" section's 4 feature
-        // cards, and the "Our Team" section's 2 cards (Unified Team / Full
+        // cards, the "Our Team" section's 2 cards (Unified Team / Full
         // Ownership — also .why-feature-card, scoped via #partnership so
         // this selector list stays explicit about which of the class's
-        // several reuses on this page are included) all get a gentler
-        // radius matching their own rounded-2xl corners instead of a full
-        // pill, which would over-round a card that size into an odd blob
-        // rather than a glowing outline.
-        var cardMorphEls = document.querySelectorAll('.services-card, #why-feature-cards .why-feature-card, #partnership .why-feature-card');
+        // several reuses on this page are included), and the "What We Stand
+        // For" panel's 6 Core Values cards all get a gentler radius matching
+        // their own rounded corners instead of a full pill, which would
+        // over-round a card that size into an odd blob rather than a
+        // glowing outline.
+        var cardMorphEls = document.querySelectorAll('.services-card, #why-feature-cards .why-feature-card, #partnership .why-feature-card, #values-grid .value-card-outer');
 
         var morphedSet = new Set();
         pillMorphEls.forEach(function (el) {
