@@ -398,7 +398,6 @@
     #contact-cursor-dot, #contact-cursor-ring {
         position: fixed;
         top: 0; left: 0;
-        border-radius: 50%;
         pointer-events: none;
         z-index: 200;
         opacity: 0;
@@ -406,18 +405,27 @@
     }
     #contact-cursor-dot {
         width: 6px; height: 6px;
+        border-radius: 50%;
         background: var(--vb-gold, #C9A84C);
         box-shadow: 0 0 10px rgba(201,168,76,.85);
     }
+    /* A fixed large-px radius (not 50%) so this same rule reads as a circle
+       at the default square size, and as a pill/card outline once the
+       script below grows it to hug a target element's own footprint — same
+       technique as the homepage's own cursor (home.blade.php). */
     #contact-cursor-ring {
         width: 46px; height: 46px;
+        border-radius: 999px;
         border: 1.5px solid rgba(201,168,76,.55);
-        transition: width .3s cubic-bezier(.22,1,.36,1), height .3s cubic-bezier(.22,1,.36,1),
-                    border-color .3s ease, background-color .3s ease;
+        /* width/height/border-radius are tweened directly by GSAP below
+           (for both the plain grow and the element-hugging morph) instead
+           of via CSS transition — a CSS transition racing GSAP's own
+           per-frame inline styles on the same property fights it and reads
+           as stutter. */
+        transition: border-color .3s ease, background-color .3s ease;
     }
     #contact-cursor-dot.is-visible, #contact-cursor-ring.is-visible { opacity: 1; }
     #contact-cursor-ring.is-hovering {
-        width: 68px; height: 68px;
         background: rgba(201,168,76,.12);
         border-color: rgba(201,168,76,.85);
     }
@@ -1013,8 +1021,16 @@
                 ring.classList.remove('is-visible');
             });
 
+            // The element currently being "morphed" onto (Contact Channel
+            // badge, form fields, Email/Call Us cards — see below), if any —
+            // while set, the ticker hands the ring's position over to the
+            // morph tween entirely instead of fighting it with the
+            // lag-follow loop. Same technique as the homepage cursor
+            // (home.blade.php).
+            var morphedEl = null;
+
             gsap.ticker.add(function () {
-                if (!visible) return;
+                if (!visible || morphedEl) return;
                 // Lower factor = more lag = smoother/slower catch-up.
                 ringX += (mouseX - ringX) * 0.1;
                 ringY += (mouseY - ringY) * 0.1;
@@ -1023,14 +1039,89 @@
                 gsap.set(ring, { x: ringX, y: ringY, scale: hovering ? 1 : stretch });
             });
 
-            // Reticle "acquires" anything clickable — links, buttons,
-            // inputs, the custom dropdown's options. Hover takes over the
-            // ring's sizing from the CSS .is-hovering class instead of the
-            // distance-based stretch above, so the two don't fight.
+            function growRing(w, h) {
+                gsap.to(ring, { width: w, height: h, duration: 0.35, ease: 'power3.out', overwrite: 'auto' });
+            }
+
+            // Morphs the ring to hug `el`'s own footprint (plus optional
+            // padding/radius) and locks onto its center, instead of just
+            // growing into a bigger circle around the raw mouse position.
+            function morphTo(el, opts) {
+                hovering = true;
+                morphedEl = el;
+                ring.classList.add('is-hovering');
+                var r = el.getBoundingClientRect();
+                var padX = opts.padX || 0, padY = opts.padY || 0;
+                var tween = {
+                    x: r.left + r.width / 2,
+                    y: r.top + r.height / 2,
+                    width: r.width + padX * 2,
+                    height: r.height + padY * 2,
+                    scale: 1,
+                    duration: 0.45,
+                    ease: 'power3.out',
+                    overwrite: 'auto',
+                };
+                if (opts.borderRadius) tween.borderRadius = opts.borderRadius;
+                gsap.to(ring, tween);
+            }
+
+            function unmorph() {
+                hovering = false;
+                morphedEl = null;
+                ring.classList.remove('is-hovering');
+                // Resume the lag-follow from wherever the mouse actually is
+                // now, not from the target's center — avoids a visible jump.
+                ringX = mouseX; ringY = mouseY;
+                gsap.to(ring, {
+                    width: 46, height: 46, borderRadius: 999,
+                    duration: 0.3, ease: 'power2.out', overwrite: 'auto',
+                    // Drops the inline borderRadius override once settled,
+                    // so a later hover on something that DOESN'T set its own
+                    // borderRadius (e.g. a plain link) isn't left stuck at
+                    // whatever the last morph target used.
+                    clearProps: 'borderRadius',
+                });
+            }
+
+            // "Contact Channel" badge gets the plain pill morph — the
+            // ring's own default border-radius:999px already reads as one.
+            var pillMorphEls = section.querySelectorAll('.contact-tag');
+            // Every form field (name/email inputs, the custom Project Type
+            // trigger, Budget Range/Timeline selects, Project Details
+            // textarea) gets a gentler radius matching a typical rounded
+            // field instead of a full pill, which would over-round the
+            // wide/tall fields into an odd blob.
+            var fieldMorphEls = section.querySelectorAll('.contact-input, .contact-select-trigger, .contact-native-select, .contact-textarea');
+            // Email / Call Us info cards get the same card-style radius.
+            var cardMorphEls = section.querySelectorAll('.contact-info-card');
+
+            var morphedSet = new Set();
+            pillMorphEls.forEach(function (el) {
+                morphedSet.add(el);
+                el.addEventListener('mouseenter', function () { morphTo(el, { padX: 10, padY: 6 }); });
+                el.addEventListener('mouseleave', unmorph);
+            });
+            fieldMorphEls.forEach(function (el) {
+                morphedSet.add(el);
+                el.addEventListener('mouseenter', function () { morphTo(el, { padX: 4, padY: 4, borderRadius: 12 }); });
+                el.addEventListener('mouseleave', unmorph);
+            });
+            cardMorphEls.forEach(function (el) {
+                morphedSet.add(el);
+                el.addEventListener('mouseenter', function () { morphTo(el, { padX: 4, padY: 4, borderRadius: 18 }); });
+                el.addEventListener('mouseleave', unmorph);
+            });
+
+            // Reticle "acquires" everything else clickable — links, buttons,
+            // the custom dropdown's options — with the original simple
+            // circle-grow. Anything already bound to the morph treatment
+            // above is excluded so it doesn't get a second listener.
             var interactiveEls = section.querySelectorAll('a, button, input, textarea, select, [role="option"]');
             interactiveEls.forEach(function (el) {
-                el.addEventListener('mouseenter', function () { hovering = true; ring.classList.add('is-hovering'); });
-                el.addEventListener('mouseleave', function () { hovering = false; ring.classList.remove('is-hovering'); });
+                if (morphedSet.has(el)) return;
+                el.addEventListener('mouseenter', function () { hovering = true; ring.classList.add('is-hovering'); growRing(68, 68); });
+                el.addEventListener('mouseleave', function () { hovering = false; ring.classList.remove('is-hovering'); growRing(46, 46); });
             });
 
             // Small press feedback on click — the ring dips, reading as the
