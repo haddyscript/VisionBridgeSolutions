@@ -102,6 +102,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 <div id="home-cursor-dot" aria-hidden="true"></div>
 <div id="home-cursor-ring" aria-hidden="true"></div>
 <style>
+    /* ─── Body copy font — scoped to #page-wrapper so it only affects this
+         page (headings/quotes keep Orbitron/Playfair Display via their own
+         explicit font-family rules, which override this inherited value). ─── */
+    #page-wrapper {
+        font-family: "Chakra Petch", "Chakra Petch Placeholder", sans-serif;
+    }
+
     #home-cursor-dot, #home-cursor-ring {
         position: fixed;
         top: 0; left: 0;
