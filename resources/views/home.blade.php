@@ -114,17 +114,26 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
          Contact (contact.blade.php) and the nav pill (layouts/app.blade.php).
          Retrace accents redraw the border clip-path removes along the cut
          diagonal, same technique as .contact-form-card::before. ─── */
-    /* ─── "Who We Are" bracket-tag badge — same technique as Contact page's
-         .contact-tag (bracket accents flanking the text via ::before/::after),
-         adapted for this section's light background instead of Contact's
-         dark one. ─── */
-    #about-kicker {
+    /* ─── Section-kicker bracket-tag badge — sitewide version of Contact
+         page's .contact-tag (bracket accents flanking the text via
+         ::before/::after). .kicker-tag is for light section backgrounds;
+         .kicker-tag-dark for the handful of kickers sitting on dark panels
+         or darkened photo overlays (Spotlight, the Team panel, the
+         parallax-divider captions). ─── */
+    .kicker-tag, .kicker-tag-dark {
         position: relative;
         padding: 8px 18px;
+    }
+    .kicker-tag {
         border: 1px solid rgba(17,29,51,0.18);
         background: rgba(17,29,51,0.02);
     }
-    #about-kicker::before, #about-kicker::after {
+    .kicker-tag-dark {
+        border: 1px solid rgba(255,255,255,0.22);
+        background: rgba(255,255,255,0.03);
+    }
+    .kicker-tag::before, .kicker-tag::after,
+    .kicker-tag-dark::before, .kicker-tag-dark::after {
         content: '';
         position: absolute;
         top: -1px; bottom: -1px;
@@ -132,8 +141,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         border-top: 1px solid #C9A84C;
         border-bottom: 1px solid #C9A84C;
     }
-    #about-kicker::before { left: -6px; border-left: 1px solid #C9A84C; }
-    #about-kicker::after  { right: -6px; border-right: 1px solid #C9A84C; }
+    .kicker-tag::before, .kicker-tag-dark::before { left: -6px; border-left: 1px solid #C9A84C; }
+    .kicker-tag::after,  .kicker-tag-dark::after  { right: -6px; border-right: 1px solid #C9A84C; }
 
     #hero-badge::before {
         content: '';
@@ -1299,7 +1308,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
             {{-- Right: supporting copy + CTAs --}}
             <div class="lg:col-span-6 text-center lg:text-left">
-                <span id="spotlight-kicker" class="inline-block text-sm font-semibold tracking-widest uppercase mb-3" style="color:#2A9D8F;">In The Spotlight</span>
+                <span id="spotlight-kicker" class="kicker-tag-dark inline-flex items-center text-sm font-semibold tracking-widest uppercase mb-3" style="color:#2A9D8F;">In The Spotlight</span>
                 <h2 id="spotlight-heading" class="font-display font-bold text-white leading-tight mb-5" style="font-size:clamp(1.9rem,4vw,2.9rem);">
                     Websites That <span class="shimmer-gold">Grow Your Mission</span> or Business
                 </h2>
@@ -1373,7 +1382,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
          style="opacity:.5;mix-blend-mode:multiply;">
     <div id="welcome-glow" class="absolute pointer-events-none" style="width:820px;height:820px;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.09) 0%,rgba(44,166,164,.07) 42%,transparent 70%);filter:blur(72px);will-change:transform;"></div>
     <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" style="z-index:2;">
-        <span id="welcome-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-5" style="opacity:0;">The VisionBridge Story</span>
+        <span id="welcome-kicker" class="kicker-tag inline-flex items-center text-teal text-sm font-semibold tracking-widest uppercase mb-5" style="opacity:0;">The VisionBridge Story</span>
         <h2 class="font-display font-bold text-navy leading-tight mb-5" style="font-size:clamp(2rem,4.5vw,3.2rem);">
             <span class="welcome-word-wrap"><span class="welcome-word">Where</span></span>
             <span class="welcome-word-wrap"><span class="welcome-word">Vision</span></span>
@@ -1418,7 +1427,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     </div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative" style="z-index:1;">
         <div id="about-intro" class="text-center mb-20">
-            <span id="about-kicker" class="inline-flex items-center text-teal text-sm font-semibold tracking-widest uppercase mb-3">Who We Are</span>
+            <span id="about-kicker" class="kicker-tag inline-flex items-center text-teal text-sm font-semibold tracking-widest uppercase mb-3">Who We Are</span>
             <h2 id="about-heading" class="section-title mt-1">About VisionBridge Solutions</h2>
             <p id="about-subtitle" class="text-base mt-3 max-w-lg mx-auto font-medium" style="color:rgba(17,29,51,0.68);line-height:1.7;">A dedicated team building websites that give organizations the digital foundation they deserve.</p>
         </div>
@@ -1573,7 +1582,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <div class="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" style="width:240px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.32),transparent);"></div>
             <div class="relative" style="z-index:1;">
                 <div class="text-center mb-16">
-                    <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">What We Stand For</span>
+                    <span class="kicker-tag inline-flex items-center text-teal text-sm font-semibold tracking-widest uppercase mb-3">What We Stand For</span>
                     <h3 class="font-display text-3xl md:text-4xl font-bold" style="color:#2F3A45;">Our Core Values</h3>
                     <div class="glow-line" style="width:52px;margin:14px auto 0;"></div>
                 </div>
@@ -1634,7 +1643,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <div class="relative grid grid-cols-1 lg:grid-cols-2 items-stretch gap-10 py-16 px-6 sm:py-20 sm:px-12 lg:py-0 lg:pl-16 lg:pr-0" style="z-index:2;min-height:480px;">
                 {{-- Left: copy, left-aligned instead of the old centered block --}}
                 <div class="text-left lg:flex lg:flex-col lg:justify-center">
-                    <span class="team-panel-line inline-block text-gold text-sm font-semibold tracking-widest uppercase mb-3">Our Team</span>
+                    <span class="team-panel-line kicker-tag-dark inline-flex items-center text-gold text-sm font-semibold tracking-widest uppercase mb-3">Our Team</span>
                     <p class="team-panel-line text-white/85 mb-5" style="font-size:1rem;line-height:1.8;max-width:32rem;">
                         At VisionBridge Solutions, we believe every successful website is the result of collaboration.
                     </p>
@@ -1687,7 +1696,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         <div class="bridge-cable-divider mb-8" aria-hidden="true">{!! $bridgeCableDivider !!}</div>
         <p class="font-extrabold mb-5" style="font-family:'Orbitron',sans-serif;font-style:italic;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.3;color:#FFFFFF;max-width:820px;">&ldquo;A bridge isn&rsquo;t just steel and cable &mdash; it&rsquo;s the promise that two sides will meet.&rdquo;</p>
         <div style="width:48px;height:1.5px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);margin-bottom:1rem;"></div>
-        <span class="text-sm font-semibold tracking-widest uppercase" style="color:#C9A84C;">VisionBridge Solutions</span>
+        <span class="kicker-tag-dark inline-flex items-center text-sm font-semibold tracking-widest uppercase" style="color:#C9A84C;">VisionBridge Solutions</span>
     </div>
 </div>
 
@@ -1698,7 +1707,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 <section id="services" class="pt-24 pb-20" style="background:#FFFFFF;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-20">
-            <span id="services-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">What We Offer</span>
+            <span id="services-kicker" class="kicker-tag inline-flex items-center text-teal text-sm font-semibold tracking-widest uppercase mb-3">What We Offer</span>
             <h2 id="services-heading" class="section-title">Our Services</h2>
             <div id="services-accent-line"></div>
             <p id="services-subtitle" class="section-subtitle">From initial design to long-term care — we cover everything your online presence needs.</p>
@@ -1776,7 +1785,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
         <div class="bridge-cable-divider mb-8" aria-hidden="true">{!! $bridgeCableDivider !!}</div>
-        <span class="text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">Engineered For Growth</span>
+        <span class="kicker-tag-dark inline-flex items-center text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">Engineered For Growth</span>
         <h3 class="font-extrabold mb-8" style="font-family:'Orbitron',sans-serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">Crafted With Purpose, Built To Perform</h3>
         <a href="#why" class="parallax-cta-btn group inline-flex items-center gap-2.5 px-8 py-4 rounded-full font-semibold text-sm transition-all duration-300" style="background:#C9A84C;color:#15202C;letter-spacing:0.04em;">
             <span class="hero-btn-fill" aria-hidden="true"></span>
@@ -1830,7 +1839,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
             {{-- Left: heading block --}}
             <div id="why-heading-block">
-                <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-5">Why VisionBridge</span>
+                <span class="kicker-tag inline-flex items-center text-teal text-sm font-semibold tracking-widest uppercase mb-5">Why VisionBridge</span>
                 <h2 class="font-display font-bold leading-tight mb-5" style="font-size:clamp(2.2rem,4vw,3.4rem);color:#2F3A45;">
                     Why Choose<br>
                     <span style="color:#C9A84C;">VisionBridge</span><br>Solutions?
@@ -1980,7 +1989,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
         <div class="bridge-cable-divider mb-8" aria-hidden="true">{!! $bridgeCableDivider !!}</div>
-        <span class="text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">Built To Last</span>
+        <span class="kicker-tag-dark inline-flex items-center text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">Built To Last</span>
         <h3 class="font-extrabold mb-8" style="font-family:'Orbitron',sans-serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">Your Bridge to Lasting Growth</h3>
         <a href="#plans" class="parallax-cta-btn group inline-flex items-center gap-2.5 px-8 py-4 rounded-full font-semibold text-sm transition-all duration-300" style="background:#C9A84C;color:#15202C;letter-spacing:0.04em;">
             <span class="hero-btn-fill" aria-hidden="true"></span>
@@ -2023,7 +2032,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                  style="width:140px;background:linear-gradient(to right, transparent 0%, #FFFFFF 100%);"></div>
 
             <div class="relative flex flex-col items-center justify-center text-center" style="min-height:230px;">
-                <span id="plans-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3" style="opacity:0;transform:translateX(-20px)">Protect Your Investment</span>
+                <span id="plans-kicker" class="kicker-tag inline-flex items-center text-teal text-sm font-semibold tracking-widest uppercase mb-3" style="opacity:0;transform:translateX(-20px)">Protect Your Investment</span>
                 <h2 id="plans-heading" class="section-title" style="opacity:0;transform:translateY(40px)">Website Care Plans</h2>
                 <p id="plans-subtitle" class="section-subtitle" style="opacity:0;transform:translateY(20px)">Protect your investment with professional website care designed to keep your website secure, updated, optimized, and performing month after month.</p>
             </div>
@@ -2173,7 +2182,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         <div class="bridge-cable-divider mb-8" aria-hidden="true">{!! $bridgeCableDivider !!}</div>
         <p class="font-extrabold mb-5" style="font-family:'Orbitron',sans-serif;font-style:italic;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.3;color:#FFFFFF;max-width:820px;">&ldquo;Every step forward is a plan taking shape.&rdquo;</p>
         <div style="width:48px;height:1.5px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);margin-bottom:1rem;"></div>
-        <span class="text-sm font-semibold tracking-widest uppercase" style="color:#C9A84C;">VisionBridge Solutions</span>
+        <span class="kicker-tag-dark inline-flex items-center text-sm font-semibold tracking-widest uppercase" style="color:#C9A84C;">VisionBridge Solutions</span>
     </div>
 </div>
 
@@ -2183,7 +2192,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 <section id="partnership" class="py-20 bg-white relative overflow-hidden">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div id="partnership-header" class="text-center mb-10 max-w-2xl mx-auto">
-            <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Our Team</span>
+            <span class="kicker-tag inline-flex items-center text-teal text-sm font-semibold tracking-widest uppercase mb-3">Our Team</span>
             <h2 class="section-title">A Single Team, A Seamless Experience</h2>
             <p class="section-subtitle">Every project is managed through VisionBridge Solutions, giving our clients one point of contact from beginning to end.</p>
         </div>
@@ -2234,7 +2243,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 <div class="relative parallax-divider" style="height:720px;overflow:hidden;background-image:url('@assetv('image/parallax-bg6-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 40%;">
     <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
-        <span class="text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">Behind Every Bridge</span>
+        <span class="kicker-tag-dark inline-flex items-center text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">Behind Every Bridge</span>
         <h3 class="font-extrabold" style="font-family:'Orbitron',sans-serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">The Story Behind The Solutions</h3>
     </div>
 </div>
@@ -2501,7 +2510,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                  height on desktop and scrollable internally so the section
                  never grows past 75vh of the viewport. --}}
             <div class="lg:col-span-6 lg:h-full lg:overflow-y-auto lg:pr-2">
-                <span class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3 opacity-0" data-reveal-content>Meet The Founder</span>
+                <span class="kicker-tag inline-flex items-center text-teal text-sm font-semibold tracking-widest uppercase mb-3 opacity-0" data-reveal-content>Meet The Founder</span>
                 <h2 class="font-display font-bold leading-tight mb-2 opacity-0" data-reveal-content style="font-size:clamp(2.2rem,4vw,3.2rem);color:#2F3A45;">Meet the Founder</h2>
                 <h3 class="font-extrabold text-lg mb-1 opacity-0" data-reveal-content style="color:#C9A84C;">Johnny Davis</h3>
                 <p class="text-sm font-semibold tracking-wide mb-7 opacity-0" data-reveal-content style="color:rgba(17,29,51,0.6);">Founder &amp; President, VisionBridge Solutions</p>
@@ -2758,7 +2767,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 <div class="relative parallax-divider" style="height:720px;overflow:hidden;background-image:url('@assetv('image/parallax-bg7-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 40%;">
     <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
-        <span class="text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">From Vision To Reality</span>
+        <span class="kicker-tag-dark inline-flex items-center text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">From Vision To Reality</span>
         <h3 class="font-extrabold" style="font-family:'Orbitron',sans-serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">One Founder's Mission To Build Bridges, Not Just Websites</h3>
     </div>
 </div>
