@@ -17,6 +17,16 @@ class DeployerController extends Controller
             abort(403, 'Forbidden');
         }
 
+        // A prior git process that got killed mid-command (this endpoint's
+        // own 120s timeout, a recycled PHP-FPM worker, two deploys
+        // overlapping) leaves a *.lock file behind, which then blocks every
+        // subsequent `git fetch`/`reset` with "Unable to create '.git/HEAD.lock':
+        // File exists" until removed by hand. Safe to clear here since the
+        // fetch + reset --hard below is about to overwrite everything anyway.
+        foreach (glob(base_path('.git/*.lock')) as $staleLock) {
+            @unlink($staleLock);
+        }
+
         $steps = [
             ['git', 'fetch', 'origin', 'main'],
             ['git', 'reset', '--hard', 'origin/main'],
