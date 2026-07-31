@@ -281,6 +281,24 @@
             background: rgba(10,10,10,0.75);
             border-color: rgba(201,168,76,0.25);
             box-shadow: 0 8px 36px rgba(0,0,0,0.50), 0 0 0 1px rgba(201,168,76,0.14);
+            /* Diagonal corner-cut, same motif as .contact-form-card/.faq-item
+               in contact.blade.php — reads as part of that page's "signal
+               channel" design instead of a soft rounded pill sitting on it. */
+            position: relative;
+            border-radius: 0;
+            clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+        }
+        .nav-force-dark #nav-inner.nav-pill::before {
+            /* Retraces the cut-corner edge in gold, same technique as
+               .contact-form-card::before — clip-path removes the border
+               along the diagonal itself, so this redraws it. */
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 16px; height: 16px;
+            background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+            opacity: .9;
+            pointer-events: none;
         }
 
         #desktop-menu-btn .hamburger-bar {
@@ -1189,7 +1207,8 @@
         #nav-inner {
             transition: background 0.50s ease, box-shadow 0.50s ease,
                         border-radius 0.50s ease, max-width 0.55s ease,
-                        border-color 0.50s ease, height 0.40s ease, padding 0.40s ease;
+                        border-color 0.50s ease, height 0.40s ease, padding 0.40s ease,
+                        clip-path 0.50s ease;
             border: 1px solid transparent;
             max-width: 100%;
         }
