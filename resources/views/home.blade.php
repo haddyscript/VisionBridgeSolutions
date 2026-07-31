@@ -109,6 +109,52 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         font-family: "Chakra Petch", "Chakra Petch Placeholder", sans-serif;
     }
 
+    /* ─── Corner-cut card/badge shape — homepage-wide design language change
+         (see conversation), matching the diagonal cut already used on
+         Contact (contact.blade.php) and the nav pill (layouts/app.blade.php).
+         Retrace accents redraw the border clip-path removes along the cut
+         diagonal, same technique as .contact-form-card::before. ─── */
+    #hero-badge::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 8px; height: 8px;
+        background: linear-gradient(135deg, transparent 49%, rgba(255,255,255,0.55) 50%, transparent 51%);
+        pointer-events: none;
+    }
+    #about-mosaic::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0; z-index: 4;
+        width: 24px; height: 24px;
+        background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+        pointer-events: none;
+    }
+    .about-card--mission::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0; z-index: 2;
+        width: 20px; height: 20px;
+        background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+        pointer-events: none;
+    }
+    .about-card--vision::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0; z-index: 2;
+        width: 20px; height: 20px;
+        background: linear-gradient(135deg, transparent 49%, rgba(42,157,143,0.85) 50%, transparent 51%);
+        pointer-events: none;
+    }
+    #about-values-panel::before, #about-team-panel::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0; z-index: 4;
+        width: 30px; height: 30px;
+        background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+        pointer-events: none;
+    }
+
     #home-cursor-dot, #home-cursor-ring {
         position: fixed;
         top: 0; left: 0;
@@ -712,10 +758,11 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <div class="text-left">
 
                 {{-- Badge --}}
-                <div id="hero-badge" class="inline-flex items-center text-xs font-semibold tracking-widest uppercase px-5 py-2 rounded-full mb-7 sm:mb-8 opacity-0"
+                <div id="hero-badge" class="relative inline-flex items-center text-xs font-semibold tracking-widest uppercase px-5 py-2 rounded-none mb-7 sm:mb-8 opacity-0"
                      style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.85);
                      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-                     box-shadow:0 8px 24px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.14);">
+                     box-shadow:0 8px 24px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.14);
+                     clip-path:polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);">
                     <span class="live-dot"></span>
                     Website Development &amp; Management
                 </div>
@@ -1193,16 +1240,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
             {{-- Left: the poster in a matte gallery frame --}}
             <div class="lg:col-span-6 flex justify-center">
-                <div class="spotlight-frame relative rounded-2xl overflow-hidden" style="max-width:440px;background:#FFFFFF;padding:10px;box-shadow:0 0 0 1px rgba(201,168,76,0.30),0 40px 90px rgba(0,0,0,0.55),0 12px 32px rgba(0,0,0,0.4);">
+                <div class="spotlight-frame relative overflow-hidden" style="max-width:440px;background:#FFFFFF;padding:10px;box-shadow:0 0 0 1px rgba(201,168,76,0.30),0 40px 90px rgba(0,0,0,0.55),0 12px 32px rgba(0,0,0,0.4);clip-path:polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%);">
+                    <div class="absolute pointer-events-none" style="top:0;right:0;z-index:11;width:22px;height:22px;background:linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);"></div>
                     {{-- "Real client campaign" badge --}}
-                    <div class="absolute z-10 flex items-center gap-1.5 text-xs font-semibold tracking-wide px-3 py-1.5 rounded-full" style="top:20px;left:20px;background:rgba(15,19,25,0.82);color:#DFC06A;backdrop-filter:blur(6px);border:1px solid rgba(201,168,76,0.35);">
+                    <div class="absolute z-10 flex items-center gap-1.5 text-xs font-semibold tracking-wide px-3 py-1.5" style="top:20px;left:20px;background:rgba(15,19,25,0.82);color:#DFC06A;backdrop-filter:blur(6px);border:1px solid rgba(201,168,76,0.35);clip-path:polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);">
                         <span class="live-dot"></span>
                         Real Client Campaign
                     </div>
                     <img src="@assetv('image/marketing/JDGM-marketing.jpeg')"
                          alt="VisionBridge Solutions marketing poster — Johnny Davis Global Missions website campaign"
                          loading="lazy" decoding="async"
-                         class="w-full h-auto rounded-xl block">
+                         class="w-full h-auto block">
                 </div>
             </div>
 
@@ -1243,14 +1291,15 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 {{-- CTAs --}}
                 <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                     <a href="https://johnnydavisglobalmissions.org/" target="_blank" rel="noopener"
-                       class="spotlight-cta-primary inline-flex items-center justify-center gap-2 font-bold px-8 py-4 rounded-lg"
-                       style="background:#C9A84C;color:#15202C;">
+                       class="spotlight-cta-primary relative inline-flex items-center justify-center gap-2 font-bold px-8 py-4"
+                       style="background:#C9A84C;color:#15202C;clip-path:polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);">
                         View The Live Site
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </a>
                     <a href="{{ route('consultation.create') }}"
-                       class="spotlight-cta-outline inline-flex items-center justify-center gap-2 font-semibold px-8 py-4 rounded-lg"
-                       style="border:1.5px solid rgba(255,255,255,0.28);color:#FFFFFF;">
+                       class="spotlight-cta-outline relative inline-flex items-center justify-center gap-2 font-semibold px-8 py-4"
+                       style="border:1.5px solid rgba(255,255,255,0.28);color:#FFFFFF;clip-path:polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);">
+                        <span class="absolute pointer-events-none" aria-hidden="true" style="top:0;right:0;width:10px;height:10px;background:linear-gradient(135deg, transparent 49%, rgba(255,255,255,0.55) 50%, transparent 51%);"></span>
                         Book A Free Consultation
                     </a>
                 </div>
@@ -1336,8 +1385,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
             {{-- Left: 3×2 mosaic — align-self:stretch forces grid to give full row height --}}
             <div id="about-mosaic-wrap" style="display:flex;flex-direction:column;align-self:stretch;">
-                <div id="about-mosaic" class="relative rounded-2xl overflow-hidden shadow-2xl"
-                     style="flex:1 1 0%;min-height:380px; --img:url('@assetv('image/VisionBridge_Solutions_1.jpeg')');">
+                <div id="about-mosaic" class="relative overflow-hidden shadow-2xl"
+                     style="flex:1 1 0%;min-height:380px; --img:url('@assetv('image/VisionBridge_Solutions_1.jpeg')');clip-path:polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);">
 
                     {{-- 3 columns × 2 rows — each cell reveals a slice of the image --}}
                     <div class="absolute inset-0 grid grid-cols-3 grid-rows-2" style="gap:3px;background:#08101e;">
@@ -1379,7 +1428,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                      mobile gets a dark glowing-bridge photo card instead,
                      see .about-card-photo-bg / .about-card-badge in
                      mobile-design.css --}}
-                <div class="about-card about-card--mission rounded-2xl flex-1 relative overflow-hidden" style="padding:22px 24px;background:#FFFFFF;border:1px solid rgba(201,168,76,0.14);box-shadow:0 4px 28px rgba(17,29,51,0.07),0 1px 4px rgba(17,29,51,0.04);">
+                <div class="about-card about-card--mission flex-1 relative overflow-hidden" style="padding:22px 24px;background:#FFFFFF;border:1px solid rgba(201,168,76,0.14);box-shadow:0 4px 28px rgba(17,29,51,0.07),0 1px 4px rgba(17,29,51,0.04);clip-path:polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);">
                     <div class="absolute left-0 top-6 bottom-6 w-0.5 rounded-r-full" style="background:linear-gradient(180deg,#C9A84C 0%,rgba(201,168,76,0.15) 100%);"></div>
                     {{-- Decorative only, mobile-only, ~8-15% opacity (mobile-design.css):
                          faded bridge photo, a slow-rotating gold arc, and drifting particles --}}
@@ -1410,7 +1459,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
                 {{-- Vision card — soft teal tint (desktop); mobile gets a
                      dark photo card matching the Mission card's treatment --}}
-                <div class="about-card about-card--vision rounded-2xl flex-1 relative overflow-hidden" style="padding:22px 24px;background:linear-gradient(135deg,#F0FAF9 0%,#EDFAF8 100%);border:1px solid rgba(42,157,143,0.18);box-shadow:0 4px 28px rgba(42,157,143,0.08),0 1px 4px rgba(42,157,143,0.04);">
+                <div class="about-card about-card--vision flex-1 relative overflow-hidden" style="padding:22px 24px;background:linear-gradient(135deg,#F0FAF9 0%,#EDFAF8 100%);border:1px solid rgba(42,157,143,0.18);box-shadow:0 4px 28px rgba(42,157,143,0.08),0 1px 4px rgba(42,157,143,0.04);clip-path:polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);">
                     <div class="absolute left-0 top-6 bottom-6 w-0.5 rounded-r-full" style="background:linear-gradient(180deg,#2A9D8F 0%,rgba(42,157,143,0.15) 100%);"></div>
                     {{-- Decorative only, mobile-only, ~8-15% opacity (mobile-design.css):
                          mountain + winding road silhouette, a soft light beam off the
@@ -1465,7 +1514,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         </div>
 
         {{-- Core Values — light, welcoming panel --}}
-        <div id="about-values-panel" class="mt-24 rounded-3xl relative overflow-hidden py-20 px-6 sm:py-24 sm:px-12 lg:py-28 lg:px-16" style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.06);">
+        <div id="about-values-panel" class="mt-24 relative overflow-hidden py-20 px-6 sm:py-24 sm:px-12 lg:py-28 lg:px-16" style="background:#FFFFFF;border:1px solid rgba(17,29,51,0.06);clip-path:polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 0 100%);">
             {{-- Ambient orbs — barely visible, just add warmth --}}
             <div class="hero-orb" style="width:580px;height:580px;top:-160px;right:-140px;background:radial-gradient(circle,rgba(201,168,76,0.07) 0%,transparent 70%);animation:orb-drift 26s ease-in-out infinite;filter:blur(64px);"></div>
             <div class="hero-orb" style="width:420px;height:420px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(42,157,143,0.06) 0%,transparent 70%);animation:orb-drift 20s ease-in-out infinite reverse 4s;filter:blur(52px);"></div>
@@ -1528,7 +1577,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
              photo circle-cropped and bleeding off the right edge, replacing
              the old full-bleed dimmed background photo + medallion
              play-button (dropped — doesn't fit this two-column layout). --}}
-        <div id="about-team-panel" class="mt-10 rounded-3xl relative overflow-hidden" style="background:linear-gradient(155deg,#0A0D11 0%,#171B21 35%,#0A0D11 70%,#15191F 100%);border:1px solid rgba(201,168,76,0.28);box-shadow:0 0 0 1px rgba(201,168,76,0.10) inset, 0 30px 80px rgba(0,0,0,0.45);">
+        <div id="about-team-panel" class="mt-10 relative overflow-hidden" style="background:linear-gradient(155deg,#0A0D11 0%,#171B21 35%,#0A0D11 70%,#15191F 100%);border:1px solid rgba(201,168,76,0.28);box-shadow:0 0 0 1px rgba(201,168,76,0.10) inset, 0 30px 80px rgba(0,0,0,0.45);clip-path:polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 0 100%);">
             {{-- Diagonal glossy sheen — light catching an acrylic plaque --}}
             <div class="absolute inset-0 pointer-events-none" style="z-index:1;background:linear-gradient(115deg,transparent 28%,rgba(255,255,255,0.07) 47%,rgba(255,255,255,0.02) 53%,transparent 68%);"></div>
             {{-- One-time light-sweep that plays as the panel reveals itself —
@@ -1615,8 +1664,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         {{-- Toggle button sits above the grid so it's always reachable --}}
         <div class="flex justify-center mb-10">
             <button id="svc-toggle-btn" onclick="toggleServices()"
-                    class="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full font-semibold text-sm transition-all duration-300"
-                    style="background:#2F3A45;color:#C9A84C;border:1.5px solid rgba(201,168,76,0.30);letter-spacing:0.04em;">
+                    class="group relative inline-flex items-center gap-2.5 px-7 py-3.5 font-semibold text-sm transition-all duration-300"
+                    style="background:#2F3A45;color:#C9A84C;border:1.5px solid rgba(201,168,76,0.30);letter-spacing:0.04em;clip-path:polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);">
                 <span id="svc-toggle-label">View All Services</span>
                 <svg id="svc-toggle-icon" class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
@@ -1791,7 +1840,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
              banner (not just a 5th feature card) so it reads as its own
              differentiator, per Johnny's note to showcase security/peace-of-mind
              as a core part of the VisionBridge value prop, not a footnote. --}}
-        <div id="why-security-banner" class="mt-14 rounded-3xl relative overflow-hidden" style="background:linear-gradient(135deg,#15202C 0%,#1F2C3A 100%);padding:48px 40px;">
+        <div id="why-security-banner" class="mt-14 relative overflow-hidden" style="background:linear-gradient(135deg,#15202C 0%,#1F2C3A 100%);padding:48px 40px;clip-path:polygon(0 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 0 100%);">
             <div class="absolute pointer-events-none" style="width:420px;height:420px;top:-140px;right:-120px;background:radial-gradient(circle,rgba(201,168,76,0.16) 0%,transparent 70%);filter:blur(40px);"></div>
 
             {{-- Two-column: copy + trust points on the left, the
@@ -1951,13 +2000,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 <div class="plans-card group shrink-0 flex flex-col items-center h-full {{ $plan->is_available ? '' : 'plans-card-dim' }}" style="width:340px;margin:0 18px;padding-top:26px;">
                     <div class="relative w-full flex-1 flex flex-col">
                         @if ($plan->badge)
-                            <div class="absolute left-1/2 -translate-x-1/2 -top-3 z-10 inline-flex items-center gap-1.5 bg-gold text-navy text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full shadow-lg whitespace-nowrap">
+                            <div class="absolute left-1/2 -translate-x-1/2 -top-3 z-10 inline-flex items-center gap-1.5 bg-gold text-navy text-xs font-bold tracking-widest uppercase px-4 py-1.5 shadow-lg whitespace-nowrap" style="clip-path:polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);">
                                 <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['star'] !!}</svg>
                                 {{ $plan->badge }}
                             </div>
                         @endif
 
-                        <div class="plan-card-panel relative rounded-2xl overflow-hidden bg-white border-2 transition-all duration-300 flex-1 flex flex-col {{ $plan->is_available ? $theme['border'].' shadow-xl' : 'border-gray-100' }}">
+                        <div class="plan-card-panel relative overflow-hidden bg-white border-2 transition-all duration-300 flex-1 flex flex-col {{ $plan->is_available ? $theme['border'].' shadow-xl' : 'border-gray-100' }}" style="clip-path:polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%);">
                             <div class="plan-header-cap {{ $plan->is_available ? $theme['cap'] : 'bg-gray-200' }} h-14"></div>
 
                             <div class="flex justify-center" style="margin-top:-32px;">
@@ -2039,7 +2088,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         </p>
 
         {{-- Trust strip: four reassurance points matching the care-plan one-pager --}}
-        <div class="mt-20 max-w-5xl mx-auto rounded-2xl border border-gray-100 shadow-sm bg-white px-6 py-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
+        <div class="relative mt-20 max-w-5xl mx-auto border border-gray-100 shadow-sm bg-white px-6 py-8 grid grid-cols-2 sm:grid-cols-4 gap-8" style="clip-path:polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);">
+            <div class="absolute pointer-events-none" style="top:0;right:0;z-index:2;width:18px;height:18px;background:linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);"></div>
             @foreach ([
                 ['icon' => 'shield',   'title' => 'Secure & Protected',  'desc' => '24/7 monitoring and protection'],
                 ['icon' => 'cloud-up', 'title' => 'Backed Up & Safe',    'desc' => 'Daily backups for peace of mind'],
@@ -2059,7 +2109,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         </div>
 
         {{-- Bottom info bar --}}
-        <div class="mt-6 max-w-5xl mx-auto rounded-full bg-navy text-white text-center text-xs sm:text-sm font-semibold px-6 py-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+        <div class="mt-6 max-w-5xl mx-auto bg-navy text-white text-center text-xs sm:text-sm font-semibold px-6 py-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1" style="clip-path:polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);">
             <span>Hosted &amp; Managed by VisionBridge Solutions</span>
             <span class="text-gold/60">|</span>
             <span>Long-Term Website Stability</span>
@@ -2210,7 +2260,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         align-items: center;
         gap: 12px;
         padding: 12px 18px;
-        border-radius: 16px;
+        border-radius: 0;
+        clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
         background: rgba(255,255,255,.88);
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
@@ -2235,7 +2286,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         align-items: flex-start;
         gap: 10px;
         padding: 20px 22px;
-        border-radius: 18px;
+        border-radius: 0;
+        clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
         flex: 1 1 200px;
         background: rgba(255,255,255,.7);
         border: 1px solid rgba(17,29,51,.08);
@@ -2248,6 +2300,32 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         transform: translateY(-6px);
         box-shadow: 0 24px 50px rgba(201,168,76,.20), 0 6px 18px rgba(17,29,51,.10);
         border-color: rgba(201,168,76,.35);
+    }
+    .founder-stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0; z-index: 2;
+        width: 14px; height: 14px;
+        background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+        pointer-events: none;
+    }
+    #svc-toggle-btn::after {
+        /* ::before on this button is already the shimmer-sweep effect
+           (layouts/app.blade.php) — ::after is free for the retrace. */
+        content: '';
+        position: absolute;
+        top: 0; right: 0; z-index: 2;
+        width: 10px; height: 10px;
+        background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+        pointer-events: none;
+    }
+    #founder-badge::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0; z-index: 5;
+        width: 12px; height: 12px;
+        background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+        pointer-events: none;
     }
     .founder-stat-icon {
         width: 44px; height: 44px; border-radius: 12px;
@@ -2415,7 +2493,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     {{-- Placeholder for the founder's future "Watch Johnny's Story"
                          welcome video — swap this block for a video embed once
                          the recording is delivered. --}}
-                    <div class="inline-flex items-center gap-4 rounded-2xl px-6 py-4" style="background:rgba(255,255,255,0.6);border:1.5px dashed rgba(201,168,76,0.35);">
+                    <div class="inline-flex items-center gap-4 px-6 py-4" style="background:rgba(255,255,255,0.6);border:1.5px dashed rgba(201,168,76,0.35);clip-path:polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);">
                         <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style="background:rgba(201,168,76,0.14);">
                             <svg class="w-5 h-5" style="color:#C9A84C;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>

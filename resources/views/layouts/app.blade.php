@@ -173,10 +173,12 @@
              Started". Teal (not gold) keeps it clearly distinct from the
              primary gold CTA next to it. */
         #nav-login {
+            position: relative;
             font-size: 0.85rem;
             font-weight: 700;
             padding: 8px 16px;
-            border-radius: 999px;
+            border-radius: 0;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
             border: 1.5px solid rgba(42,157,143,0.45);
             background: rgba(42,157,143,0.08);
             color: #1F7A6E;
@@ -186,6 +188,27 @@
             background: rgba(42,157,143,0.18);
             border-color: rgba(42,157,143,0.75);
             color: #17635A;
+        }
+        #nav-login::before {
+            /* Retraces the cut-corner edge in teal (matching this pill's own
+               border color) since clip-path removes the border along the
+               diagonal itself — same technique as .contact-form-card::before. */
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 8px; height: 8px;
+            background: linear-gradient(135deg, transparent 49%, rgba(42,157,143,0.85) 50%, transparent 51%);
+            pointer-events: none;
+        }
+        .nav-on-dark-hero #nav-inner:not(.nav-pill) #nav-login::before,
+        .nav-force-dark #nav-inner #nav-login::before {
+            background: linear-gradient(135deg, transparent 49%, rgba(111,216,203,0.85) 50%, transparent 51%);
+        }
+        #nav-cta {
+            /* Solid fill, no border to retrace — same as #contact-submit's
+               own corner-cut treatment in contact.blade.php. */
+            border-radius: 0 !important;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
         }
         .nav-on-dark-hero #nav-inner:not(.nav-pill) #nav-login {
             border-color: rgba(111,216,203,0.55);
@@ -222,7 +245,7 @@
         #desktop-menu-btn {
             width: 42px;
             height: 42px;
-            border-radius: 999px;
+            border-radius: 0;
             position: relative;
             background: rgba(21,32,44,0.06);
             border: 1.5px solid rgba(21,32,44,0.14);
@@ -264,41 +287,14 @@
         .nav-force-dark #nav-inner #nav-login {
             border-color: rgba(111,216,203,0.55);
             background: rgba(111,216,203,0.12);
-            /* Same diagonal corner-cut motif as the nav pill/form card below —
-               a rounded teal pill was the last soft/rounded holdout sitting
-               inside an otherwise squared-off nav. */
-            position: relative;
-            border-radius: 0;
-            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
-        }
-        .nav-force-dark #nav-inner #nav-login::before {
-            /* Retraces the cut-corner edge in teal (matching this pill's own
-               border color) since clip-path removes the border along the
-               diagonal itself — same technique as .contact-form-card::before. */
-            content: '';
-            position: absolute;
-            top: 0; right: 0;
-            width: 8px; height: 8px;
-            background: linear-gradient(135deg, transparent 49%, rgba(111,216,203,0.85) 50%, transparent 51%);
-            pointer-events: none;
         }
         .nav-force-dark #nav-inner #nav-login:hover {
             background: rgba(111,216,203,0.22);
             border-color: rgba(111,216,203,0.85);
         }
-        .nav-force-dark #nav-inner #nav-cta {
-            /* Solid fill, no border to retrace — same as #contact-submit's
-               own corner-cut treatment in contact.blade.php. */
-            border-radius: 0 !important;
-            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
-        }
         .nav-force-dark #nav-inner #desktop-menu-btn {
             background: rgba(255,255,255,0.08);
             border-color: rgba(255,255,255,0.22);
-            /* Squared off (not corner-cut) to match the site's other small
-               icon badges (.contact-info-icon, .faq-cta-icon) rather than
-               competing with the hamburger bars at this small a size. */
-            border-radius: 0;
         }
         .nav-force-dark #nav-inner #desktop-menu-btn:hover {
             background: rgba(201,168,76,0.22);
@@ -308,24 +304,6 @@
             background: rgba(10,10,10,0.75);
             border-color: rgba(201,168,76,0.25);
             box-shadow: 0 8px 36px rgba(0,0,0,0.50), 0 0 0 1px rgba(201,168,76,0.14);
-            /* Diagonal corner-cut, same motif as .contact-form-card/.faq-item
-               in contact.blade.php — reads as part of that page's "signal
-               channel" design instead of a soft rounded pill sitting on it. */
-            position: relative;
-            border-radius: 0;
-            clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
-        }
-        .nav-force-dark #nav-inner.nav-pill::before {
-            /* Retraces the cut-corner edge in gold, same technique as
-               .contact-form-card::before — clip-path removes the border
-               along the diagonal itself, so this redraws it. */
-            content: '';
-            position: absolute;
-            top: 0; right: 0;
-            width: 16px; height: 16px;
-            background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
-            opacity: .9;
-            pointer-events: none;
         }
 
         #desktop-menu-btn .hamburger-bar {
@@ -548,7 +526,8 @@
         .hero-btn-primary {
             position:relative; display:inline-flex; align-items:center; gap:8px;
             background:#C9A84C; color:#2F3A45; font-weight:700;
-            padding:15px 34px; border-radius:10px; font-size:1rem;
+            padding:15px 34px; border-radius:0; font-size:1rem;
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
             overflow:hidden; letter-spacing:.01em;
             transition: transform .22s, box-shadow .22s, background .22s;
             will-change: transform;
@@ -564,7 +543,8 @@
         .hero-btn-secondary {
             position:relative; display:inline-flex; align-items:center; gap:8px;
             border:1.5px solid rgba(47,58,69,.28); color:rgba(47,58,69,.85);
-            font-weight:600; padding:15px 34px; border-radius:10px; font-size:1rem;
+            font-weight:600; padding:15px 34px; border-radius:0; font-size:1rem;
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
             background:rgba(255,255,255,.92);
             backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
             overflow:hidden;
@@ -572,6 +552,11 @@
             will-change: transform;
         }
         .hero-btn-secondary:hover { border-color:rgba(47,58,69,.5); transform:translateY(-3px); box-shadow:0 8px 28px rgba(47,58,69,.14); }
+        .hero-btn-secondary::before {
+            content:''; position:absolute; top:0; right:0; width:10px; height:10px;
+            background:linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+            pointer-events:none;
+        }
 
         /* Hover fill sweep — desktop/laptop only (devices with real hover),
            so it never gets stuck mid-sweep on a touch tap. .hero-btn-content
@@ -617,6 +602,30 @@
         .why-feature-card:hover .why-feature-icon {
             box-shadow: 0 0 0 5px rgba(201,168,76,0.14), 0 6px 18px rgba(201,168,76,0.28);
         }
+        /* ─── Corner-cut card shape — services grid + Why VisionBridge/Our
+             Team feature cards. Shape only here; background/border/shadow
+             stay on the Tailwind utilities already in the markup. ─── */
+        .services-card, .why-feature-card {
+            position: relative;
+            border-radius: 0 !important;
+            clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
+        }
+        .services-card::before, .why-feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; z-index: 2;
+            width: 20px; height: 20px;
+            background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+            pointer-events: none;
+        }
+
+        /* ─── Gold CTA pills inside the parallax dividers ("See Why
+             VisionBridge", "View Plans") — shape only; the hover-only fill
+             sweep for these lives in the hover:hover media query above. ─── */
+        .parallax-cta-btn {
+            border-radius:0 !important;
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+        }
 
         /* ─── Floating glassmorphism cards ─── */
         .float-card {
@@ -624,7 +633,8 @@
             background:rgba(255,255,255,.85); border:1px solid rgba(47,58,69,.08);
             box-shadow:0 8px 28px rgba(47,58,69,.10);
             backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-            border-radius:16px; padding:12px 18px;
+            border-radius:0; padding:12px 18px;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
             will-change:transform;
         }
         .float-card-1 { bottom:24%; left:3.5%; animation:float-a 5s ease-in-out infinite; }
@@ -641,11 +651,19 @@
         /* ─── Portfolio project cards — premium agency showcase ─── */
 
         .portfolio-card-inner {
+            position:relative;
             display:flex; flex-direction:column; height:100%;
-            background:#FFFFFF; border-radius:22px; overflow:hidden;
+            background:#FFFFFF; border-radius:0; overflow:hidden;
+            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
             border:1px solid rgba(21,32,44,0.08);
             box-shadow:0 4px 20px rgba(21,32,44,0.06);
             transition:transform .4s cubic-bezier(.34,1.56,.64,1), box-shadow .4s ease, border-color .4s ease;
+        }
+        .portfolio-card-inner::before {
+            content:''; position:absolute; top:0; right:0; z-index:4;
+            width:24px; height:24px;
+            background:linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+            pointer-events:none;
         }
         .portfolio-card:hover .portfolio-card-inner {
             transform:translateY(-8px);
@@ -667,13 +685,15 @@
             position:absolute; top:14px; left:14px; z-index:2;
             background:rgba(255,255,255,0.94); color:#15202C;
             font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
-            padding:6px 14px; border-radius:9999px; box-shadow:0 4px 14px rgba(21,32,44,0.16);
+            padding:6px 14px; border-radius:0; box-shadow:0 4px 14px rgba(21,32,44,0.16);
+            clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
         }
         .portfolio-status-pill {
             position:absolute; top:14px; right:14px; z-index:2;
             background:#C9A84C; color:#15202C;
             font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
-            padding:6px 14px; border-radius:9999px; box-shadow:0 4px 14px rgba(201,168,76,0.38);
+            padding:6px 14px; border-radius:0; box-shadow:0 4px 14px rgba(201,168,76,0.38);
+            clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
         }
 
         .portfolio-card-body { display:flex; flex-direction:column; flex:1; padding:26px 26px 24px; position:relative; }
@@ -691,24 +711,40 @@
 
         .portfolio-card-features { position:relative; z-index:1; display:flex; flex-wrap:wrap; gap:8px; margin:0 0 8px; padding:0; }
         .portfolio-card-features li {
+            position:relative;
             list-style:none; font-size:0.72rem; font-weight:600; color:#1F7A78;
             background:rgba(42,157,143,0.09); border:1px solid rgba(42,157,143,0.20);
-            padding:5px 12px; border-radius:9999px;
+            padding:5px 12px; border-radius:0;
+            clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 0 100%);
+        }
+        .portfolio-card-features li::before {
+            content:''; position:absolute; top:0; right:0; width:5px; height:5px;
+            background:linear-gradient(135deg, transparent 49%, rgba(42,157,143,0.85) 50%, transparent 51%);
+            pointer-events:none;
         }
 
         .portfolio-card-btn-wrap { position:relative; z-index:1; margin-top:auto; padding-top:18px; }
         .portfolio-card-btn {
+            position:relative;
             display:inline-flex; align-items:center; gap:8px; font-size:0.88rem; font-weight:700;
-            color:#15202C; padding:12px 22px; border-radius:9999px;
+            color:#15202C; padding:12px 22px; border-radius:0;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
             background:transparent; border:1.5px solid rgba(21,32,44,0.16);
             transition:background .3s ease, color .3s ease, border-color .3s ease;
+        }
+        .portfolio-card-btn::before {
+            content:''; position:absolute; top:0; right:0; width:8px; height:8px;
+            background:linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+            pointer-events:none;
         }
         .portfolio-card-btn svg { transition:transform .3s ease; }
         .portfolio-card-btn:hover { background:#15202C; color:#C9A84C; border-color:#15202C; }
         .portfolio-card-btn:hover svg { transform:translateX(3px); }
         .portfolio-card-btn-gold { background:#C9A84C; color:#15202C; border-color:#C9A84C; }
+        .portfolio-card-btn-gold::before { display:none; }
         .portfolio-card-btn-gold:hover { background:#FFFFFF; color:#15202C; border-color:#FFFFFF; }
         .portfolio-card-btn-disabled { opacity:0.55; cursor:default; pointer-events:none; border-style:dashed; }
+        .portfolio-card-btn-disabled::before { display:none; }
 
         /* ─── Atmospheric orbs ─── */
         .hero-orb { position:absolute; border-radius:50%; pointer-events:none; will-change:transform; }
@@ -990,12 +1026,19 @@
 
         /* Rating cards — a horizontal row sitting just under the laptop */
         .hero-rating-card {
+            position:relative;
             flex:1 1 0%; pointer-events:none;
             background:rgba(20,26,36,.85); border:1px solid rgba(201,168,76,.20);
             box-shadow:0 12px 32px rgba(0,0,0,.45);
             backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-            border-radius:14px; padding:14px 16px;
+            border-radius:0; padding:14px 16px;
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
             will-change:transform;
+        }
+        .hero-rating-card::before {
+            content:''; position:absolute; top:0; right:0; width:10px; height:10px;
+            background:linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+            pointer-events:none;
         }
         .hero-rating-stars { color:#DFC06A; font-size:.72rem; letter-spacing:1px; margin-bottom:4px; }
         .hero-rating-quote { color:rgba(255,255,255,.88); font-size:.76rem; line-height:1.35; margin-bottom:4px; }
@@ -1240,14 +1283,28 @@
             max-width: 100%;
         }
         #nav-inner.nav-pill {
+            position: relative;
             background: rgba(255,255,255,0.85);
             backdrop-filter: blur(22px);
             -webkit-backdrop-filter: blur(22px);
             border-color: rgba(47,58,69,0.08);
-            border-radius: 50px;
+            border-radius: 0;
+            clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
             box-shadow: 0 8px 36px rgba(47,58,69,0.16), 0 0 0 1px rgba(201,168,76,0.10);
             max-width: 940px;
             height: 54px !important;
+        }
+        #nav-inner.nav-pill::before {
+            /* Retraces the cut-corner edge in gold since clip-path removes
+               the border along the diagonal itself — same technique as
+               .contact-form-card::before. */
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 16px; height: 16px;
+            background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+            opacity: .9;
+            pointer-events: none;
         }
 
         /* Once scrolled, blur (no solid fill) the outer #navbar wrapper too —
@@ -1339,6 +1396,12 @@
         .plan-cta-btn {
             position: relative;
             overflow: hidden;
+            border-radius: 0 !important;
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+        }
+        .plans-card button[disabled] {
+            border-radius: 0 !important;
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
         }
         .plan-cta-btn::after {
             content: '';
@@ -1546,7 +1609,8 @@
            ════════════════════════════════════════════════════════════ */
 
         .value-card-outer {
-            border-radius: 20px;
+            border-radius: 0;
+            clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
             will-change: transform;
             opacity: 1;
             cursor: default;
@@ -1555,7 +1619,8 @@
         .value-card-outer:hover { transform: translateY(-6px); }
 
         .value-card {
-            border-radius: 20px;
+            border-radius: 0;
+            clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
             background: #FFFFFF;
             padding: 32px;
             height: 100%;
@@ -1564,6 +1629,14 @@
             border: 1px solid rgba(17,29,51,0.07);
             box-shadow: 0 2px 12px rgba(17,29,51,0.05), 0 1px 3px rgba(17,29,51,0.03);
             transition: box-shadow 0.32s ease, border-color 0.32s ease;
+        }
+        .value-card::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; z-index: 2;
+            width: 18px; height: 18px;
+            background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+            pointer-events: none;
         }
         .value-card-outer:hover .value-card {
             box-shadow: 0 20px 52px rgba(201,168,76,0.14), 0 6px 18px rgba(17,29,51,0.06);
@@ -1599,7 +1672,7 @@
         .value-icon-wrap {
             width: 46px;
             height: 46px;
-            border-radius: 13px;
+            border-radius: 0;
             background: rgba(201,168,76,0.08);
             border: 1px solid rgba(201,168,76,0.16);
             display: flex;
