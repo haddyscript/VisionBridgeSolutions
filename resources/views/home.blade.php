@@ -114,6 +114,27 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
          Contact (contact.blade.php) and the nav pill (layouts/app.blade.php).
          Retrace accents redraw the border clip-path removes along the cut
          diagonal, same technique as .contact-form-card::before. ─── */
+    /* ─── "Who We Are" bracket-tag badge — same technique as Contact page's
+         .contact-tag (bracket accents flanking the text via ::before/::after),
+         adapted for this section's light background instead of Contact's
+         dark one. ─── */
+    #about-kicker {
+        position: relative;
+        padding: 8px 18px;
+        border: 1px solid rgba(17,29,51,0.18);
+        background: rgba(17,29,51,0.02);
+    }
+    #about-kicker::before, #about-kicker::after {
+        content: '';
+        position: absolute;
+        top: -1px; bottom: -1px;
+        width: 6px;
+        border-top: 1px solid #C9A84C;
+        border-bottom: 1px solid #C9A84C;
+    }
+    #about-kicker::before { left: -6px; border-left: 1px solid #C9A84C; }
+    #about-kicker::after  { right: -6px; border-right: 1px solid #C9A84C; }
+
     #hero-badge::before {
         content: '';
         position: absolute;
@@ -1397,7 +1418,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     </div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative" style="z-index:1;">
         <div id="about-intro" class="text-center mb-20">
-            <span id="about-kicker" class="inline-block text-teal text-sm font-semibold tracking-widest uppercase mb-3">Who We Are</span>
+            <span id="about-kicker" class="inline-flex items-center text-teal text-sm font-semibold tracking-widest uppercase mb-3">Who We Are</span>
             <h2 id="about-heading" class="section-title mt-1">About VisionBridge Solutions</h2>
             <p id="about-subtitle" class="text-base mt-3 max-w-lg mx-auto font-medium" style="color:rgba(17,29,51,0.68);line-height:1.7;">A dedicated team building websites that give organizations the digital foundation they deserve.</p>
         </div>
