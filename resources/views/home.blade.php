@@ -82,6 +82,173 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 <div class="page-noise" aria-hidden="true"></div>
 
 {{-- ============================================================
+     CUSTOM TRAILING "SIGNAL LOCK" CURSOR — homepage-wide version of the
+     same lag-stretch technique used on the Contact page (contact.blade.php)
+     and the site footer (layouts/app.blade.php): a dot that snaps to the
+     pointer, a ring that eases behind it and stretches with the lag
+     distance, and an "acquire" expand over anything clickable. Tracks
+     mousemove on the whole document rather than a single section, since
+     this page (unlike Contact's one dark panel) is many stacked sections.
+
+     The dot/ring live here as a direct sibling of .page-noise above (a
+     direct child of #page-wrapper) rather than nested inside any section —
+     several sections below carry their own transform/will-change (parallax
+     dividers, the pinned story-overture scenes), which would hijack these
+     position:fixed elements as containing-block descendants and offset
+     them from the real cursor position, the same class of bug already
+     solved once for #desktop-menu/#footer-cursor-dot in layouts/app.blade.php.
+     Desktop/fine-pointer only; native cursor stays untouched until the
+     script below confirms it can actually run. --}}
+<div id="home-cursor-dot" aria-hidden="true"></div>
+<div id="home-cursor-ring" aria-hidden="true"></div>
+<style>
+    #home-cursor-dot, #home-cursor-ring {
+        position: fixed;
+        top: 0; left: 0;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 200;
+        opacity: 0;
+        transform: translate(-50%, -50%);
+    }
+    #home-cursor-dot {
+        width: 6px; height: 6px;
+        background: #C9A84C;
+        box-shadow: 0 0 10px rgba(201,168,76,.85);
+    }
+    #home-cursor-ring {
+        width: 46px; height: 46px;
+        border: 1.5px solid rgba(201,168,76,.55);
+        transition: width .3s cubic-bezier(.22,1,.36,1), height .3s cubic-bezier(.22,1,.36,1),
+                    border-color .3s ease, background-color .3s ease;
+    }
+    #home-cursor-dot.is-visible, #home-cursor-ring.is-visible { opacity: 1; }
+    #home-cursor-ring.is-hovering {
+        width: 68px; height: 68px;
+        background: rgba(201,168,76,.12);
+        border-color: rgba(201,168,76,.85);
+    }
+    /* Scoped to html.has-home-cursor rather than a single section's own
+       class (unlike Contact/Footer, which scope cursor:none to their own
+       container) since this cursor spans the whole page. #site-footer has
+       its own separate cursor + has-custom-cursor scoping already, so this
+       never touches it. */
+    html.has-home-cursor, html.has-home-cursor a, html.has-home-cursor button {
+        cursor: none;
+    }
+    @media (hover: none), (pointer: coarse) {
+        #home-cursor-dot, #home-cursor-ring { display: none; }
+    }
+
+    /* ─── Card-title zoom-on-hover — Portfolio / Services / Plan cards —
+         same slow/enlarged treatment as the Contact page's labels and the
+         footer's column headings (see contact.blade.php /
+         layouts/app.blade.php). .portfolio-card-title's base rule lives in
+         layouts/app.blade.php; .svc-title/.plan-card-title are home-page-
+         only classes, so all three hover rules live together here instead
+         of being split across files. ─── */
+    .portfolio-card-title, .svc-title {
+        display: inline-block;
+        transition: transform .65s cubic-bezier(.16,1,.3,1);
+        transform-origin: left center;
+    }
+    /* Plan titles sit in a text-center column, so they zoom from their own
+       center rather than the left edge (which would read as drifting
+       rightward instead of just growing in place). */
+    .plan-card-title {
+        display: inline-block;
+        transition: transform .65s cubic-bezier(.16,1,.3,1);
+        transform-origin: center center;
+    }
+    .portfolio-card-title:hover, .svc-title:hover, .plan-card-title:hover {
+        transform: scale(1.12);
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .portfolio-card-title, .svc-title, .plan-card-title { transition: none; }
+    }
+</style>
+<script>
+(function () {
+    function initHomeCursor() {
+        if (typeof gsap === 'undefined') { setTimeout(initHomeCursor, 80); return; }
+
+        var dot = document.getElementById('home-cursor-dot');
+        var ring = document.getElementById('home-cursor-ring');
+        if (!dot || !ring) return;
+        if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        var footer = document.getElementById('site-footer');
+        var desktopMenu = document.getElementById('desktop-menu');
+
+        var moveDotX = gsap.quickTo(dot, 'x', { duration: 0.05, ease: 'power3.out' });
+        var moveDotY = gsap.quickTo(dot, 'y', { duration: 0.05, ease: 'power3.out' });
+
+        var mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+        var ringReady = false, pressed = false, hovering = false, visible = false;
+
+        function hide() {
+            if (!visible) return;
+            visible = false;
+            document.documentElement.classList.remove('has-home-cursor');
+            dot.classList.remove('is-visible');
+            ring.classList.remove('is-visible');
+        }
+
+        document.addEventListener('mousemove', function (e) {
+            // The footer has its own separate cursor treatment (see
+            // #footer-cursor-dot/#footer-cursor-ring in layouts/app.blade.php)
+            // and the full-screen desktop menu has its own too
+            // (#desktop-menu-cursor-dot/-ring) — bail out of this one while
+            // over either, so the two reticles never show at once.
+            if ((e.target.closest && e.target.closest('#site-footer')) ||
+                (desktopMenu && desktopMenu.classList.contains('is-visible'))) {
+                hide();
+                return;
+            }
+
+            mouseX = e.clientX; mouseY = e.clientY;
+            moveDotX(mouseX); moveDotY(mouseY);
+            if (!ringReady) { ringX = mouseX; ringY = mouseY; ringReady = true; }
+            if (!visible) {
+                visible = true;
+                document.documentElement.classList.add('has-home-cursor');
+                dot.classList.add('is-visible');
+                ring.classList.add('is-visible');
+            }
+        });
+
+        document.addEventListener('mouseleave', hide);
+
+        gsap.ticker.add(function () {
+            if (!visible) return;
+            // Lower factor = more lag = smoother/slower catch-up.
+            ringX += (mouseX - ringX) * 0.1;
+            ringY += (mouseY - ringY) * 0.1;
+            var dist = Math.hypot(mouseX - ringX, mouseY - ringY);
+            var stretch = pressed ? 0.8 : gsap.utils.clamp(1, 1.7, 1 + dist / 130);
+            gsap.set(ring, { x: ringX, y: ringY, scale: hovering ? 1 : stretch });
+        });
+
+        // Reticle "acquires" anything clickable — links, buttons, inputs,
+        // etc. Footer's own interactive elements are excluded since the
+        // footer runs its own identical treatment already.
+        var interactiveEls = document.querySelectorAll('a, button, input, textarea, select, [role="option"]');
+        interactiveEls.forEach(function (el) {
+            if (footer && footer.contains(el)) return;
+            el.addEventListener('mouseenter', function () { hovering = true; ring.classList.add('is-hovering'); });
+            el.addEventListener('mouseleave', function () { hovering = false; ring.classList.remove('is-hovering'); });
+        });
+
+        document.addEventListener('mousedown', function () { pressed = true; });
+        document.addEventListener('mouseup', function () { pressed = false; });
+    }
+    if (document.readyState !== 'loading') { initHomeCursor(); }
+    else { window.addEventListener('DOMContentLoaded', initHomeCursor); }
+})();
+</script>
+
+{{-- ============================================================
      3D STORYTELLING OVERTURE — a scroll-driven, camera-style
      intro that plays right after the Hero, travelling through
      three pinned scenes:
@@ -1675,7 +1842,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                             </div>
 
                             <div class="px-8 pt-3 pb-8 text-center flex-1 flex flex-col">
-                                <h3 class="font-extrabold text-xl uppercase tracking-wide {{ $plan->is_available ? $theme['name'] : 'text-gray-400' }}">{{ $plan->name }}</h3>
+                                <h3 class="plan-card-title font-extrabold text-xl uppercase tracking-wide {{ $plan->is_available ? $theme['name'] : 'text-gray-400' }}">{{ $plan->name }}</h3>
                                 <p class="{{ $plan->is_available ? 'text-gray-600' : 'text-gray-400' }} text-sm font-bold uppercase tracking-wide mt-1">{{ $plan->tagline }}</p>
                                 <div class="w-10 h-0.5 mx-auto my-4 {{ $plan->is_available ? $theme['divider'] : 'bg-gray-200' }}"></div>
 

@@ -1281,8 +1281,13 @@
            .page-noise's own `pointer-events: none` (a plain class selector),
            silently re-enabling pointer events on that fixed, full-viewport,
            z-index:9999 decorative overlay and blocking every click on the
-           page underneath it. */
-        #page-wrapper > *:not(#footer-spacer):not(.page-noise) {
+           page underneath it. #home-cursor-dot/#home-cursor-ring (also direct
+           children of #page-wrapper, see home.blade.php) need the same
+           exclusion for the same reason — an ID selector here would otherwise
+           outrank their own `pointer-events: none` and turn the trailing
+           cursor into a small fixed hitbox that follows the mouse and steals
+           every click on the page underneath it. */
+        #page-wrapper > *:not(#footer-spacer):not(.page-noise):not(#home-cursor-dot):not(#home-cursor-ring) {
             pointer-events: auto;
         }
         #site-footer {
