@@ -15,7 +15,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet">
 
     {{-- Start fetching GSAP early — these load via a deferred script tag
          near the bottom of body, so without a preload hint the browser
@@ -299,6 +299,7 @@
             pointer-events: none;
         }
         #desktop-menu-close {
+            font-family: 'Orbitron', sans-serif;
             color: rgba(255,255,255,.8);
             font-size: 0.85rem;
             font-weight: 700;
@@ -315,7 +316,7 @@
         }
         .desktop-menu-link {
             display: block;
-            font-family: 'Playfair Display', serif;
+            font-family: 'Orbitron', sans-serif;
             font-weight: 800;
             font-size: clamp(2.6rem, 6.4vw, 5.4rem);
             line-height: 1.04;
@@ -339,6 +340,7 @@
         #desktop-menu-brand-name,
         .desktop-menu-contact-link,
         #desktop-menu-tagline {
+            font-family: 'Orbitron', sans-serif;
             display: inline-block;
             transition: transform .65s cubic-bezier(.16,1,.3,1);
             transform-origin: left center;
