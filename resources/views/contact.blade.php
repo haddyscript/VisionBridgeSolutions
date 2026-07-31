@@ -1095,6 +1095,10 @@
             var fieldMorphEls = section.querySelectorAll('.contact-input, .contact-select-trigger, .contact-native-select, .contact-textarea');
             // Email / Call Us info cards get the same card-style radius.
             var cardMorphEls = section.querySelectorAll('.contact-info-card');
+            // FAQ rows — the button already spans the full clickable row
+            // width (see .faq-question-btn's width:100% in the CSS above),
+            // so hugging the button itself hugs the whole visible row.
+            var faqMorphEls = section.querySelectorAll('.faq-question-btn');
 
             var morphedSet = new Set();
             pillMorphEls.forEach(function (el) {
@@ -1110,6 +1114,11 @@
             cardMorphEls.forEach(function (el) {
                 morphedSet.add(el);
                 el.addEventListener('mouseenter', function () { morphTo(el, { padX: 4, padY: 4, borderRadius: 18 }); });
+                el.addEventListener('mouseleave', unmorph);
+            });
+            faqMorphEls.forEach(function (el) {
+                morphedSet.add(el);
+                el.addEventListener('mouseenter', function () { morphTo(el, { padX: 0, padY: 0, borderRadius: 14 }); });
                 el.addEventListener('mouseleave', unmorph);
             });
 
