@@ -1586,7 +1586,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
         <div class="bridge-cable-divider mb-8" aria-hidden="true">{!! $bridgeCableDivider !!}</div>
-        <p class="font-extrabold mb-5" style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.3;color:#FFFFFF;max-width:820px;">&ldquo;A bridge isn&rsquo;t just steel and cable &mdash; it&rsquo;s the promise that two sides will meet.&rdquo;</p>
+        <p class="font-extrabold mb-5" style="font-family:'Orbitron',sans-serif;font-style:italic;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.3;color:#FFFFFF;max-width:820px;">&ldquo;A bridge isn&rsquo;t just steel and cable &mdash; it&rsquo;s the promise that two sides will meet.&rdquo;</p>
         <div style="width:48px;height:1.5px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);margin-bottom:1rem;"></div>
         <span class="text-sm font-semibold tracking-widest uppercase" style="color:#C9A84C;">VisionBridge Solutions</span>
     </div>
@@ -1678,7 +1678,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
         <div class="bridge-cable-divider mb-8" aria-hidden="true">{!! $bridgeCableDivider !!}</div>
         <span class="text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">Engineered For Growth</span>
-        <h3 class="font-extrabold mb-8" style="font-family:'Playfair Display',serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">Crafted With Purpose, Built To Perform</h3>
+        <h3 class="font-extrabold mb-8" style="font-family:'Orbitron',sans-serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">Crafted With Purpose, Built To Perform</h3>
         <a href="#why" class="parallax-cta-btn group inline-flex items-center gap-2.5 px-8 py-4 rounded-full font-semibold text-sm transition-all duration-300" style="background:#C9A84C;color:#15202C;letter-spacing:0.04em;">
             <span class="hero-btn-fill" aria-hidden="true"></span>
             <span class="hero-btn-content">
@@ -1882,7 +1882,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
         <div class="bridge-cable-divider mb-8" aria-hidden="true">{!! $bridgeCableDivider !!}</div>
         <span class="text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">Built To Last</span>
-        <h3 class="font-extrabold mb-8" style="font-family:'Playfair Display',serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">Your Bridge to Lasting Growth</h3>
+        <h3 class="font-extrabold mb-8" style="font-family:'Orbitron',sans-serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">Your Bridge to Lasting Growth</h3>
         <a href="#plans" class="parallax-cta-btn group inline-flex items-center gap-2.5 px-8 py-4 rounded-full font-semibold text-sm transition-all duration-300" style="background:#C9A84C;color:#15202C;letter-spacing:0.04em;">
             <span class="hero-btn-fill" aria-hidden="true"></span>
             <span class="hero-btn-content">
@@ -2071,7 +2071,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
         <div class="bridge-cable-divider mb-8" aria-hidden="true">{!! $bridgeCableDivider !!}</div>
-        <p class="font-extrabold mb-5" style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.3;color:#FFFFFF;max-width:820px;">&ldquo;Every step forward is a plan taking shape.&rdquo;</p>
+        <p class="font-extrabold mb-5" style="font-family:'Orbitron',sans-serif;font-style:italic;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.3;color:#FFFFFF;max-width:820px;">&ldquo;Every step forward is a plan taking shape.&rdquo;</p>
         <div style="width:48px;height:1.5px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);margin-bottom:1rem;"></div>
         <span class="text-sm font-semibold tracking-widest uppercase" style="color:#C9A84C;">VisionBridge Solutions</span>
     </div>
@@ -2135,7 +2135,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
         <span class="text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">Behind Every Bridge</span>
-        <h3 class="font-extrabold" style="font-family:'Playfair Display',serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">The Story Behind The Solutions</h3>
+        <h3 class="font-extrabold" style="font-family:'Orbitron',sans-serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">The Story Behind The Solutions</h3>
     </div>
 </div>
 
@@ -2258,7 +2258,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         content: '\201C';
         position: absolute;
         left: 0; top: -.5rem;
-        font-family: 'Playfair Display', serif;
+        font-family: 'Orbitron', sans-serif;
         font-size: 3rem;
         line-height: 1;
         color: rgba(201,168,76,.42);
@@ -2631,7 +2631,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
         <span class="text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">From Vision To Reality</span>
-        <h3 class="font-extrabold" style="font-family:'Playfair Display',serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">One Founder's Mission To Build Bridges, Not Just Websites</h3>
+        <h3 class="font-extrabold" style="font-family:'Orbitron',sans-serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">One Founder's Mission To Build Bridges, Not Just Websites</h3>
     </div>
 </div>
 
