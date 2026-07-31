@@ -273,51 +273,80 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             gsap.to(ring, { width: w, height: h, duration: 0.35, ease: 'power3.out', overwrite: 'auto' });
         }
 
-        // Spotlight section CTAs ("View The Live Site" / "Book A Free
-        // Consultation") — same morph-into-a-pill treatment as the desktop
-        // full-screen menu's giant nav links (layouts/app.blade.php): the
-        // ring grows to hug the button's own footprint and locks onto its
-        // center instead of just growing into a bigger circle around the
-        // raw mouse position.
-        var morphEls = document.querySelectorAll('.spotlight-cta-primary, .spotlight-cta-outline');
-        morphEls.forEach(function (el) {
-            el.addEventListener('mouseenter', function () {
-                hovering = true;
-                morphedEl = el;
-                ring.classList.add('is-hovering');
-                var r = el.getBoundingClientRect();
-                var padX = 10, padY = 6;
-                gsap.to(ring, {
-                    x: r.left + r.width / 2,
-                    y: r.top + r.height / 2,
-                    width: r.width + padX * 2,
-                    height: r.height + padY * 2,
-                    scale: 1,
-                    duration: 0.45,
-                    ease: 'power3.out',
-                    overwrite: 'auto',
-                });
+        // Morphs the ring to hug `el`'s own footprint (plus optional
+        // padding/radius) and locks onto its center, instead of just
+        // growing into a bigger circle around the raw mouse position —
+        // same technique as the desktop full-screen menu's giant nav links
+        // (layouts/app.blade.php).
+        function morphTo(el, opts) {
+            hovering = true;
+            morphedEl = el;
+            ring.classList.add('is-hovering');
+            var r = el.getBoundingClientRect();
+            var padX = opts.padX || 0, padY = opts.padY || 0;
+            var tween = {
+                x: r.left + r.width / 2,
+                y: r.top + r.height / 2,
+                width: r.width + padX * 2,
+                height: r.height + padY * 2,
+                scale: 1,
+                duration: 0.45,
+                ease: 'power3.out',
+                overwrite: 'auto',
+            };
+            if (opts.borderRadius) tween.borderRadius = opts.borderRadius;
+            gsap.to(ring, tween);
+        }
+
+        function unmorph() {
+            hovering = false;
+            morphedEl = null;
+            ring.classList.remove('is-hovering');
+            // Resume the lag-follow from wherever the mouse actually is now,
+            // not from the target's center — avoids a visible jump.
+            ringX = mouseX; ringY = mouseY;
+            gsap.to(ring, {
+                width: 46, height: 46, borderRadius: 999,
+                duration: 0.3, ease: 'power2.out', overwrite: 'auto',
+                // Drops the inline borderRadius override once settled, so a
+                // later hover on something that DOESN'T set its own
+                // borderRadius (e.g. a plain link) isn't left stuck at
+                // whatever the last morph target used.
+                clearProps: 'borderRadius',
             });
-            el.addEventListener('mouseleave', function () {
-                hovering = false;
-                morphedEl = null;
-                ring.classList.remove('is-hovering');
-                // Resume the lag-follow from wherever the mouse actually is
-                // now, not from the button's center — avoids a visible jump.
-                ringX = mouseX; ringY = mouseY;
-                growRing(46, 46);
-            });
+        }
+
+        // Elements that get the plain pill morph — the ring's own default
+        // border-radius:999px already reads as one, so no override needed:
+        // Spotlight's two CTAs and the Services section's "View All
+        // Services" toggle.
+        var pillMorphEls = document.querySelectorAll('.spotlight-cta-primary, .spotlight-cta-outline, #svc-toggle-btn');
+        // The 10 service cards get a gentler radius matching their own
+        // rounded-2xl corners instead — a full pill would over-round a card
+        // that size, reading as an odd blob rather than a glowing outline.
+        var cardMorphEls = document.querySelectorAll('.services-card');
+
+        var morphedSet = new Set();
+        pillMorphEls.forEach(function (el) {
+            morphedSet.add(el);
+            el.addEventListener('mouseenter', function () { morphTo(el, { padX: 10, padY: 6 }); });
+            el.addEventListener('mouseleave', unmorph);
+        });
+        cardMorphEls.forEach(function (el) {
+            morphedSet.add(el);
+            el.addEventListener('mouseenter', function () { morphTo(el, { padX: 6, padY: 6, borderRadius: 28 }); });
+            el.addEventListener('mouseleave', unmorph);
         });
 
         // Reticle "acquires" everything else clickable — links, buttons,
         // inputs, etc. — with the original simple circle-grow. Footer's own
         // interactive elements are excluded since the footer runs its own
-        // identical treatment already; the Spotlight CTAs above are
-        // excluded since they already got their own binding.
+        // identical treatment already; anything already bound to the morph
+        // treatment above is excluded so it doesn't get a second listener.
         var interactiveEls = document.querySelectorAll('a, button, input, textarea, select, [role="option"]');
         interactiveEls.forEach(function (el) {
             if (footer && footer.contains(el)) return;
-            if (el.classList.contains('spotlight-cta-primary') || el.classList.contains('spotlight-cta-outline')) return;
+            if (morphedSet.has(el)) return;
             el.addEventListener('mouseenter', function () { hovering = true; ring.classList.add('is-hovering'); growRing(68, 68); });
             el.addEventListener('mouseleave', function () { hovering = false; ring.classList.remove('is-hovering'); growRing(46, 46); });
         });
