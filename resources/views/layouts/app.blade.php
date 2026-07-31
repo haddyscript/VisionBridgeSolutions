@@ -2904,10 +2904,20 @@
 
             if (typeof gsap === 'undefined') { animating = false; return; }
 
+            // Diagonal cascade — "Home" (first link) sits at its natural
+            // right-aligned position; each line below it shifts further
+            // left, so the stack reads as a slanted staircase rather than a
+            // flat right-aligned column. Step size is viewport-relative
+            // (capped) so the cascade scales down on narrower desktop
+            // windows instead of a fixed px offset risking overlap with the
+            // brand block on the left. Set once here (not tweened) — the
+            // stagger below only animates opacity/y, so x stays put as the
+            // link's permanent resting position across every open/close.
+            var slantStep = Math.min(70, window.innerWidth * 0.035);
             gsap.set(menu, { opacity: 1 });
             gsap.set(brand, { opacity: 0, y: -16 });
             gsap.set(closeBtn, { opacity: 0, x: 16 });
-            gsap.set(links, { opacity: 0, y: 44 });
+            gsap.set(links, { opacity: 0, y: 44, x: function (i) { return -(i * slantStep); } });
             gsap.set(tagline, { opacity: 0 });
             gsap.set(glow, { opacity: 0 });
             gsap.set(gifBg, { opacity: 0 });
