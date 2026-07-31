@@ -409,8 +409,8 @@
             line-height: 1.04;
             letter-spacing: -0.01em;
             color: rgba(255,255,255,.92);
-            text-align: right;
-            transform-origin: right center;
+            text-align: left;
+            transform-origin: left center;
             /* Slowed/enlarged to match the same text zoom-on-hover
                treatment as the Contact page and footer (see contact.blade.php
                and the footer CSS above) — color/position keep their
@@ -419,7 +419,7 @@
         }
         .desktop-menu-link:hover {
             color: #DFC06A;
-            transform: translateX(-6px) scale(1.1);
+            transform: translateX(6px) scale(1.1);
         }
         /* Small index number ("01", "02"...) preceding each link — purely a
            text-display detail (per request), not new page chrome. */
@@ -2533,7 +2533,7 @@
                     <button id="desktop-menu-close" type="button" aria-label="Close menu">Close</button>
                 </div>
 
-                <nav id="desktop-menu-nav" class="flex-1 flex flex-col items-end self-end justify-center gap-1" aria-label="Main">
+                <nav id="desktop-menu-nav" class="flex-1 flex flex-col items-start self-end justify-center gap-1" aria-label="Main">
                     <a href="{{ route('home') }}#hero" class="desktop-menu-link"><span class="desktop-menu-link-num">01</span>Home</a>
                     <a href="{{ $homeAnchor }}#about" class="desktop-menu-link"><span class="desktop-menu-link-num">02</span>About</a>
                     <a href="{{ $homeAnchor }}#services" class="desktop-menu-link"><span class="desktop-menu-link-num">03</span>Services</a>
@@ -2919,20 +2919,33 @@
 
             if (typeof gsap === 'undefined') { animating = false; return; }
 
-            // Diagonal cascade — "Home" (first link) sits at its natural
-            // right-aligned position; each line below it shifts further
-            // left, so the stack reads as a slanted staircase rather than a
-            // flat right-aligned column. Step size is viewport-relative
-            // (capped) so the cascade scales down on narrower desktop
-            // windows instead of a fixed px offset risking overlap with the
-            // brand block on the left. Set once here (not tweened) — the
-            // stagger below only animates opacity/y, so x stays put as the
-            // link's permanent resting position across every open/close.
-            var slantStep = Math.min(70, window.innerWidth * 0.035);
+            // Diagonal cascade — links are left-aligned (see .desktop-menu-link
+            // in the <style> block above), so each line's LEFT edge is now a
+            // clean, predictable anchor point instead of trailing wherever a
+            // right-aligned word's own length happened to put it. "Home"
+            // (first link) gets pushed furthest right; each line below it
+            // shifts back toward its natural left position by a shrinking
+            // amount, so the *left* edges trace one straight diagonal line
+            // down the stack while the right edges trail off naturally per
+            // word length.
+            //
+            // The TOTAL maximum push (applied to the first link) is capped
+            // directly here, not a per-step value multiplied by link count —
+            // unlike the old right-aligned version (which only ever moved
+            // links further left/inward from an already-at-the-edge start,
+            // never risking overflow), this version pushes the first link
+            // outward from its natural left position toward the right edge,
+            // so the max reach needs its own explicit ceiling to guarantee
+            // it can never push "Home" past the menu's own right boundary.
+            // Set once here (not tweened) — the stagger below only animates
+            // opacity/y, so x stays put as the link's permanent resting
+            // position across every open/close.
+            var maxSlantPush = Math.min(240, window.innerWidth * 0.14);
+            var slantStep = maxSlantPush / (links.length - 1 || 1);
             gsap.set(menu, { opacity: 1 });
             gsap.set(brand, { opacity: 0, y: -16 });
             gsap.set(closeBtn, { opacity: 0, x: 16 });
-            gsap.set(links, { opacity: 0, y: 44, x: function (i) { return -(i * slantStep); } });
+            gsap.set(links, { opacity: 0, y: 44, x: function (i) { return (links.length - 1 - i) * slantStep; } });
             gsap.set(tagline, { opacity: 0 });
             gsap.set(glow, { opacity: 0 });
             gsap.set(gifBg, { opacity: 0 });
