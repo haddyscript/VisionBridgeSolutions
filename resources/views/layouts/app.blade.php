@@ -366,7 +366,6 @@
         #desktop-menu-cursor-dot, #desktop-menu-cursor-ring {
             position: fixed;
             top: 0; left: 0;
-            border-radius: 50%;
             pointer-events: none;
             z-index: 200;
             opacity: 0;
@@ -374,18 +373,29 @@
         }
         #desktop-menu-cursor-dot {
             width: 6px; height: 6px;
+            border-radius: 50%;
             background: #C9A84C;
             box-shadow: 0 0 10px rgba(201,168,76,.85);
         }
+        /* A fixed large-px radius (not 50%) so the same rule reads as a
+           circle at the default square size, and as a pill/stadium shape
+           once the script below grows it into an oblong that spans a nav
+           link's full text width — border-radius simply clamps to the
+           tightest curve the current box shape allows either way. */
         #desktop-menu-cursor-ring {
             width: 46px; height: 46px;
+            border-radius: 999px;
             border: 1.5px solid rgba(201,168,76,.55);
-            transition: width .3s cubic-bezier(.22,1,.36,1), height .3s cubic-bezier(.22,1,.36,1),
-                        border-color .3s ease, background-color .3s ease;
+            /* width/height are no longer here — the script below now
+               GSAP-tweens both (for the plain circle-grow AND the oblong
+               nav-link morph) instead of toggling a CSS class, since a CSS
+               transition racing GSAP's own per-frame inline styles on the
+               same property fights it and reads as stutter (same reason
+               noted on #desktop-menu's own open/close styles above). */
+            transition: border-color .3s ease, background-color .3s ease;
         }
         #desktop-menu-cursor-dot.is-visible, #desktop-menu-cursor-ring.is-visible { opacity: 1; }
         #desktop-menu-cursor-ring.is-hovering {
-            width: 68px; height: 68px;
             background: rgba(201,168,76,.12);
             border-color: rgba(201,168,76,.85);
         }
@@ -2771,6 +2781,15 @@
 
             var mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
             var ringReady = false, pressed = false, hovering = false, visible = false;
+            // The giant nav link currently being "morphed" onto, if any —
+            // while set, the ticker below hands the ring's position over to
+            // the morph tween entirely instead of fighting it with the
+            // lag-follow loop.
+            var morphedLink = null;
+
+            function growRing(w, h) {
+                gsap.to(ring, { width: w, height: h, duration: 0.35, ease: 'power3.out', overwrite: 'auto' });
+            }
 
             menu.addEventListener('mousemove', function (e) {
                 mouseX = e.clientX; mouseY = e.clientY;
@@ -2792,7 +2811,7 @@
             });
 
             gsap.ticker.add(function () {
-                if (!visible) return;
+                if (!visible || morphedLink) return;
                 ringX += (mouseX - ringX) * 0.1;
                 ringY += (mouseY - ringY) * 0.1;
                 var dist = Math.hypot(mouseX - ringX, mouseY - ringY);
@@ -2800,9 +2819,51 @@
                 gsap.set(ring, { x: ringX, y: ringY, scale: hovering ? 1 : stretch });
             });
 
+            // Giant nav links (Home/About/Services/…) — the ring morphs into
+            // an oblong pill spanning the text's full width, left edge to
+            // right edge, instead of just growing into a bigger circle
+            // (these words are far wider than the ring's default size). It
+            // also locks onto the link's own center instead of the raw
+            // mouse position, so it reads as a highlight sliding under the
+            // word rather than a circle that just happens to be big enough
+            // to cover it.
+            menu.querySelectorAll('.desktop-menu-link').forEach(function (link) {
+                link.addEventListener('mouseenter', function () {
+                    hovering = true;
+                    morphedLink = link;
+                    ring.classList.add('is-hovering');
+                    var r = link.getBoundingClientRect();
+                    var padX = 32, padY = 16;
+                    gsap.to(ring, {
+                        x: r.left + r.width / 2,
+                        y: r.top + r.height / 2,
+                        width: r.width + padX * 2,
+                        height: r.height + padY * 2,
+                        scale: 1,
+                        duration: 0.45,
+                        ease: 'power3.out',
+                        overwrite: 'auto',
+                    });
+                });
+                link.addEventListener('mouseleave', function () {
+                    hovering = false;
+                    morphedLink = null;
+                    ring.classList.remove('is-hovering');
+                    // Resume the lag-follow from wherever the mouse actually
+                    // is now, not from the link's center the ring was just
+                    // morphed onto — avoids a visible jump back.
+                    ringX = mouseX; ringY = mouseY;
+                    growRing(46, 46);
+                });
+            });
+
+            // Everything else clickable in the menu (Close button, email/
+            // phone contact links) keeps the original, simpler circle-grow
+            // acquire treatment.
             menu.querySelectorAll('a, button').forEach(function (el) {
-                el.addEventListener('mouseenter', function () { hovering = true; ring.classList.add('is-hovering'); });
-                el.addEventListener('mouseleave', function () { hovering = false; ring.classList.remove('is-hovering'); });
+                if (el.classList.contains('desktop-menu-link')) return;
+                el.addEventListener('mouseenter', function () { hovering = true; ring.classList.add('is-hovering'); growRing(68, 68); });
+                el.addEventListener('mouseleave', function () { hovering = false; ring.classList.remove('is-hovering'); growRing(46, 46); });
             });
 
             menu.addEventListener('mousedown', function () { pressed = true; });
