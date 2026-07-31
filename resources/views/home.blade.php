@@ -372,9 +372,21 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         // Elements that get the plain pill morph — the ring's own default
         // border-radius:999px already reads as one, so no override needed:
         // Spotlight's two CTAs, the Services section's "View All Services"
-        // toggle, the nav's desktop full-screen-menu trigger button, and the
-        // two parallax-divider CTAs ("See Why VisionBridge" / "View Plans").
-        var pillMorphEls = document.querySelectorAll('.spotlight-cta-primary, .spotlight-cta-outline, #svc-toggle-btn, #desktop-menu-btn, .parallax-cta-btn');
+        // toggle, and the two parallax-divider CTAs ("See Why VisionBridge" /
+        // "View Plans"). The nav's desktop full-screen-menu trigger button
+        // used to be in this list too, but it's a squared-off corner-cut
+        // shape now (layouts/app.blade.php), not a circle, so it's handled
+        // separately below instead of morphing into a mismatched full pill.
+        var pillMorphEls = document.querySelectorAll('.spotlight-cta-primary, .spotlight-cta-outline, #svc-toggle-btn, .parallax-cta-btn');
+        // Nav Login/Get Started — small corner-cut rects (layouts/app.blade.php),
+        // so they get the same gentle-radius hug as the card group below
+        // rather than the full pill treatment, matching the technique used
+        // for the desktop full-screen menu's own nav-link morph, extended
+        // here to the always-visible nav bar itself.
+        var navFieldMorphEls = [document.getElementById('nav-login'), document.getElementById('nav-cta')].filter(Boolean);
+        // Hamburger trigger — squared off, not a circle, so the ring hugs it
+        // with a near-crisp corner instead of the default pill.
+        var navSquareMorphEls = [document.getElementById('desktop-menu-btn')].filter(Boolean);
         // The 10 service cards, the "Why VisionBridge" section's 4 feature
         // cards, the "Our Team" section's 2 cards (Unified Team / Full
         // Ownership — also .why-feature-card, scoped via #partnership so
@@ -395,6 +407,16 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         cardMorphEls.forEach(function (el) {
             morphedSet.add(el);
             el.addEventListener('mouseenter', function () { morphTo(el, { padX: 6, padY: 6, borderRadius: 28 }); });
+            el.addEventListener('mouseleave', unmorph);
+        });
+        navFieldMorphEls.forEach(function (el) {
+            morphedSet.add(el);
+            el.addEventListener('mouseenter', function () { morphTo(el, { padX: 4, padY: 4, borderRadius: 8 }); });
+            el.addEventListener('mouseleave', unmorph);
+        });
+        navSquareMorphEls.forEach(function (el) {
+            morphedSet.add(el);
+            el.addEventListener('mouseenter', function () { morphTo(el, { padX: 2, padY: 2, borderRadius: 2 }); });
             el.addEventListener('mouseleave', unmorph);
         });
 
