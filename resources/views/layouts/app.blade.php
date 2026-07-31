@@ -225,7 +225,8 @@
              overrides are scoped to :not(.nav-pill). */
         .nav-on-dark-hero #nav-inner:not(.nav-pill) .nav-link,
         .nav-on-dark-hero #nav-inner:not(.nav-pill) #nav-login,
-        .nav-on-dark-hero #nav-inner:not(.nav-pill) #menu-btn {
+        .nav-on-dark-hero #nav-inner:not(.nav-pill) #menu-btn,
+        .nav-on-dark-hero #nav-inner:not(.nav-pill) #desktop-menu-btn {
             color: rgba(255,255,255,.85);
         }
         .nav-on-dark-hero #nav-inner:not(.nav-pill) .hamburger-bar {
@@ -243,17 +244,36 @@
              the button now instead of stretching edge-to-edge, since the
              button itself grew from a bare 24×18 hitbox to a 42×42 circle. */
         #desktop-menu-btn {
-            width: 42px;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
             height: 42px;
+            padding: 0 16px 0 12px;
             border-radius: 0;
             position: relative;
             background: rgba(21,32,44,0.06);
             border: 1.5px solid rgba(21,32,44,0.14);
+            color: rgba(47,58,69,.85);
             transition: background-color 0.2s ease, border-color 0.2s ease;
         }
         #desktop-menu-btn:hover {
             background: rgba(201,168,76,0.14);
             border-color: rgba(201,168,76,0.45);
+        }
+        /* Fixed-size icon box the 3 bars are absolutely positioned within —
+           kept separate from the button itself now that the button has grown
+           to fit the "Menu" label alongside it too. */
+        #desktop-menu-btn-icon {
+            position: relative;
+            width: 18px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+        #desktop-menu-btn-label {
+            font-size: .78rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
         }
         .nav-on-dark-hero #nav-inner:not(.nav-pill) #desktop-menu-btn {
             background: rgba(255,255,255,0.08);
@@ -275,7 +295,8 @@
              nav a dark glass pill at every scroll position instead. */
         .nav-force-dark #nav-inner .nav-link,
         .nav-force-dark #nav-inner #nav-login,
-        .nav-force-dark #nav-inner #menu-btn {
+        .nav-force-dark #nav-inner #menu-btn,
+        .nav-force-dark #nav-inner #desktop-menu-btn {
             color: rgba(255,255,255,.85);
         }
         .nav-force-dark #nav-inner .hamburger-bar {
@@ -316,12 +337,12 @@
             border-radius: 2px;
             transition: transform 0.3s ease, opacity 0.3s ease, top 0.3s ease;
         }
-        #desktop-menu-btn .hamburger-bar:nth-child(1) { top: 15px; }
-        #desktop-menu-btn .hamburger-bar:nth-child(2) { top: 20px; }
-        #desktop-menu-btn .hamburger-bar:nth-child(3) { top: 25px; }
-        #desktop-menu-btn.is-open .hamburger-bar:nth-child(1) { top: 20px; transform: translateX(-50%) rotate(45deg); }
+        #desktop-menu-btn .hamburger-bar:nth-child(1) { top: 1px; }
+        #desktop-menu-btn .hamburger-bar:nth-child(2) { top: 6px; }
+        #desktop-menu-btn .hamburger-bar:nth-child(3) { top: 11px; }
+        #desktop-menu-btn.is-open .hamburger-bar:nth-child(1) { top: 6px; transform: translateX(-50%) rotate(45deg); }
         #desktop-menu-btn.is-open .hamburger-bar:nth-child(2) { opacity: 0; }
-        #desktop-menu-btn.is-open .hamburger-bar:nth-child(3) { top: 20px; transform: translateX(-50%) rotate(-45deg); }
+        #desktop-menu-btn.is-open .hamburger-bar:nth-child(3) { top: 6px; transform: translateX(-50%) rotate(-45deg); }
 
         /* ─── Desktop full-screen menu ───
              Reference-matched layout: brand + contact top-left/middle, CLOSE
@@ -2301,9 +2322,12 @@
                     </svg>
                 </a>
                 <button id="desktop-menu-btn" class="relative z-10 opacity-0 shrink-0" aria-label="Toggle menu" aria-expanded="false" aria-controls="desktop-menu">
-                    <span class="hamburger-bar"></span>
-                    <span class="hamburger-bar"></span>
-                    <span class="hamburger-bar"></span>
+                    <span id="desktop-menu-btn-icon">
+                        <span class="hamburger-bar"></span>
+                        <span class="hamburger-bar"></span>
+                        <span class="hamburger-bar"></span>
+                    </span>
+                    <span id="desktop-menu-btn-label">Menu</span>
                 </button>
             </div>
 
