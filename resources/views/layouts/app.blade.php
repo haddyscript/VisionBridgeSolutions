@@ -421,6 +421,27 @@
             color: #DFC06A;
             transform: translateX(-6px) scale(1.1);
         }
+        /* Small index number ("01", "02"...) preceding each link — purely a
+           text-display detail (per request), not new page chrome. */
+        .desktop-menu-link-num {
+            display: inline-block;
+            font-size: .28em;
+            font-weight: 700;
+            color: rgba(201,168,76,.65);
+            vertical-align: super;
+            margin-right: .35em;
+        }
+        /* Focus effect — hovering any one link dims every other link to a
+           muted gray while the hovered one stays at full brightness, same
+           "spotlight" pattern as the reference image. Links stay at full
+           brightness by default (nothing dimmed) until the nav itself is
+           being hovered at all. */
+        #desktop-menu-nav:hover .desktop-menu-link {
+            color: rgba(255,255,255,.32);
+        }
+        #desktop-menu-nav:hover .desktop-menu-link:hover {
+            color: #DFC06A;
+        }
 
         /* ─── Desktop menu: brand name + contact links also get the slow
              text zoom (same values as .desktop-menu-link above) ─── */
@@ -2512,14 +2533,14 @@
                     <button id="desktop-menu-close" type="button" aria-label="Close menu">Close</button>
                 </div>
 
-                <nav class="flex-1 flex flex-col items-end justify-center gap-1" aria-label="Main">
-                    <a href="{{ route('home') }}#hero" class="desktop-menu-link">Home</a>
-                    <a href="{{ $homeAnchor }}#about" class="desktop-menu-link">About</a>
-                    <a href="{{ $homeAnchor }}#services" class="desktop-menu-link">Services</a>
-                    <a href="{{ $homeAnchor }}#plans" class="desktop-menu-link">Plans</a>
-                    <a href="{{ $homeAnchor }}#portfolio" class="desktop-menu-link">Portfolio</a>
-                    <a href="{{ route('gallery') }}" class="desktop-menu-link">Our Work</a>
-                    <a href="{{ route('contact') }}" class="desktop-menu-link">Contact</a>
+                <nav id="desktop-menu-nav" class="flex-1 flex flex-col items-end justify-center gap-1" aria-label="Main">
+                    <a href="{{ route('home') }}#hero" class="desktop-menu-link"><span class="desktop-menu-link-num">01</span>Home</a>
+                    <a href="{{ $homeAnchor }}#about" class="desktop-menu-link"><span class="desktop-menu-link-num">02</span>About</a>
+                    <a href="{{ $homeAnchor }}#services" class="desktop-menu-link"><span class="desktop-menu-link-num">03</span>Services</a>
+                    <a href="{{ $homeAnchor }}#plans" class="desktop-menu-link"><span class="desktop-menu-link-num">04</span>Plans</a>
+                    <a href="{{ $homeAnchor }}#portfolio" class="desktop-menu-link"><span class="desktop-menu-link-num">05</span>Portfolio</a>
+                    <a href="{{ route('gallery') }}" class="desktop-menu-link"><span class="desktop-menu-link-num">06</span>Our Work</a>
+                    <a href="{{ route('contact') }}" class="desktop-menu-link"><span class="desktop-menu-link-num">07</span>Contact</a>
                 </nav>
 
                 <p id="desktop-menu-tagline" class="text-xs tracking-widest uppercase" style="color:rgba(201,168,76,0.7);">Building Websites. Expanding Reach.</p>
