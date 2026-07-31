@@ -433,14 +433,14 @@
         }
         /* Focus effect — hovering any one link dims every other link to a
            muted gray while the hovered one stays at full brightness, same
-           "spotlight" pattern as the reference image. Links stay at full
-           brightness by default (nothing dimmed) until the nav itself is
-           being hovered at all. */
-        #desktop-menu-nav:hover .desktop-menu-link {
+           "spotlight" pattern as the reference image. Driven by JS toggling
+           .is-dimmed on the actual sibling <a> elements (see the desktop
+           menu controller script below) rather than a parent :hover rule —
+           the nav's own box is wider than its right-aligned/slanted links,
+           so a parent-hover rule would dim/undim based on empty space
+           inside that box instead of the visible text itself. */
+        .desktop-menu-link.is-dimmed {
             color: rgba(255,255,255,.32);
-        }
-        #desktop-menu-nav:hover .desktop-menu-link:hover {
-            color: #DFC06A;
         }
 
         /* ─── Desktop menu: brand name + contact links also get the slow
@@ -2533,7 +2533,7 @@
                     <button id="desktop-menu-close" type="button" aria-label="Close menu">Close</button>
                 </div>
 
-                <nav id="desktop-menu-nav" class="flex-1 flex flex-col items-end justify-center gap-1" aria-label="Main">
+                <nav id="desktop-menu-nav" class="flex-1 flex flex-col items-end self-end justify-center gap-1" aria-label="Main">
                     <a href="{{ route('home') }}#hero" class="desktop-menu-link"><span class="desktop-menu-link-num">01</span>Home</a>
                     <a href="{{ $homeAnchor }}#about" class="desktop-menu-link"><span class="desktop-menu-link-num">02</span>About</a>
                     <a href="{{ $homeAnchor }}#services" class="desktop-menu-link"><span class="desktop-menu-link-num">03</span>Services</a>
@@ -2857,6 +2857,21 @@
         var glow    = document.getElementById('desktop-menu-glow');
         var gifBg   = document.getElementById('desktop-menu-gif-bg');
         var links   = Array.prototype.slice.call(menu.querySelectorAll('.desktop-menu-link'));
+
+        // Spotlight focus effect — hovering one link dims every other one.
+        // Attached directly to each link's own mouseenter/mouseleave (not a
+        // parent :hover rule) so it tracks the link's actual rendered
+        // position, including the diagonal slant's transform offset above.
+        links.forEach(function (link) {
+            link.addEventListener('mouseenter', function () {
+                links.forEach(function (other) {
+                    if (other !== link) other.classList.add('is-dimmed');
+                });
+            });
+            link.addEventListener('mouseleave', function () {
+                links.forEach(function (other) { other.classList.remove('is-dimmed'); });
+            });
+        });
 
         var isOpen = false;
         var animating = false;
