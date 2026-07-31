@@ -194,6 +194,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
         var footer = document.getElementById('site-footer');
         var desktopMenu = document.getElementById('desktop-menu');
+        var introOverlay = document.getElementById('intro-overlay');
 
         var moveDotX = gsap.quickTo(dot, 'x', { duration: 0.05, ease: 'power3.out' });
         var moveDotY = gsap.quickTo(dot, 'y', { duration: 0.05, ease: 'power3.out' });
@@ -215,8 +216,16 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             // and the full-screen desktop menu has its own too
             // (#desktop-menu-cursor-dot/-ring) — bail out of this one while
             // over either, so the two reticles never show at once.
+            // #intro-overlay (the video intro, z-index:9999 in
+            // layouts/app.blade.php) sits above this cursor's z-index:200,
+            // so the custom dot/ring rendered invisibly behind it while
+            // still hiding the native cursor via .has-home-cursor — leaving
+            // no cursor at all to click "Skip Intro" with. Bailing out here
+            // too lets the native cursor show through until the overlay
+            // sets itself to display:none on dismiss.
             if ((e.target.closest && e.target.closest('#site-footer')) ||
-                (desktopMenu && desktopMenu.classList.contains('is-visible'))) {
+                (desktopMenu && desktopMenu.classList.contains('is-visible')) ||
+                (introOverlay && introOverlay.style.display !== 'none')) {
                 hide();
                 return;
             }
