@@ -1310,6 +1310,13 @@
             z-index: 1;
             will-change: transform;
             overflow: visible;
+            font-family: "Chakra Petch", "Chakra Petch Placeholder", sans-serif;
+        }
+        /* Column headings (Quick Links / Company / Others) get the same
+           display treatment as headings elsewhere on the site, standing out
+           from the footer's Chakra Petch body copy around them. */
+        #footer-col-2 h4, #footer-col-3 h4, #footer-col-4 h4 {
+            font-family: 'Orbitron', sans-serif;
         }
 
         /* ─── Footer: giant bleeding wordmark ─── */
@@ -1324,6 +1331,7 @@
             text-align: center;
             white-space: nowrap;
             line-height: 1;
+            font-family: 'Orbitron', sans-serif;
             font-size: clamp(5.5rem, 17vw, 12rem);
             letter-spacing: -0.01em;
             background: linear-gradient(180deg, #DFC06A 0%, #3FBDBB 130%);
