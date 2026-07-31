@@ -318,9 +318,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
         // Elements that get the plain pill morph — the ring's own default
         // border-radius:999px already reads as one, so no override needed:
-        // Spotlight's two CTAs and the Services section's "View All
-        // Services" toggle.
-        var pillMorphEls = document.querySelectorAll('.spotlight-cta-primary, .spotlight-cta-outline, #svc-toggle-btn');
+        // Spotlight's two CTAs, the Services section's "View All Services"
+        // toggle, and the nav's desktop full-screen-menu trigger button.
+        var pillMorphEls = document.querySelectorAll('.spotlight-cta-primary, .spotlight-cta-outline, #svc-toggle-btn, #desktop-menu-btn');
         // The 10 service cards, the "Why VisionBridge" section's 4 feature
         // cards, and the "Our Team" section's 2 cards (Unified Team / Full
         // Ownership — also .why-feature-card, scoped via #partnership so
