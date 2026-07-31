@@ -19,6 +19,9 @@
 
 <div id="cine-gallery">
 
+    <div id="cine-cursor-dot" aria-hidden="true"></div>
+    <div id="cine-cursor-ring" aria-hidden="true"></div>
+
     {{-- ============================================================
          AMBIENT GALAXY ATMOSPHERE — a fixed, pointer-events:none layer
          behind the intro title and the pinned gallery. Deliberately NOT

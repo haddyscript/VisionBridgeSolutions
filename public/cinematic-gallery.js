@@ -732,10 +732,158 @@
         }
     }
 
+    // ── Custom "signal lock" cursor ──
+    // Dot snaps to the pointer, the ring eases behind it and stretches with
+    // the lag distance, and morphs into a shape-matching hug over clickable
+    // elements — same technique as the homepage/Contact page cursors (see
+    // home.blade.php / contact.blade.php). Tracks the whole document (not
+    // just #cine-gallery) so the fixed nav bar (Login/Get Started/hamburger)
+    // gets covered too. Desktop/fine-pointer only.
+    function initCineCursor() {
+        if (typeof gsap === 'undefined') { return setTimeout(initCineCursor, 80); }
+
+        var dot = document.getElementById('cine-cursor-dot');
+        var ring = document.getElementById('cine-cursor-ring');
+        if (!dot || !ring) return;
+        if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        // The desktop full-screen menu and the site footer (both in
+        // layouts/app.blade.php) each have their own separate cursor —
+        // bail out over either so no two reticles ever show at once.
+        var desktopMenu = document.getElementById('desktop-menu');
+        var footer = document.getElementById('site-footer');
+
+        var moveDotX = gsap.quickTo(dot, 'x', { duration: 0.05, ease: 'power3.out' });
+        var moveDotY = gsap.quickTo(dot, 'y', { duration: 0.05, ease: 'power3.out' });
+
+        var mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+        var ringReady = false, pressed = false, hovering = false, visible = false;
+        var morphedEl = null;
+
+        function hide() {
+            if (!visible) return;
+            visible = false;
+            document.documentElement.classList.remove('has-cine-cursor');
+            dot.classList.remove('is-visible');
+            ring.classList.remove('is-visible');
+        }
+
+        document.addEventListener('mousemove', function (e) {
+            if ((desktopMenu && desktopMenu.classList.contains('is-visible')) ||
+                (footer && e.target.closest && e.target.closest('#site-footer'))) {
+                hide(); return;
+            }
+
+            mouseX = e.clientX; mouseY = e.clientY;
+            moveDotX(mouseX); moveDotY(mouseY);
+            if (!ringReady) { ringX = mouseX; ringY = mouseY; ringReady = true; }
+            if (!visible) {
+                visible = true;
+                document.documentElement.classList.add('has-cine-cursor');
+                dot.classList.add('is-visible');
+                ring.classList.add('is-visible');
+            }
+        });
+        document.addEventListener('mouseleave', hide);
+
+        gsap.ticker.add(function () {
+            if (!visible || morphedEl) return;
+            ringX += (mouseX - ringX) * 0.1;
+            ringY += (mouseY - ringY) * 0.1;
+            var dist = Math.hypot(mouseX - ringX, mouseY - ringY);
+            var stretch = pressed ? 0.8 : gsap.utils.clamp(1, 1.7, 1 + dist / 130);
+            gsap.set(ring, { x: ringX, y: ringY, scale: hovering ? 1 : stretch });
+        });
+
+        function growRing(w, h) {
+            gsap.to(ring, { width: w, height: h, duration: 0.35, ease: 'power3.out', overwrite: 'auto' });
+        }
+
+        function morphTo(el, opts) {
+            hovering = true;
+            morphedEl = el;
+            ring.classList.add('is-hovering');
+            var r = el.getBoundingClientRect();
+            var padX = opts.padX || 0, padY = opts.padY || 0;
+            var tween = {
+                x: r.left + r.width / 2, y: r.top + r.height / 2,
+                width: r.width + padX * 2, height: r.height + padY * 2,
+                scale: 1, duration: 0.45, ease: 'power3.out', overwrite: 'auto',
+            };
+            if (opts.borderRadius) tween.borderRadius = opts.borderRadius;
+            gsap.to(ring, tween);
+        }
+
+        function unmorph() {
+            hovering = false;
+            morphedEl = null;
+            ring.classList.remove('is-hovering');
+            ringX = mouseX; ringY = mouseY;
+            gsap.to(ring, {
+                width: 46, height: 46, borderRadius: 999,
+                duration: 0.3, ease: 'power2.out', overwrite: 'auto',
+                clearProps: 'borderRadius',
+            });
+        }
+
+        // Nav Login/Get Started — small corner-cut rects (layouts/app.blade.php).
+        var navFieldMorphEls = [document.getElementById('nav-login'), document.getElementById('nav-cta')].filter(Boolean);
+        // Hamburger trigger + the page's bracket-tag kickers ("Selected
+        // Work", each project's category tag) — squared-off, sharp-cornered
+        // boxes rather than circles/pills.
+        var squareMorphEls = Array.prototype.slice.call(
+            document.querySelectorAll('#desktop-menu-btn, .cine-kicker, .cine-category')
+        );
+        // Per-project CTA — small corner-cut pill.
+        var ctaMorphEls = document.querySelectorAll('.cine-cta, .hero-btn-primary, .hero-btn-secondary');
+        // The image frame + glass info panel — gentler radius matching their
+        // own corner-cut shape.
+        var cardMorphEls = document.querySelectorAll('.cine-frame, .cine-info');
+
+        var morphedSet = new Set();
+        navFieldMorphEls.forEach(function (el) {
+            morphedSet.add(el);
+            el.addEventListener('mouseenter', function () { morphTo(el, { padX: 4, padY: 4, borderRadius: 8 }); });
+            el.addEventListener('mouseleave', unmorph);
+        });
+        squareMorphEls.forEach(function (el) {
+            morphedSet.add(el);
+            el.addEventListener('mouseenter', function () { morphTo(el, { padX: 2, padY: 2, borderRadius: 2 }); });
+            el.addEventListener('mouseleave', unmorph);
+        });
+        ctaMorphEls.forEach(function (el) {
+            morphedSet.add(el);
+            el.addEventListener('mouseenter', function () { morphTo(el, { padX: 6, padY: 6, borderRadius: 10 }); });
+            el.addEventListener('mouseleave', unmorph);
+        });
+        cardMorphEls.forEach(function (el) {
+            morphedSet.add(el);
+            el.addEventListener('mouseenter', function () { morphTo(el, { padX: 6, padY: 6, borderRadius: 22 }); });
+            el.addEventListener('mouseleave', unmorph);
+        });
+
+        // Everything else clickable gets the original simple circle-grow
+        // acquire. Elements inside the desktop full-screen menu or footer
+        // are excluded — those run their own separate cursor already.
+        var interactiveEls = document.querySelectorAll('a, button, input, [role="option"]');
+        interactiveEls.forEach(function (el) {
+            if (morphedSet.has(el)) return;
+            if (desktopMenu && desktopMenu.contains(el)) return;
+            if (footer && footer.contains(el)) return;
+            el.addEventListener('mouseenter', function () { hovering = true; ring.classList.add('is-hovering'); growRing(68, 68); });
+            el.addEventListener('mouseleave', function () { hovering = false; ring.classList.remove('is-hovering'); growRing(46, 46); });
+        });
+
+        document.addEventListener('mousedown', function () { pressed = true; });
+        document.addEventListener('mouseup', function () { pressed = false; });
+    }
+
     ready(function () {
         initCineAtmosphere();
         initCineOpening();
         initCinematicGallery();
+        initCineCursor();
 
         // Lenis smooth scroll — self-contained to this page, loaded lazily so
         // it never blocks first paint, skipped entirely for reduced-motion.

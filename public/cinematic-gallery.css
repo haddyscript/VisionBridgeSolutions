@@ -280,6 +280,28 @@
     background: linear-gradient(180deg, transparent, rgba(0,0,0,.4));
     pointer-events: none;
 }
+/* ─── Bracket-tag badge — same technique as the homepage's .kicker-tag-dark
+   / Contact page's .contact-tag: solid gold end-cap tabs at the left/right
+   edges, poking slightly past the box's own border. ─── */
+.cine-kicker, .cine-category {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 18px;
+    border: 1px solid rgba(255,255,255,.22);
+    background: rgba(255,255,255,.03);
+}
+.cine-kicker::before, .cine-kicker::after,
+.cine-category::before, .cine-category::after {
+    content: '';
+    position: absolute;
+    top: -4px; bottom: -4px;
+    width: 3px;
+    background: #C9A84C;
+}
+.cine-kicker::before, .cine-category::before { left: -1px; }
+.cine-kicker::after,  .cine-category::after  { right: -1px; }
+
 .cine-kicker {
     font-size: .75rem;
     letter-spacing: .32em;
@@ -533,7 +555,8 @@
 .cine-frame-ghost {
     position: absolute;
     inset: 0;
-    border-radius: 22px;
+    border-radius: 0;
+    clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
     background: rgba(255,255,255,.03);
     border: 1px solid rgba(201,168,76,.20);
     opacity: 0;
@@ -544,7 +567,8 @@
     position: relative;
     width: min(48vw, 620px);
     aspect-ratio: 4 / 3;
-    border-radius: 22px;
+    border-radius: 0;
+    clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
     overflow: hidden;
     --mx: 50%;
     --my: 50%;
@@ -561,6 +585,18 @@
     object-fit: cover;
     transform: scale(1.08);
     will-change: transform;
+}
+/* Retraces the cut-corner edge in gold since clip-path removes the box-
+   shadow ring along the diagonal itself — same technique as
+   .contact-form-card::before (contact.blade.php). ::after on this element
+   is already the cursor-tracking highlight below, so this uses ::before. */
+.cine-frame::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; z-index: 5;
+    width: 24px; height: 24px;
+    background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+    pointer-events: none;
 }
 /* Cursor-tracking highlight — topmost layer so it's never dimmed by the
    sweep/border layers beneath it. */
@@ -650,7 +686,8 @@
     max-width: 26rem;
     text-align: left;
     padding: 1.8rem 2rem;
-    border-radius: 20px;
+    border-radius: 0;
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
     background: rgba(255,255,255,.045);
     border: 1px solid rgba(255,255,255,.10);
     backdrop-filter: blur(14px);
@@ -658,6 +695,16 @@
     box-shadow: 0 20px 60px rgba(0,0,0,.30);
     --mx: 50%;
     --my: 50%;
+}
+.cine-info::before {
+    /* ::after on this element is already the cursor-tracking highlight
+       below, so the corner-cut retrace uses ::before instead. */
+    content: '';
+    position: absolute;
+    top: 0; right: 0; z-index: 2;
+    width: 20px; height: 20px;
+    background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+    pointer-events: none;
 }
 /* Cursor-tracking highlight, same technique as .cine-frame::after and
    .about-card::after (layouts/app.blade.php) elsewhere on the site. */
@@ -683,7 +730,7 @@
     margin-bottom: 1rem;
 }
 .cine-category {
-    display: inline-block;
+    display: inline-flex;
     font-size: .7rem;
     letter-spacing: .24em;
     text-transform: uppercase;
@@ -721,13 +768,22 @@
     gap: 8px;
     margin-top: 1.4rem;
     padding: 11px 20px;
-    border-radius: 9999px;
+    border-radius: 0;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
     border: 1.5px solid rgba(201,168,76,.40);
     color: #FFE9B0;
     font-size: .85rem;
     font-weight: 700;
     overflow: hidden;
     transition: border-color .25s ease, color .25s ease, transform .25s ease;
+}
+.cine-cta::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; z-index: 2;
+    width: 10px; height: 10px;
+    background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+    pointer-events: none;
 }
 .cine-cta-fill {
     position: absolute;
@@ -828,4 +884,81 @@
 
 @media (prefers-reduced-motion: reduce) {
     .cine-kenburns-run { animation: none !important; }
+}
+
+/* ─── Custom "signal lock" cursor — same lag-stretch dot/ring technique
+   used on the homepage/Contact page (see home.blade.php / contact.blade.php).
+   Tracks the whole document (not just #cine-gallery) so it also covers the
+   fixed nav bar above it, same fix already applied to Contact. Desktop/
+   fine-pointer only; native cursor stays untouched until
+   initCineCursor() in cinematic-gallery.js confirms it can run. ─── */
+#cine-cursor-dot, #cine-cursor-ring {
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 300;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+}
+#cine-cursor-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #C9A84C;
+    box-shadow: 0 0 10px rgba(201,168,76,.85);
+}
+#cine-cursor-ring {
+    width: 46px; height: 46px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(201,168,76,.55);
+    transition: border-color .3s ease, background-color .3s ease;
+}
+#cine-cursor-dot.is-visible, #cine-cursor-ring.is-visible { opacity: 1; }
+#cine-cursor-ring.is-hovering {
+    background: rgba(201,168,76,.12);
+    border-color: rgba(201,168,76,.85);
+}
+html.has-cine-cursor,
+html.has-cine-cursor a,
+html.has-cine-cursor button,
+html.has-cine-cursor input,
+html.has-cine-cursor [role="option"] {
+    cursor: none;
+}
+@media (hover: none), (pointer: coarse) {
+    #cine-cursor-dot, #cine-cursor-ring { display: none; }
+}
+
+/* ─── Text "zoom" under the cursor — same slow/enlarged treatment used
+   throughout the rest of the site. Short, isolated labels get the full
+   zoom; wrapped multi-line paragraphs get a much smaller lift instead,
+   since scaling those far starts misaligning their own wrapped lines. ─── */
+.cine-kicker, .cine-category, .cine-index, .cine-intro-title, .cine-title, .cine-finale-title {
+    transition: transform .65s cubic-bezier(.16,1,.3,1);
+    transform-origin: center center;
+}
+.cine-index, .cine-title, .cine-intro-title, .cine-finale-title {
+    display: inline-block;
+}
+.cine-kicker:hover, .cine-category:hover, .cine-index:hover {
+    transform: scale(1.15);
+}
+.cine-intro-title:hover, .cine-finale-title:hover {
+    transform: scale(1.03);
+}
+.cine-title:hover {
+    transform: scale(1.06);
+}
+.cine-intro-sub, .cine-finale-sub, .cine-desc {
+    display: inline-block;
+    transition: transform .7s cubic-bezier(.16,1,.3,1);
+    transform-origin: center top;
+}
+.cine-intro-sub:hover, .cine-finale-sub:hover, .cine-desc:hover {
+    transform: scale(1.02);
+}
+@media (prefers-reduced-motion: reduce) {
+    .cine-kicker, .cine-category, .cine-index, .cine-intro-title, .cine-title,
+    .cine-finale-title, .cine-intro-sub, .cine-finale-sub, .cine-desc {
+        transition: none;
+    }
 }
