@@ -105,7 +105,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     #home-cursor-dot, #home-cursor-ring {
         position: fixed;
         top: 0; left: 0;
-        border-radius: 50%;
         pointer-events: none;
         z-index: 200;
         opacity: 0;
@@ -113,18 +112,29 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     }
     #home-cursor-dot {
         width: 6px; height: 6px;
+        border-radius: 50%;
         background: #C9A84C;
         box-shadow: 0 0 10px rgba(201,168,76,.85);
     }
+    /* A fixed large-px radius (not 50%) so this same rule reads as a circle
+       at the default square size, and as a pill/stadium shape once the
+       script below grows it into an oblong that hugs a button's full
+       width/height — border-radius simply clamps to the tightest curve the
+       current box shape allows either way. Same technique as the desktop
+       full-screen menu's own cursor ring (layouts/app.blade.php). */
     #home-cursor-ring {
         width: 46px; height: 46px;
+        border-radius: 999px;
         border: 1.5px solid rgba(201,168,76,.55);
-        transition: width .3s cubic-bezier(.22,1,.36,1), height .3s cubic-bezier(.22,1,.36,1),
-                    border-color .3s ease, background-color .3s ease;
+        /* width/height live here no longer — the script below now
+           GSAP-tweens both (for the plain circle-grow AND the button-hug
+           morph) instead of toggling a CSS class, since a CSS transition
+           racing GSAP's own per-frame inline styles on the same property
+           fights it and reads as stutter. */
+        transition: border-color .3s ease, background-color .3s ease;
     }
     #home-cursor-dot.is-visible, #home-cursor-ring.is-visible { opacity: 1; }
     #home-cursor-ring.is-hovering {
-        width: 68px; height: 68px;
         background: rgba(201,168,76,.12);
         border-color: rgba(201,168,76,.85);
     }
@@ -243,8 +253,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
         document.addEventListener('mouseleave', hide);
 
+        // The element currently being "morphed" onto (Spotlight's two CTA
+        // buttons, see below), if any — while set, the ticker hands the
+        // ring's position over to the morph tween entirely instead of
+        // fighting it with the lag-follow loop.
+        var morphedEl = null;
+
         gsap.ticker.add(function () {
-            if (!visible) return;
+            if (!visible || morphedEl) return;
             // Lower factor = more lag = smoother/slower catch-up.
             ringX += (mouseX - ringX) * 0.1;
             ringY += (mouseY - ringY) * 0.1;
@@ -253,14 +269,57 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             gsap.set(ring, { x: ringX, y: ringY, scale: hovering ? 1 : stretch });
         });
 
-        // Reticle "acquires" anything clickable — links, buttons, inputs,
-        // etc. Footer's own interactive elements are excluded since the
-        // footer runs its own identical treatment already.
+        function growRing(w, h) {
+            gsap.to(ring, { width: w, height: h, duration: 0.35, ease: 'power3.out', overwrite: 'auto' });
+        }
+
+        // Spotlight section CTAs ("View The Live Site" / "Book A Free
+        // Consultation") — same morph-into-a-pill treatment as the desktop
+        // full-screen menu's giant nav links (layouts/app.blade.php): the
+        // ring grows to hug the button's own footprint and locks onto its
+        // center instead of just growing into a bigger circle around the
+        // raw mouse position.
+        var morphEls = document.querySelectorAll('.spotlight-cta-primary, .spotlight-cta-outline');
+        morphEls.forEach(function (el) {
+            el.addEventListener('mouseenter', function () {
+                hovering = true;
+                morphedEl = el;
+                ring.classList.add('is-hovering');
+                var r = el.getBoundingClientRect();
+                var padX = 10, padY = 6;
+                gsap.to(ring, {
+                    x: r.left + r.width / 2,
+                    y: r.top + r.height / 2,
+                    width: r.width + padX * 2,
+                    height: r.height + padY * 2,
+                    scale: 1,
+                    duration: 0.45,
+                    ease: 'power3.out',
+                    overwrite: 'auto',
+                });
+            });
+            el.addEventListener('mouseleave', function () {
+                hovering = false;
+                morphedEl = null;
+                ring.classList.remove('is-hovering');
+                // Resume the lag-follow from wherever the mouse actually is
+                // now, not from the button's center — avoids a visible jump.
+                ringX = mouseX; ringY = mouseY;
+                growRing(46, 46);
+            });
+        });
+
+        // Reticle "acquires" everything else clickable — links, buttons,
+        // inputs, etc. — with the original simple circle-grow. Footer's own
+        // interactive elements are excluded since the footer runs its own
+        // identical treatment already; the Spotlight CTAs above are
+        // excluded since they already got their own binding.
         var interactiveEls = document.querySelectorAll('a, button, input, textarea, select, [role="option"]');
         interactiveEls.forEach(function (el) {
             if (footer && footer.contains(el)) return;
-            el.addEventListener('mouseenter', function () { hovering = true; ring.classList.add('is-hovering'); });
-            el.addEventListener('mouseleave', function () { hovering = false; ring.classList.remove('is-hovering'); });
+            if (el.classList.contains('spotlight-cta-primary') || el.classList.contains('spotlight-cta-outline')) return;
+            el.addEventListener('mouseenter', function () { hovering = true; ring.classList.add('is-hovering'); growRing(68, 68); });
+            el.addEventListener('mouseleave', function () { hovering = false; ring.classList.remove('is-hovering'); growRing(46, 46); });
         });
 
         document.addEventListener('mousedown', function () { pressed = true; });
