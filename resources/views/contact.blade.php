@@ -2,12 +2,6 @@
 
 @section('title', 'Contact Us – VisionBridge Solutions')
 
-@push('head')
-    {{-- Bold condensed display font for the "LET'S BUILD SOMETHING" headline
-         — the rest of the page reuses Inter (already loaded sitewide). --}}
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
-@endpush
-
 @section('content')
 
 {{-- ============================================================
@@ -35,6 +29,7 @@
         min-height: 100vh;
         padding-top: clamp(120px, 14vw, 160px);
         padding-bottom: 80px;
+        font-family: "Chakra Petch", "Chakra Petch Placeholder", sans-serif;
     }
     /* Faint diagonal stripe texture, same spirit as the reference's subtle
        grain — cheap (one repeating gradient, no image) and very low opacity
@@ -81,7 +76,7 @@
     /* ── Headline ── */
     .contact-headline-wrap { position: relative; overflow: hidden; padding-bottom: 4px; margin-bottom: -4px; }
     .contact-headline {
-        font-family: 'Archivo Black', 'Inter', sans-serif;
+        font-family: 'Orbitron', sans-serif;
         text-transform: uppercase;
         line-height: .96;
         letter-spacing: -.01em;
@@ -339,7 +334,7 @@
         text-align: left;
     }
     .faq-number {
-        font-family: 'Archivo Black', 'Inter', sans-serif;
+        font-family: 'Orbitron', sans-serif;
         font-size: 1.1rem;
         color: rgba(255,255,255,.28);
         flex-shrink: 0;
