@@ -790,17 +790,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
                 {{-- Rating row, sitting just under the laptop's base like the reference layout --}}
                 <div id="hero-rating-row" class="flex gap-4" style="margin-top:0.7rem;position:relative;z-index:3;">
-                    <div class="hero-rating-card opacity-0" id="hero-rating-1">
+                    <div class="hero-rating-card hero-glass-card opacity-0" id="hero-rating-1">
                         <div class="hero-rating-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                         <p class="hero-rating-quote">"Exceeded our expectations from day one."</p>
                         <p class="hero-rating-attr">— Ministry Client</p>
                     </div>
-                    <div class="hero-rating-card opacity-0" id="hero-rating-2">
+                    <div class="hero-rating-card hero-glass-card opacity-0" id="hero-rating-2">
                         <div class="hero-rating-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                         <p class="hero-rating-quote">"Fast, responsive, and truly professional."</p>
                         <p class="hero-rating-attr">— Nonprofit Partner</p>
                     </div>
-                    <div class="hero-rating-card opacity-0" id="hero-rating-3">
+                    <div class="hero-rating-card hero-glass-card opacity-0" id="hero-rating-3">
                         <div class="hero-rating-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                         <p class="hero-rating-quote">"A website that finally reflects who we are."</p>
                         <p class="hero-rating-attr">— Small Business Owner</p>
