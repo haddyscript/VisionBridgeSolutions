@@ -402,12 +402,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         // Elements that get the plain pill morph — the ring's own default
         // border-radius:999px already reads as one, so no override needed:
         // Spotlight's two CTAs, the Services section's "View All Services"
-        // toggle, and the two parallax-divider CTAs ("See Why VisionBridge" /
-        // "View Plans"). The nav's desktop full-screen-menu trigger button
-        // used to be in this list too, but it's a squared-off corner-cut
-        // shape now (layouts/app.blade.php), not a circle, so it's handled
-        // separately below instead of morphing into a mismatched full pill.
-        var pillMorphEls = document.querySelectorAll('.spotlight-cta-primary, .spotlight-cta-outline, #svc-toggle-btn, .parallax-cta-btn');
+        // toggle, the two parallax-divider CTAs ("See Why VisionBridge" /
+        // "View Plans"), and all 15 bracket-tag section kickers (same
+        // pill-morph treatment as Contact page's own .contact-tag). The
+        // nav's desktop full-screen-menu trigger button used to be in this
+        // list too, but it's a squared-off corner-cut shape now
+        // (layouts/app.blade.php), not a circle, so it's handled separately
+        // below instead of morphing into a mismatched full pill.
+        var pillMorphEls = document.querySelectorAll('.spotlight-cta-primary, .spotlight-cta-outline, #svc-toggle-btn, .parallax-cta-btn, .kicker-tag, .kicker-tag-dark');
         // Nav Login/Get Started — small corner-cut rects (layouts/app.blade.php),
         // so they get the same gentle-radius hug as the card group below
         // rather than the full pill treatment, matching the technique used
