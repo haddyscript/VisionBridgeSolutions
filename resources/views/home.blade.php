@@ -178,6 +178,20 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+        // #page-wrapper (these two divs start out as direct children of it,
+        // see the markup above) has its own position:relative + z-index:2,
+        // which makes it a stacking context — that traps a z-index set on
+        // anything inside it, capping the whole subtree at #page-wrapper's
+        // own z-index (2) whenever compared against elements OUTSIDE it,
+        // no matter how high a z-index the inner element declares. #navbar
+        // sits outside #page-wrapper with a higher z-index of its own, so
+        // without this the dot/ring rendered invisibly behind the nav bar
+        // on hover instead of on top of it. Re-parenting to the very end of
+        // <body> escapes that trap — same fix already used for
+        // #desktop-menu/#mobile-menu elsewhere in this codebase.
+        document.body.appendChild(dot);
+        document.body.appendChild(ring);
+
         var footer = document.getElementById('site-footer');
         var desktopMenu = document.getElementById('desktop-menu');
 
