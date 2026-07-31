@@ -132,17 +132,19 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         border: 1px solid rgba(255,255,255,0.22);
         background: rgba(255,255,255,0.03);
     }
+    /* Solid gold end-cap tabs at the left/right edges, poking slightly past
+       the box's own top/bottom border — matching the reference image's
+       thicker corner accents, not a thin outline bracket. */
     .kicker-tag::before, .kicker-tag::after,
     .kicker-tag-dark::before, .kicker-tag-dark::after {
         content: '';
         position: absolute;
-        top: -1px; bottom: -1px;
-        width: 6px;
-        border-top: 1px solid #C9A84C;
-        border-bottom: 1px solid #C9A84C;
+        top: -4px; bottom: -4px;
+        width: 3px;
+        background: #C9A84C;
     }
-    .kicker-tag::before, .kicker-tag-dark::before { left: -6px; border-left: 1px solid #C9A84C; }
-    .kicker-tag::after,  .kicker-tag-dark::after  { right: -6px; border-right: 1px solid #C9A84C; }
+    .kicker-tag::before, .kicker-tag-dark::before { left: -1px; }
+    .kicker-tag::after,  .kicker-tag-dark::after  { right: -1px; }
 
     #hero-badge::before {
         content: '';
