@@ -264,14 +264,41 @@
         .nav-force-dark #nav-inner #nav-login {
             border-color: rgba(111,216,203,0.55);
             background: rgba(111,216,203,0.12);
+            /* Same diagonal corner-cut motif as the nav pill/form card below —
+               a rounded teal pill was the last soft/rounded holdout sitting
+               inside an otherwise squared-off nav. */
+            position: relative;
+            border-radius: 0;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+        }
+        .nav-force-dark #nav-inner #nav-login::before {
+            /* Retraces the cut-corner edge in teal (matching this pill's own
+               border color) since clip-path removes the border along the
+               diagonal itself — same technique as .contact-form-card::before. */
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 8px; height: 8px;
+            background: linear-gradient(135deg, transparent 49%, rgba(111,216,203,0.85) 50%, transparent 51%);
+            pointer-events: none;
         }
         .nav-force-dark #nav-inner #nav-login:hover {
             background: rgba(111,216,203,0.22);
             border-color: rgba(111,216,203,0.85);
         }
+        .nav-force-dark #nav-inner #nav-cta {
+            /* Solid fill, no border to retrace — same as #contact-submit's
+               own corner-cut treatment in contact.blade.php. */
+            border-radius: 0 !important;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+        }
         .nav-force-dark #nav-inner #desktop-menu-btn {
             background: rgba(255,255,255,0.08);
             border-color: rgba(255,255,255,0.22);
+            /* Squared off (not corner-cut) to match the site's other small
+               icon badges (.contact-info-icon, .faq-cta-icon) rather than
+               competing with the hamburger bars at this small a size. */
+            border-radius: 0;
         }
         .nav-force-dark #nav-inner #desktop-menu-btn:hover {
             background: rgba(201,168,76,0.22);
