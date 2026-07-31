@@ -28,8 +28,71 @@
             }
         }
     </script>
+
+    {{-- Custom "signal lock" cursor — same lag-stretch dot/ring technique
+         used on the homepage and Contact page (see home.blade.php /
+         contact.blade.php). Desktop/fine-pointer only; native cursor stays
+         untouched until the script near the bottom of this file confirms
+         it can actually run. --}}
+    <style>
+        #auth-cursor-dot, #auth-cursor-ring {
+            position: fixed;
+            top: 0; left: 0;
+            pointer-events: none;
+            z-index: 200;
+            opacity: 0;
+            transform: translate(-50%, -50%);
+        }
+        #auth-cursor-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #C9A84C;
+            box-shadow: 0 0 10px rgba(201,168,76,.85);
+        }
+        /* A fixed large-px radius (not 50%) so this same rule reads as a
+           circle at the default square size, and as a pill/card outline
+           once the script below grows/morphs it — same technique used
+           elsewhere on the site. */
+        #auth-cursor-ring {
+            width: 46px; height: 46px;
+            border-radius: 999px;
+            border: 1.5px solid rgba(201,168,76,.55);
+            transition: border-color .3s ease, background-color .3s ease;
+        }
+        #auth-cursor-dot.is-visible, #auth-cursor-ring.is-visible { opacity: 1; }
+        #auth-cursor-ring.is-hovering {
+            background: rgba(201,168,76,.12);
+            border-color: rgba(201,168,76,.85);
+        }
+        html.has-auth-cursor, html.has-auth-cursor a, html.has-auth-cursor button,
+        html.has-auth-cursor input, html.has-auth-cursor label {
+            cursor: none;
+        }
+        @media (hover: none), (pointer: coarse) {
+            #auth-cursor-dot, #auth-cursor-ring { display: none; }
+        }
+
+        /* ─── Text "zoom" under the cursor — headings, field labels, and
+             plain links (not the logo link, which wraps an image) get the
+             same slow/enlarged treatment used across the rest of the site. ─── */
+        h1.font-display, h2.font-display, label, a:not(:has(img)) {
+            display: inline-block;
+            transition: transform .65s cubic-bezier(.16,1,.3,1);
+            transform-origin: left center;
+        }
+        h1.font-display:hover, h2.font-display:hover, label:hover, a:not(:has(img)):hover {
+            transform: scale(1.15);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #auth-cursor-dot, #auth-cursor-ring { display: none; }
+            h1.font-display, h2.font-display, label, a:not(:has(img)) { transition: none; }
+        }
+    </style>
 </head>
 <body class="font-sans antialiased min-h-screen bg-white">
+
+    <div id="auth-cursor-dot" aria-hidden="true"></div>
+    <div id="auth-cursor-ring" aria-hidden="true"></div>
 
     <div class="min-h-screen flex flex-col lg:flex-row lg:relative">
 
@@ -128,6 +191,147 @@
             label.textContent = tier;
             label.style.color = color;
         }
+    </script>
+
+    {{-- Custom "signal lock" cursor — dot snaps to the pointer, the ring
+         eases behind it and stretches with the lag distance, and morphs
+         into a pill over plain links (same technique as the desktop
+         full-screen menu's own nav-link morph, layouts/app.blade.php) or a
+         rounded-card hug over inputs/submit buttons (same as
+         contact.blade.php's form fields). Desktop/fine-pointer only. --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script>
+    (function () {
+        function initAuthCursor() {
+            if (typeof gsap === 'undefined') { setTimeout(initAuthCursor, 80); return; }
+
+            var dot = document.getElementById('auth-cursor-dot');
+            var ring = document.getElementById('auth-cursor-ring');
+            if (!dot || !ring) return;
+            if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            var moveDotX = gsap.quickTo(dot, 'x', { duration: 0.05, ease: 'power3.out' });
+            var moveDotY = gsap.quickTo(dot, 'y', { duration: 0.05, ease: 'power3.out' });
+
+            var mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+            var ringReady = false, pressed = false, hovering = false, visible = false;
+            // The element currently being "morphed" onto, if any — while
+            // set, the ticker hands the ring's position over to the morph
+            // tween entirely instead of fighting it with the lag-follow loop.
+            var morphedEl = null;
+
+            document.addEventListener('mousemove', function (e) {
+                mouseX = e.clientX; mouseY = e.clientY;
+                moveDotX(mouseX); moveDotY(mouseY);
+                if (!ringReady) { ringX = mouseX; ringY = mouseY; ringReady = true; }
+                if (!visible) {
+                    visible = true;
+                    document.documentElement.classList.add('has-auth-cursor');
+                    dot.classList.add('is-visible');
+                    ring.classList.add('is-visible');
+                }
+            });
+
+            document.addEventListener('mouseleave', function () {
+                visible = false;
+                document.documentElement.classList.remove('has-auth-cursor');
+                dot.classList.remove('is-visible');
+                ring.classList.remove('is-visible');
+            });
+
+            gsap.ticker.add(function () {
+                if (!visible || morphedEl) return;
+                // Lower factor = more lag = smoother/slower catch-up; the
+                // resulting lag distance is what drives the stretch below.
+                ringX += (mouseX - ringX) * 0.1;
+                ringY += (mouseY - ringY) * 0.1;
+                var dist = Math.hypot(mouseX - ringX, mouseY - ringY);
+                var stretch = pressed ? 0.8 : gsap.utils.clamp(1, 1.7, 1 + dist / 130);
+                gsap.set(ring, { x: ringX, y: ringY, scale: hovering ? 1 : stretch });
+            });
+
+            function growRing(w, h) {
+                gsap.to(ring, { width: w, height: h, duration: 0.35, ease: 'power3.out', overwrite: 'auto' });
+            }
+
+            // Morphs the ring to hug `el`'s own footprint (plus optional
+            // padding/radius) and locks onto its center, instead of just
+            // growing into a bigger circle around the raw mouse position.
+            function morphTo(el, opts) {
+                hovering = true;
+                morphedEl = el;
+                ring.classList.add('is-hovering');
+                var r = el.getBoundingClientRect();
+                var padX = opts.padX || 0, padY = opts.padY || 0;
+                var tween = {
+                    x: r.left + r.width / 2,
+                    y: r.top + r.height / 2,
+                    width: r.width + padX * 2,
+                    height: r.height + padY * 2,
+                    scale: 1,
+                    duration: 0.45,
+                    ease: 'power3.out',
+                    overwrite: 'auto',
+                };
+                if (opts.borderRadius) tween.borderRadius = opts.borderRadius;
+                gsap.to(ring, tween);
+            }
+
+            function unmorph() {
+                hovering = false;
+                morphedEl = null;
+                ring.classList.remove('is-hovering');
+                // Resume the lag-follow from wherever the mouse actually is
+                // now, not from the target's center — avoids a visible jump.
+                ringX = mouseX; ringY = mouseY;
+                gsap.to(ring, {
+                    width: 46, height: 46, borderRadius: 999,
+                    duration: 0.3, ease: 'power2.out', overwrite: 'auto',
+                    clearProps: 'borderRadius',
+                });
+            }
+
+            // Plain text links (Forgot password? / Create one / Sign in /
+            // Back to sign in) get the same oblong full-pill hug as the
+            // desktop full-screen menu's own nav links — the ring's default
+            // border-radius:999px already reads as one. The logo link (wraps
+            // an <img>, no text to hug) is excluded.
+            var pillMorphEls = Array.prototype.slice.call(document.querySelectorAll('a')).filter(function (a) {
+                return !a.querySelector('img');
+            });
+            // Inputs + submit buttons get a gentler radius matching their
+            // own rounded-lg shape, same as contact.blade.php's form fields.
+            var fieldMorphEls = document.querySelectorAll('input[type="email"], input[type="password"], input[type="text"], button[type="submit"]');
+
+            var morphedSet = new Set();
+            pillMorphEls.forEach(function (el) {
+                morphedSet.add(el);
+                el.addEventListener('mouseenter', function () { morphTo(el, { padX: 10, padY: 6 }); });
+                el.addEventListener('mouseleave', unmorph);
+            });
+            fieldMorphEls.forEach(function (el) {
+                morphedSet.add(el);
+                el.addEventListener('mouseenter', function () { morphTo(el, { padX: 4, padY: 4, borderRadius: 12 }); });
+                el.addEventListener('mouseleave', unmorph);
+            });
+
+            // Everything else clickable (the "Remember me" checkbox, the
+            // password-visibility eye-toggle buttons) keeps the original
+            // simple circle-grow acquire.
+            var interactiveEls = document.querySelectorAll('a, button, input');
+            interactiveEls.forEach(function (el) {
+                if (morphedSet.has(el)) return;
+                el.addEventListener('mouseenter', function () { hovering = true; ring.classList.add('is-hovering'); growRing(68, 68); });
+                el.addEventListener('mouseleave', function () { hovering = false; ring.classList.remove('is-hovering'); growRing(46, 46); });
+            });
+
+            document.addEventListener('mousedown', function () { pressed = true; });
+            document.addEventListener('mouseup', function () { pressed = false; });
+        }
+        if (document.readyState !== 'loading') { initAuthCursor(); }
+        else { window.addEventListener('DOMContentLoaded', initAuthCursor); }
+    })();
     </script>
 </body>
 </html>
