@@ -809,5 +809,12 @@
         </script>
     @endif
 
+    {{-- Redundant (and visually competing) on the real Chat page itself —
+         a floating "ask the assistant" bubble sitting on top of the actual
+         conversation the admin is already looking at. --}}
+    @unless (request()->routeIs('admin.chat.index') || request()->routeIs('admin.chat.show'))
+        @include('partials.admin-assistant-widget')
+    @endunless
+
 </body>
 </html>

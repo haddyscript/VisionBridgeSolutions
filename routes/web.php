@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
+use App\Http\Controllers\Admin\AssistantController as AdminAssistantController;
 use App\Http\Controllers\Admin\CalendarController as AdminCalendarController;
 use App\Http\Controllers\Admin\ChatController as AdminChatController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
@@ -302,6 +303,12 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
 
     // ─── Dashboard ───────────────────────────────────────────────────────────
     Route::get('/', AdminDashboardController::class)->name('dashboard');
+
+    // ─── Assistant ───────────────────────────────────────────────────────────
+    // A helper tool for the whole team, not a permission-gated section — same
+    // reasoning as the announcements dismiss/history routes below.
+    Route::get('/assistant', [AdminAssistantController::class, 'show'])->name('assistant.show')->withoutMiddleware('admin-page-access');
+    Route::post('/assistant', [AdminAssistantController::class, 'send'])->name('assistant.send')->withoutMiddleware('admin-page-access');
 
     // ─── Announcements ───────────────────────────────────────────────────────
     Route::get('/announcements', [AdminAnnouncementController::class, 'index'])->name('announcements.index');
