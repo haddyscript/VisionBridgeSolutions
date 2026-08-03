@@ -307,7 +307,6 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     // ─── Assistant ───────────────────────────────────────────────────────────
     // A helper tool for the whole team, not a permission-gated section — same
     // reasoning as the announcements dismiss/history routes below.
-    Route::get('/assistant', [AdminAssistantController::class, 'show'])->name('assistant.show')->withoutMiddleware('admin-page-access');
     Route::post('/assistant', [AdminAssistantController::class, 'send'])->name('assistant.send')->withoutMiddleware('admin-page-access');
 
     // ─── Announcements ───────────────────────────────────────────────────────

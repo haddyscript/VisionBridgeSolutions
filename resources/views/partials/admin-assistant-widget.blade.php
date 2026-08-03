@@ -54,7 +54,10 @@
         const sendBtn = document.getElementById('admin-assistant-send');
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-        let historyLoaded = false;
+        // Conversation isn't persisted server-side — the browser holds it
+        // for this page's lifetime and resends it with each message so the
+        // assistant keeps context.
+        let history = [];
 
         function escapeHtml(text) {
             const div = document.createElement('div');
@@ -117,21 +120,6 @@
             document.getElementById('admin-assistant-typing')?.remove();
         }
 
-        function loadHistory() {
-            if (historyLoaded) return;
-            historyLoaded = true;
-
-            fetch('{{ route('admin.assistant.show') }}', {
-                headers: { 'Accept': 'application/json' },
-            })
-                .then(function (response) { return response.json(); })
-                .then(function (data) {
-                    data.messages.forEach(function (message) {
-                        appendMessage(message.role, message.content);
-                    });
-                });
-        }
-
         toggle.addEventListener('click', function () {
             const isHidden = panel.classList.contains('hidden');
             panel.classList.toggle('hidden');
@@ -139,7 +127,6 @@
             iconClose.classList.toggle('hidden', !isHidden);
 
             if (isHidden) {
-                loadHistory();
                 setTimeout(function () { input.focus(); }, 50);
             }
         });
@@ -174,7 +161,7 @@
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': csrfToken,
                 },
-                body: JSON.stringify({ message: question }),
+                body: JSON.stringify({ message: question, history: history }),
             })
                 .then(function (response) {
                     if (!response.ok) {
@@ -187,6 +174,8 @@
                 .then(function (data) {
                     removeTyping();
                     typeOutMessage(data.reply);
+                    history.push({ role: 'user', content: question });
+                    history.push({ role: 'assistant', content: data.reply });
                 })
                 .catch(function (error) {
                     removeTyping();

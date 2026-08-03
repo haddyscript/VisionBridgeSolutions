@@ -2,63 +2,65 @@
 
 namespace App\Services;
 
-use App\Models\AssistantConversation;
-use App\Models\AssistantMessage;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
 /**
  * Internal counterpart to App\Services\AssistantService (the Client Portal
- * assistant): same conversation storage and Gemini call, but the knowledge
- * base is FEATURES.md (what the whole app does) instead of the client-facing
- * spec, there are no per-account facts to inject (the user IS the team), and
- * there's no escalation step since an admin can't escalate to themselves.
+ * assistant): same Gemini call, but the knowledge base is FEATURES.md (what
+ * the whole app does) instead of the client-facing spec, there are no
+ * per-account facts to inject (the user IS the team), and there's no
+ * escalation step since an admin can't escalate to themselves.
+ *
+ * Unlike the Client Portal assistant, conversations are never written to the
+ * database — the browser holds the transcript for the page's lifetime and
+ * resends it with each message. Only a same-day message count is kept (in
+ * cache, not a table) so the daily rate limit still works.
  */
 class AdminAssistantService
 {
-    public function conversationFor(User $user): AssistantConversation
-    {
-        return AssistantConversation::firstOrCreate(['user_id' => $user->id]);
-    }
-
     public function remainingMessagesToday(User $user): int
     {
-        $sentToday = AssistantMessage::query()
-            ->where('role', 'user')
-            ->whereHas('conversation', fn ($q) => $q->where('user_id', $user->id))
-            ->where('created_at', '>=', now()->startOfDay())
-            ->count();
+        $sentToday = Cache::get($this->dailyCountCacheKey($user), 0);
 
         return max(0, (int) config('services.gemini.daily_message_limit') - $sentToday);
     }
 
-    public function reply(User $user, string $question): AssistantMessage
+    /**
+     * @param  array<int, array{role: string, content: string}>  $history  Prior turns of this conversation, as held by the browser.
+     */
+    public function reply(User $user, string $question, array $history = []): string
     {
         if ($this->remainingMessagesToday($user) <= 0) {
             abort(429, "You've reached today's message limit for the assistant. Please try again tomorrow.");
         }
 
-        $conversation = $this->conversationFor($user);
-        $conversation->messages()->create(['role' => 'user', 'content' => $question]);
-
-        // Gemini uses "model" where our own schema (and the rest of the app)
-        // says "assistant" — translate only at this API boundary, not in the
-        // database, so the stored role stays provider-agnostic.
-        $contents = $conversation->messages()
-            ->get()
-            ->map(fn (AssistantMessage $message) => [
-                'role' => $message->role === 'assistant' ? 'model' : 'user',
-                'parts' => [['text' => $message->content]],
+        // Gemini uses "model" where our own convention says "assistant" —
+        // translate only at this API boundary.
+        $contents = collect($history)
+            ->push(['role' => 'user', 'content' => $question])
+            ->map(fn (array $message) => [
+                'role' => $message['role'] === 'assistant' ? 'model' : 'user',
+                'parts' => [['text' => $message['content']]],
             ])
             ->toArray();
 
         $text = $this->generateContent($contents, $this->systemPrompt($user));
 
-        $assistantMessage = $conversation->messages()->create(['role' => 'assistant', 'content' => $text]);
-        $conversation->update(['last_message_at' => now()]);
+        Cache::put(
+            $this->dailyCountCacheKey($user),
+            Cache::get($this->dailyCountCacheKey($user), 0) + 1,
+            now()->endOfDay()
+        );
 
-        return $assistantMessage;
+        return $text;
+    }
+
+    private function dailyCountCacheKey(User $user): string
+    {
+        return "admin-assistant:daily-count:{$user->id}:".now()->toDateString();
     }
 
     /**
