@@ -36,93 +36,14 @@
             <button type="button" data-status-tab="{{ $key }}" class="submission-tab px-3 py-1.5 rounded-md text-xs font-semibold transition-colors">{{ $label }}</button>
         @endforeach
     </div>
-    <button type="button" onclick="openNewIntakeModal()"
+    <a href="{{ route('admin.intake-submissions.create') }}"
         class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-gold hover:bg-gold-dark text-navy text-sm font-semibold rounded-lg transition-colors shrink-0">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
         </svg>
         New Intake
-    </button>
+    </a>
 </div>
-
-{{-- New Intake Modal --}}
-<div id="new-intake-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 hidden">
-    <div class="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-
-        <div class="px-6 pt-6 pb-5" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
-            <button type="button" onclick="closeNewIntakeModal()" class="absolute top-4 right-4 text-white/40 hover:text-white transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-            <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Admin</p>
-            <h2 class="font-display text-xl font-bold text-white">Log a New Intake</h2>
-        </div>
-
-        <form method="POST" action="{{ route('admin.intake-submissions.store') }}" class="px-6 py-6 space-y-4">
-            @csrf
-
-            <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Organization Name</label>
-                <input type="text" name="organization_name" required
-                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
-            </div>
-            <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Organization Type <span class="text-gray-400">(optional)</span></label>
-                <input type="text" name="organization_type" placeholder="Church, Nonprofit, Small Business…"
-                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
-            </div>
-            <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Contact Name</label>
-                <input type="text" name="contact_name" required
-                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
-            </div>
-            <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Contact Email</label>
-                <input type="email" name="contact_email" required
-                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
-            </div>
-            <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Contact Phone <span class="text-gray-400">(optional)</span></label>
-                <input type="tel" name="contact_phone" placeholder="(000) 000-0000"
-                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
-            </div>
-            <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Notes <span class="text-gray-400">(optional)</span></label>
-                <textarea name="website_requirements" rows="3" placeholder="What did they ask for? Anything from the call worth logging."
-                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white"></textarea>
-            </div>
-            <p class="text-xs text-gray-500 dark:text-gray-400">
-                For a lead that came in some other way (a call, a meeting) rather than through the public "Get Started" form. Shows up in this same inbox — no confirmation email is sent, since the client didn't submit this themselves.
-            </p>
-
-            <div class="flex justify-end gap-3 pt-2">
-                <button type="button" onclick="closeNewIntakeModal()"
-                    class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                    Cancel
-                </button>
-                <button type="submit"
-                    class="px-5 py-2 rounded-lg bg-gold hover:bg-gold-dark text-navy text-sm font-semibold transition-colors">
-                    Log Intake
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-    function openNewIntakeModal() {
-        document.getElementById('new-intake-modal').classList.remove('hidden');
-    }
-
-    function closeNewIntakeModal() {
-        document.getElementById('new-intake-modal').classList.add('hidden');
-    }
-
-    document.getElementById('new-intake-modal').addEventListener('click', function (e) {
-        if (e.target === this) closeNewIntakeModal();
-    });
-</script>
 
 @if ($submissions->isEmpty())
     <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">

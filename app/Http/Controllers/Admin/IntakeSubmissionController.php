@@ -15,6 +15,28 @@ use Illuminate\Support\Str;
 
 class IntakeSubmissionController extends Controller
 {
+    // Kept identical to the public form's own lists (IntakeController /
+    // intake.create.blade.php) so an admin-logged intake is indistinguishable
+    // from one the client submitted themselves — same options, same order.
+    public const ORGANIZATION_TYPES = ['Church', 'Ministry', 'Nonprofit', 'Small Business', 'Entrepreneur', 'Other'];
+
+    public const SERVICES = [
+        'Custom Website Development', 'Landing Page Development', 'Church Website Development',
+        'Ministry Website Development', 'Nonprofit Website Development', 'Small Business Website Development',
+        'Website Redesign Services', 'Website Care Services', 'Hosting Management', 'Website Consulting',
+    ];
+
+    public const SOCIAL_LINKS = [
+        'website' => 'Current Website', 'facebook' => 'Facebook', 'instagram' => 'Instagram',
+        'twitter' => 'Twitter / X', 'linkedin' => 'LinkedIn', 'youtube' => 'YouTube', 'tiktok' => 'TikTok',
+    ];
+
+    private const FILE_FIELDS = [
+        'photos' => 'photo',
+        'videos' => 'video',
+        'logos' => 'logo',
+    ];
+
     public function index()
     {
         $submissions = IntakeSubmission::withCount('files')->latest()->paginate(15)->withQueryString();
@@ -28,25 +50,76 @@ class IntakeSubmissionController extends Controller
      * Admin "log a lead" — for a prospect that came in some other way (a
      * phone call, an in-person meeting, a consultation that hasn't gone
      * through the public intake form) rather than requiring the client to
-     * fill out /get-started themselves. Same underlying record and review
-     * flow as a public submission (shows up in this same inbox, converts to
-     * a client the same way via convert()) — just created directly by an
-     * admin instead. No confirmation/notification emails fire here, unlike
-     * IntakeController::store() — the admin creating it already knows about
-     * it, and nothing has actually been "submitted" by the client to confirm.
+     * fill out /get-started themselves.
+     */
+    public function create()
+    {
+        return view('admin.intake-submissions.create', [
+            'organizationTypes' => self::ORGANIZATION_TYPES,
+            'services' => self::SERVICES,
+            'socialLinks' => self::SOCIAL_LINKS,
+        ]);
+    }
+
+    /**
+     * Same fields, same validation, and the same file-upload handling as the
+     * public IntakeController::store() — deliberately kept in lockstep so an
+     * admin-logged intake is a full substitute for the client filling out
+     * /get-started themselves, not a stripped-down version. Same underlying
+     * record and review flow too (shows up in this same inbox, converts to a
+     * client the same way via convert()). The one difference: no
+     * confirmation/notification emails fire here — the admin creating it
+     * already knows about it, and nothing has actually been "submitted" by
+     * the client to confirm.
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'organization_name' => ['required', 'string', 'max:255'],
             'organization_type' => ['nullable', 'string', 'max:100'],
+            'mission_statement' => ['nullable', 'string', 'max:3000'],
+            'vision_statement' => ['nullable', 'string', 'max:3000'],
             'contact_name' => ['required', 'string', 'max:255'],
             'contact_email' => ['required', 'email', 'max:255'],
             'contact_phone' => ['nullable', 'string', 'max:50'],
+            'services' => ['nullable', 'array'],
+            'services.*' => ['string'],
             'website_requirements' => ['nullable', 'string', 'max:5000'],
+            'social_links' => ['nullable', 'array'],
+            'social_links.*' => ['nullable', 'string', 'max:255'],
+            'photos' => ['nullable', 'array'],
+            'photos.*' => ['file', 'image', 'max:10240'],
+            'videos' => ['nullable', 'array'],
+            'videos.*' => ['file', 'mimetypes:video/mp4,video/quicktime,video/webm,video/x-msvideo', 'max:51200'],
+            'logos' => ['nullable', 'array'],
+            'logos.*' => ['file', 'image', 'max:10240'],
         ]);
 
-        $submission = IntakeSubmission::create($validated);
+        $submission = IntakeSubmission::create([
+            'organization_name' => $validated['organization_name'],
+            'organization_type' => $validated['organization_type'] ?? null,
+            'mission_statement' => $validated['mission_statement'] ?? null,
+            'vision_statement' => $validated['vision_statement'] ?? null,
+            'contact_name' => $validated['contact_name'],
+            'contact_email' => $validated['contact_email'],
+            'contact_phone' => $validated['contact_phone'] ?? null,
+            'services' => array_values($validated['services'] ?? []),
+            'website_requirements' => $validated['website_requirements'] ?? null,
+            'social_links' => array_filter($validated['social_links'] ?? []),
+        ]);
+
+        foreach (self::FILE_FIELDS as $field => $category) {
+            foreach ($request->file($field, []) as $file) {
+                $path = $file->store("intake/{$submission->id}/{$category}", 'client_uploads');
+
+                $submission->files()->create([
+                    'category' => $category,
+                    'original_name' => $file->getClientOriginalName(),
+                    'path' => $path,
+                    'size' => $file->getSize(),
+                ]);
+            }
+        }
 
         return redirect()->route('admin.intake-submissions.show', $submission)
             ->with('status', 'Intake logged for '.$submission->contact_name.'.');
