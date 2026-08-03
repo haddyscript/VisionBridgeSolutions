@@ -420,12 +420,14 @@
             font-family: 'Orbitron', sans-serif;
             font-weight: 800;
             /* min(6vw, 8.5vh) — sized against whichever of width/height is
-               tighter, not just width. A wide-but-short laptop window (the
-               normal case at 100% zoom, not just extreme zoom) has plenty
-               of vw but not enough vh for 7 of these stacked at the old
-               vw-only size, which is what was forcing #desktop-menu's
-               overflow-y:auto fallback to kick in during ordinary use. */
-            font-size: clamp(2rem, min(6vw, 8.5vh), 5.4rem);
+               tighter, not just width, as a first pass. --menu-fit-scale
+               (1 by default) is the real guarantee: the open/close
+               controller script below measures the actual rendered content
+               against the actual available height every time the menu
+               opens or the window resizes, and sets this variable to
+               whatever factor is needed to make it fit exactly — no fixed
+               vh guess can account for every possible window size. */
+            font-size: calc(clamp(2rem, min(6vw, 8.5vh), 5.4rem) * var(--menu-fit-scale, 1));
             line-height: 1.04;
             letter-spacing: -0.01em;
             color: rgba(255,255,255,.92);
@@ -2541,7 +2543,7 @@
                  class="absolute inset-0 w-full h-full object-cover pointer-events-none"
                  style="opacity:0;mix-blend-mode:screen;">
             <div id="desktop-menu-glow" aria-hidden="true"></div>
-            <div class="relative min-h-full max-w-7xl mx-auto px-10 lg:px-16 py-10 flex flex-col">
+            <div id="desktop-menu-inner" class="relative min-h-full max-w-7xl mx-auto px-10 lg:px-16 py-10 flex flex-col">
                 <div class="flex items-start justify-between">
                     <div id="desktop-menu-brand">
                         <p id="desktop-menu-brand-name" class="font-display text-2xl font-bold text-white leading-tight mb-4">VisionBridge</p>
@@ -2893,6 +2895,43 @@
             });
         });
 
+        var inner = document.getElementById('desktop-menu-inner');
+        var navEl = document.getElementById('desktop-menu-nav');
+
+        // Guarantees the menu never needs to scroll (overflow-y:auto above
+        // is a last-resort net, not the expected path) by measuring the
+        // real rendered height against the real available height and
+        // shrinking --menu-fit-scale (used by .desktop-menu-link's
+        // font-size, see the <style> block above) by exactly the factor
+        // needed — a CSS vh/vw guess can't know the actual header/tagline
+        // height or the actual window size in advance, but this does.
+        function fitDesktopMenu() {
+            if (!inner || !navEl || !menu) return;
+
+            // Reset before measuring, or a previous shrink would make this
+            // page's content look like it already fits and never grow back
+            // when the window is enlarged again.
+            menu.style.setProperty('--menu-fit-scale', '1');
+
+            var navHeight = navEl.scrollHeight;
+            var fixedHeight = inner.scrollHeight - navHeight; // header + tagline + padding + flex gaps
+            var available = menu.clientHeight;
+            var scale = 1;
+
+            if (navHeight > 0 && (fixedHeight + navHeight) > available) {
+                // Only the links (navHeight) scale — header/tagline/padding
+                // don't, so this is solved for exactly that split rather
+                // than shrinking everything uniformly.
+                scale = (available - fixedHeight) / navHeight;
+                // Never shrink below a still-readable floor; an extremely
+                // short/zoomed window falls back to the overflow-y:auto
+                // scroll rather than links becoming illegible.
+                scale = Math.max(0.45, Math.min(1, scale));
+            }
+
+            menu.style.setProperty('--menu-fit-scale', String(scale));
+        }
+
         var isOpen = false;
         var animating = false;
 
@@ -2917,6 +2956,7 @@
             if (isOpen || animating) return;
 
             preloadGifBg(); // no-op if already loaded; covers opening before idle callback fires
+            fitDesktopMenu(); // before the entrance timeline below, so the slant-push math and resting positions use the real (possibly shrunk) link sizes
 
             isOpen = true;
             animating = true;
@@ -3027,9 +3067,13 @@
         // The button itself is hidden below md, so this can only ever be
         // opened on desktop — but if the window is resized down to mobile
         // while it's open, this still closes it rather than leaving body
-        // scroll locked with no visible way to close.
+        // scroll locked with no visible way to close. Otherwise (still
+        // desktop-width), re-fit instead — e.g. un/maximizing the window,
+        // or a shorter monitor, both change the available height this was
+        // originally fit against.
         window.addEventListener('resize', function () {
-            if (isOpen && window.innerWidth < 768) closeMenu();
+            if (isOpen && window.innerWidth < 768) { closeMenu(); return; }
+            if (isOpen) fitDesktopMenu();
         });
     })();
     </script>
