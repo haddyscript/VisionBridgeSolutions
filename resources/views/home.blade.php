@@ -1267,6 +1267,116 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 </section>{{-- /#story-overture --}}
 
 {{-- ============================================================
+     REDESIGN & RESCUE TEASER — promotes the "we fix existing
+     websites" service line to visitors who already have a site
+     and aren't happy with it, not just visitors starting from
+     scratch. Sits between the Story Overture and Spotlight (both
+     already dark), so it hands off with no seam, and links out to
+     the full website-redesign.blade.php page for the deep pitch.
+     Self-contained gsap.from() reveal (see script at the bottom of
+     this block) rather than hooking into the rest of this file's
+     orchestrated timelines, so it stays decoupled from their exact
+     selectors/sequencing.
+     ============================================================ --}}
+<style>
+    .redesign-teaser-card {
+        position: relative;
+        background: rgba(255,255,255,.03);
+        border: 1px solid rgba(255,255,255,.10);
+        padding: 22px 20px;
+        clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+        transition: border-color .3s ease, background .3s ease;
+    }
+    .redesign-teaser-card::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 18px; height: 18px;
+        background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
+        opacity: .9;
+        pointer-events: none;
+    }
+    .redesign-teaser-card:hover { border-color: rgba(201,168,76,.4); background: rgba(201,168,76,.05); }
+    .redesign-teaser-icon {
+        width: 36px; height: 36px;
+        display: flex; align-items: center; justify-content: center;
+        border: 1px solid rgba(201,168,76,.4);
+        color: #C9A84C;
+        flex-shrink: 0;
+    }
+    @media (max-width: 767px) {
+        .redesign-teaser-card { clip-path: none; border-radius: 14px; }
+        .redesign-teaser-card::before { display: none; }
+    }
+</style>
+<section id="redesign-teaser" class="py-24 relative overflow-hidden" style="background:linear-gradient(155deg,#0A0D11 0%,#171B21 40%,#0A0D11 72%,#15191F 100%);">
+    <div class="hero-orb" style="width:480px;height:480px;top:-130px;left:-110px;background:radial-gradient(circle,rgba(44,166,164,0.10) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 20s ease-in-out infinite;"></div>
+    <div class="hero-orb" style="width:420px;height:420px;bottom:-110px;right:-90px;background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,transparent 70%);filter:blur(55px);animation:orb-drift 24s ease-in-out infinite reverse 3s;"></div>
+
+    <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
+        <div class="text-center max-w-2xl mx-auto mb-14">
+            <div class="kicker-tag-dark inline-flex items-center text-xs font-semibold tracking-widest uppercase" data-redesign-teaser-reveal>
+                Already Have A Website?
+            </div>
+            <h2 class="font-display font-bold mt-6" style="font-size:clamp(2rem,4.4vw,3.2rem);line-height:1.12;color:#fff;" data-redesign-teaser-reveal>
+                We Don't Just Build New Sites.<br>We <span class="shimmer-gold">Rescue</span> The Ones You Already Have.
+            </h2>
+            <p class="mt-5 text-base sm:text-lg leading-relaxed" style="color:rgba(255,255,255,.62);" data-redesign-teaser-reveal>
+                Outdated design, no mobile support, or a host that never answers the phone — if your current website is holding you back, we'll fix it without making you start over.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" data-redesign-teaser-reveal>
+            @foreach ([
+                ['icon' => 'refresh', 'label' => 'Outdated Design'],
+                ['icon' => 'mobile',  'label' => 'Not Mobile-Friendly'],
+                ['icon' => 'chat',    'label' => 'No One To Call'],
+                ['icon' => 'bolt',    'label' => 'Slow To Load'],
+            ] as $painPoint)
+                <div class="redesign-teaser-card flex items-center gap-3">
+                    <div class="redesign-teaser-icon">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$painPoint['icon']] !!}</svg>
+                    </div>
+                    <span class="text-sm font-semibold" style="color:rgba(255,255,255,.85);">{{ $painPoint['label'] }}</span>
+                </div>
+            @endforeach
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mt-12" data-redesign-teaser-reveal>
+            <a href="{{ route('website-redesign') }}" class="hero-btn-primary">
+                <span class="hero-btn-fill" aria-hidden="true"></span>
+                <span class="hero-btn-content">
+                    See How We Rescue Websites
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </span>
+            </a>
+            <a href="{{ route('consultation.create') }}" class="hero-btn-secondary" style="background:transparent;border-color:rgba(255,255,255,.30);color:rgba(255,255,255,.90);">
+                <span class="hero-btn-fill" aria-hidden="true" style="background:rgba(255,255,255,.10);"></span>
+                <span class="hero-btn-content">Book A Free Consultation</span>
+            </a>
+        </div>
+    </div>
+</section>
+<script>
+(function () {
+    function initRedesignTeaserReveal() {
+        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') { setTimeout(initRedesignTeaserReveal, 80); return; }
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.utils.toArray('[data-redesign-teaser-reveal]').forEach(function (el) {
+            gsap.from(el, {
+                opacity: 0, y: 24, duration: 0.7, ease: 'power3.out',
+                scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' },
+            });
+        });
+    }
+    if (document.readyState !== 'loading') { initRedesignTeaserReveal(); }
+    else { window.addEventListener('DOMContentLoaded', initRedesignTeaserReveal); }
+})();
+</script>
+
+{{-- ============================================================
      MARKETING SPOTLIGHT SECTION — dark gallery frame for the
      printed promo poster (Johnny Davis Global Missions campaign).
      Dark navy backdrop makes the mostly-white poster pop, echoing
