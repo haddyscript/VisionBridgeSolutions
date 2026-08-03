@@ -40,7 +40,7 @@
 @else
     <div class="space-y-4">
         @foreach ($consultations as $consultation)
-            <div class="bg-white dark:bg-navy rounded-xl border p-6 {{ $consultation->isRead() ? 'border-gray-200 dark:border-gray-700' : 'border-gold/40 shadow-sm' }}" style="{{ $consultation->isRead() ? '' : 'background:linear-gradient(to right, rgba(201,168,76,0.05), #ffffff 12%);' }}">
+            <div class="{{ $consultation->isRead() ? 'bg-white dark:bg-navy' : 'bg-[linear-gradient(to_right,rgba(201,168,76,0.08),#ffffff_12%)] dark:bg-[linear-gradient(to_right,rgba(201,168,76,0.14),#1B2A4A_12%)]' }} rounded-xl border p-6 {{ $consultation->isRead() ? 'border-gray-200 dark:border-gray-700' : 'border-gold/40 shadow-sm' }}">
                 <div class="flex flex-wrap items-start justify-between gap-4 mb-3">
                     <div class="flex items-start gap-2.5">
                         @if (! $consultation->isRead())
