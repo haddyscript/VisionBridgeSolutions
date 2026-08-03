@@ -89,12 +89,16 @@
                         // Data-integrity flag: "done" but revisions still unresolved.
                         $progressInconsistent = $pct >= 100 && ($openRevisions > 0 || $overdueRevisions > 0);
                         $searchText = strtolower($project->user->name.' '.$project->user->email.' '.$project->name);
+                        $isNewClient = $project->user->created_at && $project->user->created_at->gt(now()->subDay());
                     @endphp
-                    <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-700/30"
+                    <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-700/30 {{ $isNewClient ? 'bg-gold/5 dark:bg-gold/10' : '' }}"
                         data-search="{{ $searchText }}" data-status="{{ $project->status }}">
                         <td class="px-5 py-3.5">
                             <p class="font-medium text-navy dark:text-white flex items-center gap-2">
                                 {{ $project->user->name }}
+                                @if ($isNewClient)
+                                    <span class="inline-flex items-center text-[0.65rem] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark ring-1 ring-gold/30" title="Joined {{ $project->user->created_at->diffForHumans() }}">New</span>
+                                @endif
                                 @if ($project->user->isOnline())
                                     <span class="inline-flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wide text-teal-dark">
                                         <span class="w-2 h-2 rounded-full bg-teal-dark" title="Online now"></span>
