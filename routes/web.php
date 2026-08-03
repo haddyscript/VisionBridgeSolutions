@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ChatController as AdminChatController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\ConsultationController as AdminConsultationController;
 use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
+use App\Http\Controllers\Admin\CronController as AdminCronController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DeveloperController as AdminDeveloperController;
 use App\Http\Controllers\Admin\EmailTemplateController as AdminEmailTemplateController;
@@ -466,6 +467,9 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
         Route::patch('/team/{user}/name', [AdminTeamController::class, 'updateName'])->name('team.name.update');
         Route::patch('/team/{user}/job-title', [AdminTeamController::class, 'updateJobTitle'])->name('team.job-title.update');
         Route::delete('/team/{user}', [AdminTeamController::class, 'destroy'])->name('team.destroy');
+
+        Route::get('/cron-jobs', [AdminCronController::class, 'index'])->name('cron-jobs.index');
+        Route::post('/cron-jobs/run', [AdminCronController::class, 'run'])->name('cron-jobs.run');
     });
 
     Route::middleware('owner')->group(function () {

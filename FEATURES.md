@@ -1566,3 +1566,8 @@ Attachments show up (as a download link with filename + size) everywhere the ann
 
 Access is gated by a new `FileDownloadController::announcementAttachment()` route — unlike every other file-serving route on this controller (which check ownership by `user_id`), an announcement has no single owner, so this checks `$attachment->announcement->isVisibleTo($user)` instead, the same audience (client/team/developer) rule the banner and history pages already use to decide who sees the announcement at all.
 
+## 99. Manual Cron Job Trigger Page (2026-08-03)
+
+New **Cron Jobs** page (`/admin/cron-jobs`, `Admin\CronController`) — super-admin only, same sensitivity level as Team management, since several of these touch real Stripe billing or suspend real client portal access. Lists all 7 of the app's artisan commands (the 5 already on the automatic schedule in `routes/console.php` — `payouts:verify`, `payouts:send-faithstack-reminder`, `projects:suspend-overdue`, `subscriptions:send-renewal-reminders`, `payments:retry-failed` — plus the 2 manual-only data-fix commands, `subscriptions:backfill-period-end` and `subscriptions:cancel-duplicates`) with a description and a **Run Now** button per job. Running one asks for confirmation first, then shows that command's console output inline via `Artisan::call()`/`Artisan::output()` — no page reload.
+
+The list of runnable commands (`CronController::JOBS`) is a fixed allow-list, not built from request input — the endpoint only ever executes one of those exact signatures, so this can't become arbitrary command execution.
