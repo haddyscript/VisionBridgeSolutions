@@ -342,18 +342,21 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-base font-bold text-navy mb-1">Photos</label>
-                            <input type="file" name="photos[]" accept="image/*" multiple
+                            <input type="file" id="intake-photos-input" name="photos[]" accept="image/*" multiple
                                    class="w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gold/15 file:text-navy file:font-semibold file:text-sm hover:file:bg-gold/25">
+                            <div id="intake-photos-preview" class="mt-2 flex flex-wrap gap-2"></div>
                         </div>
                         <div>
                             <label class="block text-base font-bold text-navy mb-1">Videos</label>
-                            <input type="file" name="videos[]" accept="video/*" multiple
+                            <input type="file" id="intake-videos-input" name="videos[]" accept="video/*" multiple
                                    class="w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gold/15 file:text-navy file:font-semibold file:text-sm hover:file:bg-gold/25">
+                            <div id="intake-videos-preview" class="mt-2 flex flex-wrap gap-2"></div>
                         </div>
                         <div>
                             <label class="block text-base font-bold text-navy mb-1">Logos</label>
-                            <input type="file" name="logos[]" accept="image/*" multiple
+                            <input type="file" id="intake-logos-input" name="logos[]" accept="image/*" multiple
                                    class="w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gold/15 file:text-navy file:font-semibold file:text-sm hover:file:bg-gold/25">
+                            <div id="intake-logos-preview" class="mt-2 flex flex-wrap gap-2"></div>
                         </div>
                     </div>
                 </div>
@@ -529,6 +532,86 @@
             field.focus();
         });
     });
+
+    // Photos/Videos/Logos preview — lets the client confirm the right files
+    // were picked before submitting: a real image thumbnail for photos/logos,
+    // a generic icon for videos (not worth loading video metadata just for a
+    // thumbnail), plus filename, size, and a remove button per file. Native
+    // file inputs replace the whole selection on every pick, so selections
+    // are accumulated here and re-synced into the input via DataTransfer —
+    // same technique as admin.project-requests._attachments-picker.
+    function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function bindMediaPreview(inputId, previewId, isImage) {
+        const input = document.getElementById(inputId);
+        const previewEl = document.getElementById(previewId);
+        if (!input || !previewEl) return;
+
+        let selectedFiles = [];
+
+        function syncInputFiles() {
+            const dt = new DataTransfer();
+            selectedFiles.forEach((file) => dt.items.add(file));
+            input.files = dt.files;
+        }
+
+        function render() {
+            previewEl.innerHTML = '';
+            selectedFiles.forEach((file, index) => {
+                const chip = document.createElement('div');
+                chip.className = 'flex items-center gap-2 rounded-lg bg-gray-50 border border-gray-200 px-2.5 py-1.5 text-xs text-gray-600';
+
+                const thumb = document.createElement('span');
+                thumb.className = 'shrink-0 w-8 h-8 rounded overflow-hidden bg-gold/15 text-gold-dark flex items-center justify-center';
+                if (isImage && file.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.className = 'w-full h-full object-cover';
+                    thumb.appendChild(img);
+                } else {
+                    thumb.innerHTML = isImage
+                        ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>'
+                        : '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                }
+
+                const name = document.createElement('span');
+                name.className = 'truncate max-w-[140px]';
+                name.textContent = file.name;
+
+                const size = document.createElement('span');
+                size.className = 'text-gray-400 shrink-0';
+                size.textContent = formatFileSize(file.size);
+
+                const remove = document.createElement('button');
+                remove.type = 'button';
+                remove.className = 'text-gray-400 hover:text-red-500 transition-colors shrink-0';
+                remove.title = 'Remove';
+                remove.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
+                remove.addEventListener('click', () => {
+                    selectedFiles.splice(index, 1);
+                    syncInputFiles();
+                    render();
+                });
+
+                chip.append(thumb, name, size, remove);
+                previewEl.appendChild(chip);
+            });
+        }
+
+        input.addEventListener('change', () => {
+            selectedFiles = selectedFiles.concat(Array.from(input.files));
+            syncInputFiles();
+            render();
+        });
+    }
+
+    bindMediaPreview('intake-photos-input', 'intake-photos-preview', true);
+    bindMediaPreview('intake-videos-input', 'intake-videos-preview', false);
+    bindMediaPreview('intake-logos-input', 'intake-logos-preview', true);
 
     // Organization Type — custom-styled dropdown instead of a native <select>,
     // whose browser-drawn option list can't be restyled to match the page.
