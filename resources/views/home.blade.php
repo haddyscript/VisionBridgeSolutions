@@ -1315,7 +1315,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
     <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
         <div class="text-center max-w-2xl mx-auto mb-14">
-            <div class="kicker-tag-dark inline-flex items-center text-xs font-semibold tracking-widest uppercase" data-redesign-teaser-reveal>
+            <div class="kicker-tag-dark inline-flex items-center text-xs font-semibold tracking-widest uppercase" style="color:rgba(255,255,255,.85);" data-redesign-teaser-reveal>
                 Already Have A Website?
             </div>
             <h2 class="font-display font-bold mt-6" style="font-size:clamp(2rem,4.4vw,3.2rem);line-height:1.12;color:#fff;" data-redesign-teaser-reveal>
