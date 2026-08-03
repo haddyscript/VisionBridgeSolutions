@@ -2353,6 +2353,15 @@
                  as before. Desktop only (hidden md:flex) — mobile keeps its
                  own separate #mobile-menu/#menu-btn, untouched. --}}
             <div class="hidden md:flex items-center gap-4">
+                <div id="nav-links" class="flex items-center">
+                    <a href="{{ route('website-redesign') }}" class="nav-link nav-link-3d opacity-0">
+                        <span class="nav-link-inner">
+                            <span class="nav-link-glass" aria-hidden="true"></span>
+                            <span class="nav-link-sweep" aria-hidden="true"></span>
+                            <span class="nav-link-label">See How We Rescue Websites</span>
+                        </span>
+                    </a>
+                </div>
                 <a id="nav-login" href="{{ route('login') }}" class="relative z-10 opacity-0 inline-flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
                     Login
@@ -2571,8 +2580,7 @@
                     <a href="{{ $homeAnchor }}#plans" class="desktop-menu-link"><span class="desktop-menu-link-num">04</span>Plans</a>
                     <a href="{{ $homeAnchor }}#portfolio" class="desktop-menu-link"><span class="desktop-menu-link-num">05</span>Portfolio</a>
                     <a href="{{ route('gallery') }}" class="desktop-menu-link"><span class="desktop-menu-link-num">06</span>Our Work</a>
-                    <a href="{{ route('website-redesign') }}" class="desktop-menu-link"><span class="desktop-menu-link-num">07</span>See How We Rescue Websites</a>
-                    <a href="{{ route('contact') }}" class="desktop-menu-link"><span class="desktop-menu-link-num">08</span>Contact</a>
+                    <a href="{{ route('contact') }}" class="desktop-menu-link"><span class="desktop-menu-link-num">07</span>Contact</a>
                 </nav>
 
                 <p id="desktop-menu-tagline" class="text-xs tracking-widest uppercase" style="color:rgba(201,168,76,0.7);">Building Websites. Expanding Reach.</p>
@@ -2790,10 +2798,10 @@
             const cursor   = document.getElementById('nav-cursor');
             const linkEls  = navLinks ? Array.from(navLinks.querySelectorAll('a')) : [];
 
-            // ── Entry: logo → Login/Get Started/menu button ──────────────
+            // ── Entry: logo → nav links/Login/Get Started/menu button ────
             gsap.timeline({ delay: 0.15 })
                 .fromTo(logo,               { opacity:0, y:-14 }, { opacity:1, y:0, duration:0.55, ease:'power3.out' })
-                .fromTo([login, cta, menuBtn], { opacity:0, y:-10 }, { opacity:1, y:0, duration:0.40, stagger:0.08, ease:'power2.out' }, '-=0.20');
+                .fromTo([...linkEls, login, cta, menuBtn], { opacity:0, y:-10 }, { opacity:1, y:0, duration:0.40, stagger:0.08, ease:'power2.out' }, '-=0.20');
 
             // ── Transparent → pill on scroll ────────────────────────────
             ScrollTrigger.create({
