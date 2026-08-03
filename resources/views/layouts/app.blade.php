@@ -363,6 +363,13 @@
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
+            /* At higher browser zoom the giant stacked links (see
+               .desktop-menu-link's clamp() below) can be taller than the
+               shrunk viewport. Without this, the overflow simply clips
+               outside this fixed inset:0 box with no way to reach it —
+               scrolling here lets it fall back to a normal scrollable
+               overlay instead of losing links off-screen. */
+            overflow-y: auto;
         }
         #desktop-menu.is-visible {
             opacity: 1;
@@ -2521,7 +2528,7 @@
                  class="absolute inset-0 w-full h-full object-cover pointer-events-none"
                  style="opacity:0;mix-blend-mode:screen;">
             <div id="desktop-menu-glow" aria-hidden="true"></div>
-            <div class="relative h-full max-w-7xl mx-auto px-10 lg:px-16 py-10 flex flex-col">
+            <div class="relative min-h-full max-w-7xl mx-auto px-10 lg:px-16 py-10 flex flex-col">
                 <div class="flex items-start justify-between">
                     <div id="desktop-menu-brand">
                         <p id="desktop-menu-brand-name" class="font-display text-2xl font-bold text-white leading-tight mb-4">VisionBridge</p>
