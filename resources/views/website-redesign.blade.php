@@ -237,9 +237,79 @@
         .rd-pain-card, .rd-step-card, .rd-faq-item { clip-path: none; border-radius: 16px; }
         .rd-pain-card::before, .rd-step-card::before, .rd-faq-item::before { display: none; }
     }
+
+    /* ── Custom "signal lock" cursor — same lag-stretch technique as
+         Home/Contact/the desktop full-screen menu (see contact.blade.php
+         for the original + its inline reasoning). Tracks the whole
+         document, not just this page's own content, so it also covers the
+         fixed nav's Login/Get Started buttons sitting outside #redesign-page
+         in the DOM — same reason contact.blade.php's cursor does the same. ── */
+    #redesign-cursor-dot, #redesign-cursor-ring {
+        position: fixed;
+        top: 0; left: 0;
+        pointer-events: none;
+        z-index: 200;
+        opacity: 0;
+        transform: translate(-50%, -50%);
+    }
+    #redesign-cursor-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: #C9A84C;
+        box-shadow: 0 0 10px rgba(201,168,76,.85);
+    }
+    /* Fixed large-px radius (not 50%) so this reads as a circle at the
+       default square size, and as a pill/card outline once the script
+       below grows/morphs it — border-radius just clamps to the tightest
+       curve the current box shape allows either way. */
+    #redesign-cursor-ring {
+        width: 46px; height: 46px;
+        border-radius: 999px;
+        border: 1.5px solid rgba(201,168,76,.55);
+        transition: border-color .3s ease, background-color .3s ease;
+    }
+    #redesign-cursor-dot.is-visible, #redesign-cursor-ring.is-visible { opacity: 1; }
+    #redesign-cursor-ring.is-hovering {
+        background: rgba(201,168,76,.12);
+        border-color: rgba(201,168,76,.85);
+    }
+    html.has-redesign-cursor, html.has-redesign-cursor a, html.has-redesign-cursor button {
+        cursor: none;
+    }
+    @media (hover: none), (pointer: coarse) {
+        #redesign-cursor-dot, #redesign-cursor-ring { display: none; }
+    }
+
+    /* ── Text "zoom" under the cursor — short, isolated text only (kicker
+         tags, headline accent word, card titles, FAQ questions), same rule
+         Contact follows: a wrapped paragraph doesn't get this since scaling
+         it that far starts misaligning its own wrapped lines. ── */
+    .rd-tag, .rd-tag-light,
+    .rd-headline .accent,
+    .rd-pain-title, .rd-step-title,
+    .rd-faq-question-text {
+        display: inline-block;
+        transition: transform .65s cubic-bezier(.16,1,.3,1);
+        transform-origin: left center;
+    }
+    .rd-tag:hover, .rd-tag-light:hover,
+    .rd-headline .accent:hover,
+    .rd-pain-title:hover, .rd-step-title:hover,
+    .rd-faq-question-text:hover {
+        transform: scale(1.2);
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .rd-tag, .rd-tag-light, .rd-headline .accent,
+        .rd-pain-title, .rd-step-title, .rd-faq-question-text {
+            transition: none;
+        }
+    }
 </style>
 
 <div id="redesign-page">
+
+    <div id="redesign-cursor-dot" aria-hidden="true"></div>
+    <div id="redesign-cursor-ring" aria-hidden="true"></div>
 
     {{-- ── Hero ── --}}
     <section id="redesign-hero">
@@ -285,7 +355,7 @@
                         <div class="rd-pain-icon">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$point['icon']] !!}</svg>
                         </div>
-                        <p class="text-base font-bold mb-2" style="color:#fff;">{{ $point['title'] }}</p>
+                        <p class="rd-pain-title text-base font-bold mb-2" style="color:#fff;">{{ $point['title'] }}</p>
                         <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,.58);">{{ $point['desc'] }}</p>
                     </div>
                 @endforeach
@@ -309,7 +379,7 @@
                         <div class="rd-step-icon">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$step['icon']] !!}</svg>
                         </div>
-                        <p class="text-base font-bold mb-2" style="color:#15202C;">{{ $step['title'] }}</p>
+                        <p class="rd-step-title text-base font-bold mb-2" style="color:#15202C;">{{ $step['title'] }}</p>
                         <p class="text-sm leading-relaxed" style="color:rgba(21,32,44,.62);">{{ $step['desc'] }}</p>
                     </div>
                 @endforeach
@@ -395,6 +465,168 @@
     }
     if (document.readyState !== 'loading') { initRedesignReveal(); }
     else { window.addEventListener('DOMContentLoaded', initRedesignReveal); }
+})();
+</script>
+
+{{-- Custom "signal lock" cursor — dot snaps to the pointer instantly, the
+     ring eases behind it with a lag-proportional stretch, and morphs into a
+     pill/rounded outline over clickable elements. Same technique and same
+     guards (bail out over the footer/desktop-menu's own separate cursors)
+     as contact.blade.php's cursor — see that file for the fuller inline
+     reasoning behind each piece. Desktop/fine-pointer only; native cursor
+     stays untouched until this confirms it can actually run. --}}
+<script>
+(function () {
+    function initRedesignCursor() {
+        if (typeof gsap === 'undefined') { setTimeout(initRedesignCursor, 80); return; }
+
+        var dot = document.getElementById('redesign-cursor-dot');
+        var ring = document.getElementById('redesign-cursor-ring');
+        if (!dot || !ring) return;
+        if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        var footer = document.getElementById('site-footer');
+        var desktopMenu = document.getElementById('desktop-menu');
+
+        var moveDotX = gsap.quickTo(dot, 'x', { duration: 0.05, ease: 'power3.out' });
+        var moveDotY = gsap.quickTo(dot, 'y', { duration: 0.05, ease: 'power3.out' });
+
+        var mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+        var ringReady = false, pressed = false, hovering = false, visible = false;
+
+        function hide() {
+            if (!visible) return;
+            visible = false;
+            document.documentElement.classList.remove('has-redesign-cursor');
+            dot.classList.remove('is-visible');
+            ring.classList.remove('is-visible');
+        }
+
+        document.addEventListener('mousemove', function (e) {
+            if ((footer && e.target.closest && e.target.closest('#site-footer')) ||
+                (desktopMenu && desktopMenu.classList.contains('is-visible'))) {
+                hide();
+                return;
+            }
+
+            mouseX = e.clientX; mouseY = e.clientY;
+            moveDotX(mouseX); moveDotY(mouseY);
+            if (!ringReady) { ringX = mouseX; ringY = mouseY; ringReady = true; }
+            if (!visible) {
+                visible = true;
+                document.documentElement.classList.add('has-redesign-cursor');
+                dot.classList.add('is-visible');
+                ring.classList.add('is-visible');
+            }
+        });
+
+        document.addEventListener('mouseleave', hide);
+
+        var morphedEl = null;
+
+        gsap.ticker.add(function () {
+            if (!visible || morphedEl) return;
+            ringX += (mouseX - ringX) * 0.1;
+            ringY += (mouseY - ringY) * 0.1;
+            var dist = Math.hypot(mouseX - ringX, mouseY - ringY);
+            var stretch = pressed ? 0.8 : gsap.utils.clamp(1, 1.7, 1 + dist / 130);
+            gsap.set(ring, { x: ringX, y: ringY, scale: hovering ? 1 : stretch });
+        });
+
+        function growRing(w, h) {
+            gsap.to(ring, { width: w, height: h, duration: 0.35, ease: 'power3.out', overwrite: 'auto' });
+        }
+
+        function morphTo(el, opts) {
+            hovering = true;
+            morphedEl = el;
+            ring.classList.add('is-hovering');
+            var r = el.getBoundingClientRect();
+            var padX = opts.padX || 0, padY = opts.padY || 0;
+            var tween = {
+                x: r.left + r.width / 2,
+                y: r.top + r.height / 2,
+                width: r.width + padX * 2,
+                height: r.height + padY * 2,
+                scale: 1,
+                duration: 0.45,
+                ease: 'power3.out',
+                overwrite: 'auto',
+            };
+            if (opts.borderRadius) tween.borderRadius = opts.borderRadius;
+            gsap.to(ring, tween);
+        }
+
+        function unmorph() {
+            hovering = false;
+            morphedEl = null;
+            ring.classList.remove('is-hovering');
+            ringX = mouseX; ringY = mouseY;
+            gsap.to(ring, {
+                width: 46, height: 46, borderRadius: 999,
+                duration: 0.3, ease: 'power2.out', overwrite: 'auto',
+                clearProps: 'borderRadius',
+            });
+        }
+
+        // Primary CTAs get the plain pill morph — the ring's own default
+        // border-radius:999px already reads as one.
+        var pillMorphEls = document.querySelectorAll('#redesign-page .hero-btn-primary, #redesign-page .hero-btn-secondary');
+        // Kicker tags — squared-off bracket badges, not circles/pills.
+        var squareMorphEls = document.querySelectorAll('#redesign-page .rd-tag, #redesign-page .rd-tag-light');
+        // Pain-point + process-step cards get a gentler radius matching
+        // their own corner-cut shape instead of a full pill.
+        var cardMorphEls = document.querySelectorAll('#redesign-page .rd-pain-card, #redesign-page .rd-step-card');
+        // FAQ rows — the button already spans the full clickable row width.
+        var faqMorphEls = document.querySelectorAll('#redesign-page .rd-faq-question-btn');
+        // Nav Login/Get Started — outside #redesign-page, small corner-cut
+        // rects (layouts/app.blade.php), so they get the same gentle-radius
+        // hug as the cards rather than the full pill treatment.
+        var navFieldMorphEls = [document.getElementById('nav-login'), document.getElementById('nav-cta')].filter(Boolean);
+
+        var morphedSet = new Set();
+        pillMorphEls.forEach(function (el) {
+            morphedSet.add(el);
+            el.addEventListener('mouseenter', function () { morphTo(el, { padX: 10, padY: 6 }); });
+            el.addEventListener('mouseleave', unmorph);
+        });
+        squareMorphEls.forEach(function (el) {
+            morphedSet.add(el);
+            el.addEventListener('mouseenter', function () { morphTo(el, { padX: 2, padY: 2, borderRadius: 2 }); });
+            el.addEventListener('mouseleave', unmorph);
+        });
+        cardMorphEls.forEach(function (el) {
+            morphedSet.add(el);
+            el.addEventListener('mouseenter', function () { morphTo(el, { padX: 4, padY: 4, borderRadius: 18 }); });
+            el.addEventListener('mouseleave', unmorph);
+        });
+        faqMorphEls.forEach(function (el) {
+            morphedSet.add(el);
+            el.addEventListener('mouseenter', function () { morphTo(el, { padX: 0, padY: 0, borderRadius: 14 }); });
+            el.addEventListener('mouseleave', unmorph);
+        });
+        navFieldMorphEls.forEach(function (el) {
+            morphedSet.add(el);
+            el.addEventListener('mouseenter', function () { morphTo(el, { padX: 4, padY: 4, borderRadius: 8 }); });
+            el.addEventListener('mouseleave', unmorph);
+        });
+
+        // Everything else clickable gets the original simple circle-grow.
+        var interactiveEls = document.querySelectorAll('a, button, input, textarea, select');
+        interactiveEls.forEach(function (el) {
+            if (footer && footer.contains(el)) return;
+            if (desktopMenu && desktopMenu.contains(el)) return;
+            if (morphedSet.has(el)) return;
+            el.addEventListener('mouseenter', function () { hovering = true; ring.classList.add('is-hovering'); growRing(68, 68); });
+            el.addEventListener('mouseleave', function () { hovering = false; ring.classList.remove('is-hovering'); growRing(46, 46); });
+        });
+
+        document.addEventListener('mousedown', function () { pressed = true; });
+        document.addEventListener('mouseup', function () { pressed = false; });
+    }
+    if (document.readyState !== 'loading') { initRedesignCursor(); }
+    else { window.addEventListener('DOMContentLoaded', initRedesignCursor); }
 })();
 </script>
 

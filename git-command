@@ -1,0 +1,7 @@
+give me the git command after the code changes, I will paste it directly in terminal, use this format;
+Note: no need to run git status
+
+-  git add .
+- git commit -m ""
+- git push origin main
+
