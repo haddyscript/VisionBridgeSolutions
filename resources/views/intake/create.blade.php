@@ -327,11 +327,12 @@
                     <p class="text-sm text-gray-600 mb-1.5">Pages you need, key features, deadlines, or anything else relevant to your project.</p>
                     <textarea name="website_requirements" rows="4" placeholder="e.g. We need a Home, About, Events, and Donate page. We'd like online giving and an events calendar. Hoping to launch by end of next month."
                               class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('website_requirements') }}</textarea>
-                    <div class="mt-2 flex flex-wrap gap-2">
-                        <button type="button" class="example-chip text-xs font-medium text-gold-dark bg-gold/10 hover:bg-gold/20 px-3 py-1.5 rounded-full transition-colors"
-                                data-target="website_requirements" data-text="We need a Home, About, Events, and Donate page. We'd like online giving and an events calendar. Hoping to launch by end of next month.">Example: Church/Nonprofit</button>
-                        <button type="button" class="example-chip text-xs font-medium text-gold-dark bg-gold/10 hover:bg-gold/20 px-3 py-1.5 rounded-full transition-colors"
-                                data-target="website_requirements" data-text="We need a Home, Services, Pricing, and Contact page, plus an online store to sell our products. Hoping to launch within 6 weeks.">Example: Business</button>
+                    <div class="mt-2">
+                        <button type="button" class="ai-suggest-btn inline-flex items-center gap-1.5 text-xs font-medium text-gold-dark bg-gold/10 hover:bg-gold/20 px-3 py-1.5 rounded-full transition-colors"
+                                data-target="website_requirements" data-pool="requirements">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                            AI Suggestion
+                        </button>
                     </div>
                 </div>
 
@@ -467,6 +468,33 @@
             "We envision a future where every family in our community knows exactly where to turn in a moment of need. Every relationship we build today becomes part of a wider safety net for tomorrow. We see local churches, schools, and businesses working together as a single, connected support system. Our long-term goal is a community where asking for help is met with dignity, not judgment. We want our neighborhood to be known for how it takes care of its own.",
             "We envision a future where every nonprofit and ministry we work with can tell their story with clarity and confidence. Every campaign we help launch today builds long-term capacity, not just a single moment of attention. We see communications becoming a genuine strength for the organizations we serve, not an afterthought. Our long-term goal is measurable growth in the causes we support, not just impressions or clicks. We want our work to be judged by the good it enabled, not the awards it won.",
             "We envision a future where our business is trusted across generations of the same families we've served. Every job done right today is an investment in decades of future relationships. We see our reputation becoming self-sustaining, carried forward by word of mouth alone. Our long-term goal is to train a team that will carry this same standard long after we've stepped back. We want our legacy to be simple: we did what we said we would, every time.",
+        ],
+        requirements: [
+            "We need a Home, About, Events, and Donate page. We'd like online giving and an events calendar. Hoping to launch by end of next month.",
+            "We need a Home, Services, Pricing, and Contact page, plus an online store to sell our products. Hoping to launch within 6 weeks.",
+            "We're looking for a Home, About, Sermons, and Giving page, with an embedded video player for past messages. No firm deadline yet.",
+            "We need a Home, Programs, Volunteer, and Donate page, along with a simple newsletter signup form. Hoping to launch before our next fundraising event.",
+            "We'd like a Home, Portfolio, Services, and Contact page with a booking form for consultations. Looking to launch within 8 weeks.",
+            "We need a Home, Menu, Location, and Order Online page, with integration for a third-party delivery service. Hoping to launch before the holiday season.",
+            "We're looking for a Home, About, Team, and Careers page, plus a simple contact form. No rush on timing.",
+            "We need a Home, Blog, Shop, and Contact page with the ability to sell digital downloads. Hoping to launch within 2 months.",
+            "We'd like a Home, About, Testimonials, and Book Now page with an online scheduling calendar. Hoping to launch within a month.",
+            "We need a Home, Ministries, Events, and Prayer Request page, with a way for visitors to submit requests privately. No firm deadline.",
+            "We're looking for a Home, About, Gallery, and Contact page to showcase our past projects. Hoping to launch within 6 weeks.",
+            "We need a Home, Services, FAQ, and Contact page, plus a live chat widget for quick questions. Looking to launch as soon as possible.",
+            "We'd like a Home, About, Impact, and Get Involved page, with a recurring donation option. Hoping to launch before year-end.",
+            "We need a Home, Classes, Instructors, and Sign Up page with an online registration system. Hoping to launch before our next session starts.",
+            "We're looking for a Home, About, Products, and Wholesale Inquiry page, plus a downloadable catalog. No firm deadline yet.",
+            "We need a Home, About, Locations, and Contact page with a store locator map. Hoping to launch within 6 weeks.",
+            "We'd like a Home, Services, Reviews, and Free Quote page with a simple estimate request form. Hoping to launch as soon as possible.",
+            "We need a Home, About, Small Groups, and Connect page, plus an option to sign up for a newsletter. No rush on timing.",
+            "We're looking for a Home, About, Case Studies, and Contact page to highlight client results. Hoping to launch within 2 months.",
+            "We need a Home, Membership, Schedule, and Sign Up page with online payment for monthly dues. Hoping to launch before next month.",
+            "We'd like a Home, About, Resources, and Contact page with downloadable guides for visitors. No firm deadline yet.",
+            "We need a Home, About, Board Members, and Annual Report page to build trust with donors. Hoping to launch before our next board meeting.",
+            "We're looking for a Home, Services, Before & After, and Contact page with a photo gallery. Hoping to launch within 6 weeks.",
+            "We need a Home, About, Upcoming Events, and RSVP page with a simple registration form. Hoping to launch before our next event.",
+            "We'd like a Home, About, Support, and Contact page with a way for clients to submit help requests. No rush on timing.",
         ],
     };
 
