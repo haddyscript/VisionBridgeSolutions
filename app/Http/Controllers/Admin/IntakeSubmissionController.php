@@ -155,13 +155,52 @@ class IntakeSubmissionController extends Controller
             'project_description' => ['nullable', 'string'],
         ]);
 
+        $linkedExistingAccount = false;
+
         try {
-            $project = DB::transaction(function () use ($validated, $intakeSubmission) {
+            $project = DB::transaction(function () use ($validated, $intakeSubmission, &$linkedExistingAccount) {
                 // Re-fetch with a row lock so two concurrent "Approve & Create Client"
                 // clicks on the same submission can't both pass the project_id check.
                 $locked = IntakeSubmission::lockForUpdate()->find($intakeSubmission->id);
 
                 abort_if($locked->project_id, 422, 'This submission has already been converted.');
+
+                // The contact email may already belong to a client account —
+                // e.g. one created via "+ Add Client" (no project attached
+                // yet) before this intake was ever logged, same scenario
+                // this admin-created-intake flow made newly common. Attach
+                // the new project to that existing account instead of trying
+                // (and failing, on the email-unique constraint) to create a
+                // duplicate one.
+                $existingUser = User::where('email', $locked->contact_email)->first();
+
+                if ($existingUser) {
+                    abort_if($existingUser->isAdmin(), 422, 'That email belongs to an admin/team account, not a client — check the contact email on this submission.');
+                    // Every portal page resolves "the" project via
+                    // ->projects()->first() — a second project here would
+                    // just be silently invisible, not a real multi-project
+                    // client, so this needs a deliberate manual decision
+                    // rather than happening automatically.
+                    abort_if(
+                        $existingUser->projects()->exists(),
+                        422,
+                        "{$existingUser->name} already has a project on file — this submission can't be auto-converted onto a second one. Handle it manually from the Clients page if that's really what's needed."
+                    );
+
+                    $project = $existingUser->projects()->create([
+                        'name' => $validated['project_name'],
+                        'description' => $validated['project_description'],
+                    ]);
+
+                    $locked->update([
+                        'status' => 'converted',
+                        'project_id' => $project->id,
+                    ]);
+
+                    $linkedExistingAccount = true;
+
+                    return $project;
+                }
 
                 $user = User::create([
                     'name' => $locked->contact_name,
@@ -193,8 +232,12 @@ class IntakeSubmissionController extends Controller
             throw $e;
         }
 
-        return redirect()->route('admin.projects.show', $project)
-            ->with('status', 'Client account and project created. A welcome email has been sent.');
+        return redirect()->route('admin.projects.show', $project)->with(
+            'status',
+            $linkedExistingAccount
+                ? 'Project created and linked to the existing account for this email — no new welcome email was sent, since the account already exists.'
+                : 'Client account and project created. A welcome email has been sent.'
+        );
     }
 
     public function resendWelcomeEmail(IntakeSubmission $intakeSubmission)
