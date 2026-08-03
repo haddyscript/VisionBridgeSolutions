@@ -4,11 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\PhasedPaymentPlanMail;
+use App\Mail\ProjectInProgressMail;
+use App\Mail\ProjectLaunchedMail;
 use App\Mail\ProjectQuoteReadyMail;
+use App\Mail\SystemAlertMail;
 use App\Models\ClientNotification;
 use App\Models\Project;
 use App\Models\SatisfactionSurvey;
 use App\Models\User;
+use App\Services\CarePlanActivator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -36,14 +40,25 @@ class ProjectController extends Controller
             'progress_override' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:100'],
             'total_price' => ['sometimes', 'nullable', 'numeric', 'min:1'],
             'discount_percent' => ['sometimes', 'nullable', 'numeric', 'min:0', 'max:100'],
+            'developer_id' => ['sometimes', 'nullable', 'exists:users,id'],
         ]);
 
         $settingPriceForFirstTime = array_key_exists('total_price', $validated)
             && $validated['total_price'] !== null
             && $project->total_price === null;
 
+        $startingProgress = ($validated['status'] ?? null) === 'in_progress' && $project->status !== 'in_progress';
         $startingReview = ($validated['status'] ?? null) === 'review' && $project->status !== 'review';
+        // "Mark Completed" in the admin UI — still stores 'launched' under the
+        // hood (every other status check in the app already keys off that
+        // value), just no longer set automatically. See Project::isEligibleForCompletion().
         $launching = ($validated['status'] ?? null) === 'launched' && $project->status !== 'launched';
+
+        abort_if(
+            $launching && ! $project->isEligibleForCompletion(),
+            422,
+            'This project cannot be marked Completed yet — the deposit, final payment, and client approval are all required first.'
+        );
 
         if (array_key_exists('total_price', $validated)) {
             $validated['total_price'] = $validated['total_price'] !== null
@@ -59,11 +74,47 @@ class ProjectController extends Controller
 
         $project->update($validated);
 
+        if ($startingProgress) {
+            dispatch(function () use ($project) {
+                Mail::to($project->user->email)->send(new ProjectInProgressMail($project));
+            })->afterResponse();
+        }
+
         if ($launching) {
             SatisfactionSurvey::firstOrCreate(
                 ['project_id' => $project->id],
                 ['user_id' => $project->user_id],
             );
+
+            // Care Plan billing only actually starts here — the payment
+            // method was already saved (no charge) during onboarding via
+            // Portal\CarePlanPaymentMethodController. Nothing to activate if
+            // that step never ran (e.g. an older project, or the client
+            // hasn't reached that step yet) or it's not still pending.
+            $subscription = $project->subscription;
+
+            if ($subscription && $subscription->isPending() && $subscription->stripe_payment_method_id) {
+                (new CarePlanActivator)->activate(
+                    $subscription,
+                    $project->user->getOrCreateStripeCustomerId(),
+                    $subscription->stripe_payment_method_id,
+                );
+            }
+
+            dispatch(function () use ($project, $subscription) {
+                Mail::to($project->user->email)->send(new ProjectLaunchedMail($project, $subscription));
+
+                $teamRecipients = array_unique(array_filter([config('mail.support_address'), $project->developer?->email]));
+
+                Mail::to($teamRecipients)->send(new SystemAlertMail(
+                    'Project Completed — '.$project->name,
+                    "{$project->user->name}'s project was marked Completed — paid in full, approved, and the Website Care Plan is now active.",
+                    [
+                        'Client' => $project->user->name,
+                        'Project' => $project->name,
+                    ],
+                ));
+            })->afterResponse();
         }
 
         // Quoting a price for the first time auto-creates the initial 50%

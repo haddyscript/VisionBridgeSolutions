@@ -6,7 +6,6 @@ use App\Mail\AdminPaymentNotificationMail;
 use App\Mail\FaithStackNewClientMail;
 use App\Mail\PaymentFailedMail;
 use App\Mail\PaymentReceiptMail;
-use App\Mail\ProjectLaunchedMail;
 use App\Mail\ProjectRestoredMail;
 use App\Mail\SubscriptionReceiptMail;
 use App\Mail\SubscriptionStatusAlertMail;
@@ -14,7 +13,6 @@ use App\Mail\SystemAlertMail;
 use App\Mail\WelcomeClientMail;
 use App\Models\PartnerPayout;
 use App\Models\Payment;
-use App\Models\SatisfactionSurvey;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -125,7 +123,7 @@ class StripeWebhookController extends Controller
 
             $this->notifyAdminOfPayment($payment);
             $this->logPartnerPayoutForPayment($payment);
-            $this->maybeAutoLaunchProject($payment);
+            $this->maybeAdvanceOnboardingAfterDeposit($payment);
         }
     }
 
@@ -164,48 +162,39 @@ class StripeWebhookController extends Controller
 
         $this->notifyAdminOfPayment($payment);
         $this->logPartnerPayoutForPayment($payment);
-        $this->maybeAutoLaunchProject($payment);
+        $this->maybeAdvanceOnboardingAfterDeposit($payment);
     }
 
     /**
-     * Once a project's final payment clears, it's launched automatically —
-     * but only if the deposit is also paid and the client actually approved
-     * (matches the boss's "paid in full + approved + funds cleared" criteria
-     * exactly; this only ever fires for the new 50/50 split workflow, since
-     * a 'final'-kind payment only exists there).
+     * Advances a client past the onboarding deposit gate the moment their
+     * initial 50% deposit clears — EnsureOnboardingComplete only routes to
+     * portal.deposit.show while onboarding_step is below 8, so this is what
+     * actually unlocks Care Plan selection next. (Launch itself is no
+     * longer automatic — see Admin\ProjectController::update()'s "Mark
+     * Completed" action, which now owns that decision along with activating
+     * Care Plan billing.)
      */
-    private function maybeAutoLaunchProject(Payment $payment): void
+    private function maybeAdvanceOnboardingAfterDeposit(Payment $payment): void
     {
-        if (! $payment->isFinal() || ! $payment->isPaid()) {
+        if (! $payment->isDeposit() || ! $payment->isPaid()) {
             return;
         }
 
         $project = $payment->project;
+        $user = $project?->user;
 
-        if (! $project || in_array($project->status, ['launched', 'maintenance'], true)) {
+        if (! $user || ($user->onboarding_step ?? 1) >= 8) {
             return;
         }
 
-        $depositPaid = $project->depositPayment()?->isPaid() ?? false;
+        $user->update(['onboarding_step' => 8]);
 
-        if (! $depositPaid || ! $project->client_approved_at) {
-            return;
-        }
+        dispatch(function () use ($project) {
+            $recipients = array_filter([config('mail.billing_address'), $project->developer?->email]);
 
-        $project->update(['status' => 'launched']);
-
-        SatisfactionSurvey::firstOrCreate(
-            ['project_id' => $project->id],
-            ['user_id' => $project->user_id],
-        );
-
-        $pendingCarePlan = $project->subscription?->isPending() ? $project->subscription : null;
-
-        dispatch(function () use ($project, $pendingCarePlan) {
-            Mail::to($project->user->email)->send(new ProjectLaunchedMail($project, $pendingCarePlan));
-            Mail::to(config('mail.support_address'))->send(new SystemAlertMail(
-                'Project Launched — '.$project->name,
-                "{$project->user->name}'s project was automatically marked as launched — paid in full, approved, and funds cleared.",
+            Mail::to($recipients)->send(new SystemAlertMail(
+                'Deposit Paid — '.$project->name,
+                "{$project->user->name} paid their initial 50% deposit for {$project->name}. Onboarding continues to Care Plan selection.",
                 [
                     'Client' => $project->user->name,
                     'Project' => $project->name,

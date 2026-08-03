@@ -7,6 +7,7 @@ use App\Mail\SubscriptionCreatedMail;
 use App\Models\MaintenancePlan;
 use App\Models\Subscription;
 use App\Models\SubscriptionPayment;
+use App\Services\CarePlanActivator;
 use App\Services\SubscriptionReconciler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -126,43 +127,16 @@ class SubscriptionController extends Controller
                 }
             }
 
-            // Use the real Stripe product/price the boss set up in the
-            // dashboard whenever this subscription is tied to one of the
-            // fixed Care Plan tiers — fall back to building an ad-hoc
-            // product/price for admin-created custom amounts that aren't
-            // tied to a maintenance_plan_id at all.
-            if ($subscription->maintenancePlan?->stripe_price_id) {
-                $item = ['price' => $subscription->maintenancePlan->stripe_price_id];
-            } else {
-                $product = \Stripe\Product::create(['name' => $subscription->description]);
-
-                $item = [
-                    'price_data' => [
-                        'currency' => $subscription->currency,
-                        'unit_amount' => $subscription->amount,
-                        'recurring' => ['interval' => $subscription->interval],
-                        'product' => $product->id,
-                    ],
-                ];
-            }
-
-            $stripeSubscription = \Stripe\Subscription::create([
-                'customer' => $setupIntent->customer,
-                'default_payment_method' => $setupIntent->payment_method,
-                'items' => [$item],
-                'metadata' => ['subscription_id' => $subscription->id],
-            ]);
-
-            // Set status here too (not just stripe_subscription_id) — canceling
-            // the stale old subscription above can trigger its webhook to land
-            // *during* this request (matching by the old id, which is still
-            // what's saved locally at that point) and overwrite status to
-            // 'canceled' before we get here. Writing the real status now wins
-            // the race regardless of timing.
-            $subscription->update([
-                'stripe_subscription_id' => $stripeSubscription->id,
-                'status' => in_array($stripeSubscription->status, ['active', 'trialing'], true) ? 'active' : 'pending',
-            ]);
+            // Price/product resolution + Subscription::create + local status
+            // sync all live in CarePlanActivator now, shared with the
+            // admin-triggered "Mark Completed" activation path
+            // (Admin\ProjectController::update) — canceling the stale old
+            // subscription above can trigger its webhook to land *during*
+            // this request (matching by the old id, still saved locally at
+            // that point) and overwrite status to 'canceled' before we get
+            // here; CarePlanActivator's own update() call writes the real
+            // status immediately after, winning that race regardless of timing.
+            $stripeSubscription = (new CarePlanActivator)->activate($subscription, $setupIntent->customer, $setupIntent->payment_method);
         } catch (ApiErrorException $e) {
             Log::error('Stripe error confirming maintenance plan subscription.', [
                 'subscription_id' => $subscription->id,

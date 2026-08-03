@@ -1,5 +1,5 @@
 @php
-    $onboardingTotalSteps = 5;
+    $onboardingTotalSteps = 7;
     $onboardingPercent = min(100, round(($step / $onboardingTotalSteps) * 100));
 @endphp
 

@@ -11,6 +11,7 @@ class Project extends Model
 
     protected $fillable = [
         'user_id',
+        'developer_id',
         'name',
         'description',
         'website_type',
@@ -38,6 +39,12 @@ class Project extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /** The admin (job_title "Developer") manually assigned to build this project, if any. */
+    public function developer()
+    {
+        return $this->belongsTo(User::class, 'developer_id');
     }
 
     public function carePlanAgreement()
@@ -147,6 +154,19 @@ class Project extends Model
     public function finalPayment(): ?Payment
     {
         return $this->payments->firstWhere('kind', 'final');
+    }
+
+    /**
+     * Whether an admin can mark this project "Completed" — same criteria the
+     * old automatic launch used to require (deposit paid, final payment paid,
+     * client approved the finished site), just checked on demand now instead
+     * of firing on its own the moment the last condition is met.
+     */
+    public function isEligibleForCompletion(): bool
+    {
+        return ($this->depositPayment()?->isPaid() ?? false)
+            && ($this->finalPayment()?->isPaid() ?? false)
+            && $this->client_approved_at !== null;
     }
 
     public function formattedTotalPrice(): ?string

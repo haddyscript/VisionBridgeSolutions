@@ -51,9 +51,12 @@ use App\Http\Controllers\Portal\AssistantController as PortalAssistantController
 use App\Http\Controllers\Portal\CarePlanAgreementController as PortalCarePlanAgreementController;
 use App\Http\Controllers\Portal\CategoryController;
 use App\Http\Controllers\Portal\ChatController as PortalChatController;
+use App\Http\Controllers\Portal\CarePlanPaymentMethodController as PortalCarePlanPaymentMethodController;
 use App\Http\Controllers\Portal\ConsultationController as PortalConsultationController;
 use App\Http\Controllers\Portal\DashboardController;
+use App\Http\Controllers\Portal\DepositController as PortalDepositController;
 use App\Http\Controllers\Portal\DocumentController as PortalDocumentController;
+use App\Http\Controllers\Portal\OnboardingCompleteController as PortalOnboardingCompleteController;
 use App\Http\Controllers\Portal\MilestoneController as PortalMilestoneController;
 use App\Http\Controllers\Portal\FaqFeedbackController;
 use App\Http\Controllers\Portal\NotificationController as PortalNotificationController;
@@ -153,6 +156,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/portal/website-type', [PortalWebsiteTypeController::class, 'show'])->name('portal.website-type.show');
     Route::post('/portal/website-type', [PortalWebsiteTypeController::class, 'store'])->name('portal.website-type.store');
 
+    Route::get('/portal/deposit', [PortalDepositController::class, 'show'])->name('portal.deposit.show');
+    // Deliberately outside the onboarding.complete-gated group below — the
+    // deposit IS one of the gates (see EnsureOnboardingComplete), so paying
+    // it has to be reachable while still mid-onboarding, the same reason
+    // portal.website-type/.care-plan-agreement/.agreement.* live up here
+    // instead of in that group. Still requires project.not-suspended
+    // explicitly, since it's no longer in that combined group either.
+    Route::post('/portal/payments/{payment}/checkout', [PortalPaymentController::class, 'checkout'])
+        ->middleware('project.not-suspended')
+        ->name('portal.payments.checkout');
+
+    Route::get('/portal/care-plan-payment-method', [PortalCarePlanPaymentMethodController::class, 'show'])->name('portal.care-plan-payment-method.show');
+    Route::post('/portal/care-plan-payment-method/confirm', [PortalCarePlanPaymentMethodController::class, 'confirm'])->name('portal.care-plan-payment-method.confirm');
+
+    Route::get('/portal/onboarding/complete', [PortalOnboardingCompleteController::class, 'show'])->name('portal.onboarding.complete');
+
     Route::get('/portal/care-plan-agreement', [PortalCarePlanAgreementController::class, 'show'])->name('portal.care-plan-agreement.show');
     Route::post('/portal/care-plan-agreement', [PortalCarePlanAgreementController::class, 'store'])->name('portal.care-plan-agreement.store');
 
@@ -233,7 +252,6 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
     Route::delete('/portal/uploads/{upload}', [UploadController::class, 'destroy'])->name('portal.uploads.destroy');
 
     Route::get('/portal/payments', [PortalPaymentController::class, 'index'])->name('portal.payments.index');
-    Route::post('/portal/payments/{payment}/checkout', [PortalPaymentController::class, 'checkout'])->name('portal.payments.checkout');
     Route::get('/portal/payments/{payment}/receipt', [PortalPaymentController::class, 'receipt'])->name('portal.payments.receipt');
     Route::post('/portal/payments/{payment}/refund-request', [PortalRefundRequestController::class, 'store'])->name('portal.payments.refund-request');
     Route::get('/portal/payments-statement', [PortalPaymentController::class, 'statement'])->name('portal.payments.statement');

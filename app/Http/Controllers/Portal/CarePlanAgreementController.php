@@ -17,7 +17,7 @@ class CarePlanAgreementController extends Controller
         abort_unless($project, 404);
 
         if ($this->autoAgreeIfSubscriptionAlreadyExists($request, $project)) {
-            return redirect()->route('portal.agreement.summary');
+            return redirect()->route('portal.care-plan-payment-method.show');
         }
 
         return view('portal.care-plan-agreement', [
@@ -35,8 +35,8 @@ class CarePlanAgreementController extends Controller
         abort_unless($project, 404);
 
         if ($this->autoAgreeIfSubscriptionAlreadyExists($request, $project)) {
-            return redirect()->route('portal.agreement.summary')
-                ->with('status', 'Care Plan selected — please review your agreement summary before signing.');
+            return redirect()->route('portal.care-plan-payment-method.show')
+                ->with('status', 'Care Plan selected — next, save a payment method for it.');
         }
 
         $validated = $request->validate([
@@ -69,10 +69,10 @@ class CarePlanAgreementController extends Controller
             ]);
         });
 
-        $request->user()->update(['onboarding_step' => 8]);
+        $request->user()->update(['onboarding_step' => 9]);
 
-        return redirect()->route('portal.agreement.summary')
-            ->with('status', 'Care Plan selected — please review your agreement summary before signing.');
+        return redirect()->route('portal.care-plan-payment-method.show')
+            ->with('status', 'Care Plan selected — next, save a payment method for it.');
     }
 
     /**
@@ -109,7 +109,7 @@ class CarePlanAgreementController extends Controller
             ]);
         });
 
-        $request->user()->update(['onboarding_step' => max($request->user()->onboarding_step ?? 1, 8)]);
+        $request->user()->update(['onboarding_step' => max($request->user()->onboarding_step ?? 1, 9)]);
 
         return true;
     }

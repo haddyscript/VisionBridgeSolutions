@@ -12,7 +12,11 @@
         'onboarding'  => 'Onboarding',
         'in_progress' => 'In Progress',
         'review'      => 'In Review',
-        'launched'    => 'Launched',
+        // Still stored as 'launched' — every other status check in the app
+        // already keys off that value — this label just reflects that the
+        // trigger is now a manual "Mark Completed" action instead of an
+        // automatic one (see Project::isEligibleForCompletion()).
+        'launched'    => 'Completed',
         'maintenance' => 'Care',
         'canceled'    => 'Canceled',
     ];
@@ -143,6 +147,47 @@
                             @endforeach
                         </div>
                     </div>
+                </form>
+
+                @unless ($project->status === 'launched')
+                    @if (! $project->isEligibleForCompletion())
+                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                            Can't be marked Completed yet — needs
+                            @php
+                                $missing = array_filter([
+                                    ! ($project->depositPayment()?->isPaid() ?? false) ? 'the deposit paid' : null,
+                                    ! ($project->finalPayment()?->isPaid() ?? false) ? 'the final payment paid' : null,
+                                    ! $project->client_approved_at ? "the client's approval" : null,
+                                ]);
+                            @endphp
+                            {{ implode(', ', $missing) }}.
+                        </p>
+                    @else
+                        <p class="text-xs text-teal-dark dark:text-teal-light mt-2">
+                            Deposit, final payment, and client approval are all in — ready to mark Completed.
+                        </p>
+                    @endif
+                @endunless
+            </div>
+
+            {{-- Developer assignment — manual, not tied to any onboarding
+                 step; assigned whenever there's a go-ahead to start work.
+                 Notifications (deposit paid, onboarding completed, project
+                 completed) read whoever's assigned here at send-time. --}}
+            <div class="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700">
+                <form method="POST" action="{{ route('admin.projects.update', $project) }}" data-ajax-target="header-card">
+                    @csrf
+                    @method('PATCH')
+                    <label class="block text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1.5">Assigned Developer</label>
+                    <select name="developer_id" onchange="this.form.submit()"
+                            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-navy-dark text-sm font-medium text-navy dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                        <option value="">Unassigned</option>
+                        @foreach ($developers as $developer)
+                            <option value="{{ $developer->id }}" {{ $project->developer_id === $developer->id ? 'selected' : '' }}>
+                                {{ $developer->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </form>
             </div>
 

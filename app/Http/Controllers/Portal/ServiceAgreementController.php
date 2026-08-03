@@ -47,7 +47,7 @@ class ServiceAgreementController extends Controller
 
         abort_unless($project && $project->hasAgreedToCarePlan(), 422);
 
-        $user->update(['onboarding_step' => 10]);
+        $user->update(['onboarding_step' => 11]);
 
         return redirect()->route('portal.agreement.show');
     }
@@ -147,14 +147,23 @@ class ServiceAgreementController extends Controller
             $signature->update(['filled_pdf_path' => $filledPdfPath]);
         }
 
-        dispatch(function () use ($user, $signature) {
+        dispatch(function () use ($user, $signature, $project) {
+            // Widened beyond just Johnny — the completed onboarding sequence
+            // is also meant to notify Support and whichever developer is
+            // already assigned to the project, if any.
+            $teamRecipients = array_unique(array_filter([
+                config('mail.johnny_address'),
+                config('mail.support_address'),
+                $project->developer?->email,
+            ]));
+
             Mail::to($user->email)->send(new ServiceAgreementSignedMail($signature));
-            Mail::to(config('mail.johnny_address'))->send(new ServiceAgreementSignedMail($signature));
+            Mail::to($teamRecipients)->send(new ServiceAgreementSignedMail($signature));
         })->afterResponse();
 
         $user->update(['onboarding_step' => 13]);
 
-        return redirect()->route('portal.dashboard')->with('status', 'Agreement signed — thank you!');
+        return redirect()->route('portal.onboarding.complete')->with('status', 'Agreement signed — thank you!');
     }
 
     public function download(Request $request, ServiceAgreementSignature $signature)
