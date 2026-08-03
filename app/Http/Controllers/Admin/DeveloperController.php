@@ -6,12 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\ProjectRequest;
 use App\Models\Upload;
 use App\Models\User;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Str;
 
 class DeveloperController extends Controller
 {
     /** How many months back Developer Timeline shows. */
     private const TIMELINE_MONTHS = 6;
+
+    /** Recent Activity is paginated at this many items per page. */
+    private const RECENT_ACTIVITY_PER_PAGE = 10;
 
     /**
      * Roster of every "Developer" job-title account, each with a workload
@@ -60,11 +65,22 @@ class DeveloperController extends Controller
             ];
         });
 
-        $recentActivity = $roster
+        // Built from merged Upload/ProjectRequest arrays rather than a single
+        // query, so it can't use Eloquent's ->paginate() — paginated by hand
+        // over the full sorted (newest-first) collection instead.
+        $recentActivityAll = $roster
             ->flatMap(fn ($row) => $row['activeItems']->concat($row['completedItems']))
             ->sortByDesc('updated_at')
-            ->take(12)
             ->values();
+
+        $recentActivityPage = Paginator::resolveCurrentPage();
+        $recentActivity = new LengthAwarePaginator(
+            $recentActivityAll->forPage($recentActivityPage, self::RECENT_ACTIVITY_PER_PAGE)->values(),
+            $recentActivityAll->count(),
+            self::RECENT_ACTIVITY_PER_PAGE,
+            $recentActivityPage,
+            ['path' => Paginator::resolveCurrentPath()]
+        );
 
         $timelineMonths = collect(range(self::TIMELINE_MONTHS - 1, 0))
             ->map(fn ($monthsAgo) => now()->subMonths($monthsAgo)->format('M Y'));

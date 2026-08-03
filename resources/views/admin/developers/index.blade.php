@@ -361,6 +361,9 @@
                     </a>
                 @endforeach
             </div>
+            <div class="mt-4">
+                {{ $recentActivity->links() }}
+            </div>
         @endif
     </div>
 
