@@ -2489,6 +2489,15 @@
                             <span class="menu-item-desc block mt-1">Walk through our project gallery.</span>
                         </span>
                     </a>
+                    <a href="{{ route('website-redesign') }}" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
+                        <span class="menu-icon-badge shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="#FFE9B0" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.418 0A9 9 0 006.582 4.582M20 20v-5h-.581m0 0A9 9 0 015.418 19.418"/></svg>
+                        </span>
+                        <span class="flex flex-col">
+                            <span class="menu-item-title block text-lg font-bold uppercase tracking-wide text-white">See How We Rescue Websites</span>
+                            <span class="menu-item-desc block mt-1">Outdated site? We fix it without a full rebuild.</span>
+                        </span>
+                    </a>
                     {{-- Teal accent (not the shared gold icon badge) so this
                          reads as "your account" rather than another
                          marketing link, same distinction made on desktop's
@@ -2562,7 +2571,8 @@
                     <a href="{{ $homeAnchor }}#plans" class="desktop-menu-link"><span class="desktop-menu-link-num">04</span>Plans</a>
                     <a href="{{ $homeAnchor }}#portfolio" class="desktop-menu-link"><span class="desktop-menu-link-num">05</span>Portfolio</a>
                     <a href="{{ route('gallery') }}" class="desktop-menu-link"><span class="desktop-menu-link-num">06</span>Our Work</a>
-                    <a href="{{ route('contact') }}" class="desktop-menu-link"><span class="desktop-menu-link-num">07</span>Contact</a>
+                    <a href="{{ route('website-redesign') }}" class="desktop-menu-link"><span class="desktop-menu-link-num">07</span>See How We Rescue Websites</a>
+                    <a href="{{ route('contact') }}" class="desktop-menu-link"><span class="desktop-menu-link-num">08</span>Contact</a>
                 </nav>
 
                 <p id="desktop-menu-tagline" class="text-xs tracking-widest uppercase" style="color:rgba(201,168,76,0.7);">Building Websites. Expanding Reach.</p>
