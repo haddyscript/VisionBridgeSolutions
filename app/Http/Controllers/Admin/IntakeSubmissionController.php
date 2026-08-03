@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class IntakeSubmissionController extends Controller
@@ -247,6 +248,28 @@ class IntakeSubmissionController extends Controller
         $this->sendWelcomeEmail($intakeSubmission->project->user);
 
         return back()->with('status', 'Welcome email resent with a fresh password-setup link.');
+    }
+
+    /**
+     * Re-confirms the acting admin's own account password (not a shared or
+     * hardcoded one) before permanently deleting a lead — same
+     * `current_password` rule TeamController::updatePassword() uses. Files on
+     * disk aren't touched by the intake_files cascade delete, so they're
+     * removed here explicitly.
+     */
+    public function destroy(Request $request, IntakeSubmission $intakeSubmission)
+    {
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
+        Storage::disk('client_uploads')->deleteDirectory("intake/{$intakeSubmission->id}");
+
+        $name = $intakeSubmission->contact_name;
+        $intakeSubmission->delete();
+
+        return redirect()->route('admin.intake-submissions.index')
+            ->with('status', "Submission from {$name} has been permanently deleted.");
     }
 
     private function sendWelcomeEmail(User $user): void

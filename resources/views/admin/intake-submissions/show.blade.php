@@ -25,10 +25,17 @@
     $totalFiles = $submission->files->count();
 @endphp
 
-<a href="{{ route('admin.intake-submissions.index') }}" class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-navy mb-6">
-    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-    Intake Submissions
-</a>
+<div class="flex items-center justify-between mb-6">
+    <a href="{{ route('admin.intake-submissions.index') }}" class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-navy">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Intake Submissions
+    </a>
+
+    <button type="button" onclick="openDeleteSubmissionModal()" class="inline-flex items-center gap-1.5 text-sm font-medium text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 px-3 py-1.5 rounded-lg transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        Delete
+    </button>
+</div>
 
 <div class="grid lg:grid-cols-3 gap-6">
 
@@ -224,6 +231,86 @@
         @endforeach
     </div>
 </div>
+
+{{-- Delete Submission Modal — a plain JS confirm() first, then this modal
+     requires the acting admin's own account password (not a shared/hardcoded
+     one) before the DELETE request actually fires. --}}
+<div id="delete-submission-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div id="delete-submission-modal-backdrop" class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
+
+    <div id="delete-submission-modal-panel" class="relative w-full max-w-md transform scale-95 opacity-0 transition-all duration-200">
+        <div class="bg-white dark:bg-navy rounded-2xl shadow-2xl overflow-hidden">
+            <div class="px-6 pt-6 pb-5" style="background:linear-gradient(135deg,#111D33,#1B2A4A);">
+                <p class="text-xs font-semibold uppercase tracking-widest text-red-400 mb-1">Delete Submission</p>
+                <h2 class="font-display text-lg font-bold text-white">{{ $submission->contact_name }} — {{ $submission->organization_name }}</h2>
+                <p class="text-sm text-white/50 mt-1">This permanently deletes the submission and all uploaded files. Enter your password to confirm.</p>
+            </div>
+
+            <form method="POST" action="{{ route('admin.intake-submissions.destroy', $submission) }}" class="px-6 py-6 space-y-4">
+                @csrf
+                @method('DELETE')
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Your Password</label>
+                    <input type="password" name="password" required autocomplete="current-password"
+                           class="w-full rounded-lg border {{ $errors->has('password') ? 'border-red-400' : 'border-gray-300 dark:border-gray-600' }} px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 dark:bg-gray-900 dark:text-white">
+                    @error('password')
+                        <p class="text-xs text-red-500 mt-1.5">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="flex justify-end gap-2.5 pt-2">
+                    <button type="button" onclick="closeDeleteSubmissionModal()" class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-red-500 hover:bg-red-600 text-white transition-colors">
+                        Permanently Delete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const modal = document.getElementById('delete-submission-modal');
+        const backdrop = document.getElementById('delete-submission-modal-backdrop');
+        const panel = document.getElementById('delete-submission-modal-panel');
+
+        function showModal() {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            requestAnimationFrame(function () {
+                backdrop.classList.remove('opacity-0');
+                panel.classList.remove('scale-95', 'opacity-0');
+            });
+        }
+
+        window.openDeleteSubmissionModal = function () {
+            if (! confirm('Delete this submission? This cannot be undone.')) return;
+
+            showModal();
+        };
+
+        window.closeDeleteSubmissionModal = function () {
+            backdrop.classList.add('opacity-0');
+            panel.classList.add('scale-95', 'opacity-0');
+            setTimeout(function () {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 200);
+        };
+
+        backdrop?.addEventListener('click', closeDeleteSubmissionModal);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeDeleteSubmissionModal();
+        });
+
+        @if ($errors->has('password'))
+            showModal();
+        @endif
+    })();
+</script>
 
 @if (! $submission->project_id)
     {{-- Approve & Create Client Modal --}}

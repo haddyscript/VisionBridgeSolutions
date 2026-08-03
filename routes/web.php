@@ -351,6 +351,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::patch('/intake-submissions/{intakeSubmission}', [AdminIntakeSubmissionController::class, 'update'])->name('intake-submissions.update');
     Route::post('/intake-submissions/{intakeSubmission}/convert', [AdminIntakeSubmissionController::class, 'convert'])->name('intake-submissions.convert');
     Route::post('/intake-submissions/{intakeSubmission}/resend-welcome-email', [AdminIntakeSubmissionController::class, 'resendWelcomeEmail'])->name('intake-submissions.resend-welcome-email');
+    Route::delete('/intake-submissions/{intakeSubmission}', [AdminIntakeSubmissionController::class, 'destroy'])->name('intake-submissions.destroy');
 
     Route::get('/work-orders', [AdminWorkOrderController::class, 'index'])->name('work-orders.index');
     Route::get('/developers', [AdminDeveloperController::class, 'index'])->name('developers.index');
