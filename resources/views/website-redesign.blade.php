@@ -349,9 +349,9 @@
                     Signs It's Time For<br><span class="accent">A Redesign.</span>
                 </h2>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" data-rd-reveal>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 @foreach ($painPoints as $point)
-                    <div class="rd-pain-card">
+                    <div class="rd-pain-card" data-rd-reveal>
                         <div class="rd-pain-icon">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$point['icon']] !!}</svg>
                         </div>
@@ -372,9 +372,9 @@
                     From Outdated To<br><span class="accent">On-Brand.</span>
                 </h2>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" data-rd-reveal>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach ($processSteps as $step)
-                    <div class="rd-step-card">
+                    <div class="rd-step-card" data-rd-reveal>
                         <span class="rd-step-num">{{ $step['num'] }}</span>
                         <div class="rd-step-icon">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$step['icon']] !!}</svg>
@@ -396,9 +396,9 @@
                     Before You <span class="accent">Switch.</span>
                 </h2>
             </div>
-            <div class="flex flex-col gap-3" data-rd-reveal>
+            <div class="flex flex-col gap-3">
                 @foreach ($faqs as $index => $faq)
-                    <div class="rd-faq-item">
+                    <div class="rd-faq-item" data-rd-reveal>
                         <button type="button" class="rd-faq-question-btn" aria-expanded="false">
                             <span class="rd-faq-number">{{ sprintf('%02d', $index + 1) }}</span>
                             <span class="rd-faq-question-text">{{ $faq['q'] }}</span>
@@ -450,11 +450,15 @@
         if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
         gsap.registerPlugin(ScrollTrigger);
+        // 'reverse' replays this same tween backwards at its own duration
+        // (1.1s below) — not a separate faster snap-away — so scrolling
+        // back up fades each element back out just as slowly as it faded
+        // in on the way down.
         var TOGGLE = 'play none none reverse';
 
         gsap.utils.toArray('[data-rd-reveal]').forEach(function (el) {
             gsap.from(el, {
-                opacity: 0, y: 24, duration: 0.7, ease: 'power3.out',
+                opacity: 0, y: 30, duration: 1.1, ease: 'power2.out',
                 scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: TOGGLE },
             });
         });
