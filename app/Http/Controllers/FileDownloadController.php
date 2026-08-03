@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AnnouncementAttachment;
 use App\Models\IntakeFile;
 use App\Models\ProjectRequest;
 use App\Models\ProjectRequestAttachment;
@@ -62,6 +63,18 @@ class FileDownloadController extends Controller
         abort_unless($request->user()->isAdmin(), 403);
 
         return $this->respond($intakeFile->path, $intakeFile->original_name);
+    }
+
+    /**
+     * Announcements have no single owner — access is gated by audience
+     * (client/team/developer) rather than by user_id, same rule the banner
+     * and history pages already use to decide who sees the announcement.
+     */
+    public function announcementAttachment(Request $request, AnnouncementAttachment $attachment)
+    {
+        abort_unless($attachment->announcement->isVisibleTo($request->user()), 403);
+
+        return $this->respond($attachment->path, $attachment->original_name);
     }
 
     private function authorizeOwnerOrAdmin(Request $request, ?int $ownerId): void

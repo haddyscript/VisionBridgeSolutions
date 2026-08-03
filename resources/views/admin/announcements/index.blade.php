@@ -11,7 +11,7 @@
     <div class="lg:col-span-2 lg:sticky lg:top-24">
         <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5">
             <h3 class="text-sm font-semibold text-navy dark:text-white mb-4">New Announcement</h3>
-            <form method="POST" action="{{ route('admin.announcements.store') }}" class="space-y-4">
+            <form method="POST" action="{{ route('admin.announcements.store') }}" enctype="multipart/form-data" class="space-y-4">
                 @csrf
                 <div>
                     <label class="block text-xs font-medium text-navy dark:text-white mb-1">Title</label>
@@ -77,6 +77,13 @@
                         @endforeach
                     </div>
                     <p class="text-xs text-gray-400 mt-1.5">Choose who sees this — clients, team, and/or developers.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-navy dark:text-white mb-1">Attachments <span class="text-gray-400 font-normal">(optional)</span></label>
+                    <input type="file" name="attachments[]" multiple
+                           class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-100 dark:file:bg-gray-700 file:text-navy dark:file:text-white hover:file:bg-gray-200 dark:hover:file:bg-gray-600">
+                    <p class="text-xs text-gray-400 mt-1">Any file type (documents, images, video, zip) up to 25MB each.</p>
                 </div>
 
                 {{-- Save as Draft (secondary) vs Publish Live (primary). Publishing
@@ -156,6 +163,7 @@
                                 <p class="text-xs text-gray-400 mt-1">
                                     By {{ $announcement->createdBy->name }} — {{ $announcement->created_at->format('M j, Y') }}
                                 </p>
+                                @include('partials.announcement-attachments', ['attachments' => $announcement->attachments, 'announcement' => $announcement])
                             </div>
 
                             {{-- Edit modal — pre-filled with current values --}}
@@ -169,7 +177,7 @@
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                                         </button>
                                     </div>
-                                    <form method="POST" action="{{ route('admin.announcements.update', $announcement) }}" class="p-5 space-y-4">
+                                    <form method="POST" action="{{ route('admin.announcements.update', $announcement) }}" enctype="multipart/form-data" class="p-5 space-y-4">
                                         @csrf
                                         @method('PATCH')
                                         <div>
@@ -213,6 +221,12 @@
                                                     </label>
                                                 @endforeach
                                             </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-medium text-navy dark:text-white mb-1">Add Attachments <span class="text-gray-400 font-normal">(optional)</span></label>
+                                            <input type="file" name="attachments[]" multiple
+                                                   class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-100 dark:file:bg-gray-700 file:text-navy dark:file:text-white hover:file:bg-gray-200 dark:hover:file:bg-gray-600">
+                                            <p class="text-xs text-gray-400 mt-1">Existing attachments stay — remove one from the collapsed card view instead.</p>
                                         </div>
                                         <div class="flex items-center gap-2 pt-1">
                                             <button type="submit" class="bg-gold hover:bg-gold-dark text-navy text-sm font-semibold px-4 py-2 rounded-lg transition-colors">

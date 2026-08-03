@@ -48,6 +48,11 @@ class Announcement extends Model
         return $this->hasMany(AnnouncementDismissal::class);
     }
 
+    public function attachments()
+    {
+        return $this->hasMany(AnnouncementAttachment::class);
+    }
+
     public function isDismissedBy(User $user): bool
     {
         return $this->dismissals()->where('user_id', $user->id)->exists();
@@ -92,6 +97,7 @@ class Announcement extends Model
     {
         return static::where('is_active', true)
             ->whereDoesntHave('dismissals', fn ($q) => $q->where('user_id', $user->id))
+            ->with('attachments')
             ->latest()
             ->get()
             ->first(fn (self $announcement) => $announcement->isVisibleTo($user));

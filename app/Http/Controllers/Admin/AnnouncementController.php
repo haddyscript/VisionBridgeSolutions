@@ -4,14 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
+use App\Models\AnnouncementAttachment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AnnouncementController extends Controller
 {
+    /** Broad but not unrestricted — blocks executable/script types (php, exe, html, svg, etc.) that would be dangerous served back from client_uploads. */
+    private const ATTACHMENT_MIMES = 'pdf,doc,docx,xls,xlsx,ppt,pptx,txt,rtf,odt,csv,jpg,jpeg,png,gif,webp,mp4,mov,zip';
+
     public function index()
     {
         return view('admin.announcements.index', [
-            'announcements' => Announcement::with('createdBy')->latest()->paginate(5),
+            'announcements' => Announcement::with('createdBy', 'attachments')->latest()->paginate(5),
         ]);
     }
 
@@ -28,7 +33,7 @@ class AnnouncementController extends Controller
     {
         $user = $request->user();
 
-        $announcements = Announcement::with('createdBy')
+        $announcements = Announcement::with('createdBy', 'attachments')
             ->withCount(['dismissals as acknowledged_count' => fn ($q) => $q->where('user_id', $user->id)])
             ->latest()
             ->get()
@@ -48,7 +53,11 @@ class AnnouncementController extends Controller
             'event_time' => ['nullable', 'string', 'max:100'],
             'audiences' => ['required', 'array', 'min:1'],
             'audiences.*' => ['in:' . implode(',', array_keys(Announcement::AUDIENCES))],
+            'attachments' => ['nullable', 'array'],
+            'attachments.*' => ['file', 'mimes:'.self::ATTACHMENT_MIMES, 'max:25600'],
         ]);
+
+        unset($validated['attachments']);
 
         // "Publish Live" activates immediately; "Save as Draft" leaves it inactive.
         $publish = $request->boolean('publish');
@@ -57,6 +66,8 @@ class AnnouncementController extends Controller
             'created_by' => $request->user()->id,
             'is_active' => $publish,
         ]);
+
+        $this->storeAttachments($request, $announcement);
 
         if ($publish) {
             $this->deactivateOverlapping($announcement);
@@ -75,9 +86,15 @@ class AnnouncementController extends Controller
             'event_time' => ['nullable', 'string', 'max:100'],
             'audiences' => ['required', 'array', 'min:1'],
             'audiences.*' => ['in:' . implode(',', array_keys(Announcement::AUDIENCES))],
+            'attachments' => ['nullable', 'array'],
+            'attachments.*' => ['file', 'mimes:'.self::ATTACHMENT_MIMES, 'max:25600'],
         ]);
 
+        unset($validated['attachments']);
+
         $announcement->update($validated);
+
+        $this->storeAttachments($request, $announcement);
 
         // Audiences may have changed — if this one is active, make sure no other
         // active announcement now overlaps its (new) audiences.
@@ -86,6 +103,28 @@ class AnnouncementController extends Controller
         }
 
         return back()->with('status', 'Announcement updated.');
+    }
+
+    /** Adds newly uploaded files — existing attachments are untouched (removed individually via destroyAttachment). */
+    private function storeAttachments(Request $request, Announcement $announcement): void
+    {
+        foreach ($request->file('attachments', []) as $file) {
+            $announcement->attachments()->create([
+                'path' => $file->store("announcements/{$announcement->id}/attachments", 'client_uploads'),
+                'original_name' => $file->getClientOriginalName(),
+                'size' => $file->getSize(),
+            ]);
+        }
+    }
+
+    public function destroyAttachment(Announcement $announcement, AnnouncementAttachment $attachment)
+    {
+        abort_unless($attachment->announcement_id === $announcement->id, 404);
+
+        Storage::disk('client_uploads')->delete($attachment->path);
+        $attachment->delete();
+
+        return back()->with('status', 'Attachment removed.');
     }
 
     public function toggle(Request $request, Announcement $announcement)
@@ -134,8 +173,18 @@ class AnnouncementController extends Controller
         return $overlapping;
     }
 
+    /**
+     * Attachment rows cascade-delete automatically
+     * (announcement_attachments.announcement_id has cascadeOnDelete()), but
+     * that only removes the DB rows — the actual files have to be cleaned up
+     * here first, before their path values are gone.
+     */
     public function destroy(Announcement $announcement)
     {
+        foreach ($announcement->attachments as $attachment) {
+            Storage::disk('client_uploads')->delete($attachment->path);
+        }
+
         $announcement->delete();
 
         return back()->with('status', 'Announcement deleted.');

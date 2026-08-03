@@ -17,7 +17,7 @@ class AnnouncementController extends Controller
     {
         $user = $request->user();
 
-        $announcements = Announcement::with('createdBy')
+        $announcements = Announcement::with('createdBy', 'attachments')
             ->withCount(['dismissals as acknowledged_count' => fn ($q) => $q->where('user_id', $user->id)])
             ->latest()
             ->get()

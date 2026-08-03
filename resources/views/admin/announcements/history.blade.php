@@ -72,6 +72,8 @@
                             {!! $bodyHtml !!}
                         </div>
 
+                        @include('partials.announcement-attachments', ['attachments' => $announcement->attachments])
+
                         @unless ($acknowledged)
                             <div id="history-actions-{{ $announcement->id }}" class="flex justify-end mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
                                 <button type="button" onclick="acknowledgeAnnouncementHistoryItem({{ $announcement->id }}, this)" data-url="{{ route('admin.announcements.dismiss', $announcement) }}"

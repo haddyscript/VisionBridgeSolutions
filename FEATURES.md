@@ -1558,3 +1558,11 @@ Added `orb-shallow-white-animating.gif` (a glowing wireframe sphere on a black b
 
 The rotation is a plain CSS animation (`hero-orb-spin`, added next to `orb-drift` in `resources/views/layouts/app.blade.php`, with a `prefers-reduced-motion` override) rather than anything GSAP/scroll-driven, so it runs independently of the Hero's existing entrance timeline. It's still hooked into that timeline for a single opacity fade-in (`heroTl.fromTo('#hero-orb-sphere', ...)`) alongside the halo, so it appears in sync with the rest of the device mockup reveal instead of popping in on its own.
 
+## 98. File Attachments on Announcements (2026-08-03)
+
+Announcements (`/admin/announcements`) can now carry file attachments, added at creation time or appended later via Edit — any file type within a broad allow-list (documents, images, video, zip; executable/script types like `.php`/`.exe`/`.html`/`.svg` stay blocked, same security reasoning as the existing Project Request attachment upload), up to 25MB each. New `AnnouncementAttachment` model/table (`announcement_id`, `path`, `original_name`, `size`), stored on the `client_uploads` disk under `announcements/{id}/attachments`, same pattern as `ProjectRequestAttachment`.
+
+Attachments show up (as a download link with filename + size) everywhere the announcement's body already renders: the popup banner (admin and Client Portal), the Client Portal's Announcement History page, and the admin read-only History page — all via one shared partial, `partials.announcement-attachments`. On the admin management page specifically, each attachment also gets a **Remove** button (`admin.announcements.attachments.destroy`) to delete it individually without touching the rest of the announcement.
+
+Access is gated by a new `FileDownloadController::announcementAttachment()` route — unlike every other file-serving route on this controller (which check ownership by `user_id`), an announcement has no single owner, so this checks `$attachment->announcement->isVisibleTo($user)` instead, the same audience (client/team/developer) rule the banner and history pages already use to decide who sees the announcement at all.
+

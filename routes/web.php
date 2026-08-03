@@ -218,6 +218,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/files/project-requests/{projectRequest}/attachment', [FileDownloadController::class, 'projectRequestAttachmentField'])->name('files.project-requests.attachment');
     Route::get('/files/project-requests/{projectRequest}/proposal-document', [FileDownloadController::class, 'proposalDocument'])->name('files.project-requests.proposal-document');
     Route::get('/files/intake/{intakeFile}', [FileDownloadController::class, 'intakeFile'])->name('files.intake.show');
+    Route::get('/files/announcement-attachments/{attachment}', [FileDownloadController::class, 'announcementAttachment'])->name('files.announcement-attachments.show');
 });
 
 Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.complete'])->group(function () {
@@ -319,6 +320,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::get('/announcements/history', [AdminAnnouncementController::class, 'history'])->name('announcements.history')->withoutMiddleware('admin-page-access');
     Route::patch('/announcements/{announcement}', [AdminAnnouncementController::class, 'update'])->name('announcements.update');
     Route::patch('/announcements/{announcement}/toggle', [AdminAnnouncementController::class, 'toggle'])->name('announcements.toggle');
+    Route::delete('/announcements/{announcement}/attachments/{attachment}', [AdminAnnouncementController::class, 'destroyAttachment'])->name('announcements.attachments.destroy');
     Route::delete('/announcements/{announcement}', [AdminAnnouncementController::class, 'destroy'])->name('announcements.destroy');
 
     // ─── Clients ─────────────────────────────────────────────────────────────
