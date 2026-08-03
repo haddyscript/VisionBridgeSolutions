@@ -81,8 +81,7 @@
 
                 <div>
                     <label class="block text-xs font-medium text-navy dark:text-white mb-1">Attachments <span class="text-gray-400 font-normal">(optional)</span></label>
-                    <input type="file" name="attachments[]" multiple
-                           class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-100 dark:file:bg-gray-700 file:text-navy dark:file:text-white hover:file:bg-gray-200 dark:hover:file:bg-gray-600">
+                    @include('admin.project-requests._attachments-picker')
                     <p class="text-xs text-gray-400 mt-1">Any file type (documents, images, video, zip) up to 25MB each.</p>
                 </div>
 
@@ -224,8 +223,7 @@
                                         </div>
                                         <div>
                                             <label class="block text-xs font-medium text-navy dark:text-white mb-1">Add Attachments <span class="text-gray-400 font-normal">(optional)</span></label>
-                                            <input type="file" name="attachments[]" multiple
-                                                   class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-100 dark:file:bg-gray-700 file:text-navy dark:file:text-white hover:file:bg-gray-200 dark:hover:file:bg-gray-600">
+                                            @include('admin.project-requests._attachments-picker')
                                             <p class="text-xs text-gray-400 mt-1">Existing attachments stay — remove one from the collapsed card view instead.</p>
                                         </div>
                                         <div class="flex items-center gap-2 pt-1">
