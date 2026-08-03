@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Mail\ConsultationCancelledMail;
 use App\Mail\ConsultationConfirmedMail;
+use App\Mail\ConsultationGetStartedMail;
 use App\Mail\ConsultationRescheduledMail;
 use App\Models\ClientNotification;
 use App\Models\Consultation;
@@ -54,7 +55,7 @@ class ConsultationController extends Controller
     public function update(Request $request, Consultation $consultation)
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:new,confirmed,rescheduled,cancelled'],
+            'status' => ['required', 'in:new,confirmed,rescheduled,cancelled,completed'],
             'preferred_at' => ['nullable', 'date'],
             'admin_notes' => ['nullable', 'string', 'max:5000'],
             'meeting_link' => ['nullable', 'url', 'max:255'],
@@ -75,8 +76,10 @@ class ConsultationController extends Controller
             $mailable = new ConsultationRescheduledMail($consultation);
         } elseif ($consultation->status === 'cancelled') {
             $mailable = new ConsultationCancelledMail($consultation);
+        } elseif ($consultation->status === 'completed') {
+            $mailable = new ConsultationGetStartedMail($consultation);
         } else {
-            abort(422, 'Set the status to Confirmed, Rescheduled, or Cancelled before notifying the client.');
+            abort(422, 'Set the status to Confirmed, Rescheduled, Cancelled, or Completed before notifying the client.');
         }
 
         $account = User::where('email', $consultation->email)->first();
@@ -86,7 +89,7 @@ class ConsultationController extends Controller
         }
 
         if ($account) {
-            $statusLabels = ['confirmed' => 'confirmed', 'rescheduled' => 'rescheduled', 'cancelled' => 'canceled'];
+            $statusLabels = ['confirmed' => 'confirmed', 'rescheduled' => 'rescheduled', 'cancelled' => 'canceled', 'completed' => 'completed'];
 
             ClientNotification::send(
                 $account,

@@ -11,12 +11,14 @@
         'confirmed' => 'Confirmed',
         'rescheduled' => 'Rescheduled',
         'cancelled' => 'Cancelled',
+        'completed' => 'Completed',
     ];
     $statusColors = [
         'new' => 'bg-gold/15 text-gold-dark',
         'confirmed' => 'bg-emerald-100 text-emerald-700',
         'rescheduled' => 'bg-teal/15 text-teal-dark',
         'cancelled' => 'bg-red-100 text-red-600',
+        'completed' => 'bg-blue-100 text-blue-700',
     ];
 @endphp
 
