@@ -24,6 +24,34 @@ class IntakeSubmissionController extends Controller
         ]);
     }
 
+    /**
+     * Admin "log a lead" — for a prospect that came in some other way (a
+     * phone call, an in-person meeting, a consultation that hasn't gone
+     * through the public intake form) rather than requiring the client to
+     * fill out /get-started themselves. Same underlying record and review
+     * flow as a public submission (shows up in this same inbox, converts to
+     * a client the same way via convert()) — just created directly by an
+     * admin instead. No confirmation/notification emails fire here, unlike
+     * IntakeController::store() — the admin creating it already knows about
+     * it, and nothing has actually been "submitted" by the client to confirm.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'organization_name' => ['required', 'string', 'max:255'],
+            'organization_type' => ['nullable', 'string', 'max:100'],
+            'contact_name' => ['required', 'string', 'max:255'],
+            'contact_email' => ['required', 'email', 'max:255'],
+            'contact_phone' => ['nullable', 'string', 'max:50'],
+            'website_requirements' => ['nullable', 'string', 'max:5000'],
+        ]);
+
+        $submission = IntakeSubmission::create($validated);
+
+        return redirect()->route('admin.intake-submissions.show', $submission)
+            ->with('status', 'Intake logged for '.$submission->contact_name.'.');
+    }
+
     public function show(IntakeSubmission $intakeSubmission)
     {
         $intakeSubmission->load('files');
