@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ProjectRequest;
 use App\Models\Upload;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Str;
@@ -24,7 +25,7 @@ class DeveloperController extends Controller
      * (not-completed) assigned items — plus a quick-assign list of every
      * Upload/ProjectRequest that has no developer yet.
      */
-    public function index()
+    public function index(Request $request)
     {
         $developers = User::developers();
         $developerIds = $developers->pluck('id');
@@ -81,6 +82,15 @@ class DeveloperController extends Controller
             $recentActivityPage,
             ['path' => Paginator::resolveCurrentPath()]
         );
+
+        // The pagination links fetch this same URL in the background (see
+        // developers/index.blade.php) instead of navigating the browser —
+        // this skips the rest of the (unused, by that request) page data.
+        if ($request->ajax()) {
+            return view('admin.developers._recent-activity', [
+                'recentActivity' => $recentActivity,
+            ]);
+        }
 
         $timelineMonths = collect(range(self::TIMELINE_MONTHS - 1, 0))
             ->map(fn ($monthsAgo) => now()->subMonths($monthsAgo)->format('M Y'));

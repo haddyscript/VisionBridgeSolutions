@@ -339,32 +339,9 @@
             <svg class="w-5 h-5 shrink-0 text-gold-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             <h3 class="font-bold text-navy dark:text-white">Recent Activity</h3>
         </div>
-        @if ($recentActivity->isEmpty())
-            <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-6">Nothing assigned to a developer yet.</p>
-        @else
-            <div class="divide-y divide-gray-100 dark:divide-gray-700">
-                @foreach ($recentActivity as $item)
-                    <a href="{{ $item['url'] }}" class="flex items-center justify-between gap-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700/40 -mx-2 px-2 rounded-lg transition-colors">
-                        <div class="min-w-0">
-                            <p class="text-sm text-navy dark:text-white truncate">
-                                <span class="font-semibold">{{ $item['developer_name'] ?? 'Unassigned' }}</span>
-                                — {{ $item['type'] }} for {{ $item['client_name'] }}
-                            </p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $item['project_name'] }}</p>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $statusColors[$item['developer_status']] ?? 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400' }}">
-                                {{ \App\Models\Upload::DEVELOPER_STATUSES[$item['developer_status']] ?? 'Not Started' }}
-                            </span>
-                            <span class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">{{ $item['updated_at']->diffForHumans() }}</span>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
-            <div class="mt-4">
-                {{ $recentActivity->links() }}
-            </div>
-        @endif
+        <div id="recent-activity-content">
+            @include('admin.developers._recent-activity')
+        </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -599,6 +576,33 @@
 
         searchInput?.addEventListener('input', applyFilters);
         workloadFilter?.addEventListener('change', applyFilters);
+    })();
+
+    // Recent Activity pagination — fetches just that section's HTML instead
+    // of doing a full page navigation. Delegated on the stable container
+    // (rather than bound per-link) so it keeps working after each swap
+    // replaces the pagination links with a fresh set.
+    (function () {
+        const content = document.getElementById('recent-activity-content');
+        if (!content) return;
+
+        content.addEventListener('click', function (e) {
+            const link = e.target.closest('.recent-activity-pagination a');
+            if (!link) return;
+
+            e.preventDefault();
+
+            content.style.opacity = '0.5';
+
+            fetch(link.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(function (response) { return response.text(); })
+                .then(function (html) {
+                    content.innerHTML = html;
+                })
+                .finally(function () {
+                    content.style.opacity = '';
+                });
+        });
     })();
 </script>
 
