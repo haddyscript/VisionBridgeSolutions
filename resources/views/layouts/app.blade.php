@@ -363,13 +363,20 @@
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
-            /* At higher browser zoom the giant stacked links (see
-               .desktop-menu-link's clamp() below) can be taller than the
-               shrunk viewport. Without this, the overflow simply clips
-               outside this fixed inset:0 box with no way to reach it —
-               scrolling here lets it fall back to a normal scrollable
-               overlay instead of losing links off-screen. */
+            /* At extreme browser zoom the giant stacked links (see
+               .desktop-menu-link's clamp() below) can still end up taller
+               than the shrunk viewport even with the height-aware sizing
+               there. Without this, the overflow simply clips outside this
+               fixed inset:0 box with no way to reach it — scrolling here
+               is a last-resort fallback rather than the normal case now
+               that .desktop-menu-link accounts for viewport height too. */
             overflow-y: auto;
+            /* Explicit, not left to default — per the overflow spec, a
+               'visible' axis paired with a non-'visible' one (overflow-y:
+               auto above) computes to 'auto' too, which was silently
+               making this horizontally scrollable as well even though
+               nothing here is meant to scroll sideways. */
+            overflow-x: hidden;
         }
         #desktop-menu.is-visible {
             opacity: 1;
@@ -412,7 +419,13 @@
             display: block;
             font-family: 'Orbitron', sans-serif;
             font-weight: 800;
-            font-size: clamp(2.6rem, 6.4vw, 5.4rem);
+            /* min(6vw, 8.5vh) — sized against whichever of width/height is
+               tighter, not just width. A wide-but-short laptop window (the
+               normal case at 100% zoom, not just extreme zoom) has plenty
+               of vw but not enough vh for 7 of these stacked at the old
+               vw-only size, which is what was forcing #desktop-menu's
+               overflow-y:auto fallback to kick in during ordinary use. */
+            font-size: clamp(2rem, min(6vw, 8.5vh), 5.4rem);
             line-height: 1.04;
             letter-spacing: -0.01em;
             color: rgba(255,255,255,.92);
