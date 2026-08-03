@@ -38,10 +38,10 @@
         <p class="text-gray-500 dark:text-gray-400">No consultation bookings yet.</p>
     </div>
 @else
-    <div class="space-y-3">
+    <div class="space-y-2.5">
         @foreach ($consultations as $consultation)
-            <div class="{{ $consultation->isRead() ? 'bg-white dark:bg-navy' : 'bg-[linear-gradient(to_right,rgba(201,168,76,0.08),#ffffff_12%)] dark:bg-[linear-gradient(to_right,rgba(201,168,76,0.14),#1B2A4A_12%)]' }} rounded-xl border p-4 {{ $consultation->isRead() ? 'border-gray-200 dark:border-gray-700' : 'border-gold/40 shadow-sm' }}">
-                <div class="flex flex-wrap items-start justify-between gap-3 mb-2">
+            <div class="{{ $consultation->isRead() ? 'bg-white dark:bg-navy' : 'bg-[linear-gradient(to_right,rgba(201,168,76,0.08),#ffffff_12%)] dark:bg-[linear-gradient(to_right,rgba(201,168,76,0.14),#1B2A4A_12%)]' }} rounded-xl border p-3.5 {{ $consultation->isRead() ? 'border-gray-200 dark:border-gray-700' : 'border-gold/40 shadow-sm' }}">
+                <div class="flex flex-wrap items-start justify-between gap-3 mb-1.5">
                     <div class="flex items-start gap-2.5">
                         @if (! $consultation->isRead())
                             <span class="w-2 h-2 rounded-full bg-gold shrink-0 mt-1.5" title="Unread"></span>
@@ -56,7 +56,7 @@
                                 @endif
                             </div>
                             {{-- Contact metadata — tight, icon-led --}}
-                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5">
                                 <a href="mailto:{{ $consultation->email }}" class="inline-flex items-center gap-1.5 text-sm text-gold-dark hover:underline">
                                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                     {{ $consultation->email }}
@@ -87,32 +87,40 @@
                     </div>
                 </div>
 
-                {{-- Message accordion — collapsed by default, smooth height reveal --}}
-                @if ($consultation->message)
-                    <button type="button" onclick="toggleConsultationMessage(this)" data-target="consultation-message-{{ $consultation->id }}"
-                            class="consultation-message-toggle w-full flex items-center gap-1.5 text-xs font-semibold text-navy dark:text-white hover:text-gold-dark border-t border-gray-100 dark:border-gray-700/60 pt-2.5 text-left">
-                        <svg class="w-3.5 h-3.5 shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                        <span class="toggle-label">Show message</span>
-                    </button>
-                    <div id="consultation-message-{{ $consultation->id }}" class="overflow-hidden transition-all duration-300 ease-in-out" style="max-height: 0px;">
-                        <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line pt-2.5 pb-1">{{ $consultation->message }}</p>
-                    </div>
-                @endif
-
-                <form method="POST" action="{{ route('admin.consultations.toggle-read', $consultation) }}" class="flex justify-end mt-2.5">
-                    @csrf
-                    @method('PATCH')
-                    @if ($consultation->isRead())
-                        <button type="submit" class="text-xs font-semibold text-gray-500 dark:text-gray-400 bg-white dark:bg-navy border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 px-3 py-1.5 rounded-full transition-colors">
-                            Mark as Unread
-                        </button>
-                    @else
-                        <button type="submit" class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white bg-white dark:bg-navy border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 px-3 py-1.5 rounded-full transition-colors">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                            Mark as Read
+                {{-- Message toggle + read/unread action now share one row
+                     (previously stacked as two separate rows) to cut an
+                     extra row of height off every card. --}}
+                <div class="flex items-center gap-3 mt-1.5 {{ $consultation->message ? 'pt-1.5 border-t border-gray-100 dark:border-gray-700/60' : '' }}">
+                    @if ($consultation->message)
+                        <button type="button" onclick="toggleConsultationMessage(this)" data-target="consultation-message-{{ $consultation->id }}"
+                                class="consultation-message-toggle flex items-center gap-1.5 text-xs font-semibold text-navy dark:text-white hover:text-gold-dark text-left">
+                            <svg class="w-3.5 h-3.5 shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            <span class="toggle-label">Show message</span>
                         </button>
                     @endif
-                </form>
+
+                    <form method="POST" action="{{ route('admin.consultations.toggle-read', $consultation) }}" class="ml-auto">
+                        @csrf
+                        @method('PATCH')
+                        @if ($consultation->isRead())
+                            <button type="submit" class="text-xs font-semibold text-gray-500 dark:text-gray-400 bg-white dark:bg-navy border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 px-3 py-1 rounded-full transition-colors">
+                                Mark as Unread
+                            </button>
+                        @else
+                            <button type="submit" class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white bg-white dark:bg-navy border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 px-3 py-1 rounded-full transition-colors">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                Mark as Read
+                            </button>
+                        @endif
+                    </form>
+                </div>
+
+                {{-- Message accordion — collapsed by default, smooth height reveal --}}
+                @if ($consultation->message)
+                    <div id="consultation-message-{{ $consultation->id }}" class="overflow-hidden transition-all duration-300 ease-in-out" style="max-height: 0px;">
+                        <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line pt-2 pb-1">{{ $consultation->message }}</p>
+                    </div>
+                @endif
             </div>
         @endforeach
     </div>
