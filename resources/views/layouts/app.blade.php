@@ -2932,6 +2932,21 @@
             menu.style.setProperty('--menu-fit-scale', String(scale));
         }
 
+        // .desktop-menu-link renders in the Orbitron web font (loaded via a
+        // separate <link> in <head>), which can still be mid-download the
+        // first time someone opens the menu — fitDesktopMenu() would then
+        // measure against the shorter fallback-font metrics, decide
+        // everything already fits, and the real (taller) font swaps in
+        // right after that measurement ran. Re-fitting once fonts are
+        // actually ready catches that case — same pattern already used for
+        // this exact class of bug on the Contact page's own scroll
+        // calculations (see contact.blade.php).
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(function () {
+                if (isOpen) fitDesktopMenu();
+            });
+        }
+
         var isOpen = false;
         var animating = false;
 
