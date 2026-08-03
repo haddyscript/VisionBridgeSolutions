@@ -34,16 +34,12 @@ class DashboardController extends Controller
 
         $pendingPayments = $project?->payments->where('status', 'pending') ?? collect();
 
-        // A friendly nudge, not a nag: the login flag alone would re-show
-        // this on every single login (e.g. several times in one day), even
-        // seconds after the client dismissed it. Cap it to once every 24
-        // hours regardless of how often they log back in.
-        $reminderThrottled = $user->payment_reminder_shown_at
-            && $user->payment_reminder_shown_at->gt(now()->subDay());
-
+        // Shows every genuine login while a payment is pending — the
+        // session flag (set fresh in AuthenticatedSessionController::finishLogin())
+        // already means "just logged in," so this doesn't fire repeatedly
+        // within one session, only on an actual logout/login.
         $showPaymentReminder = $request->session()->pull('show_payment_reminder', false)
-            && $pendingPayments->isNotEmpty()
-            && ! $reminderThrottled;
+            && $pendingPayments->isNotEmpty();
 
         if ($showPaymentReminder) {
             $user->update(['payment_reminder_shown_at' => now()]);
