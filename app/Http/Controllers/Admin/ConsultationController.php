@@ -55,13 +55,24 @@ class ConsultationController extends Controller
     public function update(Request $request, Consultation $consultation)
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:new,confirmed,rescheduled,cancelled,completed'],
+            'status' => ['required', 'in:new,confirmed,rescheduled,cancelled,proceed'],
             'preferred_at' => ['nullable', 'date'],
             'admin_notes' => ['nullable', 'string', 'max:5000'],
             'meeting_link' => ['nullable', 'url', 'max:255'],
         ]);
 
+        // Proceed has no prerequisite fields (unlike Confirmed/Rescheduled), so
+        // moving a consultation into it fires the Get Started email right away
+        // instead of waiting for a separate "Notify Client" click.
+        $movingToProceed = $validated['status'] === 'proceed' && $consultation->status !== 'proceed';
+
         $consultation->update($validated);
+
+        if ($movingToProceed) {
+            $this->sendStatusEmail($consultation);
+
+            return back()->with('status', 'Consultation updated — Get Started email sent to the client.');
+        }
 
         return back()->with('status', 'Consultation updated.');
     }
@@ -70,17 +81,25 @@ class ConsultationController extends Controller
     {
         if ($consultation->status === 'confirmed') {
             abort_unless($consultation->meeting_link, 422, 'Add a meeting link before notifying the client.');
-            $mailable = new ConsultationConfirmedMail($consultation);
         } elseif ($consultation->status === 'rescheduled') {
             abort_unless($consultation->preferred_at, 422, 'Set the new preferred date/time before notifying the client.');
-            $mailable = new ConsultationRescheduledMail($consultation);
-        } elseif ($consultation->status === 'cancelled') {
-            $mailable = new ConsultationCancelledMail($consultation);
-        } elseif ($consultation->status === 'completed') {
-            $mailable = new ConsultationGetStartedMail($consultation);
-        } else {
-            abort(422, 'Set the status to Confirmed, Rescheduled, Cancelled, or Completed before notifying the client.');
+        } elseif (! in_array($consultation->status, ['cancelled', 'proceed'], true)) {
+            abort(422, 'Set the status to Confirmed, Rescheduled, Cancelled, or Proceed before notifying the client.');
         }
+
+        $this->sendStatusEmail($consultation);
+
+        return back()->with('status', 'Notification email sent to the client.');
+    }
+
+    private function sendStatusEmail(Consultation $consultation): void
+    {
+        $mailable = match ($consultation->status) {
+            'confirmed' => new ConsultationConfirmedMail($consultation),
+            'rescheduled' => new ConsultationRescheduledMail($consultation),
+            'cancelled' => new ConsultationCancelledMail($consultation),
+            'proceed' => new ConsultationGetStartedMail($consultation),
+        };
 
         $account = User::where('email', $consultation->email)->first();
 
@@ -89,7 +108,7 @@ class ConsultationController extends Controller
         }
 
         if ($account) {
-            $statusLabels = ['confirmed' => 'confirmed', 'rescheduled' => 'rescheduled', 'cancelled' => 'canceled', 'completed' => 'completed'];
+            $statusLabels = ['confirmed' => 'confirmed', 'rescheduled' => 'rescheduled', 'cancelled' => 'canceled', 'proceed' => 'moving forward'];
 
             ClientNotification::send(
                 $account,
@@ -103,8 +122,6 @@ class ConsultationController extends Controller
         }
 
         $consultation->update(['confirmation_sent_at' => now()]);
-
-        return back()->with('status', 'Notification email sent to the client.');
     }
 
     public function toggleRead(Consultation $consultation)

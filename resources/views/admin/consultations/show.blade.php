@@ -11,14 +11,14 @@
         'confirmed' => 'Confirmed',
         'rescheduled' => 'Rescheduled',
         'cancelled' => 'Cancelled',
-        'completed' => 'Completed',
+        'proceed' => 'Proceed',
     ];
     $statusColors = [
         'new' => 'bg-gold/15 text-gold-dark',
         'confirmed' => 'bg-emerald-100 text-emerald-700',
         'rescheduled' => 'bg-teal/15 text-teal-dark',
         'cancelled' => 'bg-red-100 text-red-600',
-        'completed' => 'bg-blue-100 text-blue-700',
+        'proceed' => 'bg-blue-100 text-blue-700',
     ];
 @endphp
 
@@ -78,7 +78,7 @@
                     'confirmed' => '#10B981',
                     'rescheduled' => '#2A9D8F',
                     'cancelled' => '#EF4444',
-                    'completed' => '#3B82F6',
+                    'proceed' => '#3B82F6',
                 ];
             @endphp
 
@@ -163,17 +163,17 @@
                     'confirmed' => 'Send Confirmation Email',
                     'rescheduled' => 'Send Reschedule Notice',
                     'cancelled' => 'Send Cancellation Email',
-                    'completed' => 'Send Get Started Email',
+                    'proceed' => 'Resend Get Started Email',
                 ];
                 $notifyReady = match ($consultation->status) {
                     'confirmed' => (bool) $consultation->meeting_link,
                     'rescheduled' => (bool) $consultation->preferred_at,
                     'cancelled' => true,
-                    'completed' => true,
+                    'proceed' => true,
                     default => false,
                 };
                 $notifyHint = match (true) {
-                    $consultation->status === 'new' => 'Set status to Confirmed, Rescheduled, Cancelled, or Completed to notify the client.',
+                    $consultation->status === 'new' => 'Set status to Confirmed, Rescheduled, Cancelled, or Proceed to notify the client.',
                     $consultation->status === 'confirmed' && ! $notifyReady => 'Add and save a meeting link first.',
                     $consultation->status === 'rescheduled' && ! $notifyReady => 'Set and save the new date/time first.',
                     default => null,
