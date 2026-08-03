@@ -124,7 +124,9 @@ A plain-language summary of everything the site and client portal offer today.
 | We set a client's project price for the first time | The client (their quote + a link to pay the initial deposit) |
 | A client approves their finished website | Our team (the final 50% payment request is created automatically) |
 | A client cancels during their review window | The client (refund confirmation) and our team |
-| A project is automatically launched | The client (congratulations email + a link to set up their Care Plan billing) and our team |
+| A client pays their initial 50% deposit | Our team and the project's assigned developer, if one is set (unlocks Care Plan selection for the client — see §16) |
+| An admin marks a project "In Progress" | The client |
+| An admin marks a project "Completed" (see §16 — no longer automatic) | The client (congratulations email + their Care Plan is now active and billing) and our team |
 | A Care Plan payment becomes overdue past the grace period | The client (how to pay) and our team |
 | A suspended client's payment clears | The client (access restored) and our team |
 | Someone creates their own account | Our team |
@@ -157,8 +159,8 @@ Audit findings from comparing the onboarding workflow against actual code (2026-
 | Area | Current behavior | File(s) | Gap |
 |---|---|---|---|
 | Care Plan selection vs. summary | `CarePlanAgreementController::store` validates `maintenance_plan_id` + `agree` in a single POST | `app/Http/Controllers/Portal/CarePlanAgreementController.php:30-72` | No intermediate "review your selected plan" confirmation screen between picking a plan and committing to it — selection and acknowledgment are one step, not two |
-| Initial 50% deposit | A deposit `PaymentRequest` is only created the first time an admin manually sets `total_price` on the project | `app/Http/Controllers/Admin/ProjectController.php:33-63` | Not automatic — requires a human to quote a price first. If the business wants deposit collection to fire automatically right after onboarding/file upload (no admin step), this needs a pre-set/fixed pricing model or a new trigger independent of manual quoting |
-| Onboarding step enforcement | `EnsureOnboardingComplete` middleware gates exactly: Care Plan agreement → Service Agreement signature → Questionnaire, then releases the user into the dashboard | `app/Http/Middleware/EnsureOnboardingComplete.php:24-34` | File uploads and deposit payment are **not** gated/sequenced steps — they're just available features post-onboarding, not enforced in order |
+| Initial 50% deposit | A deposit `PaymentRequest` is only created the first time an admin manually sets `total_price` on the project | `app/Http/Controllers/Admin/ProjectController.php:33-63` | **Resolved (2026-08-03, see §16) — intentionally, not a gap.** Confirmed with the business this stays admin-manual permanently (project scope varies too much for fixed/automatic pricing); the deposit is now a required onboarding gate rather than a free-standing post-onboarding feature |
+| Onboarding step enforcement | `EnsureOnboardingComplete` middleware gates: Business Info → Website Type → **Deposit paid** → Care Plan → **Care Plan payment method** → Agreement Summary → Signature, then releases the user into the dashboard (see §13 and §16) | `app/Http/Middleware/EnsureOnboardingComplete.php` | Resolved (2026-08-03) — deposit payment is now a sequenced, gated step, not a free-standing post-onboarding feature. File uploads remain ungated (available anytime post-onboarding, not part of this sequence) |
 | Agreement audit trail | Already solid — no gap, noting for context | `app/Http/Controllers/Portal/ServiceAgreementController.php:64-74`, `CarePlanAgreementController.php:49-67` | Both Care Plan agreement and Service Agreement signatures capture `ip_address`, `user_agent`, and a timestamp; the Service Agreement additionally binds the signature to a specific template via `service_agreement_template_id` + a SHA-256 `agreement_hash` of the signed wording, so edits to the template later never alter what a past signature legally represents |
 
 **Likely next work once the Master Agreement arrives:** it will probably replace the current two-step Care Plan Agreement + Service Agreement flow with one consolidated document/model — plan accordingly rather than just adding a third agreement step.
