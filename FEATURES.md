@@ -291,6 +291,8 @@ Sir Johnny's revised onboarding workflow, implemented on top of the existing 5-s
 
 **Not changed:** the 50/50 deposit + final payment split, the Business Info questionnaire (still runs first), and the existing "Start Plan" flow (kept as a fallback for a Care Plan with no payment method saved during onboarding, e.g. pre-existing projects).
 
+**2026-08-04 fix:** `Portal\CarePlanAgreementController` (Care Plan selection) now explicitly checks `Project::hasDepositPaid()` and redirects back to the Deposit page if it isn't true yet — this page sits outside `EnsureOnboardingComplete`'s middleware group by design (every onboarding step page does, to avoid that middleware redirecting a client trying to reach one of these very pages in a loop), so without this check a client could reach Care Plan selection by navigating to its URL directly, before ever paying the deposit. The check is skipped for clients who already have a Care Plan subscription from the separate public Care Plan signup flow (`CarePlanSignupController`), which has no deposit step at all.
+
 ## 15a. Onboarding Progress Indicator (2026-07-03)
 
 The boss raised a concern: the onboarding flow (Business Info → Website Type → Care Plan → Agreement Summary → Read/Sign Agreement) is fully gated — a client can't reach any other portal feature until they finish it — and a long, open-ended locked flow risks clients getting bored or frustrated and logging out partway through.

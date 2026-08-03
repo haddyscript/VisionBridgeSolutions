@@ -57,6 +57,19 @@ class Project extends Model
         return $this->carePlanAgreement !== null;
     }
 
+    /**
+     * The onboarding deposit gate — Care Plan selection is not reachable
+     * until this is true (see Portal\CarePlanAgreementController), same as
+     * every other onboarding step guards its own prerequisite directly,
+     * since these step pages sit outside the EnsureOnboardingComplete
+     * middleware group by design (that middleware would otherwise redirect
+     * a client trying to reach one of these very pages in a loop).
+     */
+    public function hasDepositPaid(): bool
+    {
+        return $this->depositPayment()?->isPaid() ?? false;
+    }
+
     public function isSuspended(): bool
     {
         return $this->suspended_at !== null;

@@ -20,6 +20,17 @@ class CarePlanAgreementController extends Controller
             return redirect()->route('portal.care-plan-payment-method.show');
         }
 
+        // Deposit gate — only applies here, since the check above already
+        // exempted anyone who came through the public Care Plan signup flow
+        // (CarePlanSignupController), which has no deposit/proposal step at
+        // all. This page sits outside EnsureOnboardingComplete's middleware
+        // group by design (see that middleware's own docblock), so without
+        // this a client could reach Care Plan selection by typing this URL
+        // directly, before ever paying the deposit.
+        if (! $project->hasDepositPaid()) {
+            return redirect()->route('portal.deposit.show');
+        }
+
         return view('portal.care-plan-agreement', [
             'plans' => MaintenancePlan::where('is_available', true)
                 ->whereNotNull('price')
@@ -39,6 +50,13 @@ class CarePlanAgreementController extends Controller
                 ->with('status', 'Care Plan selected — next, save a payment method for it.');
         }
 
+        // Same deposit gate as show() — re-checked here too since store()
+        // is a separate request a client could hit directly (e.g. replaying
+        // a form POST) without ever loading show() first.
+        if (! $project->hasDepositPaid()) {
+            return redirect()->route('portal.deposit.show');
+        }
+
         $validated = $request->validate([
             'maintenance_plan_id' => ['required', 'exists:maintenance_plans,id'],
             'agree' => ['accepted'],
@@ -56,9 +74,11 @@ class CarePlanAgreementController extends Controller
                 'user_agent' => (string) $request->userAgent(),
             ]);
 
-            // Billing doesn't start yet — stays 'pending' until the project
-            // launches (see StripeWebhookController::maybeAutoLaunchProject),
-            // which is when the client gets emailed a link to complete checkout.
+            // Billing doesn't start yet — stays 'pending' until an admin
+            // marks the project Completed (see Admin\ProjectController::update
+            // and App\Services\CarePlanActivator), which is what actually
+            // creates the real Stripe Subscription using the payment method
+            // saved in the next onboarding step.
             $project->subscriptions()->create([
                 'maintenance_plan_id' => $plan->id,
                 'description' => $plan->name,
