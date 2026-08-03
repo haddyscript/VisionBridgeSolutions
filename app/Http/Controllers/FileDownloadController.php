@@ -69,10 +69,17 @@ class FileDownloadController extends Controller
      * Announcements have no single owner — access is gated by audience
      * (client/team/developer) rather than by user_id, same rule the banner
      * and history pages already use to decide who sees the announcement.
+     * An admin who can manage announcements always passes too, regardless of
+     * audience — the full /admin/announcements page shows every announcement
+     * to them with no audience filter at all (unlike the read-only History
+     * page), so the attachment link they click there has to work the same way.
      */
     public function announcementAttachment(Request $request, AnnouncementAttachment $attachment)
     {
-        abort_unless($attachment->announcement->isVisibleTo($request->user()), 403);
+        $user = $request->user();
+        $canManage = $user->isAdmin() && $user->canAccessAdminPage('announcements');
+
+        abort_unless($canManage || $attachment->announcement->isVisibleTo($user), 403);
 
         return $this->respond($attachment->path, $attachment->original_name);
     }
