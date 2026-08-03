@@ -130,6 +130,20 @@
     @media (prefers-reduced-motion: reduce) {
         .intake-tag, .intake-headline-line, #intake-submit, #intake-submit-label { transition: none; }
     }
+
+    /* ── AI Suggestion — a slow, soft glow so it reads as "alive" without
+         competing for attention against the rest of the form. Long duration
+         + low shadow spread/opacity keep it calm rather than flashy. ── */
+    .ai-suggest-btn {
+        animation: ai-suggest-glow 3.2s ease-in-out infinite;
+    }
+    @keyframes ai-suggest-glow {
+        0%, 100% { box-shadow: 0 0 0 rgba(201,168,76,0); }
+        50% { box-shadow: 0 0 10px 1px rgba(201,168,76,.45); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .ai-suggest-btn { animation: none; }
+    }
 </style>
 
 <section id="intake-section" class="bg-white min-h-screen pt-36 pb-28 px-4">
