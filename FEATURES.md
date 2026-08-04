@@ -1614,6 +1614,8 @@ Purely a markup/class restructuring — every element kept its original `id` (`c
 
 **Same-day follow-up**: the emoji picker itself was left anchored `left-2` from the original layout, but its trigger button moved to the right side (docked inside the pill) — same "picker opens far from its own button" bug already fixed once in chat (§88, the reaction picker). Re-anchored to `right-2` to match.
 
+**Same-day, extended to admin**: the boss asked for the identical redesign on the admin chat composer (`admin/chat/_thread.blade.php`), which this entry originally left untouched. Applied the same single-row layout (filled gold circles left, pill with docked emoji, gold Send circle right) — built with the emoji picker anchored `right-2` from the start this time, rather than repeating the left/right mismatch caught above on the portal side first.
+
 ## 105d. Chat — Message Options Menu No Longer Hidden Behind the Next Bubble (2026-08-04)
 
 On both `/portal/chat` and the admin chat inbox, opening a message's "⋮" options menu (or its reaction picker) could render *underneath* the next message bubble in the thread instead of on top of it, even though the popover has `z-20`. Neither `.chat-bubble` nor `.chat-bubble-card` establishes its own stacking context (`position:relative` with `z-index:auto`), so per CSS stacking rules a later sibling bubble's own box still painted above the earlier bubble's absolutely-positioned popover, regardless of the popover's explicit z-index.

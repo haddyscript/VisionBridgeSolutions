@@ -150,15 +150,24 @@
             'Just checking in — any updates on your end?',
         ];
     @endphp
+    {{-- Composer — Messenger-style single row, matching the identical
+         redesign on the portal side (portal/chat.blade.php): filled gold
+         circles for Voice Input/Share a Link/Quick Replies outside the pill
+         on the left, the pill holding just the textarea + Emoji docked
+         inside on the right, Send as a filled gold circle outside on the
+         right. Emoji picker anchors `right-2` (not `left-2`) to match its
+         button's new position — the portal version briefly had this
+         mismatched (picker opening far from the button) before being fixed,
+         so this one was built anchored correctly from the start. --}}
     <div class="shrink-0 px-3.5 sm:px-5 py-4 border-t border-gray-200 dark:border-gray-700">
         <form id="chat-thread-form" data-mark-read-url="{{ route('admin.chat.read', $project) }}" data-typing-url="{{ route('admin.chat.typing', $project) }}"
               method="POST" action="{{ route('admin.chat.store', $project) }}"
               onsubmit="return submitAdminChatMessage(this, event)"
-              class="chat-composer relative rounded-[1.75rem] border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-navy-dark shadow-sm transition-all duration-200 focus-within:border-gold focus-within:ring-4 focus-within:ring-gold/10 focus-within:bg-white dark:focus-within:bg-navy-dark">
+              class="chat-composer relative flex items-end gap-1.5 sm:gap-2">
             @csrf
 
             {{-- Emoji picker --}}
-            <div id="chat-emoji-picker" class="hidden absolute bottom-full left-2 mb-2 w-72 max-w-[calc(100vw-2rem)] max-h-56 overflow-y-auto bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-2.5 z-30">
+            <div id="chat-emoji-picker" class="hidden absolute bottom-full right-2 mb-2 w-72 max-w-[calc(100vw-2rem)] max-h-56 overflow-y-auto bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-2.5 z-30">
                 <div class="grid grid-cols-8 gap-0.5">
                     @foreach ($adminChatEmojiSet as $adminChatEmoji)
                         <button type="button" class="chat-emoji-option w-7 h-7 rounded-lg flex items-center justify-center text-lg hover:bg-gold/10 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-gold/50">{{ $adminChatEmoji }}</button>
@@ -198,44 +207,45 @@
                 </button>
             </div>
 
-            <textarea name="body" id="chat-composer-textarea" rows="1" maxlength="5000" placeholder="Message {{ $project->user->name }}…" required
-                      class="w-full resize-none bg-transparent px-5 pt-4 pb-1.5 text-sm text-navy dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none transition-all duration-150"
-                      style="max-height: 9.5rem;"></textarea>
-
-            <div class="flex items-end justify-between gap-2 px-2.5 sm:px-3.5 pb-2.5">
-                <div class="flex items-center gap-0.5">
-                    <button type="button" id="chat-emoji-btn" title="Emoji" aria-label="Insert emoji" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
-                        <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </button>
-                    <button type="button" id="chat-attachment-btn" title="Share a link" aria-label="Share a link" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
-                        <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                    </button>
-                    <button type="button" id="chat-templates-btn" title="Quick replies" aria-label="Quick reply templates" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
-                        <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    </button>
-                    <button type="button" id="chat-mic-btn" title="Voice input" aria-label="Voice input" class="hidden relative w-9 h-9 rounded-full text-gray-400 hover:text-gold-dark hover:bg-gold/10 hover:scale-105 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
-                        <span id="chat-mic-ring" class="hidden absolute inset-0 rounded-full bg-red-400 opacity-75 animate-ping"></span>
-                        <svg id="chat-mic-icon" class="w-4 h-4 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/>
-                        </svg>
-                        <span id="chat-mic-bars" class="hidden relative items-end justify-center gap-0.5 h-4 w-4">
-                            <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
-                            <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
-                            <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
-                            <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
-                        </span>
-                    </button>
-                </div>
-
-                <div class="flex items-center gap-3 pb-1">
-                    <span id="chat-char-counter" class="text-[0.65rem] font-medium text-gray-300 dark:text-gray-600 tabular-nums select-none transition-colors duration-200">0/5000</span>
-                    <button type="submit" id="chat-send-btn" title="Send" aria-label="Send message" class="shrink-0 w-10 h-10 rounded-full bg-navy-dark hover:bg-navy text-white flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold/40 focus:ring-offset-2 dark:focus:ring-offset-navy-dark">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-7 7m7-7l7 7"/>
-                        </svg>
-                    </button>
-                </div>
+            {{-- Left icon cluster (outside the pill), filled gold circles. --}}
+            <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 pb-1">
+                <button type="button" id="chat-mic-btn" title="Voice input" aria-label="Voice input" class="hidden relative w-9 h-9 rounded-full bg-gold/15 text-gold-dark hover:bg-gold/25 hover:scale-105 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
+                    <span id="chat-mic-ring" class="hidden absolute inset-0 rounded-full bg-red-400 opacity-75 animate-ping"></span>
+                    <svg id="chat-mic-icon" class="w-4 h-4 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/>
+                    </svg>
+                    <span id="chat-mic-bars" class="hidden relative items-end justify-center gap-0.5 h-4 w-4">
+                        <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
+                        <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
+                        <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
+                        <span class="chat-mic-bar w-0.5 h-full bg-current rounded-full origin-bottom"></span>
+                    </span>
+                </button>
+                <button type="button" id="chat-attachment-btn" title="Share a link" aria-label="Share a link" class="w-9 h-9 rounded-full bg-gold/15 text-gold-dark hover:bg-gold/25 hover:scale-105 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
+                    <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                </button>
+                <button type="button" id="chat-templates-btn" title="Quick replies" aria-label="Quick reply templates" class="w-9 h-9 rounded-full bg-gold/15 text-gold-dark hover:bg-gold/25 hover:scale-105 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
+                    <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </button>
             </div>
+
+            {{-- The pill — textarea + emoji docked inside on the right. --}}
+            <div class="flex-1 min-w-0 flex items-end gap-1 rounded-[1.5rem] bg-gray-50 dark:bg-navy-dark pl-4 pr-1.5 py-1.5 transition-all duration-150 focus-within:ring-2 focus-within:ring-gold/40">
+                <textarea name="body" id="chat-composer-textarea" rows="1" maxlength="5000" placeholder="Message {{ $project->user->name }}…" required
+                          class="flex-1 min-w-0 resize-none bg-transparent py-1.5 text-sm text-navy dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none transition-all duration-150"
+                          style="max-height: 9.5rem;"></textarea>
+                <button type="button" id="chat-emoji-btn" title="Emoji" aria-label="Insert emoji" class="shrink-0 w-8 h-8 mb-0.5 rounded-full flex items-center justify-center text-gray-400 hover:text-gold-dark hover:bg-gold/10 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/30">
+                    <svg class="w-[1.125rem] h-[1.125rem]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </button>
+            </div>
+
+            {{-- Char counter, then Send as the filled circle outside on the right. --}}
+            <span id="chat-char-counter" class="hidden sm:inline-block shrink-0 pb-3 text-[0.6rem] font-medium text-gray-300 dark:text-gray-600 tabular-nums select-none transition-colors duration-200">0/5000</span>
+            <button type="submit" id="chat-send-btn" title="Send" aria-label="Send message" class="shrink-0 w-10 h-10 rounded-full bg-gold hover:bg-gold-dark text-navy-dark flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold/40 focus:ring-offset-2 dark:focus:ring-offset-navy-dark">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-7 7m7-7l7 7"/>
+                </svg>
+            </button>
         </form>
     </div>
 </div>
