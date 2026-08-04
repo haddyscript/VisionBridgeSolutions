@@ -144,26 +144,26 @@
                             ? $assignableDevelopers
                             : $assignableDevelopers->concat([$row['developer']])->sortBy('name')->values();
                     @endphp
-                    <div class="developer-card bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 p-7 shadow-sm hover:shadow-lg hover:border-gold/40 dark:hover:border-gold/30 transition-all duration-200"
+                    <div class="developer-card bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm hover:shadow-lg hover:border-gold/40 dark:hover:border-gold/30 transition-all duration-200"
                          data-name="{{ strtolower($row['developer']->name) }}" data-has-active="{{ $hasActiveWork ? '1' : '0' }}">
 
                         {{-- SECTION 5 — Developer header --}}
-                        <div class="flex items-start gap-3.5 mb-5">
-                            <span class="w-13 h-13 rounded-2xl bg-gradient-to-br from-navy to-navy/75 text-gold text-base font-bold flex items-center justify-center shrink-0 shadow-sm" style="width:3.25rem;height:3.25rem;">
+                        <div class="flex items-start gap-3 mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-navy to-navy/75 text-gold text-sm font-bold flex items-center justify-center shrink-0 shadow-sm">
                                 {{ strtoupper(substr($row['developer']->name, 0, 1)) }}
                             </span>
                             <div class="min-w-0 flex-1 pt-0.5">
-                                <p class="font-bold text-navy dark:text-white leading-snug truncate">{{ $row['developer']->name }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $row['developer']->job_title ?? 'Developer' }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $row['developer']->email }}</p>
+                                <p class="text-sm font-bold text-navy dark:text-white leading-snug truncate">{{ $row['developer']->name }}</p>
+                                <p class="text-[0.7rem] text-gray-500 dark:text-gray-400">{{ $row['developer']->job_title ?? 'Developer' }}</p>
+                                <p class="text-[0.7rem] text-gray-500 dark:text-gray-400 truncate">{{ $row['developer']->email }}</p>
                             </div>
                             @if ($row['developer']->is_active ?? true)
-                                <span class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-teal/10 text-teal-dark">
+                                <span class="shrink-0 inline-flex items-center gap-1.5 text-[0.65rem] font-semibold px-2 py-0.5 rounded-full bg-teal/10 text-teal-dark">
                                     <span class="w-1.5 h-1.5 rounded-full bg-teal animate-pulse"></span>
                                     Active
                                 </span>
                             @else
-                                <span class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">
+                                <span class="shrink-0 inline-flex items-center gap-1.5 text-[0.65rem] font-semibold px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">
                                     <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
                                     Inactive
                                 </span>
@@ -173,10 +173,10 @@
                         {{-- SECTION 6 — Workload capacity bar, relative to the
                              busiest developer on the team (no fabricated fixed
                              "capacity" ceiling exists in the data model). --}}
-                        <div class="mb-5">
+                        <div class="mb-4">
                             <div class="flex items-center justify-between mb-1.5">
-                                <p class="text-xs font-semibold text-gray-500 dark:text-gray-400">Workload</p>
-                                <p class="text-xs font-bold {{ $capacityTextColor }}">{{ $activeCount }} active</p>
+                                <p class="text-[0.7rem] font-semibold text-gray-500 dark:text-gray-400">Workload</p>
+                                <p class="text-[0.7rem] font-bold {{ $capacityTextColor }}">{{ $activeCount }} active</p>
                             </div>
                             <div class="h-2 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
                                 <div class="workload-bar-fill h-full rounded-full {{ $capacityBarColor }}" data-target-pct="{{ $capacityPct }}" style="width:0%;"></div>
@@ -184,12 +184,12 @@
                         </div>
 
                         {{-- SECTION 7 — Statistics --}}
-                        <div class="grid grid-cols-4 gap-2 mb-5">
+                        <div class="grid grid-cols-4 gap-1.5 mb-4">
                             @foreach ($statBoxes as $key => $box)
                                 @php $count = $row['counts'][$key]; @endphp
-                                <div class="text-center rounded-xl py-3 {{ $count > 0 ? $box['activeBg'] : 'bg-gray-50 dark:bg-gray-900' }}">
-                                    <p class="text-lg font-bold {{ $count > 0 ? $box['activeText'] : 'text-gray-300 dark:text-gray-600' }}">{{ $count }}</p>
-                                    <p class="text-[0.63rem] uppercase tracking-wide {{ $count > 0 ? 'text-gray-500 dark:text-gray-400' : 'text-gray-300 dark:text-gray-600' }}">{{ $box['label'] }}</p>
+                                <div class="text-center rounded-xl py-2 {{ $count > 0 ? $box['activeBg'] : 'bg-gray-50 dark:bg-gray-900' }}">
+                                    <p class="text-sm font-bold {{ $count > 0 ? $box['activeText'] : 'text-gray-300 dark:text-gray-600' }}">{{ $count }}</p>
+                                    <p class="text-[0.58rem] uppercase tracking-wide {{ $count > 0 ? 'text-gray-500 dark:text-gray-400' : 'text-gray-300 dark:text-gray-600' }}">{{ $box['label'] }}</p>
                                 </div>
                             @endforeach
                         </div>
@@ -198,22 +198,22 @@
                              underlying item row (link, status pill, reassign
                              dropdown) is unchanged — only its wrapper here is
                              new, so nothing about how it works changes. --}}
-                        <p class="text-[0.65rem] font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Current Work Order</p>
+                        <p class="text-[0.65rem] font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Current Work Order</p>
                         @if ($currentItem)
-                            <div class="rounded-xl border border-gray-200 dark:border-gray-700 border-l-4 border-l-gold bg-gray-50/70 dark:bg-gray-900/40 px-2 mb-3">
+                            <div class="rounded-xl border border-gray-200 dark:border-gray-700 border-l-4 border-l-gold bg-gray-50/70 dark:bg-gray-900/40 px-2 mb-2.5">
                                 @include('admin.developers._item-row', ['item' => $currentItem, 'statusColors' => $statusColors, 'developers' => $reassignOptions, 'assignedDeveloperId' => $row['developer']->id])
                             </div>
                             @if ($restActiveItems->isNotEmpty())
                                 <p class="text-[0.65rem] font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Also Assigned ({{ $restActiveItems->count() }})</p>
-                                <div class="divide-y divide-gray-100 dark:divide-gray-700 max-h-48 overflow-y-auto pr-1 rounded-lg border border-gray-100 dark:border-gray-700/60 mb-4">
+                                <div class="divide-y divide-gray-100 dark:divide-gray-700 max-h-48 overflow-y-auto pr-1 rounded-lg border border-gray-100 dark:border-gray-700/60 mb-3">
                                     @foreach ($restActiveItems as $item)
                                         @include('admin.developers._item-row', ['item' => $item, 'statusColors' => $statusColors, 'developers' => $reassignOptions, 'assignedDeveloperId' => $row['developer']->id])
                                     @endforeach
                                 </div>
                             @endif
                         @else
-                            <div class="rounded-xl border border-dashed border-gray-200 dark:border-gray-700 py-5 text-center mb-4">
-                                <p class="text-sm text-gray-500 dark:text-gray-400">No active Work Orders right now.</p>
+                            <div class="rounded-xl border border-dashed border-gray-200 dark:border-gray-700 py-3 text-center mb-3">
+                                <p class="text-xs text-gray-500 dark:text-gray-400">No active Work Orders right now.</p>
                             </div>
                         @endif
 
@@ -221,7 +221,7 @@
                              match the search input and filter dropdown above. --}}
                         @if ($row['completedItems']->isNotEmpty())
                             <button type="button"
-                                    class="developer-history-btn inline-flex items-center gap-1.5 text-xs font-semibold rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50 hover:border-gold hover:text-gold-dark text-navy dark:text-white px-3 py-2 transition-colors"
+                                    class="developer-history-btn inline-flex items-center gap-1.5 text-[0.7rem] font-semibold rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50 hover:border-gold hover:text-gold-dark text-navy dark:text-white px-2.5 py-1.5 transition-colors"
                                     data-target="developer-history-{{ $row['developer']->id }}"
                                     data-developer-name="{{ $row['developer']->name }}"
                                     data-count="{{ $row['completedItems']->count() }}">
@@ -278,12 +278,12 @@
                     <p class="text-xs font-bold uppercase tracking-wide text-red-700 dark:text-red-400">{{ $unassigned->count() }} {{ $unassigned->count() === 1 ? 'item' : 'items' }} waiting for assignment</p>
                 </div>
                 @foreach ($unassigned as $item)
-                    <div class="p-4">
+                    <div class="p-3">
                         <div class="flex items-center justify-between gap-2 mb-1">
-                            <p class="text-sm font-semibold text-navy dark:text-white">{{ $item['client_name'] }}</p>
+                            <p class="text-xs font-semibold text-navy dark:text-white">{{ $item['client_name'] }}</p>
                             <span class="text-[0.65rem] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 shrink-0">{{ $item['created_at']->format('M j') }}</span>
                         </div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1.5 flex flex-wrap items-center gap-1.5">
+                        <p class="text-[0.7rem] text-gray-500 dark:text-gray-400 mb-1 flex flex-wrap items-center gap-1.5">
                             <span>{{ $item['type'] }}</span>
                             @if (! empty($item['priority']))
                                 <span class="text-[0.65rem] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full {{ $priorityColors[$item['priority']] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
@@ -291,9 +291,9 @@
                                 </span>
                             @endif
                         </p>
-                        <a href="{{ $item['url'] }}" class="text-sm text-gray-600 dark:text-gray-300 hover:underline block mb-1">{{ $item['title'] }}</a>
+                        <a href="{{ $item['url'] }}" class="text-xs text-gray-600 dark:text-gray-300 hover:underline block mb-1">{{ $item['title'] }}</a>
                         @if ($item['link'])
-                            <a href="{{ $item['link'] }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-xs font-semibold text-gold-dark hover:underline mb-2">
+                            <a href="{{ $item['link'] }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[0.7rem] font-semibold text-gold-dark hover:underline mb-1.5">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
                                 View File
                             </a>
