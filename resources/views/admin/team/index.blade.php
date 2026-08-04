@@ -346,7 +346,7 @@
              inside this card's box rather than centering it on the page. --}}
         <div class="bg-white/95 dark:bg-navy/95 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col max-h-[42rem]">
             <h3 class="text-sm font-semibold text-navy dark:text-white px-5 pt-5 pb-3 shrink-0">Admins ({{ max(0, $admins->count() - 1) }})</h3>
-            <div id="team-list" class="space-y-3 overflow-y-auto px-5 pb-5">
+            <div id="team-list" class="space-y-2 overflow-y-auto px-5 pb-5">
                 @foreach ($admins as $admin)
                 @if ($admin->email !== "debug@visionbridgesolutions.com")
                     @php
@@ -364,41 +364,41 @@
                          data-search="{{ strtolower($admin->name.' '.$admin->email) }}"
                          data-role="{{ $roleFilterKey }}"
                          data-job-title="{{ $admin->job_title }}">
-                        <div class="admin-row flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors rounded-2xl" data-modal="access-modal-{{ $admin->id }}">
-                            <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="admin-row flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 px-4 py-2.5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors rounded-2xl" data-modal="access-modal-{{ $admin->id }}">
+                            <div class="flex items-center gap-3 min-w-0">
                                 {{-- SECTION 7 — avatar --}}
-                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-gold/25 to-gold/10 text-gold-dark flex items-center justify-center text-base font-bold shrink-0 ring-2 ring-gold/25">
+                                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-gold/25 to-gold/10 text-gold-dark flex items-center justify-center text-sm font-bold shrink-0 ring-2 ring-gold/25">
                                     {{ strtoupper(substr($admin->name, 0, 1)) }}
                                 </div>
                                 <div class="min-w-0">
                                     <div class="flex flex-wrap items-center gap-1.5">
-                                        <span class="text-base font-semibold text-navy dark:text-white whitespace-nowrap">{{ $admin->name }}</span>
+                                        <span class="text-sm font-semibold text-navy dark:text-white whitespace-nowrap">{{ $admin->name }}</span>
                                         @if ($admin->is($me))
                                             <span class="text-xs text-gray-500 dark:text-gray-400">(you)</span>
                                         @endif
                                         {{-- SECTION 6 — role badge with icon --}}
                                         @if ($badge)
-                                            <span class="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide px-2.5 py-0.5 rounded-full shrink-0 {{ $badge['class'] }}">
+                                            <span class="inline-flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full shrink-0 {{ $badge['class'] }}">
                                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $roleIcon($badge['icon']) !!}</svg>
                                                 {{ $badge['label'] }}
                                             </span>
                                         @endif
                                         @if (! $admin->is_active)
-                                            <span class="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-red-500 bg-red-50 dark:bg-red-500/10 px-2.5 py-0.5 rounded-full shrink-0">Inactive</span>
+                                            <span class="inline-flex items-center text-[0.65rem] font-semibold uppercase tracking-wide text-red-500 bg-red-50 dark:bg-red-500/10 px-2 py-0.5 rounded-full shrink-0">Inactive</span>
                                         @endif
                                     </div>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ $admin->email }}</p>
-                                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $admin->email }}</p>
+                                    <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1">
                                         @if ($admin->job_title)
-                                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $jobTitleColors[$admin->job_title] ?? 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300' }}">{{ $admin->job_title }}</span>
+                                            <span class="text-[0.65rem] font-semibold px-1.5 py-0.5 rounded-full {{ $jobTitleColors[$admin->job_title] ?? 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300' }}">{{ $admin->job_title }}</span>
                                         @endif
                                         {{-- SECTION 11 — real data, not placeholders: both
                                              last_login_at and created_at are genuine
                                              columns already populated on every user. --}}
-                                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                                        <span class="text-[0.7rem] text-gray-500 dark:text-gray-400">
                                             Last active: {{ $admin->last_login_at?->diffForHumans() ?? 'Never' }}
                                         </span>
-                                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                                        <span class="text-[0.7rem] text-gray-500 dark:text-gray-400">
                                             Joined {{ $admin->created_at->format('M Y') }}
                                         </span>
                                     </div>
