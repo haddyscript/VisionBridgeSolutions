@@ -151,31 +151,73 @@
         </table>
     </div>
 
+    <div id="projects-pagination" class="hidden flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4 text-sm text-gray-600 dark:text-gray-400">
+        <p>Showing <span id="pagination-showing-start"></span>–<span id="pagination-showing-end"></span> of <span id="pagination-showing-total"></span></p>
+        <div class="flex items-center gap-2">
+            <button type="button" id="pagination-prev" class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700/30">Previous</button>
+            <span id="pagination-page-info" class="px-2 whitespace-nowrap"></span>
+            <button type="button" id="pagination-next" class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700/30">Next</button>
+        </div>
+    </div>
+
     <script>
         (function () {
+            const PER_PAGE = 10;
+            let currentPage = 1;
+
             const search = document.getElementById('project-search');
             const statusFilter = document.getElementById('project-status-filter-input');
             const emptyRow = document.getElementById('projects-empty-filter');
             const rows = Array.from(document.querySelectorAll('#projects-table tbody tr[data-search]'));
 
+            const pagination = document.getElementById('projects-pagination');
+            const prevBtn = document.getElementById('pagination-prev');
+            const nextBtn = document.getElementById('pagination-next');
+            const pageInfo = document.getElementById('pagination-page-info');
+            const showingStart = document.getElementById('pagination-showing-start');
+            const showingEnd = document.getElementById('pagination-showing-end');
+            const showingTotal = document.getElementById('pagination-showing-total');
+
             function apply() {
                 const q = (search.value || '').trim().toLowerCase();
                 const status = statusFilter.value;
-                let visible = 0;
 
-                rows.forEach(function (row) {
+                const matches = rows.filter(function (row) {
                     const matchesSearch = !q || row.dataset.search.includes(q);
                     const matchesStatus = !status || row.dataset.status === status;
-                    const show = matchesSearch && matchesStatus;
-                    row.classList.toggle('hidden', !show);
-                    if (show) visible++;
+                    return matchesSearch && matchesStatus;
                 });
 
-                emptyRow.classList.toggle('hidden', visible > 0);
+                const totalPages = Math.max(1, Math.ceil(matches.length / PER_PAGE));
+                if (currentPage > totalPages) currentPage = totalPages;
+
+                const start = (currentPage - 1) * PER_PAGE;
+                const pageRows = matches.slice(start, start + PER_PAGE);
+                const visibleSet = new Set(pageRows);
+
+                rows.forEach(function (row) {
+                    row.classList.toggle('hidden', !visibleSet.has(row));
+                });
+
+                emptyRow.classList.toggle('hidden', matches.length > 0);
+                pagination.classList.toggle('hidden', matches.length === 0);
+
+                if (matches.length > 0) {
+                    showingStart.textContent = start + 1;
+                    showingEnd.textContent = Math.min(start + PER_PAGE, matches.length);
+                    showingTotal.textContent = matches.length;
+                    pageInfo.textContent = 'Page ' + currentPage + ' of ' + totalPages;
+                    prevBtn.disabled = currentPage <= 1;
+                    nextBtn.disabled = currentPage >= totalPages;
+                }
             }
 
-            search.addEventListener('input', apply);
-            statusFilter.addEventListener('change', apply);
+            search.addEventListener('input', function () { currentPage = 1; apply(); });
+            statusFilter.addEventListener('change', function () { currentPage = 1; apply(); });
+            prevBtn.addEventListener('click', function () { if (currentPage > 1) { currentPage--; apply(); } });
+            nextBtn.addEventListener('click', function () { currentPage++; apply(); });
+
+            apply();
         })();
     </script>
 @endif
