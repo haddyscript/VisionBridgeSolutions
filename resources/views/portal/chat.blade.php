@@ -522,8 +522,12 @@
                   class="chat-composer relative flex items-end gap-1.5 sm:gap-2">
                 @csrf
 
-                {{-- Emoji picker --}}
-                <div id="chat-emoji-picker" class="hidden absolute bottom-full left-2 mb-2 w-72 max-w-[calc(100vw-2rem)] max-h-56 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl p-2.5 z-30">
+                {{-- Emoji picker — anchored to the right (not left), matching
+                     the emoji button's position docked inside the pill on
+                     the right; anchoring to the opposite side is the same
+                     "picker far from its trigger button" bug already fixed
+                     elsewhere in chat (see the reaction picker fix above). --}}
+                <div id="chat-emoji-picker" class="hidden absolute bottom-full right-2 mb-2 w-72 max-w-[calc(100vw-2rem)] max-h-56 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl p-2.5 z-30">
                     <div class="grid grid-cols-8 gap-0.5">
                         @foreach ($chatEmojiSet as $chatEmoji)
                             <button type="button" class="chat-emoji-option w-7 h-7 rounded-lg flex items-center justify-center text-lg hover:bg-gold/10 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-gold/50">{{ $chatEmoji }}</button>
