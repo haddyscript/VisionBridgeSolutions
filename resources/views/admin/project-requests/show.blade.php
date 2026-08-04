@@ -50,7 +50,15 @@
                     </a>
                 @endif
 
-                <div class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                <div class="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                    <div>
+                        <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Category</label>
+                        <select name="category" form="request-form" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
+                            @foreach (\App\Models\ProjectRequest::CATEGORIES as $value => $label)
+                                <option value="{{ $value }}" {{ old('category', $projectRequest->category) === $value ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div>
                         <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Priority</label>
                         <select name="priority" form="request-form" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">

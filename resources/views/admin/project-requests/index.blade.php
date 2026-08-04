@@ -34,6 +34,10 @@
     ];
     $avatarPalette = ['bg-gold/15 text-gold-dark', 'bg-teal/10 text-teal-dark', 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-300', 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-300'];
     $avatarClass = fn ($id) => $avatarPalette[$id % count($avatarPalette)];
+    $categoryColors = [
+        'request' => 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300',
+        'proposal' => 'bg-gold/15 text-gold-dark',
+    ];
 @endphp
 
 {{-- ═══════════════════════════════════════════════════════════════════════
@@ -88,6 +92,19 @@
             'placeholder' => "All ({$totalRequestCount})",
         ])
     </div>
+    <div class="w-full sm:w-48 shrink-0">
+        @include('admin._dropdown', [
+            'name' => 'category_filter',
+            'domId' => 'request-category-filter',
+            'options' => collect(\App\Models\ProjectRequest::CATEGORIES)->map(fn ($label, $key) => [
+                'value' => $key,
+                'label' => "{$label} (".($categoryCounts[$key] ?? 0).')',
+                'dot' => ['request' => 'bg-gray-400', 'proposal' => 'bg-gold'][$key] ?? 'bg-gray-400',
+            ])->values()->all(),
+            'selected' => '',
+            'placeholder' => 'All Categories',
+        ])
+    </div>
     <button type="button" data-modal="new-request-modal"
             class="modal-trigger inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-gradient-to-br from-gold via-gold to-gold-dark text-navy text-sm font-bold rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 whitespace-nowrap">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
@@ -126,6 +143,7 @@
                 <tr>
                     <th class="px-5 pb-2">Client</th>
                     <th class="px-5 pb-2">Title</th>
+                    <th class="px-5 pb-2">Category</th>
                     <th class="px-5 pb-2">Status</th>
                     <th class="px-5 pb-2">Proposal</th>
                     <th class="px-5 pb-2">Submitted</th>
@@ -136,7 +154,7 @@
                 @foreach ($requests as $item)
                     @php $searchText = strtolower($item->user->name.' '.$item->user->email.' '.$item->title); @endphp
                     <tr class="request-row group bg-gray-50/60 dark:bg-navy-dark/40 hover:bg-white dark:hover:bg-gray-800 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
-                        data-search="{{ $searchText }}" data-status="{{ $item->status }}"
+                        data-search="{{ $searchText }}" data-status="{{ $item->status }}" data-category="{{ $item->category }}"
                         onclick="window.location='{{ route('admin.project-requests.show', $item) }}'">
                         <td class="px-5 py-2 align-middle rounded-l-xl border-y border-l border-gray-100 dark:border-gray-700 group-hover:border-gold/30">
                             <div class="flex items-center gap-2.5 min-w-0">
@@ -163,6 +181,11 @@
                                     </span>
                                 @endif
                             </div>
+                        </td>
+                        <td class="px-5 py-2 align-middle border-y border-gray-100 dark:border-gray-700 group-hover:border-gold/30">
+                            <span class="inline-block text-[0.65rem] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $categoryColors[$item->category] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500' }}">
+                                {{ \App\Models\ProjectRequest::CATEGORIES[$item->category] ?? $item->category }}
+                            </span>
                         </td>
                         <td class="px-5 py-2 align-middle border-y border-gray-100 dark:border-gray-700 group-hover:border-gold/30">
                             <span class="inline-flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $statusColors[$item->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500' }}">
@@ -224,7 +247,7 @@
             @php $searchText = strtolower($item->user->name.' '.$item->user->email.' '.$item->title); @endphp
             <a href="{{ route('admin.project-requests.show', $item) }}"
                class="request-card block bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm active:scale-[0.99] transition-transform duration-150 p-4"
-               data-search="{{ $searchText }}" data-status="{{ $item->status }}">
+               data-search="{{ $searchText }}" data-status="{{ $item->status }}" data-category="{{ $item->category }}">
                 <div class="flex items-start gap-3 mb-3">
                     <span class="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shrink-0 {{ $avatarClass($item->user->id) }}">
                         {{ strtoupper(substr($item->user->name, 0, 1)) }}
@@ -247,6 +270,9 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-1.5 mb-3">
+                    <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $categoryColors[$item->category] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500' }}">
+                        {{ \App\Models\ProjectRequest::CATEGORIES[$item->category] ?? $item->category }}
+                    </span>
                     <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $statusColors[$item->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500' }}">
                         <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $statusIcons[$item->status] ?? '' !!}</svg>
                         {{ \App\Models\ProjectRequest::STATUSES[$item->status] ?? $item->status }}
@@ -283,11 +309,12 @@
         (function () {
             const search = document.getElementById('request-search');
             const statusFilter = document.getElementById('request-status-filter-input');
+            const categoryFilter = document.getElementById('request-category-filter-input');
             const emptyDesktop = document.getElementById('requests-empty-filter-desktop');
             const emptyMobile = document.getElementById('requests-empty-filter-mobile');
             const countLabel = document.getElementById('requests-count-label');
             // Both the desktop <tr> rows and mobile <a> cards share the same
-            // [data-search]/[data-status] contract, so one filter pass drives both.
+            // [data-search]/[data-status]/[data-category] contract, so one filter pass drives both.
             const items = Array.from(document.querySelectorAll('[data-search]'));
             // Every request is loaded onto this one page (see index() —
             // no server pagination), so this is a real total, not "this page".
@@ -296,13 +323,15 @@
             function apply() {
                 const q = (search.value || '').trim().toLowerCase();
                 const status = statusFilter.value;
+                const category = categoryFilter.value;
                 let visibleDesktop = 0;
                 let visibleMobile = 0;
 
                 items.forEach(function (el) {
                     const matchesSearch = !q || el.dataset.search.includes(q);
                     const matchesStatus = !status || el.dataset.status === status;
-                    const show = matchesSearch && matchesStatus;
+                    const matchesCategory = !category || el.dataset.category === category;
+                    const show = matchesSearch && matchesStatus && matchesCategory;
                     el.classList.toggle('hidden', !show);
                     if (show) {
                         if (el.matches('tr')) visibleDesktop++; else visibleMobile++;
@@ -313,7 +342,7 @@
                 if (emptyMobile) emptyMobile.classList.toggle('hidden', visibleMobile > 0);
 
                 if (countLabel) {
-                    countLabel.textContent = (q || status)
+                    countLabel.textContent = (q || status || category)
                         ? 'Showing ' + visibleDesktop + ' of ' + totalCount + ' request' + (totalCount === 1 ? '' : 's')
                         : 'Showing ' + totalCount + ' request' + (totalCount === 1 ? '' : 's');
                 }
@@ -321,6 +350,7 @@
 
             search.addEventListener('input', apply);
             statusFilter.addEventListener('change', apply);
+            categoryFilter.addEventListener('change', apply);
         })();
     </script>
 @endif
@@ -368,6 +398,21 @@
                 <input type="text" name="title" required value="{{ old('title') }}" placeholder="e.g. Unity Auto Group Development Research &amp; Feasibility"
                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
                 @error('title')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Category</label>
+                @include('admin._dropdown', [
+                    'name' => 'category',
+                    'domId' => 'new-request-category',
+                    'options' => collect(\App\Models\ProjectRequest::CATEGORIES)->map(fn ($label, $value) => [
+                        'value' => $value,
+                        'label' => $label,
+                        'dot' => ['request' => 'bg-gray-400', 'proposal' => 'bg-gold'][$value] ?? 'bg-gray-400',
+                    ])->values()->all(),
+                    'selected' => old('category', 'request'),
+                ])
+                @error('category')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
             </div>
 
             <div>
@@ -521,7 +566,7 @@
     // rejected the submission (e.g. no client picked) — otherwise the
     // redirect-back-with-errors would land on a closed modal and the errors
     // rendered inside it would be invisible.
-    @if ($errors->has('user_id') || $errors->has('title') || $errors->has('description') || old('title') !== null)
+    @if ($errors->has('user_id') || $errors->has('title') || $errors->has('category') || $errors->has('description') || old('title') !== null)
         (function () {
             const modal = document.getElementById('new-request-modal');
             if (modal) {

@@ -1571,3 +1571,18 @@ Access is gated by a new `FileDownloadController::announcementAttachment()` rout
 New **Cron Jobs** page (`/admin/cron-jobs`, `Admin\CronController`) — super-admin only, same sensitivity level as Team management, since several of these touch real Stripe billing or suspend real client portal access. Lists all 7 of the app's artisan commands (the 5 already on the automatic schedule in `routes/console.php` — `payouts:verify`, `payouts:send-faithstack-reminder`, `projects:suspend-overdue`, `subscriptions:send-renewal-reminders`, `payments:retry-failed` — plus the 2 manual-only data-fix commands, `subscriptions:backfill-period-end` and `subscriptions:cancel-duplicates`) with a description and a **Run Now** button per job. Running one asks for confirmation first, then shows that command's console output inline via `Artisan::call()`/`Artisan::output()` — no page reload.
 
 The list of runnable commands (`CronController::JOBS`) is a fixed allow-list, not built from request input — the endpoint only ever executes one of those exact signatures, so this can't become arbitrary command execution.
+
+## 100. Project Requests — Manual "Request" / "Proposal" Category (2026-08-04)
+
+`/admin/project-requests` gained a new `category` field (`project_requests.category`, new migration, defaults to `request`) — an admin-picked tag distinguishing a plain internal/client request from one being run as a formal Proposal, independent of the existing `proposal_status` pipeline (which only tracks a proposal's own sales stage once one exists).
+
+- Set on creation via the "New Project Request" modal's new Category dropdown (defaults to Request), and editable afterward from the request detail page (added next to Priority/Due Date).
+- Shown as its own column on the index table (and a badge on the mobile card layout), plus a new "All Categories" filter dropdown next to the existing Status filter — both wired into the page's existing client-side search/filter JS (`data-category` attribute, same pattern as `data-status`).
+
+## 101. All Projects & Clients Pages — Client-Side Pagination (2026-08-04)
+
+Both `/admin` (All Projects) and `/admin/clients` (Clients) load every row up front for their existing client-side search/filter — same reasoning as Project Requests and Care Plans (§53). Added the same client-side pagination pattern on top, 10 rows per page: a "Showing X–Y of Z" summary with Prev/Next buttons, computed by slicing the already-filtered match set rather than fetching anything new, so paging never reloads the page. Search/status-filter changes reset back to page 1. The summary bar always shows (even on a single page, with Prev/Next simply disabled) rather than hiding once the result count drops to one page.
+
+## 102. Project Requests Table — Compacted Row Density (2026-08-04)
+
+Purely visual: `/admin/project-requests`'s desktop table rows were reduced from `text-sm`/`py-4` to `text-xs`/`py-2` (smaller avatar, tighter badge padding, `border-spacing:0 6px` instead of `10px`) so more rows fit on screen without scrolling. No functional/data changes.

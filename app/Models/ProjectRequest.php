@@ -44,6 +44,12 @@ class ProjectRequest extends Model
         'urgent' => 'Urgent',
     ];
 
+    /** A manual admin tag, independent of proposal_status (which only tracks the sales pipeline once a proposal exists). */
+    public const CATEGORIES = [
+        'request' => 'Request',
+        'proposal' => 'Proposal',
+    ];
+
     /**
      * Deliberately excludes `estimated_value` — it's staff-only (see
      * Admin\ProjectRequestController::update()) and this way that
@@ -56,6 +62,7 @@ class ProjectRequest extends Model
         'user_id',
         'created_by_admin_id',
         'title',
+        'category',
         'description',
         'priority',
         'due_date',
@@ -83,6 +90,7 @@ class ProjectRequest extends Model
         static::creating(function (ProjectRequest $request) {
             $request->status ??= 'pending';
             $request->priority ??= 'medium';
+            $request->category ??= 'request';
         });
     }
 

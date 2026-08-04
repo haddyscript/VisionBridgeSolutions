@@ -36,6 +36,7 @@ class ProjectRequestController extends Controller
         // $requests itself changes. Pulled across the full table (not just
         // the current page) so the numbers are real totals, not fabricated.
         $statusCounts = ProjectRequest::selectRaw('status, count(*) as aggregate_count')->groupBy('status')->pluck('aggregate_count', 'status');
+        $categoryCounts = ProjectRequest::selectRaw('category, count(*) as aggregate_count')->groupBy('category')->pluck('aggregate_count', 'category');
 
         return view('admin.project-requests.index', [
             'requests' => $requests,
@@ -51,6 +52,7 @@ class ProjectRequestController extends Controller
             'developers' => User::developers(),
             'totalRequestCount' => array_sum($statusCounts->all()),
             'statusCounts' => $statusCounts,
+            'categoryCounts' => $categoryCounts,
             'draftProposalCount' => ProjectRequest::where('proposal_status', 'draft')->count(),
         ]);
     }
@@ -68,6 +70,7 @@ class ProjectRequestController extends Controller
         $validated = $request->validate([
             'user_id' => ['required', 'exists:users,id'],
             'title' => ['required', 'string', 'max:255', 'unique:project_requests,title'],
+            'category' => ['nullable', Rule::in(array_keys(ProjectRequest::CATEGORIES))],
             'description' => ['required', 'string', 'max:5000'],
             'priority' => ['nullable', Rule::in(array_keys(ProjectRequest::PRIORITIES))],
             'due_date' => ['nullable', 'date'],
@@ -83,6 +86,7 @@ class ProjectRequestController extends Controller
             'user_id' => $validated['user_id'],
             'created_by_admin_id' => $request->user()->id,
             'title' => $validated['title'],
+            'category' => $validated['category'] ?? null,
             'description' => $validated['description'],
             'priority' => $validated['priority'] ?? null,
             'due_date' => $validated['due_date'] ?? null,
@@ -138,6 +142,7 @@ class ProjectRequestController extends Controller
     {
         $validated = $request->validate([
             'status' => ['required', 'in:'.implode(',', array_keys(ProjectRequest::STATUSES))],
+            'category' => ['required', Rule::in(array_keys(ProjectRequest::CATEGORIES))],
             'priority' => ['nullable', Rule::in(array_keys(ProjectRequest::PRIORITIES))],
             'due_date' => ['nullable', 'date'],
             'admin_notes' => ['nullable', 'string', 'max:5000'],
