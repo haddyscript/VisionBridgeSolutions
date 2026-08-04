@@ -3,15 +3,24 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\AnnouncementNotificationMail;
 use App\Models\Announcement;
 use App\Models\AnnouncementAttachment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class AnnouncementController extends Controller
 {
     /** Broad but not unrestricted — blocks executable/script types (php, exe, html, svg, etc.) that would be dangerous served back from client_uploads. */
     private const ATTACHMENT_MIMES = 'pdf,doc,docx,xls,xlsx,ppt,pptx,txt,rtf,odt,csv,jpg,jpeg,png,gif,webp,mp4,mov,zip';
+
+    /** Extra outside-the-app recipients who should be emailed whenever a Team or Developer announcement goes live — not tied to any User account. */
+    private const TEAM_NOTIFICATION_EMAILS = [
+        'sarbidajohncarl@gmail.com',
+        'julsestorco031602@gmail.com',
+        'johnnydavis45@yahoo.com',
+    ];
 
     public function index()
     {
@@ -71,9 +80,24 @@ class AnnouncementController extends Controller
 
         if ($publish) {
             $this->deactivateOverlapping($announcement);
+            $this->notifyTeamEmails($announcement);
         }
 
         return back()->with('status', $publish ? 'Announcement published.' : 'Announcement saved as draft.');
+    }
+
+    /** Emails a fixed outside-the-app recipient list whenever a live announcement targets Team or Developers — separate from the in-app banner, which those recipients may not otherwise see. */
+    private function notifyTeamEmails(Announcement $announcement): void
+    {
+        if (! array_intersect($announcement->audiences ?? [], ['team', 'developer'])) {
+            return;
+        }
+
+        $announcement->load('attachments', 'createdBy');
+
+        dispatch(function () use ($announcement) {
+            Mail::to(self::TEAM_NOTIFICATION_EMAILS)->send(new AnnouncementNotificationMail($announcement));
+        })->afterResponse();
     }
 
     public function update(Request $request, Announcement $announcement)
