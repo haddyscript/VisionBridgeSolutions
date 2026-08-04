@@ -1586,3 +1586,7 @@ Both `/admin` (All Projects) and `/admin/clients` (Clients) load every row up fr
 ## 102. Project Requests Table — Compacted Row Density (2026-08-04)
 
 Purely visual: `/admin/project-requests`'s desktop table rows were reduced from `text-sm`/`py-4` to `text-xs`/`py-2` (smaller avatar, tighter badge padding, `border-spacing:0 6px` instead of `10px`) so more rows fit on screen without scrolling. No functional/data changes.
+
+## 103. FAQ Page — Pinned "Client Onboarding Flow" Priority Card (2026-08-04)
+
+`/admin/faq` now opens with a pinned, non-collapsible priority card (gold border, above every existing accordion section) walking through the exact client onboarding sequence step-by-step, with the admin-blocking steps called out in amber. Written by tracing the real gate logic rather than the older, since-reordered prose in FEATURES.md §1 — confirmed via `EnsureOnboardingComplete`'s gate order and each step controller's own prerequisite check (`Portal\DepositController`, `Portal\CarePlanAgreementController`): Questionnaire → Website Type → **Deposit (blocked on an admin setting `total_price` on the project — that single save auto-creates the 50% deposit invoice and emails the client, there's no separate "send quote" action)** → Care Plan selection (blocked ahead of time on at least one available plan existing under Care Plan Pricing) → Care Plan payment method → Service Agreement (blocked ahead of time on a published agreement existing) → portal access granted.
