@@ -77,14 +77,16 @@
 </div>
 
 {{-- Table --}}
-<div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-    @if ($clients->isEmpty())
+@if ($clients->isEmpty())
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div class="px-6 py-16 text-center">
             <p class="text-gray-500 dark:text-gray-400 text-sm">
                 {{ $search ? 'No clients match your search.' : 'No clients yet.' }}
             </p>
         </div>
-    @else
+    </div>
+@else
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
@@ -97,7 +99,7 @@
                         <th class="px-5 py-3"></th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                <tbody id="clients-tbody" class="divide-y divide-gray-100 dark:divide-gray-700">
                     @foreach ($clients as $client)
                         @php $project = $client->projects->first(); @endphp
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
@@ -253,8 +255,60 @@
                 </tbody>
             </table>
         </div>
-    @endif
-</div>
+    </div>
+
+    <div id="clients-pagination" class="hidden flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4 text-sm text-gray-600 dark:text-gray-400">
+        <p>Showing <span id="clients-pagination-start"></span>–<span id="clients-pagination-end"></span> of <span id="clients-pagination-total"></span></p>
+        <div class="flex items-center gap-2">
+            <button type="button" id="clients-pagination-prev" class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700/30">Previous</button>
+            <span id="clients-pagination-page-info" class="px-2 whitespace-nowrap"></span>
+            <button type="button" id="clients-pagination-next" class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700/30">Next</button>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const PER_PAGE = 10;
+            let currentPage = 1;
+
+            const rows = Array.from(document.querySelectorAll('#clients-tbody tr'));
+            const pagination = document.getElementById('clients-pagination');
+            const prevBtn = document.getElementById('clients-pagination-prev');
+            const nextBtn = document.getElementById('clients-pagination-next');
+            const pageInfo = document.getElementById('clients-pagination-page-info');
+            const showingStart = document.getElementById('clients-pagination-start');
+            const showingEnd = document.getElementById('clients-pagination-end');
+            const showingTotal = document.getElementById('clients-pagination-total');
+
+            function apply() {
+                const totalPages = Math.max(1, Math.ceil(rows.length / PER_PAGE));
+                if (currentPage > totalPages) currentPage = totalPages;
+
+                const start = (currentPage - 1) * PER_PAGE;
+                const pageRows = rows.slice(start, start + PER_PAGE);
+                const visibleSet = new Set(pageRows);
+
+                rows.forEach(function (row) {
+                    row.classList.toggle('hidden', !visibleSet.has(row));
+                });
+
+                pagination.classList.toggle('hidden', rows.length <= PER_PAGE);
+
+                showingStart.textContent = start + 1;
+                showingEnd.textContent = Math.min(start + PER_PAGE, rows.length);
+                showingTotal.textContent = rows.length;
+                pageInfo.textContent = 'Page ' + currentPage + ' of ' + totalPages;
+                prevBtn.disabled = currentPage <= 1;
+                nextBtn.disabled = currentPage >= totalPages;
+            }
+
+            prevBtn.addEventListener('click', function () { if (currentPage > 1) { currentPage--; apply(); } });
+            nextBtn.addEventListener('click', function () { currentPage++; apply(); });
+
+            apply();
+        })();
+    </script>
+@endif
 
 {{-- Edit Client Modal --}}
 <div id="edit-client-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 hidden">
