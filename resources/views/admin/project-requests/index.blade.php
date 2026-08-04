@@ -40,6 +40,13 @@
     ];
 @endphp
 
+{{-- Sticky header block (KPI cards + toolbar) — stays in view below the
+     layout's own sticky h-16 header while only the table/cards below scroll.
+     bg-gray-50/dark:bg-navy-dark matches <body>'s background (layouts.admin)
+     so content scrolling underneath doesn't show through, and a bottom
+     border gives it a visible edge once something is actually behind it. --}}
+<div class="sticky top-16 z-10 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 pt-2 pb-4 mb-3 bg-gray-50 dark:bg-navy-dark border-b border-gray-200 dark:border-gray-700">
+
 {{-- ═══════════════════════════════════════════════════════════════════════
      HEADER — subtitle + KPI cards. The "Project Requests" H1 itself is
      owned by layouts.admin (shared across every admin page), left untouched.
@@ -110,6 +117,8 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
         New Project Request
     </button>
+</div>
+
 </div>
 
 @if ($requests->isEmpty())
