@@ -310,6 +310,30 @@
                         @endif
                     </a>
                 @endif
+                @if (auth()->user()->canAccessAdminPage('chat'))
+                    {{-- Positioned 3rd in the sidebar (right after All
+                         Projects / My Work Orders) rather than further down
+                         with the rest — always visually distinct from every
+                         other nav item here too (not just on its own active
+                         route): a permanent gold-tinted pill + a small
+                         "live" dot on the icon, so the one genuinely
+                         real-time feature in this sidebar doesn't read as
+                         just another plain link an admin could easily
+                         scroll past. --}}
+                    <a href="{{ route('admin.chat.index') }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.chat.*') ? 'bg-gold text-navy-dark shadow-sm' : 'bg-gold/10 text-gold hover:bg-gold/20' }}">
+                        <span class="relative shrink-0 flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                            </svg>
+                            <span class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-teal {{ request()->routeIs('admin.chat.*') ? 'ring-2 ring-gold' : 'ring-2 ring-navy-dark' }}"></span>
+                        </span>
+                        <span class="flex-1">Chat</span>
+                        @if ($unreadChatCount > 0)
+                            <span id="admin-chat-nav-badge" class="text-xs font-semibold px-2 py-0.5 rounded-full {{ request()->routeIs('admin.chat.*') ? 'bg-navy-dark text-gold' : 'bg-red-500 text-white' }}">{{ $unreadChatCount }}</span>
+                        @endif
+                    </a>
+                @endif
                 @if (auth()->user()->canAccessAdminPage('developers'))
                     <a href="{{ route('admin.developers.index') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.developers.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
@@ -406,27 +430,6 @@
                         <span class="flex-1">Support Tickets</span>
                         @if ($openSupportTicketCount > 0)
                             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500 text-white">{{ $openSupportTicketCount }}</span>
-                        @endif
-                    </a>
-                @endif
-                @if (auth()->user()->canAccessAdminPage('chat'))
-                    {{-- Always visually distinct from every other nav item
-                         here (not just on its own active route) — a
-                         permanent gold-tinted pill + a small "live" dot on
-                         the icon, so the one genuinely real-time feature in
-                         this sidebar doesn't read as just another plain
-                         link an admin could easily scroll past. --}}
-                    <a href="{{ route('admin.chat.index') }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.chat.*') ? 'bg-gold text-navy-dark shadow-sm' : 'bg-gold/10 text-gold hover:bg-gold/20' }}">
-                        <span class="relative shrink-0 flex items-center justify-center">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                            </svg>
-                            <span class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-teal {{ request()->routeIs('admin.chat.*') ? 'ring-2 ring-gold' : 'ring-2 ring-navy-dark' }}"></span>
-                        </span>
-                        <span class="flex-1">Chat</span>
-                        @if ($unreadChatCount > 0)
-                            <span id="admin-chat-nav-badge" class="text-xs font-semibold px-2 py-0.5 rounded-full {{ request()->routeIs('admin.chat.*') ? 'bg-navy-dark text-gold' : 'bg-red-500 text-white' }}">{{ $unreadChatCount }}</span>
                         @endif
                     </a>
                 @endif
