@@ -146,17 +146,23 @@
          hover lift here is safe.
          ═══════════════════════════════════════════════════════════════ --}}
     <div id="requests-table" class="hidden md:block bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
+        {{-- max-h + overflow-y-auto here (not just overflow-x-auto) is
+             deliberate — overflow-x-auto alone computes overflow-y to auto
+             anyway per the CSS spec, which silently breaks position:sticky
+             on the thead below if it's left implicit. Setting it explicitly
+             makes this div a real, intentional scrollport, so the sticky
+             header sticks to the top of the rows area, not the page. --}}
+        <div class="overflow-x-auto overflow-y-auto max-h-[65vh]">
         <table class="w-full text-xs" style="border-collapse:separate;border-spacing:0 6px;">
             <thead class="text-left text-[0.65rem] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 <tr>
-                    <th class="px-5 pb-2">Client</th>
-                    <th class="px-5 pb-2">Title</th>
-                    <th class="px-5 pb-2">Category</th>
-                    <th class="px-5 pb-2">Status</th>
-                    <th class="px-5 pb-2">Proposal</th>
-                    <th class="px-5 pb-2">Submitted</th>
-                    <th class="px-5 pb-2"></th>
+                    <th class="sticky top-0 z-10 bg-white dark:bg-navy px-5 pt-3 pb-2">Client</th>
+                    <th class="sticky top-0 z-10 bg-white dark:bg-navy px-5 pt-3 pb-2">Title</th>
+                    <th class="sticky top-0 z-10 bg-white dark:bg-navy px-5 pt-3 pb-2">Category</th>
+                    <th class="sticky top-0 z-10 bg-white dark:bg-navy px-5 pt-3 pb-2">Status</th>
+                    <th class="sticky top-0 z-10 bg-white dark:bg-navy px-5 pt-3 pb-2">Proposal</th>
+                    <th class="sticky top-0 z-10 bg-white dark:bg-navy px-5 pt-3 pb-2">Submitted</th>
+                    <th class="sticky top-0 z-10 bg-white dark:bg-navy px-5 pt-3 pb-2"></th>
                 </tr>
             </thead>
             <tbody>
