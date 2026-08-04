@@ -88,15 +88,15 @@
 @else
     <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+            <table class="w-full text-xs">
                 <thead>
                     <tr class="border-b border-gray-100 dark:border-gray-700">
-                        <th class="text-left px-5 py-3 text-xs font-semibold uppercase tracking-widest text-gray-400">Client</th>
-                        <th class="text-left px-5 py-3 text-xs font-semibold uppercase tracking-widest text-gray-400 hidden sm:table-cell">Phone</th>
-                        <th class="text-left px-5 py-3 text-xs font-semibold uppercase tracking-widest text-gray-400 hidden md:table-cell">Project</th>
-                        <th class="text-left px-5 py-3 text-xs font-semibold uppercase tracking-widest text-gray-400 hidden lg:table-cell">Joined</th>
-                        <th class="text-left px-5 py-3 text-xs font-semibold uppercase tracking-widest text-gray-400">Status</th>
-                        <th class="px-5 py-3"></th>
+                        <th class="text-left px-4 py-2 text-[0.65rem] font-semibold uppercase tracking-widest text-gray-400">Client</th>
+                        <th class="text-left px-4 py-2 text-[0.65rem] font-semibold uppercase tracking-widest text-gray-400 hidden sm:table-cell">Phone</th>
+                        <th class="text-left px-4 py-2 text-[0.65rem] font-semibold uppercase tracking-widest text-gray-400 hidden md:table-cell">Project</th>
+                        <th class="text-left px-4 py-2 text-[0.65rem] font-semibold uppercase tracking-widest text-gray-400 hidden lg:table-cell">Joined</th>
+                        <th class="text-left px-4 py-2 text-[0.65rem] font-semibold uppercase tracking-widest text-gray-400">Status</th>
+                        <th class="px-4 py-2"></th>
                     </tr>
                 </thead>
                 <tbody id="clients-tbody" class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -105,52 +105,52 @@
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
 
                             {{-- Client identity --}}
-                            <td class="px-5 py-4">
-                                <div class="flex items-center gap-4">
+                            <td class="px-4 py-2.5">
+                                <div class="flex items-center gap-3">
                                     <div class="relative shrink-0">
-                                        <div class="w-9 h-9 rounded-full bg-navy/10 dark:bg-white/10 text-navy dark:text-white flex items-center justify-center text-sm font-bold">
+                                        <div class="w-8 h-8 rounded-full bg-navy/10 dark:bg-white/10 text-navy dark:text-white flex items-center justify-center text-xs font-bold">
                                             {{ strtoupper(substr($client->name, 0, 1)) }}
                                         </div>
                                         @if ($client->isOnline())
-                                            <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-white dark:border-gray-800"></span>
+                                            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-white dark:border-gray-800"></span>
                                         @endif
                                     </div>
                                     <div class="min-w-0">
                                         <p class="font-semibold text-navy dark:text-white truncate">{{ $client->name }}</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $client->email }}</p>
+                                        <p class="text-[0.7rem] text-gray-500 dark:text-gray-400 truncate">{{ $client->email }}</p>
                                     </div>
                                 </div>
                             </td>
 
                             {{-- Phone --}}
-                            <td class="px-5 py-4 hidden sm:table-cell">
+                            <td class="px-4 py-2.5 hidden sm:table-cell">
                                 <span class="text-gray-500 dark:text-gray-400">{{ $client->phone ?: '—' }}</span>
                             </td>
 
                             {{-- Project --}}
-                            <td class="px-5 py-4 hidden md:table-cell">
+                            <td class="px-4 py-2.5 hidden md:table-cell">
                                 @if ($project)
                                     <p class="font-medium text-navy dark:text-white truncate max-w-[180px]">{{ $project->name }}</p>
                                 @else
-                                    <span class="text-xs text-gray-500 dark:text-gray-400">No project</span>
+                                    <span class="text-[0.7rem] text-gray-500 dark:text-gray-400">No project</span>
                                 @endif
                             </td>
 
                             {{-- Joined --}}
-                            <td class="px-5 py-4 hidden lg:table-cell">
+                            <td class="px-4 py-2.5 hidden lg:table-cell">
                                 <span class="text-gray-500 dark:text-gray-400">{{ $client->created_at->format('M j, Y') }}</span>
                             </td>
 
                             {{-- Status badges --}}
-                            <td class="px-5 py-4">
-                                <div class="flex flex-wrap gap-1.5">
+                            <td class="px-4 py-2.5">
+                                <div class="flex flex-wrap gap-1">
                                     @if (! $client->email_verified_at)
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[0.65rem] font-medium bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
                                             Unverified
                                         </span>
                                     @endif
                                     @if ($project)
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $statusColors[$project->status] ?? 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300' }}">
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[0.65rem] font-medium {{ $statusColors[$project->status] ?? 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300' }}">
                                             {{ $statusLabels[$project->status] ?? ucfirst($project->status) }}
                                         </span>
                                     @endif
@@ -158,11 +158,11 @@
                             </td>
 
                             {{-- Actions --}}
-                            <td class="px-5 py-4 text-right">
-                                <div class="flex items-center justify-end gap-2">
+                            <td class="px-4 py-2.5 text-right">
+                                <div class="flex items-center justify-end gap-1.5">
                                     @if ($project)
                                         <a href="{{ route('admin.projects.show', $project) }}"
-                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-navy text-white text-xs font-semibold hover:bg-navy-light transition-colors">
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-navy text-white text-[0.7rem] font-semibold hover:bg-navy-light transition-colors">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -172,7 +172,7 @@
                                     @endif
                                     <div class="relative" x-data="{ open: false }">
                                         <button @click="open = !open" @click.outside="open = false"
-                                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                            class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                                 <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
                                             </svg>
