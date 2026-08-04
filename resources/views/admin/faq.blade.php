@@ -131,7 +131,7 @@
                 <span class="shrink-0 w-6 h-6 rounded-full bg-navy/10 dark:bg-white/10 text-navy dark:text-white text-xs font-bold flex items-center justify-center">1</span>
                 <div>
                     <p class="text-sm font-semibold text-navy dark:text-white">Account created</p>
-                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Either the client registers directly, or you convert an Intake Submission / Care Plan signup (see "Intake Submissions & Onboarding Clients" below). This creates their User account and Project.</p>
+                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Either the client registers directly, or you convert an <a href="{{ route('admin.intake-submissions.index') }}" class="font-semibold text-gold-dark hover:underline">Intake Submission</a> / Care Plan signup (see "Intake Submissions & Onboarding Clients" below). This creates their User account and Project.</p>
                 </div>
             </li>
             <li class="flex gap-3 rounded-lg bg-white/70 dark:bg-navy-dark/40 border border-gray-200 dark:border-gray-700 px-4 py-3">
@@ -152,7 +152,7 @@
                 <span class="shrink-0 w-6 h-6 rounded-full bg-amber-400 text-white text-xs font-bold flex items-center justify-center">4</span>
                 <div>
                     <p class="text-sm font-semibold text-amber-800 dark:text-amber-300">⚠ Admin action required — set the project's price</p>
-                    <p class="text-xs text-amber-700/90 dark:text-amber-300/80 mt-0.5">The client is now stuck on a "preparing your quote" screen and <span class="font-semibold">cannot proceed</span> until you review the project and enter a <span class="font-semibold">Total Price</span> on its admin project page. Saving that price automatically creates the initial 50% deposit invoice and emails the client — there's no separate "send quote" button, entering the price <span class="italic">is</span> sending the quote.</p>
+                    <p class="text-xs text-amber-700/90 dark:text-amber-300/80 mt-0.5">The client is now stuck on a "preparing your quote" screen and <span class="font-semibold">cannot proceed</span> until you review the project and enter a <span class="font-semibold">Total Price</span> on its project page — open the client from <a href="{{ route('admin.dashboard') }}" class="font-semibold text-gold-dark hover:underline">All Projects</a> and click Manage. Saving that price automatically creates the initial 50% deposit invoice and emails the client — there's no separate "send quote" button, entering the price <span class="italic">is</span> sending the quote.</p>
                 </div>
             </li>
             <li class="flex gap-3 rounded-lg bg-white/70 dark:bg-navy-dark/40 border border-gray-200 dark:border-gray-700 px-4 py-3">
@@ -166,7 +166,7 @@
                 <span class="shrink-0 w-6 h-6 rounded-full bg-amber-400 text-white text-xs font-bold flex items-center justify-center">6</span>
                 <div>
                     <p class="text-sm font-semibold text-amber-800 dark:text-amber-300">⚠ Admin action required (ahead of time) — Care Plan pricing must exist</p>
-                    <p class="text-xs text-amber-700/90 dark:text-amber-300/80 mt-0.5">The client now picks a Website Care Plan and agrees to its terms. This isn't a per-client action, but it only works if you've already published at least one available plan under <span class="font-semibold">Care Plans → Care Plan Pricing</span>. No charge happens yet — the plan is saved as "Pending" until launch.</p>
+                    <p class="text-xs text-amber-700/90 dark:text-amber-300/80 mt-0.5">The client now picks a Website Care Plan and agrees to its terms. This isn't a per-client action, but it only works if you've already published at least one available plan under <a href="{{ route('admin.care-plans.index') }}" class="font-semibold text-gold-dark hover:underline">Care Plan Pricing</a>. No charge happens yet — the plan is saved as "Pending" until launch.</p>
                 </div>
             </li>
             <li class="flex gap-3 rounded-lg bg-white/70 dark:bg-navy-dark/40 border border-gray-200 dark:border-gray-700 px-4 py-3">
@@ -180,14 +180,14 @@
                 <span class="shrink-0 w-6 h-6 rounded-full bg-amber-400 text-white text-xs font-bold flex items-center justify-center">8</span>
                 <div>
                     <p class="text-sm font-semibold text-amber-800 dark:text-amber-300">⚠ Admin action required (ahead of time) — Service Agreement must exist</p>
-                    <p class="text-xs text-amber-700/90 dark:text-amber-300/80 mt-0.5">The client reviews the agreement summary, reads the master agreement, checks the acknowledgment boxes, and signs electronically. This requires a Service Agreement already set up under <span class="font-semibold">Service Agreement</span> — again, a one-time setup, not something you do per client.</p>
+                    <p class="text-xs text-amber-700/90 dark:text-amber-300/80 mt-0.5">The client reviews the agreement summary, reads the master agreement, checks the acknowledgment boxes, and signs electronically. This requires a <a href="{{ route('admin.service-agreement.index') }}" class="font-semibold text-gold-dark hover:underline">Service Agreement</a> already set up — again, a one-time setup, not something you do per client.</p>
                 </div>
             </li>
             <li class="flex gap-3 rounded-lg bg-teal/10 border border-teal/30 px-4 py-3">
                 <span class="shrink-0 w-6 h-6 rounded-full bg-teal text-white text-xs font-bold flex items-center justify-center">9</span>
                 <div>
                     <p class="text-sm font-semibold text-teal-dark">Portal access granted — onboarding complete</p>
-                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">The client now sees their full portal. From here your ongoing job is: add/update milestones as work happens (drives their progress bar), approve uploaded files, and move the project's status forward (Onboarding → In Progress → Review → Launched). Only mark it <span class="font-semibold">Launched</span> once the deposit, final payment, and client approval are all done — that's the exact moment the Care Plan subscription actually starts billing.</p>
+                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">The client now sees their full portal. From here your ongoing job — all from that same client's project page in <a href="{{ route('admin.dashboard') }}" class="font-semibold text-gold-dark hover:underline">All Projects</a> — is: add/update milestones as work happens (drives their progress bar), approve uploaded files, and move the project's status forward (Onboarding → In Progress → Review → Launched). Only mark it <span class="font-semibold">Launched</span> once the deposit, final payment, and client approval are all done — that's the exact moment the Care Plan subscription actually starts billing.</p>
                 </div>
             </li>
         </ol>
