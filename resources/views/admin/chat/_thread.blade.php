@@ -24,6 +24,12 @@
     }
     #chat-toast:not(.hidden) { animation: chatPopoverIn 200ms ease-out; }
 
+    {{-- Same fix as the portal chat page: whichever bubble currently has its
+         options menu/reaction picker open gets elevated above every sibling
+         bubble, regardless of DOM order — otherwise a later message in the
+         list paints over the popover despite its own z-index. --}}
+    .chat-bubble-elevated { position: relative; z-index: 30; }
+
     /* Phase 10 — reduced-motion users get every animation on this page cut to a near-instant fade instead of movement/scaling. */
     @media (prefers-reduced-motion: reduce) {
         .chat-typing-dot, #chat-send-btn.chat-send-launch,
@@ -924,6 +930,7 @@ function applyAdminChatReaction(data) {
             m.classList.add('hidden');
             m.classList.remove('flex');
         });
+        container.querySelectorAll('.chat-bubble-elevated').forEach(function (b) { b.classList.remove('chat-bubble-elevated'); });
     }
 
     // Menu buttons/dropdowns are built per-bubble (server-rendered and
@@ -935,7 +942,10 @@ function applyAdminChatReaction(data) {
             const menu = menuBtn.nextElementSibling;
             const alreadyOpen = !menu.classList.contains('hidden');
             closeAllAdminChatBubblePopovers();
-            if (!alreadyOpen) menu.classList.remove('hidden');
+            if (!alreadyOpen) {
+                menu.classList.remove('hidden');
+                menuBtn.closest('.chat-bubble')?.classList.add('chat-bubble-elevated');
+            }
             return;
         }
 
@@ -947,6 +957,7 @@ function applyAdminChatReaction(data) {
             if (!alreadyOpen) {
                 picker.classList.remove('hidden');
                 picker.classList.add('flex');
+                reactBtn.closest('.chat-bubble')?.classList.add('chat-bubble-elevated');
             }
             return;
         }

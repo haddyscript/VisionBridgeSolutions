@@ -28,6 +28,15 @@
         }
         .chat-bubble-card { transition: transform 200ms ease-out, box-shadow 200ms ease-out, background-color 200ms ease-out; }
         .chat-bubble-card.chat-bubble-hoverable:hover { transform: translateY(-1px); }
+        {{-- Neither .chat-bubble nor .chat-bubble-card normally establishes
+             its own stacking context (position:relative with z-index:auto),
+             so the options menu/reaction picker they contain — despite its
+             own z-20/z-30 — can still paint underneath a *later* message
+             bubble in the DOM, since that later bubble's box otherwise wins
+             on tree order. Whichever bubble currently has its menu/picker
+             open gets this class (toggled in the click-delegation script
+             below) to force it above every sibling regardless of order. --}}
+        .chat-bubble-elevated { position: relative; z-index: 30; }
         #chat-typing-indicator { transition: opacity 200ms ease-out, transform 200ms ease-out; }
         #chat-scroll-to-bottom-btn { transition: opacity 200ms ease-out, transform 200ms ease-out, box-shadow 200ms ease-out; }
         {{-- Phase 9 note: previously this used rotate() and an overshooting
@@ -1545,6 +1554,7 @@
                 m.classList.add('hidden');
                 m.classList.remove('flex');
             });
+            container.querySelectorAll('.chat-bubble-elevated').forEach(function (b) { b.classList.remove('chat-bubble-elevated'); });
         }
 
         // Menu buttons/dropdowns are built per-bubble (server-rendered and
@@ -1562,7 +1572,10 @@
                 const menu = menuBtn.nextElementSibling;
                 const alreadyOpen = !menu.classList.contains('hidden');
                 closeAllChatBubblePopovers();
-                if (!alreadyOpen) menu.classList.remove('hidden');
+                if (!alreadyOpen) {
+                    menu.classList.remove('hidden');
+                    menuBtn.closest('.chat-bubble')?.classList.add('chat-bubble-elevated');
+                }
                 return;
             }
 
@@ -1574,6 +1587,7 @@
                 if (!alreadyOpen) {
                     picker.classList.remove('hidden');
                     picker.classList.add('flex');
+                    reactBtn.closest('.chat-bubble')?.classList.add('chat-bubble-elevated');
                 }
                 return;
             }
