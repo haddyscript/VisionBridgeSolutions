@@ -148,6 +148,16 @@
             'Could you clarify what you\'d like us to prioritize here?',
             "We've made the requested changes — please review when you have a moment.",
             'Just checking in — any updates on your end?',
+            "We're currently working on this and will update you as soon as it's ready.",
+            'Could you share a bit more detail so we can get this exactly right?',
+            "This has been added to our to-do list — we'll keep you posted on progress.",
+            "Everything looks good on our end — let us know if you'd like any changes.",
+            "We appreciate your patience — we're finishing up a few final touches.",
+            'Could you send over any reference links or files for this request?',
+            'This is now live on your site — take a look and let us know your thoughts!',
+            'We wanted to follow up on this — is everything working as expected?',
+            'Happy to hop on a quick call if that would help clarify things.',
+            "Thanks for your patience while we worked through this — it's all set now.",
         ];
     @endphp
     {{-- Composer — Messenger-style single row, matching the identical
