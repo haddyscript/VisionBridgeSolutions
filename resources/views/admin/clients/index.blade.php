@@ -292,7 +292,7 @@
                     row.classList.toggle('hidden', !visibleSet.has(row));
                 });
 
-                pagination.classList.toggle('hidden', rows.length <= PER_PAGE);
+                pagination.classList.toggle('hidden', rows.length === 0);
 
                 showingStart.textContent = start + 1;
                 showingEnd.textContent = Math.min(start + PER_PAGE, rows.length);
