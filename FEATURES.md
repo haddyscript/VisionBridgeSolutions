@@ -1600,6 +1600,12 @@ Publishing (not drafting) an announcement targeted at **Team** and/or **Develope
 - Scoped to `store()` only (a brand-new announcement being Published Live) — saving as a Draft, or later activating a draft via the Activate button, does not currently trigger this email.
 - Client-only announcements never trigger this — only fires when `audiences` intersects `['team', 'developer']`.
 
+## 105c. Client Portal Chat — Closed the Remaining Gap, Smaller Message Text (2026-08-04)
+
+Follow-up to §92: `/portal/chat`'s card height (`h-[calc(100vh-140px)]`) still left a visible ~44px gap below the composer on desktop, since `<main>`'s chat-only padding is `py-3 sm:py-4` (32px total) plus the 64px header — the exact-fit value is `100vh-96px`, not `100vh-140px`. Tightened to `h-[calc(100vh-100px)]`, closing the gap while keeping a small safety margin.
+
+Also shrank the message bubble text a step (`text-sm` → `text-[0.8rem]`) and tightened bubble padding (`px-5 py-3.5` → `px-4 py-2.5`) and the small gaps around the sender label/timestamp — the bubbles read a bit large relative to how much of the card they took up. Updated in all four places this markup exists: the server-rendered template, the JS live-append builder (`buildPortalBubbleHtml`), the plain-text body builder (`buildPortalChatBodyEl`), and the deleted-message rebuild (`applyPortalChatDeleted`) — so a freshly sent/received message matches a page-loaded one.
+
 ## 105b. Admin Chat — Reclaimed the Empty Space Below the Card (2026-08-04)
 
 `/admin/chat` and `/admin/projects/{project}/chat` left a large unused gap below the conversation card — its height was `h-[calc(100vh-160px)]` against the layout's normal generous `py-8` main padding, leaving roughly 30-40px of dead space unaccounted for beneath it. Same fix as the client portal's Chat page got in §92: `layouts/admin.blade.php`'s `<main>` padding is now conditionally thinner (`py-3 sm:py-4` instead of `py-8`) specifically on `admin.chat.*` routes, and the card's height was tightened to `h-[calc(100vh-120px)]` to reclaim the space that padding used to reserve. Like §92, this is an estimate based on the padding actually removed, not pixel-verified in a live browser — worth a quick visual check, with a small further adjustment to the `120px` constant if there's still a gap or slight overflow.

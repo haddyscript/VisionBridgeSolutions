@@ -171,7 +171,7 @@
     </style>
 
     <div id="chat-thread" data-project-id="{{ $project->id }}" data-message-base-url="{{ url('/portal/chat-messages') }}"
-         class="relative bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700/60 shadow-sm overflow-hidden flex flex-col h-[calc(100vh-140px)] min-h-[28rem] transition-colors duration-200">
+         class="relative bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700/60 shadow-sm overflow-hidden flex flex-col h-[calc(100vh-100px)] min-h-[28rem] transition-colors duration-200">
 
         {{-- Header --}}
         @php
@@ -359,13 +359,13 @@
                         @elseif (! $isOwn)
                             <span class="w-9 shrink-0"></span>
                         @endif
-                        <div class="chat-bubble-card relative rounded-[1.375rem] {{ $isOwn ? 'rounded-br-md bg-gold' : 'rounded-bl-md bg-white dark:bg-gray-800/90 border border-gray-100 dark:border-gray-700/60' }} {{ $chatMessage->isDeleted() ? 'border border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-900/30 shadow-none' : 'shadow-sm chat-bubble-hoverable hover:shadow-md' }} px-5 py-3.5">
+                        <div class="chat-bubble-card relative rounded-[1.375rem] {{ $isOwn ? 'rounded-br-md bg-gold' : 'rounded-bl-md bg-white dark:bg-gray-800/90 border border-gray-100 dark:border-gray-700/60' }} {{ $chatMessage->isDeleted() ? 'border border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-900/30 shadow-none' : 'shadow-sm chat-bubble-hoverable hover:shadow-md' }} px-4 py-2.5">
                             @if (! $isOwn && ! $isGrouped)
-                                <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold-dark mb-1.5">VisionBridge Team</p>
+                                <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold-dark mb-1">VisionBridge Team</p>
                             @endif
 
                             @if ($chatMessage->isDeleted())
-                                <p class="chat-bubble-body flex items-center gap-1.5 text-sm italic text-gray-400 dark:text-gray-500">
+                                <p class="chat-bubble-body flex items-center gap-1.5 text-xs italic text-gray-400 dark:text-gray-500">
                                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16"/></svg>
                                     This message was deleted
                                 </p>
@@ -385,10 +385,10 @@
                                     </span>
                                 </a>
                             @else
-                                <p class="chat-bubble-body text-sm leading-relaxed {{ $isOwn ? 'text-navy-dark font-medium' : 'text-gray-700 dark:text-gray-200' }} whitespace-pre-line">{{ $chatMessage->body }}</p>
+                                <p class="chat-bubble-body text-[0.8rem] leading-relaxed {{ $isOwn ? 'text-navy-dark font-medium' : 'text-gray-700 dark:text-gray-200' }} whitespace-pre-line">{{ $chatMessage->body }}</p>
                             @endif
 
-                            <p class="chat-bubble-time flex items-center gap-1 text-[0.65rem] {{ $isOwn ? 'text-navy-dark/50 justify-end' : 'text-gray-400 dark:text-gray-500' }} mt-1.5">
+                            <p class="chat-bubble-time flex items-center gap-1 text-[0.65rem] {{ $isOwn ? 'text-navy-dark/50 justify-end' : 'text-gray-400 dark:text-gray-500' }} mt-1">
                                 <span class="chat-bubble-timestamp">{{ $chatMessage->created_at->diffForHumans() }}</span>
                                 <span class="chat-bubble-edited {{ $chatMessage->isEdited() ? '' : 'hidden' }}"> · edited {{ $chatMessage->edited_at?->diffForHumans() }}</span>
                                 @if ($isOwn && ! $chatMessage->isDeleted())
@@ -1138,7 +1138,7 @@
         }
 
         const p = document.createElement('p');
-        p.className = 'chat-bubble-body text-sm leading-relaxed ' + (isOwn ? 'text-navy-dark font-medium' : 'text-gray-700 dark:text-gray-200') + ' whitespace-pre-line';
+        p.className = 'chat-bubble-body text-[0.8rem] leading-relaxed ' + (isOwn ? 'text-navy-dark font-medium' : 'text-gray-700 dark:text-gray-200') + ' whitespace-pre-line';
         p.textContent = body;
         return p;
     }
@@ -1160,12 +1160,12 @@
                 ? '<span class="w-9 shrink-0"></span>'
                 : '<span class="w-9 h-9 rounded-full bg-navy text-gold text-xs font-bold flex items-center justify-center shrink-0 shadow-sm">VB</span>';
         }
-        html += '<div class="chat-bubble-card relative rounded-[1.375rem] ' + (isOwn ? 'rounded-br-md bg-gold' : 'rounded-bl-md bg-white dark:bg-gray-800/90 border border-gray-100 dark:border-gray-700/60') + ' shadow-sm chat-bubble-hoverable hover:shadow-md px-5 py-3.5">';
+        html += '<div class="chat-bubble-card relative rounded-[1.375rem] ' + (isOwn ? 'rounded-br-md bg-gold' : 'rounded-bl-md bg-white dark:bg-gray-800/90 border border-gray-100 dark:border-gray-700/60') + ' shadow-sm chat-bubble-hoverable hover:shadow-md px-4 py-2.5">';
         if (!isOwn && !grouped) {
-            html += '<p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold-dark mb-1.5">VisionBridge Team</p>';
+            html += '<p class="text-[0.65rem] font-semibold uppercase tracking-wide text-gold-dark mb-1">VisionBridge Team</p>';
         }
-        html += '<p class="chat-bubble-body text-sm leading-relaxed ' + (isOwn ? 'text-navy-dark font-medium' : 'text-gray-700 dark:text-gray-200') + ' whitespace-pre-line"></p>';
-        html += '<p class="chat-bubble-time flex items-center gap-1 text-[0.65rem] ' + (isOwn ? 'text-navy-dark/50 justify-end' : 'text-gray-400 dark:text-gray-500') + ' mt-1.5">' +
+        html += '<p class="chat-bubble-body text-[0.8rem] leading-relaxed ' + (isOwn ? 'text-navy-dark font-medium' : 'text-gray-700 dark:text-gray-200') + ' whitespace-pre-line"></p>';
+        html += '<p class="chat-bubble-time flex items-center gap-1 text-[0.65rem] ' + (isOwn ? 'text-navy-dark/50 justify-end' : 'text-gray-400 dark:text-gray-500') + ' mt-1">' +
             '<span class="chat-bubble-timestamp"></span>' +
             '<span class="chat-bubble-edited hidden"></span>' +
             (isOwn ? '<span class="chat-bubble-ticks inline-flex shrink-0"></span>' : '') +
@@ -1467,12 +1467,12 @@
 
         const card = bubble.querySelector('.chat-bubble-card');
         if (card) {
-            card.className = 'chat-bubble-card relative rounded-[1.375rem] ' + (isOwn ? 'rounded-br-md' : 'rounded-bl-md') + ' border border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-900/30 shadow-none px-5 py-3.5';
+            card.className = 'chat-bubble-card relative rounded-[1.375rem] ' + (isOwn ? 'rounded-br-md' : 'rounded-bl-md') + ' border border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-900/30 shadow-none px-4 py-2.5';
         }
 
         const body = bubble.querySelector('.chat-bubble-body');
         if (body) {
-            body.outerHTML = '<p class="chat-bubble-body flex items-center gap-1.5 text-sm italic text-gray-400 dark:text-gray-500">' +
+            body.outerHTML = '<p class="chat-bubble-body flex items-center gap-1.5 text-xs italic text-gray-400 dark:text-gray-500">' +
                 '<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16"/></svg>' +
                 'This message was deleted</p>';
         }
