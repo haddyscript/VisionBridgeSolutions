@@ -211,8 +211,12 @@
             </div>
         </div>
 
-        {{-- Right column (~40%, sticky): quick controls + the one save action --}}
-        <div class="lg:col-span-2 lg:sticky lg:top-6 space-y-6">
+        {{-- Right column (~40%, sticky): quick controls + the one save action.
+             top-24 (not top-6) so it clears the layout's own sticky h-16
+             header instead of scrolling in underneath it — top-6 left a gap
+             smaller than the header's height, so the top of this column kept
+             visually disappearing behind the header instead of staying put. --}}
+        <div class="lg:col-span-2 lg:sticky lg:top-24 space-y-6">
 
             <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
                 <div>
