@@ -5,7 +5,7 @@
 
 @section('content')
 
-<div class="flex h-[calc(100vh-160px)] min-h-[28rem] bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+<div class="flex h-[calc(100vh-120px)] min-h-[28rem] bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
 
     {{-- Conversation list --}}
     <div class="w-full sm:w-80 shrink-0 border-r border-gray-200 dark:border-gray-700 flex-col {{ $activeProject ? 'hidden sm:flex' : 'flex' }}">
