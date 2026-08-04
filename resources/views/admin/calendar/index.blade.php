@@ -6,14 +6,19 @@
 @section('content')
 
 <div class="flex items-center justify-between mb-5">
-    <div class="flex items-center gap-4">
-        <a href="{{ route('admin.calendar', ['month' => $prevMonth]) }}" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-navy dark:hover:text-white transition-colors">
+    <div class="flex items-center gap-3">
+        <a href="{{ route('admin.calendar', ['month' => $prevMonth]) }}" title="Previous month" aria-label="Previous month"
+           class="inline-flex items-center gap-1 pl-2 pr-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark text-sm font-medium text-gray-600 dark:text-gray-300 shadow-sm hover:border-gold hover:text-gold-dark hover:shadow transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            Prev
         </a>
-        <h2 class="font-display text-lg font-bold text-navy dark:text-white">{{ $month->format('F Y') }}</h2>
-        <a href="{{ route('admin.calendar', ['month' => $nextMonth]) }}" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-navy dark:hover:text-white transition-colors">
+        <h2 class="font-display text-lg font-bold text-navy dark:text-white min-w-[9rem] text-center">{{ $month->format('F Y') }}</h2>
+        <a href="{{ route('admin.calendar', ['month' => $nextMonth]) }}" title="Next month" aria-label="Next month"
+           class="inline-flex items-center gap-1 pl-3 pr-2 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark text-sm font-medium text-gray-600 dark:text-gray-300 shadow-sm hover:border-gold hover:text-gold-dark hover:shadow transition-colors">
+            Next
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </a>
+        <a href="{{ route('admin.calendar') }}" class="text-xs font-semibold text-gold-dark hover:underline">Today</a>
     </div>
     <div class="flex items-center gap-4 text-xs font-medium text-gray-500 dark:text-gray-400">
         <span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-gold"></span> Consultation</span>
