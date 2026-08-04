@@ -8,7 +8,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
 
     {{-- ── Left column: create form ─────────────────────────────────────── --}}
-    <div class="lg:col-span-2 lg:sticky lg:top-24">
+    <div class="lg:col-span-2">
         <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5">
             <h3 class="text-sm font-semibold text-navy dark:text-white mb-4">New Announcement</h3>
             <form method="POST" action="{{ route('admin.announcements.store') }}" enctype="multipart/form-data" class="space-y-4">
@@ -103,7 +103,7 @@
     </div>
 
     {{-- ── Right column: feed log ────────────────────────────────────────── --}}
-    <div class="lg:col-span-3">
+    <div class="lg:col-span-3 lg:sticky lg:top-24">
         <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5">
             <div class="flex items-center gap-2 mb-3">
                 <h3 class="text-sm font-semibold text-navy dark:text-white">All Announcements</h3>
