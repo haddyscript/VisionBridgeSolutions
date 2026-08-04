@@ -121,8 +121,8 @@
          ═══════════════════════════════════════════════════════════════ --}}
     <div id="requests-table" class="hidden md:block bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
-        <table class="w-full text-sm" style="border-collapse:separate;border-spacing:0 10px;">
-            <thead class="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+        <table class="w-full text-xs" style="border-collapse:separate;border-spacing:0 6px;">
+            <thead class="text-left text-[0.65rem] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 <tr>
                     <th class="px-5 pb-2">Client</th>
                     <th class="px-5 pb-2">Title</th>
@@ -138,57 +138,57 @@
                     <tr class="request-row group bg-gray-50/60 dark:bg-navy-dark/40 hover:bg-white dark:hover:bg-gray-800 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
                         data-search="{{ $searchText }}" data-status="{{ $item->status }}"
                         onclick="window.location='{{ route('admin.project-requests.show', $item) }}'">
-                        <td class="px-5 py-4 align-middle rounded-l-xl border-y border-l border-gray-100 dark:border-gray-700 group-hover:border-gold/30">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <span class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 {{ $avatarClass($item->user->id) }}">
+                        <td class="px-5 py-2 align-middle rounded-l-xl border-y border-l border-gray-100 dark:border-gray-700 group-hover:border-gold/30">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <span class="w-7 h-7 rounded-full flex items-center justify-center text-[0.65rem] font-bold shrink-0 {{ $avatarClass($item->user->id) }}">
                                     {{ strtoupper(substr($item->user->name, 0, 1)) }}
                                 </span>
                                 <div class="min-w-0">
                                     <p class="font-bold text-navy dark:text-white truncate">{{ $item->user->name }}</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $item->user->email }}</p>
+                                    <p class="text-[0.7rem] text-gray-500 dark:text-gray-400 truncate">{{ $item->user->email }}</p>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-5 py-4 align-middle border-y border-gray-100 dark:border-gray-700 group-hover:border-gold/30 max-w-xs">
+                        <td class="px-5 py-2 align-middle border-y border-gray-100 dark:border-gray-700 group-hover:border-gold/30 max-w-xs">
                             <p class="font-semibold text-navy dark:text-white leading-snug">{{ $item->title }}</p>
-                            <div class="flex flex-wrap items-center gap-1 mt-1.5">
+                            <div class="flex flex-wrap items-center gap-1 mt-1">
                                 @if ($item->isInternal())
-                                    <span class="inline-block text-[0.65rem] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-navy/10 dark:bg-white/10 text-navy dark:text-white" title="Created internally by {{ $item->createdByAdmin?->name ?? 'an admin' }} — not submitted by the client">
+                                    <span class="inline-block text-[0.6rem] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-navy/10 dark:bg-white/10 text-navy dark:text-white" title="Created internally by {{ $item->createdByAdmin?->name ?? 'an admin' }} — not submitted by the client">
                                         Internal
                                     </span>
                                 @endif
                                 @if ($item->priority === 'urgent')
-                                    <span class="inline-block text-[0.65rem] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-red-50 dark:bg-red-500/10 text-red-500">
+                                    <span class="inline-block text-[0.6rem] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-red-50 dark:bg-red-500/10 text-red-500">
                                         Urgent
                                     </span>
                                 @endif
                             </div>
                         </td>
-                        <td class="px-5 py-4 align-middle border-y border-gray-100 dark:border-gray-700 group-hover:border-gold/30">
-                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $statusColors[$item->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500' }}">
+                        <td class="px-5 py-2 align-middle border-y border-gray-100 dark:border-gray-700 group-hover:border-gold/30">
+                            <span class="inline-flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $statusColors[$item->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500' }}">
                                 <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $statusIcons[$item->status] ?? '' !!}</svg>
                                 {{ \App\Models\ProjectRequest::STATUSES[$item->status] ?? $item->status }}
                             </span>
                         </td>
-                        <td class="px-5 py-4 align-middle border-y border-gray-100 dark:border-gray-700 group-hover:border-gold/30">
+                        <td class="px-5 py-2 align-middle border-y border-gray-100 dark:border-gray-700 group-hover:border-gold/30">
                             @if ($item->proposal_status)
-                                <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $proposalColors[$item->proposal_status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500' }}">
+                                <span class="inline-flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $proposalColors[$item->proposal_status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500' }}">
                                     <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $proposalIcons[$item->proposal_status] ?? '' !!}</svg>
                                     {{ \App\Models\ProjectRequest::PROPOSAL_STATUSES[$item->proposal_status] ?? $item->proposal_status }}
                                 </span>
                             @else
-                                <span class="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400">
+                                <span class="inline-block text-[0.65rem] font-medium px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400">
                                     No Proposal
                                 </span>
                             @endif
                         </td>
-                        <td class="px-5 py-4 align-middle border-y border-gray-100 dark:border-gray-700 group-hover:border-gold/30 whitespace-nowrap">
+                        <td class="px-5 py-2 align-middle border-y border-gray-100 dark:border-gray-700 group-hover:border-gold/30 whitespace-nowrap">
                             <p class="font-medium text-gray-700 dark:text-gray-300">{{ $item->created_at->format('M j, Y') }}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $item->created_at->diffForHumans() }}</p>
+                            <p class="text-[0.7rem] text-gray-500 dark:text-gray-400">{{ $item->created_at->diffForHumans() }}</p>
                         </td>
-                        <td class="px-5 py-4 align-middle text-right rounded-r-xl border-y border-r border-gray-100 dark:border-gray-700 group-hover:border-gold/30">
+                        <td class="px-5 py-2 align-middle text-right rounded-r-xl border-y border-r border-gray-100 dark:border-gray-700 group-hover:border-gold/30">
                             <a href="{{ route('admin.project-requests.show', $item) }}" onclick="event.stopPropagation()"
-                               class="inline-flex items-center gap-1.5 border border-gray-200 dark:border-gray-600 hover:border-gold hover:bg-gold/10 hover:shadow-sm hover:-translate-y-0.5 text-gray-600 dark:text-gray-300 hover:text-gold-dark text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200">
+                               class="inline-flex items-center gap-1.5 border border-gray-200 dark:border-gray-600 hover:border-gold hover:bg-gold/10 hover:shadow-sm hover:-translate-y-0.5 text-gray-600 dark:text-gray-300 hover:text-gold-dark text-[0.7rem] font-semibold px-2.5 py-1 rounded-lg transition-all duration-200">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
