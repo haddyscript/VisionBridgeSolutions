@@ -1599,3 +1599,7 @@ Publishing (not drafting) an announcement targeted at **Team** and/or **Develope
 
 - Scoped to `store()` only (a brand-new announcement being Published Live) — saving as a Draft, or later activating a draft via the Activate button, does not currently trigger this email.
 - Client-only announcements never trigger this — only fires when `audiences` intersects `['team', 'developer']`.
+
+## 105. Announcements — AJAX Pagination, No Reload (2026-08-04)
+
+`/admin/announcements`' "All Announcements" list was already server-paginated at 5 per page (`AnnouncementController::index()`), but the view never rendered `$announcements->links()` reachably in a way that avoided a full page reload — clicking a pagination link would navigate away entirely. Extracted the list (count badge + cards + `{{ $announcements->links() }}`) into a new partial, `admin/announcements/_list.blade.php`, shared between the full page load and an AJAX fragment response (`$request->ajax()` in the controller, same convention as Work Orders' `_results.blade.php`, §38). A small script in `index.blade.php` intercepts clicks on the pagination links, fetches the fragment, swaps it in, and updates the URL via `history.pushState` — clicking Next/Previous no longer reloads the page. The per-item `onclick`-bound controls (expand, Edit, Activate/Deactivate, Delete) are plain global functions, so nothing needed re-binding after a swap.

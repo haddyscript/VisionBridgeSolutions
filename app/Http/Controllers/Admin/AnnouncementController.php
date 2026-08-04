@@ -22,11 +22,17 @@ class AnnouncementController extends Controller
         'johnnydavis45@yahoo.com',
     ];
 
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.announcements.index', [
-            'announcements' => Announcement::with('createdBy', 'attachments')->latest()->paginate(5),
-        ]);
+        $announcements = Announcement::with('createdBy', 'attachments')->latest()->paginate(5);
+
+        // Pagination links fetch just this list fragment so clicking "Next"
+        // never triggers a full page reload — see index.blade.php's
+        // loadAnnouncements(). $request->ajax() checks for X-Requested-With,
+        // which that fetch() call sets explicitly.
+        return $request->ajax()
+            ? view('admin.announcements._list', compact('announcements'))
+            : view('admin.announcements.index', compact('announcements'));
     }
 
     /**
