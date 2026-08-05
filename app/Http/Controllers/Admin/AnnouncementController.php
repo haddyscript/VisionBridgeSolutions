@@ -20,6 +20,7 @@ class AnnouncementController extends Controller
         'sarbidajohncarl@gmail.com',
         'julsestorco031602@gmail.com',
         'johnnydavis45@yahoo.com',
+        'support@visionbridgesolutions.com'
     ];
 
     public function index(Request $request)
