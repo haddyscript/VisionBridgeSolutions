@@ -53,19 +53,29 @@
                 <div class="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                     <div>
                         <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Category</label>
-                        <select name="category" form="request-form" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
-                            @foreach (\App\Models\ProjectRequest::CATEGORIES as $value => $label)
-                                <option value="{{ $value }}" {{ old('category', $projectRequest->category) === $value ? 'selected' : '' }}>{{ $label }}</option>
-                            @endforeach
-                        </select>
+                        @include('admin._dropdown', [
+                            'name' => 'category',
+                            'domId' => 'request-category',
+                            'options' => collect(\App\Models\ProjectRequest::CATEGORIES)->map(fn ($label, $value) => [
+                                'value' => $value,
+                                'label' => $label,
+                                'dot' => ['request' => 'bg-gray-400', 'proposal' => 'bg-gold'][$value] ?? 'bg-gray-400',
+                            ])->values()->all(),
+                            'selected' => old('category', $projectRequest->category),
+                        ])
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Priority</label>
-                        <select name="priority" form="request-form" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
-                            @foreach (\App\Models\ProjectRequest::PRIORITIES as $value => $label)
-                                <option value="{{ $value }}" {{ old('priority', $projectRequest->priority) === $value ? 'selected' : '' }}>{{ $label }}</option>
-                            @endforeach
-                        </select>
+                        @include('admin._dropdown', [
+                            'name' => 'priority',
+                            'domId' => 'request-priority',
+                            'options' => collect(\App\Models\ProjectRequest::PRIORITIES)->map(fn ($label, $value) => [
+                                'value' => $value,
+                                'label' => $label,
+                                'dot' => ['low' => 'bg-gray-400', 'medium' => 'bg-indigo-400', 'high' => 'bg-gold', 'urgent' => 'bg-red-500'][$value] ?? 'bg-gray-400',
+                            ])->values()->all(),
+                            'selected' => old('priority', $projectRequest->priority),
+                        ])
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Due Date</label>
