@@ -42,7 +42,8 @@
 @else
     <div class="space-y-2.5">
         @foreach ($consultations as $consultation)
-            <div class="{{ $consultation->isRead() ? 'bg-white dark:bg-navy' : 'bg-[linear-gradient(to_right,rgba(201,168,76,0.08),#ffffff_12%)] dark:bg-[linear-gradient(to_right,rgba(201,168,76,0.14),#1B2A4A_12%)]' }} rounded-xl border p-3.5 {{ $consultation->isRead() ? 'border-gray-200 dark:border-gray-700' : 'border-gold/40 shadow-sm' }}">
+            <div onclick="window.location='{{ route('admin.consultations.show', $consultation) }}'"
+                 class="{{ $consultation->isRead() ? 'bg-white dark:bg-navy' : 'bg-[linear-gradient(to_right,rgba(201,168,76,0.08),#ffffff_12%)] dark:bg-[linear-gradient(to_right,rgba(201,168,76,0.14),#1B2A4A_12%)]' }} rounded-xl border p-3.5 {{ $consultation->isRead() ? 'border-gray-200 dark:border-gray-700' : 'border-gold/40 shadow-sm' }} cursor-pointer hover:shadow-md hover:-translate-y-0.5 hover:border-gold/40 transition-all duration-200">
                 <div class="flex flex-wrap items-start justify-between gap-3 mb-1.5">
                     <div class="flex items-start gap-2.5">
                         @if (! $consultation->isRead())
@@ -59,7 +60,7 @@
                             </div>
                             {{-- Contact metadata — tight, icon-led --}}
                             <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5">
-                                <a href="mailto:{{ $consultation->email }}" class="inline-flex items-center gap-1.5 text-sm text-gold-dark hover:underline">
+                                <a href="mailto:{{ $consultation->email }}" onclick="event.stopPropagation()" class="inline-flex items-center gap-1.5 text-sm text-gold-dark hover:underline">
                                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                     {{ $consultation->email }}
                                 </a>
@@ -94,14 +95,14 @@
                      extra row of height off every card. --}}
                 <div class="flex items-center gap-3 mt-1.5 {{ $consultation->message ? 'pt-1.5 border-t border-gray-100 dark:border-gray-700/60' : '' }}">
                     @if ($consultation->message)
-                        <button type="button" onclick="toggleConsultationMessage(this)" data-target="consultation-message-{{ $consultation->id }}"
+                        <button type="button" onclick="event.stopPropagation(); toggleConsultationMessage(this)" data-target="consultation-message-{{ $consultation->id }}"
                                 class="consultation-message-toggle flex items-center gap-1.5 text-xs font-semibold text-navy dark:text-white hover:text-gold-dark text-left">
                             <svg class="w-3.5 h-3.5 shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             <span class="toggle-label">Show message</span>
                         </button>
                     @endif
 
-                    <form method="POST" action="{{ route('admin.consultations.toggle-read', $consultation) }}" class="ml-auto">
+                    <form method="POST" action="{{ route('admin.consultations.toggle-read', $consultation) }}" onclick="event.stopPropagation()" class="ml-auto">
                         @csrf
                         @method('PATCH')
                         @if ($consultation->isRead())
