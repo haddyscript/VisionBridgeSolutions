@@ -311,6 +311,22 @@
         </table>
     </div>
 
+    {{-- Pagination — purely client-side, slicing the already-loaded/filtered/sorted
+         rows into pages of 15. No server round-trip, so Prev/Next never reload. --}}
+    <div id="payout-pagination" class="hidden flex items-center justify-between mt-4 text-sm">
+        <p id="payout-pagination-summary" class="text-gray-500 dark:text-gray-400"></p>
+        <div class="flex items-center gap-2">
+            <button type="button" id="payout-prev-page"
+                    class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 font-semibold hover:border-gold hover:text-gold-dark disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-300 dark:disabled:hover:border-gray-600 disabled:hover:text-gray-600 dark:disabled:hover:text-gray-300 transition-colors" disabled>
+                Prev
+            </button>
+            <button type="button" id="payout-next-page"
+                    class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 font-semibold hover:border-gold hover:text-gold-dark disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-300 dark:disabled:hover:border-gray-600 disabled:hover:text-gray-600 dark:disabled:hover:text-gray-300 transition-colors" disabled>
+                Next
+            </button>
+        </div>
+    </div>
+
     {{-- Payout detail modals — one per row, opened by clicking anywhere on the row except the actions cell. Same pattern as the admin Team page's access modal. --}}
     @foreach ($payouts as $payout)
         @php $modalProject = $payout->project(); @endphp
@@ -484,21 +500,63 @@
         const statusFilter = document.getElementById('payout-status-filter');
         const emptyState = document.getElementById('payout-empty-state');
 
+        // Pagination — 15 rows/page, sliced from whichever rows currently
+        // match the search/status filters (row.dataset.filteredOut), in
+        // whatever order sorting last left them in. Prev/Next only toggle
+        // the `hidden` class, so there's never a network request involved.
+        const PAGE_SIZE = 15;
+        let currentPage = 1;
+        const paginationWrap = document.getElementById('payout-pagination');
+        const paginationSummary = document.getElementById('payout-pagination-summary');
+        const prevPageBtn = document.getElementById('payout-prev-page');
+        const nextPageBtn = document.getElementById('payout-next-page');
+
+        function renderPayoutPage() {
+            const allRows = Array.from(tbody.querySelectorAll('.payout-row'));
+            const matched = allRows.filter((row) => row.dataset.filteredOut !== '1');
+            const totalPages = Math.max(1, Math.ceil(matched.length / PAGE_SIZE));
+            currentPage = Math.min(currentPage, totalPages);
+
+            const start = (currentPage - 1) * PAGE_SIZE;
+            const pageRows = matched.slice(start, start + PAGE_SIZE);
+
+            allRows.forEach((row) => row.classList.add('hidden'));
+            pageRows.forEach((row) => row.classList.remove('hidden'));
+
+            if (emptyState) emptyState.classList.toggle('hidden', matched.length > 0);
+
+            if (paginationWrap) paginationWrap.classList.toggle('hidden', matched.length === 0);
+            if (paginationSummary) {
+                paginationSummary.textContent = matched.length === 0
+                    ? ''
+                    : `Showing ${start + 1}–${start + pageRows.length} of ${matched.length}`;
+            }
+            if (prevPageBtn) prevPageBtn.disabled = currentPage <= 1;
+            if (nextPageBtn) nextPageBtn.disabled = currentPage >= totalPages;
+        }
+
+        prevPageBtn?.addEventListener('click', () => {
+            currentPage--;
+            renderPayoutPage();
+        });
+
+        nextPageBtn?.addEventListener('click', () => {
+            currentPage++;
+            renderPayoutPage();
+        });
+
         function applyPayoutFilters() {
             const query = (searchInput?.value || '').trim().toLowerCase();
             const status = statusFilter?.value || '';
-            let visibleCount = 0;
 
             tbody.querySelectorAll('.payout-row').forEach((row) => {
                 const matchesQuery = !query || row.dataset.client.includes(query) || row.dataset.project.includes(query);
                 const matchesStatus = !status || row.dataset.status === status;
-                const visible = matchesQuery && matchesStatus;
-
-                row.classList.toggle('hidden', !visible);
-                if (visible) visibleCount++;
+                row.dataset.filteredOut = (matchesQuery && matchesStatus) ? '' : '1';
             });
 
-            if (emptyState) emptyState.classList.toggle('hidden', visibleCount > 0);
+            currentPage = 1;
+            renderPayoutPage();
         }
 
         searchInput?.addEventListener('input', applyPayoutFilters);
@@ -578,6 +636,8 @@
             });
 
             rows.forEach((row) => tbody.appendChild(row));
+            currentPage = 1;
+            renderPayoutPage();
 
             document.querySelectorAll('.payout-sort-btn .sort-icon').forEach((icon) => {
                 icon.classList.add('opacity-30');
@@ -597,6 +657,8 @@
         document.querySelectorAll('.payout-sort-btn').forEach((btn) => {
             btn.addEventListener('click', () => sortPayoutsBy(btn.dataset.sortKey));
         });
+
+        renderPayoutPage();
     })();
 
     // Open a payout's detail modal when its row is clicked — but ignore
