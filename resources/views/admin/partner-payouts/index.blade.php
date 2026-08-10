@@ -49,47 +49,68 @@
 </div>
 
 @if (auth()->user()->isSuperAdmin())
-{{-- Log a Manual/Historical Payment — super-admin only, for direct fees paid to FaithStack outside the client-revenue-share flow (e.g. the original one-time website build), including backdated entries --}}
-<div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
-    <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">Log a Manual or Historical Payment to FaithStack</p>
-    <form method="POST" action="{{ route('admin.partner-payouts.store') }}" enctype="multipart/form-data" class="grid sm:grid-cols-2 gap-3">
-        @csrf
-        <div class="sm:col-span-2">
-            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Description</label>
-            <input type="text" name="description" required placeholder="e.g. VisionBridge website development payment"
-                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
-        </div>
-        <div>
-            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Amount (USD)</label>
-            <input type="number" name="client_amount" step="0.01" min="0" required placeholder="300.00"
-                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
-        </div>
-        <div>
-            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Payment Date</label>
-            <input type="date" name="paid_at" required
-                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
-        </div>
-        <div class="sm:col-span-2">
-            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Notes (reference/transaction #, payment method, original currency amount, etc.)</label>
-            <textarea name="notes" rows="2" placeholder="e.g. Ref #12345, paid via bank transfer to GCash, original amount ₱17,000 PHP"
-                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white"></textarea>
-        </div>
-        <div class="sm:col-span-2 receipts-field" data-max="3">
-            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Receipts (image or PDF, up to 3, optional)</label>
-            <label class="inline-flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg bg-gold/15 text-gold-dark text-sm font-semibold hover:bg-gold/25 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                <span class="receipts-field-label">Choose Receipts</span>
-                <input type="file" name="receipts[]" accept=".jpg,.jpeg,.png,.pdf" multiple class="receipts-input hidden">
-            </label>
-            <div class="receipts-preview mt-2 flex flex-wrap gap-1.5"></div>
-        </div>
-        <div class="sm:col-span-2 flex justify-end">
-            <button type="submit"
-                class="inline-flex items-center gap-1.5 px-4 py-2 bg-navy hover:bg-navy-light text-white text-sm font-semibold rounded-lg transition-colors">
-                Log Payment
+{{-- Log a Manual/Historical Payment — super-admin only, for direct fees paid to FaithStack outside the client-revenue-share flow (e.g. the original one-time website build), including backdated entries. Trigger + modal instead of an always-open form, to keep the page from feeling congested. --}}
+<div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6 flex items-center justify-between gap-4">
+    <div>
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Manual or Historical Payment</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Log a direct fee paid to FaithStack outside the client-revenue-share flow.</p>
+    </div>
+    <button type="button" class="modal-trigger shrink-0 inline-flex items-center gap-1.5 px-4 py-2 bg-navy hover:bg-navy-light text-white text-sm font-semibold rounded-lg transition-colors" data-modal="log-payment-modal">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Log a Payment
+    </button>
+</div>
+
+<div id="log-payment-modal" class="payout-modal hidden fixed inset-0 z-[60] items-center justify-center bg-black/40 px-4">
+    <div class="payout-modal-panel bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+            <p class="font-semibold text-navy dark:text-white">Log a Manual or Historical Payment to FaithStack</p>
+            <button type="button" class="payout-modal-close w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0" aria-label="Close">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-    </form>
+        <form method="POST" action="{{ route('admin.partner-payouts.store') }}" enctype="multipart/form-data" class="p-5 grid sm:grid-cols-2 gap-3">
+            @csrf
+            <div class="sm:col-span-2">
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Description</label>
+                <input type="text" name="description" required placeholder="e.g. VisionBridge website development payment"
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Amount (USD)</label>
+                <input type="number" name="client_amount" step="0.01" min="0" required placeholder="300.00"
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Payment Date</label>
+                <input type="date" name="paid_at" required
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
+            </div>
+            <div class="sm:col-span-2">
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Notes (reference/transaction #, payment method, original currency amount, etc.)</label>
+                <textarea name="notes" rows="2" placeholder="e.g. Ref #12345, paid via bank transfer to GCash, original amount ₱17,000 PHP"
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white"></textarea>
+            </div>
+            <div class="sm:col-span-2 receipts-field" data-max="3">
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Receipts (image or PDF, up to 3, optional)</label>
+                <label class="inline-flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg bg-gold/15 text-gold-dark text-sm font-semibold hover:bg-gold/25 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                    <span class="receipts-field-label">Choose Receipts</span>
+                    <input type="file" name="receipts[]" accept=".jpg,.jpeg,.png,.pdf" multiple class="receipts-input hidden">
+                </label>
+                <div class="receipts-preview mt-2 flex flex-wrap gap-1.5"></div>
+            </div>
+            <div class="sm:col-span-2 flex justify-end gap-2 pt-2">
+                <button type="button" class="payout-modal-close px-4 py-2 text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="inline-flex items-center gap-1.5 px-4 py-2 bg-navy hover:bg-navy-light text-white text-sm font-semibold rounded-lg transition-colors">
+                    Log Payment
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 @endif
 
