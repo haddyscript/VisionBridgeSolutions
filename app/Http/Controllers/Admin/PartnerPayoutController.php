@@ -103,6 +103,26 @@ class PartnerPayoutController extends Controller
         return back()->with('status', "Recalculated FaithStack amount for {$count} ".($count === 1 ? 'row' : 'rows').'.');
     }
 
+    /**
+     * Skips the remainder of a payout's 7-day verification window, marking it
+     * ready to send immediately — same end state the payouts:verify cron
+     * reaches once the window naturally elapses. Super-admin only, since it
+     * overrides the dispute/refund safety check on real money owed.
+     */
+    public function fastForward(Request $request, PartnerPayout $partnerPayout)
+    {
+        abort_unless($request->user()->isSuperAdmin(), 403);
+
+        abort_unless($partnerPayout->isPending(), 422, 'This payout is not in its verification window.');
+
+        $partnerPayout->update([
+            'status' => 'ready',
+            'ready_at' => now(),
+        ]);
+
+        return back()->with('status', 'Verification skipped — payout marked ready to send.');
+    }
+
     public function update(Request $request, PartnerPayout $partnerPayout)
     {
         // Still inside its 7-day verification window — block release even if

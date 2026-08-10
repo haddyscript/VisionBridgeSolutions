@@ -437,6 +437,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::post('/partner-payouts/recalculate', [AdminPartnerPayoutController::class, 'recalculateAll'])->name('partner-payouts.recalculate');
     Route::post('/partner-payouts/reminder-settings', [AdminPartnerPayoutController::class, 'setReminderSettings'])->name('partner-payouts.set-reminder-settings');
     Route::patch('/partner-payouts/{partnerPayout}', [AdminPartnerPayoutController::class, 'update'])->name('partner-payouts.update');
+    Route::post('/partner-payouts/{partnerPayout}/fast-forward', [AdminPartnerPayoutController::class, 'fastForward'])->name('partner-payouts.fast-forward');
     Route::get('/partner-payouts/receipts/{partnerPayoutReceipt}', [AdminPartnerPayoutController::class, 'showReceipt'])->name('partner-payouts.receipts.show');
 
     // ─── Settings ────────────────────────────────────────────────────────────

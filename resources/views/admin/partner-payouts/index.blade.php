@@ -295,6 +295,14 @@
                                         class="modal-trigger text-gray-500 dark:text-gray-400 hover:text-gold-dark font-semibold hover:underline whitespace-nowrap">
                                     Edit
                                 </button>
+                            @elseif ($payout->isPending() && auth()->user()->isSuperAdmin())
+                                <form method="POST" action="{{ route('admin.partner-payouts.fast-forward', $payout) }}"
+                                      onsubmit="return confirm('Skip the rest of the 7-day verification window and mark this payout ready to send now?')">
+                                    @csrf
+                                    <button type="submit" class="text-gold-dark hover:underline font-semibold whitespace-nowrap">
+                                        Fast Forward
+                                    </button>
+                                </form>
                             @endif
                         </td>
                     </tr>
