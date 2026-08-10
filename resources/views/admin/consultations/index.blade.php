@@ -54,9 +54,9 @@
                                 <a href="{{ route('admin.consultations.show', $consultation) }}" class="font-semibold text-navy dark:text-white hover:text-gold-dark {{ $consultation->isRead() ? '' : 'font-bold' }}">
                                     {{ $consultation->name }}
                                 </a>
-                                @if (! $consultation->isRead())
-                                    <span class="inline-flex items-center text-[0.65rem] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark ring-1 ring-gold/30">New</span>
-                                @endif
+                                <span class="inline-flex items-center text-[0.65rem] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $statusColors[$consultation->status] ?? 'bg-gray-100 text-gray-600' }}">
+                                    {{ $statusLabels[$consultation->status] ?? $consultation->status }}
+                                </span>
                             </div>
                             {{-- Contact metadata — tight, icon-led --}}
                             <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5">
@@ -74,12 +74,6 @@
                         </div>
                     </div>
                     <div class="text-right shrink-0">
-                        {{-- Status pill — skipped for "new" since the name badge already says so --}}
-                        @if ($consultation->status !== 'new')
-                            <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $statusColors[$consultation->status] ?? 'bg-gray-100 text-gray-600' }} mb-1">
-                                {{ $statusLabels[$consultation->status] ?? $consultation->status }}
-                            </span>
-                        @endif
                         @if ($consultation->preferred_at)
                             <p class="flex items-center justify-end gap-1.5 text-sm font-bold text-navy dark:text-white">
                                 <svg class="w-4 h-4 shrink-0 text-gold-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
