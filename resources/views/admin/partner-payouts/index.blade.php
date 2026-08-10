@@ -48,19 +48,69 @@
     </div>
 </div>
 
-@if (auth()->user()->isSuperAdmin())
-{{-- Log a Manual/Historical Payment — super-admin only, for direct fees paid to FaithStack outside the client-revenue-share flow (e.g. the original one-time website build), including backdated entries. Trigger + modal instead of an always-open form, to keep the page from feeling congested. --}}
-<div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6 flex items-center justify-between gap-4">
-    <div>
-        <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Manual or Historical Payment</p>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Log a direct fee paid to FaithStack outside the client-revenue-share flow.</p>
+{{-- Manual/Historical Payment + Payment Reminders — side by side on larger
+     screens so neither card eats the full page width; the Manual Payment
+     card is super-admin only, so this becomes a single-column full-width
+     Payment Reminders card for everyone else. --}}
+<div class="grid {{ auth()->user()->isSuperAdmin() ? 'sm:grid-cols-2' : '' }} gap-4 mb-6">
+    @if (auth()->user()->isSuperAdmin())
+    {{-- Log a Manual/Historical Payment — super-admin only, for direct fees paid to FaithStack outside the client-revenue-share flow (e.g. the original one-time website build), including backdated entries. Trigger + modal instead of an always-open form, to keep the page from feeling congested. --}}
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5 flex items-center justify-between gap-4">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Manual or Historical Payment</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Log a direct fee paid to FaithStack outside the client-revenue-share flow.</p>
+        </div>
+        <button type="button" class="modal-trigger shrink-0 inline-flex items-center gap-1.5 px-4 py-2 bg-navy hover:bg-navy-light text-white text-sm font-semibold rounded-lg transition-colors" data-modal="log-payment-modal">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Log a Payment
+        </button>
     </div>
-    <button type="button" class="modal-trigger shrink-0 inline-flex items-center gap-1.5 px-4 py-2 bg-navy hover:bg-navy-light text-white text-sm font-semibold rounded-lg transition-colors" data-modal="log-payment-modal">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-        Log a Payment
-    </button>
+    @endif
+
+    {{-- FaithStack Payment Reminders --}}
+    <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Payment Reminders</p>
+                @if ($faithstackDueDay)
+                    <p class="font-display text-2xl font-bold text-navy dark:text-white">Day {{ $faithstackDueDay }} of each month</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Emails {{ str_replace(',', ', ', $faithstackReminderEmail) }} 5 days before, on the due date, and then every day it stays unpaid — whenever there's a ready-to-send balance.</p>
+                @else
+                    <p class="text-sm text-gold-dark font-medium">No due day set — automatic reminders are off.</p>
+                @endif
+            </div>
+            <form method="POST" action="{{ route('admin.partner-payouts.set-reminder-settings') }}" class="flex flex-wrap items-end gap-3">
+                @csrf
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Due Day of Month</label>
+                    <input type="number" name="faithstack_payment_due_day" min="1" max="28"
+                        value="{{ old('faithstack_payment_due_day', $faithstackDueDay ?: '') }}"
+                        placeholder="e.g. 5"
+                        class="w-24 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Reminder Email(s)</label>
+                    <input type="text" name="faithstack_reminder_email"
+                        value="{{ old('faithstack_reminder_email', $faithstackReminderEmail) }}"
+                        placeholder="you@example.com, other@example.com"
+                        class="w-full sm:w-56 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
+                    @error('faithstack_reminder_email')
+                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <button type="submit"
+                    class="inline-flex items-center gap-1.5 px-4 py-2 bg-navy hover:bg-navy-light text-white text-sm font-semibold rounded-lg transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Save
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
 
+@if (auth()->user()->isSuperAdmin())
 <div id="log-payment-modal" class="payout-modal hidden fixed inset-0 z-[60] items-center justify-center bg-black/40 px-4">
     <div class="payout-modal-panel bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
         <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
@@ -113,48 +163,6 @@
     </div>
 </div>
 @endif
-
-{{-- FaithStack Payment Reminders --}}
-<div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-        <div>
-            <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Payment Reminders</p>
-            @if ($faithstackDueDay)
-                <p class="font-display text-2xl font-bold text-navy dark:text-white">Day {{ $faithstackDueDay }} of each month</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Emails {{ str_replace(',', ', ', $faithstackReminderEmail) }} 5 days before, on the due date, and then every day it stays unpaid — whenever there's a ready-to-send balance.</p>
-            @else
-                <p class="text-sm text-gold-dark font-medium">No due day set — automatic reminders are off.</p>
-            @endif
-        </div>
-        <form method="POST" action="{{ route('admin.partner-payouts.set-reminder-settings') }}" class="flex flex-wrap items-end gap-3">
-            @csrf
-            <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Due Day of Month</label>
-                <input type="number" name="faithstack_payment_due_day" min="1" max="28"
-                    value="{{ old('faithstack_payment_due_day', $faithstackDueDay ?: '') }}"
-                    placeholder="e.g. 5"
-                    class="w-24 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
-            </div>
-            <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Reminder Email(s)</label>
-                <input type="text" name="faithstack_reminder_email"
-                    value="{{ old('faithstack_reminder_email', $faithstackReminderEmail) }}"
-                    placeholder="you@example.com, other@example.com"
-                    class="w-72 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
-                @error('faithstack_reminder_email')
-                    <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-            <button type="submit"
-                class="inline-flex items-center gap-1.5 px-4 py-2 bg-navy hover:bg-navy-light text-white text-sm font-semibold rounded-lg transition-colors">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Save
-            </button>
-        </form>
-    </div>
-</div>
 
 <div class="grid sm:grid-cols-3 gap-4 mb-6">
     <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5">
