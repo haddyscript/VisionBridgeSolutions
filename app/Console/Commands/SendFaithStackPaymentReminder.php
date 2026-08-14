@@ -88,6 +88,7 @@ class SendFaithStackPaymentReminder extends Command
             oneTimePayoutCount: $oneTimePayoutCount,
             rate: (float) AppSetting::get('faithstack_percentage', 0),
             daysUntilDue: $daysUntilDue,
+            readyPayouts: $readyPayouts,
         ));
 
         $this->info($daysUntilDue < 0

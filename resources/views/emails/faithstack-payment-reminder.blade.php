@@ -47,6 +47,22 @@
                                     {{ $oneTimePayoutCount }} one-time project payment{{ $oneTimePayoutCount === 1 ? '' : 's' }}{{ $rate > 0 ? " calculated at {$rate}%" : ' (amount entered manually per payout)' }} — past the 7-day verification window and ready to send.
                                 @endif
                             </p>
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px; border-collapse:collapse; border:1px solid #e5e7eb; border-radius:8px; overflow:hidden;">
+                                <tr>
+                                    <td style="padding:8px 12px; background-color:#f3f4f6; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:#6b7280; border-bottom:1px solid #e5e7eb;">Project Name</td>
+                                    <td style="padding:8px 12px; background-color:#f3f4f6; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:#6b7280; border-bottom:1px solid #e5e7eb;">Care Plan</td>
+                                    <td style="padding:8px 12px; background-color:#f3f4f6; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:#6b7280; border-bottom:1px solid #e5e7eb; text-align:right;">Care Plan Amount</td>
+                                </tr>
+                                @foreach ($readyPayouts as $payout)
+                                    <tr>
+                                        <td style="padding:8px 12px; font-size:14px; color:#111D33; border-bottom:1px solid #e5e7eb;">{{ $payout->project()?->name ?? '—' }}</td>
+                                        <td style="padding:8px 12px; font-size:14px; color:#4b5563; border-bottom:1px solid #e5e7eb;">{{ $payout->sourceLabel() }}</td>
+                                        <td style="padding:8px 12px; font-size:14px; color:#111D33; border-bottom:1px solid #e5e7eb; text-align:right;">{{ $payout->formattedFaithstackAmount() }}</td>
+                                    </tr>
+                                @endforeach
+                            </table>
+
                             <a href="{{ route('admin.partner-payouts.index') }}"
                                style="display:inline-block; background-color:#C9A84C; color:#111D33; font-weight:700; font-size:14px; padding:12px 22px; border-radius:8px; text-decoration:none;">
                                 Pay FaithStack

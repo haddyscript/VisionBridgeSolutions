@@ -1574,6 +1574,8 @@ The list of runnable commands (`CronController::JOBS`) is a fixed allow-list, no
 
 **Force Re-Run for the FaithStack reminder (2026-08-14):** the "Send FaithStack Payment Reminder" job now also gets a red **Re-Run** button alongside Run Now. It passes a new `--force` option to `payouts:send-faithstack-reminder`, which skips the 5-days-out/due-date schedule check — it still requires a ready-to-send balance (and a configured due day) before it will actually email anyone, so it can't fire on a $0 balance. Which jobs get this button is driven by a `forceable` flag on the job's `CronController::JOBS` entry, and the controller only forwards `--force` to Artisan for jobs that declared it, so the option can't be probed against other commands.
 
+**Per-payout breakdown in the reminder email (2026-08-14):** the FaithStack payment reminder email now lists every ready-to-send payout in a table — Project Name, Care Plan (or payment source), and its FaithStack amount — instead of only the aggregated total, so the recipient can see exactly what makes up the amount due.
+
 ## 100. Project Requests — Manual "Request" / "Proposal" Category (2026-08-04)
 
 `/admin/project-requests` gained a new `category` field (`project_requests.category`, new migration, defaults to `request`) — an admin-picked tag distinguishing a plain internal/client request from one being run as a formal Proposal, independent of the existing `proposal_status` pipeline (which only tracks a proposal's own sales stage once one exists).

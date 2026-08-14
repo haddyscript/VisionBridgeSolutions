@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
@@ -19,6 +20,7 @@ class FaithStackPaymentReminderMail extends Mailable
         public int $oneTimePayoutCount,
         public float $rate,
         public int $daysUntilDue,
+        public Collection $readyPayouts,
     ) {
     }
 
