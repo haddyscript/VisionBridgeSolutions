@@ -26,12 +26,23 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400">{{ $job['description'] }}</p>
                     <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 font-mono">php artisan {{ $signature }}</p>
                 </div>
-                <button type="button"
-                        class="cron-run-btn shrink-0 inline-flex items-center gap-1.5 bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        data-command="{{ $signature }}" data-label="{{ $job['label'] }}" data-target="cron-output-{{ $loop->index }}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    Run Now
-                </button>
+                <div class="shrink-0 flex items-center gap-2">
+                    <button type="button"
+                            class="cron-run-btn inline-flex items-center gap-1.5 bg-gold hover:bg-gold-dark text-navy-dark text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-command="{{ $signature }}" data-label="{{ $job['label'] }}" data-target="cron-output-{{ $loop->index }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Run Now
+                    </button>
+                    @if ($job['forceable'] ?? false)
+                        <button type="button"
+                                class="cron-run-btn inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                data-command="{{ $signature }}" data-label="{{ $job['label'] }}" data-force="1" data-target="cron-output-{{ $loop->index }}"
+                                title="Send now regardless of the schedule/date check — still requires a ready-to-send balance">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            Re-Run
+                        </button>
+                    @endif
+                </div>
             </div>
 
             <div id="cron-output-{{ $loop->index }}" class="hidden mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
@@ -45,14 +56,18 @@
 <script>
     document.querySelectorAll('.cron-run-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
-            if (!confirm('Run "' + btn.dataset.label + '" right now?')) return;
+            const forced = btn.dataset.force === '1';
+            const confirmMessage = forced
+                ? 'Force re-run "' + btn.dataset.label + '" now? This skips the schedule/date check and sends immediately if there\'s a ready-to-send balance.'
+                : 'Run "' + btn.dataset.label + '" right now?';
+            if (!confirm(confirmMessage)) return;
 
             const outputBox = document.getElementById(btn.dataset.target);
             const pre = outputBox.querySelector('pre');
 
             btn.disabled = true;
             const originalHtml = btn.innerHTML;
-            btn.textContent = 'Running…';
+            btn.textContent = forced ? 'Force running…' : 'Running…';
 
             fetch('{{ route('admin.cron-jobs.run') }}', {
                 method: 'POST',
@@ -61,7 +76,7 @@
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 },
-                body: JSON.stringify({ command: btn.dataset.command }),
+                body: JSON.stringify({ command: btn.dataset.command, force: forced }),
             })
                 .then(function (response) { return response.json().then(function (data) { return { ok: response.ok, data: data }; }); })
                 .then(function (result) {

@@ -31,6 +31,7 @@ class CronController extends Controller
             'label' => 'Send FaithStack Payment Reminder',
             'description' => 'Email the FaithStack payment reminder 5 days before, and again on, the configured monthly due day.',
             'schedule' => 'Daily',
+            'forceable' => true,
         ],
         'projects:suspend-overdue' => [
             'label' => 'Suspend Overdue Projects',
@@ -70,9 +71,17 @@ class CronController extends Controller
     {
         $validated = $request->validate([
             'command' => ['required', 'string', Rule::in(array_keys(self::JOBS))],
+            'force' => ['nullable', 'boolean'],
         ]);
 
-        $exitCode = Artisan::call($validated['command']);
+        // Only pass --force through to commands that actually declared support
+        // for it (JOBS[...]['forceable']) — Artisan::call() throws on an
+        // unrecognized option, so this can't be used to probe other commands.
+        $params = $request->boolean('force') && (self::JOBS[$validated['command']]['forceable'] ?? false)
+            ? ['--force' => true]
+            : [];
+
+        $exitCode = Artisan::call($validated['command'], $params);
 
         return response()->json([
             'output' => trim(Artisan::output()),

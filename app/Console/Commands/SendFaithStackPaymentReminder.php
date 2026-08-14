@@ -12,12 +12,14 @@ use Illuminate\Support\Facades\Mail;
 
 class SendFaithStackPaymentReminder extends Command
 {
-    protected $signature = 'payouts:send-faithstack-reminder';
+    protected $signature = 'payouts:send-faithstack-reminder {--force : Bypass the 5-days-out/due-date schedule check and send immediately, as long as there is a ready-to-send balance}';
 
     protected $description = 'Email the FaithStack payment reminder 5 days before, and again on, the configured monthly due day';
 
     public function handle(): int
     {
+        $force = (bool) $this->option('force');
+
         $dueDay = (int) AppSetting::get('faithstack_payment_due_day', 0);
 
         if ($dueDay < 1) {
@@ -39,7 +41,9 @@ class SendFaithStackPaymentReminder extends Command
 
         $this->line("Due day is set to {$dueDay}. This cycle's due date: {$dueDate->format('M j, Y')} ({$daysUntilDue} day(s) from today).");
 
-        if ($daysUntilDue > 0 && $daysUntilDue !== 5) {
+        if ($force) {
+            $this->line('--force passed — bypassing the schedule check.');
+        } elseif ($daysUntilDue > 0 && $daysUntilDue !== 5) {
             $this->line('Not 5 days out yet, and not on/past the due date — skipping reminder for today.');
 
             return self::SUCCESS;
