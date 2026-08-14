@@ -42,10 +42,13 @@
 
 {{-- Sticky header block (KPI cards + toolbar) — stays in view below the
      layout's own sticky h-16 header while only the table/cards below scroll.
+     Only sticky from sm: up — on mobile the 2-col stat grid + stacked
+     toolbar make this block taller than the viewport, so pinning it there
+     would cover the whole screen and leave the request list unreachable.
      bg-gray-50/dark:bg-navy-dark matches <body>'s background (layouts.admin)
      so content scrolling underneath doesn't show through, and a bottom
      border gives it a visible edge once something is actually behind it. --}}
-<div class="sticky top-16 z-10 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 pt-2 pb-4 mb-3 bg-gray-50 dark:bg-navy-dark border-b border-gray-200 dark:border-gray-700">
+<div class="sm:sticky sm:top-16 z-10 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 pt-2 pb-4 mb-3 bg-gray-50 dark:bg-navy-dark border-b border-gray-200 dark:border-gray-700">
 
 {{-- ═══════════════════════════════════════════════════════════════════════
      HEADER — subtitle + KPI cards. The "Project Requests" H1 itself is
