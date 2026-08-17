@@ -338,6 +338,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
 
     // ─── Inbox ───────────────────────────────────────────────────────────────
     Route::get('/contact-messages', [AdminContactMessageController::class, 'index'])->name('contact-messages.index');
+    Route::get('/contact-messages/{contactMessage}', [AdminContactMessageController::class, 'show'])->name('contact-messages.show');
     Route::patch('/contact-messages/{contactMessage}/read', [AdminContactMessageController::class, 'toggleRead'])->name('contact-messages.toggle-read');
 
     Route::get('/consultations', [AdminConsultationController::class, 'index'])->name('consultations.index');

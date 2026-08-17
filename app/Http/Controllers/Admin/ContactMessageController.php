@@ -34,6 +34,17 @@ class ContactMessageController extends Controller
         ]);
     }
 
+    public function show(ContactMessage $contactMessage)
+    {
+        if (! $contactMessage->isRead()) {
+            $contactMessage->update(['read_at' => now()]);
+        }
+
+        return view('admin.contact-messages.show', [
+            'message' => $contactMessage,
+        ]);
+    }
+
     public function toggleRead(ContactMessage $contactMessage)
     {
         $contactMessage->update([

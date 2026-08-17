@@ -23,25 +23,30 @@
         <p class="text-gray-500 dark:text-gray-400">No messages from the "Get in Touch" form yet.</p>
     </div>
 @else
-    <div class="space-y-4">
+    <div class="space-y-2.5">
         @foreach ($messages as $message)
-            <div class="bg-white dark:bg-navy rounded-xl border p-6 {{ $message->isRead() ? 'border-gray-200 dark:border-gray-700' : 'border-gold/40 shadow-sm bg-[linear-gradient(to_right,rgba(201,168,76,0.05),#ffffff_12%)] dark:bg-[linear-gradient(to_right,rgba(201,168,76,0.12),#1B2A4A_12%)]' }}">
-                <div class="flex flex-wrap items-start justify-between gap-4 mb-3">
-                    <div class="flex items-center gap-2.5">
+            <div onclick="window.location='{{ route('admin.contact-messages.show', $message) }}'"
+                 class="{{ $message->isRead() ? 'bg-white dark:bg-navy' : 'bg-[linear-gradient(to_right,rgba(201,168,76,0.05),#ffffff_12%)] dark:bg-[linear-gradient(to_right,rgba(201,168,76,0.12),#1B2A4A_12%)]' }} rounded-xl border p-3.5 {{ $message->isRead() ? 'border-gray-200 dark:border-gray-700' : 'border-gold/40 shadow-sm' }} cursor-pointer hover:shadow-md hover:-translate-y-0.5 hover:border-gold/40 transition-all duration-200">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div class="flex items-start gap-2.5">
                         @if (! $message->isRead())
-                            <span class="w-2 h-2 rounded-full bg-gold shrink-0" title="Unread"></span>
+                            <span class="w-2 h-2 rounded-full bg-gold shrink-0 mt-1.5" title="Unread"></span>
                         @endif
                         <div>
-                            <p class="font-semibold text-navy dark:text-white {{ $message->isRead() ? '' : 'font-bold' }}">
-                                {{ $message->first_name }} {{ $message->last_name }}
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <a href="{{ route('admin.contact-messages.show', $message) }}" class="font-semibold text-navy dark:text-white hover:text-gold-dark {{ $message->isRead() ? '' : 'font-bold' }}">
+                                    {{ $message->first_name }} {{ $message->last_name }}
+                                </a>
                                 @if (! $message->isRead())
-                                    <span class="ml-1.5 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">New</span>
+                                    <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">New</span>
                                 @endif
-                            </p>
-                            <a href="mailto:{{ $message->email }}" class="text-sm text-gold-dark hover:underline">{{ $message->email }}</a>
-                            @if ($message->organization)
-                                <span class="text-sm text-gray-500 dark:text-gray-400"> &middot; {{ $message->organization }}</span>
-                            @endif
+                            </div>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5">
+                                <a href="mailto:{{ $message->email }}" onclick="event.stopPropagation()" class="text-sm text-gold-dark hover:underline">{{ $message->email }}</a>
+                                @if ($message->organization)
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ $message->organization }}</span>
+                                @endif
+                            </div>
                         </div>
                     </div>
                     <div class="text-right shrink-0">
@@ -54,24 +59,22 @@
                     </div>
                 </div>
 
-                @if ($message->message)
-                    <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line border-t border-gray-100 dark:border-gray-700/60 pt-3 mb-3">{{ $message->message }}</p>
-                @endif
-
-                <form method="POST" action="{{ route('admin.contact-messages.toggle-read', $message) }}" class="flex justify-end">
-                    @csrf
-                    @method('PATCH')
-                    @if ($message->isRead())
-                        <button type="submit" class="text-xs font-semibold text-navy dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 px-3 py-1.5 rounded-full transition-colors">
-                            Mark as Unread
-                        </button>
-                    @else
-                        <button type="submit" class="inline-flex items-center gap-1.5 text-xs font-semibold text-gold-dark bg-gold/10 border border-gold/30 px-3 py-1.5 rounded-full hover:bg-gold/15 transition-colors">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                            Mark as Read
-                        </button>
-                    @endif
-                </form>
+                <div class="flex justify-end mt-2 pt-2 border-t border-gray-100 dark:border-gray-700/60">
+                    <form method="POST" action="{{ route('admin.contact-messages.toggle-read', $message) }}" onclick="event.stopPropagation()">
+                        @csrf
+                        @method('PATCH')
+                        @if ($message->isRead())
+                            <button type="submit" class="text-xs font-semibold text-gray-500 dark:text-gray-400 bg-white dark:bg-navy border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 px-3 py-1 rounded-full transition-colors">
+                                Mark as Unread
+                            </button>
+                        @else
+                            <button type="submit" class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white bg-white dark:bg-navy border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 px-3 py-1 rounded-full transition-colors">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                Mark as Read
+                            </button>
+                        @endif
+                    </form>
+                </div>
             </div>
         @endforeach
     </div>
