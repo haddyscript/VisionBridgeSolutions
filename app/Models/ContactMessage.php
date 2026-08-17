@@ -34,4 +34,12 @@ class ContactMessage extends Model
     {
         return $this->read_at !== null;
     }
+
+    /** Spam/bot submissions frequently repeat the same value in both name fields (e.g. "DavidtuhDS DavidtuhDS") — collapse that to one name instead of showing the duplicate everywhere it's displayed. */
+    public function displayName(): string
+    {
+        return strcasecmp(trim($this->first_name), trim($this->last_name)) === 0
+            ? $this->first_name
+            : trim($this->first_name.' '.$this->last_name);
+    }
 }

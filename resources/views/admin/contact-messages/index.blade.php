@@ -43,7 +43,7 @@
                         <div>
                             <div class="flex items-center gap-2 flex-wrap">
                                 <a href="{{ route('admin.contact-messages.show', $message) }}" class="font-semibold text-navy dark:text-white hover:text-gold-dark {{ $message->isRead() ? '' : 'font-bold' }}">
-                                    {{ $message->first_name }} {{ $message->last_name }}
+                                    {{ $message->displayName() }}
                                 </a>
                                 @if (! $message->isRead())
                                     <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">New</span>

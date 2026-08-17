@@ -1,12 +1,35 @@
 @extends('layouts.admin')
 
-@section('title', $message->first_name.' '.$message->last_name.' – Admin')
-@section('page-title', $message->first_name.' '.$message->last_name)
+@php
+    $displayName = $message->displayName();
+
+    $labelColors = [
+        'spam' => ['dot' => 'bg-red-400', 'text' => 'text-red-500'],
+        'not_helpful' => ['dot' => 'bg-gray-400', 'text' => 'text-gray-500 dark:text-gray-400'],
+        'follow_up' => ['dot' => 'bg-blue-400', 'text' => 'text-blue-500'],
+    ];
+
+    // Turn bare URLs in the message into real links — this inbox regularly
+    // gets outreach/spam messages packed with Telegram/WhatsApp links, and
+    // as plain text they're neither clickable nor easy to scan for.
+    $linkPattern = '/((https?:\/\/|www\.)[^\s<]+)/i';
+    $linkCount = $message->message ? preg_match_all($linkPattern, $message->message) : 0;
+    $linkedMessage = $message->message
+        ? preg_replace_callback($linkPattern, function ($matches) {
+            $url = rtrim($matches[0], '.,)');
+            $href = str_starts_with($url, 'http') ? $url : 'https://'.$url;
+            return '<a href="'.e($href).'" target="_blank" rel="noopener noreferrer" class="text-gold-dark underline decoration-gold/40 hover:decoration-gold-dark break-all">'.e($url).'</a>';
+        }, e($message->message))
+        : null;
+@endphp
+
+@section('title', $displayName.' – Admin')
+@section('page-title', $displayName)
 
 @section('content')
 
 <div class="flex items-center justify-between mb-6">
-    <a href="{{ route('admin.contact-messages.index') }}" class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white">
+    <a href="{{ route('admin.contact-messages.index') }}" class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         Contact Messages
     </a>
@@ -40,20 +63,20 @@
 
 <div class="grid lg:grid-cols-3 gap-6">
 
-    {{-- Sidebar: contact details --}}
+    {{-- Sidebar: contact + status --}}
     <div class="lg:col-span-1 space-y-6 order-1 lg:order-2">
         <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex items-center gap-3 mb-5">
                 <div class="w-12 h-12 rounded-full bg-gold/15 text-gold-dark flex items-center justify-center font-display font-bold text-lg shrink-0">
-                    {{ strtoupper(substr($message->first_name, 0, 1)) }}
+                    {{ strtoupper(substr($displayName, 0, 1)) }}
                 </div>
                 <div class="min-w-0">
-                    <p class="font-semibold text-navy dark:text-white truncate">{{ $message->first_name }} {{ $message->last_name }}</p>
+                    <p class="font-semibold text-navy dark:text-white truncate">{{ $displayName }}</p>
                     <p class="text-xs text-gray-500 dark:text-gray-400 truncate">Contact Form Message</p>
                 </div>
             </div>
 
-            <div class="space-y-2">
+            <div class="space-y-2 mb-5">
                 <a href="mailto:{{ $message->email }}" class="flex items-center gap-2.5 text-sm text-gray-600 dark:text-gray-300 hover:text-gold-dark">
                     <svg class="w-4 h-4 shrink-0 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     <span class="truncate">{{ $message->email }}</span>
@@ -65,6 +88,11 @@
                     </p>
                 @endif
             </div>
+
+            <a href="mailto:{{ $message->email }}" class="flex items-center justify-center gap-2 w-full text-sm font-semibold text-navy-dark bg-gold hover:bg-gold-dark px-4 py-2.5 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                Reply via Email
+            </a>
         </div>
 
         <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4 text-sm">
@@ -74,13 +102,15 @@
                     {{ $message->isRead() ? 'Read' : 'New' }}
                 </span>
             </div>
-            <div class="flex items-center justify-between gap-3">
-                <span class="text-gray-500 dark:text-gray-400 shrink-0">Label</span>
-                <form method="POST" action="{{ route('admin.contact-messages.update-label', $message) }}">
+
+            <div class="flex items-center justify-between">
+                <span class="text-gray-500 dark:text-gray-400">Label</span>
+                <form method="POST" action="{{ route('admin.contact-messages.update-label', $message) }}" class="relative">
                     @csrf
                     @method('PATCH')
+                    <span class="absolute left-2.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full pointer-events-none {{ $labelColors[$message->label]['dot'] ?? 'bg-gray-300 dark:bg-gray-600' }}"></span>
                     <select name="label" onchange="this.form.submit()"
-                            class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark px-2.5 py-1 text-xs font-semibold text-navy dark:text-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold cursor-pointer">
+                            class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark pl-6 pr-2.5 py-1 text-xs font-semibold {{ $labelColors[$message->label]['text'] ?? 'text-navy dark:text-white' }} focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold cursor-pointer">
                         <option value="" {{ $message->label ? '' : 'selected' }}>No Label</option>
                         @foreach (\App\Models\ContactMessage::LABELS as $value => $label)
                             <option value="{{ $value }}" {{ $message->label === $value ? 'selected' : '' }}>{{ $label }}</option>
@@ -88,15 +118,15 @@
                     </select>
                 </form>
             </div>
+
             @if ($message->service)
-                <div class="flex items-center justify-between gap-3">
-                    <span class="text-gray-500 dark:text-gray-400 shrink-0">Service</span>
-                    <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-gold/15 text-gold-dark text-right">
-                        {{ $message->service }}
-                    </span>
+                <div>
+                    <span class="text-gray-500 dark:text-gray-400 block mb-1">Service</span>
+                    <p class="text-navy dark:text-white font-medium leading-snug">{{ $message->service }}</p>
                 </div>
             @endif
-            <div class="flex items-center justify-between">
+
+            <div class="flex items-center justify-between pt-1 border-t border-gray-100 dark:border-gray-700/60">
                 <span class="text-gray-500 dark:text-gray-400">Submitted</span>
                 <span class="text-navy dark:text-white font-medium" title="{{ $message->created_at->format('M j, Y \a\t g:ia') }}">{{ $message->created_at->diffForHumans() }}</span>
             </div>
@@ -105,12 +135,22 @@
 
     {{-- Main content --}}
     <div class="lg:col-span-2 space-y-6 order-2 lg:order-1">
-        @if ($message->message)
-            <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-                <h3 class="font-semibold text-navy dark:text-white mb-1.5">Message</h3>
-                <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">{{ $message->message }}</p>
+        <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-semibold text-navy dark:text-white">Message</h3>
+                @if ($linkCount > 0)
+                    <span class="inline-flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400">
+                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 010 5.656l-3 3a4 4 0 01-5.656-5.656l1.5-1.5M10.172 13.828a4 4 0 010-5.656l3-3a4 4 0 015.656 5.656l-1.5 1.5"/></svg>
+                        {{ $linkCount }} {{ \Illuminate\Support\Str::plural('link', $linkCount) }}
+                    </span>
+                @endif
             </div>
-        @endif
+            @if ($linkedMessage)
+                <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line leading-relaxed">{!! $linkedMessage !!}</p>
+            @else
+                <p class="text-sm text-gray-400 dark:text-gray-500 italic">No message was included with this submission.</p>
+            @endif
+        </div>
     </div>
 </div>
 
