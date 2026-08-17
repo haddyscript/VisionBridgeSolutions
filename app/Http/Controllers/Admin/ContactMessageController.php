@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ContactMessageController extends Controller
 {
@@ -52,5 +53,23 @@ class ContactMessageController extends Controller
         ]);
 
         return back()->with('status', $contactMessage->isRead() ? 'Marked as read.' : 'Marked as unread.');
+    }
+
+    public function updateLabel(Request $request, ContactMessage $contactMessage)
+    {
+        $validated = $request->validate([
+            'label' => ['nullable', Rule::in(array_keys(ContactMessage::LABELS))],
+        ]);
+
+        $contactMessage->update(['label' => $validated['label'] ?? null]);
+
+        return back()->with('status', 'Label updated.');
+    }
+
+    public function destroy(ContactMessage $contactMessage)
+    {
+        $contactMessage->delete();
+
+        return redirect()->route('admin.contact-messages.index')->with('status', 'Message deleted.');
     }
 }

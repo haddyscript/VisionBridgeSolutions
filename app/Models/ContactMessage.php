@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class ContactMessage extends Model
 {
+    public const LABELS = [
+        'spam' => 'Spam',
+        'not_helpful' => 'Not Helpful',
+        'follow_up' => 'Follow Up',
+    ];
+
     protected $fillable = [
         'first_name',
         'last_name',
@@ -13,6 +19,7 @@ class ContactMessage extends Model
         'organization',
         'service',
         'message',
+        'label',
         'read_at',
     ];
 

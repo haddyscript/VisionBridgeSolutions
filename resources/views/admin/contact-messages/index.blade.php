@@ -5,6 +5,14 @@
 
 @section('content')
 
+@php
+    $labelColors = [
+        'spam' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
+        'not_helpful' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400',
+        'follow_up' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-500',
+    ];
+@endphp
+
 <form method="GET" class="flex items-center justify-end gap-2.5 mb-5">
     <label class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Sort by</label>
     <div class="relative">
@@ -39,6 +47,11 @@
                                 </a>
                                 @if (! $message->isRead())
                                     <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">New</span>
+                                @endif
+                                @if ($message->label)
+                                    <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $labelColors[$message->label] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500' }}">
+                                        {{ \App\Models\ContactMessage::LABELS[$message->label] ?? $message->label }}
+                                    </span>
                                 @endif
                             </div>
                             <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5">
