@@ -11,12 +11,14 @@
         'reviewed' => 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 ring-1 ring-inset ring-indigo-200 dark:ring-indigo-500/20',
         'converted' => 'bg-teal/10 text-teal-dark ring-1 ring-inset ring-teal/20',
         'declined' => 'bg-red-50 dark:bg-red-500/10 text-red-500 ring-1 ring-inset ring-red-200 dark:ring-red-500/20',
+        'done' => 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-1 ring-inset ring-emerald-200 dark:ring-emerald-500/20',
     ];
     $statusIcons = [
         'pending' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>',
         'reviewed' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>',
         'converted' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>',
         'declined' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>',
+        'done' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>',
     ];
     $proposalColors = [
         'draft' => 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300',
@@ -96,7 +98,7 @@
             'options' => collect(\App\Models\ProjectRequest::STATUSES)->map(fn ($label, $key) => [
                 'value' => $key,
                 'label' => "{$label} (".($statusCounts[$key] ?? 0).')',
-                'dot' => ['pending' => 'bg-amber-400', 'reviewed' => 'bg-indigo-400', 'converted' => 'bg-teal', 'declined' => 'bg-red-400'][$key] ?? 'bg-gray-400',
+                'dot' => ['pending' => 'bg-amber-400', 'reviewed' => 'bg-indigo-400', 'converted' => 'bg-teal', 'declined' => 'bg-red-400', 'done' => 'bg-emerald-400'][$key] ?? 'bg-gray-400',
             ])->values()->all(),
             'selected' => '',
             'placeholder' => "All ({$totalRequestCount})",

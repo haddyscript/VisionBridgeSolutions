@@ -11,6 +11,7 @@ class ProjectRequest extends Model
         'reviewed' => 'Reviewed',
         'converted' => 'Converted to Project',
         'declined' => 'Declined',
+        'done' => 'Done',
     ];
 
     /** The sales/proposal pipeline — deliberately separate from STATUSES (intake triage) so advancing a proposal never overwrites internal review tracking. */
