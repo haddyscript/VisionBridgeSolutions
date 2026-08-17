@@ -247,7 +247,18 @@
         </div>
 
         <div class="flex items-center justify-between gap-4 px-5 py-3 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
-            <span id="requests-count-label">Showing {{ $requests->count() }} request{{ $requests->count() === 1 ? '' : 's' }}</span>
+            <span id="requests-count-label-desktop"></span>
+            <div class="flex items-center gap-2">
+                <button type="button" id="requests-page-prev-desktop" onclick="changeRequestsPage(-1)"
+                        class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                    Prev
+                </button>
+                <span id="requests-page-indicator-desktop" class="px-2 text-navy dark:text-white font-medium"></span>
+                <button type="button" id="requests-page-next-desktop" onclick="changeRequestsPage(1)"
+                        class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                    Next
+                </button>
+            </div>
         </div>
     </div>
 
@@ -319,52 +330,107 @@
         </div>
     </div>
 
+    <div class="md:hidden flex items-center justify-between gap-4 mt-3 px-1 text-xs text-gray-500 dark:text-gray-400">
+        <span id="requests-count-label-mobile"></span>
+        <div class="flex items-center gap-2">
+            <button type="button" id="requests-page-prev-mobile" onclick="changeRequestsPage(-1)"
+                    class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                Prev
+            </button>
+            <span id="requests-page-indicator-mobile" class="px-2 text-navy dark:text-white font-medium"></span>
+            <button type="button" id="requests-page-next-mobile" onclick="changeRequestsPage(1)"
+                    class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                Next
+            </button>
+        </div>
+    </div>
+
     <script>
         (function () {
+            const PER_PAGE = 15;
+            let currentPage = 1;
+
             const search = document.getElementById('request-search');
             const statusFilter = document.getElementById('request-status-filter-input');
             const categoryFilter = document.getElementById('request-category-filter-input');
             const emptyDesktop = document.getElementById('requests-empty-filter-desktop');
             const emptyMobile = document.getElementById('requests-empty-filter-mobile');
-            const countLabel = document.getElementById('requests-count-label');
-            // Both the desktop <tr> rows and mobile <a> cards share the same
-            // [data-search]/[data-status]/[data-category] contract, so one filter pass drives both.
-            const items = Array.from(document.querySelectorAll('[data-search]'));
-            // Every request is loaded onto this one page (see index() —
-            // no server pagination), so this is a real total, not "this page".
-            const totalCount = items.length / 2;
+            // The desktop <tr> rows and mobile <a> cards are two independent
+            // renderings of the same $requests collection in the same order,
+            // so a row and its corresponding card always match/mismatch the
+            // same filters together — each list is paginated on its own,
+            // but always lands on the same page range.
+            const rows = Array.from(document.querySelectorAll('#requests-table tbody tr'));
+            const cards = Array.from(document.querySelectorAll('#requests-cards > a[data-search]'));
 
-            function apply() {
+            function matchesFilters(el, q, status, category) {
+                const matchesSearch = !q || el.dataset.search.includes(q);
+                const matchesStatus = !status || el.dataset.status === status;
+                const matchesCategory = !category || el.dataset.category === category;
+                return matchesSearch && matchesStatus && matchesCategory;
+            }
+
+            function updatePageControls(suffix, total, totalPages) {
+                const countLabel = document.getElementById('requests-count-label-' + suffix);
+                const indicator = document.getElementById('requests-page-indicator-' + suffix);
+                const prevBtn = document.getElementById('requests-page-prev-' + suffix);
+                const nextBtn = document.getElementById('requests-page-next-' + suffix);
+
+                if (countLabel) {
+                    if (total === 0) {
+                        countLabel.textContent = 'No matching requests found';
+                    } else {
+                        const start = (currentPage - 1) * PER_PAGE + 1;
+                        const end = Math.min(currentPage * PER_PAGE, total);
+                        countLabel.textContent = 'Showing ' + start + '–' + end + ' of ' + total + ' request' + (total === 1 ? '' : 's');
+                    }
+                }
+                if (indicator) indicator.textContent = 'Page ' + currentPage + ' of ' + totalPages;
+                if (prevBtn) prevBtn.disabled = currentPage <= 1;
+                if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+            }
+
+            function render() {
                 const q = (search.value || '').trim().toLowerCase();
                 const status = statusFilter.value;
                 const category = categoryFilter.value;
-                let visibleDesktop = 0;
-                let visibleMobile = 0;
 
-                items.forEach(function (el) {
-                    const matchesSearch = !q || el.dataset.search.includes(q);
-                    const matchesStatus = !status || el.dataset.status === status;
-                    const matchesCategory = !category || el.dataset.category === category;
-                    const show = matchesSearch && matchesStatus && matchesCategory;
-                    el.classList.toggle('hidden', !show);
-                    if (show) {
-                        if (el.matches('tr')) visibleDesktop++; else visibleMobile++;
-                    }
-                });
+                const matchedRows = rows.filter((el) => matchesFilters(el, q, status, category));
+                const matchedCards = cards.filter((el) => matchesFilters(el, q, status, category));
+                const total = matchedRows.length;
+                const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+                currentPage = Math.min(Math.max(currentPage, 1), totalPages);
 
-                if (emptyDesktop) emptyDesktop.classList.toggle('hidden', visibleDesktop > 0);
-                if (emptyMobile) emptyMobile.classList.toggle('hidden', visibleMobile > 0);
+                const start = (currentPage - 1) * PER_PAGE;
+                const end = start + PER_PAGE;
+                const pageRows = new Set(matchedRows.slice(start, end));
+                const pageCards = new Set(matchedCards.slice(start, end));
 
-                if (countLabel) {
-                    countLabel.textContent = (q || status || category)
-                        ? 'Showing ' + visibleDesktop + ' of ' + totalCount + ' request' + (totalCount === 1 ? '' : 's')
-                        : 'Showing ' + totalCount + ' request' + (totalCount === 1 ? '' : 's');
-                }
+                rows.forEach((el) => el.classList.toggle('hidden', !pageRows.has(el)));
+                cards.forEach((el) => el.classList.toggle('hidden', !pageCards.has(el)));
+
+                if (emptyDesktop) emptyDesktop.classList.toggle('hidden', total > 0);
+                if (emptyMobile) emptyMobile.classList.toggle('hidden', total > 0);
+
+                updatePageControls('desktop', total, totalPages);
+                updatePageControls('mobile', total, totalPages);
             }
 
-            search.addEventListener('input', apply);
-            statusFilter.addEventListener('change', apply);
-            categoryFilter.addEventListener('change', apply);
+            function applyFilters() {
+                currentPage = 1;
+                render();
+            }
+
+            window.changeRequestsPage = function (delta) {
+                currentPage += delta;
+                render();
+            };
+
+            search.addEventListener('input', applyFilters);
+            statusFilter.addEventListener('change', applyFilters);
+            categoryFilter.addEventListener('change', applyFilters);
+
+            render();
         })();
     </script>
 @endif
