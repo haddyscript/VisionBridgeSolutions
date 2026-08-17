@@ -25,7 +25,7 @@
 @else
     <div class="space-y-4">
         @foreach ($messages as $message)
-            <div class="bg-white dark:bg-navy rounded-xl border p-6 {{ $message->isRead() ? 'border-gray-200 dark:border-gray-700' : 'border-gold/40 shadow-sm' }}" style="{{ $message->isRead() ? '' : 'background:linear-gradient(to right, rgba(201,168,76,0.05), #ffffff 12%);' }}">
+            <div class="bg-white dark:bg-navy rounded-xl border p-6 {{ $message->isRead() ? 'border-gray-200 dark:border-gray-700' : 'border-gold/40 shadow-sm bg-[linear-gradient(to_right,rgba(201,168,76,0.05),#ffffff_12%)] dark:bg-[linear-gradient(to_right,rgba(201,168,76,0.12),#1B2A4A_12%)]' }}">
                 <div class="flex flex-wrap items-start justify-between gap-4 mb-3">
                     <div class="flex items-center gap-2.5">
                         @if (! $message->isRead())
