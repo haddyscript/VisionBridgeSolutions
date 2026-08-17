@@ -95,40 +95,44 @@
             </a>
         </div>
 
-        <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4 text-sm">
-            <div class="flex items-center justify-between">
-                <span class="text-gray-500 dark:text-gray-400">Status</span>
-                <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $message->isRead() ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300' : 'bg-gold/15 text-gold-dark' }}">
-                    {{ $message->isRead() ? 'Read' : 'New' }}
-                </span>
-            </div>
+        <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 text-sm">
+            <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Label</label>
+            <form method="POST" action="{{ route('admin.contact-messages.update-label', $message) }}">
+                @csrf
+                @method('PATCH')
+                @include('admin._dropdown', [
+                    'name' => 'label',
+                    'domId' => 'message-label',
+                    'options' => collect(\App\Models\ContactMessage::LABELS)->map(fn ($label, $value) => [
+                        'value' => $value,
+                        'label' => $label,
+                        'dot' => $labelColors[$value]['dot'] ?? 'bg-gray-400',
+                    ])->values()->all(),
+                    'selected' => $message->label,
+                    'placeholder' => 'No Label',
+                    'autoSubmit' => true,
+                ])
+            </form>
 
-            <div class="flex items-center justify-between">
-                <span class="text-gray-500 dark:text-gray-400">Label</span>
-                <form method="POST" action="{{ route('admin.contact-messages.update-label', $message) }}" class="relative">
-                    @csrf
-                    @method('PATCH')
-                    <span class="absolute left-2.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full pointer-events-none {{ $labelColors[$message->label]['dot'] ?? 'bg-gray-300 dark:bg-gray-600' }}"></span>
-                    <select name="label" onchange="this.form.submit()"
-                            class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark pl-6 pr-2.5 py-1 text-xs font-semibold {{ $labelColors[$message->label]['text'] ?? 'text-navy dark:text-white' }} focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold cursor-pointer">
-                        <option value="" {{ $message->label ? '' : 'selected' }}>No Label</option>
-                        @foreach (\App\Models\ContactMessage::LABELS as $value => $label)
-                            <option value="{{ $value }}" {{ $message->label === $value ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </form>
-            </div>
-
-            @if ($message->service)
-                <div>
-                    <span class="text-gray-500 dark:text-gray-400 block mb-1">Service</span>
-                    <p class="text-navy dark:text-white font-medium leading-snug">{{ $message->service }}</p>
+            <div class="space-y-4 mt-5 pt-5 border-t border-gray-100 dark:border-gray-700/60">
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-500 dark:text-gray-400">Status</span>
+                    <span class="inline-block text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full {{ $message->isRead() ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300' : 'bg-gold/15 text-gold-dark' }}">
+                        {{ $message->isRead() ? 'Read' : 'New' }}
+                    </span>
                 </div>
-            @endif
 
-            <div class="flex items-center justify-between pt-1 border-t border-gray-100 dark:border-gray-700/60">
-                <span class="text-gray-500 dark:text-gray-400">Submitted</span>
-                <span class="text-navy dark:text-white font-medium" title="{{ $message->created_at->format('M j, Y \a\t g:ia') }}">{{ $message->created_at->diffForHumans() }}</span>
+                @if ($message->service)
+                    <div>
+                        <span class="text-gray-500 dark:text-gray-400 block mb-1">Service</span>
+                        <p class="text-navy dark:text-white font-medium leading-snug">{{ $message->service }}</p>
+                    </div>
+                @endif
+
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-500 dark:text-gray-400">Submitted</span>
+                    <span class="text-navy dark:text-white font-medium" title="{{ $message->created_at->format('M j, Y \a\t g:ia') }}">{{ $message->created_at->diffForHumans() }}</span>
+                </div>
             </div>
         </div>
     </div>
