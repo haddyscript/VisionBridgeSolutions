@@ -232,9 +232,18 @@
                                  inline) until JS clones it into the shared
                                  modal below. --}}
                             <template id="developer-history-{{ $row['developer']->id }}">
-                                <div class="divide-y divide-gray-100 dark:divide-gray-700">
-                                    @foreach ($row['completedItems'] as $item)
-                                        @include('admin.developers._item-row', ['item' => $item, 'statusColors' => $statusColors, 'completed' => true])
+                                <div class="space-y-3">
+                                    @foreach ($row['completedItems']->groupBy(fn ($item) => $item['updated_at']->format('F Y')) as $month => $monthItems)
+                                        <div data-history-month>
+                                            <p class="sticky top-0 z-10 -mx-1 px-1 py-1 mb-1 bg-white/95 dark:bg-navy/95 backdrop-blur-sm text-[0.65rem] font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                                                {{ $month }}
+                                            </p>
+                                            <div class="divide-y divide-gray-100 dark:divide-gray-700">
+                                                @foreach ($monthItems as $item)
+                                                    @include('admin.developers._item-row', ['item' => $item, 'statusColors' => $statusColors, 'completed' => true])
+                                                @endforeach
+                                            </div>
+                                        </div>
                                     @endforeach
                                 </div>
                             </template>
@@ -442,19 +451,33 @@
 {{-- Shared History modal — one instance, populated on click by cloning the
      clicked developer's <template> from above rather than one modal per
      developer card. --}}
-<div id="developer-history-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div class="absolute inset-0 bg-black/50" data-history-modal-close></div>
-    <div class="relative bg-white dark:bg-navy rounded-xl shadow-xl w-full max-w-lg max-h-[85vh] flex flex-col">
-        <div class="flex items-center justify-between gap-4 px-5 py-4 border-b border-gray-100 dark:border-gray-700 shrink-0">
-            <div class="min-w-0">
+<div id="developer-history-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="developer-history-modal-title">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-history-modal-close></div>
+    <div id="developer-history-modal-panel" class="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col opacity-0 scale-95 transition-all duration-200 ease-out">
+        <div class="flex items-center gap-3 px-5 py-4 border-b border-gray-100 dark:border-gray-700 shrink-0">
+            <span id="developer-history-modal-avatar" class="w-9 h-9 rounded-xl bg-gradient-to-br from-navy to-navy/75 text-gold text-sm font-bold flex items-center justify-center shrink-0 shadow-sm"></span>
+            <div class="min-w-0 flex-1">
                 <h3 id="developer-history-modal-title" class="font-bold text-navy dark:text-white truncate"></h3>
                 <p class="text-xs text-gray-500 dark:text-gray-400">Completed Work Orders</p>
             </div>
-            <button type="button" data-history-modal-close class="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors" aria-label="Close">
+            <button type="button" data-history-modal-close class="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg p-1.5 transition-colors" aria-label="Close">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-        <div id="developer-history-modal-body" class="overflow-y-auto px-5"></div>
+        {{-- Filter box only matters once a developer has a long history —
+             harmless and always visible so its position doesn't jump
+             depending on count. --}}
+        <div class="px-5 pt-3 pb-3 shrink-0 border-b border-gray-100 dark:border-gray-700">
+            <div class="relative">
+                <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input type="text" id="developer-history-search" placeholder="Filter by title or client…"
+                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 dark:text-white pl-9 pr-3 py-2 text-xs placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition-shadow">
+            </div>
+        </div>
+        <div id="developer-history-modal-body" class="overflow-y-auto px-5 py-3">
+            <div id="developer-history-modal-list"></div>
+            <p id="developer-history-empty" class="hidden text-xs text-gray-500 dark:text-gray-400 text-center py-8">No items match your filter.</p>
+        </div>
     </div>
 </div>
 
@@ -519,23 +542,54 @@
 
     (function () {
         const modal = document.getElementById('developer-history-modal');
+        const panel = document.getElementById('developer-history-modal-panel');
+        const modalAvatar = document.getElementById('developer-history-modal-avatar');
         const modalTitle = document.getElementById('developer-history-modal-title');
-        const modalBody = document.getElementById('developer-history-modal-body');
-        if (!modal || !modalTitle || !modalBody) return;
+        const modalList = document.getElementById('developer-history-modal-list');
+        const modalEmpty = document.getElementById('developer-history-empty');
+        const modalSearch = document.getElementById('developer-history-search');
+        if (!modal || !panel || !modalTitle || !modalList) return;
+
+        function filterHistory() {
+            const query = (modalSearch?.value || '').trim().toLowerCase();
+            const rows = modalList.querySelectorAll('[data-history-row]');
+            let visibleCount = 0;
+
+            rows.forEach((row) => {
+                const visible = !query || row.dataset.historySearch.includes(query);
+                row.classList.toggle('hidden', !visible);
+                if (visible) visibleCount++;
+            });
+
+            // Hide a month's sticky label too once every row under it is filtered out.
+            modalList.querySelectorAll('[data-history-month]').forEach((group) => {
+                const hasVisibleRow = group.querySelectorAll('[data-history-row]:not(.hidden)').length > 0;
+                group.classList.toggle('hidden', !hasVisibleRow);
+            });
+
+            modalEmpty?.classList.toggle('hidden', visibleCount !== 0);
+        }
 
         function openHistoryModal(btn) {
             const template = document.getElementById(btn.dataset.target);
             if (!template) return;
             modalTitle.textContent = `${btn.dataset.developerName} — History (${btn.dataset.count})`;
-            modalBody.innerHTML = '';
-            modalBody.appendChild(template.content.cloneNode(true));
+            if (modalAvatar) modalAvatar.textContent = btn.dataset.developerName.charAt(0).toUpperCase();
+            modalList.innerHTML = '';
+            modalList.appendChild(template.content.cloneNode(true));
+            if (modalSearch) modalSearch.value = '';
+            filterHistory();
             modal.classList.remove('hidden');
             document.body.classList.add('overflow-hidden');
+            requestAnimationFrame(() => {
+                panel.classList.remove('opacity-0', 'scale-95');
+            });
         }
 
         function closeHistoryModal() {
-            modal.classList.add('hidden');
+            panel.classList.add('opacity-0', 'scale-95');
             document.body.classList.remove('overflow-hidden');
+            window.setTimeout(() => modal.classList.add('hidden'), 200);
         }
 
         document.querySelectorAll('.developer-history-btn').forEach((btn) => {
@@ -547,6 +601,7 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeHistoryModal();
         });
+        modalSearch?.addEventListener('input', filterHistory);
     })();
 
     (function () {

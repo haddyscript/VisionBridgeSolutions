@@ -16,14 +16,15 @@
         'urgent' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
     ];
 @endphp
-<div class="flex items-center justify-between gap-3 px-1 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+<div class="flex items-center justify-between gap-3 px-1 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+     @if (! empty($completed)) data-history-row data-history-search="{{ strtolower($item['title'].' '.$item['client_name'].' '.$item['type']) }}" @endif>
     <div class="min-w-0">
         <a href="{{ $item['url'] }}" class="text-xs text-navy dark:text-white truncate hover:underline block">{{ $item['title'] }}</a>
         <p class="text-[0.7rem] text-gray-500 dark:text-gray-400 flex flex-wrap items-center gap-x-1.5 gap-y-1 mt-0.5">
             <span>
                 {{ $item['type'] }} &middot; {{ $item['client_name'] }}
                 @if (! empty($completed))
-                    &middot; Completed {{ $item['updated_at']->format('M j, Y') }}
+                    &middot; <span class="text-gray-600 dark:text-gray-300">Completed {{ $item['updated_at']->format('M j, Y') }}</span>
                 @endif
             </span>
             @if (! empty($item['priority']))
@@ -58,6 +59,14 @@
                 ])
             </form>
         </div>
+    @elseif (! empty($completed))
+        {{-- The modal/section this row lives in is already scoped to
+             completed work, so repeating a "COMPLETED" pill on every single
+             row is pure noise — a small checkmark is enough confirmation
+             and lets the title/date do the talking. --}}
+        <span class="shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-full bg-teal/15 text-teal-dark" title="Completed">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        </span>
     @else
         <a href="{{ $item['url'] }}" class="shrink-0 text-[0.65rem] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full {{ $statusColors[$item['developer_status']] ?? 'bg-gray-100 text-gray-500' }}">
             {{ \App\Models\Upload::DEVELOPER_STATUSES[$item['developer_status']] ?? 'Not Started' }}
