@@ -347,8 +347,14 @@
         + ($project->subscription && $project->subscription->status === 'pending' ? 1 : 0);
 @endphp
 
-{{-- Tabs — high-contrast pill segmented control --}}
-<div class="inline-flex flex-wrap items-center gap-1 bg-gray-100 dark:bg-navy-dark rounded-full p-1 mb-6">
+{{-- Tabs — high-contrast pill segmented control. Sticks to the top navbar
+     while scrolling (matches the sidebar's own always-visible nav) instead
+     of scrolling out of reach on a project with a lot of content below it.
+     The sentinel + IntersectionObserver below just add a shadow once it's
+     actually docked, purely cosmetic. --}}
+<div id="tabs-sticky-sentinel"></div>
+<div id="project-tabs-sticky" class="sticky top-16 z-10 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 bg-gray-50 dark:bg-navy-dark mb-6 transition-shadow duration-200">
+<div class="inline-flex flex-wrap items-center gap-1 bg-gray-100 dark:bg-navy-dark rounded-full p-1">
     <button type="button" data-tab-button="overview" onclick="showProjectTab('overview')"
             class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-colors bg-navy text-white dark:bg-gold dark:text-navy">
         Overview
@@ -397,6 +403,7 @@
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">{{ $projectRequests->where('status', 'pending')->count() }}</span>
         @endif
     </button>
+</div>
 </div>
 
 <div id="panel-overview" data-tab-panel="overview">
@@ -1908,6 +1915,25 @@ function submitAdminReply(form, event) {
         };
 
         backdrop?.addEventListener('click', closeResetPasswordModal);
+    })();
+
+    // Adds a shadow/border to the tabs bar only once it's actually docked
+    // under the top navbar (vs. sitting in its normal spot in the page) —
+    // purely a visual cue that it's now "stuck", no effect on the sticky
+    // behavior itself (that's plain CSS `position: sticky`).
+    (function () {
+        const sentinel = document.getElementById('tabs-sticky-sentinel');
+        const stickyBar = document.getElementById('project-tabs-sticky');
+        if (!sentinel || !stickyBar || !('IntersectionObserver' in window)) return;
+
+        const observer = new IntersectionObserver(([entry]) => {
+            stickyBar.classList.toggle('shadow-md', !entry.isIntersecting);
+            stickyBar.classList.toggle('border-b', !entry.isIntersecting);
+            stickyBar.classList.toggle('border-gray-200', !entry.isIntersecting);
+            stickyBar.classList.toggle('dark:border-gray-700', !entry.isIntersecting);
+        }, { threshold: 0, rootMargin: '-65px 0px 0px 0px' });
+
+        observer.observe(sentinel);
     })();
 </script>
 
