@@ -442,13 +442,18 @@
      (admin._dropdown) render via real position:fixed, viewport-relative
      coordinates computed on open, and a transformed/filtered ancestor
      becomes their containing block instead, misplacing the menu (same class
-     of bug hit and fixed on the Team page). Also deliberately no
-     backdrop-blur on the overlay itself either — tried it, but blurring a
-     full-viewport fixed element bled onto the (unrelated) panel in testing,
-     a compositing glitch, not worth chasing for a cosmetic effect. The
-     panel's entrance is plain opacity-only. --}}
+     of bug hit and fixed on the Team page). The panel's own entrance is
+     plain opacity-only for the same reason. The backdrop below IS blurred
+     (backdrop-blur-sm) — that's safe since it's a sibling of the panel, not
+     an ancestor, so it never touches the dropdowns' containing block. It
+     does need `relative` on .admin-modal-panel to work correctly though: a
+     position:absolute backdrop paints above a position:static panel
+     regardless of DOM order, which visually looked like the blur was
+     "bleeding" onto the panel but was actually the backdrop sitting on top
+     of it the whole time (and silently swallowing every click as a
+     backdrop click) — `relative` fixes the stacking, not the blur. --}}
 <div id="new-request-modal" class="admin-modal hidden fixed inset-0 z-[60] items-center justify-center px-4">
-    <div class="absolute inset-0 bg-navy-dark/60 opacity-0 transition-opacity duration-200" data-modal-backdrop></div>
+    <div class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200" data-modal-backdrop></div>
 
     {{-- relative is required here: the backdrop above is position:absolute
          (a "positioned" element), and without an explicit position on this
