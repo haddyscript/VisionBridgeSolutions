@@ -474,7 +474,12 @@
             </div>
         </div>
 
-        <form id="new-request-form" method="POST" action="{{ route('admin.project-requests.store') }}" enctype="multipart/form-data" class="flex-1 overflow-y-auto p-5 space-y-5">
+        {{-- min-h-0 is required here: a flex child sized by flex-1 alone
+             ignores the parent's height cap and grows to its full content
+             height instead, so overflow-y-auto never actually triggers —
+             the panel's own overflow-hidden just silently clips whatever
+             doesn't fit, with no scrollbar to reach it. --}}
+        <form id="new-request-form" method="POST" action="{{ route('admin.project-requests.store') }}" enctype="multipart/form-data" class="flex-1 min-h-0 overflow-y-auto p-5 space-y-5">
             @csrf
 
             {{-- Section: the request itself --}}
@@ -664,6 +669,13 @@
     function openAdminModal(modal) {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+        // Locks the page behind the modal so scrolling/clicking through to
+        // it (and the layout shift that comes with it) isn't possible while
+        // the modal's open — otherwise a scroll gesture over a
+        // non-scrollable part of the modal (the header/footer) falls
+        // through to the page, which can shift enough to turn a later click
+        // into an accidental backdrop click that closes the modal.
+        document.body.classList.add('overflow-hidden');
         requestAnimationFrame(() => {
             modal.querySelector('[data-modal-backdrop]')?.classList.remove('opacity-0');
             modal.querySelector('.admin-modal-panel')?.classList.remove('opacity-0');
@@ -675,6 +687,7 @@
     function closeAdminModal(modal) {
         modal.querySelector('[data-modal-backdrop]')?.classList.add('opacity-0');
         modal.querySelector('.admin-modal-panel')?.classList.add('opacity-0');
+        document.body.classList.remove('overflow-hidden');
         setTimeout(() => {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
