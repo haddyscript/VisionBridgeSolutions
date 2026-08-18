@@ -557,18 +557,25 @@
     <div class="flex items-center justify-between gap-3 mb-4">
         <h3 class="font-semibold text-navy dark:text-white">Payments</h3>
 
-        {{-- One-off for Unity Auto Group's special phased payment plan (see
-        AdminProjectController::sendPaymentInstructions) — not a general
-        per-project feature, so intentionally scoped to just this project. --}}
-        @if ($project->id === 7)
-            <form method="POST" action="{{ route('admin.projects.payment-instructions', $project) }}" data-confirm="Email the phased payment plan instructions to {{ $project->user->name }}?">
-                @csrf
-                <button type="submit" class="inline-flex items-center gap-1.5 text-xs font-semibold text-gold-dark border border-gold/40 hover:bg-gold/10 px-3 py-1.5 rounded-full transition-colors">
-                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    Payment Instruction
-                </button>
-            </form>
-        @endif
+        <div class="flex items-center gap-2">
+            {{-- One-off for Unity Auto Group's special phased payment plan (see
+            AdminProjectController::sendPaymentInstructions) — not a general
+            per-project feature, so intentionally scoped to just this project. --}}
+            @if ($project->id === 7)
+                <form method="POST" action="{{ route('admin.projects.payment-instructions', $project) }}" data-confirm="Email the phased payment plan instructions to {{ $project->user->name }}?">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center gap-1.5 text-xs font-semibold text-gold-dark border border-gold/40 hover:bg-gold/10 px-3 py-1.5 rounded-full transition-colors">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        Payment Instruction
+                    </button>
+                </form>
+            @endif
+            <button type="button" data-modal="new-payment-modal"
+                class="modal-trigger inline-flex items-center gap-1.5 text-xs font-semibold text-navy dark:text-white border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 bg-white dark:bg-navy px-3 py-1.5 rounded-lg transition-colors">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                New Line Item
+            </button>
+        </div>
     </div>
 
     {{-- Line-item ledger table --}}
@@ -656,57 +663,6 @@
             </div>
         </div>
     @endif
-
-    {{-- Compact "Add Line Item" row --}}
-    <div class="pt-5 border-t border-gray-100 dark:border-gray-700">
-        <p class="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">Add New Line Item</p>
-        <form method="POST" action="{{ route('admin.payments.store', $project) }}" class="flex flex-wrap items-end gap-3" data-ajax-target="panel-billing tabbtn-billing">
-            @csrf
-            <div class="flex-1 min-w-[14rem]">
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Description</label>
-                <input type="text" name="description" placeholder="What's this payment for..." required
-                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
-            </div>
-            <div class="w-44 shrink-0">
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Category</label>
-                <input type="hidden" name="category" id="payment-category-input" value="">
-
-                <div class="relative" data-payment-category-dropdown>
-                    <button type="button" data-payment-category-toggle aria-haspopup="listbox" aria-expanded="false"
-                            class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
-                        <span data-payment-category-label class="text-gray-500 dark:text-gray-400 truncate">No category</span>
-                        <svg data-payment-category-chevron class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-
-                    <div data-payment-category-menu class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
-                        @foreach (['' => 'No category', 'phase' => 'Phase', 'one_time' => 'One-Time Payment', 'deposit' => 'Deposit', 'final' => 'Final Payment', 'other' => 'Other'] as $value => $label)
-                            <button type="button" data-payment-category-option="{{ $value }}" role="option" aria-selected="{{ $value === '' ? 'true' : 'false' }}"
-                                    class="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $value === '' ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
-                                {{ $label }}
-                                <svg class="w-4 h-4 text-gold-dark shrink-0 {{ $value === '' ? '' : 'invisible' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                </svg>
-                            </button>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-            <div class="w-36 shrink-0">
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Amount</label>
-                <div class="relative">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400 pointer-events-none">$</span>
-                    <input type="number" name="amount" step="0.01" min="1" placeholder="0.00" required
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-6 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
-                </div>
-            </div>
-            <button type="submit" class="shrink-0 inline-flex items-center gap-1.5 bg-navy hover:bg-navy-light text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                Add Item
-            </button>
-        </form>
-    </div>
 </div>
 
 {{-- Maintenance Plan --}}
@@ -1322,15 +1278,92 @@ function submitAdminReply(form, event) {
     </div>
 </div>
 
+{{-- New Line Item modal — same admin-modal pattern as New Work Order above.
+     Submits through the existing ajax flow (data-ajax-target) so adding a
+     payment still updates the ledger in place without a full reload; the
+     modal itself lives outside #panel-billing so an ajax swap of that panel
+     never removes it (see bindModalTriggers rebinding below for the trigger
+     button, which does live inside the swapped panel). --}}
+<div id="new-payment-modal" class="admin-modal hidden fixed inset-0 z-[60] items-center justify-center bg-black/40 px-4">
+    <div class="admin-modal-panel bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl w-full max-w-md">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+            <p class="font-semibold text-navy dark:text-white">New Line Item</p>
+            <button type="button" class="admin-modal-close w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0" aria-label="Close">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <form method="POST" action="{{ route('admin.payments.store', $project) }}" class="p-5 space-y-4" data-ajax-target="panel-billing tabbtn-billing">
+            @csrf
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Description</label>
+                <input type="text" name="description" placeholder="What's this payment for..." required
+                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Category</label>
+                <input type="hidden" name="category" id="payment-category-input" value="">
+
+                <div class="relative" data-payment-category-dropdown>
+                    <button type="button" data-payment-category-toggle aria-haspopup="listbox" aria-expanded="false"
+                            class="w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+                        <span data-payment-category-label class="text-gray-500 dark:text-gray-400 truncate">No category</span>
+                        <svg data-payment-category-chevron class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    <div data-payment-category-menu class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                        @foreach (['' => 'No category', 'phase' => 'Phase', 'one_time' => 'One-Time Payment', 'deposit' => 'Deposit', 'final' => 'Final Payment', 'other' => 'Other'] as $value => $label)
+                            <button type="button" data-payment-category-option="{{ $value }}" role="option" aria-selected="{{ $value === '' ? 'true' : 'false' }}"
+                                    class="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $value === '' ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
+                                {{ $label }}
+                                <svg class="w-4 h-4 text-gold-dark shrink-0 {{ $value === '' ? '' : 'invisible' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Amount</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400 pointer-events-none">$</span>
+                    <input type="number" name="amount" step="0.01" min="1" placeholder="0.00" required
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 pl-6 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" class="admin-modal-close px-4 py-2 text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2 bg-navy hover:bg-navy-light text-white text-sm font-semibold rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    Add Item
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-    document.querySelectorAll('.modal-trigger').forEach((trigger) => {
-        trigger.addEventListener('click', () => {
-            const modal = document.getElementById(trigger.dataset.modal);
-            if (!modal) return;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+    function bindModalTriggers(root) {
+        root.querySelectorAll('.modal-trigger').forEach((trigger) => {
+            if (trigger.dataset.modalBound) return;
+            trigger.dataset.modalBound = '1';
+            trigger.addEventListener('click', () => {
+                const modal = document.getElementById(trigger.dataset.modal);
+                if (!modal) return;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            });
         });
-    });
+    }
+    window.bindModalTriggers = bindModalTriggers;
+    bindModalTriggers(document);
 
     function closeAdminModal(modal) {
         modal.classList.add('hidden');
@@ -1865,6 +1898,11 @@ function submitAdminReply(form, event) {
                                     window.bindPaymentCategoryDropdown?.(freshEl);
                                     window.bindMilestoneToggles?.(freshEl);
                                     window.bindRevisionDropdowns?.(freshEl);
+                                    // The swapped-in markup has its own fresh
+                                    // "New Line Item"/"New Work Order" trigger
+                                    // button — it needs its click listener
+                                    // (re)attached same as everything above.
+                                    window.bindModalTriggers?.(freshEl);
                                 }
                             });
 
@@ -1872,6 +1910,36 @@ function submitAdminReply(form, event) {
 
                             if (openThreadMatch) {
                                 openAdminThread(openThreadMatch[1], openThreadMatch[2], false, null);
+                            }
+
+                            // A form that lives inside a modal (e.g. "New Line
+                            // Item") just succeeded — close it and clear it out
+                            // instead of leaving it open over the now-stale
+                            // values, since the panel behind it already shows
+                            // the freshly-added row.
+                            const parentModal = form.closest('.admin-modal');
+                            if (parentModal) {
+                                closeAdminModal(parentModal);
+                                form.reset();
+                                // The category field is a custom JS-driven
+                                // dropdown, not a native <select> — its visible
+                                // label/highlight don't follow form.reset(),
+                                // so resync them to the "No category" default.
+                                const categoryLabel = form.querySelector('[data-payment-category-label]');
+                                if (categoryLabel) {
+                                    categoryLabel.textContent = 'No category';
+                                    categoryLabel.classList.add('text-gray-400', 'dark:text-gray-500');
+                                    categoryLabel.classList.remove('text-navy', 'dark:text-white');
+                                    form.querySelectorAll('[data-payment-category-option]').forEach((opt) => {
+                                        const isDefault = opt.dataset.paymentCategoryOption === '';
+                                        opt.setAttribute('aria-selected', isDefault ? 'true' : 'false');
+                                        opt.classList.toggle('text-gold-dark', isDefault);
+                                        opt.classList.toggle('font-semibold', isDefault);
+                                        opt.classList.toggle('text-gray-700', !isDefault);
+                                        opt.classList.toggle('dark:text-gray-300', !isDefault);
+                                        opt.querySelector('svg')?.classList.toggle('invisible', !isDefault);
+                                    });
+                                }
                             }
                         })
                         .catch(() => {
