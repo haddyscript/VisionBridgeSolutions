@@ -450,7 +450,14 @@
 <div id="new-request-modal" class="admin-modal hidden fixed inset-0 z-[60] items-center justify-center px-4">
     <div class="absolute inset-0 bg-navy-dark/60 opacity-0 transition-opacity duration-200" data-modal-backdrop></div>
 
-    <div class="admin-modal-panel bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl w-full max-w-lg max-h-[85vh] overflow-hidden opacity-0 transition-opacity duration-200 flex flex-col">
+    {{-- relative is required here: the backdrop above is position:absolute
+         (a "positioned" element), and without an explicit position on this
+         panel too, CSS paints positioned elements above static ones
+         regardless of DOM order — the backdrop would sit visually on top of
+         this panel (blocking/absorbing every click as a backdrop click,
+         even though the panel's opaque background still shows through it
+         fine, which is what made this so easy to miss). --}}
+    <div class="admin-modal-panel relative bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl w-full max-w-lg max-h-[85vh] overflow-hidden opacity-0 transition-opacity duration-200 flex flex-col">
         {{-- Rich gradient header — the one deliberately elevated moment on
              this page, matching the gold "wow" the trigger button already
              promises, instead of a flat text bar. Decorative glow blobs live
