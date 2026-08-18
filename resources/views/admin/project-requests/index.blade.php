@@ -436,142 +436,178 @@
 @endif
 
 {{-- New Project Request modal — the admin-created "internal work order" path,
-     alongside the existing client-submitted one. No backdrop-blur/glass or
-     transform-animation on the panel here, deliberately — the client/
-     priority/developer dropdowns inside it (admin._dropdown) use real
-     position:fixed, viewport-relative coordinates, and either of those CSS
-     properties on an ancestor would make this panel their containing block
-     instead (same class of bug hit and fixed on the Team page). --}}
-<div id="new-request-modal" class="admin-modal hidden fixed inset-0 z-[60] items-center justify-center bg-black/40 px-4">
-    <div class="admin-modal-panel bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
-        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
-            <p class="font-bold text-navy dark:text-white">New Project Request</p>
-            <button type="button" class="admin-modal-close w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0" aria-label="Close">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+     alongside the existing client-submitted one. IMPORTANT: no transform
+     (scale/translate) or backdrop-blur/filter on .admin-modal-panel or any
+     of its ancestors — the client/priority/developer dropdowns inside it
+     (admin._dropdown) render via real position:fixed, viewport-relative
+     coordinates computed on open, and a transformed/filtered ancestor
+     becomes their containing block instead, misplacing the menu (same class
+     of bug hit and fixed on the Team page). The backdrop below is a SIBLING
+     of the panel, not an ancestor — blurring/fading *that* is safe, and the
+     panel's own entrance is opacity-only for the same reason. --}}
+<div id="new-request-modal" class="admin-modal hidden fixed inset-0 z-[60] items-center justify-center px-4">
+    <div class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200" data-modal-backdrop></div>
+
+    <div class="admin-modal-panel bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl w-full max-w-lg max-h-[85vh] overflow-hidden opacity-0 transition-opacity duration-200 flex flex-col">
+        {{-- Rich gradient header — the one deliberately elevated moment on
+             this page, matching the gold "wow" the trigger button already
+             promises, instead of a flat text bar. Decorative glow blobs live
+             INSIDE this header (not wrapping the form below), so animating
+             them with transform is safe. --}}
+        <div class="relative overflow-hidden shrink-0 px-5 pt-5 pb-5" style="background:linear-gradient(135deg,#111D33,#1B2A4A 65%,#1B2A4A);">
+            <div class="absolute -top-10 -right-10 w-36 h-36 rounded-full pointer-events-none new-request-glow" style="background:radial-gradient(circle,rgba(201,168,76,0.30) 0%,transparent 70%);"></div>
+            <div class="absolute -bottom-12 -left-8 w-32 h-32 rounded-full pointer-events-none new-request-glow" style="background:radial-gradient(circle,rgba(42,157,143,0.20) 0%,transparent 70%); animation-delay:1.2s;"></div>
+
+            <div class="relative flex items-start gap-3">
+                <span class="w-10 h-10 rounded-xl bg-gold/20 text-gold flex items-center justify-center shrink-0 shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </span>
+                <div class="min-w-0 flex-1 pt-0.5">
+                    <p class="font-display text-lg font-bold text-white leading-tight">New Project Request</p>
+                    <p class="text-xs text-white/60 mt-0.5 leading-relaxed">For internal work not submitted by a client — never appears in their portal or notifies them.</p>
+                </div>
+                <button type="button" class="admin-modal-close shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors" aria-label="Close">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
         </div>
-        <form id="new-request-form" method="POST" action="{{ route('admin.project-requests.store') }}" enctype="multipart/form-data" class="p-5 space-y-4">
+
+        <form id="new-request-form" method="POST" action="{{ route('admin.project-requests.store') }}" enctype="multipart/form-data" class="flex-1 overflow-y-auto p-5 space-y-5">
             @csrf
-            <p class="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-navy-dark/50 rounded-lg px-3 py-2">
-                For internal work not submitted by a client — e.g. research/feasibility work on an existing account. It's tied to a client for record-keeping but never appears in their portal or notifies them.
-            </p>
 
-            <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Client</label>
-                @include('admin._dropdown', [
-                    'name' => 'user_id',
-                    'domId' => 'new-request-client',
-                    'options' => $clients->map(fn ($client) => [
-                        'value' => $client->id,
-                        'label' => $client->projects->isNotEmpty()
-                            ? "{$client->name} — {$client->projects->first()->name} ({$client->email})"
-                            : "{$client->name} ({$client->email})",
-                    ])->all(),
-                    'selected' => old('user_id'),
-                    'placeholder' => 'Select a client...',
-                ])
-                @error('user_id')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-            </div>
-
-            <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Title</label>
-                <input type="text" name="title" required value="{{ old('title') }}" placeholder="e.g. Unity Auto Group Development Research &amp; Feasibility"
-                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
-                @error('title')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-            </div>
-
-            <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Category</label>
-                @include('admin._dropdown', [
-                    'name' => 'category',
-                    'domId' => 'new-request-category',
-                    'options' => collect(\App\Models\ProjectRequest::CATEGORIES)->map(fn ($label, $value) => [
-                        'value' => $value,
-                        'label' => $label,
-                        'dot' => ['request' => 'bg-gray-400', 'proposal' => 'bg-gold'][$value] ?? 'bg-gray-400',
-                    ])->values()->all(),
-                    'selected' => old('category', 'request'),
-                ])
-                @error('category')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-            </div>
-
-            <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Description</label>
-                <textarea name="description" rows="3" required
-                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">{{ old('description') }}</textarea>
-                @error('description')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
+            {{-- Section: the request itself --}}
+            <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Priority</label>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Client</label>
                     @include('admin._dropdown', [
-                        'name' => 'priority',
-                        'domId' => 'new-request-priority',
-                        'options' => collect(\App\Models\ProjectRequest::PRIORITIES)->map(fn ($label, $value) => [
+                        'name' => 'user_id',
+                        'domId' => 'new-request-client',
+                        'options' => $clients->map(fn ($client) => [
+                            'value' => $client->id,
+                            'label' => $client->projects->isNotEmpty()
+                                ? "{$client->name} — {$client->projects->first()->name} ({$client->email})"
+                                : "{$client->name} ({$client->email})",
+                        ])->all(),
+                        'selected' => old('user_id'),
+                        'placeholder' => 'Select a client...',
+                    ])
+                    @error('user_id')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Title</label>
+                    <input type="text" name="title" required value="{{ old('title') }}" placeholder="e.g. Unity Auto Group Development Research &amp; Feasibility"
+                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
+                    @error('title')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Category</label>
+                    @include('admin._dropdown', [
+                        'name' => 'category',
+                        'domId' => 'new-request-category',
+                        'options' => collect(\App\Models\ProjectRequest::CATEGORIES)->map(fn ($label, $value) => [
                             'value' => $value,
                             'label' => $label,
-                            'dot' => ['low' => 'bg-gray-400', 'medium' => 'bg-indigo-400', 'high' => 'bg-gold', 'urgent' => 'bg-red-500'][$value] ?? 'bg-gray-400',
+                            'dot' => ['request' => 'bg-gray-400', 'proposal' => 'bg-gold'][$value] ?? 'bg-gray-400',
                         ])->values()->all(),
-                        'selected' => old('priority', 'medium'),
+                        'selected' => old('category', 'request'),
+                    ])
+                    @error('category')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Description</label>
+                    <textarea name="description" rows="3" required
+                              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">{{ old('description') }}</textarea>
+                    @error('description')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+            </div>
+
+            {{-- Section: scheduling & ownership --}}
+            <div class="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                <p class="text-[0.65rem] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Scheduling &amp; Ownership</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Priority</label>
+                        @include('admin._dropdown', [
+                            'name' => 'priority',
+                            'domId' => 'new-request-priority',
+                            'options' => collect(\App\Models\ProjectRequest::PRIORITIES)->map(fn ($label, $value) => [
+                                'value' => $value,
+                                'label' => $label,
+                                'dot' => ['low' => 'bg-gray-400', 'medium' => 'bg-indigo-400', 'high' => 'bg-gold', 'urgent' => 'bg-red-500'][$value] ?? 'bg-gray-400',
+                            ])->values()->all(),
+                            'selected' => old('priority', 'medium'),
+                        ])
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Due Date</label>
+                        <input type="date" name="due_date" value="{{ old('due_date') }}" onclick="this.showPicker && this.showPicker()" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Assign Developer (optional)</label>
+                    @include('admin._dropdown', [
+                        'name' => 'assigned_developer_id',
+                        'domId' => 'new-request-developer',
+                        'options' => $developers->map(fn ($d) => ['value' => $d->id, 'label' => $d->name])->all(),
+                        'selected' => old('assigned_developer_id'),
+                        'placeholder' => 'Unassigned',
                     ])
                 </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Due Date</label>
-                    <input type="date" name="due_date" value="{{ old('due_date') }}" onclick="this.showPicker && this.showPicker()" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
-                </div>
             </div>
 
-            <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Assign Developer (optional)</label>
-                @include('admin._dropdown', [
-                    'name' => 'assigned_developer_id',
-                    'domId' => 'new-request-developer',
-                    'options' => $developers->map(fn ($d) => ['value' => $d->id, 'label' => $d->name])->all(),
-                    'selected' => old('assigned_developer_id'),
-                    'placeholder' => 'Unassigned',
-                ])
-            </div>
+            {{-- Section: attachments --}}
+            <div class="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                <p class="text-[0.65rem] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Attachments</p>
 
-            <div class="proposal-doc-picker">
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Proposal Document (optional)</label>
-                <label class="inline-flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark hover:border-gold hover:bg-gold/5 px-3.5 py-2 text-sm font-medium text-navy dark:text-white transition-colors">
-                    <input type="file" name="proposal_document" class="proposal-doc-input sr-only" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.rtf,.odt,.jpg,.jpeg,.png,.gif,.webp,.zip">
-                    <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span>Choose file</span>
-                </label>
-                {{-- Hidden until a file is picked — shows exactly what will be uploaded (name, size, and a real thumbnail for images) so an admin can catch a wrong file before submitting, instead of trusting the browser's bare "No file chosen" text. --}}
-                <div class="proposal-doc-preview hidden mt-2 flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-navy-dark/60 px-3 py-2">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <span class="shrink-0 w-8 h-8 rounded flex items-center justify-center bg-gold/15 text-gold-dark overflow-hidden">
-                            <svg class="proposal-doc-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                            <img class="proposal-doc-thumb hidden w-full h-full object-cover" alt="">
-                        </span>
-                        <div class="min-w-0">
-                            <p class="proposal-doc-name text-sm font-medium text-navy dark:text-white truncate"></p>
-                            <p class="proposal-doc-size text-xs text-gray-500 dark:text-gray-400"></p>
+                <div class="proposal-doc-picker">
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Proposal Document (optional)</label>
+                    <label class="inline-flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark hover:border-gold hover:bg-gold/5 px-3.5 py-2 text-sm font-medium text-navy dark:text-white transition-colors">
+                        <input type="file" name="proposal_document" class="proposal-doc-input sr-only" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.rtf,.odt,.jpg,.jpeg,.png,.gif,.webp,.zip">
+                        <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span>Choose file</span>
+                    </label>
+                    {{-- Hidden until a file is picked — shows exactly what will be uploaded (name, size, and a real thumbnail for images) so an admin can catch a wrong file before submitting, instead of trusting the browser's bare "No file chosen" text. --}}
+                    <div class="proposal-doc-preview hidden mt-2 flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-navy-dark/60 px-3 py-2">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="shrink-0 w-8 h-8 rounded flex items-center justify-center bg-gold/15 text-gold-dark overflow-hidden">
+                                <svg class="proposal-doc-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <img class="proposal-doc-thumb hidden w-full h-full object-cover" alt="">
+                            </span>
+                            <div class="min-w-0">
+                                <p class="proposal-doc-name text-sm font-medium text-navy dark:text-white truncate"></p>
+                                <p class="proposal-doc-size text-xs text-gray-500 dark:text-gray-400"></p>
+                            </div>
                         </div>
+                        <button type="button" class="proposal-doc-remove shrink-0 text-gray-400 hover:text-red-500 transition-colors" title="Remove">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
                     </div>
-                    <button type="button" class="proposal-doc-remove shrink-0 text-gray-400 hover:text-red-500 transition-colors" title="Remove">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
                 </div>
-            </div>
 
-            <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Supporting Documents (optional)</label>
-                @include('admin.project-requests._attachments-picker')
-            </div>
-
-            <div class="flex justify-end gap-2 pt-2">
-                <button type="button" class="admin-modal-close px-4 py-2 text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
-                    Cancel
-                </button>
-                <button type="submit" class="px-4 py-2 bg-navy hover:bg-navy-light text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
-                    Create
-                </button>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Supporting Documents (optional)</label>
+                    @include('admin.project-requests._attachments-picker')
+                </div>
             </div>
         </form>
+
+        {{-- Footer pinned outside the scrollable form area (associated via
+             the button's form="" attribute) — stays reachable on a form this
+             long instead of scrolling away with the fields. --}}
+        <div class="shrink-0 flex justify-end gap-2 px-5 py-4 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-navy">
+            <button type="button" class="admin-modal-close px-4 py-2 text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
+                Cancel
+            </button>
+            <button type="submit" form="new-request-form" id="new-request-submit"
+                    class="inline-flex items-center gap-1.5 px-5 py-2 bg-gradient-to-br from-gold via-gold to-gold-dark text-navy text-sm font-bold rounded-lg shadow-sm hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                Create Request
+            </button>
+        </div>
     </div>
 </div>
 
@@ -619,19 +655,36 @@
         });
     });
 
+    // Opacity-only open/close (see the big comment on #new-request-modal for
+    // why this never touches transform) — fades the backdrop and panel in
+    // together, then auto-focuses the first field so typing can start right
+    // away without an extra click.
+    function openAdminModal(modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        requestAnimationFrame(() => {
+            modal.querySelector('[data-modal-backdrop]')?.classList.remove('opacity-0');
+            modal.querySelector('.admin-modal-panel')?.classList.remove('opacity-0');
+        });
+        const firstField = modal.querySelector('.admin-modal-panel button[id$="-toggle"], .admin-modal-panel input:not([type=hidden]), .admin-modal-panel textarea');
+        if (firstField) setTimeout(() => firstField.focus(), 150);
+    }
+
+    function closeAdminModal(modal) {
+        modal.querySelector('[data-modal-backdrop]')?.classList.add('opacity-0');
+        modal.querySelector('.admin-modal-panel')?.classList.add('opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 200);
+    }
+
     document.querySelectorAll('.modal-trigger').forEach((trigger) => {
         trigger.addEventListener('click', () => {
             const modal = document.getElementById(trigger.dataset.modal);
-            if (!modal) return;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            if (modal) openAdminModal(modal);
         });
     });
-
-    function closeAdminModal(modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
 
     document.querySelectorAll('.admin-modal').forEach((modal) => {
         modal.addEventListener('click', (e) => {
@@ -649,16 +702,27 @@
     @if ($errors->has('user_id') || $errors->has('title') || $errors->has('category') || $errors->has('description') || old('title') !== null)
         (function () {
             const modal = document.getElementById('new-request-modal');
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            }
+            if (modal) openAdminModal(modal);
         })();
     @endif
 
     document.addEventListener('keydown', (e) => {
         if (e.key !== 'Escape') return;
         document.querySelectorAll('.admin-modal:not(.hidden)').forEach(closeAdminModal);
+    });
+
+    // This form is a real full-page POST (no ajax) — a large multipart
+    // upload can take a moment, so disable the button and show a spinner
+    // instead of leaving it clickable (and double-submittable) while
+    // waiting. No need to reset it: success navigates away, and a
+    // validation failure reloads the page fresh (button state resets with
+    // it) and reopens the modal via the block above.
+    document.getElementById('new-request-form')?.addEventListener('submit', function () {
+        const btn = document.getElementById('new-request-submit');
+        if (!btn) return;
+        btn.disabled = true;
+        btn.classList.add('opacity-70', 'cursor-wait');
+        btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Creating…';
     });
 </script>
 
@@ -675,8 +739,21 @@
     #requests-table, #requests-cards {
         animation: request-fade-in 0.35s ease-out both;
     }
+
+    /* New Project Request modal's decorative header glow — lives on plain
+       empty <div>s inside the gradient header (not wrapping the form), so
+       animating them with transform never touches the dropdown-positioning
+       constraint documented on the modal itself. */
+    @keyframes new-request-glow-float {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50%      { transform: translateY(-6px) scale(1.08); }
+    }
+    .new-request-glow {
+        animation: new-request-glow-float 5s ease-in-out infinite;
+    }
+
     @media (prefers-reduced-motion: reduce) {
-        #requests-table, #requests-cards { animation: none; }
+        #requests-table, #requests-cards, .new-request-glow { animation: none; }
     }
 </style>
 

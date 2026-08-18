@@ -1297,6 +1297,9 @@ function submitAdminReply(form, event) {
         </div>
         <form method="POST" action="{{ route('admin.payments.store', $project) }}" class="p-5 space-y-4" data-ajax-target="panel-billing tabbtn-billing">
             @csrf
+            <p class="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-navy-dark/50 rounded-lg px-3 py-2">
+                This only adds the line item to the ledger — the client isn't emailed. Use "Send Email" on the row once it's ready to invoice.
+            </p>
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Description</label>
                 <input type="text" name="description" placeholder="What's this line item for…" required
