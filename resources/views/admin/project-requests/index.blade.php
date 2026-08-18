@@ -457,7 +457,7 @@
          this panel (blocking/absorbing every click as a backdrop click,
          even though the panel's opaque background still shows through it
          fine, which is what made this so easy to miss). --}}
-    <div class="admin-modal-panel relative bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl w-full max-w-lg max-h-[85vh] overflow-hidden opacity-0 transition-opacity duration-200 flex flex-col">
+    <div class="admin-modal-panel relative bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden opacity-0 transition-opacity duration-200 flex flex-col">
         {{-- Rich gradient header — the one deliberately elevated moment on
              this page, matching the gold "wow" the trigger button already
              promises, instead of a flat text bar. Decorative glow blobs live
