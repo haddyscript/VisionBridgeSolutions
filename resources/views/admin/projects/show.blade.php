@@ -347,42 +347,43 @@
         + ($project->subscription && $project->subscription->status === 'pending' ? 1 : 0);
 @endphp
 
-{{-- Tabs — high-contrast pill segmented control. Sticks to the top navbar
-     while scrolling (matches the sidebar's own always-visible nav) instead
-     of scrolling out of reach on a project with a lot of content below it.
-     The sentinel + IntersectionObserver below just add a shadow once it's
-     actually docked, purely cosmetic. --}}
+{{-- Tabs — vertical left-side nav (same idea as the app's own sidebar),
+     sticky below the top navbar while the panel content scrolls. Collapses
+     to a plain stacked list above the content on small screens instead of
+     a fixed side column. The sentinel + IntersectionObserver below just add
+     a shadow once it's actually docked, purely cosmetic. --}}
 <div id="tabs-sticky-sentinel"></div>
-<div id="project-tabs-sticky" class="sticky top-16 z-10 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 bg-gray-50 dark:bg-navy-dark mb-6 transition-shadow duration-200">
-<div class="inline-flex flex-wrap items-center gap-1 bg-gray-100 dark:bg-navy-dark rounded-full p-1">
+<div class="lg:grid lg:grid-cols-[15rem_1fr] lg:gap-8 lg:items-start">
+
+<nav id="project-tabs-sticky" class="flex flex-col gap-1 bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-2 mb-6 lg:mb-0 lg:sticky lg:top-16 transition-shadow duration-200">
     <button type="button" data-tab-button="overview" onclick="showProjectTab('overview')"
-            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-colors bg-navy text-white dark:bg-gold dark:text-navy">
+            class="tab-pill flex items-center justify-between gap-2 w-full px-3 py-2.5 rounded-lg text-sm font-semibold text-left transition-colors bg-navy text-white dark:bg-gold dark:text-navy">
         Overview
     </button>
     <button id="tabbtn-billing" type="button" data-tab-button="billing" onclick="showProjectTab('billing')"
-            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
+            class="tab-pill flex items-center justify-between gap-2 w-full px-3 py-2.5 rounded-lg text-sm font-semibold text-left text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-navy dark:hover:text-white transition-colors">
         Billing
         @if ($pendingPaymentCount > 0)
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">{{ $pendingPaymentCount }}</span>
         @endif
     </button>
     <button type="button" data-tab-button="onboarding" onclick="showProjectTab('onboarding')"
-            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
+            class="tab-pill flex items-center justify-between gap-2 w-full px-3 py-2.5 rounded-lg text-sm font-semibold text-left text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-navy dark:hover:text-white transition-colors">
         Onboarding
         @if (! $project->hasAgreedToCarePlan() || ! $project->hasSignedCurrentAgreement() || ! $project->hasCompletedQuestionnaire())
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">Pending</span>
         @endif
     </button>
     <button type="button" data-tab-button="files" onclick="showProjectTab('files')"
-            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
+            class="tab-pill flex items-center justify-between gap-2 w-full px-3 py-2.5 rounded-lg text-sm font-semibold text-left text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-navy dark:hover:text-white transition-colors">
         Files
     </button>
     <button type="button" data-tab-button="content" onclick="showProjectTab('content')"
-            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
+            class="tab-pill flex items-center justify-between gap-2 w-full px-3 py-2.5 rounded-lg text-sm font-semibold text-left text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-navy dark:hover:text-white transition-colors">
         Website Content
     </button>
     <button id="tabbtn-revision" type="button" data-tab-button="revision" onclick="showProjectTab('revision')"
-            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
+            class="tab-pill flex items-center justify-between gap-2 w-full px-3 py-2.5 rounded-lg text-sm font-semibold text-left text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-navy dark:hover:text-white transition-colors">
         Revisions
         @php $openRevisionCount = $uploadsByCategory->get('revision', $empty)->where('status', '!=', 'completed')->count(); @endphp
         @if ($openRevisionCount > 0)
@@ -390,22 +391,22 @@
         @endif
     </button>
     <button type="button" data-tab-button="recommendations" onclick="showProjectTab('recommendations')"
-            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
+            class="tab-pill flex items-center justify-between gap-2 w-full px-3 py-2.5 rounded-lg text-sm font-semibold text-left text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-navy dark:hover:text-white transition-colors">
         Recommendations
         @if ($project->recommendations->where('status', 'pending_review')->isNotEmpty())
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">{{ $project->recommendations->where('status', 'pending_review')->count() }}</span>
         @endif
     </button>
     <button type="button" data-tab-button="workorders" onclick="showProjectTab('workorders')"
-            class="tab-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white transition-colors">
+            class="tab-pill flex items-center justify-between gap-2 w-full px-3 py-2.5 rounded-lg text-sm font-semibold text-left text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-navy dark:hover:text-white transition-colors">
         Work Orders
         @if ($projectRequests->where('status', 'pending')->isNotEmpty())
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/15 text-gold-dark">{{ $projectRequests->where('status', 'pending')->count() }}</span>
         @endif
     </button>
-</div>
-</div>
+</nav>
 
+<div class="min-w-0">
 <div id="panel-overview" data-tab-panel="overview">
 
 {{-- Milestones --}}
@@ -1083,6 +1084,9 @@
             </div>
         @endif
     </div>
+</div>
+
+</div>
 </div>
 
 <script>
