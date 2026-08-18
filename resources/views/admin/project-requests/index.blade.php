@@ -437,16 +437,18 @@
 
 {{-- New Project Request modal — the admin-created "internal work order" path,
      alongside the existing client-submitted one. IMPORTANT: no transform
-     (scale/translate) or backdrop-blur/filter on .admin-modal-panel or any
+     (scale/translate) or backdrop-filter/blur on .admin-modal-panel or any
      of its ancestors — the client/priority/developer dropdowns inside it
      (admin._dropdown) render via real position:fixed, viewport-relative
      coordinates computed on open, and a transformed/filtered ancestor
      becomes their containing block instead, misplacing the menu (same class
-     of bug hit and fixed on the Team page). The backdrop below is a SIBLING
-     of the panel, not an ancestor — blurring/fading *that* is safe, and the
-     panel's own entrance is opacity-only for the same reason. --}}
+     of bug hit and fixed on the Team page). Also deliberately no
+     backdrop-blur on the overlay itself either — tried it, but blurring a
+     full-viewport fixed element bled onto the (unrelated) panel in testing,
+     a compositing glitch, not worth chasing for a cosmetic effect. The
+     panel's entrance is plain opacity-only. --}}
 <div id="new-request-modal" class="admin-modal hidden fixed inset-0 z-[60] items-center justify-center px-4">
-    <div class="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-200" data-modal-backdrop></div>
+    <div class="absolute inset-0 bg-navy-dark/60 opacity-0 transition-opacity duration-200" data-modal-backdrop></div>
 
     <div class="admin-modal-panel bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl w-full max-w-lg max-h-[85vh] overflow-hidden opacity-0 transition-opacity duration-200 flex flex-col">
         {{-- Rich gradient header — the one deliberately elevated moment on
