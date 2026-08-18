@@ -184,16 +184,16 @@
 
     <div id="revisions-table-wrap" class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div class="overflow-x-auto">
-        <table id="revisions-table" class="w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-navy-dark text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+        <table id="revisions-table" class="w-full text-xs">
+            <thead class="bg-gray-50 dark:bg-navy-dark text-left text-[0.7rem] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                 <tr>
-                    <th class="px-5 py-3">Client / Project</th>
-                    <th class="px-5 py-3">Request</th>
-                    <th class="px-5 py-3">Status</th>
-                    <th class="px-5 py-3">Priority</th>
-                    <th class="px-5 py-3">Developer</th>
-                    <th class="px-5 py-3">Requested</th>
-                    <th class="px-5 py-3"></th>
+                    <th class="px-4 py-2.5">Client / Project</th>
+                    <th class="px-4 py-2.5">Request</th>
+                    <th class="px-4 py-2.5">Status</th>
+                    <th class="px-4 py-2.5">Priority</th>
+                    <th class="px-4 py-2.5">Developer</th>
+                    <th class="px-4 py-2.5">Requested</th>
+                    <th class="px-4 py-2.5"></th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -205,27 +205,27 @@
                         data-priority="{{ $item->priority }}"
                         data-developer="{{ $item->assigned_developer_id ?? 'unassigned' }}"
                         data-date="{{ $item->created_at->format('Y-m-d') }}">
-                        <td class="px-5 py-3.5">
+                        <td class="px-4 py-2.5">
                             <p class="font-medium text-navy dark:text-white">{{ $item->user->name }}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $item->project->name }}</p>
+                            <p class="text-[0.7rem] text-gray-500 dark:text-gray-400">{{ $item->project->name }}</p>
                         </td>
-                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300 max-w-xs">
+                        <td class="px-4 py-2.5 text-gray-700 dark:text-gray-300 max-w-xs">
                             @if ($item->title)
                                 <p class="font-semibold text-navy dark:text-white truncate">{{ $item->title }}</p>
                             @endif
-                            <p class="truncate {{ $item->title ? 'text-xs text-gray-500 dark:text-gray-400' : '' }}">{{ \Illuminate\Support\Str::limit($item->body ?? $item->original_name ?? 'Revision #'.$item->id, 60) }}</p>
+                            <p class="truncate {{ $item->title ? 'text-[0.7rem] text-gray-500 dark:text-gray-400' : '' }}">{{ \Illuminate\Support\Str::limit($item->body ?? $item->original_name ?? 'Revision #'.$item->id, 60) }}</p>
                             @if ($item->isOverdue())
-                                <span class="inline-block mt-1 text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400">Overdue</span>
+                                <span class="inline-block mt-1 text-[0.65rem] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400">Overdue</span>
                             @endif
                         </td>
 
                         {{-- Status — inline pill dropdown, saves via AJAX on select --}}
-                        <td class="px-5 py-3.5">
+                        <td class="px-4 py-2.5">
                             <div class="relative" data-rev-dd data-rev-dd-kind="status" data-value="{{ $item->status }}"
                                  data-rev-dd-url="{{ route('admin.uploads.status', $item) }}">
                                 <button type="button" data-rev-dd-toggle data-color-class="{{ $statusColors[$item->status] ?? 'bg-gray-100 text-gray-500' }}"
                                         aria-haspopup="listbox" aria-expanded="false"
-                                        class="inline-flex items-center gap-1.5 text-xs font-semibold rounded-full pl-3 pr-2 py-1 focus:outline-none focus:ring-2 focus:ring-gold transition-colors {{ $statusColors[$item->status] ?? 'bg-gray-100 text-gray-500' }}">
+                                        class="inline-flex items-center gap-1.5 text-[0.7rem] font-semibold rounded-full pl-2.5 pr-1.5 py-0.5 focus:outline-none focus:ring-2 focus:ring-gold transition-colors {{ $statusColors[$item->status] ?? 'bg-gray-100 text-gray-500' }}">
                                     <span data-rev-dd-label>{{ \App\Models\Upload::STATUSES[$item->status] ?? $item->status }}</span>
                                     <svg data-rev-dd-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
@@ -242,13 +242,13 @@
                         </td>
 
                         {{-- Priority — inline pill dropdown; preserves the existing estimated completion date --}}
-                        <td class="px-5 py-3.5">
+                        <td class="px-4 py-2.5">
                             <div class="relative" data-rev-dd data-rev-dd-kind="priority" data-value="{{ $item->priority }}"
                                  data-rev-dd-url="{{ route('admin.uploads.details', $item) }}"
                                  data-estimated-completion-date="{{ $item->estimated_completion_date?->format('Y-m-d') }}">
                                 <button type="button" data-rev-dd-toggle data-color-class="{{ $priorityColors[$item->priority] ?? $priorityColors['medium'] }}"
                                         aria-haspopup="listbox" aria-expanded="false"
-                                        class="inline-flex items-center gap-1.5 text-xs font-semibold rounded-full pl-3 pr-2 py-1 focus:outline-none focus:ring-2 focus:ring-gold transition-colors {{ $priorityColors[$item->priority] ?? $priorityColors['medium'] }}">
+                                        class="inline-flex items-center gap-1.5 text-[0.7rem] font-semibold rounded-full pl-2.5 pr-1.5 py-0.5 focus:outline-none focus:ring-2 focus:ring-gold transition-colors {{ $priorityColors[$item->priority] ?? $priorityColors['medium'] }}">
                                     <span data-rev-dd-label>{{ \App\Models\Upload::PRIORITIES[$item->priority] ?? ucfirst($item->priority) }}</span>
                                     <svg data-rev-dd-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
@@ -265,11 +265,11 @@
                         </td>
 
                         {{-- Developer — inline pill dropdown (plain, no color) --}}
-                        <td class="px-5 py-3.5">
+                        <td class="px-4 py-2.5">
                             <div class="relative" data-rev-dd data-rev-dd-kind="developer" data-value="{{ $item->assigned_developer_id }}"
                                  data-rev-dd-url="{{ route('admin.uploads.assign-developer', $item) }}">
                                 <button type="button" data-rev-dd-toggle aria-haspopup="listbox" aria-expanded="false"
-                                        class="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg pl-2.5 pr-2 py-1.5 border focus:outline-none focus:ring-2 focus:ring-gold hover:border-gray-400 dark:hover:border-gray-500 transition-colors {{ $item->assigned_developer_id ? 'border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark text-navy dark:text-white' : 'border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark text-gray-500 dark:text-gray-400' }}">
+                                        class="inline-flex items-center gap-1.5 text-[0.7rem] font-medium rounded-lg pl-2 pr-1.5 py-1 border focus:outline-none focus:ring-2 focus:ring-gold hover:border-gray-400 dark:hover:border-gray-500 transition-colors {{ $item->assigned_developer_id ? 'border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark text-navy dark:text-white' : 'border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark text-gray-500 dark:text-gray-400' }}">
                                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                     <span data-rev-dd-label>{{ $item->assignedDeveloper->name ?? 'Unassigned' }}</span>
                                     <svg data-rev-dd-chevron class="w-3.5 h-3.5 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -291,8 +291,8 @@
                             </div>
                         </td>
 
-                        <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300">{{ $item->created_at->format('M j, Y') }}</td>
-                        <td class="px-5 py-3.5 text-right">
+                        <td class="px-4 py-2.5 text-gray-700 dark:text-gray-300">{{ $item->created_at->format('M j, Y') }}</td>
+                        <td class="px-4 py-2.5 text-right">
                             <a href="{{ route('admin.projects.show', $item->project) }}?tab=revision" class="text-gold-dark font-semibold hover:underline whitespace-nowrap">Open in Project</a>
                         </td>
                     </tr>
