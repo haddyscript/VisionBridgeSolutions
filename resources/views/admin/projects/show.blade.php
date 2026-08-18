@@ -1278,14 +1278,24 @@ function submitAdminReply(form, event) {
     </div>
 </div>
 
-{{-- New Line Item modal — same admin-modal pattern as New Work Order above.
-     Submits through the existing ajax flow (data-ajax-target) so adding a
-     payment still updates the ledger in place without a full reload; the
-     modal itself lives outside #panel-billing so an ajax swap of that panel
-     never removes it (see bindModalTriggers rebinding below for the trigger
-     button, which does live inside the swapped panel). --}}
-<div id="new-payment-modal" class="admin-modal hidden fixed inset-0 z-[60] items-center justify-center bg-black/40 px-4 opacity-0 transition-opacity duration-200">
-    <div class="admin-modal-panel bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl w-full max-w-md scale-95 transition-transform duration-200">
+{{-- New Line Item modal — same admin-modal pattern as New Work Order above,
+     except this one gets a separate blurred backdrop (safe here since its
+     Category field is a local position:absolute dropdown, not the
+     position:fixed admin._dropdown that New Work Order's Priority/Developer
+     fields use — blurring an ancestor of THOSE would break their viewport-
+     relative positioning, which is why New Work Order above still uses the
+     plain single-wrapper fade instead). `relative` on the panel matters:
+     without it, the position:absolute backdrop paints above a
+     position:static panel regardless of DOM order, silently swallowing
+     every click as a backdrop click. Submits through the existing ajax flow
+     (data-ajax-target) so adding a payment still updates the ledger in
+     place without a full reload; the modal itself lives outside
+     #panel-billing so an ajax swap of that panel never removes it (see
+     bindModalTriggers rebinding below for the trigger button, which does
+     live inside the swapped panel). --}}
+<div id="new-payment-modal" class="admin-modal hidden fixed inset-0 z-[60] items-center justify-center px-4">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm opacity-0 transition-opacity duration-200" data-modal-backdrop></div>
+    <div class="admin-modal-panel relative bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl w-full max-w-md opacity-0 scale-95 transition-all duration-200">
         <div class="flex items-center gap-3 px-5 py-4 border-b border-gray-100 dark:border-gray-700">
             <span class="w-9 h-9 rounded-lg bg-gold/15 text-gold-dark flex items-center justify-center shrink-0">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V6m0 12v-2m0-14a9 9 0 100 18 9 9 0 000-18z"/></svg>
@@ -1358,14 +1368,22 @@ function submitAdminReply(form, event) {
 <script>
     // Shared open/close for every .admin-modal (New Work Order, New Line
     // Item, and any future one) — a quick fade+scale instead of an instant
-    // flash, plus auto-focusing the first field so typing can start right
-    // away without an extra click.
+    // flash, auto-focusing the first field, and locking background scroll
+    // while open. Handles two backdrop patterns: New Work Order fades its
+    // own wrapper (which also carries bg-black/40 directly), while New Line
+    // Item has a separate [data-modal-backdrop] sibling so it can be
+    // blurred without that blur landing on an ancestor of a
+    // position:fixed dropdown (see the comment on #new-payment-modal) — the
+    // optional-chained lookups below are harmless no-ops for whichever
+    // pattern a given modal doesn't use.
     function openAdminModal(modal) {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+        document.body.classList.add('overflow-hidden');
         requestAnimationFrame(() => {
             modal.classList.remove('opacity-0');
-            modal.querySelector('.admin-modal-panel')?.classList.remove('scale-95');
+            modal.querySelector('[data-modal-backdrop]')?.classList.remove('opacity-0');
+            modal.querySelector('.admin-modal-panel')?.classList.remove('scale-95', 'opacity-0');
         });
         const firstField = modal.querySelector('.admin-modal-panel input:not([type=hidden]), .admin-modal-panel textarea');
         if (firstField) setTimeout(() => firstField.focus(), 150);
@@ -1374,7 +1392,9 @@ function submitAdminReply(form, event) {
 
     function closeAdminModal(modal) {
         modal.classList.add('opacity-0');
-        modal.querySelector('.admin-modal-panel')?.classList.add('scale-95');
+        modal.querySelector('[data-modal-backdrop]')?.classList.add('opacity-0');
+        modal.querySelector('.admin-modal-panel')?.classList.add('scale-95', 'opacity-0');
+        document.body.classList.remove('overflow-hidden');
         setTimeout(() => {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
