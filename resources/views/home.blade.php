@@ -1394,7 +1394,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             </p>
         </div>
 
-        <div class="flex flex-col gap-4" data-redesign-teaser-reveal>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start" data-redesign-teaser-reveal>
             @foreach ([
                 ['icon' => 'user',     'label' => 'Unhappy With Your Current Developer', 'desc' => 'We\'ll take over communication, fix what\'s broken, and give you a team that actually responds.'],
                 ['icon' => 'lock',     'label' => 'Lost Access To Your Website Or Domain', 'desc' => 'We\'ll help you recover access to your hosting, domain registrar, and admin accounts.'],
@@ -1402,7 +1402,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 ['icon' => 'cog',      'label' => 'Add Automation, Forms & Notifications', 'desc' => 'Contact forms, booking flows, and instant notifications — automated so nothing slips through.'],
                 ['icon' => 'dollar',   'label' => 'Affordable Website Care Plans That Save You Money', 'desc' => 'Monthly care plans covering hosting, updates, and support — for less than piecing it together yourself.'],
             ] as $painPoint)
-                <div class="redesign-teaser-row" tabindex="0">
+                <div class="redesign-teaser-row{{ $loop->last ? ' sm:col-span-2' : '' }}" tabindex="0">
                     <div class="redesign-teaser-row-icon">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$painPoint['icon']] !!}</svg>
                     </div>
