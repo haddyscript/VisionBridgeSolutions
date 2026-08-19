@@ -3473,8 +3473,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             // Starts small/tilted; "start" only fires once the whole panel
             // (short at this scale) has fully entered the viewport from the
             // bottom — not as soon as its top edge merely appears.
+            // Peak scale capped at 1.6 (was 2.3) — the more aggressive
+            // blow-up magnified the video into an unrecognizable blurry
+            // blob right as the About section's dark scrim was fading in
+            // underneath, reading as a murky/washed-out transition.
             { scale:0.4, rotateX:24, y:40 },
-            { scale:2.3, rotateX:0, y:0, ease:'none',
+            { scale:1.6, rotateX:0, y:0, ease:'none',
               // end:'bottom top' stretches the scrub across the entire time
               // the panel is passing through the viewport (not just the
               // first ~25%), so the zoom plays out gradually start to finish.
