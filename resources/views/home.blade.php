@@ -29,6 +29,8 @@ $svgIcons = [
     'bolt'        => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>',
     'crown'       => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 17h18M4 17l-1-9 5 4 4-7 4 7 5-4-1 9"/>',
     'cloud-up'    => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 18a4 4 0 01-1-7.874A5 5 0 0115.9 8.1 4.5 4.5 0 0117.5 17H7z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12v6m0-6l-2.5 2.5M12 12l2.5 2.5"/>',
+    'user'        => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>',
+    'dollar'      => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M9.401 15c.52.598 1.489 1 2.599 1M12 6v2m0 8v2"/>',
 ];
 
 // Website Care Plans — per-icon color theme (Essential=teal, Growth=gold, Elite=navy)
@@ -1279,41 +1281,65 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      selectors/sequencing.
      ============================================================ --}}
 <style>
-    .redesign-teaser-card {
+    .redesign-teaser-row {
         position: relative;
-        background: rgba(255,255,255,.03);
-        border: 1px solid rgba(255,255,255,.10);
-        padding: 22px 20px;
-        clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 18px 24px;
+        border: 1px solid rgba(201,168,76,.32);
+        border-radius: 999px;
+        background: rgba(255,255,255,.02);
         transition: border-color .3s ease, background .3s ease;
     }
-    .redesign-teaser-card::before {
-        content: '';
-        position: absolute;
-        top: 0; right: 0;
-        width: 18px; height: 18px;
-        background: linear-gradient(135deg, transparent 49%, #C9A84C 50%, transparent 51%);
-        opacity: .9;
-        pointer-events: none;
+    .redesign-teaser-row:hover {
+        border-color: rgba(201,168,76,.65);
+        background: rgba(201,168,76,.05);
     }
-    .redesign-teaser-card:hover { border-color: rgba(201,168,76,.4); background: rgba(201,168,76,.05); }
-    .redesign-teaser-icon {
-        width: 36px; height: 36px;
+    .redesign-teaser-row-icon {
+        width: 42px; height: 42px;
+        border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
+        background: rgba(201,168,76,.14);
         border: 1px solid rgba(201,168,76,.4);
         color: #C9A84C;
         flex-shrink: 0;
     }
-    @media (max-width: 767px) {
-        .redesign-teaser-card { clip-path: none; border-radius: 14px; }
-        .redesign-teaser-card::before { display: none; }
+    .redesign-teaser-quote {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        border: 1px solid rgba(201,168,76,.35);
+        background: rgba(201,168,76,.05);
+        border-radius: 18px;
+        padding: 32px 36px;
+    }
+    .redesign-teaser-quote-mark {
+        font-family: Georgia, serif;
+        font-size: 3.5rem;
+        line-height: 1;
+        color: #C9A84C;
+        flex-shrink: 0;
+    }
+    .redesign-teaser-quote-shield {
+        width: 48px; height: 48px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(201,168,76,.14);
+        border: 1px solid rgba(201,168,76,.4);
+        color: #C9A84C;
+        flex-shrink: 0;
+    }
+    @media (max-width: 640px) {
+        .redesign-teaser-row { border-radius: 14px; padding: 16px 18px; }
+        .redesign-teaser-quote { flex-direction: column; text-align: center; padding: 28px 24px; }
     }
 </style>
 <section id="redesign-teaser" class="py-24 relative overflow-hidden" style="background:linear-gradient(155deg,#0A0D11 0%,#171B21 40%,#0A0D11 72%,#15191F 100%);">
     <div class="hero-orb" style="width:480px;height:480px;top:-130px;left:-110px;background:radial-gradient(circle,rgba(44,166,164,0.10) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 20s ease-in-out infinite;"></div>
     <div class="hero-orb" style="width:420px;height:420px;bottom:-110px;right:-90px;background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,transparent 70%);filter:blur(55px);animation:orb-drift 24s ease-in-out infinite reverse 3s;"></div>
 
-    <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8" style="z-index:1;">
         <div class="text-center max-w-2xl mx-auto mb-14">
             <div class="kicker-tag-dark inline-flex items-center text-xs font-semibold tracking-widest uppercase" style="color:rgba(255,255,255,.85);" data-redesign-teaser-reveal>
                 Already Have A Website?
@@ -1326,33 +1352,45 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             </p>
         </div>
 
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" data-redesign-teaser-reveal>
+        <div class="flex flex-col gap-4" data-redesign-teaser-reveal>
             @foreach ([
-                ['icon' => 'refresh', 'label' => 'Outdated Design'],
-                ['icon' => 'mobile',  'label' => 'Not Mobile-Friendly'],
-                ['icon' => 'chat',    'label' => 'No One To Call'],
-                ['icon' => 'bolt',    'label' => 'Slow To Load'],
+                ['icon' => 'user',     'label' => 'Unhappy With Your Current Developer'],
+                ['icon' => 'lock',     'label' => 'Lost Access To Your Website Or Domain'],
+                ['icon' => 'document', 'label' => 'Need A Landing Page Redesign Or Additional Pages'],
+                ['icon' => 'cog',      'label' => 'Add Automation, Forms & Notifications'],
+                ['icon' => 'dollar',   'label' => 'Affordable Website Care Plans That Save You Money'],
             ] as $painPoint)
-                <div class="redesign-teaser-card flex items-center gap-3">
-                    <div class="redesign-teaser-icon">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$painPoint['icon']] !!}</svg>
+                <div class="redesign-teaser-row">
+                    <div class="redesign-teaser-row-icon">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$painPoint['icon']] !!}</svg>
                     </div>
-                    <span class="text-sm font-semibold" style="color:rgba(255,255,255,.85);">{{ $painPoint['label'] }}</span>
+                    <span class="text-sm sm:text-base font-semibold" style="color:rgba(255,255,255,.88);">{{ $painPoint['label'] }}</span>
                 </div>
             @endforeach
         </div>
 
+        <div class="redesign-teaser-quote mt-10" data-redesign-teaser-reveal>
+            <span class="redesign-teaser-quote-mark" aria-hidden="true">&ldquo;</span>
+            <p class="text-base sm:text-lg leading-relaxed flex-1" style="color:rgba(255,255,255,.85);">
+                You may not need a brand-new website — you may just need the right team to
+                <span class="shimmer-gold font-semibold">rescue and improve</span> the one you already have.
+            </p>
+            <div class="redesign-teaser-quote-shield" aria-hidden="true">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['shield'] !!}</svg>
+            </div>
+        </div>
+
         <div class="flex flex-col sm:flex-row gap-4 justify-center mt-12" data-redesign-teaser-reveal>
-            <a href="{{ route('website-redesign') }}" class="hero-btn-primary">
+            <a href="{{ route('consultation.create') }}" class="hero-btn-primary">
                 <span class="hero-btn-fill" aria-hidden="true"></span>
                 <span class="hero-btn-content">
-                    See How We Rescue Websites
+                    Request A Website Review
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </span>
             </a>
-            <a href="{{ route('consultation.create') }}" class="hero-btn-secondary" style="background:transparent;border-color:rgba(255,255,255,.30);color:rgba(255,255,255,.90);">
+            <a href="{{ route('website-redesign') }}" class="hero-btn-secondary" style="background:transparent;border-color:rgba(255,255,255,.30);color:rgba(255,255,255,.90);">
                 <span class="hero-btn-fill" aria-hidden="true" style="background:rgba(255,255,255,.10);"></span>
-                <span class="hero-btn-content">Book A Free Consultation</span>
+                <span class="hero-btn-content">See How We Rescue Websites</span>
             </a>
         </div>
     </div>
