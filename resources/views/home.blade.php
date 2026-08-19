@@ -1415,6 +1415,36 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         .redesign-teaser-quote { flex-direction: column; text-align: center; padding: 28px 24px; }
         .redesign-teaser-popover { display: none; }
     }
+
+    /* SVG stroke "draw" hover — scoped to just these two CTA buttons via a
+       wrapper, so it doesn't touch the shared .hero-btn-primary/-secondary
+       classes reused elsewhere (hero section, etc). The rect's perimeter is
+       fully hidden (dashoffset = dasharray) at rest and draws itself in on
+       hover (dashoffset -> 0). viewBox stays fixed while the svg itself
+       stretches via preserveAspectRatio="none", so the draw stays
+       proportionally correct regardless of the button's real rendered size. */
+    .svg-draw-btn {
+        position: relative;
+        display: inline-block;
+    }
+    .svg-draw-btn-outline {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: visible;
+    }
+    .svg-draw-btn-outline rect {
+        fill: none;
+        stroke-width: 2;
+        stroke-dasharray: 740;
+        stroke-dashoffset: 740;
+        transition: stroke-dashoffset .7s cubic-bezier(.16,1,.3,1);
+    }
+    .svg-draw-btn:hover .svg-draw-btn-outline rect {
+        stroke-dashoffset: 0;
+    }
 </style>
 <section id="redesign-teaser" class="py-24 relative overflow-hidden" style="background:linear-gradient(155deg,#0A0D11 0%,#171B21 40%,#0A0D11 72%,#15191F 100%);">
     <div class="hero-orb" style="width:480px;height:480px;top:-130px;left:-110px;background:radial-gradient(circle,rgba(44,166,164,0.10) 0%,transparent 70%);filter:blur(60px);animation:orb-drift 20s ease-in-out infinite;"></div>
@@ -1466,17 +1496,27 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         </div>
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center mt-12" data-redesign-teaser-reveal>
-            <a href="{{ route('consultation.create') }}" class="hero-btn-primary">
-                <span class="hero-btn-fill" aria-hidden="true"></span>
-                <span class="hero-btn-content">
-                    Request A Website Review
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                </span>
-            </a>
-            <a href="{{ route('website-redesign') }}" class="hero-btn-secondary" style="background:transparent;border-color:rgba(255,255,255,.30);color:rgba(255,255,255,.90);">
-                <span class="hero-btn-fill" aria-hidden="true" style="background:rgba(255,255,255,.10);"></span>
-                <span class="hero-btn-content">See How We Rescue Websites</span>
-            </a>
+            <div class="svg-draw-btn">
+                <svg class="svg-draw-btn-outline" viewBox="0 0 300 64" preserveAspectRatio="none" aria-hidden="true">
+                    <rect x="2" y="2" width="296" height="60" stroke="rgba(255,255,255,.9)"/>
+                </svg>
+                <a href="{{ route('consultation.create') }}" class="hero-btn-primary">
+                    <span class="hero-btn-fill" aria-hidden="true"></span>
+                    <span class="hero-btn-content">
+                        Request A Website Review
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </span>
+                </a>
+            </div>
+            <div class="svg-draw-btn">
+                <svg class="svg-draw-btn-outline" viewBox="0 0 300 64" preserveAspectRatio="none" aria-hidden="true">
+                    <rect x="2" y="2" width="296" height="60" stroke="#C9A84C"/>
+                </svg>
+                <a href="{{ route('website-redesign') }}" class="hero-btn-secondary" style="background:transparent;border-color:rgba(255,255,255,.30);color:rgba(255,255,255,.90);">
+                    <span class="hero-btn-fill" aria-hidden="true" style="background:rgba(255,255,255,.10);"></span>
+                    <span class="hero-btn-content">See How We Rescue Websites</span>
+                </a>
+            </div>
         </div>
     </div>
 </section>
