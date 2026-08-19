@@ -1316,20 +1316,55 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      selectors/sequencing.
      ============================================================ --}}
 <style>
+    /* 3D flip card — replaces the old hover popover. .redesign-teaser-row is
+       just the perspective host (no visible styling of its own); the two
+       .redesign-teaser-row-face elements carry the pill border/background
+       and sit absolutely inset, so the row needs an explicit min-height
+       (auto height doesn't work for absolutely-positioned children). */
     .redesign-teaser-row {
         position: relative;
+        min-height: 108px;
+        perspective: 1200px;
+    }
+    .redesign-teaser-row-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform .7s cubic-bezier(.16,1,.3,1);
+        transform-style: preserve-3d;
+    }
+    @media (min-width: 641px) {
+        .redesign-teaser-row:hover .redesign-teaser-row-inner,
+        .redesign-teaser-row:focus-within .redesign-teaser-row-inner {
+            transform: rotateY(180deg);
+        }
+    }
+    .redesign-teaser-row-face {
+        position: absolute;
+        inset: 0;
         display: flex;
         align-items: center;
+        border-radius: 999px;
+        border: 1px solid rgba(201,168,76,.32);
+        background: rgba(255,255,255,.02);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+    .redesign-teaser-row-front {
         gap: 18px;
         padding: 18px 24px;
-        border: 1px solid rgba(201,168,76,.32);
-        border-radius: 999px;
-        background: rgba(255,255,255,.02);
-        transition: border-color .3s ease, background .3s ease;
     }
-    .redesign-teaser-row:hover {
-        border-color: rgba(201,168,76,.65);
-        background: rgba(201,168,76,.05);
+    .redesign-teaser-row-back {
+        transform: rotateY(180deg);
+        padding: 18px 26px;
+        background: rgba(201,168,76,.08);
+        border-color: rgba(201,168,76,.5);
+    }
+    .redesign-teaser-row-back p {
+        margin: 0;
+        font-size: .875rem;
+        line-height: 1.5;
+        color: rgba(255,255,255,.85);
     }
     .redesign-teaser-row-icon {
         width: 42px; height: 42px;
@@ -1365,55 +1400,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         color: #C9A84C;
         flex-shrink: 0;
     }
-    .redesign-teaser-popover {
-        position: absolute;
-        left: 50%;
-        bottom: calc(100% + 14px);
-        transform: translate(-50%, 14px) scale(.94);
-        transform-origin: bottom center;
-        width: min(320px, 90vw);
-        background: rgba(15,19,25,.97);
-        border: 1px solid rgba(201,168,76,.45);
-        border-radius: 12px;
-        padding: 14px 18px;
-        box-shadow: 0 20px 40px rgba(0,0,0,.45);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity .45s cubic-bezier(.16,1,.3,1), transform .45s cubic-bezier(.16,1,.3,1);
-        will-change: opacity, transform;
-        z-index: 20;
-        backdrop-filter: blur(8px);
-    }
-    .redesign-teaser-popover p {
-        margin: 0;
-        font-size: .875rem;
-        line-height: 1.5;
-        color: rgba(255,255,255,.82);
-        font-weight: 400;
-    }
-    .redesign-teaser-popover-arrow {
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        width: 12px; height: 12px;
-        background: rgba(15,19,25,.97);
-        border-right: 1px solid rgba(201,168,76,.45);
-        border-bottom: 1px solid rgba(201,168,76,.45);
-        transform: translateX(-50%) rotate(45deg);
-        margin-top: -6px;
-    }
-    .redesign-teaser-row:hover .redesign-teaser-popover,
-    .redesign-teaser-row:focus-within .redesign-teaser-popover {
-        opacity: 1;
-        transform: translate(-50%, 0) scale(1);
-        pointer-events: auto;
-        transition-duration: .38s, .38s;
-        transition-timing-function: cubic-bezier(.16,1,.3,1), cubic-bezier(.16,1,.3,1);
-    }
     @media (max-width: 640px) {
-        .redesign-teaser-row { border-radius: 14px; padding: 16px 18px; }
+        .redesign-teaser-row-face { border-radius: 14px; }
         .redesign-teaser-quote { flex-direction: column; text-align: center; padding: 28px 24px; }
-        .redesign-teaser-popover { display: none; }
     }
 
     /* SVG stroke "draw" hover — scoped to just these two CTA buttons via a
@@ -1472,13 +1461,16 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 ['icon' => 'dollar',   'label' => 'Affordable Website Care Plans That Save You Money', 'desc' => 'Monthly care plans covering hosting, updates, and support — for less than piecing it together yourself.'],
             ] as $painPoint)
                 <div class="redesign-teaser-row{{ $loop->last ? ' sm:col-span-2' : '' }}" tabindex="0">
-                    <div class="redesign-teaser-row-icon">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$painPoint['icon']] !!}</svg>
-                    </div>
-                    <span class="text-sm sm:text-base font-semibold" style="color:rgba(255,255,255,.88);">{{ $painPoint['label'] }}</span>
-                    <div class="redesign-teaser-popover" role="tooltip">
-                        <p>{{ $painPoint['desc'] }}</p>
-                        <span class="redesign-teaser-popover-arrow" aria-hidden="true"></span>
+                    <div class="redesign-teaser-row-inner">
+                        <div class="redesign-teaser-row-face redesign-teaser-row-front">
+                            <div class="redesign-teaser-row-icon">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$painPoint['icon']] !!}</svg>
+                            </div>
+                            <span class="text-sm sm:text-base font-semibold" style="color:rgba(255,255,255,.88);">{{ $painPoint['label'] }}</span>
+                        </div>
+                        <div class="redesign-teaser-row-face redesign-teaser-row-back">
+                            <p>{{ $painPoint['desc'] }}</p>
+                        </div>
                     </div>
                 </div>
             @endforeach
