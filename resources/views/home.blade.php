@@ -1438,8 +1438,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     .svg-draw-btn-outline rect {
         fill: none;
         stroke-width: 2;
-        stroke-dasharray: 740;
-        stroke-dashoffset: 740;
+        stroke-dasharray: 2000;
+        stroke-dashoffset: 2000;
         transition: stroke-dashoffset .7s cubic-bezier(.16,1,.3,1);
     }
     .svg-draw-btn:hover .svg-draw-btn-outline rect {
