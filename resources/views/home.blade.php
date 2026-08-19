@@ -1330,9 +1330,51 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         color: #C9A84C;
         flex-shrink: 0;
     }
+    .redesign-teaser-popover {
+        position: absolute;
+        left: 50%;
+        bottom: calc(100% + 14px);
+        transform: translate(-50%, 8px);
+        width: min(320px, 90vw);
+        background: rgba(15,19,25,.97);
+        border: 1px solid rgba(201,168,76,.45);
+        border-radius: 12px;
+        padding: 14px 18px;
+        box-shadow: 0 20px 40px rgba(0,0,0,.45);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .28s ease, transform .28s ease;
+        z-index: 20;
+        backdrop-filter: blur(8px);
+    }
+    .redesign-teaser-popover p {
+        margin: 0;
+        font-size: .875rem;
+        line-height: 1.5;
+        color: rgba(255,255,255,.82);
+        font-weight: 400;
+    }
+    .redesign-teaser-popover-arrow {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        width: 12px; height: 12px;
+        background: rgba(15,19,25,.97);
+        border-right: 1px solid rgba(201,168,76,.45);
+        border-bottom: 1px solid rgba(201,168,76,.45);
+        transform: translateX(-50%) rotate(45deg);
+        margin-top: -6px;
+    }
+    .redesign-teaser-row:hover .redesign-teaser-popover,
+    .redesign-teaser-row:focus-within .redesign-teaser-popover {
+        opacity: 1;
+        transform: translate(-50%, 0);
+        pointer-events: auto;
+    }
     @media (max-width: 640px) {
         .redesign-teaser-row { border-radius: 14px; padding: 16px 18px; }
         .redesign-teaser-quote { flex-direction: column; text-align: center; padding: 28px 24px; }
+        .redesign-teaser-popover { display: none; }
     }
 </style>
 <section id="redesign-teaser" class="py-24 relative overflow-hidden" style="background:linear-gradient(155deg,#0A0D11 0%,#171B21 40%,#0A0D11 72%,#15191F 100%);">
@@ -1354,17 +1396,21 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
         <div class="flex flex-col gap-4" data-redesign-teaser-reveal>
             @foreach ([
-                ['icon' => 'user',     'label' => 'Unhappy With Your Current Developer'],
-                ['icon' => 'lock',     'label' => 'Lost Access To Your Website Or Domain'],
-                ['icon' => 'document', 'label' => 'Need A Landing Page Redesign Or Additional Pages'],
-                ['icon' => 'cog',      'label' => 'Add Automation, Forms & Notifications'],
-                ['icon' => 'dollar',   'label' => 'Affordable Website Care Plans That Save You Money'],
+                ['icon' => 'user',     'label' => 'Unhappy With Your Current Developer', 'desc' => 'We\'ll take over communication, fix what\'s broken, and give you a team that actually responds.'],
+                ['icon' => 'lock',     'label' => 'Lost Access To Your Website Or Domain', 'desc' => 'We\'ll help you recover access to your hosting, domain registrar, and admin accounts.'],
+                ['icon' => 'document', 'label' => 'Need A Landing Page Redesign Or Additional Pages', 'desc' => 'From a single page refresh to brand-new sections, we build on what you already have.'],
+                ['icon' => 'cog',      'label' => 'Add Automation, Forms & Notifications', 'desc' => 'Contact forms, booking flows, and instant notifications — automated so nothing slips through.'],
+                ['icon' => 'dollar',   'label' => 'Affordable Website Care Plans That Save You Money', 'desc' => 'Monthly care plans covering hosting, updates, and support — for less than piecing it together yourself.'],
             ] as $painPoint)
-                <div class="redesign-teaser-row">
+                <div class="redesign-teaser-row" tabindex="0">
                     <div class="redesign-teaser-row-icon">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$painPoint['icon']] !!}</svg>
                     </div>
                     <span class="text-sm sm:text-base font-semibold" style="color:rgba(255,255,255,.88);">{{ $painPoint['label'] }}</span>
+                    <div class="redesign-teaser-popover" role="tooltip">
+                        <p>{{ $painPoint['desc'] }}</p>
+                        <span class="redesign-teaser-popover-arrow" aria-hidden="true"></span>
+                    </div>
                 </div>
             @endforeach
         </div>
