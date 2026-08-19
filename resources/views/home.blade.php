@@ -1323,7 +1323,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
        (auto height doesn't work for absolutely-positioned children). */
     .redesign-teaser-row {
         position: relative;
-        min-height: 84px;
+        height: 88px;
         perspective: 1200px;
     }
     .redesign-teaser-row-inner {
