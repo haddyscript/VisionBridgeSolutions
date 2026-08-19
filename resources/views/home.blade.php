@@ -1535,20 +1535,27 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             });
         });
 
-        // Scale + fade "recede" as this section scrolls up toward the fixed
-        // nav — reads as the section sinking back into the page while
-        // Spotlight advances, rather than just dimming in place. Scrubbed
-        // directly to scroll position so it reverses smoothly when
-        // scrolling back up. Bound to #redesign-teaser's OWN scroll position
-        // (not #spotlight's), so the recede is always fully complete before
-        // the section reaches the nav regardless of how tall Spotlight is —
-        // triggering off the next section left a stretch where the
-        // still-visible CTAs were sliding in behind the nav, which read as
-        // ghosting/un-smooth. transform + opacity only (no filter:blur) —
-        // blur here collided with the nav's own backdrop-filter and painted
-        // a flat gray block over it.
+        // Scale + fade + backward-tilt "recede" as this section scrolls up
+        // toward the fixed nav — reads as the section physically falling
+        // away into the screen (hinged from its bottom edge) while
+        // Spotlight advances, not just dimming/shrinking in place.
+        // transformPerspective bakes a perspective() into this element's own
+        // transform chain (no need for a separate parent `perspective`
+        // rule), and transformOrigin '50% 100%' hinges the tilt from the
+        // bottom so it reads as toppling backward rather than just spinning
+        // in place. Scrubbed directly to scroll position so it reverses
+        // smoothly when scrolling back up. Bound to #redesign-teaser's OWN
+        // scroll position (not #spotlight's), so the recede is always fully
+        // complete before the section reaches the nav regardless of how
+        // tall Spotlight is — triggering off the next section left a
+        // stretch where the still-visible CTAs were sliding in behind the
+        // nav, which read as ghosting/un-smooth. No filter:blur — that
+        // collided with the nav's own backdrop-filter and painted a flat
+        // gray block over it.
         gsap.to('#redesign-teaser', {
-            opacity: 0, scale: 0.94, ease: 'none',
+            opacity: 0, scale: 0.88, y: 60, rotationX: 12,
+            transformPerspective: 1400, transformOrigin: '50% 100%',
+            ease: 'none',
             scrollTrigger: { trigger: '#redesign-teaser', start: 'bottom 75%', end: 'top 15%', scrub: 0.4 },
         });
     }
