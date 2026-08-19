@@ -63,8 +63,20 @@
     }
     #intake-submit {
         position: relative;
+        overflow: hidden;
         clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
-        transition: transform .2s ease, background-color .2s ease;
+        box-shadow: 0 4px 14px rgba(201,168,76,.35);
+        transition: transform .3s cubic-bezier(.16,1,.3,1), background-color .2s ease, box-shadow .3s ease;
+        /* Same slow idle pulse as .ai-suggest-btn below (identical timing/
+           values), but on `filter: drop-shadow` instead of `box-shadow` —
+           box-shadow is already used for the static/hover elevation shadow,
+           and an animation targeting that same property would just
+           override it outright while running instead of layering. */
+        animation: intake-submit-glow 3.2s ease-in-out infinite;
+    }
+    @keyframes intake-submit-glow {
+        0%, 100% { filter: drop-shadow(0 0 0 rgba(201,168,76,0)); }
+        50% { filter: drop-shadow(0 0 10px rgba(201,168,76,.5)); }
     }
     #intake-submit::before {
         content: '';
@@ -74,8 +86,41 @@
         background: linear-gradient(135deg, transparent 49%, #15202C 50%, transparent 51%);
         opacity: .5;
         pointer-events: none;
+        z-index: 1;
     }
-    #intake-submit:hover { transform: translateY(-1px); }
+    /* Sheen sweep — a soft diagonal light band that travels across the
+       button once on hover. Contained by #intake-submit's own
+       overflow:hidden, so it stays within the corner-cut (or, on mobile,
+       rounded-rect) shape regardless of which one is active. */
+    .intake-submit-sheen {
+        position: absolute;
+        top: 0; left: -60%;
+        width: 40%; height: 100%;
+        background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.55) 50%, transparent 100%);
+        transform: skewX(-20deg);
+        pointer-events: none;
+        transition: left .65s cubic-bezier(.16,1,.3,1);
+    }
+    #intake-submit:hover .intake-submit-sheen { left: 120%; }
+    /* Arrow — slides/fades in on hover rather than being visible at rest,
+       reinforcing "submit" as a forward action; kept as a sibling of
+       #intake-submit-label (not nested inside it) so it animates on its
+       own instead of getting swept into the label's own scale-on-hover. */
+    .intake-submit-arrow {
+        display: inline-block;
+        margin-left: 8px;
+        vertical-align: middle;
+        opacity: 0;
+        transform: translateX(-6px);
+        transition: opacity .35s ease, transform .35s cubic-bezier(.16,1,.3,1);
+    }
+    #intake-submit:hover .intake-submit-arrow { opacity: 1; transform: translateX(0); }
+    #intake-submit:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(201,168,76,.45); }
+    #intake-submit:active {
+        transform: translateY(-1px) scale(0.98);
+        box-shadow: 0 6px 16px rgba(201,168,76,.35);
+        transition-duration: .1s;
+    }
     @media (max-width: 640px) {
         .intake-card, #intake-submit { clip-path: none; border-radius: 16px; }
         .intake-card::before, #intake-submit::before { display: none; }
@@ -128,7 +173,9 @@
         #intake-cursor-dot, #intake-cursor-ring { display: none; }
     }
     @media (prefers-reduced-motion: reduce) {
-        .intake-tag, .intake-headline-line, #intake-submit, #intake-submit-label { transition: none; }
+        .intake-tag, .intake-headline-line, #intake-submit, #intake-submit-label,
+        .intake-submit-sheen, .intake-submit-arrow { transition: none; }
+        #intake-submit { animation: none; }
     }
 
     /* ── AI Suggestion — a slow, soft glow so it reads as "alive" without
@@ -381,7 +428,11 @@
                 </div>
 
                 <button type="submit" id="intake-submit" class="w-full mt-6 bg-gold hover:bg-gold-dark text-navy font-bold text-lg py-4 shadow">
+                    <span class="intake-submit-sheen" aria-hidden="true"></span>
                     <span id="intake-submit-label">Submit Your Information</span>
+                    <svg class="intake-submit-arrow w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
                 </button>
             </form>
 
