@@ -3491,6 +3491,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             );
         } else {
             var welcomeSectionEl = document.getElementById('welcome');
+            // #welcome's own overflow:hidden (otherwise kept to contain its
+            // ambient glow decoration) is left permanently open on desktop
+            // instead of being toggled around the pin — toggling it back to
+            // hidden the instant the pin released clipped away almost the
+            // entire still-huge (scale 3.4) video before it could scroll
+            // away naturally, which read as it abruptly vanishing. Leaving
+            // it open lets the video stay fully visible and simply scroll
+            // off with the rest of the page once released, at the minor
+            // cosmetic cost of the glow decoration being able to bleed
+            // slightly past the section's edge.
+            welcomeSectionEl.style.overflow = 'visible';
             // Scale target raised to 3.4 — big enough to cover the video
             // edge-to-edge even on wide monitors, since its container caps
             // out at max-w-4xl regardless of viewport width. borderRadius
@@ -3503,16 +3514,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                   scrollTrigger: {
                       trigger:'#welcome-video-wrap', start:'center center', end:'+=1200',
                       pin:true, scrub:1, anticipatePin:1, invalidateOnRefresh:true,
-                      // #welcome's own overflow:hidden (kept the rest of the
-                      // time to contain its ambient glow decoration) would
-                      // otherwise clip the video once it grows past the
-                      // section's own box — toggled off only while actively
-                      // pinned, restored the instant the pin releases in
-                      // either scroll direction.
-                      onEnter:     function () { welcomeSectionEl.style.overflow = 'visible'; },
-                      onLeave:     function () { welcomeSectionEl.style.overflow = 'hidden'; },
-                      onEnterBack: function () { welcomeSectionEl.style.overflow = 'visible'; },
-                      onLeaveBack: function () { welcomeSectionEl.style.overflow = 'hidden'; },
                   } }
             );
         }
