@@ -1330,7 +1330,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         position: relative;
         width: 100%;
         height: 100%;
-        transition: transform .7s cubic-bezier(.16,1,.3,1);
+        transition: transform .95s cubic-bezier(.65,0,.35,1);
         transform-style: preserve-3d;
     }
     @media (min-width: 641px) {
