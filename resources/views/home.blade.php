@@ -1324,19 +1324,27 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     .redesign-teaser-row {
         position: relative;
         height: 88px;
-        perspective: 1200px;
+        perspective: 650px;
     }
     .redesign-teaser-row-inner {
         position: relative;
         width: 100%;
         height: 100%;
-        transition: transform .95s cubic-bezier(.65,0,.35,1);
+        transition: transform .6s cubic-bezier(.65,0,.35,1);
         transform-style: preserve-3d;
     }
     @media (min-width: 641px) {
         .redesign-teaser-row:hover .redesign-teaser-row-inner,
         .redesign-teaser-row:focus-within .redesign-teaser-row-inner {
             transform: rotateY(180deg);
+        }
+        .redesign-teaser-row:hover,
+        .redesign-teaser-row:focus-within {
+            z-index: 2;
+        }
+        .redesign-teaser-row:hover .redesign-teaser-row-face,
+        .redesign-teaser-row:focus-within .redesign-teaser-row-face {
+            box-shadow: 0 26px 46px rgba(0,0,0,.5);
         }
     }
     .redesign-teaser-row-face {
@@ -1349,6 +1357,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         background: rgba(255,255,255,.02);
         backface-visibility: hidden;
         -webkit-backface-visibility: hidden;
+        transition: box-shadow .6s ease;
     }
     .redesign-teaser-row-front {
         gap: 18px;
