@@ -3483,14 +3483,39 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             transformPerspective:1600, transformOrigin:'center center', force3D:true,
         });
         var welcomeVideoIsMobile = window.matchMedia('(max-width: 768px)').matches;
-        gsap.fromTo('#welcome-video-wrap',
-            { scale:0.4, rotateX:24, y:40 },
-            { scale:1.6, rotateX:0, y:0, ease:'none',
-              scrollTrigger: welcomeVideoIsMobile
-                  ? { trigger:'#welcome-video-wrap', start:'bottom bottom', end:'bottom top', scrub:1 }
-                  : { trigger:'#welcome-video-wrap', start:'center center', end:'+=900',
-                      pin:true, scrub:1, anticipatePin:1, invalidateOnRefresh:true } }
-        );
+        if (welcomeVideoIsMobile) {
+            gsap.fromTo('#welcome-video-wrap',
+                { scale:0.4, rotateX:24, y:40 },
+                { scale:1.6, rotateX:0, y:0, ease:'none',
+                  scrollTrigger: { trigger:'#welcome-video-wrap', start:'bottom bottom', end:'bottom top', scrub:1 } }
+            );
+        } else {
+            var welcomeSectionEl = document.getElementById('welcome');
+            // Scale target raised to 3.4 — big enough to cover the video
+            // edge-to-edge even on wide monitors, since its container caps
+            // out at max-w-4xl regardless of viewport width. borderRadius
+            // eases from the resting 24px down to 0 alongside the scale so
+            // it reads as the video taking over the whole screen, not just
+            // "a very big rounded card."
+            gsap.fromTo('#welcome-video-wrap',
+                { scale:0.4, rotateX:24, y:40, borderRadius:'24px' },
+                { scale:3.4, rotateX:0, y:0, borderRadius:'0px', ease:'none',
+                  scrollTrigger: {
+                      trigger:'#welcome-video-wrap', start:'center center', end:'+=1200',
+                      pin:true, scrub:1, anticipatePin:1, invalidateOnRefresh:true,
+                      // #welcome's own overflow:hidden (kept the rest of the
+                      // time to contain its ambient glow decoration) would
+                      // otherwise clip the video once it grows past the
+                      // section's own box — toggled off only while actively
+                      // pinned, restored the instant the pin releases in
+                      // either scroll direction.
+                      onEnter:     function () { welcomeSectionEl.style.overflow = 'visible'; },
+                      onLeave:     function () { welcomeSectionEl.style.overflow = 'hidden'; },
+                      onEnterBack: function () { welcomeSectionEl.style.overflow = 'visible'; },
+                      onLeaveBack: function () { welcomeSectionEl.style.overflow = 'hidden'; },
+                  } }
+            );
+        }
 
         // Plays once via IntersectionObserver (not ScrollTrigger) — same
         // workaround already used for the Plans/Portfolio sections below,
