@@ -840,6 +840,37 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 </p>
 
                 {{-- CTA buttons --}}
+                <style>
+                    /* Offset-border hover — scoped to just the hero "Book A
+                       Consultation" button via a wrapper, so it doesn't touch
+                       the shared .hero-btn-secondary class used elsewhere
+                       (redesign-teaser section, etc). Two oversized gold
+                       outline frames sit offset around the button at rest;
+                       on hover each collapses along its own axis (scaleX/scaleY),
+                       giving the "offset border retract" effect. */
+                    .consult-offset-wrap {
+                        position: relative;
+                        display: inline-block;
+                    }
+                    .consult-offset-wrap::before,
+                    .consult-offset-wrap::after {
+                        content: '';
+                        position: absolute;
+                        pointer-events: none;
+                        box-shadow: inset 0 0 0 2px rgba(201,168,76,.85);
+                        transition: transform .5s cubic-bezier(.16,1,.3,1);
+                    }
+                    .consult-offset-wrap::before {
+                        inset: -7px -16px;
+                        transform-origin: center;
+                    }
+                    .consult-offset-wrap::after {
+                        inset: -16px -7px;
+                        transform-origin: center;
+                    }
+                    .consult-offset-wrap:hover::before { transform: scaleX(0); }
+                    .consult-offset-wrap:hover::after { transform: scaleY(0); }
+                </style>
                 <div id="hero-ctas" class="flex flex-col sm:flex-row gap-4 mb-9 sm:mb-10">
                     <a href="{{ route('register') }}" class="hero-btn-primary opacity-0">
                         <span class="hero-btn-fill" aria-hidden="true"></span>
@@ -850,15 +881,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                             </svg>
                         </span>
                     </a>
-                    <a href="{{ route('consultation.create') }}" class="hero-btn-secondary opacity-0">
-                        <span class="hero-btn-fill" aria-hidden="true"></span>
-                        <span class="hero-btn-content">
-                            <svg class="w-4 h-4 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            Book A Consultation
-                        </span>
-                    </a>
+                    <div class="consult-offset-wrap opacity-0">
+                        <a href="{{ route('consultation.create') }}" class="hero-btn-secondary">
+                            <span class="hero-btn-fill" aria-hidden="true"></span>
+                            <span class="hero-btn-content">
+                                <svg class="w-4 h-4 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                Book A Consultation
+                            </span>
+                        </a>
+                    </div>
                 </div>
 
                 {{-- Social proof row --}}
@@ -3083,7 +3116,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             .from ('.hero-word',        { y:'110%', opacity:0, duration:0.75, stagger:0.09 }, '-=0.30')
             .fromTo('#hero-glow-line',  { opacity:0, scaleX:0 }, { opacity:1, scaleX:1, duration:0.70, ease:'power2.out' }, '-=0.15')
             .fromTo('#hero-subtext',    { opacity:0, y:26  }, { opacity:1, y:0, duration:0.60 }, '-=0.35')
-            .fromTo('#hero-ctas > a',   { opacity:0, y:22  }, { opacity:1, y:0, duration:0.50, stagger:0.13 }, '-=0.30')
+            .fromTo('#hero-ctas > a, #hero-ctas > .consult-offset-wrap', { opacity:0, y:22  }, { opacity:1, y:0, duration:0.50, stagger:0.13 }, '-=0.30')
             .fromTo('#hero-trust',      { opacity:0, y:18  }, { opacity:1, y:0, duration:0.50, onStart: animateHeroTrustCount }, '-=0.20')
             // Device mockup + its floating cards — a beat behind the copy so
             // the eye lands on the heading first, matching the reference layout
