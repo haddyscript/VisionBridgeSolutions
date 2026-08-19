@@ -845,9 +845,9 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                        Consultation" button via a wrapper, so it doesn't touch
                        the shared .hero-btn-secondary class used elsewhere
                        (redesign-teaser section, etc). Two oversized gold
-                       outline frames sit offset around the button at rest;
-                       on hover each collapses along its own axis (scaleX/scaleY),
-                       giving the "offset border retract" effect. */
+                       outline frames stay collapsed (invisible) at rest and
+                       expand into view along their own axis (scaleX/scaleY)
+                       only on hover. */
                     .consult-offset-wrap {
                         position: relative;
                         display: inline-block;
@@ -863,13 +863,15 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     .consult-offset-wrap::before {
                         inset: -7px -16px;
                         transform-origin: center;
+                        transform: scaleX(0);
                     }
                     .consult-offset-wrap::after {
                         inset: -16px -7px;
                         transform-origin: center;
+                        transform: scaleY(0);
                     }
-                    .consult-offset-wrap:hover::before { transform: scaleX(0); }
-                    .consult-offset-wrap:hover::after { transform: scaleY(0); }
+                    .consult-offset-wrap:hover::before { transform: scaleX(1); }
+                    .consult-offset-wrap:hover::after { transform: scaleY(1); }
                 </style>
                 <div id="hero-ctas" class="flex flex-col sm:flex-row gap-4 mb-9 sm:mb-10">
                     <a href="{{ route('register') }}" class="hero-btn-primary opacity-0">
