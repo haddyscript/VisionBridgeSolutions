@@ -1535,15 +1535,19 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             });
         });
 
-        // As the Spotlight section scrolls into view below, fade this whole
-        // section out — scrubbed directly to scroll position so it reverses
-        // smoothly when scrolling back up, not a one-shot reveal. Opacity
-        // only (no filter:blur) — animating blur here collided with the
-        // sticky nav's own backdrop-filter and painted a flat gray block
-        // over the nav instead of the actual blurred content.
+        // Fade this section out as it scrolls up toward the fixed nav —
+        // scrubbed directly to scroll position so it reverses smoothly when
+        // scrolling back up. Bound to #redesign-teaser's OWN scroll position
+        // (not #spotlight's), so the fade is always fully complete before
+        // the section reaches the nav, regardless of how tall Spotlight is —
+        // triggering off the next section left a stretch where the still
+        // half-faded CTAs were sliding in behind the nav, which read as
+        // ghosting/un-smooth rather than a clean fade-out. Opacity only (no
+        // filter:blur) — blur here collided with the nav's own
+        // backdrop-filter and painted a flat gray block over it.
         gsap.to('#redesign-teaser', {
             opacity: 0.15, ease: 'none',
-            scrollTrigger: { trigger: '#spotlight', start: 'top bottom', end: 'top 35%', scrub: 0.4 },
+            scrollTrigger: { trigger: '#redesign-teaser', start: 'bottom 75%', end: 'top 15%', scrub: 0.4 },
         });
     }
     if (document.readyState !== 'loading') { initRedesignTeaserReveal(); }
