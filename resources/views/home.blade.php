@@ -1534,6 +1534,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' },
             });
         });
+
+        // As the Spotlight section scrolls into view below, blur/fade this
+        // whole section out — scrubbed directly to scroll position so it
+        // reverses smoothly when scrolling back up, not a one-shot reveal.
+        gsap.to('#redesign-teaser', {
+            filter: 'blur(10px)', opacity: 0.15, ease: 'none',
+            scrollTrigger: { trigger: '#spotlight', start: 'top bottom', end: 'top 35%', scrub: true },
+        });
     }
     if (document.readyState !== 'loading') { initRedesignTeaserReveal(); }
     else { window.addEventListener('DOMContentLoaded', initRedesignTeaserReveal); }
