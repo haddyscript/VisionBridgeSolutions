@@ -3460,29 +3460,36 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         //  TOGGLE on the parent ScrollTrigger means the entire timeline
         //  plays forward on entry and reverses cleanly on scroll-back.
         // ============================================================
-        // Video panel scales up + straightens out as it scrolls through the
-        // viewport — tied directly to scroll position, no pinning. The
-        // pinned version of this kept producing an intermittent blank-page
-        // bug (pin-spacer insertion fighting with refresh-on-load timing),
-        // so this trades the "frozen while zooming" cinematic feel for a
-        // version that can't get stuck invisible.
+        // Video panel scales up + straightens out as you scroll into it.
+        // Desktop: PINNED — the page holds still while the video grows from
+        // small/tilted up to full size, then releases and normal scrolling
+        // resumes. A prior pinned version of this caused an intermittent
+        // blank-page bug (pin-spacer sized against layout measured before
+        // the video's real dimensions were known, racing the
+        // metadata-triggered refresh() below). This version avoids that by
+        // giving the pin a FIXED pixel scroll distance (end:'+=900')
+        // instead of one derived from the wrap's own (video-dependent)
+        // height — so the pin-spacer's size never depends on the video
+        // having finished loading, only the *start* point does, and that's
+        // determined entirely by the (video-independent) content above it.
+        // invalidateOnRefresh re-snapshots the tween on any refresh instead
+        // of reusing stale values; anticipatePin avoids a snap if someone
+        // scrolls in fast.
+        // Mobile: kept as the original non-pinned scroll-scrub — pinning is
+        // the single most common source of this exact bug class on mobile
+        // Safari, since the address bar hiding/showing mid-scroll changes
+        // the viewport height the pin was measured against.
         gsap.set('#welcome-video-wrap', {
             transformPerspective:1600, transformOrigin:'center center', force3D:true,
         });
+        var welcomeVideoIsMobile = window.matchMedia('(max-width: 768px)').matches;
         gsap.fromTo('#welcome-video-wrap',
-            // Starts small/tilted; "start" only fires once the whole panel
-            // (short at this scale) has fully entered the viewport from the
-            // bottom — not as soon as its top edge merely appears.
-            // Peak scale capped at 1.6 (was 2.3) — the more aggressive
-            // blow-up magnified the video into an unrecognizable blurry
-            // blob right as the About section's dark scrim was fading in
-            // underneath, reading as a murky/washed-out transition.
             { scale:0.4, rotateX:24, y:40 },
             { scale:1.6, rotateX:0, y:0, ease:'none',
-              // end:'bottom top' stretches the scrub across the entire time
-              // the panel is passing through the viewport (not just the
-              // first ~25%), so the zoom plays out gradually start to finish.
-              scrollTrigger: { trigger:'#welcome-video-wrap', start:'bottom bottom', end:'bottom top', scrub:1 } }
+              scrollTrigger: welcomeVideoIsMobile
+                  ? { trigger:'#welcome-video-wrap', start:'bottom bottom', end:'bottom top', scrub:1 }
+                  : { trigger:'#welcome-video-wrap', start:'center center', end:'+=900',
+                      pin:true, scrub:1, anticipatePin:1, invalidateOnRefresh:true } }
         );
 
         // Plays once via IntersectionObserver (not ScrollTrigger) — same
