@@ -1461,7 +1461,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             </p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start" data-redesign-teaser-reveal>
+        <div id="redesign-teaser-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
             @foreach ([
                 ['icon' => 'user',     'label' => 'Unhappy With Your Current Developer', 'desc' => 'We\'ll take over communication, fix what\'s broken, and give you a team that actually responds.'],
                 ['icon' => 'lock',     'label' => 'Lost Access To Your Website Or Domain', 'desc' => 'We\'ll help you recover access to your hosting, domain registrar, and admin accounts.'],
@@ -1534,6 +1534,23 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' },
             });
         });
+
+        // Staggered 3D flip-in for the pain-point rows — echoes the same
+        // rotateY language as their hover flip, so the reveal and the hover
+        // read as one consistent card mechanic instead of a plain fade-up.
+        // transformPerspective bakes the perspective into each row's own
+        // transform chain; transformOrigin '0% 50%' hinges the rotation
+        // from the row's left edge so it reads as swinging open rather than
+        // spinning in place.
+        var teaserRows = gsap.utils.toArray('#redesign-teaser-grid .redesign-teaser-row');
+        if (teaserRows.length) {
+            gsap.from(teaserRows, {
+                opacity: 0, rotationY: -85, x: -36,
+                transformPerspective: 900, transformOrigin: '0% 50%',
+                duration: 0.85, ease: 'power3.out', stagger: 0.13,
+                scrollTrigger: { trigger: '#redesign-teaser-grid', start: 'top 85%', toggleActions: 'play none none reverse' },
+            });
+        }
 
         // Scale + fade + backward-tilt "recede" as this section scrolls up
         // toward the fixed nav — reads as the section physically falling
