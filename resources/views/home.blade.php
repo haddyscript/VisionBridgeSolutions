@@ -1572,8 +1572,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         gsap.to('#redesign-teaser', {
             opacity: 0, scale: 0.88, y: 60, rotationX: 12,
             transformPerspective: 1400, transformOrigin: '50% 100%',
-            ease: 'none',
-            scrollTrigger: { trigger: '#redesign-teaser', start: 'bottom 75%', end: 'top 15%', scrub: 0.4 },
+            ease: 'none', force3D: true,
+            scrollTrigger: { trigger: '#redesign-teaser', start: 'bottom 75%', end: 'top 15%', scrub: 0.8 },
         });
     }
     if (document.readyState !== 'loading') { initRedesignTeaserReveal(); }
