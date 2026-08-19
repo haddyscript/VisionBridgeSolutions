@@ -1334,7 +1334,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         position: absolute;
         left: 50%;
         bottom: calc(100% + 14px);
-        transform: translate(-50%, 8px);
+        transform: translate(-50%, 14px) scale(.94);
+        transform-origin: bottom center;
         width: min(320px, 90vw);
         background: rgba(15,19,25,.97);
         border: 1px solid rgba(201,168,76,.45);
@@ -1343,7 +1344,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         box-shadow: 0 20px 40px rgba(0,0,0,.45);
         opacity: 0;
         pointer-events: none;
-        transition: opacity .28s ease, transform .28s ease;
+        transition: opacity .45s cubic-bezier(.16,1,.3,1), transform .45s cubic-bezier(.16,1,.3,1);
+        will-change: opacity, transform;
         z-index: 20;
         backdrop-filter: blur(8px);
     }
@@ -1368,8 +1370,10 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     .redesign-teaser-row:hover .redesign-teaser-popover,
     .redesign-teaser-row:focus-within .redesign-teaser-popover {
         opacity: 1;
-        transform: translate(-50%, 0);
+        transform: translate(-50%, 0) scale(1);
         pointer-events: auto;
+        transition-duration: .38s, .38s;
+        transition-timing-function: cubic-bezier(.16,1,.3,1), cubic-bezier(.16,1,.3,1);
     }
     @media (max-width: 640px) {
         .redesign-teaser-row { border-radius: 14px; padding: 16px 18px; }
