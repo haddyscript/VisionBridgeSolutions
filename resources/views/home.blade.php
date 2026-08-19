@@ -1316,13 +1316,6 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      selectors/sequencing.
      ============================================================ --}}
 <style>
-    /* Pre-promote to its own GPU layer so the scroll-scrubbed blur/opacity
-       tween (see the script below) doesn't force an expensive layer
-       creation mid-scroll — that lag was showing up as a flat gray
-       placeholder frame instead of the actual blurred content. */
-    #redesign-teaser {
-        will-change: filter, opacity;
-    }
     /* 3D flip card — replaces the old hover popover. .redesign-teaser-row is
        just the perspective host (no visible styling of its own); the two
        .redesign-teaser-row-face elements carry the pill border/background
@@ -1542,16 +1535,14 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             });
         });
 
-        // As the Spotlight section scrolls into view below, blur/fade this
-        // whole section out — scrubbed directly to scroll position so it
-        // reverses smoothly when scrolling back up, not a one-shot reveal.
-        // scrub is a smoothing duration (not `true`) and will-change is set
-        // below so the browser promotes this to its own GPU layer ahead of
-        // time — animating `filter` raw on every scroll tick otherwise made
-        // Chrome briefly paint a flat gray placeholder frame while it
-        // recomputed the (expensive) blur mid-scroll.
+        // As the Spotlight section scrolls into view below, fade this whole
+        // section out — scrubbed directly to scroll position so it reverses
+        // smoothly when scrolling back up, not a one-shot reveal. Opacity
+        // only (no filter:blur) — animating blur here collided with the
+        // sticky nav's own backdrop-filter and painted a flat gray block
+        // over the nav instead of the actual blurred content.
         gsap.to('#redesign-teaser', {
-            filter: 'blur(8px)', opacity: 0.15, ease: 'none',
+            opacity: 0.15, ease: 'none',
             scrollTrigger: { trigger: '#spotlight', start: 'top bottom', end: 'top 35%', scrub: 0.4 },
         });
     }
