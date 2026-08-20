@@ -304,69 +304,85 @@
                 <p class="mt-4 text-base text-gray-600 max-w-xl mx-auto">Tap any item below to see exactly what it means, what we do, and what it doesn't cover.</p>
             </div>
 
-            {{-- 2 columns from md up — each item's accordion body expands
-                 independently, so opening one only pushes items below it in
-                 the same column down, not the whole grid. --}}
+            @php
+                // A single 2-col CSS grid (one <div> per feature, row-major)
+                // ties both columns' row heights together — expanding one
+                // item makes the whole grid *row* tall, silently reserving
+                // empty space next to its shorter neighbor and still pushing
+                // every item below down in both columns. Splitting into two
+                // independent flex columns instead means each side's vertical
+                // stacking is entirely its own — opening an item on the left
+                // only ever moves items below it in the left column.
+                $featureItems = collect($plan->features)->values();
+                $featureColumns = [
+                    $featureItems->filter(fn ($item, $i) => $i % 2 === 0)->values(),
+                    $featureItems->filter(fn ($item, $i) => $i % 2 === 1)->values(),
+                ];
+            @endphp
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                @foreach ($plan->features as $item)
-                    <div class="cp-feature-item">
-                        <button type="button" class="cp-feature-btn" aria-expanded="false">
-                            <span class="cp-feature-check">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['check'] !!}</svg>
-                            </span>
-                            <span class="cp-feature-title">{{ $item['title'] ?? $item }}</span>
-                            <svg class="cp-feature-toggle" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">{!! $svgIcons['plus'] !!}</svg>
-                        </button>
-                        <div class="cp-feature-body-wrap">
-                            <div class="cp-feature-body">
-                                @if (!empty($item['simple_explanation']) || !empty($item['description']))
-                                    <div class="cp-feature-block">
-                                        <p class="cp-feature-label">Simple Explanation</p>
-                                        <p class="cp-feature-text">{{ $item['simple_explanation'] ?? $item['description'] }}</p>
-                                    </div>
-                                @endif
+                @foreach ($featureColumns as $column)
+                    <div class="flex flex-col gap-4">
+                        @foreach ($column as $item)
+                            <div class="cp-feature-item">
+                                <button type="button" class="cp-feature-btn" aria-expanded="false">
+                                    <span class="cp-feature-check">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['check'] !!}</svg>
+                                    </span>
+                                    <span class="cp-feature-title">{{ $item['title'] ?? $item }}</span>
+                                    <svg class="cp-feature-toggle" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">{!! $svgIcons['plus'] !!}</svg>
+                                </button>
+                                <div class="cp-feature-body-wrap">
+                                    <div class="cp-feature-body">
+                                        @if (!empty($item['simple_explanation']) || !empty($item['description']))
+                                            <div class="cp-feature-block">
+                                                <p class="cp-feature-label">Simple Explanation</p>
+                                                <p class="cp-feature-text">{{ $item['simple_explanation'] ?? $item['description'] }}</p>
+                                            </div>
+                                        @endif
 
-                                @if (!empty($item['what_we_do']))
-                                    <div class="cp-feature-block">
-                                        <p class="cp-feature-label">What We Do</p>
-                                        <ul class="cp-feature-list">
-                                            @foreach ($item['what_we_do'] as $line)
-                                                <li><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['check'] !!}</svg><span>{{ $line }}</span></li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                @endif
+                                        @if (!empty($item['what_we_do']))
+                                            <div class="cp-feature-block">
+                                                <p class="cp-feature-label">What We Do</p>
+                                                <ul class="cp-feature-list">
+                                                    @foreach ($item['what_we_do'] as $line)
+                                                        <li><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['check'] !!}</svg><span>{{ $line }}</span></li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
 
-                                @if (!empty($item['why_matters']))
-                                    <div class="cp-feature-block">
-                                        <p class="cp-feature-label">Why This Matters</p>
-                                        <p class="cp-feature-text">{{ $item['why_matters'] }}</p>
-                                    </div>
-                                @endif
+                                        @if (!empty($item['why_matters']))
+                                            <div class="cp-feature-block">
+                                                <p class="cp-feature-label">Why This Matters</p>
+                                                <p class="cp-feature-text">{{ $item['why_matters'] }}</p>
+                                            </div>
+                                        @endif
 
-                                @if (!empty($item['benefits']))
-                                    <div class="cp-feature-block">
-                                        <p class="cp-feature-label">Customer Benefits</p>
-                                        <ul class="cp-feature-list">
-                                            @foreach ($item['benefits'] as $line)
-                                                <li><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['check'] !!}</svg><span>{{ $line }}</span></li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                @endif
+                                        @if (!empty($item['benefits']))
+                                            <div class="cp-feature-block">
+                                                <p class="cp-feature-label">Customer Benefits</p>
+                                                <ul class="cp-feature-list">
+                                                    @foreach ($item['benefits'] as $line)
+                                                        <li><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['check'] !!}</svg><span>{{ $line }}</span></li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
 
-                                @if (!empty($item['not_included']))
-                                    <div class="cp-feature-block">
-                                        <p class="cp-feature-label" style="color:rgba(21,32,44,.4);">What's Not Included</p>
-                                        <ul class="cp-feature-list cp-not-included">
-                                            @foreach ($item['not_included'] as $line)
-                                                <li><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['x'] !!}</svg><span>{{ $line }}</span></li>
-                                            @endforeach
-                                        </ul>
+                                        @if (!empty($item['not_included']))
+                                            <div class="cp-feature-block">
+                                                <p class="cp-feature-label" style="color:rgba(21,32,44,.4);">What's Not Included</p>
+                                                <ul class="cp-feature-list cp-not-included">
+                                                    @foreach ($item['not_included'] as $line)
+                                                        <li><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['x'] !!}</svg><span>{{ $line }}</span></li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
                                     </div>
-                                @endif
+                                </div>
                             </div>
-                        </div>
+                        @endforeach
                     </div>
                 @endforeach
             </div>
