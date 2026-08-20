@@ -12,6 +12,7 @@ class ProjectRequest extends Model
         'in_progress' => 'In Progress',
         'converted' => 'Converted to Project',
         'declined' => 'Declined',
+        'duplicated' => 'Duplicated (Decline/Done)',
         'done' => 'Done',
     ];
 

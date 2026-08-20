@@ -188,7 +188,7 @@ class ProjectRequestController extends Controller
         // (see ProjectRequest::isInternal()) — an admin-created internal
         // work order has nothing for a client to be notified about.
         if ($validated['status'] !== $previousStatus
-            && in_array($validated['status'], ['converted', 'declined'], true)
+            && in_array($validated['status'], ['converted', 'declined', 'duplicated'], true)
             && ! $projectRequest->isInternal()) {
             $this->notifyClientOfRequestResolution($projectRequest);
         }

@@ -12,6 +12,7 @@
         'in_progress' => 'bg-gold/15 text-gold-dark ring-1 ring-inset ring-gold/30',
         'converted' => 'bg-teal/10 text-teal-dark ring-1 ring-inset ring-teal/20',
         'declined' => 'bg-red-50 dark:bg-red-500/10 text-red-500 ring-1 ring-inset ring-red-200 dark:ring-red-500/20',
+        'duplicated' => 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 ring-1 ring-inset ring-gray-300 dark:ring-gray-600',
         'done' => 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-1 ring-inset ring-emerald-200 dark:ring-emerald-500/20',
     ];
     $statusIcons = [
@@ -20,6 +21,7 @@
         'in_progress' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>',
         'converted' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>',
         'declined' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>',
+        'duplicated' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>',
         'done' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>',
     ];
     $proposalColors = [
@@ -100,7 +102,7 @@
             'options' => collect(\App\Models\ProjectRequest::STATUSES)->map(fn ($label, $key) => [
                 'value' => $key,
                 'label' => "{$label} (".($statusCounts[$key] ?? 0).')',
-                'dot' => ['pending' => 'bg-amber-400', 'reviewed' => 'bg-indigo-400', 'in_progress' => 'bg-gold', 'converted' => 'bg-teal', 'declined' => 'bg-red-400', 'done' => 'bg-emerald-400'][$key] ?? 'bg-gray-400',
+                'dot' => ['pending' => 'bg-amber-400', 'reviewed' => 'bg-indigo-400', 'in_progress' => 'bg-gold', 'converted' => 'bg-teal', 'declined' => 'bg-red-400', 'duplicated' => 'bg-gray-400', 'done' => 'bg-emerald-400'][$key] ?? 'bg-gray-400',
             ])->values()->all(),
             'selected' => '',
             'placeholder' => "All ({$totalRequestCount})",
