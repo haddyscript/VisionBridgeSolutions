@@ -288,7 +288,7 @@
                         'options' => collect(\App\Models\ProjectRequest::STATUSES)->map(fn ($label, $value) => [
                             'value' => $value,
                             'label' => $label,
-                            'dot' => ['pending' => 'bg-amber-400', 'reviewed' => 'bg-indigo-400', 'converted' => 'bg-teal', 'declined' => 'bg-red-400', 'done' => 'bg-emerald-400'][$value] ?? 'bg-gray-400',
+                            'dot' => ['pending' => 'bg-amber-400', 'reviewed' => 'bg-indigo-400', 'in_progress' => 'bg-gold', 'converted' => 'bg-teal', 'declined' => 'bg-red-400', 'done' => 'bg-emerald-400'][$value] ?? 'bg-gray-400',
                         ])->values()->all(),
                         'selected' => $projectRequest->status,
                         'formId' => 'request-form',

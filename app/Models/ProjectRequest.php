@@ -9,6 +9,7 @@ class ProjectRequest extends Model
     public const STATUSES = [
         'pending' => 'Pending Review',
         'reviewed' => 'Reviewed',
+        'in_progress' => 'In Progress',
         'converted' => 'Converted to Project',
         'declined' => 'Declined',
         'done' => 'Done',
