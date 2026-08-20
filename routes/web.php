@@ -38,6 +38,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\CarePlanController;
 use App\Http\Controllers\CarePlanSignupController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\ContactMessageController;
@@ -116,6 +117,8 @@ Route::get('/care-plans/get-started/confirmation', [CarePlanSignupController::cl
 Route::get('/care-plans/check-email', [CarePlanSignupController::class, 'checkEmail'])->name('care-plan-signup.check-email');
 Route::get('/care-plans/{maintenancePlan}/get-started', [CarePlanSignupController::class, 'create'])->name('care-plan-signup.create');
 Route::post('/care-plans/{maintenancePlan}/get-started', [CarePlanSignupController::class, 'store'])->name('care-plan-signup.store');
+
+Route::get('/care-plans/{maintenancePlan}', [CarePlanController::class, 'show'])->name('care-plans.show');
 
 Route::match(['get', 'post'], '/deployer', [DeployerController::class, 'deploy'])->name('deployer');
 Route::get('/migrate', [DeployerController::class, 'migrate'])->name('deployer.migrate');

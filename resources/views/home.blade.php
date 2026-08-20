@@ -2417,6 +2417,10 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                                     @endforeach
                                 </ul>
 
+                                <a href="{{ route('care-plans.show', $plan) }}" class="text-sm font-bold {{ $plan->is_available ? 'text-teal-dark hover:underline' : 'text-gray-400 pointer-events-none' }} mb-4 inline-block">
+                                    See Full Plan Details &rarr;
+                                </a>
+
                                 @if ($plan->is_available)
                                     <a href="{{ $plan->price !== null ? route('care-plan-signup.create', $plan) : $plan->cta_url }}" class="plan-cta-btn {{ $theme['btn'] }} w-full text-center font-bold text-lg px-7 py-4 rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
                                         <span class="plan-cta-content">

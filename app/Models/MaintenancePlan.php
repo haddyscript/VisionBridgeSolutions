@@ -18,6 +18,7 @@ class MaintenancePlan extends Model
         'icon',
         'response_time',
         'features',
+        'excluded_services',
         'cta_label',
         'cta_url',
         'is_available',
@@ -28,6 +29,7 @@ class MaintenancePlan extends Model
     {
         return [
             'features' => 'array',
+            'excluded_services' => 'array',
             'is_available' => 'boolean',
         ];
     }
