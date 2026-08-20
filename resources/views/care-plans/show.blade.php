@@ -7,12 +7,21 @@
 
 @php
     $svgIcons = [
-        'shield'   => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>',
-        'check'    => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>',
-        'x'        => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>',
-        'plus'     => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14M5 12h14"/>',
-        'clock'    => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>',
+        'shield'       => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>',
+        'trending-up'  => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>',
+        'crown'        => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 17h18M4 17l-1-9 5 4 4-7 4 7 5-4-1 9"/>',
+        'check'        => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>',
+        'x'            => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>',
+        'plus'         => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14M5 12h14"/>',
+        'clock'        => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>',
     ];
+
+    // Same per-plan accent language already used for the pricing cards on
+    // the homepage (Essential=teal, Growth=gold, Elite=navy) — carried over
+    // here so each plan's page has its own signature glow instead of every
+    // plan looking identically gold-branded.
+    $planAccents = ['shield' => '#2CA6A4', 'trending-up' => '#C9A84C', 'crown' => '#7A8CA3'];
+    $accent = $planAccents[$plan->icon] ?? $planAccents['shield'];
 @endphp
 
 <style>
@@ -21,13 +30,114 @@
         position: relative;
         overflow: hidden;
         padding-top: clamp(120px, 14vw, 160px);
-        padding-bottom: 70px;
+        padding-bottom: 100px;
     }
     #cp-hero::before {
         content: '';
         position: absolute; inset: 0;
-        background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(201,168,76,.14), transparent 70%);
+        background: radial-gradient(ellipse 60% 50% at 50% 0%, {{ $accent }}26, transparent 70%);
         pointer-events: none;
+    }
+    /* Smooth hand-off into the light section below instead of a hard cut —
+       height matches padding-bottom exactly so this can never paint over
+       the actual hero text above it (::after paints on top of everything
+       else in the section, including the ambient layers below). */
+    #cp-hero::after {
+        content: '';
+        position: absolute; inset: auto 0 0 0; height: 100px;
+        background: linear-gradient(to bottom, transparent, #F7F8FA);
+        pointer-events: none;
+    }
+
+    /* Subtle dot-grid texture, faded toward the edges via a mask so it
+       reads as ambient depth rather than a flat repeating pattern. */
+    #cp-hero-dots {
+        position: absolute; inset: 0; pointer-events: none;
+        background-image: radial-gradient(circle, rgba(255,255,255,.16) 1px, transparent 1px);
+        background-size: 42px 42px;
+        opacity: .55;
+        -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 28%, black 25%, transparent 78%);
+        mask-image: radial-gradient(ellipse 70% 55% at 50% 28%, black 25%, transparent 78%);
+    }
+
+    /* Slow ambient color drift, tinted with this plan's own accent. */
+    #cp-hero-drift {
+        position: absolute; inset: -15%; pointer-events: none;
+        background: linear-gradient(120deg, {{ $accent }}22 0%, rgba(201,168,76,.08) 45%, transparent 75%);
+        background-size: 220% 220%;
+        animation: cp-gradient-drift 22s ease-in-out infinite;
+    }
+    @keyframes cp-gradient-drift {
+        0%, 100% { background-position: 0% 30%; }
+        50%      { background-position: 100% 70%; }
+    }
+
+    /* Mouse-following glow — position set via JS (see script below), plain
+       instant style updates rather than a CSS transition on the custom
+       properties themselves (percentage-valued custom properties don't
+       interpolate reliably cross-browser without @property registration). */
+    #cp-hero-mouse-glow {
+        --mx: 50%; --my: 35%;
+        position: absolute; inset: 0; pointer-events: none;
+        background: radial-gradient(560px circle at var(--mx) var(--my), {{ $accent }}22, transparent 62%);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        #cp-hero-drift { animation: none; }
+    }
+
+    /* Floating gold particles — same idea as the homepage hero's ambient
+       particles, kept CSS-only here (no per-particle GSAP physics) so this
+       page doesn't need its own copy of that heavier system. */
+    .cp-hero-particle {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, #FFF6DC 0%, rgba(223,192,106,.9) 45%, transparent 75%);
+        filter: drop-shadow(0 0 4px rgba(223,192,106,.7));
+        pointer-events: none;
+        animation: cp-particle-float linear infinite;
+    }
+    @keyframes cp-particle-float {
+        0%   { transform: translateY(0) translateX(0); opacity: 0; }
+        10%  { opacity: 1; }
+        90%  { opacity: 1; }
+        100% { transform: translateY(-140px) translateX(var(--drift, 20px)); opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .cp-hero-particle { display: none; }
+    }
+
+    /* Plan icon badge — a solid accent circle with a soft pulsing halo
+       behind it, reinforcing which plan this page belongs to at a glance. */
+    .cp-icon-badge-wrap { position: relative; display: inline-flex; }
+    .cp-icon-badge-halo {
+        position: absolute; inset: -14px;
+        border-radius: 50%;
+        background: radial-gradient(circle, {{ $accent }}55, transparent 70%);
+        animation: cp-halo-pulse 3.2s ease-in-out infinite;
+    }
+    @keyframes cp-halo-pulse {
+        0%, 100% { transform: scale(1); opacity: .7; }
+        50%      { transform: scale(1.18); opacity: 1; }
+    }
+    .cp-icon-badge {
+        position: relative;
+        width: 60px; height: 60px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(155deg, {{ $accent }} 0%, {{ $accent }}CC 100%);
+        box-shadow: 0 8px 26px {{ $accent }}55, inset 0 1px 1px rgba(255,255,255,.35);
+        color: #0A0A0A;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .cp-icon-badge-halo { animation: none; }
+    }
+
+    /* Trust micro-copy under the CTA — same reassurance line already used
+       on the homepage pricing cards. */
+    .cp-trust-line {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: .82rem; font-weight: 600; color: rgba(255,255,255,.5);
     }
     .cp-tag {
         display: inline-flex; align-items: center; gap: 8px;
@@ -237,8 +347,32 @@
 
     {{-- ── Hero ── --}}
     <section id="cp-hero">
+        <div id="cp-hero-drift" aria-hidden="true"></div>
+        <div id="cp-hero-dots" aria-hidden="true"></div>
+        <div id="cp-hero-mouse-glow" aria-hidden="true"></div>
+        @for ($i = 0; $i < 7; $i++)
+            <span class="cp-hero-particle" aria-hidden="true" style="
+                left:{{ [8, 22, 38, 52, 66, 80, 92][$i] }}%;
+                bottom:{{ [10, 30, 5, 40, 15, 35, 8][$i] }}%;
+                width:{{ [3, 4, 3, 5, 3, 4, 3][$i] }}px;
+                height:{{ [3, 4, 3, 5, 3, 4, 3][$i] }}px;
+                --drift:{{ [16, -12, 20, -18, 14, -10, 18][$i] }}px;
+                animation-duration:{{ [9, 12, 10, 14, 11, 13, 9.5][$i] }}s;
+                animation-delay:-{{ [1, 4, 2, 6, 3, 5, 0][$i] }}s;
+            "></span>
+        @endfor
+
         <div class="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <span class="cp-tag cp-reveal" style="animation-delay:.05s;">Website Care Plan</span>
+            <div class="cp-icon-badge-wrap cp-reveal" style="animation-delay:0s;">
+                <span class="cp-icon-badge-halo" aria-hidden="true"></span>
+                <span class="cp-icon-badge">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons[$plan->icon] ?? $svgIcons['shield'] !!}</svg>
+                </span>
+            </div>
+
+            <div class="mt-5">
+                <span class="cp-tag cp-reveal" style="animation-delay:.05s;">Website Care Plan</span>
+            </div>
 
             @if (isset($allPlans) && $allPlans->count() > 1)
                 <div class="cp-switcher-wrap cp-reveal mt-6" style="animation-delay:.1s;">
@@ -284,6 +418,12 @@
                             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                         </span>
                     </a>
+                    @if ($plan->price !== null)
+                        <p class="cp-trust-line mt-4">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['check'] !!}</svg>
+                            No Long-Term Contracts — Cancel Anytime
+                        </p>
+                    @endif
                 </div>
             @endif
 
@@ -665,6 +805,27 @@
     }
     if (document.readyState !== 'loading') { initPageTransition(); }
     else { window.addEventListener('DOMContentLoaded', initPageTransition); }
+})();
+</script>
+
+{{-- Hero mouse-follow glow — plain instant style updates on mousemove
+     (not a CSS transition on the custom properties themselves, since
+     percentage-valued custom properties don't interpolate reliably
+     cross-browser without @property registration). Desktop/fine-pointer
+     only, matching the rest of this page's motion effects. --}}
+<script>
+(function () {
+    var hero = document.getElementById('cp-hero');
+    var glow = document.getElementById('cp-hero-mouse-glow');
+    if (!hero || !glow) return;
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    hero.addEventListener('mousemove', function (e) {
+        var r = hero.getBoundingClientRect();
+        glow.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+        glow.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+    });
 })();
 </script>
 
