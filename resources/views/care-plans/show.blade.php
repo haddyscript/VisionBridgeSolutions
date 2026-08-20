@@ -295,7 +295,7 @@
 
     {{-- ── What's Included ── --}}
     <section class="py-20" style="background:#F7F8FA;">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
                 <div class="cp-tag" style="color:#A8872E;background:rgba(201,168,76,.08);">What's Included</div>
                 <h2 class="mt-5 font-display font-extrabold text-navy" style="font-size:clamp(1.9rem,3.6vw,2.6rem);">
@@ -304,7 +304,10 @@
                 <p class="mt-4 text-base text-gray-600 max-w-xl mx-auto">Tap any item below to see exactly what it means, what we do, and what it doesn't cover.</p>
             </div>
 
-            <div class="flex flex-col gap-3">
+            {{-- 2 columns from md up — each item's accordion body expands
+                 independently, so opening one only pushes items below it in
+                 the same column down, not the whole grid. --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 @foreach ($plan->features as $item)
                     <div class="cp-feature-item">
                         <button type="button" class="cp-feature-btn" aria-expanded="false">
