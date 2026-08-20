@@ -155,24 +155,114 @@
     @media (prefers-reduced-motion: reduce) {
         .cp-tag, .cp-feature-title { transition: none; }
     }
+
+    /* ── Plan switcher — segmented pill control, active plan gets a sliding
+         gold indicator (positioned once by JS below). Hover feedback is
+         handled entirely by the custom cursor's pill-morph (added below in
+         the cursor script's pillMorphEls), so no separate hover-follow
+         indicator logic is needed here — keeps this simple and avoids two
+         competing "highlight" systems fighting for attention. ── */
+    .cp-switcher-wrap { display: flex; justify-content: center; }
+    .cp-switcher {
+        position: relative;
+        display: inline-flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px;
+        padding: 6px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.05);
+        border: 1px solid rgba(255,255,255,.14);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+    }
+    .cp-switcher-indicator {
+        position: absolute;
+        top: 6px; left: 6px;
+        height: calc(100% - 12px);
+        border-radius: 999px;
+        background: linear-gradient(135deg, #C9A84C 0%, #DFC06A 100%);
+        box-shadow: 0 6px 20px rgba(201,168,76,.45);
+        transition: transform .5s cubic-bezier(.22,1,.36,1), width .5s cubic-bezier(.22,1,.36,1);
+        z-index: 0;
+        will-change: transform, width;
+    }
+    .cp-switcher-item {
+        position: relative;
+        z-index: 1;
+        display: inline-flex; align-items: center; justify-content: center;
+        padding: 11px 24px;
+        font-size: .82rem; font-weight: 700; letter-spacing: .02em;
+        color: rgba(255,255,255,.55);
+        border-radius: 999px;
+        white-space: nowrap;
+        transition: color .35s ease;
+    }
+    .cp-switcher-item:hover { color: rgba(255,255,255,.9); }
+    .cp-switcher-item.is-active { color: #15202C; }
+    @media (max-width: 480px) {
+        .cp-switcher-item { padding: 9px 16px; font-size: .76rem; }
+    }
+
+    /* ── Hero entrance — staggered fade-up, purely CSS so it's zero-risk if
+         JS never runs. Reduced-motion just skips straight to the end state. ── */
+    @keyframes cp-fade-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    .cp-reveal { opacity: 0; animation: cp-fade-up .7s cubic-bezier(.22,1,.36,1) forwards; }
+    @media (prefers-reduced-motion: reduce) {
+        .cp-reveal { animation: none; opacity: 1; }
+    }
+
+    /* ── Cross-fade page transition — used only when navigating between
+         plan pages via the switcher, so jumping between Essential/Growth/
+         Elite feels like one continuous experience instead of a hard page
+         cut. Starts fully transparent + non-interactive: if GSAP never
+         loads, this element simply never becomes visible and every link
+         behaves like a completely normal navigation — no risk of a stuck
+         black screen. ── */
+    #cp-transition-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 500;
+        background: #0A0A0A;
+        opacity: 0;
+        pointer-events: none;
+    }
 </style>
 
 <div id="cp-page">
 
     <div id="cp-cursor-dot" aria-hidden="true"></div>
     <div id="cp-cursor-ring" aria-hidden="true"></div>
+    <div id="cp-transition-overlay" aria-hidden="true"></div>
 
     {{-- ── Hero ── --}}
     <section id="cp-hero">
         <div class="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <span class="cp-tag">Website Care Plan</span>
+            <span class="cp-tag cp-reveal" style="animation-delay:.05s;">Website Care Plan</span>
 
-            <h1 class="mt-6 font-display font-extrabold text-white" style="font-size:clamp(2.2rem,5vw,3.4rem);line-height:1.1;">
+            @if (isset($allPlans) && $allPlans->count() > 1)
+                <div class="cp-switcher-wrap cp-reveal mt-6" style="animation-delay:.1s;">
+                    <div class="cp-switcher" role="tablist" aria-label="Switch Care Plan" id="cp-switcher">
+                        <span class="cp-switcher-indicator" aria-hidden="true"></span>
+                        @foreach ($allPlans as $p)
+                            <a href="{{ route('care-plans.show', $p) }}"
+                               class="cp-switcher-item {{ $p->id === $plan->id ? 'is-active' : '' }}"
+                               data-cp-switch
+                               role="tab"
+                               aria-selected="{{ $p->id === $plan->id ? 'true' : 'false' }}">
+                                {{ $p->name }}
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            <h1 class="mt-6 font-display font-extrabold text-white cp-reveal" style="font-size:clamp(2.2rem,5vw,3.4rem);line-height:1.1;animation-delay:.16s;">
                 {{ $plan->name }}
             </h1>
-            <p class="mt-3 text-lg font-bold uppercase tracking-wide" style="color:#DFC06A;">{{ $plan->tagline }}</p>
+            <p class="mt-3 text-lg font-bold uppercase tracking-wide cp-reveal" style="color:#DFC06A;animation-delay:.22s;">{{ $plan->tagline }}</p>
 
-            <div class="mt-6">
+            <div class="mt-6 cp-reveal" style="animation-delay:.28s;">
                 @if ($plan->formattedPrice())
                     <span class="text-5xl font-extrabold text-white">{{ $plan->formattedPrice() }}</span>
                     <span class="text-lg font-semibold" style="color:rgba(255,255,255,.6);">/{{ $plan->interval }}</span>
@@ -181,12 +271,12 @@
                 @endif
             </div>
 
-            <p class="mt-6 text-base sm:text-lg leading-relaxed max-w-xl mx-auto" style="color:rgba(255,255,255,.62);">
+            <p class="mt-6 text-base sm:text-lg leading-relaxed max-w-xl mx-auto cp-reveal" style="color:rgba(255,255,255,.62);animation-delay:.34s;">
                 {{ $plan->description }}
             </p>
 
             @if ($plan->is_available)
-                <div class="mt-9">
+                <div class="mt-9 cp-reveal" style="animation-delay:.4s;">
                     <a href="{{ $plan->price !== null ? route('care-plan-signup.create', $plan) : $plan->cta_url }}" class="hero-btn-primary">
                         <span class="hero-btn-fill" aria-hidden="true"></span>
                         <span class="hero-btn-content">
@@ -197,7 +287,7 @@
                 </div>
             @endif
 
-            <p class="mt-8 text-sm">
+            <p class="mt-8 text-sm cp-reveal" style="animation-delay:.46s;">
                 <a href="{{ route('home') }}#plans" style="color:rgba(255,255,255,.5);" class="hover:underline">&larr; Compare All Care Plans</a>
             </p>
         </div>
@@ -428,9 +518,9 @@
             });
         }
 
-        // Primary CTAs get the plain pill morph — the ring's own default
-        // border-radius:999px already reads as one.
-        var pillMorphEls = document.querySelectorAll('#cp-page .hero-btn-primary, #cp-page .btn-gold');
+        // Primary CTAs + plan switcher tabs get the plain pill morph — the
+        // ring's own default border-radius:999px already reads as one.
+        var pillMorphEls = document.querySelectorAll('#cp-page .hero-btn-primary, #cp-page .btn-gold, #cp-page .cp-switcher-item');
         // Hero kicker tag — a squared-off bracket badge, not a circle/pill.
         var squareMorphEls = document.querySelectorAll('#cp-page .cp-tag');
         // Feature accordion rows — the button already spans the full
@@ -501,6 +591,61 @@
             wrap.style.maxHeight = wrap.scrollHeight + 'px';
         });
     });
+})();
+</script>
+
+{{-- Plan switcher — positions the sliding gold indicator under the active
+     plan tab, and (when GSAP is available) cross-fades to black before
+     following a switcher link so moving between Essential/Growth/Elite
+     feels like one continuous transition rather than a hard page cut.
+     Everything here degrades to a completely normal link/page load if
+     GSAP never loads or the visitor prefers reduced motion. --}}
+<script>
+(function () {
+    var switcher = document.getElementById('cp-switcher');
+    if (switcher) {
+        var indicator = switcher.querySelector('.cp-switcher-indicator');
+        var positionIndicator = function () {
+            var active = switcher.querySelector('.cp-switcher-item.is-active');
+            if (!active || !indicator) return;
+            indicator.style.width = active.offsetWidth + 'px';
+            indicator.style.transform = 'translateX(' + active.offsetLeft + 'px)';
+        };
+        positionIndicator();
+        // Tailwind's CDN build applies utility classes at runtime (not
+        // build time), so the very first measurement above can land before
+        // padding/font-weight have actually been applied — re-measure once
+        // everything (styles, fonts) has definitely settled.
+        window.addEventListener('load', positionIndicator);
+        window.addEventListener('resize', positionIndicator);
+    }
+
+    var overlay = document.getElementById('cp-transition-overlay');
+    if (!overlay) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    function initPageTransition() {
+        if (typeof gsap === 'undefined') { setTimeout(initPageTransition, 80); return; }
+
+        document.querySelectorAll('[data-cp-switch]').forEach(function (link) {
+            link.addEventListener('click', function (e) {
+                if (link.classList.contains('is-active')) return;
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return; // let new-tab/middle-click behave normally
+
+                e.preventDefault();
+                var href = link.href;
+                overlay.style.pointerEvents = 'auto';
+                gsap.to(overlay, {
+                    opacity: 1,
+                    duration: 0.35,
+                    ease: 'power2.inOut',
+                    onComplete: function () { window.location.href = href; },
+                });
+            });
+        });
+    }
+    if (document.readyState !== 'loading') { initPageTransition(); }
+    else { window.addEventListener('DOMContentLoaded', initPageTransition); }
 })();
 </script>
 
