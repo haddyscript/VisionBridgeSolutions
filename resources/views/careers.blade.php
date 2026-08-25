@@ -246,11 +246,41 @@
     }
     .careers-looking-glow-1 { top: -46px; right: -46px; width: 160px; height: 160px; background: radial-gradient(circle, rgba(201,168,76,0.32) 0%, transparent 70%); }
     .careers-looking-glow-2 { bottom: -56px; left: -36px; width: 150px; height: 150px; background: radial-gradient(circle, rgba(42,157,143,0.22) 0%, transparent 70%); }
-    .careers-looking-item {
+    .careers-list-item {
         transition: transform .3s cubic-bezier(.22,1,.36,1);
     }
-    .careers-looking-item:hover {
+    .careers-list-item:hover {
         transform: translateX(5px);
+    }
+    .careers-talent-icon {
+        transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+    }
+    .careers-list-item:hover .careers-talent-icon {
+        transform: scale(1.14) rotate(-4deg);
+    }
+
+    /* ─── Generic scroll-reveal — fade/slide entrance applied across the
+         page's remaining sections/items (the point cards above already have
+         their own equivalent, kept separate since they also need the
+         hover-specific rules alongside it). Toggled by the shared
+         IntersectionObserver script below. ─── */
+    .vip-reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
+    }
+    .vip-reveal-left  { transform: translateX(-34px); }
+    .vip-reveal-right { transform: translateX(34px); }
+    .vip-reveal.is-visible,
+    .vip-reveal-left.is-visible,
+    .vip-reveal-right.is-visible {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .vip-reveal, .vip-reveal-left, .vip-reveal-right {
+            opacity: 1; transform: none; transition: none;
+        }
     }
 
     /* ─── "Express Interest" — elevated to a genuine premium CTA card
@@ -347,7 +377,7 @@
 <section id="current-opening" class="py-16 md:py-24 bg-white scroll-mt-20">
     <div class="max-w-6xl mx-auto px-5 sm:px-8">
         <div class="grid lg:grid-cols-[1fr_1.3fr] gap-10 lg:gap-14 items-center mb-14">
-            <div class="order-2 lg:order-1 text-center lg:text-left">
+            <div class="vip-reveal-left order-2 lg:order-1 text-center lg:text-left">
                 <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gold-dark bg-gold/10 px-3 py-1.5 rounded-full mb-4">
                     Current Opportunity
                 </span>
@@ -355,7 +385,7 @@
                 <p class="section-subtitle mx-auto lg:mx-0">Independent Contractor &middot; Commission-Based Opportunity</p>
                 <p class="text-sm text-gray-500 mt-3 max-w-xl mx-auto lg:mx-0">This is the only position currently available at this time.</p>
             </div>
-            <div class="order-1 lg:order-2 flex justify-center">
+            <div class="vip-reveal-right order-1 lg:order-2 flex justify-center" style="transition-delay: 120ms;">
                 <img src="@assetv('image/marketing/job-seeking.jpeg')" alt="Now Seeking: Sales, Marketing &amp; Referral Partners — VisionBridge Solutions job posting"
                      data-lightbox-trigger
                      class="careers-flyer-trigger w-full max-w-sm rounded-2xl border border-gray-200 shadow-xl">
@@ -375,13 +405,13 @@
         </div>
 
         <div class="grid md:grid-cols-2 gap-8 items-stretch">
-            <div class="careers-card careers-looking-card text-white p-8">
+            <div class="careers-card careers-looking-card vip-reveal-left text-white p-8">
                 <div class="careers-looking-glow careers-looking-glow-1" aria-hidden="true"></div>
                 <div class="careers-looking-glow careers-looking-glow-2" aria-hidden="true"></div>
                 <h3 class="relative font-display text-xl font-bold text-gold mb-5">What We're Looking For</h3>
                 <ul class="relative space-y-4">
                     @foreach ($lookingFor as $item)
-                        <li class="careers-looking-item flex items-start gap-3">
+                        <li class="careers-list-item flex items-start gap-3">
                             <span class="careers-check mt-0.5">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                             </span>
@@ -391,7 +421,7 @@
                 </ul>
             </div>
 
-            <div class="careers-card careers-cta-card border border-gold/25 p-8 flex flex-col justify-center h-full">
+            <div class="careers-card careers-cta-card vip-reveal-right border border-gold/25 p-8 flex flex-col justify-center h-full" style="transition-delay: 120ms;">
                 <div class="relative flex items-center gap-4 mb-4">
                     <span class="careers-cta-icon">
                         <svg class="w-6 h-6 text-navy" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -413,7 +443,7 @@
 <section id="talent-network" class="py-16 md:py-24 scroll-mt-20" style="background:#0B0F17;">
     <div class="max-w-6xl mx-auto px-5 sm:px-8">
         <div class="grid lg:grid-cols-[1.3fr_1fr] gap-10 lg:gap-14 items-center mb-14">
-            <div class="text-center lg:text-left">
+            <div class="vip-reveal-left text-center lg:text-left">
                 <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gold bg-gold/10 px-3 py-1.5 rounded-full mb-4">
                     VisionBridge Talent Network
                 </span>
@@ -422,7 +452,7 @@
                     We're always connecting with skilled independent professionals for project-based work — flexible freelance and contract assignments, ideal for creatives, editors, and digital specialists ready to collaborate on meaningful projects.
                 </p>
             </div>
-            <div class="flex justify-center">
+            <div class="vip-reveal-right flex justify-center" style="transition-delay: 120ms;">
                 <img src="@assetv('image/marketing/job-seeking2.jpeg')" alt="VisionBridge Talent Network — freelance and contract opportunities job posting"
                      data-lightbox-trigger
                      class="careers-flyer-trigger w-full max-w-sm rounded-2xl border border-white/10 shadow-xl">
@@ -437,8 +467,8 @@
                 </h3>
                 <ul class="space-y-3.5">
                     @foreach ($talentAreas as $area)
-                        <li class="flex items-center gap-3">
-                            <span class="w-8 h-8 rounded-lg bg-gold/10 text-gold flex items-center justify-center shrink-0">
+                        <li class="careers-list-item vip-reveal flex items-center gap-3" style="transition-delay: {{ $loop->index * 70 }}ms;">
+                            <span class="careers-talent-icon w-8 h-8 rounded-lg bg-gold/10 text-gold flex items-center justify-center shrink-0">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">{!! $area['icon'] !!}</svg>
                             </span>
                             <span class="text-white/80">{{ $area['label'] }}</span>
@@ -454,7 +484,7 @@
                 </h3>
                 <ul class="space-y-4">
                     @foreach ($whatWeOffer as $item)
-                        <li class="flex items-start gap-3">
+                        <li class="careers-list-item vip-reveal flex items-start gap-3" style="transition-delay: {{ $loop->index * 70 }}ms;">
                             <span class="careers-check mt-0.5">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                             </span>
@@ -465,7 +495,7 @@
             </div>
         </div>
 
-        <div class="careers-card bg-gradient-to-br from-navy via-navy to-navy-dark border border-gold/20 p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="careers-card vip-reveal bg-gradient-to-br from-navy via-navy to-navy-dark border border-gold/20 p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
                 <h3 class="font-display text-2xl font-bold text-white mb-1.5">Let's Connect</h3>
                 <p class="text-white/60">Send your portfolio, samples, or area of expertise — we'll keep you in mind for the right project.</p>
@@ -475,7 +505,7 @@
             </a>
         </div>
 
-        <p class="text-center text-white/40 text-xs uppercase tracking-widest mt-10">
+        <p class="vip-reveal text-center text-white/40 text-xs uppercase tracking-widest mt-10">
             Independent contractor opportunities only — not employee positions.
         </p>
     </div>
@@ -548,7 +578,7 @@
 
 <script>
 (function () {
-    var cards = document.querySelectorAll('.careers-point-card');
+    var cards = document.querySelectorAll('.careers-point-card, .vip-reveal, .vip-reveal-left, .vip-reveal-right');
     if (!cards.length) return;
 
     // Reduced-motion visitors get everything visible immediately (the
