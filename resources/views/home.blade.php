@@ -3102,23 +3102,81 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- Founder parallax divider — closes out the homepage after Meet the
      Founder (Contact now lives on its own /contact page, see contact.blade.php).
      Same fixed-background parallax technique as the other section
-     dividers — now also closing with a Careers CTA, same
-     .parallax-cta-btn pattern as the "See Why VisionBridge" divider above,
-     since this is the last thing a visitor sees before leaving the page. --}}
+     dividers, text only (no CTA button — the Careers CTA lives in the
+     "Join The Vision" section right after it instead). --}}
 <div class="relative parallax-divider" style="height:720px;overflow:hidden;background-image:url('@assetv('image/parallax-bg7-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 40%;">
     <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
         <span class="kicker-tag-dark inline-flex items-center text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">From Vision To Reality</span>
-        <h3 class="font-extrabold mb-8" style="font-family:'Orbitron',sans-serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">One Founder's Mission To Build Bridges, Not Just Websites</h3>
-        <a href="{{ route('careers') }}" class="parallax-cta-btn group inline-flex items-center gap-2.5 px-8 py-4 rounded-full font-semibold text-sm transition-all duration-300" style="background:#C9A84C;color:#15202C;letter-spacing:0.04em;">
-            <span class="hero-btn-fill" aria-hidden="true"></span>
-            <span class="hero-btn-content">
-                Discover Career Opportunities
-                <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-            </span>
-        </a>
+        <h3 class="font-extrabold" style="font-family:'Orbitron',sans-serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">One Founder's Mission To Build Bridges, Not Just Websites</h3>
     </div>
 </div>
+
+{{-- ============================================================
+     JOIN THE VISION — closing Careers CTA, framed like a premium
+     ticket/pass (gold corner brackets) since this bookends the whole
+     homepage. Own scoped <style>, same convention as the other
+     ad-hoc per-section blocks above (Why Choose Us, Meet the Founder).
+     ============================================================ --}}
+<style>
+    #join-vision { position: relative; overflow: hidden; background: linear-gradient(180deg, #0B0F17 0%, #111827 100%); }
+    #join-vision::before {
+        content: '';
+        position: absolute;
+        top: -20%; left: 50%;
+        transform: translateX(-50%);
+        width: 70%; height: 70%;
+        background: radial-gradient(ellipse at center, rgba(201,168,76,0.14) 0%, transparent 70%);
+        filter: blur(50px);
+        pointer-events: none;
+    }
+    .join-vision-frame {
+        position: relative;
+        padding: 56px 32px;
+    }
+    .join-vision-frame::before, .join-vision-frame::after {
+        content: '';
+        position: absolute;
+        left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(201,168,76,0.55) 15%, rgba(201,168,76,0.55) 85%, transparent);
+    }
+    .join-vision-frame::before { top: 0; }
+    .join-vision-frame::after  { bottom: 0; }
+    .join-vision-corner {
+        position: absolute;
+        width: 22px; height: 22px;
+        border: 1.5px solid #C9A84C;
+        opacity: .85;
+    }
+    .join-vision-corner-tl { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+    .join-vision-corner-tr { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+    .join-vision-corner-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+    .join-vision-corner-br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+</style>
+<section id="join-vision" class="py-24">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+        <div class="join-vision-frame">
+            <span class="join-vision-corner join-vision-corner-tl" aria-hidden="true"></span>
+            <span class="join-vision-corner join-vision-corner-tr" aria-hidden="true"></span>
+            <span class="join-vision-corner join-vision-corner-bl" aria-hidden="true"></span>
+            <span class="join-vision-corner join-vision-corner-br" aria-hidden="true"></span>
+
+            <span class="kicker-tag-dark inline-flex items-center text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">Join The Vision</span>
+            <h2 class="font-display font-bold mb-5" style="font-size:clamp(1.9rem,3.6vw,2.75rem);line-height:1.2;color:#FFFFFF;">Build. Create. Make an Impact.</h2>
+            <p class="text-white/65 text-base md:text-lg leading-relaxed mb-8 max-w-xl mx-auto">
+                We're always looking for talented people who want to build meaningful digital experiences and grow alongside the businesses, ministries, churches, and nonprofits we serve.
+            </p>
+            <a href="{{ route('careers') }}" class="hero-btn-primary">
+                <span class="hero-btn-fill" aria-hidden="true"></span>
+                <span class="hero-btn-content">
+                    Explore Careers at VisionBridge
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                </span>
+            </a>
+        </div>
+    </div>
+</section>
 
 @endsection
 
