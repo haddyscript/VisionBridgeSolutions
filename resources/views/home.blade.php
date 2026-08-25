@@ -3303,9 +3303,18 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     //  top/bottom lines draw in from center, the four corner brackets
     //  snap into place, a single scan-line sweeps down through the
     //  frame, then the kicker / word-mask headline (same mask-reveal
-    //  technique as the Hero) / copy / button land in sequence. Same
-    //  TOGGLE convention as the rest of the page, so it un-reveals and
-    //  replays if a visitor scrolls back up past the section.
+    //  technique as the Hero) / copy / button land in sequence.
+    //
+    //  Driven by a plain IntersectionObserver (play() while any part of
+    //  the section is visible, reverse() once none of it is) rather than
+    //  ScrollTrigger's toggleActions — an earlier 'play reverse play
+    //  reverse' + fastScrollEnd attempt misfired on ordinary scroll
+    //  speeds (GSAP resolves "fast" scroll velocity as low as ~2500px/s,
+    //  which a normal flick easily exceeds) and reversed the section back
+    //  to hidden while it was still mid-screen. isIntersecting has no
+    //  such ambiguity — it's a plain visible/not-visible boolean — and
+    //  this is the same technique already used successfully for the
+    //  retriggering reveals on the Careers page.
     // ─────────────────────────────────────────────────────────────────
     function initJoinVisionReveal() {
         const section = document.getElementById('join-vision');
@@ -3328,32 +3337,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             return;
         }
 
-        gsap.timeline({
-            defaults: { ease: 'power3.out' },
-            // Unlike the shared TOGGLE constant (which only reverses once
-            // scrolled all the way back above the section), this one
-            // reverses on leaving in EITHER direction and replays on
-            // re-entering from either direction too — per request, this
-            // section's opening should retrigger every time it comes back
-            // into view, not just once per visit.
-            //
-            // end: 'bottom top' — only counts as "left" once the section
-            // has fully scrolled above the viewport. An earlier attempt
-            // used 'bottom 25%', which fires while the section is still
-            // filling most of the screen, so it reversed itself back to
-            // hidden right as you were looking at it.
-            //
-            // fastScrollEnd guards against a fast scroll/flick crossing
-            // both the start and end points in the same tick (firing play
-            // then reverse back-to-back), which can otherwise leave the
-            // section stuck hidden.
-            scrollTrigger: { trigger: section, start: 'top 75%', end: 'bottom top', toggleActions: 'play reverse play reverse', fastScrollEnd: true },
-        })
-            // Kept snappy (~1.3s total, vs. an earlier ~2.5s pass) — the
-            // section can come into view fairly quickly during a normal
-            // scroll, and a long sequence made it look "stuck" mid-reveal
-            // (only the first couple of steps done) rather than actually
-            // being broken.
+        const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } })
             .fromTo(lines, { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: 'power2.inOut' }, 0)
             .fromTo(corners, { opacity: 0, scale: 0.4 }, { opacity: 0.85, scale: 1, duration: 0.3, stagger: 0.04, ease: 'back.out(2)' }, 0.08)
             .fromTo(scan, { opacity: 0, top: '0%' }, { opacity: 1, top: '100%', duration: 0.4, ease: 'power1.inOut' }, 0.12)
@@ -3362,6 +3346,15 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             .fromTo(words, { opacity: 0, y: '110%' }, { opacity: 1, y: '0%', duration: 0.4, stagger: 0.04 }, 0.42)
             .fromTo(copy, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.35 }, '>-0.15')
             .fromTo(cta, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(1.6)', clearProps: 'transform' }, '>-0.1');
+
+        if (!('IntersectionObserver' in window)) { tl.play(); return; }
+
+        new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) tl.play();
+                else tl.reverse();
+            });
+        }, { threshold: 0.15 }).observe(section);
     }
 
     function initGSAP() {
