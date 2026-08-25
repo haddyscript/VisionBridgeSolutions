@@ -2610,7 +2610,7 @@
                 ['id' => 'services',    'label' => 'Services'],
                 ['id' => 'why',         'label' => 'Why Us'],
                 ['id' => 'plans',       'label' => 'Plans'],
-                ['id' => 'partnership', 'label' => 'Partnership'],
+                ['id' => 'join-vision', 'label' => 'Career'],
             ] as $rail)
                 <button type="button" class="rail-dot" data-rail-target="{{ $rail['id'] }}" aria-label="Jump to {{ $rail['label'] }}">
                     <span class="rail-dot-label">{{ $rail['label'] }}</span>
