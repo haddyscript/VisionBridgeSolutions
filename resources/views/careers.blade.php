@@ -496,6 +496,13 @@
 (function () {
     var lightbox = document.getElementById('careers-lightbox');
     if (!lightbox) return;
+    // Re-parent to <body> — #page-wrapper (this element's original parent)
+    // gets a scroll-driven `transform` from footer-reveal.js for the fixed
+    // footer's "unpeel" effect, and a transform on an ancestor makes IT the
+    // containing block for position:fixed descendants instead of the real
+    // viewport. Left in place, this modal rendered squashed under the fixed
+    // nav rather than as a true full-screen overlay.
+    document.body.appendChild(lightbox);
     var img = document.getElementById('careers-lightbox-img');
     var backdrop = lightbox.querySelector('[data-lightbox-backdrop]');
     var closeBtn = lightbox.querySelector('[data-lightbox-close]');
