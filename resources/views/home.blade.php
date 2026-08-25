@@ -3154,6 +3154,59 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         background: radial-gradient(ellipse at center, rgba(201,168,76,0.14) 0%, transparent 70%);
         filter: blur(50px);
         pointer-events: none;
+        /* Slow ambient "breathing" — an idle loop, not just a static glow,
+           so the section feels quietly alive even once the entrance has
+           finished. Paused off-screen via #join-vision.is-in-view. */
+        animation: join-vision-glow-breathe 6s ease-in-out infinite;
+        animation-play-state: paused;
+    }
+    #join-vision.is-in-view::before { animation-play-state: running; }
+    @keyframes join-vision-glow-breathe {
+        0%, 100% { opacity: 1;   transform: translateX(-50%) scale(1); }
+        50%      { opacity: .55; transform: translateX(-50%) scale(1.1); }
+    }
+    /* Faint drifting circuit-board dot texture across the whole section —
+       masked toward the edges so it reads as ambient depth behind the
+       frame rather than a hard-edged tile, same technique as the Careers
+       page hero's own dot-grid. */
+    .join-vision-grid {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image: radial-gradient(circle, rgba(201,168,76,.55) 1px, transparent 1px);
+        background-size: 30px 30px;
+        -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 45%, #000 0%, transparent 75%);
+        mask-image: radial-gradient(ellipse 70% 70% at 50% 45%, #000 0%, transparent 75%);
+        opacity: .18;
+        animation: join-vision-grid-drift 18s linear infinite;
+        animation-play-state: paused;
+    }
+    #join-vision.is-in-view .join-vision-grid { animation-play-state: running; }
+    @keyframes join-vision-grid-drift {
+        from { background-position: 0 0; }
+        to   { background-position: 60px 60px; }
+    }
+    /* Idle pulsing beacon glow behind the CTA — separate from its own
+       hover sweep, so the button quietly draws the eye even before
+       anyone's cursor gets near it. */
+    #join-vision-cta::before {
+        content: '';
+        position: absolute;
+        inset: -10px;
+        z-index: -1;
+        border-radius: 999px;
+        background: radial-gradient(circle, rgba(201,168,76,.45) 0%, transparent 70%);
+        filter: blur(6px);
+        animation: join-vision-cta-beacon 2.6s ease-in-out infinite;
+        animation-play-state: paused;
+    }
+    #join-vision.is-in-view #join-vision-cta::before { animation-play-state: running; }
+    @keyframes join-vision-cta-beacon {
+        0%, 100% { opacity: .35; transform: scale(1); }
+        50%      { opacity: .7;  transform: scale(1.12); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        #join-vision::before, .join-vision-grid, #join-vision-cta::before { animation: none; }
     }
     .join-vision-frame {
         position: relative;
@@ -3233,7 +3286,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     #join-vision-cta { opacity: 0; transform: scale(.85); }
 </style>
 <section id="join-vision" class="py-24">
-    <div class="max-w-3xl mx-auto px-6 text-center">
+    <div class="join-vision-grid" aria-hidden="true"></div>
+    <div class="relative z-[1] max-w-3xl mx-auto px-6 text-center">
         <div class="join-vision-frame">
             <span class="join-vision-line join-vision-line-top" aria-hidden="true"></span>
             <span class="join-vision-line join-vision-line-bottom" aria-hidden="true"></span>
