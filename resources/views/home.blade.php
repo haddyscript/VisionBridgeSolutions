@@ -3175,6 +3175,34 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
     }
     .join-vision-line-top    { top: 0; }
     .join-vision-line-bottom { bottom: 0; }
+    /* Traveling light pulse — an ambient loop once the one-shot draw-in
+       above finishes, like a signal running along a circuit trace, not
+       just a static line. Paused by default (and while off-screen — see
+       #join-vision.is-in-view below) so it doesn't burn cycles when no
+       one's looking at it. */
+    .join-vision-line::after {
+        content: '';
+        position: absolute;
+        top: 0; bottom: 0; left: 0;
+        width: 25%;
+        background: linear-gradient(90deg, transparent, rgba(255,244,214,0.95), transparent);
+        transform: translateX(-120%);
+        animation: join-vision-line-pulse 3.4s ease-in-out infinite;
+        animation-delay: 1s;
+        animation-play-state: paused;
+    }
+    #join-vision.is-in-view .join-vision-line::after {
+        animation-play-state: running;
+    }
+    @keyframes join-vision-line-pulse {
+        0%   { transform: translateX(-120%); opacity: 0; }
+        15%  { opacity: 1; }
+        85%  { opacity: 1; }
+        100% { transform: translateX(520%); opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .join-vision-line::after { display: none; }
+    }
     .join-vision-corner {
         position: absolute;
         width: 22px; height: 22px;
@@ -3351,6 +3379,10 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
         new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
+                // Also toggles the ambient traveling-line-pulse loop (see
+                // #join-vision.is-in-view in the <style> above) so it only
+                // runs while the section is actually on screen.
+                section.classList.toggle('is-in-view', entry.isIntersecting);
                 if (entry.isIntersecting) tl.play();
                 else tl.reverse();
             });
