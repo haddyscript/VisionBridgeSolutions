@@ -103,13 +103,19 @@
      ═══════════════════════════════════════════════════════════════ --}}
 <section class="py-16 md:py-24 bg-white">
     <div class="max-w-6xl mx-auto px-5 sm:px-8">
-        <div class="text-center mb-12">
-            <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gold-dark bg-gold/10 px-3 py-1.5 rounded-full mb-4">
-                Current Opportunity
-            </span>
-            <h2 class="section-title">Sales, Marketing &amp; Referral Partners</h2>
-            <p class="section-subtitle mx-auto">Independent Contractor &middot; Commission-Based Opportunity</p>
-            <p class="text-sm text-gray-500 mt-3 max-w-xl mx-auto">This is the only position currently available at this time.</p>
+        <div class="grid lg:grid-cols-[1fr_1.3fr] gap-10 lg:gap-14 items-center mb-14">
+            <div class="order-2 lg:order-1 text-center lg:text-left">
+                <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gold-dark bg-gold/10 px-3 py-1.5 rounded-full mb-4">
+                    Current Opportunity
+                </span>
+                <h2 class="section-title">Sales, Marketing &amp; Referral Partners</h2>
+                <p class="section-subtitle mx-auto lg:mx-0">Independent Contractor &middot; Commission-Based Opportunity</p>
+                <p class="text-sm text-gray-500 mt-3 max-w-xl mx-auto lg:mx-0">This is the only position currently available at this time.</p>
+            </div>
+            <div class="order-1 lg:order-2 flex justify-center">
+                <img src="@assetv('image/marketing/job-seeking.jpeg')" alt="Now Seeking: Sales, Marketing &amp; Referral Partners — VisionBridge Solutions job posting"
+                     class="w-full max-w-sm rounded-2xl border border-gray-200 shadow-xl">
+            </div>
         </div>
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-14">
@@ -154,14 +160,20 @@
      ═══════════════════════════════════════════════════════════════ --}}
 <section class="py-16 md:py-24" style="background:#0B0F17;">
     <div class="max-w-6xl mx-auto px-5 sm:px-8">
-        <div class="text-center mb-12">
-            <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gold bg-gold/10 px-3 py-1.5 rounded-full mb-4">
-                VisionBridge Talent Network
-            </span>
-            <h2 class="font-display text-3xl md:text-5xl font-extrabold text-white leading-tight mb-4">Freelance &amp; Contract Opportunities</h2>
-            <p class="text-white/60 text-lg max-w-2xl mx-auto leading-relaxed">
-                We're always connecting with skilled independent professionals for project-based work — flexible freelance and contract assignments, ideal for creatives, editors, and digital specialists ready to collaborate on meaningful projects.
-            </p>
+        <div class="grid lg:grid-cols-[1.3fr_1fr] gap-10 lg:gap-14 items-center mb-14">
+            <div class="text-center lg:text-left">
+                <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gold bg-gold/10 px-3 py-1.5 rounded-full mb-4">
+                    VisionBridge Talent Network
+                </span>
+                <h2 class="font-display text-3xl md:text-5xl font-extrabold text-white leading-tight mb-4">Freelance &amp; Contract Opportunities</h2>
+                <p class="text-white/60 text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                    We're always connecting with skilled independent professionals for project-based work — flexible freelance and contract assignments, ideal for creatives, editors, and digital specialists ready to collaborate on meaningful projects.
+                </p>
+            </div>
+            <div class="flex justify-center">
+                <img src="@assetv('image/marketing/job-seeking2.jpeg')" alt="VisionBridge Talent Network — freelance and contract opportunities job posting"
+                     class="w-full max-w-sm rounded-2xl border border-white/10 shadow-xl">
+            </div>
         </div>
 
         <div class="grid md:grid-cols-2 gap-10 mb-14">
