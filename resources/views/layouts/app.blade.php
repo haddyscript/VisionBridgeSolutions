@@ -2507,6 +2507,15 @@
                             <span class="menu-item-desc block mt-1">Outdated site? We fix it without a full rebuild.</span>
                         </span>
                     </a>
+                    <a href="{{ route('careers') }}" class="mobile-menu-link px-4 py-4 rounded-xl transition-all duration-200">
+                        <span class="menu-icon-badge shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="#FFE9B0" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                        </span>
+                        <span class="flex flex-col">
+                            <span class="menu-item-title block text-lg font-bold uppercase tracking-wide text-white">Careers</span>
+                            <span class="menu-item-desc block mt-1">Independent contractor opportunities.</span>
+                        </span>
+                    </a>
                     {{-- Teal accent (not the shared gold icon badge) so this
                          reads as "your account" rather than another
                          marketing link, same distinction made on desktop's
@@ -2580,7 +2589,8 @@
                     <a href="{{ $homeAnchor }}#plans" class="desktop-menu-link"><span class="desktop-menu-link-num">04</span>Plans</a>
                     <a href="{{ $homeAnchor }}#portfolio" class="desktop-menu-link"><span class="desktop-menu-link-num">05</span>Portfolio</a>
                     <a href="{{ route('gallery') }}" class="desktop-menu-link"><span class="desktop-menu-link-num">06</span>Our Work</a>
-                    <a href="{{ route('contact') }}" class="desktop-menu-link"><span class="desktop-menu-link-num">07</span>Contact</a>
+                    <a href="{{ route('careers') }}" class="desktop-menu-link"><span class="desktop-menu-link-num">07</span>Careers</a>
+                    <a href="{{ route('contact') }}" class="desktop-menu-link"><span class="desktop-menu-link-num">08</span>Contact</a>
                 </nav>
 
                 <p id="desktop-menu-tagline" class="text-xs tracking-widest uppercase" style="color:rgba(201,168,76,0.7);">Building Websites. Expanding Reach.</p>
@@ -2708,6 +2718,7 @@
                         <li><a href="{{ $homeAnchor }}#founder"     class="footer-link hover:text-gold">Meet the Founder<span class="footer-link-bar"></span></a></li>
                         <li><a href="{{ $homeAnchor }}#partnership" class="footer-link hover:text-gold">Our Team<span class="footer-link-bar"></span></a></li>
                         <li><a href="{{ $homeAnchor }}#plans"       class="footer-link hover:text-gold">Care Plans<span class="footer-link-bar"></span></a></li>
+                        <li><a href="{{ route('careers') }}"        class="footer-link hover:text-gold">Careers<span class="footer-link-bar"></span></a></li>
                         <li><a href="{{ route('intake.create') }}"  class="footer-link hover:text-gold">Get Started<span class="footer-link-bar"></span></a></li>
                     </ul>
                 </div>

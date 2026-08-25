@@ -92,6 +92,8 @@ Route::view('/our-work', 'gallery')->name('gallery');
 
 Route::view('/website-redesign', 'website-redesign')->name('website-redesign');
 
+Route::view('/careers', 'careers')->name('careers');
+
 // A shareable follow-up link for prospects we've already talked to — not
 // linked anywhere in the site nav, just sent directly (text/email/WhatsApp).
 // Personalized via an optional ?name= query string read in the view itself.
