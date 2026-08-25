@@ -3349,14 +3349,19 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             // section stuck hidden.
             scrollTrigger: { trigger: section, start: 'top 75%', end: 'bottom top', toggleActions: 'play reverse play reverse', fastScrollEnd: true },
         })
-            .fromTo(lines, { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: 'power2.inOut' }, 0)
-            .fromTo(corners, { opacity: 0, scale: 0.4 }, { opacity: 0.85, scale: 1, duration: 0.5, stagger: 0.08, ease: 'back.out(2)' }, 0.15)
-            .fromTo(scan, { opacity: 0, top: '0%' }, { opacity: 1, top: '100%', duration: 0.7, ease: 'power1.inOut' }, 0.2)
-            .to(scan, { opacity: 0, duration: 0.25 }, '>-0.1')
-            .fromTo(kicker, { opacity: 0, y: 10, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5 }, 0.55)
-            .fromTo(words, { opacity: 0, y: '110%' }, { opacity: 1, y: '0%', duration: 0.65, stagger: 0.07 }, 0.75)
-            .fromTo(copy, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6 }, '>-0.3')
-            .fromTo(cta, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.55, ease: 'back.out(1.6)', clearProps: 'transform' }, '>-0.15');
+            // Kept snappy (~1.3s total, vs. an earlier ~2.5s pass) — the
+            // section can come into view fairly quickly during a normal
+            // scroll, and a long sequence made it look "stuck" mid-reveal
+            // (only the first couple of steps done) rather than actually
+            // being broken.
+            .fromTo(lines, { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: 'power2.inOut' }, 0)
+            .fromTo(corners, { opacity: 0, scale: 0.4 }, { opacity: 0.85, scale: 1, duration: 0.3, stagger: 0.04, ease: 'back.out(2)' }, 0.08)
+            .fromTo(scan, { opacity: 0, top: '0%' }, { opacity: 1, top: '100%', duration: 0.4, ease: 'power1.inOut' }, 0.12)
+            .to(scan, { opacity: 0, duration: 0.15 }, '>-0.05')
+            .fromTo(kicker, { opacity: 0, y: 10, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.3 }, 0.3)
+            .fromTo(words, { opacity: 0, y: '110%' }, { opacity: 1, y: '0%', duration: 0.4, stagger: 0.04 }, 0.42)
+            .fromTo(copy, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.35 }, '>-0.15')
+            .fromTo(cta, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(1.6)', clearProps: 'transform' }, '>-0.1');
     }
 
     function initGSAP() {
