@@ -79,6 +79,15 @@
         background: rgba(201,168,76,0.14); color: #A8872E;
         display: flex; align-items: center; justify-content: center;
     }
+    .careers-flyer-trigger {
+        display: block;
+        cursor: zoom-in;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .careers-flyer-trigger:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+    }
 </style>
 
 {{-- ═══════════════════════════════════════════════════════════════
@@ -114,7 +123,8 @@
             </div>
             <div class="order-1 lg:order-2 flex justify-center">
                 <img src="@assetv('image/marketing/job-seeking.jpeg')" alt="Now Seeking: Sales, Marketing &amp; Referral Partners — VisionBridge Solutions job posting"
-                     class="w-full max-w-sm rounded-2xl border border-gray-200 shadow-xl">
+                     data-lightbox-trigger
+                     class="careers-flyer-trigger w-full max-w-sm rounded-2xl border border-gray-200 shadow-xl">
             </div>
         </div>
 
@@ -172,7 +182,8 @@
             </div>
             <div class="flex justify-center">
                 <img src="@assetv('image/marketing/job-seeking2.jpeg')" alt="VisionBridge Talent Network — freelance and contract opportunities job posting"
-                     class="w-full max-w-sm rounded-2xl border border-white/10 shadow-xl">
+                     data-lightbox-trigger
+                     class="careers-flyer-trigger w-full max-w-sm rounded-2xl border border-white/10 shadow-xl">
             </div>
         </div>
 
@@ -227,5 +238,63 @@
         </p>
     </div>
 </section>
+
+{{-- Full-screen image lightbox — shared by both flyer images above.
+     Opacity-only open/close (no transform), same pattern as the admin
+     modals elsewhere on the site. --}}
+<div id="careers-lightbox" class="hidden fixed inset-0 z-[70] items-center justify-center p-4 sm:p-8" role="dialog" aria-modal="true" aria-label="Image preview">
+    <div class="absolute inset-0 bg-black/90 backdrop-blur-sm opacity-0 transition-opacity duration-200" data-lightbox-backdrop></div>
+    <button type="button" data-lightbox-close aria-label="Close" class="absolute top-5 right-5 z-10 w-11 h-11 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors opacity-0">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+    <img id="careers-lightbox-img" src="" alt="" class="relative max-w-full max-h-full object-contain rounded-lg shadow-2xl opacity-0 transition-opacity duration-200">
+</div>
+
+<script>
+(function () {
+    var lightbox = document.getElementById('careers-lightbox');
+    if (!lightbox) return;
+    var img = document.getElementById('careers-lightbox-img');
+    var backdrop = lightbox.querySelector('[data-lightbox-backdrop]');
+    var closeBtn = lightbox.querySelector('[data-lightbox-close]');
+
+    function open(src, alt) {
+        img.src = src;
+        img.alt = alt || '';
+        lightbox.classList.remove('hidden');
+        lightbox.classList.add('flex');
+        document.body.classList.add('overflow-hidden');
+        requestAnimationFrame(function () {
+            backdrop.classList.remove('opacity-0');
+            img.classList.remove('opacity-0');
+            closeBtn.classList.remove('opacity-0');
+        });
+    }
+
+    function close() {
+        backdrop.classList.add('opacity-0');
+        img.classList.add('opacity-0');
+        closeBtn.classList.add('opacity-0');
+        document.body.classList.remove('overflow-hidden');
+        setTimeout(function () {
+            lightbox.classList.add('hidden');
+            lightbox.classList.remove('flex');
+            img.src = '';
+        }, 200);
+    }
+
+    document.querySelectorAll('[data-lightbox-trigger]').forEach(function (trigger) {
+        trigger.addEventListener('click', function () {
+            open(trigger.getAttribute('src'), trigger.getAttribute('alt'));
+        });
+    });
+
+    backdrop.addEventListener('click', close);
+    closeBtn.addEventListener('click', close);
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !lightbox.classList.contains('hidden')) close();
+    });
+})();
+</script>
 
 @endsection
