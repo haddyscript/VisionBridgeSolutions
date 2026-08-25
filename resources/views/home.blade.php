@@ -2566,9 +2566,12 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <p class="text-base md:text-lg leading-relaxed mb-5" style="color:rgba(17,29,51,0.74);">
                 Want to be part of the team behind these projects? We're always looking for driven sales, marketing, and creative partners to grow with us.
             </p>
-            <a href="{{ route('careers') }}" class="btn-gold inline-flex items-center gap-2">
-                Discover Career Opportunities
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            <a href="{{ route('careers') }}" class="hero-btn-primary">
+                <span class="hero-btn-fill" aria-hidden="true"></span>
+                <span class="hero-btn-content">
+                    Discover Career Opportunities
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </span>
             </a>
         </div>
     </div>
