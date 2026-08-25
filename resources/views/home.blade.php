@@ -3102,12 +3102,21 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 {{-- Founder parallax divider — closes out the homepage after Meet the
      Founder (Contact now lives on its own /contact page, see contact.blade.php).
      Same fixed-background parallax technique as the other section
-     dividers, text only (no CTA button). --}}
+     dividers — now also closing with a Careers CTA, same
+     .parallax-cta-btn pattern as the "See Why VisionBridge" divider above,
+     since this is the last thing a visitor sees before leaving the page. --}}
 <div class="relative parallax-divider" style="height:720px;overflow:hidden;background-image:url('@assetv('image/parallax-bg7-enhance.png')');background-attachment:fixed;background-size:cover;background-position:center 40%;">
     <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(17,29,51,0.30) 0%,rgba(17,29,51,0.62) 100%);" aria-hidden="true"></div>
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
         <span class="kicker-tag-dark inline-flex items-center text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">From Vision To Reality</span>
-        <h3 class="font-extrabold" style="font-family:'Orbitron',sans-serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">One Founder's Mission To Build Bridges, Not Just Websites</h3>
+        <h3 class="font-extrabold mb-8" style="font-family:'Orbitron',sans-serif;font-size:clamp(1.75rem,4vw,3rem);line-height:1.15;color:#FFFFFF;max-width:760px;">One Founder's Mission To Build Bridges, Not Just Websites</h3>
+        <a href="{{ route('careers') }}" class="parallax-cta-btn group inline-flex items-center gap-2.5 px-8 py-4 rounded-full font-semibold text-sm transition-all duration-300" style="background:#C9A84C;color:#15202C;letter-spacing:0.04em;">
+            <span class="hero-btn-fill" aria-hidden="true"></span>
+            <span class="hero-btn-content">
+                Discover Career Opportunities
+                <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </span>
+        </a>
     </div>
 </div>
 
