@@ -3159,37 +3159,72 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         position: relative;
         padding: 56px 32px;
     }
-    .join-vision-frame::before, .join-vision-frame::after {
-        content: '';
+    /* Real elements (not ::before/::after) so the "grand techy opening"
+       script below can tween them directly — a scroll-triggered draw-in
+       instead of a static frame, same HUD-power-on language as the
+       corner brackets. Hidden by default via these base rules (matching
+       GSAP's own fromTo "from" state) so there's no flash of the fully-
+       drawn frame before the idle-deferred setup script runs. */
+    .join-vision-line {
         position: absolute;
         left: 0; right: 0;
         height: 1px;
         background: linear-gradient(90deg, transparent, rgba(201,168,76,0.55) 15%, rgba(201,168,76,0.55) 85%, transparent);
+        transform: scaleX(0);
+        transform-origin: center;
     }
-    .join-vision-frame::before { top: 0; }
-    .join-vision-frame::after  { bottom: 0; }
+    .join-vision-line-top    { top: 0; }
+    .join-vision-line-bottom { bottom: 0; }
     .join-vision-corner {
         position: absolute;
         width: 22px; height: 22px;
         border: 1.5px solid #C9A84C;
-        opacity: .85;
+        opacity: 0;
+        transform: scale(.4);
     }
     .join-vision-corner-tl { top: -1px; left: -1px; border-right: none; border-bottom: none; }
     .join-vision-corner-tr { top: -1px; right: -1px; border-left: none; border-bottom: none; }
     .join-vision-corner-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
     .join-vision-corner-br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+    /* One-shot scan-line that sweeps down through the frame right after
+       it draws in — a single clean pass, not a strobe/flicker, so it
+       reads as "system online" without any photosensitivity risk. */
+    .join-vision-scan {
+        position: absolute;
+        left: 6%; right: 6%;
+        top: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(201,168,76,0.9), transparent);
+        box-shadow: 0 0 12px rgba(201,168,76,0.7);
+        opacity: 0;
+        pointer-events: none;
+    }
+    #join-vision-kicker { opacity: 0; transform: translateY(10px) scale(.92); }
+    #join-vision-heading .hero-word { opacity: 0; transform: translateY(110%); }
+    #join-vision-copy { opacity: 0; transform: translateY(16px); }
+    #join-vision-cta { opacity: 0; transform: scale(.85); }
 </style>
 <section id="join-vision" class="py-24">
     <div class="max-w-3xl mx-auto px-6 text-center">
         <div class="join-vision-frame">
+            <span class="join-vision-line join-vision-line-top" aria-hidden="true"></span>
+            <span class="join-vision-line join-vision-line-bottom" aria-hidden="true"></span>
+            <span class="join-vision-scan" aria-hidden="true"></span>
+
             <span class="join-vision-corner join-vision-corner-tl" aria-hidden="true"></span>
             <span class="join-vision-corner join-vision-corner-tr" aria-hidden="true"></span>
             <span class="join-vision-corner join-vision-corner-bl" aria-hidden="true"></span>
             <span class="join-vision-corner join-vision-corner-br" aria-hidden="true"></span>
 
-            <span class="kicker-tag-dark inline-flex items-center text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">Join The Vision</span>
-            <h2 class="font-display font-bold mb-5" style="font-size:clamp(1.9rem,3.6vw,2.75rem);line-height:1.2;color:#FFFFFF;">Build. Create. Make an Impact.</h2>
-            <p class="text-white/65 text-base md:text-lg leading-relaxed mb-8 max-w-xl mx-auto">
+            <span id="join-vision-kicker" class="kicker-tag-dark inline-flex items-center text-sm font-semibold tracking-widest uppercase mb-4" style="color:#C9A84C;">Join The Vision</span>
+            <h2 id="join-vision-heading" class="font-display font-bold mb-5" style="font-size:clamp(1.9rem,3.6vw,2.75rem);line-height:1.2;color:#FFFFFF;">
+                <span class="word-wrap"><span class="hero-word">Build.</span></span>
+                <span class="word-wrap"><span class="hero-word">Create.</span></span>
+                <span class="word-wrap"><span class="hero-word">Make</span></span>
+                <span class="word-wrap"><span class="hero-word">an</span></span>
+                <span class="word-wrap"><span class="hero-word">Impact.</span></span>
+            </h2>
+            <p id="join-vision-copy" class="text-white/65 text-base md:text-lg leading-relaxed mb-8 max-w-xl mx-auto">
                 We're always looking for talented people who want to build meaningful digital experiences and grow alongside the businesses, ministries, churches, and nonprofits we serve.
             </p>
             <a id="join-vision-cta" href="{{ route('careers') }}" class="hero-btn-primary">
@@ -3263,6 +3298,50 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         });
     }
 
+    // ─────────────────────────────────────────────────────────────────
+    //  JOIN THE VISION — "grand techy" HUD-style opening: the frame's
+    //  top/bottom lines draw in from center, the four corner brackets
+    //  snap into place, a single scan-line sweeps down through the
+    //  frame, then the kicker / word-mask headline (same mask-reveal
+    //  technique as the Hero) / copy / button land in sequence. Same
+    //  TOGGLE convention as the rest of the page, so it un-reveals and
+    //  replays if a visitor scrolls back up past the section.
+    // ─────────────────────────────────────────────────────────────────
+    function initJoinVisionReveal() {
+        const section = document.getElementById('join-vision');
+        if (!section) return;
+
+        const lines = section.querySelectorAll('.join-vision-line');
+        const corners = section.querySelectorAll('.join-vision-corner');
+        const scan = section.querySelector('.join-vision-scan');
+        const kicker = document.getElementById('join-vision-kicker');
+        const words = section.querySelectorAll('#join-vision-heading .hero-word');
+        const copy = document.getElementById('join-vision-copy');
+        const cta = document.getElementById('join-vision-cta');
+
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            gsap.set(lines, { scaleX: 1 });
+            gsap.set(corners, { opacity: 0.85, scale: 1 });
+            gsap.set([kicker, copy], { opacity: 1, y: 0, scale: 1 });
+            gsap.set(words, { opacity: 1, y: '0%' });
+            gsap.set(cta, { opacity: 1, scale: 1, clearProps: 'transform' });
+            return;
+        }
+
+        gsap.timeline({
+            defaults: { ease: 'power3.out' },
+            scrollTrigger: { trigger: section, start: 'top 75%', toggleActions: TOGGLE },
+        })
+            .fromTo(lines, { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: 'power2.inOut' }, 0)
+            .fromTo(corners, { opacity: 0, scale: 0.4 }, { opacity: 0.85, scale: 1, duration: 0.5, stagger: 0.08, ease: 'back.out(2)' }, 0.15)
+            .fromTo(scan, { opacity: 0, top: '0%' }, { opacity: 1, top: '100%', duration: 0.7, ease: 'power1.inOut' }, 0.2)
+            .to(scan, { opacity: 0, duration: 0.25 }, '>-0.1')
+            .fromTo(kicker, { opacity: 0, y: 10, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5 }, 0.55)
+            .fromTo(words, { opacity: 0, y: '110%' }, { opacity: 1, y: '0%', duration: 0.65, stagger: 0.07 }, 0.75)
+            .fromTo(copy, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6 }, '>-0.3')
+            .fromTo(cta, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.55, ease: 'back.out(1.6)', clearProps: 'transform' }, '>-0.15');
+    }
+
     function initGSAP() {
         if (typeof gsap === 'undefined') { setTimeout(initGSAP, 80); return; }
 
@@ -3280,6 +3359,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         // Run the generic reveal system first so section-specific tweens
         // that share the same trigger don't double-fire on the same element
         initRevealSections();
+        initJoinVisionReveal();
 
         // ============================================================
         //  HERO — page-load entrance timeline (no ScrollTrigger needed:
