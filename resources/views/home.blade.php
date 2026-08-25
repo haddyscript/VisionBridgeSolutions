@@ -102,7 +102,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
      Desktop/fine-pointer only; native cursor stays untouched until the
      script below confirms it can actually run. --}}
 <div id="home-cursor-dot" aria-hidden="true"></div>
-<div id="home-cursor-ring" aria-hidden="true"></div>
+<div id="home-cursor-ring" aria-hidden="true">
+    {{-- Hidden by default (opacity via #home-cursor-ring.is-arrow below) —
+         only shown while hovering the "Explore Careers at VisionBridge"
+         button, so the pill morph there reads as "click to go" instead of
+         just a plain glowing outline like every other pill-morph target. --}}
+    <svg id="home-cursor-arrow" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+</div>
 <style>
     /* ─── Body copy font — scoped to #page-wrapper so it only affects this
          page (headings/quotes keep Orbitron/Playfair Display via their own
@@ -225,6 +231,16 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         background: rgba(201,168,76,.12);
         border-color: rgba(201,168,76,.85);
     }
+    #home-cursor-arrow {
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 15px; height: 15px;
+        transform: translate(-50%, -50%);
+        color: #C9A84C;
+        opacity: 0;
+        transition: opacity .2s ease;
+    }
+    #home-cursor-ring.is-arrow #home-cursor-arrow { opacity: 1; }
     /* Scoped to html.has-home-cursor rather than a single section's own
        class (unlike Contact/Footer, which scope cursor:none to their own
        container) since this cursor spans the whole page. #site-footer has
@@ -411,7 +427,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         // used to be in this list too, but it's a squared-off corner-cut
         // shape now (layouts/app.blade.php), not a circle, so it's handled
         // separately below instead of morphing into a mismatched full pill.
-        var pillMorphEls = document.querySelectorAll('.spotlight-cta-primary, .spotlight-cta-outline, #svc-toggle-btn, .parallax-cta-btn');
+        var pillMorphEls = document.querySelectorAll('.spotlight-cta-primary, .spotlight-cta-outline, #svc-toggle-btn, .parallax-cta-btn, #join-vision-cta');
         // Nav Login/Get Started — small corner-cut rects (layouts/app.blade.php),
         // so they get the same gentle-radius hug as the card group below
         // rather than the full pill treatment, matching the technique used
@@ -467,6 +483,15 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             el.addEventListener('mouseenter', function () { hovering = true; ring.classList.add('is-hovering'); growRing(68, 68); });
             el.addEventListener('mouseleave', function () { hovering = false; ring.classList.remove('is-hovering'); growRing(46, 46); });
         });
+
+        // "Explore Careers at VisionBridge" gets the arrow shown inside the
+        // pill on top of the regular morph wired in above — a distinct
+        // touch since it's the closing CTA of the whole homepage.
+        var joinVisionCta = document.getElementById('join-vision-cta');
+        if (joinVisionCta) {
+            joinVisionCta.addEventListener('mouseenter', function () { ring.classList.add('is-arrow'); });
+            joinVisionCta.addEventListener('mouseleave', function () { ring.classList.remove('is-arrow'); });
+        }
 
         document.addEventListener('mousedown', function () { pressed = true; });
         document.addEventListener('mouseup', function () { pressed = false; });
@@ -3167,7 +3192,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <p class="text-white/65 text-base md:text-lg leading-relaxed mb-8 max-w-xl mx-auto">
                 We're always looking for talented people who want to build meaningful digital experiences and grow alongside the businesses, ministries, churches, and nonprofits we serve.
             </p>
-            <a href="{{ route('careers') }}" class="hero-btn-primary">
+            <a id="join-vision-cta" href="{{ route('careers') }}" class="hero-btn-primary">
                 <span class="hero-btn-fill" aria-hidden="true"></span>
                 <span class="hero-btn-content">
                     Explore Careers at VisionBridge
