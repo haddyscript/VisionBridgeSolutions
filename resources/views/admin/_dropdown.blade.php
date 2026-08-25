@@ -178,8 +178,13 @@
         // scroll (capture: true, since scrolling inside a nested scrollable
         // container like the Unassigned list doesn't bubble a 'scroll' event
         // to document otherwise) avoids the menu staying frozen in place
-        // while the button it's anchored to moves out from under it.
-        document.addEventListener('scroll', function () {
+        // while the button it's anchored to moves out from under it. But
+        // that same capture-phase listener also catches scroll events from
+        // the menu's own overflow-y-auto option list, so it must ignore
+        // those — otherwise scrolling a long option list closes the menu
+        // out from under the cursor instead of just scrolling it.
+        document.addEventListener('scroll', function (e) {
+            if (menu.contains(e.target)) return;
             if (!menu.classList.contains('hidden')) closeMenu();
         }, true);
     }
