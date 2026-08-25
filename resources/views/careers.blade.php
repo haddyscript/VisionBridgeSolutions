@@ -11,7 +11,7 @@
         ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>', 'text' => 'Refer new opportunities for website development and digital services.'],
         ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>', 'text' => 'Flexible, remote opportunity — work on your own schedule.'],
         ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V6m0 10v2"/><circle cx="12" cy="12" r="9" stroke-width="2"/>', 'text' => 'Earn commission on successful, paid referrals.'],
-        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M5.636 18.364l3.536-3.536m0-5.656L5.636 5.636M12 12l4.5-4.5M12 12l-4.5 4.5M12 12l4.5 4.5M12 12l-4.5-4.5"/>', 'text' => 'Sales tools, scripts, and ongoing support provided.'],
+        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085Z"/>', 'text' => 'Sales tools, scripts, and ongoing support provided.'],
     ];
 
     $lookingFor = [
@@ -185,6 +185,101 @@
         transform: translateY(-3px);
         box-shadow: 0 20px 45px rgba(0,0,0,0.25);
     }
+
+    /* ─── Referral-point cards — editorial numbering + gradient icon badge,
+         with a scroll-triggered reveal (toggled by the IntersectionObserver
+         script below) instead of just appearing flat on load. ─── */
+    .careers-point-card {
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(22px);
+        transition: opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.22,1,.36,1),
+                    box-shadow .35s ease, border-color .35s ease;
+    }
+    .careers-point-card.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .careers-point-card:hover {
+        transform: translateY(-7px);
+        border-color: rgba(201,168,76,0.4) !important;
+        box-shadow: 0 22px 46px rgba(201,168,76,0.16), 0 6px 18px rgba(21,32,44,0.06);
+    }
+    .careers-point-num {
+        position: absolute;
+        top: 8px; right: 16px;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: rgba(21,32,44,0.055);
+        line-height: 1;
+        user-select: none;
+        pointer-events: none;
+    }
+    .careers-point-icon {
+        background: linear-gradient(155deg, rgba(201,168,76,0.22), rgba(201,168,76,0.06));
+        box-shadow: inset 0 0 0 1px rgba(201,168,76,0.15);
+        transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+    }
+    .careers-point-card:hover .careers-point-icon {
+        transform: scale(1.12) rotate(-6deg);
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .careers-point-card { opacity: 1; transform: none; transition: none; }
+        .careers-point-card:hover .careers-point-icon { transform: none; }
+    }
+
+    /* ─── "What We're Looking For" — dark glass card with decorative
+         gold/teal corner glows, matching the New Project Request modal
+         header treatment elsewhere on the site. ─── */
+    .careers-looking-card {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(155deg, #111D33 0%, #1B2A4A 65%, #1B2A4A 100%);
+    }
+    .careers-looking-glow {
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+        filter: blur(2px);
+    }
+    .careers-looking-glow-1 { top: -46px; right: -46px; width: 160px; height: 160px; background: radial-gradient(circle, rgba(201,168,76,0.32) 0%, transparent 70%); }
+    .careers-looking-glow-2 { bottom: -56px; left: -36px; width: 150px; height: 150px; background: radial-gradient(circle, rgba(42,157,143,0.22) 0%, transparent 70%); }
+    .careers-looking-item {
+        transition: transform .3s cubic-bezier(.22,1,.36,1);
+    }
+    .careers-looking-item:hover {
+        transform: translateX(5px);
+    }
+
+    /* ─── "Express Interest" — elevated to a genuine premium CTA card
+         (gold-tinted border/glow + icon avatar) instead of a plain gray
+         box, so it reads as the section's payoff rather than an
+         afterthought next to the dark card beside it. ─── */
+    .careers-cta-card {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(155deg, #FFFFFF 0%, #FBF7EC 100%);
+        box-shadow: 0 24px 55px rgba(201,168,76,0.14), 0 4px 14px rgba(21,32,44,0.05);
+    }
+    .careers-cta-card::after {
+        content: '';
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 160px; height: 160px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .careers-cta-icon {
+        width: 52px; height: 52px;
+        border-radius: 50%;
+        background: linear-gradient(155deg, #C9A84C 0%, #A8872E 100%);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 10px 24px rgba(201,168,76,0.38);
+        flex-shrink: 0;
+    }
 </style>
 
 {{-- ═══════════════════════════════════════════════════════════════
@@ -269,8 +364,9 @@
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-14">
             @foreach ($referralPoints as $point)
-                <div class="careers-card bg-white border border-gray-200 shadow-sm px-5 py-6 text-center flex flex-col items-center gap-3">
-                    <span class="w-11 h-11 rounded-full bg-gold/10 text-gold-dark flex items-center justify-center shrink-0">
+                <div class="careers-card careers-point-card bg-white border border-gray-200 shadow-sm px-5 py-6 text-center flex flex-col items-center gap-3" style="transition-delay: {{ $loop->index * 70 }}ms;">
+                    <span class="careers-point-num">0{{ $loop->iteration }}</span>
+                    <span class="careers-point-icon w-11 h-11 rounded-full text-gold-dark flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $point['icon'] !!}</svg>
                     </span>
                     <p class="text-sm text-gray-700 leading-snug">{{ $point['text'] }}</p>
@@ -278,12 +374,14 @@
             @endforeach
         </div>
 
-        <div class="grid md:grid-cols-2 gap-8 items-start">
-            <div class="careers-card bg-navy text-white p-8">
-                <h3 class="font-display text-xl font-bold text-gold mb-5">What We're Looking For</h3>
-                <ul class="space-y-4">
+        <div class="grid md:grid-cols-2 gap-8 items-stretch">
+            <div class="careers-card careers-looking-card text-white p-8">
+                <div class="careers-looking-glow careers-looking-glow-1" aria-hidden="true"></div>
+                <div class="careers-looking-glow careers-looking-glow-2" aria-hidden="true"></div>
+                <h3 class="relative font-display text-xl font-bold text-gold mb-5">What We're Looking For</h3>
+                <ul class="relative space-y-4">
                     @foreach ($lookingFor as $item)
-                        <li class="flex items-start gap-3">
+                        <li class="careers-looking-item flex items-start gap-3">
                             <span class="careers-check mt-0.5">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                             </span>
@@ -293,10 +391,15 @@
                 </ul>
             </div>
 
-            <div class="careers-card bg-gray-50 border border-gray-200 p-8 flex flex-col justify-center h-full">
-                <h3 class="font-display text-xl font-bold text-navy mb-2">Express Interest</h3>
-                <p class="text-gray-600 mb-6 leading-relaxed">Ready to help VisionBridge connect with more clients? Reach out and we'll walk you through how the referral partnership works.</p>
-                <a href="mailto:johnny@visionbridgesolutions.com?subject=Sales%2C%20Marketing%20%26%20Referral%20Partner%20Interest" class="btn-gold text-center">
+            <div class="careers-card careers-cta-card border border-gold/25 p-8 flex flex-col justify-center h-full">
+                <div class="relative flex items-center gap-4 mb-4">
+                    <span class="careers-cta-icon">
+                        <svg class="w-6 h-6 text-navy" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    </span>
+                    <h3 class="font-display text-xl font-bold text-navy">Express Interest</h3>
+                </div>
+                <p class="relative text-gray-600 mb-6 leading-relaxed">Ready to help VisionBridge connect with more clients? Reach out and we'll walk you through how the referral partnership works.</p>
+                <a href="mailto:johnny@visionbridgesolutions.com?subject=Sales%2C%20Marketing%20%26%20Referral%20Partner%20Interest" class="relative btn-gold text-center">
                     Email johnny@visionbridgesolutions.com
                 </a>
             </div>
@@ -433,6 +536,36 @@
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && !lightbox.classList.contains('hidden')) close();
     });
+})();
+</script>
+
+<script>
+(function () {
+    var cards = document.querySelectorAll('.careers-point-card');
+    if (!cards.length) return;
+
+    // Reduced-motion visitors get everything visible immediately (the
+    // matching CSS media query above also disables the transition itself).
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        cards.forEach(function (card) { card.classList.add('is-visible'); });
+        return;
+    }
+
+    if (!('IntersectionObserver' in window)) {
+        cards.forEach(function (card) { card.classList.add('is-visible'); });
+        return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+    cards.forEach(function (card) { observer.observe(card); });
 })();
 </script>
 
