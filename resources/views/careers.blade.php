@@ -593,12 +593,12 @@
         return;
     }
 
+    // Toggles both ways (and never unobserves) so scrolling back up past a
+    // section replays its entrance the same way scrolling back down into it
+    // does, instead of a one-time reveal that only ever plays once per visit.
     var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                observer.unobserve(entry.target);
-            }
+            entry.target.classList.toggle('is-visible', entry.isIntersecting);
         });
     }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 
