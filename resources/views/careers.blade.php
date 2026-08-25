@@ -43,24 +43,121 @@
         background: linear-gradient(155deg, #0B0F17 0%, #15202C 55%, #0B0F17 100%);
         position: relative;
         overflow: hidden;
-        padding-top: clamp(120px, 14vw, 160px);
-        padding-bottom: 90px;
+        padding-top: clamp(130px, 15vw, 172px);
+        padding-bottom: 110px;
     }
     #careers-hero::before {
         content: '';
         position: absolute;
-        top: -20%; right: -10%;
-        width: 60%; height: 90%;
-        background: radial-gradient(circle, rgba(201,168,76,0.16) 0%, transparent 70%);
-        filter: blur(40px);
+        top: -25%; right: -12%;
+        width: 62%; height: 95%;
+        background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, transparent 70%);
+        filter: blur(50px);
         pointer-events: none;
     }
+    /* Second ambient glow, teal, opposite corner — same two-tone accent
+       language used elsewhere on the site (footer icosahedron, hero orbs)
+       so this hero doesn't read as a flat single-color wash. */
+    .careers-hero-glow-2 {
+        position: absolute;
+        bottom: -30%; left: -10%;
+        width: 55%; height: 85%;
+        background: radial-gradient(circle, rgba(44,166,164,0.14) 0%, transparent 70%);
+        filter: blur(55px);
+        pointer-events: none;
+    }
+    /* Sparse white dot-grid, same technique as the shared .hero-grid-dots
+       class but recolored for this dark hero (that shared class is tuned
+       for light backgrounds) and faded top/bottom so it reads as ambient
+       depth rather than a hard-edged tile. */
+    .careers-hero-grid {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image: radial-gradient(circle, rgba(255,255,255,.16) 1px, transparent 1px);
+        background-size: 34px 34px;
+        -webkit-mask-image: radial-gradient(ellipse 75% 75% at 50% 40%, #000 0%, transparent 75%);
+        mask-image: radial-gradient(ellipse 75% 75% at 50% 40%, #000 0%, transparent 75%);
+        opacity: .5;
+    }
+    .careers-hero-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .careers-particle {
+        position: absolute;
+        width: 4px; height: 4px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #FFF6DC 0%, rgba(223,192,106,.9) 45%, transparent 75%);
+        filter: drop-shadow(0 0 4px rgba(223,192,106,.85));
+        animation: careers-particle-float 7s ease-in-out infinite;
+    }
+    @keyframes careers-particle-float {
+        0%, 100% { transform: translateY(0) scale(1); opacity: .55; }
+        50%      { transform: translateY(-22px) scale(1.3); opacity: 1; }
+    }
     .careers-badge {
+        position: relative;
         display: inline-flex; align-items: center; gap: 8px;
-        padding: 6px 16px; border-radius: 999px;
+        padding: 7px 18px; border-radius: 999px;
         background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.35);
         color: #DFC06A; font-size: 0.78rem; font-weight: 700;
         text-transform: uppercase; letter-spacing: 0.08em;
+        box-shadow: 0 0 0 1px rgba(201,168,76,0.08), 0 6px 20px rgba(201,168,76,0.15);
+    }
+    .careers-trust-pill {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 8px 16px; border-radius: 999px;
+        background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14);
+        color: rgba(255,255,255,0.78); font-size: 0.82rem; font-weight: 600;
+        backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    }
+    .careers-trust-pill svg { color: #DFC06A; }
+    /* Transparent/light-border variant of the shared .hero-btn-secondary —
+       its default styling is a frosted-white pill meant for light heroes,
+       which would look like a stray white box on this dark background
+       (same reasoning documented on #hero.hero-dark .hero-btn-secondary in
+       layouts/app.blade.php, just scoped here instead of to the homepage). */
+    #careers-hero .hero-btn-secondary {
+        background: transparent;
+        border-color: rgba(255,255,255,.30);
+        color: rgba(255,255,255,.90);
+    }
+    #careers-hero .hero-btn-secondary:hover {
+        border-color: rgba(255,255,255,.55);
+        box-shadow: 0 8px 28px rgba(0,0,0,.35);
+    }
+    @media (hover: hover) and (pointer: fine) {
+        #careers-hero .hero-btn-secondary .hero-btn-fill { background: rgba(255,255,255,.10); }
+    }
+    .careers-scroll-cue {
+        position: absolute;
+        left: 50%; bottom: 28px;
+        transform: translateX(-50%);
+        color: rgba(255,255,255,.35);
+        animation: careers-scroll-bounce 2.2s ease-in-out infinite;
+    }
+    @keyframes careers-scroll-bounce {
+        0%, 100% { transform: translate(-50%, 0); opacity: .35; }
+        50%      { transform: translate(-50%, 8px); opacity: .7; }
+    }
+    /* Staggered fade/slide-up entrance for the hero content — plain CSS
+       (no GSAP dependency, unlike the homepage hero) since this page
+       doesn't load a per-hero animation timeline. */
+    .careers-hero-content > * {
+        opacity: 0;
+        animation: careers-hero-in .7s cubic-bezier(.16,1,.3,1) forwards;
+    }
+    .careers-hero-content > *:nth-child(1) { animation-delay: .05s; }
+    .careers-hero-content > *:nth-child(2) { animation-delay: .15s; }
+    .careers-hero-content > *:nth-child(3) { animation-delay: .25s; }
+    .careers-hero-content > *:nth-child(4) { animation-delay: .35s; }
+    .careers-hero-content > *:nth-child(5) { animation-delay: .45s; }
+    .careers-hero-content > *:nth-child(6) { animation-delay: .55s; }
+    @keyframes careers-hero-in {
+        from { opacity: 0; transform: translateY(18px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .careers-particle, .careers-scroll-cue { animation: none; }
+        .careers-hero-content > * { animation: none; opacity: 1; }
     }
     .careers-card {
         position: relative;
@@ -94,23 +191,65 @@
      HERO
      ═══════════════════════════════════════════════════════════════ --}}
 <section id="careers-hero">
-    <div class="relative max-w-5xl mx-auto px-5 sm:px-8 text-center">
+    <div class="careers-hero-grid" aria-hidden="true"></div>
+    <div class="careers-hero-glow-2" aria-hidden="true"></div>
+    <div class="careers-hero-particles" aria-hidden="true">
+        <span class="careers-particle" style="top:22%; left:10%; animation-delay:0s;"></span>
+        <span class="careers-particle" style="top:68%; left:6%; animation-delay:-2.3s;"></span>
+        <span class="careers-particle" style="top:16%; left:88%; animation-delay:-4.1s;"></span>
+        <span class="careers-particle" style="top:78%; left:82%; animation-delay:-1.2s;"></span>
+        <span class="careers-particle" style="top:45%; left:94%; animation-delay:-3.4s;"></span>
+        <span class="careers-particle" style="top:52%; left:3%; animation-delay:-5.2s;"></span>
+    </div>
+
+    <div class="careers-hero-content relative max-w-5xl mx-auto px-5 sm:px-8 text-center">
         <span class="careers-badge mb-6">
             <span class="live-dot"></span> Now Hiring
         </span>
-        <h1 class="font-display text-4xl md:text-6xl font-extrabold text-white leading-tight mb-5">
+        <h1 class="font-display text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-4">
             Careers at <span class="shimmer-gold">VisionBridge</span>
         </h1>
-        <p class="text-white/70 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+        <p class="text-white/70 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-8">
             Independent contractor and freelance opportunities — help us build websites, expand our reach, and grow alongside the businesses, ministries, and nonprofits we serve.
         </p>
+
+        <div class="flex flex-wrap items-center justify-center gap-3 mb-10">
+            <span class="careers-trust-pill">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                Independent Contractor
+            </span>
+            <span class="careers-trust-pill">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                Remote &amp; Flexible
+            </span>
+            <span class="careers-trust-pill">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V6m0 10v2"/></svg>
+                Commission &amp; Project-Based
+            </span>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-4">
+            <a href="#current-opening" class="hero-btn-primary">
+                <span class="hero-btn-fill" aria-hidden="true"></span>
+                <span class="hero-btn-content">
+                    View Open Position
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </span>
+            </a>
+            <a href="#talent-network" class="hero-btn-secondary">
+                <span class="hero-btn-fill" aria-hidden="true"></span>
+                <span class="hero-btn-content">Join Our Talent Network</span>
+            </a>
+        </div>
     </div>
+
+    <svg class="careers-scroll-cue w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
 </section>
 
 {{-- ═══════════════════════════════════════════════════════════════
      CURRENT OPENING — Sales, Marketing & Referral Partners
      ═══════════════════════════════════════════════════════════════ --}}
-<section class="py-16 md:py-24 bg-white">
+<section id="current-opening" class="py-16 md:py-24 bg-white scroll-mt-20">
     <div class="max-w-6xl mx-auto px-5 sm:px-8">
         <div class="grid lg:grid-cols-[1fr_1.3fr] gap-10 lg:gap-14 items-center mb-14">
             <div class="order-2 lg:order-1 text-center lg:text-left">
@@ -168,7 +307,7 @@
 {{-- ═══════════════════════════════════════════════════════════════
      TALENT NETWORK — Freelance & Contract Opportunities
      ═══════════════════════════════════════════════════════════════ --}}
-<section class="py-16 md:py-24" style="background:#0B0F17;">
+<section id="talent-network" class="py-16 md:py-24 scroll-mt-20" style="background:#0B0F17;">
     <div class="max-w-6xl mx-auto px-5 sm:px-8">
         <div class="grid lg:grid-cols-[1.3fr_1fr] gap-10 lg:gap-14 items-center mb-14">
             <div class="text-center lg:text-left">
