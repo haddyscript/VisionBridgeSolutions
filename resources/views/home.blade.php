@@ -3330,7 +3330,13 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 
         gsap.timeline({
             defaults: { ease: 'power3.out' },
-            scrollTrigger: { trigger: section, start: 'top 75%', toggleActions: TOGGLE },
+            // Unlike the shared TOGGLE constant (which only reverses once
+            // scrolled all the way back above the section), this one
+            // reverses on leaving in EITHER direction and replays on
+            // re-entering from either direction too — per request, this
+            // section's opening should retrigger every time it comes back
+            // into view, not just once per visit.
+            scrollTrigger: { trigger: section, start: 'top 75%', end: 'bottom 25%', toggleActions: 'play reverse play reverse' },
         })
             .fromTo(lines, { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: 'power2.inOut' }, 0)
             .fromTo(corners, { opacity: 0, scale: 0.4 }, { opacity: 0.85, scale: 1, duration: 0.5, stagger: 0.08, ease: 'back.out(2)' }, 0.15)
