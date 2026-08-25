@@ -3335,13 +3335,19 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             // reverses on leaving in EITHER direction and replays on
             // re-entering from either direction too — per request, this
             // section's opening should retrigger every time it comes back
-            // into view, not just once per visit. fastScrollEnd guards
-            // against the known ScrollTrigger edge case where a fast
-            // scroll/flick crosses both the start and end points in the
-            // same tick (firing play then reverse back-to-back) and leaves
-            // the section stuck fully hidden — it forces the state to
-            // resolve correctly instead.
-            scrollTrigger: { trigger: section, start: 'top 75%', end: 'bottom 25%', toggleActions: 'play reverse play reverse', fastScrollEnd: true },
+            // into view, not just once per visit.
+            //
+            // end: 'bottom top' — only counts as "left" once the section
+            // has fully scrolled above the viewport. An earlier attempt
+            // used 'bottom 25%', which fires while the section is still
+            // filling most of the screen, so it reversed itself back to
+            // hidden right as you were looking at it.
+            //
+            // fastScrollEnd guards against a fast scroll/flick crossing
+            // both the start and end points in the same tick (firing play
+            // then reverse back-to-back), which can otherwise leave the
+            // section stuck hidden.
+            scrollTrigger: { trigger: section, start: 'top 75%', end: 'bottom top', toggleActions: 'play reverse play reverse', fastScrollEnd: true },
         })
             .fromTo(lines, { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: 'power2.inOut' }, 0)
             .fromTo(corners, { opacity: 0, scale: 0.4 }, { opacity: 0.85, scale: 1, duration: 0.5, stagger: 0.08, ease: 'back.out(2)' }, 0.15)
