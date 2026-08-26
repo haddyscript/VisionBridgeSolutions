@@ -2406,6 +2406,65 @@
             white-space: nowrap;
         }
         #redesign-intro-label .accent { color: #C9A84C; }
+
+        /* ─── Contact page — opening transition overlay ───
+             Same shape again, restyled to match #contact-dark's own
+             "signal channel" look (contact.blade.php) — identical flat
+             black/diagonal-texture/gold-glow treatment to #redesign-intro
+             above, since both pages share that exact palette. */
+        #contact-intro {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #0A0A0A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        #contact-intro::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background-image: repeating-linear-gradient(135deg, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px, transparent 1px, transparent 14px);
+        }
+        #contact-intro-glow {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: min(620px, 90vw); height: min(620px, 90vw);
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(201,168,76,0.14) 0%, transparent 70%);
+            filter: blur(40px);
+            pointer-events: none;
+        }
+        #contact-intro-content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 0 24px;
+        }
+        #contact-intro-line {
+            width: 64px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #C9A84C, transparent);
+            transform: scaleX(0);
+        }
+        #contact-intro-label {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            font-size: clamp(0.94rem, 3vw, 1.5rem);
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: #FFFFFF;
+            opacity: 0;
+            transform: translateY(10px);
+            text-align: center;
+            white-space: nowrap;
+        }
+        #contact-intro-label .accent { color: #C9A84C; }
     </style>
     {{-- Optional per-page extra <head> tags (e.g. a page-specific display
          font) — empty by default, so this is a no-op on every page that
@@ -2465,6 +2524,20 @@
             </div>
         </div>
         <noscript><style>#redesign-intro { display: none !important; }</style></noscript>
+    @endif
+
+    {{-- Full-screen opening transition — contact page only. Same reasoning
+         as the two overlays above, restyled to match #contact-dark's own
+         "signal channel" black/gold look. --}}
+    @if (request()->routeIs('contact'))
+        <div id="contact-intro" role="presentation" aria-hidden="true">
+            <div id="contact-intro-glow"></div>
+            <div id="contact-intro-content">
+                <div id="contact-intro-line"></div>
+                <p id="contact-intro-label">Opening <span class="accent">Channel</span>...</p>
+            </div>
+        </div>
+        <noscript><style>#contact-intro { display: none !important; }</style></noscript>
     @endif
 
     {{-- Section anchors only exist on the homepage; from other pages, link back home first --}}
@@ -3739,6 +3812,7 @@
         var pageIntros = [
             { overlay: 'careers-intro',  line: 'careers-intro-line',  label: 'careers-intro-label' },
             { overlay: 'redesign-intro', line: 'redesign-intro-line', label: 'redesign-intro-label' },
+            { overlay: 'contact-intro',  line: 'contact-intro-line',  label: 'contact-intro-label' },
         ];
 
         pageIntros.forEach(function (ids) {
