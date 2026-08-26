@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="@if(request()->routeIs('careers', 'website-redesign', 'contact')) intro-locked @endif">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -2291,6 +2291,62 @@
             .portfolio-card, .spotlight-frame { opacity: 1 !important; transform: none !important; filter: none !important; }
         }
 
+        /* ─── Page-opening curtain: hold the real page's own entrance
+             animations at their start frame while a curtain (below) is up ───
+             Without this, a page's own CSS-animated entrance (e.g. the
+             careers hero's staggered fade-up, which starts at parse time
+             on a fixed delay, independent of this curtain) simply finishes
+             — invisibly, hidden behind the opaque curtain — before the
+             curtain has even lifted, so lifting it reveals content that's
+             already fully settled instead of playing its own reveal for
+             real. Scoping to #page-wrapper/#navbar (not a global `*`) is
+             what keeps this from touching the curtains' own elements,
+             which live as siblings of both, outside either one. Toggled by
+             .intro-locked on <html> (set server-side below so it's present
+             from first paint, removed by the shared reveal script the
+             instant a curtain actually starts lifting — see the script
+             further down). */
+        html.intro-locked #page-wrapper *,
+        html.intro-locked #navbar * {
+            animation-play-state: paused !important;
+        }
+
+        /* ─── Shared chrome for the three page-opening curtains below
+             (#careers-intro, #redesign-intro, #contact-intro) — only the
+             background/glow color and label copy differ per page; the
+             bracket-frame + progress-bar around the label is identical, so
+             it's factored out once here instead of tripled. Bracket ticks
+             reuse the same corner-tick technique as .rd-tag/.contact-tag
+             elsewhere on the site, so the curtain reads as this brand's own
+             chrome rather than a generic loader. */
+        .page-intro-frame {
+            position: relative;
+            padding: 14px 30px;
+        }
+        .page-intro-frame::before, .page-intro-frame::after {
+            content: '';
+            position: absolute;
+            top: -1px; bottom: -1px;
+            width: 10px;
+            border-top: 1px solid #C9A84C;
+            border-bottom: 1px solid #C9A84C;
+            opacity: .85;
+        }
+        .page-intro-frame::before { left: 0; border-left: 1px solid #C9A84C; }
+        .page-intro-frame::after  { right: 0; border-right: 1px solid #C9A84C; }
+        .page-intro-bar {
+            width: 130px;
+            height: 2px;
+            background: rgba(255,255,255,.12);
+            overflow: hidden;
+        }
+        .page-intro-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #C9A84C, #DFC06A);
+            box-shadow: 0 0 8px rgba(201,168,76,.65);
+        }
+
         /* ─── Careers page — opening transition overlay ───
              Full-screen curtain shown only on /careers (this route is a
              plain server-rendered view, not an SPA, so "plays once on
@@ -2325,12 +2381,6 @@
             align-items: center;
             gap: 16px;
             padding: 0 24px;
-        }
-        #careers-intro-line {
-            width: 64px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #C9A84C, transparent);
-            transform: scaleX(0);
         }
         #careers-intro-label {
             font-family: 'Orbitron', sans-serif;
@@ -2387,12 +2437,6 @@
             gap: 16px;
             padding: 0 24px;
         }
-        #redesign-intro-line {
-            width: 64px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #C9A84C, transparent);
-            transform: scaleX(0);
-        }
         #redesign-intro-label {
             font-family: 'Orbitron', sans-serif;
             text-transform: uppercase;
@@ -2445,12 +2489,6 @@
             align-items: center;
             gap: 16px;
             padding: 0 24px;
-        }
-        #contact-intro-line {
-            width: 64px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #C9A84C, transparent);
-            transform: scaleX(0);
         }
         #contact-intro-label {
             font-family: 'Orbitron', sans-serif;
@@ -2505,8 +2543,10 @@
         <div id="careers-intro" role="presentation" aria-hidden="true">
             <div id="careers-intro-glow"></div>
             <div id="careers-intro-content">
-                <div id="careers-intro-line"></div>
-                <p id="careers-intro-label">Vision<span>Bridge</span> Solutions</p>
+                <div class="page-intro-frame">
+                    <p id="careers-intro-label">Vision<span>Bridge</span> Solutions</p>
+                </div>
+                <div class="page-intro-bar"><div id="careers-intro-bar" class="page-intro-bar-fill"></div></div>
             </div>
         </div>
         <noscript><style>#careers-intro { display: none !important; }</style></noscript>
@@ -2519,8 +2559,10 @@
         <div id="redesign-intro" role="presentation" aria-hidden="true">
             <div id="redesign-intro-glow"></div>
             <div id="redesign-intro-content">
-                <div id="redesign-intro-line"></div>
-                <p id="redesign-intro-label">Redesign. Rebuild. <span class="accent">Rescue.</span></p>
+                <div class="page-intro-frame">
+                    <p id="redesign-intro-label">Redesign. Rebuild. <span class="accent">Rescue.</span></p>
+                </div>
+                <div class="page-intro-bar"><div id="redesign-intro-bar" class="page-intro-bar-fill"></div></div>
             </div>
         </div>
         <noscript><style>#redesign-intro { display: none !important; }</style></noscript>
@@ -2533,12 +2575,22 @@
         <div id="contact-intro" role="presentation" aria-hidden="true">
             <div id="contact-intro-glow"></div>
             <div id="contact-intro-content">
-                <div id="contact-intro-line"></div>
-                <p id="contact-intro-label">Opening <span class="accent">Channel</span>...</p>
+                <div class="page-intro-frame">
+                    <p id="contact-intro-label">Opening <span class="accent">Channel</span>...</p>
+                </div>
+                <div class="page-intro-bar"><div id="contact-intro-bar" class="page-intro-bar-fill"></div></div>
             </div>
         </div>
         <noscript><style>#contact-intro { display: none !important; }</style></noscript>
     @endif
+
+    {{-- No-JS safety net: with no JS to ever remove .intro-locked (set on
+         <html> above), the page's own entrance animations would otherwise
+         stay paused forever — this releases them immediately regardless. --}}
+    <noscript><style>
+        html.intro-locked #page-wrapper *,
+        html.intro-locked #navbar * { animation-play-state: running !important; }
+    </style></noscript>
 
     {{-- Section anchors only exist on the homepage; from other pages, link back home first --}}
     @php $homeAnchor = request()->routeIs('home') ? '' : route('home'); @endphp
@@ -3810,18 +3862,27 @@
     <script defer>
     (function () {
         var pageIntros = [
-            { overlay: 'careers-intro',  line: 'careers-intro-line',  label: 'careers-intro-label' },
-            { overlay: 'redesign-intro', line: 'redesign-intro-line', label: 'redesign-intro-label' },
-            { overlay: 'contact-intro',  line: 'contact-intro-line',  label: 'contact-intro-label' },
+            { overlay: 'careers-intro',  bar: 'careers-intro-bar',  label: 'careers-intro-label' },
+            { overlay: 'redesign-intro', bar: 'redesign-intro-bar', label: 'redesign-intro-label' },
+            { overlay: 'contact-intro',  bar: 'contact-intro-bar',  label: 'contact-intro-label' },
         ];
 
         pageIntros.forEach(function (ids) {
             var overlay = document.getElementById(ids.overlay);
             if (!overlay) return; // not this page
 
-            var line  = document.getElementById(ids.line);
+            var bar   = document.getElementById(ids.bar);
             var label = document.getElementById(ids.label);
             var revealed = false;
+
+            // Lets the real page's own entrance animations (paused via
+            // .intro-locked, see the <style> block above) start playing —
+            // called right as the curtain BEGINS lifting (not after it
+            // finishes), so the page visibly comes alive as the curtain
+            // dissolves rather than popping in fully-formed once it's gone.
+            function unlockPage() {
+                document.documentElement.classList.remove('intro-locked');
+            }
 
             function finish() {
                 overlay.remove();
@@ -3831,6 +3892,7 @@
             // Skip entirely for visitors who've asked for less motion —
             // no scroll lock, no delay, page is usable immediately.
             if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                unlockPage();
                 finish();
                 return;
             }
@@ -3840,6 +3902,7 @@
             function reveal() {
                 if (revealed) return;
                 revealed = true;
+                unlockPage();
 
                 if (typeof gsap === 'undefined') {
                     overlay.style.transition = 'opacity .45s ease';
@@ -3848,27 +3911,32 @@
                     return;
                 }
 
+                // A soft focus-pull dissolve (fade + gentle scale-up + blur)
+                // rather than a plain opacity fade — reads as the curtain
+                // melting away instead of a hard cut.
                 gsap.to(overlay, {
                     opacity: 0,
-                    scale: 1.04,
-                    duration: 0.55,
+                    scale: 1.05,
+                    filter: 'blur(6px)',
+                    duration: 0.5,
                     ease: 'power2.inOut',
                     onComplete: finish,
                 });
             }
 
-            // Safety net — never trap a visitor behind this overlay even if
-            // GSAP never loads (e.g. the CDN is blocked).
+            // Safety net — never trap a visitor behind this overlay (or its
+            // paused page underneath) even if GSAP never loads.
             setTimeout(reveal, 2600);
 
             function play() {
                 if (revealed) return;
                 if (typeof gsap === 'undefined') { setTimeout(play, 60); return; }
 
+                gsap.set(overlay, { filter: 'blur(0px)' }); // baseline so the exit's blur tween has something to interpolate from
                 gsap.timeline({ onComplete: reveal })
-                    .to(line,  { scaleX: 1, duration: 0.5, ease: 'power3.out' })
-                    .to(label, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.25')
-                    .to({}, { duration: 0.35 }); // brief hold before the reveal fires
+                    .to(label, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' })
+                    .to(bar,   { width: '100%', duration: 0.55, ease: 'power1.inOut' }, '-=0.15')
+                    .to({}, { duration: 0.15 }); // brief hold once the bar fills, before the reveal fires
             }
             play();
         });
