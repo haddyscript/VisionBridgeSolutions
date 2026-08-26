@@ -2290,6 +2290,61 @@
         @media (prefers-reduced-motion: reduce) {
             .portfolio-card, .spotlight-frame { opacity: 1 !important; transform: none !important; filter: none !important; }
         }
+
+        /* ─── Careers page — opening transition overlay ───
+             Full-screen curtain shown only on /careers (this route is a
+             plain server-rendered view, not an SPA, so "plays once on
+             initial load" and "plays on every load of this page" are the
+             same thing — matching the homepage's #intro-overlay convention
+             below). Same dark navy → gold accent language as #careers-hero
+             so the reveal reads as a continuation of that hero rather than
+             an unrelated splash screen. */
+        #careers-intro {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: linear-gradient(155deg, #0B0F17 0%, #15202C 55%, #0B0F17 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        #careers-intro-glow {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: min(620px, 90vw); height: min(620px, 90vw);
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(201,168,76,0.16) 0%, transparent 70%);
+            filter: blur(40px);
+            pointer-events: none;
+        }
+        #careers-intro-content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 0 24px;
+        }
+        #careers-intro-line {
+            width: 64px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #C9A84C, transparent);
+            transform: scaleX(0);
+        }
+        #careers-intro-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(0.68rem, 2.4vw, 0.82rem);
+            font-weight: 700;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.88);
+            opacity: 0;
+            transform: translateY(10px);
+            text-align: center;
+            white-space: nowrap;
+        }
+        #careers-intro-label span { color: #DFC06A; }
     </style>
     {{-- Optional per-page extra <head> tags (e.g. a page-specific display
          font) — empty by default, so this is a no-op on every page that
@@ -2318,6 +2373,23 @@
                 </svg>
             </button>
         </div>
+    @endif
+
+    {{-- Full-screen opening transition — careers page only. The real page
+         content underneath is already fully rendered by the time this
+         fires (no video/GIF to wait on, unlike the homepage intro above),
+         so this only ever covers first paint for ~1.1s before fading into
+         the actual hero. `<noscript>` hides it outright, since with no JS
+         to run the reveal timeline there'd be nothing left to release it. --}}
+    @if (request()->routeIs('careers'))
+        <div id="careers-intro" role="presentation" aria-hidden="true">
+            <div id="careers-intro-glow"></div>
+            <div id="careers-intro-content">
+                <div id="careers-intro-line"></div>
+                <p id="careers-intro-label">Vision<span>Bridge</span> Solutions</p>
+            </div>
+        </div>
+        <noscript><style>#careers-intro { display: none !important; }</style></noscript>
     @endif
 
     {{-- Section anchors only exist on the homepage; from other pages, link back home first --}}
@@ -3574,6 +3646,74 @@
             }
         }
         initIntro();
+    })();
+    </script>
+
+    {{-- Careers page opening transition — full-screen curtain, ~1.1s,
+         GSAP-eased. Falls back to a plain CSS fade if GSAP fails to load,
+         and force-releases after a safety timeout so a slow/broken load can
+         never trap a visitor behind it — same defensive shape as
+         initIntro() above. --}}
+    <script defer>
+    (function () {
+        function initCareersIntro() {
+            var overlay = document.getElementById('careers-intro');
+            if (!overlay) return; // not on the careers page
+
+            var line  = document.getElementById('careers-intro-line');
+            var label = document.getElementById('careers-intro-label');
+            var revealed = false;
+
+            function finish() {
+                overlay.remove();
+                document.body.style.overflow = '';
+            }
+
+            // Skip entirely for visitors who've asked for less motion —
+            // no scroll lock, no delay, page is usable immediately.
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                finish();
+                return;
+            }
+
+            document.body.style.overflow = 'hidden';
+
+            function reveal() {
+                if (revealed) return;
+                revealed = true;
+
+                if (typeof gsap === 'undefined') {
+                    overlay.style.transition = 'opacity .45s ease';
+                    overlay.style.opacity = '0';
+                    setTimeout(finish, 450);
+                    return;
+                }
+
+                gsap.to(overlay, {
+                    opacity: 0,
+                    scale: 1.04,
+                    duration: 0.55,
+                    ease: 'power2.inOut',
+                    onComplete: finish,
+                });
+            }
+
+            // Safety net — never trap a visitor behind this overlay even if
+            // GSAP never loads (e.g. the CDN is blocked).
+            setTimeout(reveal, 2600);
+
+            function play() {
+                if (revealed) return;
+                if (typeof gsap === 'undefined') { setTimeout(play, 60); return; }
+
+                gsap.timeline({ onComplete: reveal })
+                    .to(line,  { scaleX: 1, duration: 0.5, ease: 'power3.out' })
+                    .to(label, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.25')
+                    .to({}, { duration: 0.35 }); // brief hold before the reveal fires
+            }
+            play();
+        }
+        initCareersIntro();
     })();
     </script>
 
