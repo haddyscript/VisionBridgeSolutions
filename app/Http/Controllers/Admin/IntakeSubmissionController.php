@@ -100,13 +100,13 @@ class IntakeSubmissionController extends Controller
             'organization_name' => $validated['organization_name'],
             'organization_type' => $validated['organization_type'] ?? null,
             'mission_statement' => $validated['mission_statement'] ?? null,
-            'vision_statement' => $validated['vision_statement'] ?? null,
-            'contact_name' => $validated['contact_name'],
-            'contact_email' => $validated['contact_email'],
-            'contact_phone' => $validated['contact_phone'] ?? null,
-            'services' => array_values($validated['services'] ?? []),
+            'vision_statement'  => $validated['vision_statement'] ?? null,
+            'contact_name'      => $validated['contact_name'],
+            'contact_email'     => $validated['contact_email'],
+            'contact_phone'     => $validated['contact_phone'] ?? null,
+            'services'          => array_values($validated['services'] ?? []),
             'website_requirements' => $validated['website_requirements'] ?? null,
-            'social_links' => array_filter($validated['social_links'] ?? []),
+            'social_links'      => array_filter($validated['social_links'] ?? []),
         ]);
 
         foreach (self::FILE_FIELDS as $field => $category) {

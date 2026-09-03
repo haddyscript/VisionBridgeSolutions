@@ -99,7 +99,7 @@
 </div>
 
 <div class="mt-6">
-    {{ $requests->links() }}
+    {{ $requests->links('vendor.pagination.portal') }}
 </div>
 
 {{-- Request detail modal — one shared modal populated from the clicked row's data-* attributes --}}
