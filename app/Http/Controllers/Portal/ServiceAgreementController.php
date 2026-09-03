@@ -26,6 +26,15 @@ class ServiceAgreementController extends Controller
         }
 
         if ($project->hasSignedCurrentAgreement()) {
+            // Also true when there's no active template at all — nothing to
+            // sign, so this gate is a no-op. Must advance onboarding_step
+            // past it here, not just redirect: EnsureOnboardingComplete
+            // keeps sending step < 11 straight back to this same page,
+            // which would otherwise loop forever between here and the
+            // dashboard for anyone who reaches this step with no template
+            // configured (or a template that's since been deactivated).
+            $user->update(['onboarding_step' => max($user->onboarding_step ?? 1, 13)]);
+
             return redirect()->route('portal.dashboard');
         }
 
@@ -54,7 +63,8 @@ class ServiceAgreementController extends Controller
 
     public function show(Request $request)
     {
-        $project = $request->user()->projects()->first();
+        $user = $request->user();
+        $project = $user->projects()->first();
 
         // A Care Plan must be selected and agreed to before the Service
         // Agreement can even be shown — it's now the first onboarding step.
@@ -65,7 +75,14 @@ class ServiceAgreementController extends Controller
         $template = ServiceAgreementTemplate::currentActive();
 
         // Nothing to sign, or already signed — don't show the form again.
+        // Same reasoning as summary() above: must advance onboarding_step
+        // past this gate here, or EnsureOnboardingComplete (step < 13 →
+        // this page) and this redirect (→ dashboard) loop forever.
         if (! $template || ($project && $project->hasSignedCurrentAgreement())) {
+            if ($project) {
+                $user->update(['onboarding_step' => max($user->onboarding_step ?? 1, 13)]);
+            }
+
             return redirect()->route('portal.dashboard');
         }
 
