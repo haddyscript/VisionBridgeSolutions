@@ -561,7 +561,7 @@
 
         {{-- Main content --}}
         <div id="portal-main" class="flex-1 md:ml-64 min-w-0 transition-[margin] duration-200">
-            <header class="sticky top-0 z-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 h-16 flex items-center px-4 sm:px-6 lg:px-8 gap-4">
+            <header class="sticky top-0 z-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 border-t-4 border-t-navy dark:border-t-gold h-[4.5rem] flex items-center px-4 sm:px-6 lg:px-8 gap-3 sm:gap-4 lg:gap-6">
                 <button id="sidebar-toggle" class="md:hidden text-gray-500 dark:text-gray-400 hover:text-navy dark:hover:text-white">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -580,7 +580,7 @@
                 {{-- Quick Action --}}
                 <div class="relative hidden md:block" id="quick-action-wrap">
                     <button type="button" id="quick-action-toggle" aria-haspopup="true" aria-expanded="false"
-                            class="inline-flex items-center gap-1.5 h-9 pl-3 pr-2.5 rounded-lg bg-gold hover:bg-gold-dark text-navy text-sm font-semibold transition-colors">
+                            class="inline-flex items-center gap-1.5 h-9 pl-3 pr-2.5 rounded-full bg-gold hover:bg-gold-dark text-navy text-sm font-semibold transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                         Quick Action
                         <svg id="quick-action-chevron" class="w-3.5 h-3.5 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
@@ -626,7 +626,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
                     </svg>
                     <input type="text" id="portal-search-input" placeholder="Search your files, payments..." autocomplete="off"
-                           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 pl-9 pr-12 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
+                           class="w-full rounded-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 pl-9 pr-12 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                     <kbd id="portal-search-shortcut-hint" class="hidden lg:inline-flex absolute right-2.5 top-1/2 -translate-y-1/2 items-center px-1.5 py-0.5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-[0.65rem] font-semibold text-gray-400 dark:text-gray-500 pointer-events-none">⌘K</kbd>
 
                     <div id="portal-search-results" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-30 max-h-96 overflow-y-auto"></div>
@@ -650,7 +650,7 @@
                      count and is kept in sync with it by the same mark-read
                      script in portal/chat.blade.php. --}}
                 <a href="{{ route('portal.chat.show') }}" data-tooltip="Chat" aria-label="Chat"
-                   class="chat-nav-icon-btn relative w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/60 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-800 {{ request()->routeIs('portal.chat.*') ? 'bg-gold text-navy-dark shadow-sm hover:shadow-[0_4px_16px_rgba(201,168,76,0.55)] hover:scale-105' : 'bg-gold/10 text-gold-dark hover:bg-gold/20 hover:scale-110 hover:shadow-[0_4px_14px_rgba(201,168,76,0.4)]' }}">
+                   class="chat-nav-icon-btn relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/60 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-800 {{ request()->routeIs('portal.chat.*') ? 'bg-gold text-navy-dark shadow-sm hover:shadow-[0_4px_16px_rgba(201,168,76,0.55)] hover:scale-105' : 'bg-gold/10 text-gold-dark hover:bg-gold/20 hover:scale-110 hover:shadow-[0_4px_14px_rgba(201,168,76,0.4)]' }}">
                     <svg class="chat-nav-icon-svg w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                     </svg>
@@ -663,7 +663,7 @@
                 </a>
 
                 <a href="{{ route('portal.faq') }}" data-tooltip="Help &amp; Support" aria-label="Help &amp; Support"
-                   class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                   class="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/60 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -675,7 +675,7 @@
                      (same icon already used for "Open" links elsewhere, e.g.
                      the admin project page's Preview URL). --}}
                 <a href="https://visionbridgesolutions.com" target="_blank" rel="noopener noreferrer" data-tooltip="Visit VisionBridgeSolutions.com (opens in a new tab)" aria-label="Visit VisionBridgeSolutions.com (opens in a new tab)"
-                   class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                   class="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/60 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                     </svg>
@@ -683,7 +683,7 @@
 
                 <div class="relative">
                     <button id="notification-bell-toggle" type="button" data-tooltip="Notifications" aria-label="Notifications" aria-haspopup="true" aria-expanded="false" data-tour="notification-bell"
-                            class="relative w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            class="relative w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/60 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                         </svg>
