@@ -41,6 +41,16 @@ return [
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
     ],
 
+    // Testing-only bypass for the Care Plan "save card" onboarding step —
+    // see Portal\CarePlanPaymentMethodController::skip(). Unset (the
+    // default) disables the bypass entirely, in every environment
+    // including production. Set it to a long random value in .env only on
+    // whichever environment needs to test onboarding without a real card,
+    // and never commit a real value.
+    'dev_bypass' => [
+        'token' => env('DEV_BYPASS_TOKEN'),
+    ],
+
     'gemini' => [
         'key' => env('GEMINI_API_KEY'),
         'model' => env('GEMINI_MODEL', 'gemini-2.5-flash'),

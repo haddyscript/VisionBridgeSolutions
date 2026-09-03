@@ -176,6 +176,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/portal/care-plan-payment-method', [PortalCarePlanPaymentMethodController::class, 'show'])->name('portal.care-plan-payment-method.show');
     Route::post('/portal/care-plan-payment-method/confirm', [PortalCarePlanPaymentMethodController::class, 'confirm'])->name('portal.care-plan-payment-method.confirm');
+    Route::post('/portal/care-plan-payment-method/skip', [PortalCarePlanPaymentMethodController::class, 'skip'])->name('portal.care-plan-payment-method.skip');
 
     Route::get('/portal/onboarding/complete', [PortalOnboardingCompleteController::class, 'show'])->name('portal.onboarding.complete');
 

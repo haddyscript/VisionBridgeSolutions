@@ -39,6 +39,20 @@
             <p class="text-xs text-gray-400 dark:text-gray-500 mt-6">
                 Payments are processed securely by Stripe. Your card details never touch our servers.
             </p>
+
+            @if ($devBypassToken)
+                {{-- Testing-only bypass — only rendered when the correct
+                     DEV_BYPASS_TOKEN is already on the URL's query string
+                     (see CarePlanPaymentMethodController::skip()). Never
+                     visible otherwise, in any environment. --}}
+                <form method="POST" action="{{ route('portal.care-plan-payment-method.skip') }}" class="mt-3 pt-3 border-t border-dashed border-gray-200 dark:border-gray-700">
+                    @csrf
+                    <input type="hidden" name="token" value="{{ $devBypassToken }}">
+                    <button type="submit" class="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors">
+                        ⚠ Skip — save no card (testing bypass)
+                    </button>
+                </form>
+            @endif
         </div>
 
         <div class="lg:col-span-1">
