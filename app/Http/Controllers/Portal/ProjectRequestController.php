@@ -11,8 +11,25 @@ class ProjectRequestController extends Controller
 {
     public function show(Request $request)
     {
+        $sortable = ['title', 'status', 'created_at'];
+        $sort = in_array($request->query('sort'), $sortable, true) ? $request->query('sort') : 'created_at';
+        $direction = $request->query('direction') === 'asc' ? 'asc' : 'desc';
+        $search = trim((string) $request->query('search', ''));
+
+        $requests = $request->user()->projectRequests()
+            ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            }))
+            ->orderBy($sort, $direction)
+            ->paginate(8)
+            ->withQueryString();
+
         return view('portal.project-request', [
-            'requests' => $request->user()->projectRequests()->latest()->paginate(8),
+            'requests' => $requests,
+            'sort' => $sort,
+            'direction' => $direction,
+            'search' => $search,
         ]);
     }
 

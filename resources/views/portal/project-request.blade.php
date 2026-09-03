@@ -61,41 +61,92 @@
 
 @php
     $requestStatusMeta = [
-        'converted' => ['label' => 'Converted', 'pill' => 'bg-teal/10 text-teal-dark', 'dot' => 'bg-teal'],
-        'declined' => ['label' => 'Declined', 'pill' => 'bg-red-50 text-red-500', 'dot' => 'bg-red-400'],
+        'converted' => ['label' => 'Converted', 'pill' => 'bg-teal/10 text-teal-dark', 'dot' => 'bg-teal', 'icon' => 'M5 13l4 4L19 7'],
+        'declined' => ['label' => 'Declined', 'pill' => 'bg-red-50 text-red-500', 'dot' => 'bg-red-400', 'icon' => 'M6 18L18 6M6 6l12 12'],
     ];
+    $defaultStatusMeta = ['pill' => 'bg-gold/15 text-gold-dark', 'dot' => 'bg-gold', 'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'];
+
+    $sortLink = fn (string $column) => route('portal.project-requests.show', array_filter([
+        'search' => $search !== '' ? $search : null,
+        'sort' => $column,
+        'direction' => $sort === $column && $direction === 'asc' ? 'desc' : 'asc',
+    ]));
+    $sortIndicator = fn (string $column) => $sort !== $column ? '' : ($direction === 'asc' ? '↑' : '↓');
 @endphp
 
 <h3 class="font-semibold text-navy dark:text-white mb-3">Your Requests</h3>
-<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
-    @forelse ($requests as $item)
-        @php $meta = $requestStatusMeta[$item->status] ?? ['label' => \App\Models\ProjectRequest::STATUSES[$item->status] ?? $item->status, 'pill' => 'bg-gold/15 text-gold-dark', 'dot' => 'bg-gold']; @endphp
-        <button type="button" class="request-row w-full flex items-center gap-4 px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-colors"
-                data-title="{{ $item->title }}"
-                data-description="{{ $item->description }}"
-                data-status-label="{{ $meta['label'] }}"
-                data-status-pill="{{ $meta['pill'] }}"
-                data-date="{{ $item->created_at->format('M j, Y') }}"
-                data-attachment-url="{{ $item->attachment_path ? $item->attachmentUrl() : '' }}"
-                data-attachment-name="{{ $item->attachment_original_name }}">
-            <span class="w-2 h-2 rounded-full shrink-0 {{ $meta['dot'] }}"></span>
-            <span class="min-w-0 flex-1">
-                <span class="block text-sm font-semibold text-navy dark:text-white truncate">{{ $item->title }}</span>
-                <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">Submitted {{ $item->created_at->format('M j, Y') }}</span>
-            </span>
-            <span class="shrink-0 text-xs font-semibold uppercase tracking-wide px-2.5 py-0.5 rounded-full {{ $meta['pill'] }}">
-                {{ $meta['label'] }}
-            </span>
-            <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        </button>
-    @empty
-        <div class="text-center py-12">
-            <div class="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
-                <svg class="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="p-4 border-b border-gray-100 dark:border-gray-700">
+        <form method="GET" action="{{ route('portal.project-requests.show') }}" id="request-search-form">
+            <input type="hidden" name="sort" value="{{ $sort }}">
+            <input type="hidden" name="direction" value="{{ $direction }}">
+            <div class="relative">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
+                </svg>
+                <input type="text" name="search" id="request-search-input" value="{{ $search }}" placeholder="Search by title or description..."
+                       class="w-full rounded-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:text-white">
             </div>
-            <p class="text-sm text-gray-400 dark:text-gray-500">No project requests yet.</p>
-        </div>
-    @endforelse
+        </form>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b border-gray-100 dark:border-gray-700">
+                    <th class="text-left font-semibold text-gray-500 dark:text-gray-400 px-6 py-3 whitespace-nowrap">
+                        <a href="{{ $sortLink('title') }}" class="inline-flex items-center gap-1 hover:text-navy dark:hover:text-white transition-colors">Request <span class="text-gold-dark">{{ $sortIndicator('title') }}</span></a>
+                    </th>
+                    <th class="text-left font-semibold text-gray-500 dark:text-gray-400 px-6 py-3 whitespace-nowrap">
+                        <a href="{{ $sortLink('status') }}" class="inline-flex items-center gap-1 hover:text-navy dark:hover:text-white transition-colors">Status <span class="text-gold-dark">{{ $sortIndicator('status') }}</span></a>
+                    </th>
+                    <th class="text-left font-semibold text-gray-500 dark:text-gray-400 px-6 py-3 whitespace-nowrap">
+                        <a href="{{ $sortLink('created_at') }}" class="inline-flex items-center gap-1 hover:text-navy dark:hover:text-white transition-colors">Submitted <span class="text-gold-dark">{{ $sortIndicator('created_at') }}</span></a>
+                    </th>
+                    <th class="text-right font-semibold text-gray-500 dark:text-gray-400 px-6 py-3 whitespace-nowrap">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                @forelse ($requests as $item)
+                    @php $meta = array_merge($defaultStatusMeta, $requestStatusMeta[$item->status] ?? ['label' => \App\Models\ProjectRequest::STATUSES[$item->status] ?? $item->status]); @endphp
+                    <tr class="request-row hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-colors"
+                        data-title="{{ $item->title }}"
+                        data-description="{{ $item->description }}"
+                        data-status-label="{{ $meta['label'] }}"
+                        data-status-pill="{{ $meta['pill'] }}"
+                        data-date="{{ $item->created_at->format('M j, Y') }}"
+                        data-attachment-url="{{ $item->attachment_path ? $item->attachmentUrl() : '' }}"
+                        data-attachment-name="{{ $item->attachment_original_name }}">
+                        <td class="px-6 py-4">
+                            <span class="flex items-center gap-2 min-w-0">
+                                <span class="w-2 h-2 rounded-full shrink-0 {{ $meta['dot'] }}"></span>
+                                <span class="font-semibold text-navy dark:text-white truncate max-w-xs">{{ $item->title }}</span>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-2.5 py-0.5 rounded-full whitespace-nowrap {{ $meta['pill'] }}">
+                                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="{{ $meta['icon'] }}"/></svg>
+                                {{ $meta['label'] }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $item->created_at->format('M j, Y') }}</td>
+                        <td class="px-6 py-4 text-right">
+                            <button type="button" class="request-view-btn text-xs font-semibold text-gold-dark hover:underline">View</button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="text-center py-12">
+                            <div class="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                            </div>
+                            <p class="text-sm text-gray-400 dark:text-gray-500">{{ $search !== '' ? 'No requests match your search.' : 'No project requests yet.' }}</p>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <div class="mt-6">
@@ -142,8 +193,8 @@
     const descriptionEl = document.getElementById('request-modal-description');
     const attachmentEl = document.getElementById('request-modal-attachment');
     const attachmentNameEl = document.getElementById('request-modal-attachment-name');
-    const rows = document.querySelectorAll('.request-row');
-    if (!modal || !rows.length) return;
+    const viewButtons = document.querySelectorAll('.request-view-btn');
+    if (!modal || !viewButtons.length) return;
 
     function openModal(row) {
         titleEl.textContent = row.dataset.title;
@@ -180,11 +231,23 @@
         }, 200);
     }
 
-    rows.forEach((row) => row.addEventListener('click', () => openModal(row)));
+    viewButtons.forEach((btn) => btn.addEventListener('click', () => openModal(btn.closest('.request-row'))));
     document.getElementById('request-modal-close').addEventListener('click', closeModal);
     backdrop.addEventListener('click', closeModal);
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+    });
+})();
+
+(function () {
+    const form = document.getElementById('request-search-form');
+    const input = document.getElementById('request-search-input');
+    if (!form || !input) return;
+
+    let debounceTimer;
+    input.addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => form.submit(), 400);
     });
 })();
 </script>
