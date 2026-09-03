@@ -196,6 +196,7 @@
             <nav class="flex-1 overflow-y-auto gold-scrollbar py-5 px-3 space-y-0.5">
                 <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mb-2">Client Portal</p>
                 <a href="{{ route('portal.dashboard') }}" data-tour="overview"
+                   @if (request()->routeIs('portal.dashboard')) aria-current="page" @endif
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.dashboard') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -206,6 +207,7 @@
                     @endif
                 </a>
                 <a href="{{ route('portal.milestones.index') }}"
+                   @if (request()->routeIs('portal.milestones.*')) aria-current="page" @endif
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.milestones.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
@@ -221,6 +223,7 @@
                      sidebar doesn't read as just another plain link a
                      client could easily scroll past. --}}
                 <a href="{{ route('portal.chat.show') }}"
+                   @if (request()->routeIs('portal.chat.*')) aria-current="page" @endif
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 {{ request()->routeIs('portal.chat.*') ? 'bg-gold text-navy-dark shadow-sm' : 'bg-gold/10 text-gold hover:bg-gold/20' }}">
                     <span class="relative shrink-0 flex items-center justify-center">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -234,6 +237,7 @@
                     @endif
                 </a>
                 <a href="{{ route('portal.documents.index') }}" data-tour="documents"
+                   @if (request()->routeIs('portal.documents.*')) aria-current="page" @endif
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.documents.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -241,6 +245,7 @@
                     Documents
                 </a>
                 <a href="{{ route('portal.project-requests.show') }}"
+                   @if (request()->routeIs('portal.project-requests.*')) aria-current="page" @endif
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.project-requests.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -248,6 +253,7 @@
                     Request a New Project
                 </a>
                 <a href="{{ route('portal.consultation.create') }}" data-tour="consultation"
+                   @if (request()->routeIs('portal.consultation.*')) aria-current="page" @endif
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.consultation.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -258,6 +264,7 @@
                     @endif
                 </a>
                 <a href="{{ route('portal.support-tickets.index') }}"
+                   @if (request()->routeIs('portal.support-tickets.*')) aria-current="page" @endif
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.support-tickets.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -267,6 +274,7 @@
 
                 <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mt-5 mb-2">Project Files</p>
                 <a href="{{ route('portal.category', 'image') }}" data-tour="files"
+                   @if (request()->routeIs('portal.category') && in_array(request()->route('category'), $fileCategories, true)) aria-current="page" @endif
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.category') && in_array(request()->route('category'), $fileCategories, true) ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -277,6 +285,7 @@
                 <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mt-5 mb-2">Content &amp; Revisions</p>
                 @foreach (['content' => 'Website Content', 'revision' => 'Revisions'] as $cat => $label)
                     <a href="{{ route('portal.category', $cat) }}" {{ $cat === 'content' ? 'data-tour=content-revisions' : '' }}
+                       @if (request()->routeIs('portal.category') && request()->route('category') === $cat) aria-current="page" @endif
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.category') && request()->route('category') === $cat ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $categoryIcons[$cat] }}"/>
@@ -287,6 +296,7 @@
 
                 <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mt-5 mb-2">Billing</p>
                 <a href="{{ route('portal.payments.index') }}" data-tour="payments"
+                   @if (request()->routeIs('portal.payments.*')) aria-current="page" @endif
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.payments.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h5M5 6h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"/>
@@ -299,6 +309,7 @@
 
                 <p class="px-3 text-[0.65rem] font-semibold uppercase tracking-widest text-white/30 mt-5 mb-2">Account</p>
                 <a href="{{ route('portal.account.index') }}"
+                   @if (request()->routeIs('portal.account.*')) aria-current="page" @endif
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.account.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -306,6 +317,7 @@
                     Account Settings
                 </a>
                 <a href="{{ route('portal.announcements.index') }}"
+                   @if (request()->routeIs('portal.announcements.*')) aria-current="page" @endif
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.announcements.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
@@ -316,6 +328,7 @@
                     @endif
                 </a>
                 <a href="{{ route('portal.faq') }}" data-tour="faq"
+                   @if (request()->routeIs('portal.faq')) aria-current="page" @endif
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.faq') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -455,10 +468,13 @@
                 });
 
                 // The sidebar resets to the top on every full page reload — bring
-                // the active nav item (uniquely marked with `text-gold`) into view
-                // by centering it within the scrollable nav.
+                // the active nav item into view by centering it within the
+                // scrollable nav. Match on aria-current, not on `text-gold`:
+                // the Chat link keeps a permanent gold-tinted pill even when
+                // it isn't the active page, so a `.text-gold` selector always
+                // matched Chat (near the top) instead of the true active item.
                 const nav = document.querySelector('#portal-sidebar nav');
-                const active = nav?.querySelector('a.text-gold');
+                const active = nav?.querySelector('a[aria-current="page"]');
                 if (nav && active) {
                     const navRect = nav.getBoundingClientRect();
                     const aRect = active.getBoundingClientRect();
