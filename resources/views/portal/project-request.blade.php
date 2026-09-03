@@ -131,7 +131,7 @@
                         </td>
                         <td class="px-6 py-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $item->created_at->format('M j, Y') }}</td>
                         <td class="px-6 py-4 text-right">
-                            <button type="button" class="request-view-btn text-xs font-semibold text-gold-dark hover:underline">View</button>
+                            <button type="button" class="request-view-btn inline-flex items-center justify-center px-4 py-1.5 rounded-full border border-gray-300 dark:border-gray-600 text-xs font-bold text-navy dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700/60 transition-colors">View</button>
                         </td>
                     </tr>
                 @empty
