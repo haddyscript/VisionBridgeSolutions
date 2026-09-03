@@ -1362,6 +1362,18 @@
                 const form = e.target;
                 if (form.tagName !== 'FORM' || form.dataset.noLoadingOverlay !== undefined) return;
 
+                // A data-confirm form's first submit is always intercepted
+                // and canceled by bindConfirmForms (see the confirm-modal
+                // script above) so its custom "Are you sure?" dialog can
+                // show instead of submitting yet — showing this overlay on
+                // that first submit would cover the dialog with a
+                // higher-z-index, blurred layer the user can't click
+                // through, leaving them stuck. Only show it once the
+                // dialog's been accepted and the form is genuinely
+                // resubmitting (bindConfirmForms sets confirmAccepted right
+                // before calling requestSubmit()).
+                if (form.dataset.confirm !== undefined && form.dataset.confirmAccepted === undefined) return;
+
                 showOverlay();
             }, true);
 
