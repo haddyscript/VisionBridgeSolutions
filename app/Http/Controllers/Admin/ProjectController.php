@@ -124,7 +124,7 @@ class ProjectController extends Controller
             $depositPayment = $project->payments()->create([
                 'description' => 'Initial 50% Project Deposit',
                 'kind' => 'deposit',
-                'amount' => (int) round($project->total_price / 2),
+                'amount' => (int) round($project->discountedTotalPrice() / 2),
             ]);
 
             Mail::to($project->user->email)->send(new ProjectQuoteReadyMail($project, $depositPayment));

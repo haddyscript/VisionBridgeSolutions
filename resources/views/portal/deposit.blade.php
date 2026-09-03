@@ -72,6 +72,16 @@
                         <span class="text-sm font-semibold text-navy dark:text-white">{{ $project->formattedTotalPrice() }}</span>
                     </div>
                 @endif
+                @if ($project->discount_percent)
+                    <div class="flex items-center justify-between px-5 py-3.5">
+                        <span class="text-sm text-gray-500 dark:text-gray-400">Discount ({{ rtrim(rtrim(number_format($project->discount_percent, 2), '0'), '.') }}%)</span>
+                        <span class="text-sm font-semibold text-teal-dark">-{{ '$'.number_format(($project->total_price - $project->discountedTotalPrice()) / 100, 2) }}</span>
+                    </div>
+                    <div class="flex items-center justify-between px-5 py-3.5">
+                        <span class="text-sm text-gray-500 dark:text-gray-400">Total After Discount</span>
+                        <span class="text-sm font-semibold text-navy dark:text-white">{{ $project->formattedDiscountedTotalPrice() }}</span>
+                    </div>
+                @endif
                 <div class="flex items-center justify-between px-5 py-4 bg-gold/5">
                     <div>
                         <span class="text-sm font-bold text-navy dark:text-white">Due Now — {{ $deposit->description }}</span>
@@ -82,7 +92,7 @@
                 @if ($project->total_price)
                     <div class="flex items-center justify-between px-5 py-3.5">
                         <span class="text-sm text-gray-400 dark:text-gray-500">Due at Completion</span>
-                        <span class="text-sm font-medium text-gray-400 dark:text-gray-500">{{ '$'.number_format(($project->total_price - $deposit->amount) / 100, 2) }}</span>
+                        <span class="text-sm font-medium text-gray-400 dark:text-gray-500">{{ '$'.number_format(($project->discountedTotalPrice() - $deposit->amount) / 100, 2) }}</span>
                     </div>
                 @endif
             </div>
@@ -92,7 +102,7 @@
                 <input type="hidden" name="timezone" class="js-timezone-field">
                 <button type="submit"
                         class="w-full inline-flex items-center justify-center gap-2 bg-gold hover:bg-gold-dark text-navy font-bold text-base py-3.5 rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg">
-                    Pay Deposit Now — {{ $deposit->formattedAmount() }}
+                    {{ $deposit->amount > 0 ? 'Pay Deposit Now — '.$deposit->formattedAmount() : 'Continue — No Payment Due' }}
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </button>
             </form>

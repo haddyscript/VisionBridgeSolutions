@@ -32,7 +32,7 @@ class ProjectReviewController extends Controller
             $finalPayment = $project->payments()->create([
                 'description' => 'Final 50% Project Payment',
                 'kind' => 'final',
-                'amount' => max(0, $project->total_price - $depositAmount),
+                'amount' => max(0, $project->discountedTotalPrice() - $depositAmount),
             ]);
         }
 

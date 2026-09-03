@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\StripeWebhookController;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Stripe\Stripe;
@@ -39,6 +40,24 @@ class PaymentController extends Controller
 
         if (! empty($validated['timezone'])) {
             $payment->update(['timezone' => $validated['timezone']]);
+        }
+
+        // A 100% project discount can bring a deposit/final payment to
+        // $0 — Stripe's PaymentIntent API refuses to process a zero-amount
+        // charge, so there's nothing to actually collect. Mark it paid
+        // directly and reuse the same post-payment side effects (admin
+        // notice, onboarding advance) a real Stripe payment would trigger,
+        // instead of sending the client to a checkout page that would fail
+        // the moment it tried to create a PaymentIntent.
+        if ($payment->amount <= 0) {
+            $payment->update(['status' => 'paid', 'paid_at' => now()]);
+
+            $webhookController = app(StripeWebhookController::class);
+            $webhookController->notifyAdminOfPayment($payment);
+            $webhookController->maybeAdvanceOnboardingAfterDeposit($payment);
+
+            return redirect()->route('portal.payments.index')
+                ->with('status', 'No payment due — this was fully covered by your discount.');
         }
 
         Stripe::setApiKey(config('services.stripe.secret'));

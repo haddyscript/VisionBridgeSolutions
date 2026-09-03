@@ -174,7 +174,7 @@ class StripeWebhookController extends Controller
      * Completed" action, which now owns that decision along with activating
      * Care Plan billing.)
      */
-    private function maybeAdvanceOnboardingAfterDeposit(Payment $payment): void
+    public function maybeAdvanceOnboardingAfterDeposit(Payment $payment): void
     {
         if (! $payment->isDeposit() || ! $payment->isPaid()) {
             return;
@@ -244,7 +244,7 @@ class StripeWebhookController extends Controller
         })->afterResponse();
     }
 
-    private function notifyAdminOfPayment(Payment $payment): void
+    public function notifyAdminOfPayment(Payment $payment): void
     {
         dispatch(function () use ($payment) {
             Mail::to(config('mail.billing_address'))->send(new AdminPaymentNotificationMail(
