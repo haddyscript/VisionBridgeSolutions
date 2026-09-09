@@ -207,21 +207,42 @@ class ProjectRequest extends Model
     }
 
     /**
-     * HTML-escaped text with any URL or bare domain turned into a clickable
-     * link. Escapes first, then wraps matches found in the already-escaped
-     * text — so an href built from it can never carry unescaped markup.
-     * Displayed text stays exactly as typed; only the href gets a scheme
-     * added for a bare domain.
+     * Bolds a leading "Label:" at the very start of a line — e.g. "Important:"
+     * or "Portal Description:" — so these read as headers instead of blending
+     * into the paragraph. Requires the whole run before the colon to be 1-5
+     * Capitalized words with nothing else (so it can't fire mid-sentence, on
+     * a URL's "https:", or on a clock time like "10:30"), and the colon must
+     * be followed by whitespace or the end of the line. Operates on
+     * already-escaped text, since $1 is inserted verbatim into HTML.
+     */
+    private static function boldLabels(string $escapedText): string
+    {
+        return preg_replace(
+            '/^([A-Z][A-Za-z]*(?:[ \t]+[A-Z][A-Za-z]*){0,4}:)(?=[ \t]|$)/m',
+            '<strong>$1</strong>',
+            $escapedText
+        );
+    }
+
+    /**
+     * HTML-escaped text with a leading "Label:" bolded (see boldLabels())
+     * and any URL or bare domain turned into a clickable link. Escapes
+     * first, then wraps matches found in the already-escaped text — so an
+     * href built from it can never carry unescaped markup. Displayed text
+     * stays exactly as typed; only the href gets a scheme added for a bare
+     * domain.
      */
     private static function linkify(string $text): string
     {
+        $html = self::boldLabels(e($text));
+
         return preg_replace_callback(self::linkPattern(), function ($match) {
             $url = rtrim($match[0], ".,;:!?)]}");
             $trailing = substr($match[0], strlen($url));
             $href = self::normalizeUrl($url);
 
             return '<a href="'.$href.'" target="_blank" rel="noopener" class="text-gold-dark hover:underline break-all">'.$url.'</a>'.$trailing;
-        }, e($text));
+        }, $html);
     }
 
     /** Sign-offs recognized as the start of a trailing closing/signature block — see splitClosing(). */
