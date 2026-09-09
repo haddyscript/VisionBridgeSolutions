@@ -143,4 +143,41 @@ class ProjectRequest extends Model
     {
         return $this->estimated_value !== null ? '$'.number_format($this->estimated_value / 100, 2) : null;
     }
+
+    /** Matches raw URLs inside plain-text `description` so they can be linkified and compiled into a "Links" list on the admin show page. */
+    private const URL_PATTERN = '/https?:\/\/[^\s<]+/i';
+
+    /** Every URL found in the description, de-duplicated and stripped of trailing sentence punctuation (e.g. a link followed by a period). */
+    public function descriptionUrls(): array
+    {
+        if (! $this->description) {
+            return [];
+        }
+
+        preg_match_all(self::URL_PATTERN, $this->description, $matches);
+
+        return array_values(array_unique(array_map(
+            fn ($url) => rtrim($url, ".,;:!?)]}"),
+            $matches[0]
+        )));
+    }
+
+    /**
+     * HTML-escaped description with any URLs turned into clickable links.
+     * Escapes first, then wraps matches found in the already-escaped text —
+     * so an href built from it can never carry unescaped markup.
+     */
+    public function descriptionHtml(): string
+    {
+        if (! $this->description) {
+            return '';
+        }
+
+        return preg_replace_callback(self::URL_PATTERN, function ($match) {
+            $url = rtrim($match[0], ".,;:!?)]}");
+            $trailing = substr($match[0], strlen($url));
+
+            return '<a href="'.$url.'" target="_blank" rel="noopener" class="text-gold-dark hover:underline break-all">'.$url.'</a>'.$trailing;
+        }, e($this->description));
+    }
 }
