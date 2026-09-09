@@ -207,24 +207,81 @@ class ProjectRequest extends Model
     }
 
     /**
-     * HTML-escaped description with any URL or bare domain turned into a
-     * clickable link. Escapes first, then wraps matches found in the
-     * already-escaped text — so an href built from it can never carry
-     * unescaped markup. Displayed text stays exactly as typed; only the
-     * href gets a scheme added for a bare domain.
+     * HTML-escaped text with any URL or bare domain turned into a clickable
+     * link. Escapes first, then wraps matches found in the already-escaped
+     * text — so an href built from it can never carry unescaped markup.
+     * Displayed text stays exactly as typed; only the href gets a scheme
+     * added for a bare domain.
      */
-    public function descriptionHtml(): string
+    private static function linkify(string $text): string
     {
-        if (! $this->description) {
-            return '';
-        }
-
         return preg_replace_callback(self::linkPattern(), function ($match) {
             $url = rtrim($match[0], ".,;:!?)]}");
             $trailing = substr($match[0], strlen($url));
             $href = self::normalizeUrl($url);
 
             return '<a href="'.$href.'" target="_blank" rel="noopener" class="text-gold-dark hover:underline break-all">'.$url.'</a>'.$trailing;
-        }, e($this->description));
+        }, e($text));
+    }
+
+    /** Sign-offs recognized as the start of a trailing closing/signature block — see splitClosing(). */
+    private const CLOSING_PHRASES = [
+        'thank you', 'thanks', 'thanks again', 'many thanks',
+        'best', 'best regards', 'kind regards', 'warm regards', 'warmly', 'regards',
+        'sincerely', 'yours sincerely', 'yours truly', 'respectfully', 'cheers',
+    ];
+
+    /**
+     * Splits the description into [main body, trailing closing/signature
+     * block] — e.g. a "Thank you," / name / title / company sign-off — so
+     * the admin show page can style the signature distinctly instead of it
+     * blending into the paragraph. Detection: the LAST line that consists
+     * of nothing but one of CLOSING_PHRASES (comma/period optional) marks
+     * where the signature starts; everything from there to the end (name,
+     * title, company on their own lines) goes with it. A line merely
+     * *containing* one of these phrases mid-sentence ("Thanks, that sounds
+     * good") doesn't match, since the whole line has to reduce to just the
+     * phrase once trailing punctuation is stripped.
+     */
+    private function splitClosing(): array
+    {
+        if (! $this->description) {
+            return ['', ''];
+        }
+
+        $lines = preg_split('/\R/', $this->description);
+        $closingIndex = null;
+
+        foreach ($lines as $index => $line) {
+            $normalized = strtolower(trim($line, " \t,."));
+            if (in_array($normalized, self::CLOSING_PHRASES, true)) {
+                $closingIndex = $index;
+            }
+        }
+
+        if ($closingIndex === null) {
+            return [$this->description, ''];
+        }
+
+        return [
+            rtrim(implode("\n", array_slice($lines, 0, $closingIndex))),
+            implode("\n", array_slice($lines, $closingIndex)),
+        ];
+    }
+
+    /** The description's main body (everything before a trailing closing/signature block, if any) with links made clickable. */
+    public function descriptionHtml(): string
+    {
+        [$main] = $this->splitClosing();
+
+        return $main !== '' ? self::linkify($main) : '';
+    }
+
+    /** The trailing closing/signature block (e.g. "Thank you," / name / title / company), if the description ends with one — empty string otherwise. */
+    public function descriptionClosingHtml(): string
+    {
+        [, $closing] = $this->splitClosing();
+
+        return $closing !== '' ? self::linkify($closing) : '';
     }
 }
