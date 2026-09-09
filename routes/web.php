@@ -480,6 +480,10 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
 
         Route::get('/cron-jobs', [AdminCronController::class, 'index'])->name('cron-jobs.index');
         Route::post('/cron-jobs/run', [AdminCronController::class, 'run'])->name('cron-jobs.run');
+        // Redirects to the public /deployer endpoint with its password appended
+        // server-side — keeps the plaintext DEPLOYER_PASSWORD out of this
+        // page's rendered HTML, only ever exposed in this one-time redirect.
+        Route::get('/cron-jobs/deploy', [AdminCronController::class, 'deploy'])->name('cron-jobs.deploy');
     });
 
     Route::middleware('owner')->group(function () {

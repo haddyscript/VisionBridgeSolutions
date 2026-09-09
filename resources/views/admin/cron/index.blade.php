@@ -12,6 +12,27 @@
     </p>
 </div>
 
+@if (auth()->user()->isSuperAdmin())
+    <div class="bg-white dark:bg-navy rounded-xl border border-red-200 dark:border-red-500/25 p-5 mb-6">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap mb-1">
+                    <h3 class="text-sm font-bold text-navy dark:text-white">Deployer</h3>
+                    <span class="text-[11px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400">Live Deploy</span>
+                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Pulls the latest <code class="font-mono">main</code> branch (<code class="font-mono">git reset --hard</code>), clears caches, and — if enabled — runs database migrations on the live production site.
+                </p>
+            </div>
+            <button type="button" id="deployer-run-btn"
+                    class="shrink-0 inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Run Deployer
+            </button>
+        </div>
+    </div>
+@endif
+
 <div class="space-y-3">
     @foreach ($jobs as $signature => $job)
         <div id="cron-job-{{ $loop->index }}" class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-5">
@@ -54,6 +75,11 @@
 </div>
 
 <script>
+    document.getElementById('deployer-run-btn')?.addEventListener('click', function () {
+        if (!confirm('Run the Deployer now? This pulls the latest main branch onto the live site (git reset --hard) and may run database migrations. This can\'t be undone.')) return;
+        window.open('{{ route('admin.cron-jobs.deploy') }}', '_blank');
+    });
+
     document.querySelectorAll('.cron-run-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
             const forced = btn.dataset.force === '1';

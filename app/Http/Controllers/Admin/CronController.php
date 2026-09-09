@@ -88,4 +88,16 @@ class CronController extends Controller
             'success' => $exitCode === 0,
         ]);
     }
+
+    /**
+     * Hands off to the public /deployer endpoint with its password appended
+     * here, server-side — so DEPLOYER_PASSWORD never sits in this page's
+     * rendered HTML, only in this one-time redirect response.
+     */
+    public function deploy()
+    {
+        abort_if(blank(config('app.deployer_password')), 500, 'DEPLOYER_PASSWORD is not configured.');
+
+        return redirect()->route('deployer', ['password' => config('app.deployer_password')]);
+    }
 }
