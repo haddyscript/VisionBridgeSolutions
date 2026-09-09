@@ -144,28 +144,74 @@ class ProjectRequest extends Model
         return $this->estimated_value !== null ? '$'.number_format($this->estimated_value / 100, 2) : null;
     }
 
-    /** Matches raw URLs inside plain-text `description` so they can be linkified and compiled into a "Links" list on the admin show page. */
-    private const URL_PATTERN = '/https?:\/\/[^\s<]+/i';
+    /**
+     * Common TLDs recognized for "bare" domain mentions with no http(s)://
+     * prefix (e.g. "FixMyCar.io" typed in plain text) — kept as a whitelist
+     * rather than "anything.anything" so ordinary abbreviations/initials
+     * ("e.g.", "U.S.") and version numbers ("iOS 17.4") don't get linkified.
+     */
+    private const BARE_DOMAIN_TLDS = [
+        'com', 'org', 'net', 'io', 'co', 'dev', 'app', 'ai', 'edu', 'gov',
+        'info', 'biz', 'us', 'uk', 'ca', 'au', 'de', 'fr', 'jp', 'cn', 'in',
+        'ru', 'br', 'es', 'it', 'nl', 'se', 'no', 'fi', 'dk', 'pl', 'ch',
+        'at', 'be', 'nz', 'ie', 'sg', 'hk', 'tw', 'kr', 'mx', 'ar', 'za',
+        'tv', 'me', 'xyz', 'online', 'site', 'tech', 'store', 'blog',
+        'cloud', 'live', 'world', 'agency', 'solutions',
+    ];
 
-    /** Every URL found in the description, de-duplicated and stripped of trailing sentence punctuation (e.g. a link followed by a period). */
-    public function descriptionUrls(): array
+    /**
+     * Matches raw URLs (`https://...`) or bare domains (`FixMyCar.io`)
+     * inside plain-text `description`, so both can be linkified and
+     * compiled into a "Links" list on the admin show page. The bare-domain
+     * alternative excludes anything right after an `@` so an email address's
+     * domain half doesn't get linkified on its own.
+     */
+    private static function linkPattern(): string
+    {
+        $tlds = implode('|', self::BARE_DOMAIN_TLDS);
+
+        return '/(https?:\/\/[^\s<]+)|((?<!@)\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+(?:'.$tlds.')\b(?:\/[^\s<]*)?)/i';
+    }
+
+    private static function normalizeUrl(string $url): string
+    {
+        return preg_match('/^https?:\/\//i', $url) ? $url : 'https://'.$url;
+    }
+
+    /**
+     * Every link found in the description — trailing sentence punctuation
+     * (e.g. a link followed by a period) stripped, de-duplicated by the
+     * resolved `href`. `label` is the text as typed; `href` always carries
+     * a scheme so a bare domain like "FixMyCar.io" is still a working link
+     * rather than a broken relative path.
+     */
+    public function descriptionLinks(): array
     {
         if (! $this->description) {
             return [];
         }
 
-        preg_match_all(self::URL_PATTERN, $this->description, $matches);
+        preg_match_all(self::linkPattern(), $this->description, $matches);
 
-        return array_values(array_unique(array_map(
-            fn ($url) => rtrim($url, ".,;:!?)]}"),
-            $matches[0]
-        )));
+        $links = [];
+        foreach ($matches[0] as $raw) {
+            $label = rtrim($raw, ".,;:!?)]}");
+            $links[self::normalizeUrl($label)] = $label;
+        }
+
+        return array_map(
+            fn ($href, $label) => ['href' => $href, 'label' => $label],
+            array_keys($links),
+            array_values($links)
+        );
     }
 
     /**
-     * HTML-escaped description with any URLs turned into clickable links.
-     * Escapes first, then wraps matches found in the already-escaped text —
-     * so an href built from it can never carry unescaped markup.
+     * HTML-escaped description with any URL or bare domain turned into a
+     * clickable link. Escapes first, then wraps matches found in the
+     * already-escaped text — so an href built from it can never carry
+     * unescaped markup. Displayed text stays exactly as typed; only the
+     * href gets a scheme added for a bare domain.
      */
     public function descriptionHtml(): string
     {
@@ -173,11 +219,12 @@ class ProjectRequest extends Model
             return '';
         }
 
-        return preg_replace_callback(self::URL_PATTERN, function ($match) {
+        return preg_replace_callback(self::linkPattern(), function ($match) {
             $url = rtrim($match[0], ".,;:!?)]}");
             $trailing = substr($match[0], strlen($url));
+            $href = self::normalizeUrl($url);
 
-            return '<a href="'.$url.'" target="_blank" rel="noopener" class="text-gold-dark hover:underline break-all">'.$url.'</a>'.$trailing;
+            return '<a href="'.$href.'" target="_blank" rel="noopener" class="text-gold-dark hover:underline break-all">'.$url.'</a>'.$trailing;
         }, e($this->description));
     }
 }

@@ -50,14 +50,14 @@
                     </a>
                 @endif
 
-                @php $descriptionUrls = $projectRequest->descriptionUrls(); @endphp
-                @if (count($descriptionUrls))
+                @php $descriptionLinks = $projectRequest->descriptionLinks(); @endphp
+                @if (count($descriptionLinks))
                     <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
                         <p class="text-[0.65rem] font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">Links</p>
                         <ul class="space-y-1">
-                            @foreach ($descriptionUrls as $url)
+                            @foreach ($descriptionLinks as $link)
                                 <li>
-                                    <a href="{{ $url }}" target="_blank" rel="noopener" class="text-sm text-gold-dark hover:underline break-all">{{ $url }}</a>
+                                    <a href="{{ $link['href'] }}" target="_blank" rel="noopener" class="text-sm text-gold-dark hover:underline break-all">{{ $link['label'] }}</a>
                                 </li>
                             @endforeach
                         </ul>
