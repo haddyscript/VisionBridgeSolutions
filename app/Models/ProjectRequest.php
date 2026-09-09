@@ -225,16 +225,32 @@ class ProjectRequest extends Model
     }
 
     /**
-     * HTML-escaped text with a leading "Label:" bolded (see boldLabels())
-     * and any URL or bare domain turned into a clickable link. Escapes
-     * first, then wraps matches found in the already-escaped text — so an
-     * href built from it can never carry unescaped markup. Displayed text
-     * stays exactly as typed; only the href gets a scheme added for a bare
-     * domain.
+     * Bolds a leading numbered-list marker at the very start of a line —
+     * "1.", "2.", etc. — up to 3 digits (ordered lists in these descriptions
+     * never run past double digits; capping it keeps this from ever matching
+     * something like a year sitting alone at the start of a line) and only
+     * when followed by whitespace or the end of the line.
+     */
+    private static function boldNumbering(string $escapedText): string
+    {
+        return preg_replace(
+            '/^(\d{1,3}\.)(?=[ \t]|$)/m',
+            '<strong>$1</strong>',
+            $escapedText
+        );
+    }
+
+    /**
+     * HTML-escaped text with a leading "Label:" (see boldLabels()) or "1."
+     * numbered-list marker (see boldNumbering()) bolded, and any URL or bare
+     * domain turned into a clickable link. Escapes first, then wraps matches
+     * found in the already-escaped text — so an href built from it can never
+     * carry unescaped markup. Displayed text stays exactly as typed; only
+     * the href gets a scheme added for a bare domain.
      */
     private static function linkify(string $text): string
     {
-        $html = self::boldLabels(e($text));
+        $html = self::boldNumbering(self::boldLabels(e($text)));
 
         return preg_replace_callback(self::linkPattern(), function ($match) {
             $url = rtrim($match[0], ".,;:!?)]}");
