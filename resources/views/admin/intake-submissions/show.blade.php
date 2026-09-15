@@ -7,14 +7,30 @@
 
 @php
     $statusLabels = [
-        'new'       => 'New',
-        'contacted' => 'Contacted',
-        'converted' => 'Converted',
+        'new'            => 'New',
+        'contacted'      => 'Contacted',
+        'converted'      => 'Converted',
+        'reviewing'      => 'Reviewing',
+        'follow_up'      => 'Follow-Up',
+        'proposal_sent'  => 'Proposal Sent',
+        'negotiating'    => 'Negotiating',
+        'approved'       => 'Approved',
+        'on_hold'        => 'On Hold',
+        'not_interested' => 'Not Interested',
+        'lost'           => 'Lost',
     ];
     $statusColors = [
-        'new'       => 'bg-gold/15 text-gold-dark',
-        'contacted' => 'bg-teal/15 text-teal-dark',
-        'converted' => 'bg-emerald-100 text-emerald-700',
+        'new'            => 'bg-gold/15 text-gold-dark',
+        'contacted'      => 'bg-teal/15 text-teal-dark',
+        'converted'      => 'bg-emerald-100 text-emerald-700',
+        'reviewing'      => 'bg-blue-100 text-blue-700',
+        'follow_up'      => 'bg-orange-100 text-orange-700',
+        'proposal_sent'  => 'bg-purple-100 text-purple-700',
+        'negotiating'    => 'bg-cyan-100 text-cyan-700',
+        'approved'       => 'bg-green-100 text-green-700',
+        'on_hold'        => 'bg-gray-100 text-gray-600',
+        'not_interested' => 'bg-rose-100 text-rose-700',
+        'lost'           => 'bg-red-100 text-red-700',
     ];
     $categoryLabels = [
         'photo' => 'Photos',

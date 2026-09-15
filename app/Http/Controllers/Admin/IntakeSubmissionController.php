@@ -139,7 +139,7 @@ class IntakeSubmissionController extends Controller
     public function update(Request $request, IntakeSubmission $intakeSubmission)
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:new,contacted,converted'],
+            'status' => ['required', 'in:new,contacted,converted,reviewing,follow_up,proposal_sent,negotiating,approved,on_hold,not_interested,lost'],
         ]);
 
         $intakeSubmission->update($validated);

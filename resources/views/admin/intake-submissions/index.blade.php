@@ -7,16 +7,32 @@
 
 @php
     $statusLabels = [
-        'new'       => 'New',
-        'contacted' => 'Contacted',
-        'converted' => 'Converted',
+        'new'            => 'New',
+        'contacted'      => 'Contacted',
+        'converted'      => 'Converted',
+        'reviewing'      => 'Reviewing',
+        'follow_up'      => 'Follow-Up',
+        'proposal_sent'  => 'Proposal Sent',
+        'negotiating'    => 'Negotiating',
+        'approved'       => 'Approved',
+        'on_hold'        => 'On Hold',
+        'not_interested' => 'Not Interested',
+        'lost'           => 'Lost',
     ];
-    // "New" gets a solid, high-contrast pill (unlike the other two) since
+    // "New" gets a solid, high-contrast pill (unlike the others) since
     // these are the ones that actually need to grab attention on load.
     $statusColors = [
-        'new' => 'bg-indigo-600 text-white',
-        'contacted' => 'bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 ring-1 ring-inset ring-amber-200 dark:ring-amber-500/20',
-        'converted' => 'bg-teal/10 text-teal-dark ring-1 ring-inset ring-teal/20',
+        'new'            => 'bg-indigo-600 text-white',
+        'contacted'      => 'bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 ring-1 ring-inset ring-amber-200 dark:ring-amber-500/20',
+        'converted'      => 'bg-teal/10 text-teal-dark ring-1 ring-inset ring-teal/20',
+        'reviewing'      => 'bg-blue-50 dark:bg-blue-500/10 text-blue-800 dark:text-blue-400 ring-1 ring-inset ring-blue-200 dark:ring-blue-500/20',
+        'follow_up'      => 'bg-orange-50 dark:bg-orange-500/10 text-orange-800 dark:text-orange-400 ring-1 ring-inset ring-orange-200 dark:ring-orange-500/20',
+        'proposal_sent'  => 'bg-purple-50 dark:bg-purple-500/10 text-purple-800 dark:text-purple-400 ring-1 ring-inset ring-purple-200 dark:ring-purple-500/20',
+        'negotiating'    => 'bg-cyan-50 dark:bg-cyan-500/10 text-cyan-800 dark:text-cyan-400 ring-1 ring-inset ring-cyan-200 dark:ring-cyan-500/20',
+        'approved'       => 'bg-green-50 dark:bg-green-500/10 text-green-800 dark:text-green-400 ring-1 ring-inset ring-green-200 dark:ring-green-500/20',
+        'on_hold'        => 'bg-gray-100 dark:bg-gray-700/40 text-gray-600 dark:text-gray-300 ring-1 ring-inset ring-gray-200 dark:ring-gray-600/30',
+        'not_interested' => 'bg-rose-50 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400 ring-1 ring-inset ring-rose-200 dark:ring-rose-500/20',
+        'lost'           => 'bg-red-50 dark:bg-red-500/10 text-red-800 dark:text-red-400 ring-1 ring-inset ring-red-200 dark:ring-red-500/20',
     ];
 @endphp
 
