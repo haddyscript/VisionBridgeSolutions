@@ -245,11 +245,44 @@
                 {{-- Organization Information --}}
                 <div class="intake-card bg-white border border-gray-200 p-7">
                     <h3 class="font-display text-lg font-bold text-navy mb-5">Organization Information</h3>
+                    @php
+                        $currentOrgType = old('organization_type');
+
+                        // Per-type example copy for the Organization Name / Mission
+                        // / Vision placeholders below — was hardcoded to a single
+                        // church-flavored example regardless of what the visitor
+                        // actually picked, which read oddly once Organization Type
+                        // expanded to 17 options covering far more than churches.
+                        // '_default' is shown before any type is chosen (and for
+                        // 'Other') — deliberately generic rather than favoring any
+                        // one type. Mirrored in the JS ORG_PLACEHOLDERS object
+                        // further down, which swaps these live on selection.
+                        $orgPlaceholders = [
+                            'Church' => ['name' => 'Grace Community Church', 'mission' => 'We exist to equip families with biblical resources for everyday life.', 'vision' => 'To see every family in our city rooted in faith and community.'],
+                            'Ministry' => ['name' => 'Pathway Youth Ministry', 'mission' => 'We disciple young people through mentorship, worship, and community outreach.', 'vision' => 'To raise up a generation of leaders rooted in faith and purpose.'],
+                            'Nonprofit / NGO' => ['name' => 'Bright Futures Foundation', 'mission' => 'We provide school supplies and tutoring to underserved children.', 'vision' => 'To see every child in our community have equal access to a quality education.'],
+                            'Community Organization' => ['name' => 'Riverside Neighborhood Alliance', 'mission' => 'We bring neighbors together to improve safety, connection, and local resources.', 'vision' => 'To build a neighborhood where every resident feels supported and heard.'],
+                            'Educational Institution' => ['name' => 'Maple Grove Academy', 'mission' => 'We provide a well-rounded education that prepares students for lifelong success.', 'vision' => "To be known for academic excellence and character development."],
+                            'Healthcare Organization' => ['name' => 'Wellness Family Clinic', 'mission' => 'We provide accessible, compassionate care to families in our community.', 'vision' => 'To be the trusted healthcare partner for every family we serve.'],
+                            'Small Business' => ['name' => 'Riverside Coffee Co.', 'mission' => 'We serve locally roasted coffee and create a welcoming space for our community.', 'vision' => "To become the neighborhood's favorite place to gather and connect."],
+                            'Startup' => ['name' => 'Nimbus Analytics', 'mission' => 'We help small businesses turn their data into actionable insights.', 'vision' => 'To be the go-to analytics platform for growing businesses everywhere.'],
+                            'Entrepreneur / Individual' => ['name' => 'Jordan Ellis Consulting', 'mission' => 'I help small business owners streamline their operations and grow with confidence.', 'vision' => 'To build long-term partnerships that help my clients thrive.'],
+                            'Professional Services' => ['name' => 'Hartwell & Associates Law Firm', 'mission' => 'We provide trusted legal guidance to individuals and businesses.', 'vision' => 'To be the most trusted legal partner in our region.'],
+                            'Creative / Media' => ['name' => 'Lumen Studio', 'mission' => 'We create bold visual content that helps brands tell their story.', 'vision' => 'To be the creative partner brands turn to for standout storytelling.'],
+                            'Retail / E-commerce' => ['name' => 'Coastal Threads Boutique', 'mission' => 'We sell quality, sustainably-made apparel designed for everyday comfort.', 'vision' => 'To become a go-to name in sustainable, everyday fashion.'],
+                            'Real Estate' => ['name' => 'Summit Realty Group', 'mission' => 'We help families find homes that fit their life and budget.', 'vision' => 'To be the most trusted real estate team in our market.'],
+                            'Technology / IT' => ['name' => 'Northbridge IT Solutions', 'mission' => 'We provide reliable IT support and cybersecurity for growing businesses.', 'vision' => 'To be the technology partner businesses trust to keep them running smoothly.'],
+                            'Corporation / Enterprise' => ['name' => 'Vantage Industrial Group', 'mission' => 'We deliver reliable manufacturing solutions to partners across the region.', 'vision' => 'To be an industry leader known for quality, reliability, and innovation.'],
+                            'Government / Public Organization' => ['name' => 'City of Meadowbrook Parks & Recreation', 'mission' => 'We provide safe, well-maintained public spaces and programs for our residents.', 'vision' => 'To make Meadowbrook one of the most livable communities in the region.'],
+                            '_default' => ['name' => 'Your Organization Name', 'mission' => 'What does your organization do, and who do you serve?', 'vision' => 'What future are you working toward?'],
+                        ];
+                        $activePlaceholders = $orgPlaceholders[$currentOrgType] ?? $orgPlaceholders['_default'];
+                    @endphp
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="sm:col-span-2">
                             <label class="block text-base font-bold text-navy mb-1">Organization Name *</label>
                             <input type="text" name="organization_name" value="{{ old('organization_name') }}" required
-                                   placeholder="e.g. Grace Community Church"
+                                   placeholder="e.g. {{ $activePlaceholders['name'] }}"
                                    class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                         </div>
                         @php
@@ -272,7 +305,6 @@
                                 'Government / Public Organization' => 'bg-lime-500',
                                 'Other' => 'bg-gray-400',
                             ];
-                            $currentOrgType = old('organization_type');
                         @endphp
                         <div class="sm:col-span-2 relative" id="org-type-wrap">
                             <label class="block text-base font-bold text-navy mb-1">Organization Type</label>
@@ -323,7 +355,7 @@
                             <label class="block text-base font-bold text-navy mb-1">Mission Statement</label>
                             <p class="text-sm text-gray-600 mb-1.5">What does your organization do, and who do you serve?</p>
                             <textarea name="mission_statement" rows="3"
-                                      placeholder="e.g. We exist to equip families with biblical resources for everyday life."
+                                      placeholder="e.g. {{ $activePlaceholders['mission'] }}"
                                       class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('mission_statement') }}</textarea>
                             <div class="mt-2">
                                 <button type="button" class="ai-suggest-btn inline-flex items-center gap-1.5 text-xs font-medium text-gold-dark bg-gold/10 hover:bg-gold/20 px-3 py-1.5 rounded-full transition-colors"
@@ -337,7 +369,7 @@
                             <label class="block text-base font-bold text-navy mb-1">Vision Statement</label>
                             <p class="text-sm text-gray-600 mb-1.5">What future are you working toward?</p>
                             <textarea name="vision_statement" rows="3"
-                                      placeholder="e.g. To see every family in our city rooted in faith and community."
+                                      placeholder="e.g. {{ $activePlaceholders['vision'] }}"
                                       class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('vision_statement') }}</textarea>
                             <div class="mt-2">
                                 <button type="button" class="ai-suggest-btn inline-flex items-center gap-1.5 text-xs font-medium text-gold-dark bg-gold/10 hover:bg-gold/20 px-3 py-1.5 rounded-full transition-colors"
@@ -710,6 +742,21 @@
             'Government / Public Organization': 'bg-lime-500', 'Other': 'bg-gray-400',
         };
 
+        // Emitted straight from the same PHP $orgPlaceholders map that rendered
+        // this page's initial placeholder text, rather than hand-duplicated here
+        // — one source of truth, no risk of the two drifting apart.
+        const ORG_PLACEHOLDERS = @json($orgPlaceholders);
+        const nameField = document.querySelector('[name="organization_name"]');
+        const missionField = document.querySelector('[name="mission_statement"]');
+        const visionField = document.querySelector('[name="vision_statement"]');
+
+        function applyOrgPlaceholders(type) {
+            const p = ORG_PLACEHOLDERS[type] || ORG_PLACEHOLDERS['_default'];
+            if (nameField) nameField.placeholder = 'e.g. ' + p.name;
+            if (missionField) missionField.placeholder = 'e.g. ' + p.mission;
+            if (visionField) visionField.placeholder = 'e.g. ' + p.vision;
+        }
+
         function closeMenu() {
             menu.classList.add('hidden');
             toggle.setAttribute('aria-expanded', 'false');
@@ -742,6 +789,7 @@
                     label.insertBefore(dot, labelText);
                 }
                 dot.className = 'w-2 h-2 rounded-full shrink-0 ' + (dotColors[value] || 'bg-gray-400');
+                applyOrgPlaceholders(value);
 
                 menu.querySelectorAll('[data-org-type-option]').forEach(function (opt) {
                     const isSelected = opt === option;
