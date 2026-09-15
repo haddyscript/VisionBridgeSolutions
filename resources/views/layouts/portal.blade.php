@@ -99,7 +99,7 @@
              font-size:0 override further down has higher specificity and
              still wins when the sidebar is collapsed. ── */
         #portal-sidebar-nav a {
-            font-size: 10px;
+            font-size: 12px;
             font-family: -apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
