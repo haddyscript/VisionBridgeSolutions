@@ -19,7 +19,12 @@ class IntakeSubmissionController extends Controller
     // Kept identical to the public form's own lists (IntakeController /
     // intake.create.blade.php) so an admin-logged intake is indistinguishable
     // from one the client submitted themselves — same options, same order.
-    public const ORGANIZATION_TYPES = ['Church', 'Ministry', 'Nonprofit', 'Small Business', 'Entrepreneur', 'Other'];
+    public const ORGANIZATION_TYPES = [
+        'Church', 'Ministry', 'Nonprofit / NGO', 'Community Organization', 'Educational Institution',
+        'Healthcare Organization', 'Small Business', 'Startup', 'Entrepreneur / Individual', 'Professional Services',
+        'Creative / Media', 'Retail / E-commerce', 'Real Estate', 'Technology / IT', 'Corporation / Enterprise',
+        'Government / Public Organization', 'Other',
+    ];
 
     public const SERVICES = [
         'Custom Website Development', 'Landing Page Development', 'Church Website Development',

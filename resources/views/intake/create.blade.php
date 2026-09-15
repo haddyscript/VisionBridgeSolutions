@@ -253,7 +253,25 @@
                                    class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
                         </div>
                         @php
-                            $orgTypeColors = ['Church' => 'bg-indigo-400', 'Ministry' => 'bg-teal', 'Nonprofit' => 'bg-blue-400', 'Small Business' => 'bg-gold', 'Entrepreneur' => 'bg-purple-400', 'Other' => 'bg-gray-400'];
+                            $orgTypeColors = [
+                                'Church' => 'bg-indigo-400',
+                                'Ministry' => 'bg-teal',
+                                'Nonprofit / NGO' => 'bg-blue-400',
+                                'Community Organization' => 'bg-cyan-400',
+                                'Educational Institution' => 'bg-sky-400',
+                                'Healthcare Organization' => 'bg-rose-400',
+                                'Small Business' => 'bg-gold',
+                                'Startup' => 'bg-orange-400',
+                                'Entrepreneur / Individual' => 'bg-purple-400',
+                                'Professional Services' => 'bg-slate-400',
+                                'Creative / Media' => 'bg-pink-400',
+                                'Retail / E-commerce' => 'bg-emerald-400',
+                                'Real Estate' => 'bg-amber-500',
+                                'Technology / IT' => 'bg-violet-400',
+                                'Corporation / Enterprise' => 'bg-navy',
+                                'Government / Public Organization' => 'bg-lime-500',
+                                'Other' => 'bg-gray-400',
+                            ];
                             $currentOrgType = old('organization_type');
                         @endphp
                         <div class="sm:col-span-2 relative" id="org-type-wrap">
@@ -273,8 +291,14 @@
                                 </svg>
                             </button>
 
-                            <div id="org-type-menu" class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white border border-gray-200 rounded-lg shadow-lg py-1" role="listbox">
-                                @foreach (['Church', 'Ministry', 'Nonprofit', 'Small Business', 'Entrepreneur', 'Other'] as $type)
+                            <div id="org-type-menu" class="hidden absolute z-20 left-0 right-0 mt-1.5 max-h-72 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg py-1" role="listbox">
+                                @foreach ([
+                                    'Church', 'Ministry', 'Nonprofit / NGO', 'Community Organization',
+                                    'Educational Institution', 'Healthcare Organization', 'Small Business', 'Startup',
+                                    'Entrepreneur / Individual', 'Professional Services', 'Creative / Media',
+                                    'Retail / E-commerce', 'Real Estate', 'Technology / IT', 'Corporation / Enterprise',
+                                    'Government / Public Organization', 'Other',
+                                ] as $type)
                                     <button type="button" data-org-type-option="{{ $type }}" role="option" aria-selected="{{ $currentOrgType === $type ? 'true' : 'false' }}"
                                             class="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $currentOrgType === $type ? 'text-gold-dark font-semibold' : 'text-gray-700' }}">
                                         <span class="flex items-center gap-2">
@@ -677,8 +701,13 @@
         if (!wrap || !toggle || !menu || !hiddenInput || !label) return;
 
         const dotColors = {
-            'Church': 'bg-indigo-400', 'Ministry': 'bg-teal', 'Nonprofit': 'bg-blue-400',
-            'Small Business': 'bg-gold', 'Entrepreneur': 'bg-purple-400', 'Other': 'bg-gray-400',
+            'Church': 'bg-indigo-400', 'Ministry': 'bg-teal', 'Nonprofit / NGO': 'bg-blue-400',
+            'Community Organization': 'bg-cyan-400', 'Educational Institution': 'bg-sky-400',
+            'Healthcare Organization': 'bg-rose-400', 'Small Business': 'bg-gold', 'Startup': 'bg-orange-400',
+            'Entrepreneur / Individual': 'bg-purple-400', 'Professional Services': 'bg-slate-400',
+            'Creative / Media': 'bg-pink-400', 'Retail / E-commerce': 'bg-emerald-400', 'Real Estate': 'bg-amber-500',
+            'Technology / IT': 'bg-violet-400', 'Corporation / Enterprise': 'bg-navy',
+            'Government / Public Organization': 'bg-lime-500', 'Other': 'bg-gray-400',
         };
 
         function closeMenu() {

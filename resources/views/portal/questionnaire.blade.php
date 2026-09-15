@@ -44,7 +44,13 @@
                     <select name="organization_type"
                             class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white">
                         <option value="">Select one&hellip;</option>
-                        @foreach (['Church', 'Ministry', 'Nonprofit', 'Small Business', 'Entrepreneur', 'Other'] as $type)
+                        @foreach ([
+                            'Church', 'Ministry', 'Nonprofit / NGO', 'Community Organization',
+                            'Educational Institution', 'Healthcare Organization', 'Small Business', 'Startup',
+                            'Entrepreneur / Individual', 'Professional Services', 'Creative / Media',
+                            'Retail / E-commerce', 'Real Estate', 'Technology / IT', 'Corporation / Enterprise',
+                            'Government / Public Organization', 'Other',
+                        ] as $type)
                             <option value="{{ $type }}" {{ old('organization_type', $questionnaire?->organization_type) === $type ? 'selected' : '' }}>{{ $type }}</option>
                         @endforeach
                     </select>
