@@ -3,6 +3,26 @@
 @section('title', 'Our Work — VisionBridge Solutions')
 @section('description', 'A scroll-driven visual journey through the websites, hosting, and care plans we\'ve built for our clients.')
 
+@push('head')
+    {{-- This page is a scroll-driven "chapter" experience (cinematic opening
+         overlay + pinned gallery) that only makes sense starting from the
+         very top. Without this, the browser's own scroll-position
+         restoration (a reload, or back/forward navigation, while deep in
+         the pinned track) drops a visitor mid-gallery before any of this
+         page's JS has run — cinematic-gallery.js's opening-intro scroll
+         lock then anchors to THAT already-scrolled position instead of the
+         top, and ScrollTrigger's pin math gets computed against it too,
+         producing scenes that appear out of order / overlap the finale
+         section. Runs as a synchronous inline script as early as possible
+         in <head> — scroll restoration is applied by the browser before
+         the deferred cinematic-gallery.js ever executes, so setting this
+         from inside that file would already be too late. --}}
+    <script>
+        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+        window.scrollTo(0, 0);
+    </script>
+@endpush
+
 @section('content')
 
 @php
