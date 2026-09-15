@@ -26,6 +26,17 @@
                         sans:    ['Inter', 'sans-serif'],
                         display: ['"Playfair Display"', 'serif'],
                     },
+                    // `text-sm` is the dominant size already used for body
+                    // copy throughout the portal (card descriptions, list
+                    // items, notifications, help text, etc.) — nudged from
+                    // Tailwind's default 14px to 13px per a specific
+                    // request, scoped to the portal only since this config
+                    // is separate from the marketing site's own Tailwind
+                    // build. Line-height kept at Tailwind's own default for
+                    // text-sm (1.25rem) so vertical rhythm doesn't shift.
+                    fontSize: {
+                        sm: ['13px', { lineHeight: '1.25rem' }],
+                    },
                 }
             }
         }
