@@ -34,10 +34,30 @@
         'not_interested' => 'bg-rose-50 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400 ring-1 ring-inset ring-rose-200 dark:ring-rose-500/20',
         'lost'           => 'bg-red-50 dark:bg-red-500/10 text-red-800 dark:text-red-400 ring-1 ring-inset ring-red-200 dark:ring-red-500/20',
     ];
+    // Solid dot colors for the status filter dropdown (admin._dropdown) —
+    // same hue per status as $statusColors above, just a saturated dot
+    // instead of a tinted badge background.
+    $statusDots = [
+        'new'            => 'bg-indigo-600',
+        'contacted'      => 'bg-amber-500',
+        'converted'      => 'bg-teal',
+        'reviewing'      => 'bg-blue-500',
+        'follow_up'      => 'bg-orange-500',
+        'proposal_sent'  => 'bg-purple-500',
+        'negotiating'    => 'bg-cyan-500',
+        'approved'       => 'bg-green-500',
+        'on_hold'        => 'bg-gray-400',
+        'not_interested' => 'bg-rose-500',
+        'lost'           => 'bg-red-500',
+    ];
 @endphp
 
-{{-- Controls: search + status tabs — same toolbar spirit as Project Requests
-     (§15oo) and All Projects, kept ready to scale as submission volume grows. --}}
+{{-- Controls: search + status filter — same toolbar spirit as Project Requests
+     (§15oo) and All Projects. Was a row of tabs, but with 11 statuses now
+     (up from the original 3) that wrapped into a cramped multi-line mess —
+     a single dropdown (admin._dropdown, same component the detail page's
+     Status field uses) scales to however many statuses get added later
+     without the toolbar growing taller. --}}
 <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
     <div class="relative flex-1">
         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,11 +66,18 @@
         <input type="text" id="submission-search" placeholder="Search organization or contact..." autocomplete="off"
                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-dark dark:text-white pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">
     </div>
-    <div id="submission-status-tabs" class="inline-flex flex-wrap items-center gap-1 bg-gray-100 dark:bg-navy-dark rounded-lg p-1 shrink-0">
-        <button type="button" data-status-tab="" class="submission-tab is-active px-3 py-1.5 rounded-md text-xs font-semibold transition-colors">All Submissions</button>
-        @foreach ($statusLabels as $key => $label)
-            <button type="button" data-status-tab="{{ $key }}" class="submission-tab px-3 py-1.5 rounded-md text-xs font-semibold transition-colors">{{ $label }}</button>
-        @endforeach
+    <div class="w-full sm:w-56 shrink-0">
+        @include('admin._dropdown', [
+            'name' => 'status_filter',
+            'domId' => 'submission-status-filter',
+            'options' => collect($statusLabels)->map(fn ($label, $value) => [
+                'value' => $value,
+                'label' => $label,
+                'dot' => $statusDots[$value] ?? 'bg-gray-400',
+            ])->values()->all(),
+            'selected' => '',
+            'placeholder' => 'All Submissions',
+        ])
     </div>
     <a href="{{ route('admin.intake-submissions.create') }}"
         class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-gold hover:bg-gold-dark text-navy text-sm font-semibold rounded-lg transition-colors shrink-0">
@@ -147,7 +174,7 @@
     <script>
         (function () {
             const search = document.getElementById('submission-search');
-            const tabs = document.querySelectorAll('.submission-tab');
+            const statusFilterInput = document.getElementById('submission-status-filter-input');
             const emptyRow = document.getElementById('submissions-empty-filter');
             const countLabel = document.getElementById('submissions-count-label');
             const rows = Array.from(document.querySelectorAll('#submissions-table tbody tr[data-search]'));
@@ -174,24 +201,14 @@
 
             search.addEventListener('input', apply);
 
-            tabs.forEach(function (tab) {
-                tab.addEventListener('click', function () {
-                    activeStatus = tab.dataset.statusTab;
-                    tabs.forEach(function (t) { t.classList.toggle('is-active', t === tab); });
+            if (statusFilterInput) {
+                statusFilterInput.addEventListener('change', function () {
+                    activeStatus = statusFilterInput.value;
                     apply();
                 });
-            });
+            }
         })();
     </script>
 @endif
-
-<style>
-    .submission-tab { color: rgba(47,58,69,0.6); }
-    .dark .submission-tab { color: rgba(255,255,255,0.5); }
-    .submission-tab:hover { color: #1B2A4A; }
-    .dark .submission-tab:hover { color: #ffffff; }
-    .submission-tab.is-active { background: #ffffff; color: #A8872E; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-    .dark .submission-tab.is-active { background: rgba(255,255,255,0.08); color: #DFC06A; }
-</style>
 
 @endsection
