@@ -2510,10 +2510,16 @@
              form, not a dark hero, so a dark curtain fading into a white page
              read as a jarring flash rather than a continuation. Gold-bracket
              chrome matches the page's own ".intake-tag" badge treatment.
-             Runs noticeably longer than the other three curtains (~3s total
-             vs. ~1.5s) — a specific request for this page since it's the
-             lead-gen intake form, not a hero reveal; see the play()/pageIntros
-             durations in the shared driver script further down. */
+             Staged in three beats (logo chip → kicker → bracket headline/bar)
+             rather than everything appearing at once — the logo/kicker fade
+             in via plain CSS (so they still play even if GSAP never loads),
+             the bracket headline + bar are handed to the shared GSAP driver
+             below via a `startDelay`, so the whole sequence reads as one
+             deliberate reveal instead of a generic spinner. Runs noticeably
+             longer than the other three curtains (~3.2s total vs. ~1.5s) —
+             a specific request for this page since it's the lead-gen intake
+             form, not a hero reveal; see the play()/pageIntros durations in
+             the shared driver script further down. */
         #get-started-intro {
             position: fixed;
             inset: 0;
@@ -2524,12 +2530,25 @@
             justify-content: center;
             overflow: hidden;
         }
+        /* Faint diagonal hairline texture, echoing the same device the dark
+           curtains use (#contact-intro::before etc.) at a fraction of the
+           opacity — enough to keep the white from reading as a flat/empty
+           void, not enough to look "unfinished" on a light background. */
+        #get-started-intro::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background-image: repeating-linear-gradient(135deg, rgba(21,32,44,.018) 0px, rgba(21,32,44,.018) 1px, transparent 1px, transparent 14px);
+        }
         #get-started-intro-glow {
             position: absolute;
             top: 50%; left: 50%;
-            width: min(620px, 90vw); height: min(620px, 90vw);
+            width: min(680px, 92vw); height: min(680px, 92vw);
             transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(201,168,76,0.10) 0%, transparent 70%);
+            background:
+                radial-gradient(circle at 50% 45%, rgba(201,168,76,0.13) 0%, transparent 55%),
+                radial-gradient(circle at 50% 55%, rgba(21,32,44,0.035) 0%, transparent 70%);
             filter: blur(40px);
             pointer-events: none;
         }
@@ -2538,15 +2557,71 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 16px;
+            gap: 18px;
             padding: 0 24px;
+        }
+        /* Small dark-chip logo mark, same treatment as #nav-logo's own inner
+           chip (navy background + gold hairline border + soft shadow) — the
+           logo file's baked-in navy background needs that chip to read
+           cleanly rather than showing a hard rectangle against the white
+           curtain. First beat of the reveal. */
+        #get-started-intro-logo-chip {
+            border-radius: 14px;
+            background: #0B0F17;
+            padding: 9px 15px;
+            border: 1px solid rgba(201,168,76,0.35);
+            box-shadow: 0 8px 22px rgba(21,32,44,0.16);
+            opacity: 0;
+            transform: translateY(8px) scale(0.96);
+            animation: gsi-fade-up 0.6s cubic-bezier(.16,1,.3,1) 0.1s forwards;
+        }
+        #get-started-intro-logo-chip img { display: block; height: 34px; width: auto; object-fit: contain; }
+        /* Second beat — a small tracked-out kicker above the headline,
+           matching the careers-intro-label's uppercase/letter-spaced
+           treatment but tuned for a light background. */
+        #get-started-intro-kicker {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.66rem;
+            font-weight: 700;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: rgba(21,32,44,0.42);
+            opacity: 0;
+            transform: translateY(8px);
+            animation: gsi-fade-up 0.55s cubic-bezier(.16,1,.3,1) 0.55s forwards;
+        }
+        @keyframes gsi-fade-up {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #get-started-intro-logo-chip, #get-started-intro-kicker { animation: none; opacity: 1; transform: none; }
         }
         /* Shared .page-intro-bar's track color (rgba(255,255,255,.12)) is
            tuned for the other curtains' dark backgrounds — on white it'd be
            an invisible white-on-white track until the gold fill covers it.
-           Scoped to this curtain only, so the other three are untouched. */
+           Also widened slightly and given pill ends + a traveling shimmer
+           for a more finished "loading" feel. Scoped to this curtain only,
+           so the other three are untouched. */
         #get-started-intro-content .page-intro-bar {
+            width: 168px;
+            border-radius: 999px;
             background: rgba(21,32,44,.10);
+        }
+        #get-started-intro-content .page-intro-bar-fill {
+            position: relative;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        #get-started-intro-content .page-intro-bar-fill::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
+            animation: gsi-bar-shimmer 1.15s ease-in-out infinite;
+        }
+        @keyframes gsi-bar-shimmer {
+            from { transform: translateX(-100%); }
+            to   { transform: translateX(100%); }
         }
         #get-started-intro-label {
             font-family: 'Orbitron', sans-serif;
@@ -2644,12 +2719,17 @@
 
     {{-- Full-screen opening transition — Get Started (intake form) page
          only. Same reasoning as the three overlays above, restyled with the
-         navy/gold palette; runs longer than the others (see pageIntros in
-         the shared driver script further down for the duration override). --}}
+         white/gold palette; staged logo → kicker → headline/bar reveal, and
+         runs longer than the others (see pageIntros in the shared driver
+         script further down for the duration/startDelay override). --}}
     @if (request()->routeIs('intake.create'))
         <div id="get-started-intro" role="presentation" aria-hidden="true">
             <div id="get-started-intro-glow"></div>
             <div id="get-started-intro-content">
+                <div id="get-started-intro-logo-chip">
+                    <img src="@assetv('image/logo/vbs-logo-v3.jpeg')" alt="VisionBridge Solutions">
+                </div>
+                <p id="get-started-intro-kicker">VisionBridge Solutions</p>
                 <div class="page-intro-frame">
                     <p id="get-started-intro-label">Starting Your <span class="accent">Project</span></p>
                 </div>
@@ -3940,12 +4020,15 @@
             { overlay: 'careers-intro',  bar: 'careers-intro-bar',  label: 'careers-intro-label' },
             { overlay: 'redesign-intro', bar: 'redesign-intro-bar', label: 'redesign-intro-label' },
             { overlay: 'contact-intro',  bar: 'contact-intro-bar',  label: 'contact-intro-label' },
-            // ~3s total (vs. the ~1.5s default the other three use below) —
+            // ~3.2s total (vs. the ~1.5s default the other three use below) —
             // a specific ask for this page since it's the lead-gen intake
-            // form, not a hero reveal. safetyMs is padded past this curtain's
-            // own natural ~2.5s pre-fade completion so the fallback never
-            // fires ahead of it in the normal case.
-            { overlay: 'get-started-intro', bar: 'get-started-intro-bar', label: 'get-started-intro-label', barDuration: 1.8, holdDuration: 0.4, safetyMs: 3400 },
+            // form, not a hero reveal. startDelay holds the bracket headline
+            // + bar back until the logo chip/kicker (plain CSS animations,
+            // see the <style> block above) have had their own beat — label
+            // 1.05s→1.50s, bar 1.35s→2.40s, hold to 2.70s, reveal fade
+            // 2.70s→3.20s. safetyMs is padded past that natural ~2.7s
+            // pre-fade completion so the fallback never fires ahead of it.
+            { overlay: 'get-started-intro', bar: 'get-started-intro-bar', label: 'get-started-intro-label', startDelay: 1.05, barDuration: 1.05, holdDuration: 0.3, safetyMs: 3700 },
         ];
 
         pageIntros.forEach(function (ids) {
@@ -3958,6 +4041,7 @@
             var barDuration = ids.barDuration || 0.55;
             var holdDuration = ids.holdDuration || 0.15;
             var safetyMs = ids.safetyMs || 2600;
+            var startDelay = ids.startDelay || 0;
 
             // Lets the real page's own entrance animations (paused via
             // .intro-locked, see the <style> block above) start playing —
@@ -4017,7 +4101,7 @@
                 if (typeof gsap === 'undefined') { setTimeout(play, 60); return; }
 
                 gsap.set(overlay, { filter: 'blur(0px)' }); // baseline so the exit's blur tween has something to interpolate from
-                gsap.timeline({ onComplete: reveal })
+                gsap.timeline({ delay: startDelay, onComplete: reveal })
                     .to(label, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' })
                     .to(bar,   { width: '100%', duration: barDuration, ease: 'power1.inOut' }, '-=0.15')
                     .to({}, { duration: holdDuration }); // brief hold once the bar fills, before the reveal fires
