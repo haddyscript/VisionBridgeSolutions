@@ -15,7 +15,12 @@
         'not_started' => 'bg-gray-400',
         'in_progress' => 'bg-gold',
         'waiting_on_visionbridge' => 'bg-purple-400',
+        'waiting_on_client' => 'bg-blue-400',
+        'review_testing' => 'bg-cyan-400',
+        'changes_requested' => 'bg-amber-400',
         'completed' => 'bg-teal',
+        'on_hold' => 'bg-gray-400',
+        'cancelled' => 'bg-red-400',
     ];
     $neutralPill = 'border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy text-navy dark:text-white';
     $checkIcon = '<svg data-option-check class="w-4 h-4 text-gold-dark shrink-0 %s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>';

@@ -289,7 +289,7 @@
                         'options' => collect(\App\Models\ProjectRequest::DEVELOPER_STATUSES)->map(fn ($label, $value) => [
                             'value' => $value,
                             'label' => $label,
-                            'dot' => ['in_progress' => 'bg-gold', 'waiting_on_visionbridge' => 'bg-purple-400', 'completed' => 'bg-teal'][$value] ?? 'bg-gray-400',
+                            'dot' => ['in_progress' => 'bg-gold', 'waiting_on_visionbridge' => 'bg-purple-400', 'waiting_on_client' => 'bg-blue-400', 'review_testing' => 'bg-cyan-400', 'changes_requested' => 'bg-amber-400', 'completed' => 'bg-teal', 'on_hold' => 'bg-gray-400', 'cancelled' => 'bg-red-400'][$value] ?? 'bg-gray-400',
                         ])->values()->all(),
                         'selected' => $projectRequest->developer_status,
                     ])

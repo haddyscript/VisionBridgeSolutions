@@ -41,7 +41,12 @@ class Upload extends Model
         'open' => 'Open',
         'in_progress' => 'In Progress',
         'waiting_on_visionbridge' => 'Waiting for VisionBridge',
+        'waiting_on_client' => 'Waiting for Client',
+        'review_testing' => 'Review / Testing',
+        'changes_requested' => 'Changes Requested',
         'completed' => 'Completed',
+        'on_hold' => 'On Hold',
+        'cancelled' => 'Cancelled',
     ];
 
     protected $fillable = [

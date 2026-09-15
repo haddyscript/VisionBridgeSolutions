@@ -248,15 +248,21 @@ class UploadApprovalController extends Controller
     /**
      * Maps a developer-facing status to its client-facing equivalent, so a
      * developer's update on a Work Order also moves the status the client
-     * sees on the revision tab, instead of the two drifting apart.
+     * sees on the revision tab, instead of the two drifting apart. Statuses
+     * with no entry here (Open, On Hold) are internal-only — the client
+     * keeps seeing whatever status they already had.
      */
     private const DEVELOPER_TO_CLIENT_STATUS = [
         'in_progress' => 'in_progress',
         'waiting_on_visionbridge' => 'needs_approval',
+        'waiting_on_client' => 'waiting_on_client',
+        'review_testing' => 'under_review',
+        'changes_requested' => 'in_progress',
         'completed' => 'completed',
+        'cancelled' => 'closed',
     ];
 
-    /** Developer-facing status (In Progress / Waiting for VisionBridge / Completed) — drives the client-facing status via DEVELOPER_TO_CLIENT_STATUS. */
+    /** Developer-facing status — drives the client-facing status via DEVELOPER_TO_CLIENT_STATUS, where a mapping exists. */
     public function updateDeveloperStatus(Request $request, Upload $upload)
     {
         $validated = $request->validate([
@@ -264,15 +270,20 @@ class UploadApprovalController extends Controller
         ]);
 
         $previousStatus = $upload->status;
-        $validated['status'] = self::DEVELOPER_TO_CLIENT_STATUS[$validated['developer_status']];
-        // A developer update is never a "closed" outcome, so any stale closed
-        // reason from a prior manual closure shouldn't resurface later.
-        $validated['closed_reason'] = null;
-        $validated['completed_at'] = $this->resolveCompletedAt($upload, $validated['status']);
+        $clientStatus = self::DEVELOPER_TO_CLIENT_STATUS[$validated['developer_status']] ?? null;
+
+        if ($clientStatus !== null) {
+            $validated['status'] = $clientStatus;
+            // A developer update is never a "closed" outcome except via the
+            // explicit Cancelled mapping above, so any stale closed reason
+            // from a prior manual closure shouldn't resurface later.
+            $validated['closed_reason'] = $clientStatus === 'closed' ? 'Cancelled by developer.' : null;
+            $validated['completed_at'] = $this->resolveCompletedAt($upload, $clientStatus);
+        }
 
         $upload->update($validated);
 
-        if ($validated['status'] !== $previousStatus) {
+        if ($clientStatus !== null && $clientStatus !== $previousStatus) {
             $this->notifyClientOfStatusChange($upload);
         }
 

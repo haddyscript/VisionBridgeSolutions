@@ -2,12 +2,22 @@
     $statusColors = [
         'in_progress' => 'bg-gold/15 text-gold-dark',
         'waiting_on_visionbridge' => 'bg-purple-50 dark:bg-purple-500/10 text-purple-500',
+        'waiting_on_client' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-500',
+        'review_testing' => 'bg-cyan-50 dark:bg-cyan-500/10 text-cyan-500',
+        'changes_requested' => 'bg-amber-50 dark:bg-amber-500/10 text-amber-500',
         'completed' => 'bg-teal/10 text-teal-dark',
+        'on_hold' => 'bg-gray-100 dark:bg-gray-700/40 text-gray-500',
+        'cancelled' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
     ];
     $rowStatusDots = [
         'in_progress' => 'bg-gold',
         'waiting_on_visionbridge' => 'bg-purple-400',
+        'waiting_on_client' => 'bg-blue-400',
+        'review_testing' => 'bg-cyan-400',
+        'changes_requested' => 'bg-amber-400',
         'completed' => 'bg-teal',
+        'on_hold' => 'bg-gray-400',
+        'cancelled' => 'bg-red-400',
     ];
     $neutralStatusPill = 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400';
     $rowCheckIcon = '<svg data-option-check class="w-4 h-4 text-gold-dark shrink-0 %s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>';

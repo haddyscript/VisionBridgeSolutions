@@ -5,7 +5,12 @@
         $statusColors = [
             'in_progress' => 'bg-gold/15 text-gold-dark',
             'waiting_on_visionbridge' => 'bg-purple-50 dark:bg-purple-500/10 text-purple-500',
+            'waiting_on_client' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-500',
+            'review_testing' => 'bg-cyan-50 dark:bg-cyan-500/10 text-cyan-500',
+            'changes_requested' => 'bg-amber-50 dark:bg-amber-500/10 text-amber-500',
             'completed' => 'bg-teal/10 text-teal-dark',
+            'on_hold' => 'bg-gray-100 dark:bg-gray-700/40 text-gray-500',
+            'cancelled' => 'bg-red-50 dark:bg-red-500/10 text-red-500',
         ];
     @endphp
     <div class="divide-y divide-gray-100 dark:divide-gray-700">
