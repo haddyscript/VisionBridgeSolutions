@@ -74,23 +74,23 @@
 
         <div class="relative">
             <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-2">Billing Overview</p>
-            <h2 class="font-display text-2xl font-bold text-white mb-6">Your account at a glance</h2>
+            <h2 class="font-display text-xl font-bold text-white mb-6">Your account at a glance</h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="rounded-xl px-5 py-4" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);">
                     <p class="text-xs font-semibold uppercase tracking-wide text-white/75 mb-1.5">Amount Due</p>
-                    <p class="font-sans text-2xl font-extrabold tracking-tight text-white">${{ number_format($totalDue / 100, 2) }}</p>
+                    <p class="font-sans text-xl font-extrabold tracking-tight text-white">${{ number_format($totalDue / 100, 2) }}</p>
                 </div>
                 <div class="rounded-xl px-5 py-4" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);">
                     <p class="text-xs font-semibold uppercase tracking-wide text-white/75 mb-1.5">Total Paid</p>
-                    <p class="font-sans text-2xl font-extrabold tracking-tight text-white">${{ number_format($totalPaid / 100, 2) }}</p>
+                    <p class="font-sans text-xl font-extrabold tracking-tight text-white">${{ number_format($totalPaid / 100, 2) }}</p>
                 </div>
                 <div class="rounded-xl px-5 py-4" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);">
                     <p class="text-xs font-semibold uppercase tracking-wide text-white/75 mb-1.5">Care Plan</p>
                     @if ($subscription)
-                        <p class="font-sans text-2xl font-extrabold tracking-tight {{ $subscription->isCanceled() ? 'text-white/50' : 'text-white' }}">{{ $subscription->status === 'past_due' ? 'Past Due' : ucfirst($subscription->status) }}</p>
+                        <p class="font-sans text-xl font-extrabold tracking-tight {{ $subscription->isCanceled() ? 'text-white/50' : 'text-white' }}">{{ $subscription->status === 'past_due' ? 'Past Due' : ucfirst($subscription->status) }}</p>
                     @else
-                        <p class="font-sans text-2xl font-extrabold tracking-tight text-white/50">None</p>
+                        <p class="font-sans text-xl font-extrabold tracking-tight text-white/50">None</p>
                     @endif
                 </div>
             </div>
@@ -117,7 +117,7 @@
                     <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </span>
                 <div>
-                    <h3 class="font-semibold text-xl text-navy dark:text-white">Payment{{ $pendingPayments->count() > 1 ? 's' : '' }} Needed</h3>
+                    <h3 class="font-semibold text-lg text-navy dark:text-white">Payment{{ $pendingPayments->count() > 1 ? 's' : '' }} Needed</h3>
                     <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ $pendingPayments->count() }} payment{{ $pendingPayments->count() > 1 ? 's' : '' }} totaling <strong class="text-navy dark:text-white">${{ number_format($pendingPayments->sum('amount') / 100, 2) }}</strong> — pay securely below to keep your project moving.</p>
                 </div>
             </div>
@@ -136,7 +136,7 @@
 
                         <div class="flex flex-wrap items-center justify-between gap-4 mt-4">
                             <div class="flex items-center gap-3">
-                                <span class="font-sans font-bold text-[1.375rem] text-navy dark:text-white">{{ $payment->formattedAmount() }}</span>
+                                <span class="font-sans font-bold text-lg text-navy dark:text-white">{{ $payment->formattedAmount() }}</span>
                                 <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-amber-400">
                                     <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                                     Payment Needed
@@ -160,7 +160,7 @@
     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
             <button type="button" id="payment-history-toggle" aria-expanded="true" aria-controls="payment-history-body" class="group inline-flex items-center gap-2 text-left">
-                <h3 class="font-display text-lg font-bold text-navy dark:text-white">Payment History <span class="text-gray-400 dark:text-gray-500 font-normal">({{ $allPaymentItems->count() }})</span></h3>
+                <h3 class="font-display text-base font-bold text-navy dark:text-white">Payment History <span class="text-gray-400 dark:text-gray-500 font-normal">({{ $allPaymentItems->count() }})</span></h3>
                 <svg id="payment-history-chevron" class="w-4 h-4 text-gray-400 group-hover:text-navy dark:group-hover:text-white transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </button>
             <div class="flex items-center gap-4">
@@ -264,7 +264,7 @@
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-4">
-                                        <span class="font-sans font-extrabold text-lg text-navy dark:text-white">{{ $payment->formattedAmount() }}</span>
+                                        <span class="font-sans font-extrabold text-base text-navy dark:text-white">{{ $payment->formattedAmount() }}</span>
                                         <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full {{ $statusColors[$payment->status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }}">
                                             <span class="w-1.5 h-1.5 rounded-full {{ $statusDots[$payment->status] ?? 'bg-gray-400' }}"></span>
                                             {{ ucfirst($payment->status) }}
@@ -293,7 +293,7 @@
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-4">
-                                        <span class="font-sans font-extrabold text-lg text-navy dark:text-white">{{ $subscriptionPayment->formattedAmountPaid() }}</span>
+                                        <span class="font-sans font-extrabold text-base text-navy dark:text-white">{{ $subscriptionPayment->formattedAmountPaid() }}</span>
                                         <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full bg-teal/15 text-teal-dark">
                                             <span class="w-1.5 h-1.5 rounded-full bg-teal"></span>
                                             Paid
@@ -350,7 +350,7 @@
                 <div class="relative px-7 pt-8 pb-6 text-center">
                     <div id="modal-status-icon" class="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"></div>
                     <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Transaction Details</p>
-                    <p id="modal-amount" class="font-display text-3xl font-bold text-white"></p>
+                    <p id="modal-amount" class="font-display text-2xl font-bold text-white"></p>
                     <p id="modal-description" class="text-sm text-white/50 mt-1"></p>
                 </div>
 
@@ -426,7 +426,7 @@
                         <svg class="w-7 h-7 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                     </div>
                     <p class="text-xs font-semibold uppercase tracking-widest text-gold mb-1">Care Plan</p>
-                    <p id="sub-modal-amount" class="font-display text-3xl font-bold text-white"></p>
+                    <p id="sub-modal-amount" class="font-display text-2xl font-bold text-white"></p>
                     <p id="sub-modal-description" class="text-sm text-white/50 mt-1"></p>
                 </div>
 

@@ -41,7 +41,7 @@
             <div>
                 <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-0.5">Care Plan</p>
                 <div class="flex items-center gap-2.5 flex-wrap">
-                    <p class="font-display text-lg font-bold text-navy dark:text-white">{{ $subscription->description }}</p>
+                    <p class="font-display text-base font-bold text-navy dark:text-white">{{ $subscription->description }}</p>
                     @if ($subscription->cancel_at_period_end && $subscription->isActive())
                         <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-3 py-1 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500">
                             <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
