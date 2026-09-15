@@ -560,6 +560,17 @@
             return;
         }
 
+        // Mirrors App\Rules\ValidPhoneNumber server-side — only digits and
+        // common phone punctuation, with a digit count that could plausibly
+        // be a real number. Catches garbage input before the network round
+        // trip; the server-side rule is still the real guarantee (this is
+        // just a faster no).
+        const phoneDigitCount = (phoneHidden.value.match(/\d/g) || []).length;
+        if (!phoneHidden.value || /[^0-9+\-\s().]/.test(phoneHidden.value) || phoneDigitCount < 7 || phoneDigitCount > 15) {
+            window.showNotice('Please enter a valid phone number.');
+            return;
+        }
+
         submitBtn.disabled = true;
         submitLabel.textContent = 'Booking...';
         submitBtn.insertAdjacentHTML('afterbegin',

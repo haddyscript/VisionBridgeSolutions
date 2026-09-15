@@ -7,6 +7,7 @@ use App\Mail\ConsultationReceivedMail;
 use App\Mail\NewConsultationMail;
 use App\Models\Consultation;
 use App\Models\Project;
+use App\Rules\ValidPhoneNumber;
 use App\Support\IcsCalendar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -71,7 +72,7 @@ class ConsultationController extends Controller
         }
 
         $validated = $request->validate([
-            'phone' => ['required', 'string', 'max:50'],
+            'phone' => ['required', 'string', 'max:50', new ValidPhoneNumber()],
             'country' => ['nullable', 'string', 'max:100'],
             'timezone' => ['nullable', 'string', 'max:100'],
             'preferred_at' => ['nullable', 'date'],

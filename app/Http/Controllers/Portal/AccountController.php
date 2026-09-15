@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Mail\AccountEmailChangedMail;
 use App\Mail\AccountPasswordChangedMail;
+use App\Rules\ValidPhoneNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -47,7 +48,7 @@ class AccountController extends Controller
         $validated = $request->validate([
             'name'             => ['required', 'string', 'max:255'],
             'email'            => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
-            'phone'            => ['nullable', 'string', 'max:30'],
+            'phone'            => ['nullable', 'string', 'max:30', new ValidPhoneNumber()],
             'current_password' => ['required', 'current_password'],
         ]);
 
