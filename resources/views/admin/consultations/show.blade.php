@@ -8,17 +8,29 @@
 @php
     $statusLabels = [
         'new' => 'New',
+        'contacted' => 'Contacted',
         'confirmed' => 'Confirmed',
-        'rescheduled' => 'Rescheduled',
-        'cancelled' => 'Cancelled',
+        'rescheduled' => 'Reschedule',
+        'in_progress' => 'In Progress',
+        'completed' => 'Completed',
+        'follow_up' => 'Follow-Up',
         'proceed' => 'Proceed',
+        'no_show' => 'No Show',
+        'cancelled' => 'Cancelled',
+        'declined' => 'Declined',
     ];
     $statusColors = [
         'new' => 'bg-gold/15 text-gold-dark',
-        'confirmed' => 'bg-emerald-100 text-emerald-700',
+        'contacted' => 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400',
+        'confirmed' => 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
         'rescheduled' => 'bg-teal/15 text-teal-dark',
-        'cancelled' => 'bg-red-100 text-red-600',
-        'proceed' => 'bg-blue-100 text-blue-700',
+        'in_progress' => 'bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-400',
+        'completed' => 'bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-400',
+        'follow_up' => 'bg-cyan-100 dark:bg-cyan-500/15 text-cyan-700 dark:text-cyan-400',
+        'proceed' => 'bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400',
+        'no_show' => 'bg-orange-100 dark:bg-orange-500/15 text-orange-700 dark:text-orange-400',
+        'cancelled' => 'bg-red-100 dark:bg-red-500/15 text-red-600 dark:text-red-400',
+        'declined' => 'bg-pink-100 dark:bg-pink-500/15 text-pink-700 dark:text-pink-400',
     ];
 @endphp
 
@@ -73,12 +85,26 @@
             </div>
 
             @php
-                $statusDotColors = [
-                    'new' => '#C9A84C',
-                    'confirmed' => '#10B981',
-                    'rescheduled' => '#2A9D8F',
-                    'cancelled' => '#EF4444',
-                    'proceed' => '#3B82F6',
+                // Solid dot colors (Tailwind classes, not raw hex) for the
+                // custom status dropdown below — same hue per status as
+                // $statusColors above, just a saturated dot instead of a
+                // tinted badge background. Feeds admin._dropdown's `dot`
+                // option, which already renders this inline (both in the
+                // closed button and in each option row), so the bespoke
+                // "Google Calendar style" standalone dot + JS color-sync
+                // this replaced is no longer needed.
+                $statusDots = [
+                    'new' => 'bg-gold',
+                    'contacted' => 'bg-amber-500',
+                    'confirmed' => 'bg-emerald-500',
+                    'rescheduled' => 'bg-teal',
+                    'in_progress' => 'bg-indigo-500',
+                    'completed' => 'bg-green-500',
+                    'follow_up' => 'bg-cyan-500',
+                    'proceed' => 'bg-blue-500',
+                    'no_show' => 'bg-orange-500',
+                    'cancelled' => 'bg-red-500',
+                    'declined' => 'bg-pink-500',
                 ];
             @endphp
 
@@ -87,16 +113,18 @@
                 @method('PATCH')
                 <input type="hidden" name="preferred_at" id="preferred_at_hidden">
 
-                {{-- Status — Google Calendar style colored dot + select --}}
-                <div class="flex items-center gap-3">
-                    <span id="status-dot" class="w-3 h-3 rounded-full shrink-0" style="background-color: {{ $statusDotColors[$consultation->status] ?? '#9CA3AF' }};"></span>
-                    <select name="status" id="status-select"
-                            class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white"
-                            data-colors='@json($statusDotColors)'>
-                        @foreach ($statusLabels as $value => $label)
-                            <option value="{{ $value }}" {{ $consultation->status === $value ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Status</label>
+                    @include('admin._dropdown', [
+                        'name' => 'status',
+                        'domId' => 'consultation-status',
+                        'options' => collect($statusLabels)->map(fn ($label, $value) => [
+                            'value' => $value,
+                            'label' => $label,
+                            'dot' => $statusDots[$value] ?? 'bg-gray-400',
+                        ])->values()->all(),
+                        'selected' => $consultation->status,
+                    ])
                 </div>
 
                 {{-- Date & time — clock icon row --}}
@@ -142,14 +170,6 @@
 
             <script>
             (function () {
-                const dot = document.getElementById('status-dot');
-                const select = document.getElementById('status-select');
-                const colors = JSON.parse(select.dataset.colors);
-
-                select.addEventListener('change', () => {
-                    dot.style.backgroundColor = colors[select.value] || '#9CA3AF';
-                });
-
                 document.getElementById('consultation-update-form').addEventListener('submit', (e) => {
                     const date = document.getElementById('preferred_date').value;
                     const time = document.getElementById('preferred_time').value;
@@ -173,7 +193,7 @@
                     default => false,
                 };
                 $notifyHint = match (true) {
-                    $consultation->status === 'new' => 'Set status to Confirmed, Rescheduled, Cancelled, or Proceed to notify the client.',
+                    $consultation->status === 'new' => 'Set status to Confirmed, Reschedule, Cancelled, or Proceed to notify the client.',
                     $consultation->status === 'confirmed' && ! $notifyReady => 'Add and save a meeting link first.',
                     $consultation->status === 'rescheduled' && ! $notifyReady => 'Set and save the new date/time first.',
                     default => null,

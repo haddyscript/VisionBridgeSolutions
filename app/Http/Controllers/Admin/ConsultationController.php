@@ -55,7 +55,7 @@ class ConsultationController extends Controller
     public function update(Request $request, Consultation $consultation)
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:new,confirmed,rescheduled,cancelled,proceed'],
+            'status' => ['required', 'in:new,contacted,confirmed,rescheduled,in_progress,completed,follow_up,proceed,no_show,cancelled,declined'],
             'preferred_at' => ['nullable', 'date'],
             'admin_notes' => ['nullable', 'string', 'max:5000'],
             'meeting_link' => ['nullable', 'url', 'max:255'],

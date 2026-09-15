@@ -8,17 +8,29 @@
 @php
     $statusLabels = [
         'new' => 'New',
+        'contacted' => 'Contacted',
         'confirmed' => 'Confirmed',
-        'rescheduled' => 'Rescheduled',
-        'cancelled' => 'Cancelled',
+        'rescheduled' => 'Reschedule',
+        'in_progress' => 'In Progress',
+        'completed' => 'Completed',
+        'follow_up' => 'Follow-Up',
         'proceed' => 'Proceed',
+        'no_show' => 'No Show',
+        'cancelled' => 'Cancelled',
+        'declined' => 'Declined',
     ];
     $statusColors = [
         'new' => 'bg-gold/15 text-gold-dark',
-        'confirmed' => 'bg-emerald-100 text-emerald-700',
+        'contacted' => 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400',
+        'confirmed' => 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
         'rescheduled' => 'bg-teal/15 text-teal-dark',
-        'cancelled' => 'bg-red-100 text-red-600',
-        'proceed' => 'bg-blue-100 text-blue-700',
+        'in_progress' => 'bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-400',
+        'completed' => 'bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-400',
+        'follow_up' => 'bg-cyan-100 dark:bg-cyan-500/15 text-cyan-700 dark:text-cyan-400',
+        'proceed' => 'bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400',
+        'no_show' => 'bg-orange-100 dark:bg-orange-500/15 text-orange-700 dark:text-orange-400',
+        'cancelled' => 'bg-red-100 dark:bg-red-500/15 text-red-600 dark:text-red-400',
+        'declined' => 'bg-pink-100 dark:bg-pink-500/15 text-pink-700 dark:text-pink-400',
     ];
 @endphp
 
