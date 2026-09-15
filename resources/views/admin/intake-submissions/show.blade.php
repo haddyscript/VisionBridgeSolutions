@@ -32,6 +32,22 @@
         'not_interested' => 'bg-rose-100 text-rose-700',
         'lost'           => 'bg-red-100 text-red-700',
     ];
+    // Solid dot colors for the custom status dropdown (admin._dropdown) —
+    // same hue per status as $statusColors above, just a saturated dot
+    // instead of a tinted badge background.
+    $statusDots = [
+        'new'            => 'bg-gold',
+        'contacted'      => 'bg-teal',
+        'converted'      => 'bg-emerald-500',
+        'reviewing'      => 'bg-blue-500',
+        'follow_up'      => 'bg-orange-500',
+        'proposal_sent'  => 'bg-purple-500',
+        'negotiating'    => 'bg-cyan-500',
+        'approved'       => 'bg-green-500',
+        'on_hold'        => 'bg-gray-400',
+        'not_interested' => 'bg-rose-500',
+        'lost'           => 'bg-red-500',
+    ];
     $categoryLabels = [
         'photo' => 'Photos',
         'video' => 'Videos',
@@ -85,12 +101,17 @@
                 @csrf
                 @method('PATCH')
                 <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Status</label>
-                <select name="status" onchange="this.form.submit()"
-                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-gray-900 dark:text-white dark:placeholder-gray-500">
-                    @foreach ($statusLabels as $value => $label)
-                        <option value="{{ $value }}" {{ $submission->status === $value ? 'selected' : '' }}>{{ $label }}</option>
-                    @endforeach
-                </select>
+                @include('admin._dropdown', [
+                    'name' => 'status',
+                    'domId' => 'intake-submission-status',
+                    'options' => collect($statusLabels)->map(fn ($label, $value) => [
+                        'value' => $value,
+                        'label' => $label,
+                        'dot' => $statusDots[$value] ?? 'bg-gray-400',
+                    ])->values()->all(),
+                    'selected' => $submission->status,
+                    'autoSubmit' => true,
+                ])
             </form>
 
             @if ($submission->project_id)
