@@ -90,6 +90,19 @@
             background-color: rgba(201, 168, 76, 0.6);
         }
 
+        /* ── Sidebar nav label styling — compact system-font look, matching
+             a reference (ClickUp's own sidebar) rather than this site's
+             usual Inter/text-sm. Scoped to #portal-sidebar-nav's own <a>
+             elements only (badges/counters inside them keep their explicit
+             text-xs classes, which win over this via direct declaration —
+             only the plain label text actually shrinks). The collapsed-rail
+             font-size:0 override further down has higher specificity and
+             still wins when the sidebar is collapsed. ── */
+        #portal-sidebar-nav a {
+            font-size: 10px;
+            font-family: -apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
         /* ── Collapsible sidebar (desktop only) ───────────────────────── */
         #portal-sidebar { transition: transform .2s ease, width .2s ease; }
 
@@ -199,7 +212,7 @@
                 </button>
             </div>
 
-            <nav class="flex-1 overflow-y-auto gold-scrollbar py-5 px-3 space-y-1">
+            <nav id="portal-sidebar-nav" class="flex-1 overflow-y-auto gold-scrollbar py-5 px-3 space-y-1">
                 <a href="{{ route('portal.dashboard') }}" data-tour="overview"
                    @if (request()->routeIs('portal.dashboard')) aria-current="page" @endif
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.dashboard') ? 'bg-gold/10 text-gold-dark dark:bg-gold/15 dark:text-gold' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/60 hover:text-navy dark:hover:text-white' }}">
