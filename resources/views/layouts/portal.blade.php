@@ -1166,8 +1166,14 @@
         })();
     </script>
 
-    {{-- Interactive portal tour — see specs/INTERACTIVE_PRODUCT_TOUR.md --}}
-    <div id="tour-backdrop" class="hidden fixed inset-0 z-50"></div>
+    {{-- Interactive portal tour — see specs/INTERACTIVE_PRODUCT_TOUR.md.
+         backdrop-blur-sm (same utility #page-loading-overlay uses below)
+         blurs whatever's still showing through the dimmed polygon painted
+         in paintBackdrop() — the clip-path hole around the highlighted
+         element isn't covered by this div at all, so only the un-cut area
+         gets blurred, keeping the target crisp while the rest of the page
+         softens behind it. --}}
+    <div id="tour-backdrop" class="hidden fixed inset-0 z-50 backdrop-blur-sm"></div>
     <div id="tour-card" class="hidden fixed z-50 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-5">
         <p id="tour-step-count" class="text-xs font-semibold uppercase tracking-widest text-gold-dark mb-1.5"></p>
         <h3 id="tour-title" class="font-display text-base font-bold text-navy dark:text-white mb-1.5"></h3>
