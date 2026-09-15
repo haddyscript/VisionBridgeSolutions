@@ -114,6 +114,18 @@
             font-family: -apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
+        /* ── Revision/content-request conversation bubbles — a bit smaller
+             than the portal's general text-sm (13px). Scoped by class, not
+             by page, on purpose: .message-text also appears in the admin
+             panel's own thread view (admin/projects/_text-thread.blade.php),
+             but that page uses layouts/admin.blade.php, an entirely separate
+             document with its own <style>, so this rule — living only in
+             layouts/portal.blade.php — can never reach it despite the
+             shared class name. ── */
+        .message-text {
+            font-size: 12px;
+        }
+
         /* ── Collapsible sidebar (desktop only) ───────────────────────── */
         #portal-sidebar { transition: transform .2s ease, width .2s ease; }
 
