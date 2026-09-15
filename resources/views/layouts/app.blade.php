@@ -2505,20 +2505,20 @@
         #contact-intro-label .accent { color: #C9A84C; }
 
         /* ─── Get Started (intake form) page — opening transition overlay ───
-             Same navy-gradient/gold-glow language as #careers-intro, since
-             this page's own hero (intake/create.blade.php) is a light/white
-             background rather than a dark hero — the curtain itself stays
-             dark so the reveal still reads as a deliberate "arrival" moment
-             instead of a flash of white. Runs noticeably longer than the
-             other three curtains (~3s total vs. ~1.5s) — a specific request
-             for this page since it's the lead-gen intake form, not a hero
-             reveal; see the play()/pageIntros durations in the shared driver
-             script further down. */
+             White, unlike the other three (dark navy/black) curtains — this
+             page's own content (intake/create.blade.php) is a white-background
+             form, not a dark hero, so a dark curtain fading into a white page
+             read as a jarring flash rather than a continuation. Gold-bracket
+             chrome matches the page's own ".intake-tag" badge treatment.
+             Runs noticeably longer than the other three curtains (~3s total
+             vs. ~1.5s) — a specific request for this page since it's the
+             lead-gen intake form, not a hero reveal; see the play()/pageIntros
+             durations in the shared driver script further down. */
         #get-started-intro {
             position: fixed;
             inset: 0;
             z-index: 9999;
-            background: linear-gradient(155deg, #0B0F17 0%, #15202C 55%, #0B0F17 100%);
+            background: #FFFFFF;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -2529,7 +2529,7 @@
             top: 50%; left: 50%;
             width: min(620px, 90vw); height: min(620px, 90vw);
             transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(201,168,76,0.16) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(201,168,76,0.10) 0%, transparent 70%);
             filter: blur(40px);
             pointer-events: none;
         }
@@ -2541,13 +2541,20 @@
             gap: 16px;
             padding: 0 24px;
         }
+        /* Shared .page-intro-bar's track color (rgba(255,255,255,.12)) is
+           tuned for the other curtains' dark backgrounds — on white it'd be
+           an invisible white-on-white track until the gold fill covers it.
+           Scoped to this curtain only, so the other three are untouched. */
+        #get-started-intro-content .page-intro-bar {
+            background: rgba(21,32,44,.10);
+        }
         #get-started-intro-label {
             font-family: 'Orbitron', sans-serif;
             text-transform: uppercase;
             font-size: clamp(0.94rem, 3vw, 1.5rem);
             font-weight: 800;
             letter-spacing: -0.01em;
-            color: #FFFFFF;
+            color: #15202C;
             opacity: 0;
             transform: translateY(10px);
             text-align: center;
