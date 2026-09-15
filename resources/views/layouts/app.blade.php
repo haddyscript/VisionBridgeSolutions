@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="@if(request()->routeIs('careers', 'website-redesign', 'contact')) intro-locked @endif">
+<html lang="en" class="@if(request()->routeIs('careers', 'website-redesign', 'contact', 'intake.create')) intro-locked @endif">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -2503,6 +2503,57 @@
             white-space: nowrap;
         }
         #contact-intro-label .accent { color: #C9A84C; }
+
+        /* ─── Get Started (intake form) page — opening transition overlay ───
+             Same navy-gradient/gold-glow language as #careers-intro, since
+             this page's own hero (intake/create.blade.php) is a light/white
+             background rather than a dark hero — the curtain itself stays
+             dark so the reveal still reads as a deliberate "arrival" moment
+             instead of a flash of white. Runs noticeably longer than the
+             other three curtains (~3s total vs. ~1.5s) — a specific request
+             for this page since it's the lead-gen intake form, not a hero
+             reveal; see the play()/pageIntros durations in the shared driver
+             script further down. */
+        #get-started-intro {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: linear-gradient(155deg, #0B0F17 0%, #15202C 55%, #0B0F17 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        #get-started-intro-glow {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: min(620px, 90vw); height: min(620px, 90vw);
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(201,168,76,0.16) 0%, transparent 70%);
+            filter: blur(40px);
+            pointer-events: none;
+        }
+        #get-started-intro-content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 0 24px;
+        }
+        #get-started-intro-label {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            font-size: clamp(0.94rem, 3vw, 1.5rem);
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: #FFFFFF;
+            opacity: 0;
+            transform: translateY(10px);
+            text-align: center;
+            white-space: nowrap;
+        }
+        #get-started-intro-label .accent { color: #C9A84C; }
     </style>
     {{-- Optional per-page extra <head> tags (e.g. a page-specific display
          font) — empty by default, so this is a no-op on every page that
@@ -2582,6 +2633,23 @@
             </div>
         </div>
         <noscript><style>#contact-intro { display: none !important; }</style></noscript>
+    @endif
+
+    {{-- Full-screen opening transition — Get Started (intake form) page
+         only. Same reasoning as the three overlays above, restyled with the
+         navy/gold palette; runs longer than the others (see pageIntros in
+         the shared driver script further down for the duration override). --}}
+    @if (request()->routeIs('intake.create'))
+        <div id="get-started-intro" role="presentation" aria-hidden="true">
+            <div id="get-started-intro-glow"></div>
+            <div id="get-started-intro-content">
+                <div class="page-intro-frame">
+                    <p id="get-started-intro-label">Starting Your <span class="accent">Project</span></p>
+                </div>
+                <div class="page-intro-bar"><div id="get-started-intro-bar" class="page-intro-bar-fill"></div></div>
+            </div>
+        </div>
+        <noscript><style>#get-started-intro { display: none !important; }</style></noscript>
     @endif
 
     {{-- No-JS safety net: with no JS to ever remove .intro-locked (set on
@@ -3865,6 +3933,12 @@
             { overlay: 'careers-intro',  bar: 'careers-intro-bar',  label: 'careers-intro-label' },
             { overlay: 'redesign-intro', bar: 'redesign-intro-bar', label: 'redesign-intro-label' },
             { overlay: 'contact-intro',  bar: 'contact-intro-bar',  label: 'contact-intro-label' },
+            // ~3s total (vs. the ~1.5s default the other three use below) —
+            // a specific ask for this page since it's the lead-gen intake
+            // form, not a hero reveal. safetyMs is padded past this curtain's
+            // own natural ~2.5s pre-fade completion so the fallback never
+            // fires ahead of it in the normal case.
+            { overlay: 'get-started-intro', bar: 'get-started-intro-bar', label: 'get-started-intro-label', barDuration: 1.8, holdDuration: 0.4, safetyMs: 3400 },
         ];
 
         pageIntros.forEach(function (ids) {
@@ -3874,6 +3948,9 @@
             var bar   = document.getElementById(ids.bar);
             var label = document.getElementById(ids.label);
             var revealed = false;
+            var barDuration = ids.barDuration || 0.55;
+            var holdDuration = ids.holdDuration || 0.15;
+            var safetyMs = ids.safetyMs || 2600;
 
             // Lets the real page's own entrance animations (paused via
             // .intro-locked, see the <style> block above) start playing —
@@ -3926,7 +4003,7 @@
 
             // Safety net — never trap a visitor behind this overlay (or its
             // paused page underneath) even if GSAP never loads.
-            setTimeout(reveal, 2600);
+            setTimeout(reveal, safetyMs);
 
             function play() {
                 if (revealed) return;
@@ -3935,8 +4012,8 @@
                 gsap.set(overlay, { filter: 'blur(0px)' }); // baseline so the exit's blur tween has something to interpolate from
                 gsap.timeline({ onComplete: reveal })
                     .to(label, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' })
-                    .to(bar,   { width: '100%', duration: 0.55, ease: 'power1.inOut' }, '-=0.15')
-                    .to({}, { duration: 0.15 }); // brief hold once the bar fills, before the reveal fires
+                    .to(bar,   { width: '100%', duration: barDuration, ease: 'power1.inOut' }, '-=0.15')
+                    .to({}, { duration: holdDuration }); // brief hold once the bar fills, before the reveal fires
             }
             play();
         });
