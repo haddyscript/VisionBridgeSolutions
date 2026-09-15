@@ -425,14 +425,19 @@
                                 <button type="button" class="chat-bubble-react-btn absolute -top-2 {{ $isOwn ? '-left-9' : '-right-9' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gold-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40" title="React" aria-label="React to this message">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 </button>
-                                {{-- Anchored to the SAME side as the react button
-                                     above (not the opposite side) — otherwise the
-                                     gap between the button you click and the
-                                     picker that opens grows with the message's
-                                     width, since the button sits just outside the
-                                     bubble's edge while an opposite-side anchor is
-                                     measured from the bubble's own far edge. --}}
-                                <div class="chat-reaction-picker hidden absolute z-20 {{ $isOwn ? 'left-8' : 'right-8' }} -top-11 items-center gap-0.5 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-full shadow-lg px-1.5 py-1">
+                                {{-- Anchored to the OPPOSITE side from the react
+                                     button/bubble edge — same reasoning as
+                                     .chat-bubble-menu below: this picker's width
+                                     (6 emoji buttons + padding, ~190px) can exceed
+                                     a narrow bubble's own width (e.g. "Hello sir"),
+                                     and same-side anchoring on an already
+                                     edge-hugging bubble pushed it straight past
+                                     the container edge, forcing the thread
+                                     horizontally scrollable. Anchoring to the far
+                                     side keeps it a little further from the
+                                     button on very wide messages, but that's a
+                                     much smaller cost than a broken layout. --}}
+                                <div class="chat-reaction-picker hidden absolute z-20 {{ $isOwn ? 'right-8' : 'left-8' }} -top-11 items-center gap-0.5 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-full shadow-lg px-1.5 py-1">
                                     @foreach (\App\Models\ChatMessage::REACTIONS as $chatReactionEmoji)
                                         <button type="button" class="chat-reaction-option w-7 h-7 rounded-full flex items-center justify-center text-base hover:bg-gold/10 hover:scale-110 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-gold/50" aria-label="{{ ['👍' => 'Thumbs up', '❤️' => 'Heart', '😂' => 'Laughing', '😮' => 'Surprised', '😢' => 'Crying', '🙏' => 'Pray'][$chatReactionEmoji] ?? $chatReactionEmoji }}">{{ $chatReactionEmoji }}</button>
                                     @endforeach
@@ -442,10 +447,10 @@
                                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>
                                 </button>
                                 {{-- Anchored to the OPPOSITE side from the trigger
-                                     button/bubble edge (unlike .chat-reaction-picker
-                                     above, which deliberately matches its trigger's
-                                     side) — this menu is fixed-width (w-44) and a
-                                     narrow bubble (e.g. "Hello sir") is often narrower
+                                     button/bubble edge — same reasoning as
+                                     .chat-reaction-picker above. This menu is
+                                     fixed-width (w-44) and a narrow bubble (e.g.
+                                     "Hello sir") is often narrower
                                      than that, so anchoring to the same side it's
                                      already hugging the container edge on would push
                                      it straight past that edge, forcing the whole
@@ -1211,7 +1216,9 @@
         html += '<button type="button" class="chat-bubble-react-btn absolute -top-2 ' + (isOwn ? '-left-9' : '-right-9') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gold-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40" title="React" aria-label="React to this message">' +
             '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' +
         '</button>';
-        html += '<div class="chat-reaction-picker hidden absolute z-20 ' + (isOwn ? 'left-8' : 'right-8') + ' -top-11 items-center gap-0.5 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-full shadow-lg px-1.5 py-1">';
+        // Anchored to the OPPOSITE side from the react button/bubble edge —
+        // see the matching comment on the server-rendered version above.
+        html += '<div class="chat-reaction-picker hidden absolute z-20 ' + (isOwn ? 'right-8' : 'left-8') + ' -top-11 items-center gap-0.5 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-full shadow-lg px-1.5 py-1">';
         const chatReactionLabels = { '👍': 'Thumbs up', '❤️': 'Heart', '😂': 'Laughing', '😮': 'Surprised', '😢': 'Crying', '🙏': 'Pray' };
         ['👍', '❤️', '😂', '😮', '😢', '🙏'].forEach(function (emoji) {
             html += '<button type="button" class="chat-reaction-option w-7 h-7 rounded-full flex items-center justify-center text-base hover:bg-gold/10 hover:scale-110 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-gold/50" aria-label="' + (chatReactionLabels[emoji] || emoji) + '">' + emoji + '</button>';
