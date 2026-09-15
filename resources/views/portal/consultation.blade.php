@@ -23,7 +23,7 @@
 </div>
 
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-    <form method="POST" action="{{ route('portal.consultation.store') }}" id="consultation-form">
+    <form method="POST" action="{{ route('portal.consultation.store') }}" id="consultation-form" data-no-loading-overlay>
         @csrf
         <input type="hidden" name="preferred_at" id="preferred_at" value="{{ old('preferred_at') }}">
         <input type="hidden" name="timezone" id="timezone" value="{{ old('timezone') }}">
