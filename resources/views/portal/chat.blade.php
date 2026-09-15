@@ -441,7 +441,18 @@
                                 <button type="button" class="chat-bubble-menu-btn absolute -top-2 {{ $isOwn ? '-left-2' : '-right-2' }} opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40" aria-label="Message options">
                                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>
                                 </button>
-                                <div class="chat-bubble-menu hidden absolute z-20 {{ $isOwn ? 'left-0' : 'right-0' }} top-7 w-44 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg py-1.5">
+                                {{-- Anchored to the OPPOSITE side from the trigger
+                                     button/bubble edge (unlike .chat-reaction-picker
+                                     above, which deliberately matches its trigger's
+                                     side) — this menu is fixed-width (w-44) and a
+                                     narrow bubble (e.g. "Hello sir") is often narrower
+                                     than that, so anchoring to the same side it's
+                                     already hugging the container edge on would push
+                                     it straight past that edge, forcing the whole
+                                     thread horizontally scrollable. Anchoring to the
+                                     far side instead always expands back into the
+                                     bubble's own available interior space. --}}
+                                <div class="chat-bubble-menu hidden absolute z-20 {{ $isOwn ? 'right-0' : 'left-0' }} top-7 w-44 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg py-1.5">
                                     @if ($isOwn)
                                         <button type="button" class="chat-action-edit w-full text-left px-3.5 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark transition-colors duration-200 rounded-lg mx-1 w-[calc(100%-0.5rem)]">Edit</button>
                                         <button type="button" class="chat-action-delete-everyone w-full text-left px-3.5 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors duration-200 rounded-lg mx-1 w-[calc(100%-0.5rem)]">Delete for everyone</button>
@@ -1209,7 +1220,12 @@
         html += '<button type="button" class="chat-bubble-menu-btn absolute -top-2 ' + (isOwn ? '-left-2' : '-right-2') + ' opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold/40" aria-label="Message options">' +
             '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 100-4 2 2 0 000 4zM10 12a2 2 0 100-4 2 2 0 000 4zM10 18a2 2 0 100-4 2 2 0 000 4z"/></svg>' +
         '</button>';
-        html += '<div class="chat-bubble-menu hidden absolute z-20 ' + (isOwn ? 'left-0' : 'right-0') + ' top-7 w-44 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg py-1.5">';
+        // Anchored to the OPPOSITE side from the trigger button/bubble edge —
+        // see the matching comment on the server-rendered version of this
+        // markup above for why (a narrow bubble is often narrower than this
+        // menu's fixed w-44, so same-side anchoring pushes it past the
+        // container edge it's already hugging).
+        html += '<div class="chat-bubble-menu hidden absolute z-20 ' + (isOwn ? 'right-0' : 'left-0') + ' top-7 w-44 bg-white dark:bg-navy border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg py-1.5">';
         if (isOwn) {
             html += '<button type="button" class="chat-action-edit w-[calc(100%-0.5rem)] mx-1 text-left px-3.5 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gold/10 hover:text-gold-dark transition-colors duration-200 rounded-lg">Edit</button>';
             html += '<button type="button" class="chat-action-delete-everyone w-[calc(100%-0.5rem)] mx-1 text-left px-3.5 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors duration-200 rounded-lg">Delete for everyone</button>';
