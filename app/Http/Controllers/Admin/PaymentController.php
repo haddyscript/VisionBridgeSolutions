@@ -97,7 +97,7 @@ class PaymentController extends Controller
         $validated = $request->validate([
             'description' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'min:1'],
-            'category' => ['nullable', 'string', 'in:phase,deposit,final,one_time,other'],
+            'category' => ['nullable', 'string', 'in:phase,deposit,final,one_time,other,milestone_payment,progress_payment,partial_payment,full_payment,balance_payment,additional_payment,change_order,rush_fee,website_development,landing_page_development,web_app_development,ecommerce_development,website_redesign,website_migration,domain_registration,domain_renewal,web_hosting,ssl_certificate,email_hosting,third_party_service,software_license_fee,website_maintenance,website_care_plan,technical_support,bug_fix,security_maintenance,backup_recovery,content_update,feature_enhancement,performance_optimization,monthly_subscription,quarterly_subscription,annual_subscription,recurring_service,maintenance_retainer,support_retainer,consultation_fee,service_fee,setup_fee,project_management_fee,design_fee,development_fee,hosting_infrastructure,reimbursement,late_payment_fee,cancellation_fee,refund,refund_adjustment,account_credit,payment_adjustment,payment_correction,overpayment,outstanding_balance'],
         ]);
 
         $project->payments()->create([

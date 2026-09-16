@@ -1329,16 +1329,106 @@ function submitAdminReply(form, event) {
                         </svg>
                     </button>
 
-                    <div data-payment-category-menu class="hidden absolute z-20 left-0 right-0 mt-1.5 bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
-                        @foreach (['' => 'No category', 'phase' => 'Phase', 'one_time' => 'One-Time Payment', 'deposit' => 'Deposit', 'final' => 'Final Payment', 'other' => 'Other'] as $value => $label)
-                            <button type="button" data-payment-category-option="{{ $value }}" role="option" aria-selected="{{ $value === '' ? 'true' : 'false' }}"
-                                    class="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm text-left hover:bg-gold/10 transition-colors {{ $value === '' ? 'text-gold-dark font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
-                                {{ $label }}
-                                <svg class="w-4 h-4 text-gold-dark shrink-0 {{ $value === '' ? '' : 'invisible' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                </svg>
-                            </button>
+                    <div data-payment-category-menu class="hidden absolute z-20 left-0 right-0 mt-1.5 max-h-80 overflow-y-auto bg-white dark:bg-navy border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1" role="listbox">
+                        @php
+                            $paymentCategoryGroups = [
+                                '💰 Project / Service Payments' => [
+                                    'phase' => 'Phase',
+                                    'one_time' => 'One-Time Payment',
+                                    'deposit' => 'Deposit',
+                                    'final' => 'Final Payment',
+                                    'milestone_payment' => 'Milestone Payment',
+                                    'progress_payment' => 'Progress Payment',
+                                    'partial_payment' => 'Partial Payment',
+                                    'full_payment' => 'Full Payment',
+                                    'balance_payment' => 'Balance Payment',
+                                    'additional_payment' => 'Additional Payment',
+                                    'change_order' => 'Extra Work / Change Order',
+                                    'rush_fee' => 'Rush / Expedited Fee',
+                                ],
+                                '🌐 Website & Development' => [
+                                    'website_development' => 'Website Development',
+                                    'landing_page_development' => 'Landing Page Development',
+                                    'web_app_development' => 'Web Application Development',
+                                    'ecommerce_development' => 'E-Commerce Development',
+                                    'website_redesign' => 'Website Redesign',
+                                    'website_migration' => 'Website Migration',
+                                    'domain_registration' => 'Domain Registration',
+                                    'domain_renewal' => 'Domain Renewal',
+                                    'web_hosting' => 'Web Hosting',
+                                    'ssl_certificate' => 'SSL Certificate',
+                                    'email_hosting' => 'Email Hosting',
+                                    'third_party_service' => 'Third-Party Service / API',
+                                    'software_license_fee' => 'Software / License Fee',
+                                ],
+                                '🛠️ Maintenance & Support' => [
+                                    'website_maintenance' => 'Website Maintenance',
+                                    'website_care_plan' => 'Website Care Plan',
+                                    'technical_support' => 'Technical Support',
+                                    'bug_fix' => 'Bug Fix / Issue Resolution',
+                                    'security_maintenance' => 'Security Maintenance',
+                                    'backup_recovery' => 'Backup & Recovery',
+                                    'content_update' => 'Content Update',
+                                    'feature_enhancement' => 'Feature Enhancement',
+                                    'performance_optimization' => 'Performance Optimization',
+                                ],
+                                '📅 Recurring Payments' => [
+                                    'monthly_subscription' => 'Monthly Subscription',
+                                    'quarterly_subscription' => 'Quarterly Subscription',
+                                    'annual_subscription' => 'Annual Subscription',
+                                    'recurring_service' => 'Recurring Service',
+                                    'maintenance_retainer' => 'Maintenance Retainer',
+                                    'support_retainer' => 'Support Retainer',
+                                ],
+                                '📄 Business / Administrative' => [
+                                    'consultation_fee' => 'Consultation Fee',
+                                    'service_fee' => 'Service Fee',
+                                    'setup_fee' => 'Setup Fee',
+                                    'project_management_fee' => 'Project Management Fee',
+                                    'design_fee' => 'Design Fee',
+                                    'development_fee' => 'Development Fee',
+                                    'hosting_infrastructure' => 'Hosting & Infrastructure',
+                                    'reimbursement' => 'Reimbursement',
+                                    'late_payment_fee' => 'Late Payment Fee',
+                                    'cancellation_fee' => 'Cancellation Fee',
+                                ],
+                                '💳 Financial / Special Cases' => [
+                                    'refund' => 'Refund',
+                                    'refund_adjustment' => 'Refund Adjustment',
+                                    'account_credit' => 'Credit / Account Credit',
+                                    'payment_adjustment' => 'Payment Adjustment',
+                                    'payment_correction' => 'Payment Correction',
+                                    'overpayment' => 'Overpayment',
+                                    'outstanding_balance' => 'Outstanding Balance',
+                                ],
+                            ];
+                        @endphp
+                        <button type="button" data-payment-category-option="" role="option" aria-selected="true"
+                                class="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm text-left hover:bg-gold/10 transition-colors text-gold-dark font-semibold">
+                            No category
+                            <svg class="w-4 h-4 text-gold-dark shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </button>
+                        @foreach ($paymentCategoryGroups as $groupLabel => $options)
+                            <div class="px-4 pt-2.5 pb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">{{ $groupLabel }}</div>
+                            @foreach ($options as $value => $label)
+                                <button type="button" data-payment-category-option="{{ $value }}" role="option" aria-selected="false"
+                                        class="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm text-left hover:bg-gold/10 transition-colors text-gray-700 dark:text-gray-300">
+                                    {{ $label }}
+                                    <svg class="w-4 h-4 text-gold-dark shrink-0 invisible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </button>
+                            @endforeach
                         @endforeach
+                        <button type="button" data-payment-category-option="other" role="option" aria-selected="false"
+                                class="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm text-left hover:bg-gold/10 transition-colors text-gray-700 dark:text-gray-300">
+                            Other
+                            <svg class="w-4 h-4 text-gold-dark shrink-0 invisible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
