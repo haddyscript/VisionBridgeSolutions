@@ -42,6 +42,9 @@ return Application::configure(basePath: dirname(__DIR__))
             // into a stale cached page. See the class docblock for why
             // @assetv()'s per-file cache-busting alone doesn't cover this.
             \App\Http\Middleware\PreventStaleHtmlCaching::class,
+            // Logs public-website page views for the super admin's Website
+            // Visitors report — see the class docblock for what's skipped.
+            \App\Http\Middleware\TrackSiteVisit::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [

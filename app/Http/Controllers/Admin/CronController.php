@@ -48,6 +48,11 @@ class CronController extends Controller
             'description' => "Force an immediate retry of every past-due Care Plan subscription's unpaid invoice via Stripe, instead of waiting on Stripe's own retry schedule.",
             'schedule' => 'Twice Daily',
         ],
+        'visits:rollup' => [
+            'label' => 'Save Monthly Website Visitor Totals',
+            'description' => 'Save this month and last month\'s website visitor totals to the permanent monthly report, then delete detailed visit records (IP addresses) older than 90 days.',
+            'schedule' => 'Daily',
+        ],
         'subscriptions:backfill-period-end' => [
             'label' => 'Backfill Subscription Period End',
             'description' => 'Backfill current_period_end from Stripe for active subscriptions where it is missing. One-off data fix, safe to re-run.',

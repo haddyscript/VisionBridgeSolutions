@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\RevisionController as AdminRevisionController;
 use App\Http\Controllers\Admin\SatisfactionSurveyController as AdminSatisfactionSurveyController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
 use App\Http\Controllers\Admin\ServiceAgreementController as AdminServiceAgreementController;
+use App\Http\Controllers\Admin\SiteVisitorController as AdminSiteVisitorController;
 use App\Http\Controllers\Admin\PartnerPayoutController as AdminPartnerPayoutController;
 use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\Admin\TeamController as AdminTeamController;
@@ -484,6 +485,8 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
         // server-side — keeps the plaintext DEPLOYER_PASSWORD out of this
         // page's rendered HTML, only ever exposed in this one-time redirect.
         Route::get('/cron-jobs/deploy', [AdminCronController::class, 'deploy'])->name('cron-jobs.deploy');
+
+        Route::get('/site-visitors', [AdminSiteVisitorController::class, 'index'])->name('site-visitors.index');
     });
 
     Route::middleware('owner')->group(function () {

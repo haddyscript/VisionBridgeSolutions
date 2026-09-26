@@ -1,0 +1,96 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use App\Models\SiteVisit;
+use App\Support\UserAgentParser;
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
+
+/**
+ * Logs one row per public-website page view for the super admin's Website
+ * Visitors report. Only successful HTML GET pages count — portal/admin pages,
+ * file downloads, auth screens, AJAX/JSON, redirects, errors, bots, and admins
+ * (including an admin viewing-as-client) are all skipped, so the numbers
+ * reflect real outside visitors. Never allowed to break the page: any failure
+ * is logged and swallowed.
+ */
+class TrackSiteVisit
+{
+    private const COOKIE = 'vbs_vid';
+
+    private const EXCLUDED_PREFIXES = [
+        'admin', 'portal', 'files', 'login', 'logout', 'register', 'forgot-password',
+        'reset-password', 'two-factor-challenge', 'email', 'deployer', 'migrate',
+        'reset-database', 'stripe', 'up', 'broadcasting', 'theme', 'impersonate', 'storage',
+    ];
+
+    public function handle(Request $request, Closure $next): Response
+    {
+        $response = $next($request);
+
+        if (! $this->shouldTrack($request, $response)) {
+            return $response;
+        }
+
+        try {
+            $visitorId = $request->cookie(self::COOKIE);
+            if (! $visitorId || strlen($visitorId) > 40) {
+                $visitorId = Str::random(32);
+                Cookie::queue(self::COOKIE, $visitorId, 60 * 24 * 365 * 2);
+            }
+
+            $ua = $request->userAgent();
+            $referrerHost = parse_url((string) $request->headers->get('referer'), PHP_URL_HOST);
+
+            SiteVisit::create([
+                'visitor_id' => $visitorId,
+                // Behind Cloudflare, request->ip() would be Cloudflare's own
+                // edge IP rather than the visitor's.
+                'ip_address' => $request->header('CF-Connecting-IP') ?: $request->ip(),
+                ...UserAgentParser::parse($ua),
+                'path' => Str::limit('/'.ltrim($request->path(), '/'), 250, ''),
+                // Clicking between our own pages isn't a traffic source.
+                'referrer_host' => $referrerHost && $referrerHost !== $request->getHost() ? Str::limit($referrerHost, 250, '') : null,
+                'user_agent' => $ua ? Str::limit($ua, 1000, '') : null,
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('Site visit tracking failed', ['exception' => $e]);
+        }
+
+        return $response;
+    }
+
+    private function shouldTrack(Request $request, Response $response): bool
+    {
+        if (! $request->isMethod('GET') || $request->ajax() || $request->expectsJson()) {
+            return false;
+        }
+
+        if ($response->getStatusCode() !== 200
+            || ! str_contains((string) $response->headers->get('Content-Type'), 'text/html')) {
+            return false;
+        }
+
+        // Browser link prefetching isn't a real visit.
+        if ($request->header('Purpose') === 'prefetch' || $request->header('Sec-Purpose')) {
+            return false;
+        }
+
+        $firstSegment = $request->segment(1);
+        if ($firstSegment && in_array($firstSegment, self::EXCLUDED_PREFIXES, true)) {
+            return false;
+        }
+
+        $user = $request->user();
+        if (($user && $user->isAdmin()) || $request->session()->has('impersonator_id')) {
+            return false;
+        }
+
+        return ! UserAgentParser::isBot($request->userAgent());
+    }
+}
