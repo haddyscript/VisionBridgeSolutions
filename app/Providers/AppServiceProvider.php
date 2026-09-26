@@ -64,6 +64,9 @@ class AppServiceProvider extends ServiceProvider
             $view->with('unreadChatCount', $this->adminUnreadChatCount());
             $view->with('unreadContactCount', ContactMessage::whereNull('read_at')->count());
             $view->with('unreadConsultationCount', Consultation::whereNull('read_at')->count());
+            // rescue(): don't take down every admin page if this deploys before its migration runs.
+            $view->with('newWebsiteCheckLeadCount', rescue(fn () => \App\Models\WebsiteCheck::leads()->where('status', 'new')->count(), 0, false));
+            $view->with('draftCarePlanReportCount', rescue(fn () => \App\Models\CarePlanReport::where('status', 'draft')->count(), 0, false));
             $view->with('gettingStartedTasks', $this->adminGettingStartedTasks());
             $view->with('myWorkOrderCount', $this->myWorkOrderCount());
             $view->with('unassignedWorkOrderCount', $this->unassignedWorkOrderCount());
@@ -76,6 +79,13 @@ class AppServiceProvider extends ServiceProvider
             $view->with('unreadNotificationCount', $unreadNotificationCount);
             $view->with('upcomingConsultationCount', $this->clientUpcomingConsultationCount());
             $view->with('unreadChatCount', $this->clientUnreadChatCount());
+            // Sidebar "Monthly Reports" link — only for clients with a Care Plan or an already-sent report.
+            $view->with('showCarePlanReports', rescue(function () {
+                $project = auth()->user()?->projects()->first();
+
+                return $project && ($project->subscriptions()->whereIn('status', ['active', 'past_due'])->exists()
+                    || \App\Models\CarePlanReport::where('project_id', $project->id)->where('status', 'sent')->exists());
+            }, false, false));
         });
     }
 

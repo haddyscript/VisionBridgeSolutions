@@ -23,9 +23,11 @@ use App\Http\Controllers\Admin\RecommendationController as AdminRecommendationCo
 use App\Http\Controllers\Admin\RevisionController as AdminRevisionController;
 use App\Http\Controllers\Admin\SatisfactionSurveyController as AdminSatisfactionSurveyController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
+use App\Http\Controllers\Admin\CarePlanReportController as AdminCarePlanReportController;
 use App\Http\Controllers\Admin\RevenueController as AdminRevenueController;
 use App\Http\Controllers\Admin\ServiceAgreementController as AdminServiceAgreementController;
 use App\Http\Controllers\Admin\SiteVisitorController as AdminSiteVisitorController;
+use App\Http\Controllers\Admin\WebsiteCheckController as AdminWebsiteCheckController;
 use App\Http\Controllers\Admin\PartnerPayoutController as AdminPartnerPayoutController;
 use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\Admin\TeamController as AdminTeamController;
@@ -44,6 +46,7 @@ use App\Http\Controllers\CarePlanController;
 use App\Http\Controllers\CarePlanSignupController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\WebsiteCheckController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\DatabaseResetController;
 use App\Http\Controllers\DeployerController;
@@ -61,6 +64,7 @@ use App\Http\Controllers\Portal\CarePlanPaymentMethodController as PortalCarePla
 use App\Http\Controllers\Portal\ConsultationController as PortalConsultationController;
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\DepositController as PortalDepositController;
+use App\Http\Controllers\Portal\CarePlanReportController as PortalCarePlanReportController;
 use App\Http\Controllers\Portal\DocumentController as PortalDocumentController;
 use App\Http\Controllers\Portal\OnboardingCompleteController as PortalOnboardingCompleteController;
 use App\Http\Controllers\Portal\MilestoneController as PortalMilestoneController;
@@ -98,6 +102,10 @@ Route::view('/website-redesign', 'website-redesign')->name('website-redesign');
 Route::view('/careers', 'careers')->name('careers');
 
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+
+Route::get('/website-check', [WebsiteCheckController::class, 'show'])->name('website-check');
+Route::post('/website-check', [WebsiteCheckController::class, 'run'])->middleware('throttle:6,1')->name('website-check.run');
+Route::post('/website-check/{websiteCheck}/report', [WebsiteCheckController::class, 'unlock'])->middleware('throttle:6,1')->name('website-check.unlock');
 
 // A shareable follow-up link for prospects we've already talked to — not
 // linked anywhere in the site nav, just sent directly (text/email/WhatsApp).
@@ -240,6 +248,8 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
     Route::get('/portal/milestones', [PortalMilestoneController::class, 'index'])->name('portal.milestones.index');
     Route::get('/portal/milestones/{milestone}/ics', [PortalMilestoneController::class, 'ics'])->name('portal.milestones.ics');
     Route::get('/portal/documents', [PortalDocumentController::class, 'index'])->name('portal.documents.index');
+    Route::get('/portal/reports', [PortalCarePlanReportController::class, 'index'])->name('portal.care-plan-reports.index');
+    Route::get('/portal/reports/{carePlanReport}', [PortalCarePlanReportController::class, 'show'])->name('portal.care-plan-reports.show');
     Route::get('/portal/documents/handoff-package', [PortalDocumentController::class, 'handoffPackage'])->name('portal.documents.handoff-package');
     Route::get('/portal/support-tickets', [PortalSupportTicketController::class, 'index'])->name('portal.support-tickets.index');
     Route::post('/portal/support-tickets', [PortalSupportTicketController::class, 'store'])->name('portal.support-tickets.store');
@@ -348,6 +358,10 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::delete('/calendar/events/{calendarEvent}', [AdminCalendarController::class, 'destroy'])->name('calendar.events.destroy');
 
     // ─── Inbox ───────────────────────────────────────────────────────────────
+    Route::get('/website-checks', [AdminWebsiteCheckController::class, 'index'])->name('website-checks.index');
+    Route::get('/website-checks/{websiteCheck}', [AdminWebsiteCheckController::class, 'show'])->name('website-checks.show');
+    Route::patch('/website-checks/{websiteCheck}', [AdminWebsiteCheckController::class, 'update'])->name('website-checks.update');
+
     Route::get('/contact-messages', [AdminContactMessageController::class, 'index'])->name('contact-messages.index');
     Route::get('/contact-messages/{contactMessage}', [AdminContactMessageController::class, 'show'])->name('contact-messages.show');
     Route::patch('/contact-messages/{contactMessage}/read', [AdminContactMessageController::class, 'toggleRead'])->name('contact-messages.toggle-read');
@@ -439,6 +453,11 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
     Route::delete('/payments/{payment}', [AdminPaymentController::class, 'destroy'])->name('payments.destroy');
     Route::post('/payments/{payment}/sync', [AdminPaymentController::class, 'sync'])->name('payments.sync');
     Route::post('/payments/{payment}/send-email', [AdminPaymentController::class, 'sendEmail'])->name('payments.send-email');
+
+    Route::get('/care-plan-reports', [AdminCarePlanReportController::class, 'index'])->name('care-plan-reports.index');
+    Route::post('/care-plan-reports/generate', [AdminCarePlanReportController::class, 'generate'])->name('care-plan-reports.generate');
+    Route::get('/care-plan-reports/{carePlanReport}', [AdminCarePlanReportController::class, 'edit'])->name('care-plan-reports.edit');
+    Route::patch('/care-plan-reports/{carePlanReport}', [AdminCarePlanReportController::class, 'update'])->name('care-plan-reports.update');
 
     Route::get('/subscriptions', [AdminSubscriptionController::class, 'index'])->name('subscriptions.index');
     Route::post('/projects/{project}/subscriptions', [AdminSubscriptionController::class, 'store'])->name('subscriptions.store');

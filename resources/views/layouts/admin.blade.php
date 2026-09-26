@@ -385,6 +385,18 @@
                         @endif
                     </a>
                 @endif
+                @if (auth()->user()->canAccessAdminPage('website-checks'))
+                    <a href="{{ route('admin.website-checks.index') }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.website-checks.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                        <span class="flex-1">Website Check Leads</span>
+                        @if ($newWebsiteCheckLeadCount > 0)
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500 text-white">{{ $newWebsiteCheckLeadCount }}</span>
+                        @endif
+                    </a>
+                @endif
                 @if (auth()->user()->canAccessAdminPage('consultations'))
                     <a href="{{ route('admin.consultations.index') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.consultations.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
@@ -473,6 +485,18 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                         </svg>
                         Care Plans
+                    </a>
+                @endif
+                @if (auth()->user()->canAccessAdminPage('care-plan-reports'))
+                    <a href="{{ route('admin.care-plan-reports.index') }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.care-plan-reports.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span class="flex-1">Care Plan Reports</span>
+                        @if ($draftCarePlanReportCount > 0)
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500 text-white">{{ $draftCarePlanReportCount }}</span>
+                        @endif
                     </a>
                 @endif
                 @if (auth()->user()->canAccessAdminPage('partner-payouts'))

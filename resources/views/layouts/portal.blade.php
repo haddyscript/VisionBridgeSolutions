@@ -285,6 +285,16 @@
                     </svg>
                     Documents
                 </a>
+                @if ($showCarePlanReports ?? false)
+                    <a href="{{ route('portal.care-plan-reports.index') }}"
+                       @if (request()->routeIs('portal.care-plan-reports.*')) aria-current="page" @endif
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.care-plan-reports.*') ? 'bg-gold/10 text-gold-dark dark:bg-gold/15 dark:text-gold' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/60 hover:text-navy dark:hover:text-white' }}">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Monthly Reports
+                    </a>
+                @endif
                 <a href="{{ route('portal.project-requests.show') }}"
                    @if (request()->routeIs('portal.project-requests.*')) aria-current="page" @endif
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('portal.project-requests.*') ? 'bg-gold/10 text-gold-dark dark:bg-gold/15 dark:text-gold' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/60 hover:text-navy dark:hover:text-white' }}">

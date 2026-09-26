@@ -13,6 +13,7 @@ Schedule::command('payouts:send-faithstack-reminder')->daily();
 Schedule::command('projects:suspend-overdue')->hourly();
 Schedule::command('subscriptions:send-renewal-reminders')->daily();
 Schedule::command('visits:rollup')->daily();
+Schedule::command('care-plan-reports:generate')->monthlyOn(1, '07:00');
 // Manual run over SSH (also fires automatically twice a day via this
 // schedule, if the server's cron is wired up):
 //   ssh -p 65002 u290597841@45.130.228.160

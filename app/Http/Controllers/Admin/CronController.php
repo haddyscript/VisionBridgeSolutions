@@ -53,6 +53,11 @@ class CronController extends Controller
             'description' => 'Save this month and last month\'s website visitor totals to the permanent monthly report, then delete detailed visit records (IP addresses) older than 90 days.',
             'schedule' => 'Daily',
         ],
+        'care-plan-reports:generate' => [
+            'label' => 'Draft Monthly Care Plan Reports',
+            'description' => "Create last month's draft Care Plan report for every active plan (skips any that already exist). Drafts are never sent automatically — an admin reviews and sends each one.",
+            'schedule' => 'Monthly (1st)',
+        ],
         'subscriptions:backfill-period-end' => [
             'label' => 'Backfill Subscription Period End',
             'description' => 'Backfill current_period_end from Stripe for active subscriptions where it is missing. One-off data fix, safe to re-run.',
