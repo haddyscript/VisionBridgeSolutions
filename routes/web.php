@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\RecommendationController as AdminRecommendationCo
 use App\Http\Controllers\Admin\RevisionController as AdminRevisionController;
 use App\Http\Controllers\Admin\SatisfactionSurveyController as AdminSatisfactionSurveyController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
+use App\Http\Controllers\Admin\RevenueController as AdminRevenueController;
 use App\Http\Controllers\Admin\ServiceAgreementController as AdminServiceAgreementController;
 use App\Http\Controllers\Admin\SiteVisitorController as AdminSiteVisitorController;
 use App\Http\Controllers\Admin\PartnerPayoutController as AdminPartnerPayoutController;
@@ -490,6 +491,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
         Route::get('/cron-jobs/deploy', [AdminCronController::class, 'deploy'])->name('cron-jobs.deploy');
 
         Route::get('/site-visitors', [AdminSiteVisitorController::class, 'index'])->name('site-visitors.index');
+        Route::get('/revenue', [AdminRevenueController::class, 'index'])->name('revenue.index');
     });
 
     Route::middleware('owner')->group(function () {

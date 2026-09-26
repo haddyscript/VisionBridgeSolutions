@@ -1712,3 +1712,16 @@ Makes the public website easier for Google (and social apps) to read. All in the
 - **Fixed: phone links dialed a placeholder number.** The "(404) 426-2856" links in the public site's desktop menu and footer, and in the client portal sidebar's Need Help box, were `tel:5550000000` — tapping them on a phone dialed the wrong number. Now `tel:+14044262856`.
 
 **Business actions needed (outside the code):** verify the site in **Google Search Console** and submit `https://visionbridgesolutions.com/sitemap.xml`; set up a **Google Business Profile** (drives the map/business panel, and unblocks the Google-review funnel from §15uu). Rankings change over weeks, not immediately.
+
+## 116. Revenue Dashboard — Super Admin (2026-09-27)
+
+New super-admin-only page, **Revenue** (`/admin/revenue`, sidebar link under Website Visitors, `Admin\RevenueController`). Read-only; computed live on each load from the existing `payments`, `subscription_payments`, `subscriptions`, and `partner_payouts` tables (all cents) — none of those are ever pruned, so no snapshot table is needed and history is permanent.
+
+- **KPI cards** — This Month's money in (with ▲/▼ % change vs last month), Monthly Care Plan Income (every `active` + `past_due` subscription; yearly plans ÷ 12) with active/past-due counts, Year-to-Date, and Waiting to Be Paid (all `pending` one-time payments).
+- **12-month stacked bar chart** — one-time project payments vs Care Plan charges per month (plain CSS, no chart library).
+- **Monthly Breakdown table** (last 12 months + totals) — One-Time, Care Plans, Refunds, Money In, FaithStack Share, VisionBridge Keeps.
+- **Waiting to Be Paid** list — each pending one-time payment request, oldest first, with how many days ago it was requested (amber after 14 days, red after 30), linking to the project. Note: this includes future phases an admin queued ahead of time (§ Payment Requests), not only overdue ones — there's no due-date field to tell them apart.
+- **Top Clients (All Time)** — top 10 projects by lifetime money in.
+- **Care Plans Past Due** (monthly income at risk), **Care Plans Canceled (Last 90 Days)** (monthly income lost), and a **FaithStack** card (currently owed but not marked paid, plus 12-month share vs what VisionBridge kept, linking to FaithStack Payouts).
+
+**How amounts are counted:** money in for a month = one-time payments by `paid_at` + Care Plan invoices by `paid_at` − refunds by `refunded_at` (a refund lands in the month it was issued, not the month of the original payment). FaithStack share = `partner_payouts.faithstack_amount` by `created_at` — a historical payout entered manually later (§16) counts in the month it was entered. Amounts are before Stripe processing fees. Test/sandbox payments left in the database are counted like any other.
