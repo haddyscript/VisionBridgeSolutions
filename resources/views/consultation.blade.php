@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Book A Consultation – VisionBridge Solutions')
+@section('description', 'Book a consultation with VisionBridge Solutions — pick a time that works for you and talk through your website goals with our team.')
 
 @section('content')
 

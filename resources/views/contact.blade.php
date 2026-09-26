@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Contact Us – VisionBridge Solutions')
+@section('description', 'Questions about a new website, a redesign, hosting, or a Website Care Plan? Contact VisionBridge Solutions by message, email, or phone at (404) 426-2856.')
 
 @section('content')
 

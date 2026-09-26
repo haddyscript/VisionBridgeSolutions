@@ -3,8 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VisionBridge Solutions</title>
+    <title>@yield('title', 'VisionBridge Solutions')</title>
     <meta name="description" content="@yield('description', 'Custom websites designed to strengthen your brand, expand your reach, and protect your online presence.')">
+
+    {{-- SEO: canonical URL (query strings like ?ref= or ?utm_ stripped, so
+         tracking links don't count as duplicate pages) + share previews for
+         Facebook/LinkedIn/iMessage/WhatsApp (Open Graph) and X (Twitter). --}}
+    <link rel="canonical" href="{{ url()->current() }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="VisionBridge Solutions">
+    <meta property="og:title" content="@yield('title', 'VisionBridge Solutions')">
+    <meta property="og:description" content="@yield('description', 'Custom websites designed to strengthen your brand, expand your reach, and protect your online presence.')">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="{{ asset('image/logo/visionbridgesolutions-logo-tagline.png') }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', 'VisionBridge Solutions')">
+    <meta name="twitter:description" content="@yield('description', 'Custom websites designed to strengthen your brand, expand your reach, and protect your online presence.')">
+    <meta name="twitter:image" content="{{ asset('image/logo/visionbridgesolutions-logo-tagline.png') }}">
+
+    {{-- SEO: structured business details Google reads for the knowledge
+         panel / rich results. Homepage only, per Google's guidance. --}}
+    @if (request()->routeIs('home'))
+        @php
+            $seoSchema = [
+                '@context' => 'https://schema.org',
+                '@graph' => [
+                    [
+                        '@type' => 'Organization',
+                        '@id' => url('/').'#organization',
+                        'name' => 'VisionBridge Solutions',
+                        'url' => url('/'),
+                        'logo' => asset('image/logo/visionbridgesolutions-logo.png'),
+                        'description' => 'Web design, development, hosting, and ongoing website care for churches, ministries, nonprofits, and businesses.',
+                        'email' => 'support@visionbridgesolutions.com',
+                        'telephone' => '+1-404-426-2856',
+                        'areaServed' => 'US',
+                        'contactPoint' => [
+                            '@type' => 'ContactPoint',
+                            'contactType' => 'customer service',
+                            'email' => 'support@visionbridgesolutions.com',
+                            'telephone' => '+1-404-426-2856',
+                            'availableLanguage' => 'English',
+                        ],
+                    ],
+                    [
+                        '@type' => 'WebSite',
+                        '@id' => url('/').'#website',
+                        'name' => 'VisionBridge Solutions',
+                        'url' => url('/'),
+                        'publisher' => ['@id' => url('/').'#organization'],
+                    ],
+                ],
+            ];
+        @endphp
+        <script type="application/ld+json">{!! json_encode($seoSchema, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) !!}</script>
+    @endif
 
     <!-- Favicon — VisionBridge logo mark, matching the navbar logo -->
     <link rel="icon" type="image/jpeg" href="@assetv('image/logo/vbs-logo-v3.jpeg')">
@@ -3003,7 +3056,7 @@
                         <p id="desktop-menu-brand-name" class="font-display text-2xl font-bold text-white leading-tight mb-4">VisionBridge</p>
                         <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,.55);">
                             <a href="mailto:support@visionbridgesolutions.com" class="hover:text-gold transition-colors desktop-menu-contact-link">support@visionbridgesolutions.com</a><br>
-                            <a href="tel:5550000000" class="hover:text-gold transition-colors desktop-menu-contact-link">(404) 426-2856</a>
+                            <a href="tel:+14044262856" class="hover:text-gold transition-colors desktop-menu-contact-link">(404) 426-2856</a>
                         </p>
                     </div>
                     <button id="desktop-menu-close" type="button" aria-label="Close menu">Close</button>
@@ -3119,7 +3172,7 @@
                             <svg class="w-4 h-4 text-teal shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                             </svg>
-                            <a href="tel:5550000000" class="footer-link hover:text-gold">
+                            <a href="tel:+14044262856" class="footer-link hover:text-gold">
                                 (404) 426-2856<span class="footer-link-bar"></span>
                             </a>
                         </li>

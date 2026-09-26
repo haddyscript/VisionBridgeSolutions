@@ -42,6 +42,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\CarePlanController;
 use App\Http\Controllers\CarePlanSignupController;
 use App\Http\Controllers\ConsultationController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\DatabaseResetController;
 use App\Http\Controllers\DeployerController;
@@ -94,6 +95,8 @@ Route::view('/our-work', 'gallery')->name('gallery');
 Route::view('/website-redesign', 'website-redesign')->name('website-redesign');
 
 Route::view('/careers', 'careers')->name('careers');
+
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 
 // A shareable follow-up link for prospects we've already talked to — not
 // linked anywhere in the site nav, just sent directly (text/email/WhatsApp).

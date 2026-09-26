@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'VisionBridge Solutions – Building Websites. Expanding Reach.')
+@section('description', 'VisionBridge Solutions designs, builds, hosts, and cares for websites for churches, ministries, nonprofits, and businesses — so you can grow your reach while we handle the technology.')
 
 @section('content')
 

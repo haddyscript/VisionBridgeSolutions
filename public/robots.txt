@@ -1,2 +1,15 @@
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /portal
+Disallow: /files
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /two-factor-challenge
+Disallow: /email
+Disallow: /deployer
+Disallow: /migrate
+Disallow: /reset-database
+
+Sitemap: https://visionbridgesolutions.com/sitemap.xml
