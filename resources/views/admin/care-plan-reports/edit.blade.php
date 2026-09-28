@@ -25,8 +25,13 @@
     <div>
         <p class="text-lg font-bold text-navy dark:text-white">{{ $report->project->user->name }} — {{ $report->monthLabel() }}</p>
         <p class="text-sm text-gray-500 dark:text-gray-400">
-            {{ $report->project->name }}@if ($report->subscription?->maintenancePlan) · {{ $report->subscription->maintenancePlan->name }} plan@endif
-            @if ($report->subscription?->domain) · {{ $report->subscription->domain }}@endif
+            {{ $report->project->name }}
+            @if ($report->subscription?->maintenancePlan)
+                · {{ $report->subscription->maintenancePlan->name }} plan
+            @endif
+            @if ($report->subscription?->domain)
+                · {{ $report->subscription->domain }}
+            @endif
         </p>
     </div>
     @if ($report->isSent())
