@@ -660,9 +660,10 @@
 
             <script>
             // Sidebar groups: remembered open/closed per browser; the group
-            // holding the current page always opens; a collapsed group shows a
-            // red dot if anything inside has a badge; groups with no links the
-            // admin can access are removed.
+            // holding the current page opens on load and keeps a gold header
+            // even if collapsed; a collapsed group shows the total of the
+            // badges inside it; groups with no links the admin can access are
+            // removed.
             (function () {
                 const KEY = 'adminNavCollapsed';
                 let collapsed = [];
@@ -674,17 +675,25 @@
 
                     const name = group.dataset.navGroup;
                     const btn = group.querySelector('.nav-group-toggle');
-                    const dot = group.querySelector('.nav-group-dot');
-                    const hasBadge = !!items.querySelector('.bg-red-500');
+                    const badge = group.querySelector('.nav-group-badge');
+                    const badgeTotal = Array.from(items.querySelectorAll('.bg-red-500'))
+                        .reduce(function (sum, el) { return sum + (parseInt(el.textContent, 10) || 0); }, 0);
+                    const hasActive = !!items.querySelector('a[class*="bg-gold/15"]');
+
+                    if (hasActive) {
+                        btn.classList.remove('text-white/70');
+                        btn.classList.add('text-gold');
+                    }
+                    badge.textContent = badgeTotal > 99 ? '99+' : badgeTotal;
 
                     const setOpen = function (open) {
                         items.classList.toggle('hidden', !open);
                         btn.setAttribute('aria-expanded', open ? 'true' : 'false');
                         btn.querySelector('.nav-group-chevron').classList.toggle('-rotate-90', !open);
-                        dot.classList.toggle('hidden', open || !hasBadge);
+                        badge.classList.toggle('hidden', open || badgeTotal === 0);
                     };
 
-                    setOpen(!!items.querySelector('a[class*="bg-gold/15"]') || !collapsed.includes(name));
+                    setOpen(hasActive || !collapsed.includes(name));
 
                     btn.addEventListener('click', function () {
                         const open = items.classList.contains('hidden');

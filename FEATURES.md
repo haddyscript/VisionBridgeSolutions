@@ -1773,7 +1773,7 @@ The admin sidebar was one long flat list that needed scrolling. Links are now gr
 - **System** (super admins only): Cron Jobs, Error Log — originally one "Super Admin" group, split so every header names what's inside rather than who can see it
 - FAQ & Help Guide stays at the bottom.
 
-Click a section header to collapse/expand it — remembered per browser (`localStorage` key `adminNavCollapsed`). The section holding the current page always opens, a collapsed section shows a small red dot if anything inside has an unread/pending badge, and a section is hidden entirely for a restricted admin with access to none of its pages. Per-link permission checks are unchanged.
+Click a section header to collapse/expand it — remembered per browser (`localStorage` key `adminNavCollapsed`). The section holding the current page opens on load and its header stays gold even if collapsed, a collapsed section shows a red count totalling the unread/pending badges inside it, and a section is hidden entirely for a restricted admin with access to none of its pages. Per-link permission checks are unchanged.
 
 ## 122. `/reset-database` Route Disabled (2026-09-28)
 
