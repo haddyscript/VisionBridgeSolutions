@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
- * Super-admin read-only viewer for storage/logs, so checking errors doesn't
+ * Super-admin viewer (and clearer) for storage/logs, so checking errors doesn't
  * need a trip into the Hostinger file manager. Only the tail of the file is
  * read (logs can grow to hundreds of MB); the full file is still downloadable.
  */
@@ -57,6 +58,26 @@ class LaravelLogController extends Controller
         abort_unless($file, 404);
 
         return response()->download($file);
+    }
+
+    /**
+     * Empties the file rather than deleting it, so the web server keeps
+     * writing to the same file with the same ownership/permissions.
+     */
+    public function clear(Request $request)
+    {
+        $file = $this->resolveFile($request->input('file'), $this->logFiles());
+
+        abort_unless($file, 404);
+
+        file_put_contents($file, '');
+
+        // Leaves a trail of who wiped it — lands in whichever file the
+        // current log channel writes to (usually this same one).
+        Log::info('Log file cleared', ['file' => basename($file), 'by' => $request->user()->email]);
+
+        return redirect()->route('admin.laravel-log.index', ['file' => basename($file)])
+            ->with('success', basename($file).' was cleared.');
     }
 
     /** Newest first, keyed by basename — the only names a request may pick from. */

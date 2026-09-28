@@ -519,6 +519,7 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
 
         Route::get('/laravel-log', [AdminLaravelLogController::class, 'index'])->name('laravel-log.index');
         Route::get('/laravel-log/download', [AdminLaravelLogController::class, 'download'])->name('laravel-log.download');
+        Route::delete('/laravel-log', [AdminLaravelLogController::class, 'clear'])->name('laravel-log.clear');
     });
 
     Route::middleware('owner')->group(function () {

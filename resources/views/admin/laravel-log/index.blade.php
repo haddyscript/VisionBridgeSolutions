@@ -26,9 +26,13 @@
 @endphp
 
 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
-    The server's error log (<span class="font-mono">storage/logs</span>), newest first. Read-only — nothing here changes the site.
+    The server's error log (<span class="font-mono">storage/logs</span>), newest first. Clearing the log only empties this file — it doesn't change anything else on the site.
     Showing up to {{ $maxEntries }} entries{{ $truncated ? ' from the most recent 2 MB of the file' : '' }}; download the file for everything.
 </p>
+
+@if (session('success'))
+    <div class="mb-4 rounded-lg bg-teal/10 text-teal text-sm px-4 py-3">{{ session('success') }}</div>
+@endif
 
 @if (! $file)
     <div class="{{ $card }} p-8 text-center text-sm text-gray-500 dark:text-gray-400">No log files yet — nothing has been logged.</div>
@@ -58,6 +62,15 @@
             <span class="text-gray-500 dark:text-gray-400">{{ basename($file) }} · {{ number_format($fileSize / 1024 / 1024, 2) }} MB</span>
             <a href="{{ route('admin.laravel-log.download', ['file' => basename($file)]) }}"
                class="font-semibold text-navy dark:text-white border border-gray-300 dark:border-gray-600 hover:border-gold px-3 py-1.5 rounded-lg">Download</a>
+            @if ($fileSize > 0)
+                <form method="POST" action="{{ route('admin.laravel-log.clear') }}"
+                      onsubmit="return confirm('Clear {{ basename($file) }}? Every entry in it will be permanently erased. Download it first if you might need it.')">
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" name="file" value="{{ basename($file) }}">
+                    <button type="submit" class="font-semibold text-red-600 dark:text-red-400 border border-red-300 dark:border-red-500/40 hover:bg-red-50 dark:hover:bg-red-500/10 px-3 py-1.5 rounded-lg">Clear Log</button>
+                </form>
+            @endif
         </div>
     </div>
 
