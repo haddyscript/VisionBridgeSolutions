@@ -138,7 +138,10 @@ Route::get('/care-plans/{maintenancePlan}', [CarePlanController::class, 'show'])
 
 Route::match(['get', 'post'], '/deployer', [DeployerController::class, 'deploy'])->name('deployer');
 Route::get('/migrate', [DeployerController::class, 'migrate'])->name('deployer.migrate');
-Route::get('/reset-database', [DatabaseResetController::class, 'reset'])->name('database.reset');
+// Disabled 2026-09-28: a public, no-login URL that wipes the database is too
+// dangerous now that it holds live client data and paying subscriptions.
+// Don't re-enable without moving it behind super-admin auth first.
+// Route::get('/reset-database', [DatabaseResetController::class, 'reset'])->name('database.reset');
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])->name('stripe.webhook');
 

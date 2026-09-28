@@ -1773,3 +1773,7 @@ The admin sidebar was one long flat list that needed scrolling. Links are now gr
 - FAQ & Help Guide stays at the bottom.
 
 Click a section header to collapse/expand it — remembered per browser (`localStorage` key `adminNavCollapsed`). The section holding the current page always opens, a collapsed section shows a small red dot if anything inside has an unread/pending badge, and a section is hidden entirely for a restricted admin with access to none of its pages. Per-link permission checks are unchanged.
+
+## 122. `/reset-database` Route Disabled (2026-09-28)
+
+The public `GET /reset-database` route (`DatabaseResetController::reset`, route name `database.reset`) is commented out in `routes/web.php` — it was reachable without logging in, and the database now holds live client data and active Stripe subscriptions. The URL now returns a 404. The controller file is left in place (unused) for reference; re-enabling it should only ever happen behind super-admin authentication. `/migrate` and `/deployer` are unchanged.
