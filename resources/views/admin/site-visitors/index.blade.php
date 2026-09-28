@@ -227,7 +227,7 @@
                 @forelse ($recentConversions as $conversion)
                     @php $url = $conversion->adminUrl(); @endphp
                     <tr class="text-gray-600 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-white/5">
-                        <td class="px-5 py-3 whitespace-nowrap">{{ $conversion->created_at->format('M j, g:i a') }}</td>
+                        <td class="px-5 py-3 whitespace-nowrap"><time data-local-time datetime="{{ $conversion->created_at->toIso8601String() }}">{{ $conversion->created_at->format('M j, g:i a') }} UTC</time></td>
                         <td class="px-5 py-3 whitespace-nowrap">
                             @if ($url)
                                 <a href="{{ $url }}" class="font-medium text-navy dark:text-white hover:text-gold">{{ $conversion->label() }}</a>
@@ -291,7 +291,7 @@
             <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                 @forelse ($recent as $visit)
                     <tr class="text-gray-600 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-white/5" title="{{ $visit->user_agent }}">
-                        <td class="px-5 py-3 whitespace-nowrap">{{ $visit->created_at->format('M j, g:i a') }}</td>
+                        <td class="px-5 py-3 whitespace-nowrap"><time data-local-time datetime="{{ $visit->created_at->toIso8601String() }}">{{ $visit->created_at->format('M j, g:i a') }} UTC</time></td>
                         <td class="px-5 py-3 font-mono text-xs">{{ $visit->ip_address ?? '—' }}</td>
                         <td class="px-5 py-3 whitespace-nowrap">{{ $visit->country ? \App\Models\SiteVisit::countryLabel($visit->country) : '—' }}</td>
                         <td class="px-5 py-3 whitespace-nowrap">{{ $visit->browser }} <span class="text-gray-400 dark:text-gray-500">· {{ $visit->platform }}</span></td>
@@ -316,5 +316,16 @@
         <div class="px-5 py-3 border-t border-gray-100 dark:border-gray-700">{{ $recent->links() }}</div>
     @endif
 </div>
+
+<script>
+// Times are stored in UTC; show each viewer their own local time instead
+// (the server-rendered text, suffixed "UTC", stays as the no-JS fallback).
+document.querySelectorAll('time[data-local-time]').forEach(function (el) {
+    const date = new Date(el.getAttribute('datetime'));
+    if (isNaN(date)) return;
+    el.textContent = date.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    el.title = date.toUTCString();
+});
+</script>
 
 @endsection
