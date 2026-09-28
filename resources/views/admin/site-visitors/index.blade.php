@@ -132,6 +132,7 @@
         ['Devices', $devices],
         ['Operating Systems', $platforms],
         ['Top Pages', $topPages],
+        ['Countries', $countries],
         ['Where Visitors Came From', $topReferrers],
         ['Ad Campaigns', $campaigns],
     ] as [$title, $rows])
@@ -153,6 +154,7 @@
                 <p class="text-xs text-gray-400 dark:text-gray-500">{{ match ($title) {
                     'Where Visitors Came From' => 'No outside referrers yet — visitors typed the address or used a bookmark.',
                     'Ad Campaigns' => 'No tagged ad links clicked yet — see Tracking Links above.',
+                    'Countries' => 'No country data yet — recorded for visits from now on.',
                     default => 'No data yet.',
                 } }}</p>
             @endforelse
@@ -263,7 +265,7 @@
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">One row per page view, newest first.</p>
         </div>
         <form method="GET" class="flex flex-wrap items-center gap-2">
-            <input type="text" name="search" value="{{ $search }}" placeholder="Search IP, page, browser…"
+            <input type="text" name="search" value="{{ $search }}" placeholder="Search IP, page, country code…"
                    class="w-56 max-w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white dark:placeholder-gray-500">
             <input type="date" name="date" value="{{ $date }}"
                    class="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold dark:bg-navy-dark dark:text-white">
@@ -279,6 +281,7 @@
                 <tr class="text-left text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500">
                     <th class="px-5 py-3 font-semibold">Time</th>
                     <th class="px-5 py-3 font-semibold">IP Address</th>
+                    <th class="px-5 py-3 font-semibold">Country</th>
                     <th class="px-5 py-3 font-semibold">Browser</th>
                     <th class="px-5 py-3 font-semibold">Device</th>
                     <th class="px-5 py-3 font-semibold">Page</th>
@@ -290,6 +293,7 @@
                     <tr class="text-gray-600 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-white/5" title="{{ $visit->user_agent }}">
                         <td class="px-5 py-3 whitespace-nowrap">{{ $visit->created_at->format('M j, g:i a') }}</td>
                         <td class="px-5 py-3 font-mono text-xs">{{ $visit->ip_address ?? '—' }}</td>
+                        <td class="px-5 py-3 whitespace-nowrap">{{ $visit->country ? \App\Models\SiteVisit::countryLabel($visit->country) : '—' }}</td>
                         <td class="px-5 py-3 whitespace-nowrap">{{ $visit->browser }} <span class="text-gray-400 dark:text-gray-500">· {{ $visit->platform }}</span></td>
                         <td class="px-5 py-3">{{ $visit->device }}</td>
                         <td class="px-5 py-3 truncate max-w-[14rem]">{{ $visit->path }}</td>
@@ -302,7 +306,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-5 py-8 text-center text-gray-400 dark:text-gray-500">No visits {{ $search !== '' || $date ? 'match your filter' : 'recorded yet' }}.</td>
+                        <td colspan="7" class="px-5 py-8 text-center text-gray-400 dark:text-gray-500">No visits {{ $search !== '' || $date ? 'match your filter' : 'recorded yet' }}.</td>
                     </tr>
                 @endforelse
             </tbody>

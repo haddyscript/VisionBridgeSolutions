@@ -52,6 +52,9 @@ class TrackSiteVisit
                 // Behind Cloudflare, request->ip() would be Cloudflare's own
                 // edge IP rather than the visitor's.
                 'ip_address' => $request->header('CF-Connecting-IP') ?: $request->ip(),
+                // Cloudflare's own IP geolocation (Network → IP Geolocation).
+                // XX = unknown, T1 = Tor — neither is a real country.
+                'country' => preg_match('/^[A-Z]{2}$/', $cc = strtoupper((string) $request->header('CF-IPCountry'))) && ! in_array($cc, ['XX', 'T1'], true) ? $cc : null,
                 ...UserAgentParser::parse($ua),
                 'path' => Str::limit('/'.ltrim($request->path(), '/'), 250, ''),
                 // Clicking between our own pages isn't a traffic source.

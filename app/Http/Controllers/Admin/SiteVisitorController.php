@@ -89,6 +89,7 @@ class SiteVisitorController extends Controller
         $recent = SiteVisit::query()
             ->when($search !== '', fn ($q) => $q->where(fn ($q) => $q
                 ->where('ip_address', 'like', "%{$search}%")
+                ->orWhere('country', strtoupper($search))
                 ->orWhere('path', 'like', "%{$search}%")
                 ->orWhere('browser', 'like', "%{$search}%")
                 ->orWhere('platform', 'like', "%{$search}%")
@@ -118,6 +119,8 @@ class SiteVisitorController extends Controller
             'platforms' => $breakdown('platform'),
             'topPages' => $breakdown('path', 10),
             'topReferrers' => $breakdown('referrer_host', 10),
+            'countries' => $breakdown('country', 10)
+                ->mapWithKeys(fn ($total, $code) => [SiteVisit::countryLabel($code) => $total]),
             'monthly' => $monthly,
             'recent' => $recent,
             'search' => $search,
