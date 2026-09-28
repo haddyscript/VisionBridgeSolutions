@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DeveloperController as AdminDeveloperController;
 use App\Http\Controllers\Admin\EmailTemplateController as AdminEmailTemplateController;
 use App\Http\Controllers\Admin\IntakeSubmissionController as AdminIntakeSubmissionController;
+use App\Http\Controllers\Admin\LaravelLogController as AdminLaravelLogController;
 use App\Http\Controllers\Admin\MaintenancePlanController as AdminMaintenancePlanController;
 use App\Http\Controllers\Admin\MilestoneController as AdminMilestoneController;
 use App\Http\Controllers\Admin\OnboardingPreviewController as AdminOnboardingPreviewController;
@@ -515,6 +516,9 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
 
         Route::get('/site-visitors', [AdminSiteVisitorController::class, 'index'])->name('site-visitors.index');
         Route::get('/revenue', [AdminRevenueController::class, 'index'])->name('revenue.index');
+
+        Route::get('/laravel-log', [AdminLaravelLogController::class, 'index'])->name('laravel-log.index');
+        Route::get('/laravel-log/download', [AdminLaravelLogController::class, 'download'])->name('laravel-log.download');
     });
 
     Route::middleware('owner')->group(function () {
