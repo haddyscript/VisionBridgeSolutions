@@ -1785,6 +1785,17 @@ The public `GET /reset-database` route (`DatabaseResetController::reset`, route 
 - **Migrations moved to `/admin/migrate`** (route `admin.migrate`, super admins only — auth + admin + super-admin middleware, no password needed). The old public `/migrate` URL was runnable by anyone who knew it and has been removed (now a 404). Each run is logged with the super admin's email and IP.
 - Note: the deploy request runs the controller code that was live *before* the pull, so the new check first takes effect on the deploy *after* the one that ships it.
 
-## 124. Redesigned 404 Page (2026-09-28)
+## 124. Redesigned Error Pages — 404, 403, 419, 5xx/Maintenance (2026-09-28)
+
+**All error pages now share one branded shell**, `resources/views/errors/minimal.blade.php` (named `minimal` deliberately — Laravel's own built-in error views such as 401/402/429/503 extend `errors::minimal`, so they pick up the same design automatically). Each page picks its own variant of the bridge illustration (`errors/partials/bridge.blade.php`):
+
+| Page | File | Bridge | Main actions |
+|---|---|---|---|
+| 404 Not Found | `errors/404.blade.php` | Broken middle span | Back to Home, Go Back, 4 quick-link cards (details below) |
+| 403 Access Restricted | `errors/403.blade.php` | Padlock badge | "Go to My Dashboard" (clients → portal; team → first admin section they can open; guests → home), Go Back. Shows the specific restriction message when there is one |
+| 419 Page Expired | `errors/419.blade.php` (new) | Clock badge | "Reload the Page" (fresh load of the previous page, so it gets a new security token), Sign In Again. Normally never seen — `bootstrap/app.php` already redirects an expired session to login with a message; this is the fallback |
+| Server error / maintenance | `errors/maintenance.blade.php` | Slowly turning gear | Try Again, Go to Homepage. Shown for every production 5xx and maintenance mode; no DB queries, since the DB may be what's down |
+
+Original 404 notes:
 
 `resources/views/errors/404.blade.php` rebuilt around a brand metaphor — an animated **broken bridge** ("Looks like this bridge is out.") under a shimmering gold "404". Shows the exact address the visitor tried, a **Back to Home** button plus a **Go Back** button (only shown when the visitor arrived from another page on this site), and four quick-link cards to keep lost visitors on the site: Our Work, Free Website Check, Book a Consultation, and Client Login (which already forwards a logged-in user to their portal/admin dashboard — the 404 page itself can't tell who's logged in, since Laravel doesn't start the session for unmatched URLs). Subtle background (dot grid, drifting glows, pointer-following glow on mouse devices), staggered entrance, full `prefers-reduced-motion` support, single-column on phones, `noindex` so search engines don't index error pages. Still self-contained (inline CSS, no Tailwind), same as before.
