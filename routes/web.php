@@ -201,10 +201,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/portal/agreement', [PortalServiceAgreementController::class, 'show'])->name('portal.agreement.show');
     Route::post('/portal/agreement', [PortalServiceAgreementController::class, 'store'])->name('portal.agreement.store');
-    Route::get('/portal/agreement/{signature}/download', [PortalServiceAgreementController::class, 'download'])->name('portal.agreement.download');
-    Route::get('/portal/agreement/{signature}/preview', [PortalServiceAgreementController::class, 'preview'])->name('portal.agreement.preview');
-    Route::get('/portal/agreement/{signature}/filled', [PortalServiceAgreementController::class, 'viewFilled'])->name('portal.agreement.filled');
-    Route::get('/portal/agreement/templates/{serviceAgreementTemplate}/view', [PortalServiceAgreementController::class, 'viewTemplate'])->name('portal.agreement.view-template');
 
     Route::get('/portal/questionnaire', [PortalProjectQuestionnaireController::class, 'show'])->name('portal.questionnaire.show');
     Route::post('/portal/questionnaire', [PortalProjectQuestionnaireController::class, 'store'])->name('portal.questionnaire.store');
@@ -239,6 +235,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/files/project-requests/{projectRequest}/proposal-document', [FileDownloadController::class, 'proposalDocument'])->name('files.project-requests.proposal-document');
     Route::get('/files/intake/{intakeFile}', [FileDownloadController::class, 'intakeFile'])->name('files.intake.show');
     Route::get('/files/announcement-attachments/{attachment}', [FileDownloadController::class, 'announcementAttachment'])->name('files.announcement-attachments.show');
+
+    // Signed agreement PDFs — also linked from the admin project Onboarding
+    // tab, so same reasoning as above: each action gates owning client OR
+    // any admin itself, and admins must not hit email verification.
+    Route::get('/portal/agreement/{signature}/download', [PortalServiceAgreementController::class, 'download'])->name('portal.agreement.download');
+    Route::get('/portal/agreement/{signature}/preview', [PortalServiceAgreementController::class, 'preview'])->name('portal.agreement.preview');
+    Route::get('/portal/agreement/{signature}/filled', [PortalServiceAgreementController::class, 'viewFilled'])->name('portal.agreement.filled');
+    Route::get('/portal/agreement/templates/{serviceAgreementTemplate}/view', [PortalServiceAgreementController::class, 'viewTemplate'])->name('portal.agreement.view-template');
 });
 
 Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.complete'])->group(function () {
