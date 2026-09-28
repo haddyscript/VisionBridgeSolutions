@@ -10,12 +10,7 @@ class DeployerController extends Controller
 {
     public function deploy(Request $request)
     {
-        $expected = (string) config('app.deployer_password');
-        $given = (string) $request->input('password', '');
-
-        if ($expected === '' || ! hash_equals($expected, $given)) {
-            abort(403, 'Forbidden');
-        }
+        $this->authorizeDeployer($request);
 
         // A prior git process that got killed mid-command (this endpoint's
         // own 120s timeout, a recycled PHP-FPM worker, two deploys
@@ -26,6 +21,9 @@ class DeployerController extends Controller
         foreach (glob(base_path('.git/*.lock')) as $staleLock) {
             @unlink($staleLock);
         }
+
+        // Where to roll back to if the new code ships a broken view.
+        $previousSha = trim(Process::path(base_path())->run(['git', 'rev-parse', 'HEAD'])->output());
 
         $steps = [
             ['git', 'fetch', 'origin', 'main'],
@@ -47,12 +45,16 @@ class DeployerController extends Controller
             ['php', 'artisan', 'view:cache'],
         ];
 
+        // Run only once the views above have passed the syntax check below,
+        // so a rolled-back deploy never leaves new migrations applied.
+        $postSteps = [];
+
         if (config('app.deployer_run_composer')) {
-            $steps[] = ['composer', 'install', '--no-dev', '--optimize-autoloader', '--no-interaction'];
+            $postSteps[] = ['composer', 'install', '--no-dev', '--optimize-autoloader', '--no-interaction'];
         }
 
         if (config('app.deployer_run_migrations')) {
-            $steps[] = ['php', 'artisan', 'migrate', '--force'];
+            $postSteps[] = ['php', 'artisan', 'migrate', '--force'];
         }
 
         // Diagnostic only — lets us tell whether two domains hitting this
@@ -68,16 +70,31 @@ class DeployerController extends Controller
             '',
         ];
 
-        foreach ($steps as $command) {
-            $result = Process::path(base_path())->timeout(120)->run($command);
+        $failed = ! $this->runSteps($steps, $output);
 
-            $output[] = '$ '.implode(' ', $command);
-            $output[] = trim($result->output().$result->errorOutput());
+        // `view:cache` only translates Blade into PHP — it happily compiles
+        // a template with e.g. an unclosed @if into invalid PHP, which then
+        // only blows up when someone opens that page. Lint every compiled
+        // view; if any is broken, put the previous code back.
+        if (! $failed && ($broken = $this->brokenCompiledViews())) {
+            $failed = true;
+            $output[] = '';
+            $output[] = 'DEPLOY ROLLED BACK — these views have PHP syntax errors:';
+            array_push($output, ...$broken);
 
-            if ($result->failed()) {
-                $output[] = "Deploy failed at: {$command[0]}";
-                break;
+            if ($previousSha !== '') {
+                $output[] = '';
+                $output[] = "Restoring previous version {$previousSha}:";
+                $this->runSteps([
+                    ['git', 'reset', '--hard', $previousSha],
+                    ['php', 'artisan', 'view:clear'],
+                    ['php', 'artisan', 'view:cache'],
+                ], $output);
             }
+        }
+
+        if (! $failed) {
+            $this->runSteps($postSteps, $output);
         }
 
         // `artisan view:clear` above runs as a spawned CLI subprocess, which
@@ -92,18 +109,70 @@ class DeployerController extends Controller
         }
 
         $log = implode("\n", $output);
-        Log::channel('single')->info("Deployer run:\n{$log}");
+        // Error level on failure so it stands out in the admin Error Log.
+        Log::channel('single')->{$failed ? 'error' : 'info'}("Deployer run:\n{$log}");
 
-        return response($log, 200)->header('Content-Type', 'text/plain');
+        return response($log, $failed ? 500 : 200)->header('Content-Type', 'text/plain');
     }
 
     public function migrate(Request $request)
     {
+        // Was reachable by anyone with the URL — same password as /deployer now.
+        $this->authorizeDeployer($request);
+
         $result = Process::path(base_path())->timeout(120)->run(['php', 'artisan', 'migrate', '--force']);
 
         $log = trim($result->output().$result->errorOutput());
         Log::channel('single')->info("Migrate run (ip: {$request->ip()}):\n{$log}");
 
         return response($log, 200)->header('Content-Type', 'text/plain');
+    }
+
+    private function authorizeDeployer(Request $request): void
+    {
+        $expected = (string) config('app.deployer_password');
+        $given = (string) $request->input('password', '');
+
+        if ($expected === '' || ! hash_equals($expected, $given)) {
+            abort(403, 'Forbidden');
+        }
+    }
+
+    /** Runs each command in order, appending to $output; false if one failed. */
+    private function runSteps(array $steps, array &$output): bool
+    {
+        foreach ($steps as $command) {
+            $result = Process::path(base_path())->timeout(120)->run($command);
+
+            $output[] = '$ '.implode(' ', $command);
+            $output[] = trim($result->output().$result->errorOutput());
+
+            if ($result->failed()) {
+                $output[] = "Deploy failed at: {$command[0]}";
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /** `php -l` every compiled Blade view; returns "source view: error" for each broken one. */
+    private function brokenCompiledViews(): array
+    {
+        $broken = [];
+
+        foreach (glob(storage_path('framework/views/*.php')) ?: [] as $compiled) {
+            $result = Process::timeout(30)->run(['php', '-l', $compiled]);
+
+            if ($result->failed()) {
+                // Compiled views end with a /**PATH <source> ENDPATH**/ marker.
+                preg_match('#/\*\*PATH (.+?) ENDPATH\*\*/#', (string) file_get_contents($compiled), $m);
+                $error = trim(strtok($result->output().$result->errorOutput(), "\n"));
+                $broken[] = ($m[1] ?? basename($compiled)).': '.$error;
+            }
+        }
+
+        return $broken;
     }
 }
