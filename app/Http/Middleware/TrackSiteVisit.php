@@ -124,6 +124,6 @@ class TrackSiteVisit
             return false;
         }
 
-        return ! UserAgentParser::isBot($request->userAgent());
+        return ! UserAgentParser::isBot($request->userAgent(), $request->header('CF-Connecting-IP') ?: $request->ip());
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use Symfony\Component\HttpFoundation\IpUtils;
+
 /**
  * Lightweight user-agent sniffing for the Website Visitors report — just
  * enough to bucket visits by browser/OS/device and filter out bots, without
@@ -10,11 +12,19 @@ namespace App\Support;
  */
 class UserAgentParser
 {
-    private const BOT_PATTERN = '/bot|crawl|spider|slurp|facebookexternalhit|embedly|preview|monitor|uptime|curl|wget|python|java\/|go-http|headless|lighthouse|pingdom|scan/i';
+    // "google" catches Google's fetchers that pose as a plain Chrome phone
+    // with no "bot" in the name (Google-InspectionTool, GoogleOther,
+    // Google-Read-Aloud…) — real browsers never say "Google" in their UA.
+    private const BOT_PATTERN = '/bot|crawl|spider|slurp|google|facebookexternalhit|embedly|preview|monitor|uptime|curl|wget|python|java\/|go-http|headless|lighthouse|pingdom|scan/i';
 
-    public static function isBot(?string $ua): bool
+    /** Google's published crawler range — no real visitor browses from here, whatever the UA says. */
+    private const CRAWLER_IP_RANGES = ['66.249.64.0/19'];
+
+    public static function isBot(?string $ua, ?string $ip = null): bool
     {
-        return ! $ua || preg_match(self::BOT_PATTERN, $ua) === 1;
+        return ! $ua
+            || preg_match(self::BOT_PATTERN, $ua) === 1
+            || ($ip && IpUtils::checkIp($ip, self::CRAWLER_IP_RANGES));
     }
 
     public static function parse(?string $ua): array
