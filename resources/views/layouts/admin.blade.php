@@ -334,6 +334,12 @@
                         @endif
                     </a>
                 @endif
+
+                {{-- Collapsible groups — see the script after </nav> for
+                     open/closed state and hiding groups with no visible links. --}}
+                <div class="nav-group pt-4" data-nav-group="clients">
+                    @include('partials.admin-nav-group-header', ['label' => 'Clients & Projects'])
+                    <div class="nav-group-items space-y-0.5">
                 @if (auth()->user()->canAccessAdminPage('developers'))
                     <a href="{{ route('admin.developers.index') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.developers.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
@@ -373,6 +379,21 @@
                         Calendar
                     </a>
                 @endif
+                @if (auth()->user()->canAccessAdminPage('satisfaction-surveys'))
+                    <a href="{{ route('admin.satisfaction-surveys.index') }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.satisfaction-surveys.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.958a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.368 2.447a1 1 0 00-.363 1.118l1.287 3.957c.3.922-.755 1.688-1.539 1.118l-3.367-2.446a1 1 0 00-1.176 0l-3.367 2.446c-.784.57-1.838-.196-1.539-1.118l1.287-3.957a1 1 0 00-.363-1.118L2.062 9.385c-.783-.57-.38-1.81.588-1.81h4.163a1 1 0 00.95-.69l1.286-3.958z"/>
+                        </svg>
+                        Satisfaction Surveys
+                    </a>
+                @endif
+                    </div>
+                </div>
+
+                <div class="nav-group pt-4" data-nav-group="inbox">
+                    @include('partials.admin-nav-group-header', ['label' => 'Inbox'])
+                    <div class="nav-group-items space-y-0.5">
                 @if (auth()->user()->canAccessAdminPage('contact-messages'))
                     <a href="{{ route('admin.contact-messages.index') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.contact-messages.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
@@ -457,6 +478,12 @@
                         @endif
                     </a>
                 @endif
+                    </div>
+                </div>
+
+                <div class="nav-group pt-4" data-nav-group="billing">
+                    @include('partials.admin-nav-group-header', ['label' => 'Billing'])
+                    <div class="nav-group-items space-y-0.5">
                 @if (auth()->user()->canAccessAdminPage('payments'))
                     <a href="{{ route('admin.payments.index') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.payments.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
@@ -508,6 +535,12 @@
                         FaithStack Payouts
                     </a>
                 @endif
+                    </div>
+                </div>
+
+                <div class="nav-group pt-4" data-nav-group="settings">
+                    @include('partials.admin-nav-group-header', ['label' => 'Settings & Team'])
+                    <div class="nav-group-items space-y-0.5">
                 @if (auth()->user()->canAccessAdminPage('care-plan-pricing'))
                     <a href="{{ route('admin.care-plans.index') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.care-plans.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
@@ -533,15 +566,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                         </svg>
                         Email Templates
-                    </a>
-                @endif
-                @if (auth()->user()->canAccessAdminPage('satisfaction-surveys'))
-                    <a href="{{ route('admin.satisfaction-surveys.index') }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.satisfaction-surveys.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.958a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.368 2.447a1 1 0 00-.363 1.118l1.287 3.957c.3.922-.755 1.688-1.539 1.118l-3.367-2.446a1 1 0 00-1.176 0l-3.367 2.446c-.784.57-1.838-.196-1.539-1.118l1.287-3.957a1 1 0 00-.363-1.118L2.062 9.385c-.783-.57-.38-1.81.588-1.81h4.163a1 1 0 00.95-.69l1.286-3.958z"/>
-                        </svg>
-                        Satisfaction Surveys
                     </a>
                 @endif
                 @php($unreadAnnouncementCount = \App\Models\Announcement::unacknowledgedCountFor(auth()->user()))
@@ -578,7 +602,13 @@
                     </svg>
                     Team
                 </a>
+                    </div>
+                </div>
+
                 @if (auth()->user()->isSuperAdmin())
+                <div class="nav-group pt-4" data-nav-group="super-admin">
+                    @include('partials.admin-nav-group-header', ['label' => 'Super Admin'])
+                    <div class="nav-group-items space-y-0.5">
                     <a href="{{ route('admin.cron-jobs.index') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.cron-jobs.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -600,7 +630,18 @@
                         </svg>
                         Revenue
                     </a>
+                    <a href="{{ route('admin.laravel-log.index') }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.laravel-log.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/>
+                        </svg>
+                        Error Log
+                    </a>
+                    </div>
+                </div>
                 @endif
+
+                <div class="pt-4 mt-4 border-t border-white/10"></div>
                 <a href="{{ route('admin.faq') }}"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.faq') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -609,6 +650,45 @@
                     FAQ &amp; Help Guide
                 </a>
             </nav>
+
+            <script>
+            // Sidebar groups: remembered open/closed per browser; the group
+            // holding the current page always opens; a collapsed group shows a
+            // red dot if anything inside has a badge; groups with no links the
+            // admin can access are removed.
+            (function () {
+                const KEY = 'adminNavCollapsed';
+                let collapsed = [];
+                try { collapsed = JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) {}
+
+                document.querySelectorAll('#admin-sidebar-nav .nav-group').forEach(function (group) {
+                    const items = group.querySelector('.nav-group-items');
+                    if (!items.querySelector('a')) { group.remove(); return; }
+
+                    const name = group.dataset.navGroup;
+                    const btn = group.querySelector('.nav-group-toggle');
+                    const dot = group.querySelector('.nav-group-dot');
+                    const hasBadge = !!items.querySelector('.bg-red-500');
+
+                    const setOpen = function (open) {
+                        items.classList.toggle('hidden', !open);
+                        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                        btn.querySelector('.nav-group-chevron').classList.toggle('-rotate-90', !open);
+                        dot.classList.toggle('hidden', open || !hasBadge);
+                    };
+
+                    setOpen(!!items.querySelector('a[class*="bg-gold/15"]') || !collapsed.includes(name));
+
+                    btn.addEventListener('click', function () {
+                        const open = items.classList.contains('hidden');
+                        setOpen(open);
+                        collapsed = collapsed.filter(function (n) { return n !== name; });
+                        if (!open) collapsed.push(name);
+                        try { localStorage.setItem(KEY, JSON.stringify(collapsed)); } catch (e) {}
+                    });
+                });
+            })();
+            </script>
 
             <div class="border-t border-white/10 pt-3 shrink-0">
                 @include('partials.getting-started')
