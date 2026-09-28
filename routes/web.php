@@ -136,7 +136,6 @@ Route::post('/care-plans/{maintenancePlan}/get-started', [CarePlanSignupControll
 Route::get('/care-plans/{maintenancePlan}', [CarePlanController::class, 'show'])->name('care-plans.show');
 
 Route::match(['get', 'post'], '/deployer', [DeployerController::class, 'deploy'])->name('deployer');
-Route::get('/migrate', [DeployerController::class, 'migrate'])->name('deployer.migrate');
 // Disabled 2026-09-28: a public, no-login URL that wipes the database is too
 // dangerous now that it holds live client data and paying subscriptions.
 // Don't re-enable without moving it behind super-admin auth first.
@@ -522,6 +521,9 @@ Route::middleware(['auth', 'admin', 'admin-page-access'])->prefix('admin')->name
         Route::get('/laravel-log', [AdminLaravelLogController::class, 'index'])->name('laravel-log.index');
         Route::get('/laravel-log/download', [AdminLaravelLogController::class, 'download'])->name('laravel-log.download');
         Route::delete('/laravel-log', [AdminLaravelLogController::class, 'clear'])->name('laravel-log.clear');
+
+        // Was a public /migrate URL — now super-admin login only.
+        Route::get('/migrate', [DeployerController::class, 'migrate'])->name('migrate');
     });
 
     Route::middleware('owner')->group(function () {

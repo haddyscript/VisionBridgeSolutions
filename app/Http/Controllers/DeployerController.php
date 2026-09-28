@@ -117,13 +117,13 @@ class DeployerController extends Controller
 
     public function migrate(Request $request)
     {
-        // Was reachable by anyone with the URL — same password as /deployer now.
-        $this->authorizeDeployer($request);
-
+        // Only reachable via GET /admin/migrate (auth + admin + super-admin
+        // middleware) — no password check here, so never route to this
+        // from outside that group.
         $result = Process::path(base_path())->timeout(120)->run(['php', 'artisan', 'migrate', '--force']);
 
         $log = trim($result->output().$result->errorOutput());
-        Log::channel('single')->info("Migrate run (ip: {$request->ip()}):\n{$log}");
+        Log::channel('single')->info("Migrate run (by: {$request->user()->email}, ip: {$request->ip()}):\n{$log}");
 
         return response($log, 200)->header('Content-Type', 'text/plain');
     }
