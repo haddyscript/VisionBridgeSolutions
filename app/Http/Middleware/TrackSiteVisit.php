@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\SiteVisit;
+use App\Support\IpCountry;
 use App\Support\UserAgentParser;
 use Closure;
 use Illuminate\Http\Request;
@@ -47,14 +48,20 @@ class TrackSiteVisit
             $ua = $request->userAgent();
             $referrerHost = parse_url((string) $request->headers->get('referer'), PHP_URL_HOST);
 
+            // Behind Cloudflare, request->ip() would be Cloudflare's own edge
+            // IP rather than the visitor's.
+            $ip = $request->header('CF-Connecting-IP') ?: $request->ip();
+
+            // Cloudflare's country header if it's ever in front of the site
+            // (XX = unknown, T1 = Tor); otherwise our own DB-IP lookup —
+            // today the site is behind Hostinger's CDN, which sends none.
+            $cc = strtoupper((string) $request->header('CF-IPCountry'));
+            $country = preg_match('/^[A-Z]{2}$/', $cc) && ! in_array($cc, ['XX', 'T1'], true) ? $cc : IpCountry::lookup($ip);
+
             SiteVisit::create([
                 'visitor_id' => $visitorId,
-                // Behind Cloudflare, request->ip() would be Cloudflare's own
-                // edge IP rather than the visitor's.
-                'ip_address' => $request->header('CF-Connecting-IP') ?: $request->ip(),
-                // Cloudflare's own IP geolocation (Network → IP Geolocation).
-                // XX = unknown, T1 = Tor — neither is a real country.
-                'country' => preg_match('/^[A-Z]{2}$/', $cc = strtoupper((string) $request->header('CF-IPCountry'))) && ! in_array($cc, ['XX', 'T1'], true) ? $cc : null,
+                'ip_address' => $ip,
+                'country' => $country,
                 ...UserAgentParser::parse($ua),
                 'path' => Str::limit('/'.ltrim($request->path(), '/'), 250, ''),
                 // Clicking between our own pages isn't a traffic source.

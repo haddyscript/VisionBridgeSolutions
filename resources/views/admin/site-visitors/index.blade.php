@@ -13,6 +13,7 @@
 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
     Visits to the public website (not the client portal or admin). Bots and our own team are excluded.
     Detailed visit records, including IP addresses, are kept for {{ \App\Models\SiteVisit::RETENTION_DAYS }} days; the monthly totals below are kept permanently.
+    Visitor countries use <a href="https://db-ip.com" target="_blank" rel="noopener" class="underline hover:text-navy dark:hover:text-white">IP Geolocation by DB-IP</a>.
 </p>
 
 {{-- Stat cards --}}
