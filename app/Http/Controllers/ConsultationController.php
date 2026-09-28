@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\ConsultationReceivedMail;
 use App\Mail\NewConsultationMail;
 use App\Models\Consultation;
+use App\Models\SiteConversion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -53,6 +54,8 @@ class ConsultationController extends Controller
         }
 
         $consultation = Consultation::create($validated);
+
+        SiteConversion::record($request, 'consultation', $consultation);
 
         Mail::to(config('mail.support_address'))->send(new NewConsultationMail($consultation));
 

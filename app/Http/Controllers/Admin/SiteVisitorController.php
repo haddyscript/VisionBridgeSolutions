@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\SiteConversion;
 use App\Models\SiteVisit;
 use App\Models\SiteVisitMonthlyStat;
 use Illuminate\Http\Request;
@@ -59,6 +60,29 @@ class SiteVisitorController extends Controller
         ]));
         $monthly = $monthly->sortByDesc(fn ($s) => $s->month)->values();
 
+        // ─── Conversions (kept permanently — no IPs stored) ───────────────────
+        $leadTypes = array_keys(SiteConversion::LEAD_TYPES);
+        $monthTotals = $totals($currentMonth);
+
+        $conversionCounts = SiteConversion::where('created_at', '>=', $currentMonth)
+            ->selectRaw('type, COUNT(*) as total')
+            ->groupBy('type')
+            ->pluck('total', 'type');
+        $monthLeads = (int) $conversionCounts->only($leadTypes)->sum();
+
+        $leadBreakdown = fn (string $expression) => SiteConversion::whereIn('type', $leadTypes)
+            ->where('created_at', '>=', $thirtyDaysAgo)
+            ->selectRaw("{$expression} as label, COUNT(*) as total")
+            ->groupBy('label')
+            ->orderByDesc('total')
+            ->limit(10)
+            ->pluck('total', 'label');
+
+        // Low volume, so grouped in PHP rather than DB-specific date SQL.
+        $monthlyLeads = SiteConversion::whereIn('type', $leadTypes)
+            ->get(['created_at'])
+            ->countBy(fn ($c) => $c->created_at->copy()->startOfMonth()->toDateString());
+
         $search = trim((string) $request->query('search'));
         $date = $request->query('date');
 
@@ -77,7 +101,16 @@ class SiteVisitorController extends Controller
         return view('admin.site-visitors.index', [
             'today' => $totals(now()->startOfDay()),
             'week' => $totals(now()->subDays(6)->startOfDay()),
-            'month' => $totals($currentMonth),
+            'month' => $monthTotals,
+            'conversionCounts' => $conversionCounts,
+            'monthLeads' => $monthLeads,
+            'conversionRate' => $monthTotals['visitors'] > 0 ? $monthLeads / $monthTotals['visitors'] * 100 : null,
+            'leadSources' => $leadBreakdown("COALESCE(source, 'Direct')"),
+            'leadPages' => $leadBreakdown("COALESCE(last_page, 'Unknown')"),
+            'leadCampaigns' => $leadBreakdown("COALESCE(campaign, 'No campaign')"),
+            'monthlyLeads' => $monthlyLeads,
+            'recentConversions' => SiteConversion::with('subject')->latest('created_at')->limit(15)->get(),
+            'campaigns' => $breakdown('utm_campaign', 10),
             'allTimeViews' => $monthly->sum('page_views'),
             'chart' => $chart,
             'browsers' => $breakdown('browser'),

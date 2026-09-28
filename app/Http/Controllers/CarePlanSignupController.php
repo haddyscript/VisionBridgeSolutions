@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\FaithStackNewClientMail;
 use App\Mail\WelcomeClientMail;
 use App\Models\MaintenancePlan;
+use App\Models\SiteConversion;
 use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -93,6 +94,8 @@ class CarePlanSignupController extends Controller
         });
 
         $subscription->load('project.user', 'maintenancePlan');
+
+        SiteConversion::record($request, 'care_plan', $subscription);
 
         // Moved here from StripeWebhookController::welcomeNewCarePlanClient(),
         // which used to fire this only once Stripe confirmed payment — now

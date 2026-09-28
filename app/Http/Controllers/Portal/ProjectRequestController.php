@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Mail\NewProjectRequestMail;
+use App\Models\SiteConversion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -49,6 +50,8 @@ class ProjectRequestController extends Controller
         }
 
         $projectRequest = $request->user()->projectRequests()->create($validated);
+
+        SiteConversion::record($request, 'project_request', $projectRequest);
 
         dispatch(function () use ($projectRequest) {
             Mail::to(config('mail.support_address'))->send(new NewProjectRequestMail($projectRequest));

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\NewContactMessageMail;
 use App\Models\ContactMessage;
+use App\Models\SiteConversion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -21,6 +22,8 @@ class ContactMessageController extends Controller
         ]);
 
         $contactMessage = ContactMessage::create($validated);
+
+        SiteConversion::record($request, 'contact', $contactMessage);
 
         dispatch(function () use ($contactMessage) {
             Mail::to(config('mail.support_address'))->send(new NewContactMessageMail($contactMessage));

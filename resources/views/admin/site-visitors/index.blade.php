@@ -35,6 +35,74 @@
     </div>
 </div>
 
+{{-- Conversions this month --}}
+<div class="{{ $card }} p-5 mb-6">
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
+        <div>
+            <h3 class="text-sm font-bold text-navy dark:text-white">Leads &amp; Actions — This Month</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">What visitors actually did on the website. Client portal requests are counted separately, since they aren't new leads.</p>
+        </div>
+        <div class="text-right">
+            <p class="text-2xl font-bold text-navy dark:text-white">{{ number_format($monthLeads) }} <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">new leads</span></p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                @if ($conversionRate !== null)
+                    from {{ number_format($month['visitors']) }} visitors · <span class="font-semibold text-teal">{{ number_format($conversionRate, 1) }}% conversion rate</span>
+                @else
+                    No visitors yet this month
+                @endif
+            </p>
+        </div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-3">
+        @foreach (\App\Models\SiteConversion::types() as $type => $label)
+            @php $isLead = array_key_exists($type, \App\Models\SiteConversion::LEAD_TYPES); @endphp
+            <div class="rounded-lg p-3 {{ $isLead ? 'bg-gold/10' : 'bg-gray-50 dark:bg-white/5' }}">
+                <p class="text-xl font-bold text-navy dark:text-white">{{ number_format($conversionCounts[$type] ?? 0) }}</p>
+                <p class="text-[11px] leading-tight text-gray-500 dark:text-gray-400 mt-0.5">{{ $label }}</p>
+            </div>
+        @endforeach
+    </div>
+</div>
+
+{{-- Lead breakdowns (last 30 days) --}}
+<div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
+    @foreach ([
+        ['Where Leads Came From', $leadSources, 'No leads yet in the last 30 days.'],
+        ['Pages That Brought In Leads', $leadPages, 'No leads yet in the last 30 days.'],
+        ['Leads by Ad Campaign', $leadCampaigns, 'No leads yet in the last 30 days.'],
+    ] as [$title, $rows, $emptyText])
+        @php $max = max(1, $rows->max() ?? 1); @endphp
+        <div class="{{ $card }} p-5">
+            <h3 class="text-sm font-bold text-navy dark:text-white mb-1">{{ $title }}</h3>
+            <p class="text-[11px] text-gray-400 dark:text-gray-500 mb-3">Last 30 days · new leads</p>
+            @forelse ($rows as $label => $total)
+                <div class="mb-2.5">
+                    <div class="flex justify-between gap-3 text-xs mb-1">
+                        <span class="text-gray-600 dark:text-gray-300 truncate">{{ $label }}</span>
+                        <span class="font-semibold text-navy dark:text-white shrink-0">{{ number_format($total) }}</span>
+                    </div>
+                    <div class="h-1.5 rounded-full bg-gray-100 dark:bg-white/5">
+                        <div class="h-1.5 rounded-full bg-gold" style="width: {{ round($total / $max * 100) }}%"></div>
+                    </div>
+                </div>
+            @empty
+                <p class="text-xs text-gray-400 dark:text-gray-500">{{ $emptyText }}</p>
+            @endforelse
+        </div>
+    @endforeach
+</div>
+
+{{-- Tracking links for ads --}}
+<div class="{{ $card }} p-5 mb-6">
+    <h3 class="text-sm font-bold text-navy dark:text-white mb-1">Tracking Links for Ads &amp; Posts</h3>
+    <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+        Add tags to the end of any link you share so this report can tell exactly which ad or post each visitor and lead came from.
+        Facebook and Google ad clicks are detected automatically, but tags also name the specific campaign.
+    </p>
+    <code class="block text-xs font-mono break-all rounded-lg bg-gray-50 dark:bg-white/5 text-navy dark:text-gray-200 px-3 py-2">{{ url('/') }}/?utm_source=facebook&amp;utm_medium=paid&amp;utm_campaign=fall-ministry-ad</code>
+    <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-2">Change <span class="font-mono">utm_source</span> to where the link is posted (facebook, instagram, email…) and <span class="font-mono">utm_campaign</span> to a short name for the ad.</p>
+</div>
+
 {{-- Daily chart --}}
 <div class="{{ $card }} p-5 mb-6">
     <div class="flex items-center justify-between mb-4">
@@ -65,6 +133,7 @@
         ['Operating Systems', $platforms],
         ['Top Pages', $topPages],
         ['Where Visitors Came From', $topReferrers],
+        ['Ad Campaigns', $campaigns],
     ] as [$title, $rows])
         @php $max = max(1, $rows->max() ?? 1); @endphp
         <div class="{{ $card }} p-5">
@@ -81,7 +150,11 @@
                     </div>
                 </div>
             @empty
-                <p class="text-xs text-gray-400 dark:text-gray-500">{{ $title === 'Where Visitors Came From' ? 'No outside referrers yet — visitors typed the address or used a bookmark.' : 'No data yet.' }}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500">{{ match ($title) {
+                    'Where Visitors Came From' => 'No outside referrers yet — visitors typed the address or used a bookmark.',
+                    'Ad Campaigns' => 'No tagged ad links clicked yet — see Tracking Links above.',
+                    default => 'No data yet.',
+                } }}</p>
             @endforelse
         </div>
     @endforeach
@@ -100,6 +173,8 @@
                     <th class="px-5 py-3 font-semibold">Month</th>
                     <th class="px-5 py-3 font-semibold text-right">Visitors</th>
                     <th class="px-5 py-3 font-semibold text-right">Page Views</th>
+                    <th class="px-5 py-3 font-semibold text-right">New Leads</th>
+                    <th class="px-5 py-3 font-semibold text-right">Conv. Rate</th>
                     <th class="px-5 py-3 font-semibold">Top Browser</th>
                     <th class="px-5 py-3 font-semibold">Top Device</th>
                     <th class="px-5 py-3 font-semibold">Top Page</th>
@@ -116,11 +191,65 @@
                         </td>
                         <td class="px-5 py-3 text-right font-semibold text-navy dark:text-white">{{ number_format($stat->unique_visitors) }}</td>
                         <td class="px-5 py-3 text-right">{{ number_format($stat->page_views) }}</td>
+                        @php $leads = $monthlyLeads[$stat->month->toDateString()] ?? 0; @endphp
+                        <td class="px-5 py-3 text-right font-semibold text-navy dark:text-white">{{ number_format($leads) }}</td>
+                        <td class="px-5 py-3 text-right">{{ $stat->unique_visitors > 0 ? number_format($leads / $stat->unique_visitors * 100, 1).'%' : '—' }}</td>
                         <td class="px-5 py-3">{{ array_key_first($stat->browsers ?? []) ?? '—' }}</td>
                         <td class="px-5 py-3">{{ array_key_first($stat->devices ?? []) ?? '—' }}</td>
                         <td class="px-5 py-3 truncate max-w-[14rem]">{{ array_key_first($stat->top_pages ?? []) ?? '—' }}</td>
                     </tr>
                 @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{{-- Recent conversions --}}
+<div class="{{ $card }} mb-6 overflow-hidden">
+    <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+        <h3 class="text-sm font-bold text-navy dark:text-white">Recent Leads &amp; Actions</h3>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">The latest 15, newest first. Click one to open the request.</p>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="text-left text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                    <th class="px-5 py-3 font-semibold">Time</th>
+                    <th class="px-5 py-3 font-semibold">Action</th>
+                    <th class="px-5 py-3 font-semibold">Came From</th>
+                    <th class="px-5 py-3 font-semibold">First Page Seen</th>
+                    <th class="px-5 py-3 font-semibold">Submitted On</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                @forelse ($recentConversions as $conversion)
+                    @php $url = $conversion->adminUrl(); @endphp
+                    <tr class="text-gray-600 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-white/5">
+                        <td class="px-5 py-3 whitespace-nowrap">{{ $conversion->created_at->format('M j, g:i a') }}</td>
+                        <td class="px-5 py-3 whitespace-nowrap">
+                            @if ($url)
+                                <a href="{{ $url }}" class="font-medium text-navy dark:text-white hover:text-gold">{{ $conversion->label() }}</a>
+                            @else
+                                <span class="font-medium text-navy dark:text-white">{{ $conversion->label() }}</span>
+                            @endif
+                            @unless ($conversion->isLead())
+                                <span class="ml-1.5 text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400">Client</span>
+                            @endunless
+                        </td>
+                        <td class="px-5 py-3 truncate max-w-[12rem]">
+                            {{ $conversion->source ?? 'Direct' }}
+                            @if ($conversion->campaign)
+                                <span class="text-gray-400 dark:text-gray-500">· {{ $conversion->campaign }}</span>
+                            @endif
+                        </td>
+                        <td class="px-5 py-3 truncate max-w-[14rem]">{{ $conversion->landing_page ?? '—' }}</td>
+                        <td class="px-5 py-3 truncate max-w-[14rem]">{{ $conversion->last_page ?? '—' }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="px-5 py-8 text-center text-gray-400 dark:text-gray-500">No leads or actions recorded yet — they'll appear here as forms are submitted.</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
@@ -164,7 +293,12 @@
                         <td class="px-5 py-3 whitespace-nowrap">{{ $visit->browser }} <span class="text-gray-400 dark:text-gray-500">· {{ $visit->platform }}</span></td>
                         <td class="px-5 py-3">{{ $visit->device }}</td>
                         <td class="px-5 py-3 truncate max-w-[14rem]">{{ $visit->path }}</td>
-                        <td class="px-5 py-3 truncate max-w-[12rem]">{{ $visit->referrer_host ?? 'Direct' }}</td>
+                        <td class="px-5 py-3 truncate max-w-[12rem]">
+                            {{ $visit->utm_source ?? $visit->referrer_host ?? 'Direct' }}
+                            @if ($visit->utm_campaign)
+                                <span class="text-gray-400 dark:text-gray-500">· {{ $visit->utm_campaign }}</span>
+                            @endif
+                        </td>
                     </tr>
                 @empty
                     <tr>

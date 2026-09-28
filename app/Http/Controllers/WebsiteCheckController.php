@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\NewWebsiteCheckLeadMail;
 use App\Mail\WebsiteCheckReportMail;
+use App\Models\SiteConversion;
 use App\Models\WebsiteCheck;
 use App\Support\WebsiteChecker;
 use Illuminate\Http\Request;
@@ -77,6 +78,8 @@ class WebsiteCheckController extends Controller
         // send mail to an arbitrary address.
         if (! $websiteCheck->report_sent_at) {
             $websiteCheck->update([...$validated, 'report_sent_at' => now()]);
+
+            SiteConversion::record($request, 'website_check', $websiteCheck);
 
             try {
                 Mail::to($websiteCheck->email)->send(new WebsiteCheckReportMail($websiteCheck));

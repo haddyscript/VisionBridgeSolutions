@@ -57,12 +57,35 @@ class TrackSiteVisit
                 // Clicking between our own pages isn't a traffic source.
                 'referrer_host' => $referrerHost && $referrerHost !== $request->getHost() ? Str::limit($referrerHost, 250, '') : null,
                 'user_agent' => $ua ? Str::limit($ua, 1000, '') : null,
+                ...$this->campaignParams($request),
             ]);
         } catch (\Throwable $e) {
             Log::warning('Site visit tracking failed', ['exception' => $e]);
         }
 
         return $response;
+    }
+
+    /**
+     * Ad/campaign tags from the landing URL (?utm_source=facebook&utm_campaign=…).
+     * Facebook and Google ads auto-append their click IDs even without UTM
+     * tags, so those still get attributed to the right network.
+     */
+    private function campaignParams(Request $request): array
+    {
+        $param = fn (string $key, int $max) => ($value = trim((string) $request->query($key))) !== ''
+            ? Str::limit(Str::lower($value), $max, '')
+            : null;
+
+        $source = $param('utm_source', 100)
+            ?? ($request->query('fbclid') ? 'facebook' : null)
+            ?? ($request->query('gclid') ? 'google' : null);
+
+        return [
+            'utm_source' => $source,
+            'utm_medium' => $param('utm_medium', 100),
+            'utm_campaign' => $param('utm_campaign', 150),
+        ];
     }
 
     private function shouldTrack(Request $request, Response $response): bool

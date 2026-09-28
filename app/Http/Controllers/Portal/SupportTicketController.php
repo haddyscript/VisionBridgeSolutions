@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Mail\NewSupportTicketMail;
 use App\Mail\SupportTicketClientReplyMail;
+use App\Models\SiteConversion;
 use App\Models\SupportTicket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -34,6 +35,8 @@ class SupportTicketController extends Controller
             ...$validated,
             'user_id' => $request->user()->id,
         ]);
+
+        SiteConversion::record($request, 'support_ticket', $ticket);
 
         dispatch(function () use ($ticket) {
             Mail::to(config('mail.support_address'))->send(new NewSupportTicketMail($ticket));

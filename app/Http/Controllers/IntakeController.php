@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\IntakeConfirmationMail;
 use App\Mail\NewIntakeSubmissionMail;
 use App\Models\IntakeSubmission;
+use App\Models\SiteConversion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -69,6 +70,8 @@ class IntakeController extends Controller
                 ]);
             }
         }
+
+        SiteConversion::record($request, 'intake', $submission);
 
         Mail::to(config('mail.support_address'))->send(new NewIntakeSubmissionMail($submission));
         Mail::to($submission->contact_email)->send(new IntakeConfirmationMail($submission));

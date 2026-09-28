@@ -22,6 +22,9 @@ class SiteVisit extends Model
         'device',
         'path',
         'referrer_host',
+        'utm_source',
+        'utm_medium',
+        'utm_campaign',
         'user_agent',
     ];
 }
