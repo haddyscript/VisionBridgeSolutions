@@ -49,7 +49,6 @@ use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\WebsiteCheckController;
 use App\Http\Controllers\ContactMessageController;
-use App\Http\Controllers\DatabaseResetController;
 use App\Http\Controllers\DeployerController;
 use App\Http\Controllers\FileDownloadController;
 use App\Http\Controllers\ImpersonationController;
