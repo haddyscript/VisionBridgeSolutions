@@ -1758,7 +1758,7 @@ The super admin **Website Visitors** report (`/admin/site-visitors`) now shows w
 
 ## 120. Error Log Viewer (2026-09-28)
 
-**`/admin/laravel-log`** (`Admin\LaravelLogController`, super admins only) — view the server's `storage/logs/*.log` in the browser instead of opening the Hostinger file manager. A **Clear Log** button (with a confirm prompt) empties the selected file — truncated, not deleted, so the server keeps writing to it with the same permissions — and logs a "Log file cleared" line naming who did it. Otherwise read-only: newest entries first (up to 300, parsed from the last 2 MB of the file so a huge log can't slow the page), a count + filter per level (Error, Warning, Info, …), text search, click an entry to expand its full stack trace, a file picker if there's more than one log (e.g. daily logs), and a **Download** button for the complete file. Deliberately not a public URL — logs can contain client emails, error details, and config values. Only files already in `storage/logs` can be viewed or downloaded (picked by name from a server-side list, never a raw path). Linked as **Error Log** in the sidebar's Super Admin group (§121).
+**`/admin/laravel-log`** (`Admin\LaravelLogController`, super admins only) — view the server's `storage/logs/*.log` in the browser instead of opening the Hostinger file manager. A **Clear Log** button (with a confirm prompt) empties the selected file — truncated, not deleted, so the server keeps writing to it with the same permissions — and logs a "Log file cleared" line naming who did it. Otherwise read-only: newest entries first (up to 300, parsed from the last 2 MB of the file so a huge log can't slow the page), a count + filter per level (Error, Warning, Info, …), text search, click an entry to expand its full stack trace, a file picker if there's more than one log (e.g. daily logs), and a **Download** button for the complete file. Deliberately not a public URL — logs can contain client emails, error details, and config values. Only files already in `storage/logs` can be viewed or downloaded (picked by name from a server-side list, never a raw path). Linked as **Error Log** in the sidebar's System group (§121).
 
 ## 121. Admin Sidebar — Grouped, Collapsible Sections (2026-09-28)
 
@@ -1769,7 +1769,8 @@ The admin sidebar was one long flat list that needed scrolling. Links are now gr
 - **Inbox:** Contact Messages, Website Check Leads, Consultations, Intake Submissions, Project Requests, Support Tickets, Recommendations
 - **Billing:** Payments, Refund Requests, Care Plans, Care Plan Reports, FaithStack Payouts
 - **Settings & Team:** Care Plan Pricing, Service Agreement, Email Templates, Announcements, Team
-- **Super Admin** (super admins only): Cron Jobs, Website Visitors, Revenue, Error Log
+- **Insights** (super admins only): Website Visitors, Revenue
+- **System** (super admins only): Cron Jobs, Error Log — originally one "Super Admin" group, split so every header names what's inside rather than who can see it
 - FAQ & Help Guide stays at the bottom.
 
 Click a section header to collapse/expand it — remembered per browser (`localStorage` key `adminNavCollapsed`). The section holding the current page always opens, a collapsed section shows a small red dot if anything inside has an unread/pending badge, and a section is hidden entirely for a restricted admin with access to none of its pages. Per-link permission checks are unchanged.

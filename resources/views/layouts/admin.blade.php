@@ -606,16 +606,10 @@
                 </div>
 
                 @if (auth()->user()->isSuperAdmin())
-                <div class="nav-group pt-4" data-nav-group="super-admin">
-                    @include('partials.admin-nav-group-header', ['label' => 'Super Admin'])
+                {{-- Both groups below are super-admin only. --}}
+                <div class="nav-group pt-4" data-nav-group="insights">
+                    @include('partials.admin-nav-group-header', ['label' => 'Insights'])
                     <div class="nav-group-items space-y-0.5">
-                    <a href="{{ route('admin.cron-jobs.index') }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.cron-jobs.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        Cron Jobs
-                    </a>
                     <a href="{{ route('admin.site-visitors.index') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.site-visitors.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -629,6 +623,19 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                         </svg>
                         Revenue
+                    </a>
+                    </div>
+                </div>
+
+                <div class="nav-group pt-4" data-nav-group="system">
+                    @include('partials.admin-nav-group-header', ['label' => 'System'])
+                    <div class="nav-group-items space-y-0.5">
+                    <a href="{{ route('admin.cron-jobs.index') }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.cron-jobs.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Cron Jobs
                     </a>
                     <a href="{{ route('admin.laravel-log.index') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.laravel-log.*') ? 'bg-gold/15 text-gold' : 'text-white/65 hover:bg-white/5 hover:text-white' }}">
