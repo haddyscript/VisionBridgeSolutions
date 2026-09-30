@@ -18,6 +18,7 @@
         'on_hold'        => 'On Hold',
         'not_interested' => 'Not Interested',
         'lost'           => 'Lost',
+        'testing'        => 'Testing',
     ];
     $statusColors = [
         'new'            => 'bg-gold/15 text-gold-dark',
@@ -31,6 +32,7 @@
         'on_hold'        => 'bg-gray-100 text-gray-600',
         'not_interested' => 'bg-rose-100 text-rose-700',
         'lost'           => 'bg-red-100 text-red-700',
+        'testing'        => 'bg-pink-100 text-pink-700',
     ];
     // Solid dot colors for the custom status dropdown (admin._dropdown) —
     // same hue per status as $statusColors above, just a saturated dot
@@ -47,6 +49,7 @@
         'on_hold'        => 'bg-gray-400',
         'not_interested' => 'bg-rose-500',
         'lost'           => 'bg-red-500',
+        'testing'        => 'bg-pink-500',
     ];
     $categoryLabels = [
         'photo' => 'Photos',

@@ -18,6 +18,7 @@
         'on_hold'        => 'On Hold',
         'not_interested' => 'Not Interested',
         'lost'           => 'Lost',
+        'testing'        => 'Testing',
     ];
     // "New" gets a solid, high-contrast pill (unlike the others) since
     // these are the ones that actually need to grab attention on load.
@@ -33,6 +34,7 @@
         'on_hold'        => 'bg-gray-100 dark:bg-gray-700/40 text-gray-600 dark:text-gray-300 ring-1 ring-inset ring-gray-200 dark:ring-gray-600/30',
         'not_interested' => 'bg-rose-50 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400 ring-1 ring-inset ring-rose-200 dark:ring-rose-500/20',
         'lost'           => 'bg-red-50 dark:bg-red-500/10 text-red-800 dark:text-red-400 ring-1 ring-inset ring-red-200 dark:ring-red-500/20',
+        'testing'        => 'bg-pink-50 dark:bg-pink-500/10 text-pink-800 dark:text-pink-400 ring-1 ring-inset ring-pink-200 dark:ring-pink-500/20',
     ];
     // Solid dot colors for the status filter dropdown (admin._dropdown) —
     // same hue per status as $statusColors above, just a saturated dot
@@ -49,6 +51,7 @@
         'on_hold'        => 'bg-gray-400',
         'not_interested' => 'bg-rose-500',
         'lost'           => 'bg-red-500',
+        'testing'        => 'bg-pink-500',
     ];
 @endphp
 
