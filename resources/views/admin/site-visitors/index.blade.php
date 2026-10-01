@@ -314,7 +314,14 @@
         </table>
     </div>
     @if ($recent->hasPages())
-        <div class="px-5 py-3 border-t border-gray-100 dark:border-gray-700">{{ $recent->links() }}</div>
+        {{-- sm:pr-20 keeps Next clear of the floating chat button bottom-right --}}
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 sm:pr-20 py-4 border-t border-gray-100 dark:border-gray-700">
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+                Showing <span class="font-semibold text-navy dark:text-white">{{ number_format($recent->firstItem()) }}–{{ number_format($recent->lastItem()) }}</span>
+                of <span class="font-semibold text-navy dark:text-white">{{ number_format($recent->total()) }}</span> visits
+            </p>
+            {{ $recent->onEachSide(1)->links('admin._pagination') }}
+        </div>
     @endif
 </div>
 
