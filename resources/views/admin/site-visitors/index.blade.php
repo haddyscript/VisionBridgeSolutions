@@ -258,8 +258,8 @@
     </div>
 </div>
 
-{{-- Recent visitors --}}
-<div class="{{ $card }} overflow-hidden">
+{{-- Recent visitors (paging/filtering swaps just this card in place — see script below) --}}
+<div id="recent-visitors" class="{{ $card }} overflow-hidden scroll-mt-24 transition-opacity">
     <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex flex-wrap items-center justify-between gap-3">
         <div>
             <h3 class="text-sm font-bold text-navy dark:text-white">Recent Visitors</h3>
@@ -321,12 +321,65 @@
 <script>
 // Times are stored in UTC; show each viewer their own local time instead
 // (the server-rendered text, suffixed "UTC", stays as the no-JS fallback).
-document.querySelectorAll('time[data-local-time]').forEach(function (el) {
-    const date = new Date(el.getAttribute('datetime'));
-    if (isNaN(date)) return;
-    el.textContent = date.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-    el.title = date.toUTCString();
-});
+function localizeTimes(root) {
+    root.querySelectorAll('time[data-local-time]').forEach(function (el) {
+        const date = new Date(el.getAttribute('datetime'));
+        if (isNaN(date)) return;
+        el.textContent = date.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+        el.title = date.toUTCString();
+    });
+}
+localizeTimes(document);
+
+// Recent Visitors: pagination and the search/date filter fetch the page in
+// the background and swap only this card, instead of a full reload that
+// jumps back to the top. Falls back to normal navigation if the fetch fails.
+(function () {
+    const card = document.getElementById('recent-visitors');
+    if (!card) return;
+
+    function load(url, push) {
+        card.classList.add('opacity-50', 'pointer-events-none');
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (res) {
+                if (!res.ok) throw new Error(res.status);
+                return res.text();
+            })
+            .then(function (html) {
+                const fresh = new DOMParser().parseFromString(html, 'text/html').getElementById('recent-visitors');
+                if (!fresh) throw new Error('missing card');
+                card.innerHTML = fresh.innerHTML;
+                localizeTimes(card);
+                if (push) history.pushState({ recentVisitors: true }, '', url);
+                if (card.getBoundingClientRect().top < 0) card.scrollIntoView({ behavior: 'smooth' });
+            })
+            .catch(function () { window.location.href = url; })
+            .finally(function () { card.classList.remove('opacity-50', 'pointer-events-none'); });
+    }
+
+    card.addEventListener('click', function (e) {
+        const link = e.target.closest('a[href]');
+        if (!link || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        const url = new URL(link.href, window.location.href);
+        if (url.pathname !== window.location.pathname) return;
+        e.preventDefault();
+        load(url.toString(), true);
+    });
+
+    card.addEventListener('submit', function (e) {
+        const form = e.target;
+        e.preventDefault();
+        const url = new URL(window.location.pathname, window.location.href);
+        new FormData(form).forEach(function (value, key) {
+            if (value !== '') url.searchParams.set(key, value);
+        });
+        load(url.toString(), true);
+    });
+
+    window.addEventListener('popstate', function () {
+        load(window.location.href, false);
+    });
+})();
 </script>
 
 @endsection
