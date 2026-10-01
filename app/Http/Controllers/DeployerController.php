@@ -165,9 +165,13 @@ class DeployerController extends Controller
         foreach (glob(storage_path('framework/views/*.php')) ?: [] as $compiled) {
             $result = Process::timeout(30)->run(['php', '-l', $compiled]);
 
-            if ($result->failed()) {
+            // A file can vanish between glob() and here if another deploy
+            // (e.g. a second domain sharing this folder) runs view:clear at
+            // the same time. Missing isn't broken, so skip it rather than
+            // rolling back a healthy deploy or crashing on the read below.
+            if ($result->failed() && is_file($compiled)) {
                 // Compiled views end with a /**PATH <source> ENDPATH**/ marker.
-                preg_match('#/\*\*PATH (.+?) ENDPATH\*\*/#', (string) file_get_contents($compiled), $m);
+                preg_match('#/\*\*PATH (.+?) ENDPATH\*\*/#', (string) @file_get_contents($compiled), $m);
                 $error = trim(strtok($result->output().$result->errorOutput(), "\n"));
                 $broken[] = ($m[1] ?? basename($compiled)).': '.$error;
             }
