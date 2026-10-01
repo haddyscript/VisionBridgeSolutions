@@ -186,4 +186,19 @@ return [
 
     'johnny_address' => env('MAIL_JOHNNY_ADDRESS', env('MAIL_ADMIN_ADDRESS', env('MAIL_FROM_ADDRESS', 'hello@example.com'))),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Failed Payment Alert Addresses
+    |--------------------------------------------------------------------------
+    |
+    | Everyone emailed the moment a Stripe charge fails — a Care Plan renewal
+    | or a one-time project payment. Comma-separated list.
+    |
+    */
+
+    'payment_failed_addresses' => array_values(array_filter(array_map('trim', explode(',', (string) env(
+        'MAIL_PAYMENT_FAILED_ADDRESSES',
+        'hadrianevarula@gmail.com,johnnydavis45@yahoo.com',
+    ))))),
+
 ];

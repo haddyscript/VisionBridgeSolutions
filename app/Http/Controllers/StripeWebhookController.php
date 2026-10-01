@@ -61,6 +61,7 @@ class StripeWebhookController extends Controller
             'invoice.payment_succeeded' => $this->handleInvoicePaymentSucceeded($event->data->object),
             'invoice.payment_failed' => $this->handleInvoicePaymentFailed($event->data->object),
             'payment_intent.succeeded' => $this->handlePaymentIntentSucceeded($event->data->object),
+            'payment_intent.payment_failed' => $this->handlePaymentIntentFailed($event->data->object),
             'charge.refunded' => $this->flagPayoutForCharge($event->data->object, 'Refunded'),
             'charge.dispute.created' => $this->flagPayoutForDispute($event->data->object),
             default => null,
@@ -540,6 +541,63 @@ class StripeWebhookController extends Controller
             Mail::to($subscription->project->user->email)->send(
                 new PaymentFailedMail($subscription, $amountDue)
             );
+        })->afterResponse();
+
+        $nextAttempt = $invoice->next_payment_attempt ?? null;
+
+        $this->alertTeamOfFailedPayment(
+            'Care Plan Payment Failed — '.($subscription->project->name ?? 'Unknown project'),
+            "A recurring Care Plan charge for {$subscription->project->user->name} was declined. The client has been emailed to update their card.",
+            [
+                'Client' => $subscription->project->user->name.' ('.$subscription->project->user->email.')',
+                'Project' => $subscription->project->name,
+                'Amount Due' => '$'.number_format($amountDue / 100, 2),
+                'Attempt' => (string) ($invoice->attempt_count ?? 1),
+                'Next Retry' => $nextAttempt
+                    ? Carbon::createFromTimestamp($nextAttempt)->format('M j, Y g:i A').' UTC'
+                    : 'None — Stripe will not retry automatically',
+                'Invoice' => $invoice->hosted_invoice_url ?? '—',
+            ],
+        );
+    }
+
+    /**
+     * A one-time project payment (deposit/final/other) made through the
+     * embedded checkout was declined. Only Payments we can match by
+     * PaymentIntent id are alerted — subscription invoice charges also fire
+     * this event, but those are already covered by handleInvoicePaymentFailed.
+     */
+    private function handlePaymentIntentFailed($paymentIntent): void
+    {
+        $payment = Payment::with('project.user')->where('stripe_payment_intent_id', $paymentIntent->id)->first();
+
+        if (! $payment || $payment->isPaid()) {
+            return;
+        }
+
+        $this->alertTeamOfFailedPayment(
+            'Project Payment Failed — '.($payment->project->name ?? 'Unknown project'),
+            "{$payment->project->user->name}'s card was declined while paying {$payment->formattedAmount()}. They can try again from their portal.",
+            [
+                'Client' => $payment->project->user->name.' ('.$payment->project->user->email.')',
+                'Project' => $payment->project->name,
+                'Amount' => $payment->formattedAmount(),
+                'Reason' => $paymentIntent->last_payment_error->message ?? 'Not provided by Stripe',
+            ],
+        );
+    }
+
+    /** Emails everyone in mail.payment_failed_addresses (Hadrian + Johnny by default). */
+    private function alertTeamOfFailedPayment(string $title, string $message, array $context): void
+    {
+        $recipients = config('mail.payment_failed_addresses');
+
+        if (empty($recipients)) {
+            return;
+        }
+
+        dispatch(function () use ($recipients, $title, $message, $context) {
+            Mail::to($recipients)->send(new SystemAlertMail($title, $message, $context));
         })->afterResponse();
     }
 
