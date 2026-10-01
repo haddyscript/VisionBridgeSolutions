@@ -16,23 +16,39 @@
     Visitor countries use <a href="https://db-ip.com" target="_blank" rel="noopener" class="underline hover:text-navy dark:hover:text-white">IP Geolocation by DB-IP</a>.
 </p>
 
-{{-- Stat cards --}}
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+{{-- Stat cards — Unique Visitors and Total Page Views shown side by side,
+     each with its own label, so the two numbers are never confused. --}}
+<div class="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-gray-500 dark:text-gray-400 mb-3">
+    <span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-gold"></span><strong class="text-navy dark:text-white">Unique Visitors</strong> = different people (each device counted once)</span>
+    <span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-teal"></span><strong class="text-navy dark:text-white">Total Page Views</strong> = every page they opened (one person can view many pages)</span>
+</div>
+<div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     @foreach ([
         ['Today', $today],
         ['Last 7 Days', $week],
         ['This Month', $month],
     ] as [$label, $stat])
         <div class="{{ $card }} p-5">
-            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">{{ $label }}</p>
-            <p class="text-2xl font-bold text-navy dark:text-white mt-1">{{ number_format($stat['visitors']) }}</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">visitors · {{ number_format($stat['views']) }} page views</p>
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-3">{{ $label }}</p>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="border-l-2 border-gold pl-3">
+                    <p class="text-2xl font-bold text-navy dark:text-white">{{ number_format($stat['visitors']) }}</p>
+                    <p class="text-[11px] font-medium text-gray-500 dark:text-gray-400 leading-tight">Unique Visitors</p>
+                </div>
+                <div class="border-l-2 border-teal pl-3">
+                    <p class="text-2xl font-bold text-navy dark:text-white">{{ number_format($stat['views']) }}</p>
+                    <p class="text-[11px] font-medium text-gray-500 dark:text-gray-400 leading-tight">Total Page Views</p>
+                </div>
+            </div>
         </div>
     @endforeach
     <div class="{{ $card }} p-5">
-        <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">All Time</p>
-        <p class="text-2xl font-bold text-navy dark:text-white mt-1">{{ number_format($allTimeViews) }}</p>
-        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">page views since tracking began</p>
+        <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-3">All Time</p>
+        <div class="border-l-2 border-teal pl-3">
+            <p class="text-2xl font-bold text-navy dark:text-white">{{ number_format($allTimeViews) }}</p>
+            <p class="text-[11px] font-medium text-gray-500 dark:text-gray-400 leading-tight">Total Page Views since tracking began</p>
+        </div>
+        <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-2">Unique visitors are counted per month — see the Monthly Report below.</p>
     </div>
 </div>
 
@@ -107,7 +123,7 @@
 {{-- Daily chart --}}
 <div class="{{ $card }} p-5 mb-6">
     <div class="flex items-center justify-between mb-4">
-        <h3 class="text-sm font-bold text-navy dark:text-white">Visitors per Day — Last 30 Days</h3>
+        <h3 class="text-sm font-bold text-navy dark:text-white">Unique Visitors per Day — Last 30 Days</h3>
     </div>
     <div class="flex items-end gap-1 h-40">
         @foreach ($chart as $day)
@@ -174,8 +190,8 @@
             <thead>
                 <tr class="text-left text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500">
                     <th class="px-5 py-3 font-semibold">Month</th>
-                    <th class="px-5 py-3 font-semibold text-right">Visitors</th>
-                    <th class="px-5 py-3 font-semibold text-right">Page Views</th>
+                    <th class="px-5 py-3 font-semibold text-right">Unique Visitors</th>
+                    <th class="px-5 py-3 font-semibold text-right">Total Page Views</th>
                     <th class="px-5 py-3 font-semibold text-right">New Leads</th>
                     <th class="px-5 py-3 font-semibold text-right">Conv. Rate</th>
                     <th class="px-5 py-3 font-semibold">Top Browser</th>
@@ -262,8 +278,8 @@
 <div id="recent-visitors" class="{{ $card }} overflow-hidden scroll-mt-24 transition-opacity">
     <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex flex-wrap items-center justify-between gap-3">
         <div>
-            <h3 class="text-sm font-bold text-navy dark:text-white">Recent Visitors</h3>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">One row per page view, newest first.</p>
+            <h3 class="text-sm font-bold text-navy dark:text-white">Recent Page Views</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">One row per page view (not per visitor), newest first.</p>
         </div>
         <form method="GET" class="flex flex-wrap items-center gap-2">
             <input type="text" name="search" value="{{ $search }}" placeholder="Search IP, page, country code…"
@@ -318,7 +334,7 @@
         <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 sm:pr-20 py-4 border-t border-gray-100 dark:border-gray-700">
             <p class="text-xs text-gray-500 dark:text-gray-400">
                 Showing <span class="font-semibold text-navy dark:text-white">{{ number_format($recent->firstItem()) }}–{{ number_format($recent->lastItem()) }}</span>
-                of <span class="font-semibold text-navy dark:text-white">{{ number_format($recent->total()) }}</span> visits
+                of <span class="font-semibold text-navy dark:text-white">{{ number_format($recent->total()) }}</span> page views
             </p>
             {{ $recent->onEachSide(1)->links('admin._pagination') }}
         </div>
