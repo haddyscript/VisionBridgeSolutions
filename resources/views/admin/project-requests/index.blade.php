@@ -257,7 +257,7 @@
                         class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                     Prev
                 </button>
-                <span id="requests-page-indicator-desktop" class="px-2 text-navy dark:text-white font-medium"></span>
+                <div id="requests-page-indicator-desktop" class="flex items-center gap-1"></div>
                 <button type="button" id="requests-page-next-desktop" onclick="changeRequestsPage(1)"
                         class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                     Next
@@ -341,7 +341,7 @@
                     class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                 Prev
             </button>
-            <span id="requests-page-indicator-mobile" class="px-2 text-navy dark:text-white font-medium"></span>
+            <div id="requests-page-indicator-mobile" class="flex items-center gap-1"></div>
             <button type="button" id="requests-page-next-mobile" onclick="changeRequestsPage(1)"
                     class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                 Next
@@ -374,6 +374,42 @@
                 return matchesSearch && matchesStatus && matchesCategory;
             }
 
+            // Numbered page buttons (1 2 3 …) so any page is one click away.
+            // With many pages, shows first, last and the pages around the
+            // current one, with "…" for the gaps.
+            function renderPageNumbers(container, totalPages) {
+                const pages = [];
+                for (let p = 1; p <= totalPages; p++) {
+                    if (p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1) {
+                        if (pages.length && p - pages[pages.length - 1] > 1) pages.push('…');
+                        pages.push(p);
+                    }
+                }
+
+                container.innerHTML = '';
+                pages.forEach((p) => {
+                    if (p === '…') {
+                        const gap = document.createElement('span');
+                        gap.className = 'px-1 text-gray-400 dark:text-gray-500';
+                        gap.textContent = '…';
+                        container.appendChild(gap);
+                        return;
+                    }
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.textContent = p;
+                    btn.className = 'w-8 py-1.5 text-center rounded-lg border transition-colors ' + (p === currentPage
+                        ? 'border-gold bg-gold/15 text-gold-dark font-semibold'
+                        : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700');
+                    if (p === currentPage) btn.setAttribute('aria-current', 'page');
+                    btn.addEventListener('click', () => {
+                        currentPage = p;
+                        render();
+                    });
+                    container.appendChild(btn);
+                });
+            }
+
             function updatePageControls(suffix, total, totalPages) {
                 const countLabel = document.getElementById('requests-count-label-' + suffix);
                 const indicator = document.getElementById('requests-page-indicator-' + suffix);
@@ -389,7 +425,7 @@
                         countLabel.textContent = 'Showing ' + start + '–' + end + ' of ' + total + ' request' + (total === 1 ? '' : 's');
                     }
                 }
-                if (indicator) indicator.textContent = 'Page ' + currentPage + ' of ' + totalPages;
+                if (indicator) renderPageNumbers(indicator, totalPages);
                 if (prevBtn) prevBtn.disabled = currentPage <= 1;
                 if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
             }
