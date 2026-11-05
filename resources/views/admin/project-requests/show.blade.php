@@ -28,6 +28,10 @@
             <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6">
                 <div class="flex items-center justify-between gap-4 mb-4">
                     <div>
+                        @php $projectNames = $projectRequest->user->projects->pluck('name')->filter()->unique(); @endphp
+                        @if ($projectNames->isNotEmpty())
+                            <p class="text-sm font-semibold text-gold mb-0.5">{{ $projectNames->implode(' · ') }}</p>
+                        @endif
                         <p class="font-semibold text-navy dark:text-white">{{ $projectRequest->user->name }}</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">{{ $projectRequest->user->email }}</p>
                     </div>

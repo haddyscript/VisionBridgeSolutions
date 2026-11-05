@@ -123,7 +123,7 @@ class ProjectRequestController extends Controller
 
     public function show(ProjectRequest $projectRequest)
     {
-        $projectRequest->load('user', 'attachments');
+        $projectRequest->load('user.projects', 'attachments');
 
         return view('admin.project-requests.show', [
             'projectRequest' => $projectRequest,
