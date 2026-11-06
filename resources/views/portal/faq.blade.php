@@ -86,7 +86,7 @@
             ],
             [
                 'q' => 'What\'s the difference between a one-time payment and a Care Plan?',
-                'a' => 'One-time payments are individual invoices for specific work (e.g. a deposit or milestone payment). A Care Plan is a recurring monthly subscription that covers ongoing website updates and support after launch.',
+                'a' => 'One-time payments are individual invoices for specific work (e.g. a deposit or milestone payment). A Care Plan is an optional recurring monthly subscription that covers ongoing website updates and support after launch. If you chose No Care Plan, there are no monthly fees — each revision you request is quoted and billed individually as a one-time payment.',
             ],
             [
                 'q' => 'How do I manage or cancel my Care Plan billing?',

@@ -1493,7 +1493,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 ['icon' => 'lock',     'label' => 'Lost Access To Your Website Or Domain', 'desc' => 'We\'ll help you recover access to your hosting, domain registrar, and admin accounts.'],
                 ['icon' => 'document', 'label' => 'Need A Landing Page Redesign Or Additional Pages', 'desc' => 'From a single page refresh to brand-new sections, we build on what you already have.'],
                 ['icon' => 'cog',      'label' => 'Add Automation, Forms & Notifications', 'desc' => 'Contact forms, booking flows, and instant notifications — automated so nothing slips through.'],
-                ['icon' => 'dollar',   'label' => 'Affordable Website Care Plans That Save You Money', 'desc' => 'Monthly care plans covering hosting, updates, and support — for less than piecing it together yourself.'],
+                ['icon' => 'dollar',   'label' => 'Affordable Website Care Plans That Save You Money', 'desc' => 'Optional monthly care plans covering hosting, updates, and support — or skip the monthly fee and pay per revision.'],
             ] as $painPoint)
                 <div class="redesign-teaser-row{{ $loop->last ? ' sm:col-span-2' : '' }}" tabindex="0">
                     <div class="redesign-teaser-row-inner">
@@ -2378,8 +2378,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             <div class="relative flex flex-col items-center justify-center text-center" style="min-height:230px;">
                 <span id="plans-kicker" class="kicker-tag inline-flex items-center text-teal text-sm font-semibold tracking-widest uppercase mb-3" style="opacity:0;transform:translateX(-20px)">Protect Your Investment</span>
                 <h2 id="plans-heading" class="section-title" style="opacity:0;transform:translateY(40px)">Website Care Plans</h2>
-                <p id="plans-subtitle" class="section-subtitle" style="opacity:0;transform:translateY(20px)">Protect your investment with professional website care designed to keep your website secure, updated, optimized, and performing month after month.</p>
+                <p id="plans-subtitle" class="section-subtitle" style="opacity:0;transform:translateY(20px)">Protect your investment with professional website care designed to keep your website secure, updated, optimized, and performing month after month — completely optional.</p>
             </div>
+        </div>
+
+        {{-- "No Monthly Fees Required" banner (2026-11 work order) — Care
+             Plans are optional; clients can pay per revision instead. Not
+             tied to the section's scroll animation so it's always visible. --}}
+        <div class="max-w-4xl mx-auto -mt-10 mb-14 text-center border-2 border-gold bg-navy px-6 py-8 shadow-xl" style="clip-path:polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);">
+            <p class="font-display font-extrabold uppercase tracking-wide text-gold leading-tight" style="font-size:clamp(1.9rem,5vw,3.25rem);">No Monthly Fees Required!</p>
+            <p class="mt-3 text-white text-lg sm:text-xl font-semibold">Monthly Website Care Plans Are Optional — Pay Per Revision!</p>
+            <p class="mt-3 text-white/70 text-sm sm:text-base max-w-2xl mx-auto">Buy your website with no recurring charges. Need changes later? Request a revision and we'll quote it before any work begins — or add a Care Plan anytime for ongoing care.</p>
         </div>
 
         <div id="plans-carousel" class="relative max-w-5xl mx-auto" style="opacity:0;transform:translateY(40px);">
@@ -2479,6 +2488,17 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             @endforeach
             </div>
             </div>
+        </div>
+
+        {{-- Pay-per-revision alternative to the monthly plans above --}}
+        <div class="max-w-3xl mx-auto mt-12 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 border-2 border-dashed border-gray-300 bg-white px-6 py-6">
+            <div class="text-center sm:text-left shrink-0">
+                <p class="font-extrabold text-xl uppercase tracking-wide text-navy">No Care Plan</p>
+                <p><span class="text-4xl font-extrabold text-navy">$0</span><span class="text-gray-600 text-base font-semibold">/month</span></p>
+            </div>
+            <p class="text-base font-medium text-gray-700 text-center sm:text-left">
+                <strong class="text-navy">Pay per revision instead.</strong> Every website package can be purchased without a monthly plan — when you need changes, submit a revision request and we'll quote it for your approval first.
+            </p>
         </div>
 
         {{-- Path for the undecided — cross-sell into the existing consultation booking flow --}}

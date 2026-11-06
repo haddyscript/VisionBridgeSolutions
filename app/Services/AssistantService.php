@@ -208,7 +208,9 @@ class AssistantService
         }
 
         $subscription = $project->subscription;
-        if (! $subscription) {
+        if (! $subscription && $project->hasDeclinedCarePlan()) {
+            $lines[] = '- Chose No Care Plan (pay per revision): no monthly fees; each revision is quoted and billed as a one-time payment. Care Plans are optional and can be added later.';
+        } elseif (! $subscription) {
             $lines[] = '- No Care Plan subscription on file.';
         } else {
             $planName = $subscription->maintenancePlan?->name ?? 'Care Plan';

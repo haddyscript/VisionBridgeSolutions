@@ -423,6 +423,10 @@
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['check'] !!}</svg>
                             No Long-Term Contracts — Cancel Anytime
                         </p>
+                        <p class="cp-trust-line mt-2">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $svgIcons['check'] !!}</svg>
+                            Care Plans Are Optional — No Monthly Fees Required, Pay Per Revision Instead
+                        </p>
                     @endif
                 </div>
             @endif

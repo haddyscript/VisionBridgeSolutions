@@ -759,13 +759,13 @@
             <div class="flex flex-col gap-3" data-faq-cards>
                 @php $faqs = [
                     ['q' => 'How long does it take?', 'a' => "Timelines vary by scope and how quickly we receive your content, but every project moves through the same clear path — onboarding, design, revisions, and launch — with real milestones you can track the whole way through your client portal."],
-                    ['q' => 'Do I need a Care Plan?', 'a' => "Yes — a Website Care Plan is required for every site we build, agreed to during onboarding. It covers hosting, updates, and ongoing support, so nothing is left unmanaged after launch. Billing only starts once your site actually goes live."],
+                    ['q' => 'Do I need a Care Plan?', 'a' => "No — there are no monthly fees required. A Website Care Plan is optional: it covers hosting, updates, and ongoing support for one monthly price, with billing starting only once your site goes live. Prefer not to subscribe? Skip the plan and simply pay per revision — each change is quoted for your approval before any work begins."],
                     ['q' => 'Will my site work on mobile?', 'a' => "Every site we build is mobile-first and tested to perform beautifully across phones, tablets, and desktops alike — not an afterthought bolted on at the end."],
                     ['q' => 'Can I add pages or make changes later?', 'a' => "Yes. Once your site is live, you can request new pages, content updates, or design changes anytime through your client portal, and we track every request from submission through completion."],
-                    ['q' => 'Do you handle hosting and launch?', 'a' => "We do. Hosting management, security, and the launch itself are all handled for you as part of your Care Plan — you never need to touch a server."],
+                    ['q' => 'Do you handle hosting and launch?', 'a' => "We do. We handle the launch for you, and ongoing hosting management and security are included with every Care Plan — you never need to touch a server."],
                     ['q' => 'Who owns the website?', 'a' => "You do — 100%. Domain, content, hosting, and data all belong to you, always. We build it, but it's yours from day one."],
                     ['q' => 'What happens after I submit this form?', 'a' => "We'll review your details and reply within 24 hours with next steps — usually a short consultation to scope out your project before any work begins."],
-                    ['q' => 'Do you offer support after launch?', 'a' => "Always. Every Care Plan includes ongoing updates, monitoring, and a direct line to our team for as long as you're with us."],
+                    ['q' => 'Do you offer support after launch?', 'a' => "Always. Every Care Plan includes ongoing updates, monitoring, and a direct line to our team for as long as you're with us. Without a Care Plan, you can still request changes anytime and pay per revision."],
                 ]; @endphp
                 @foreach ($faqs as $index => $faq)
                     <div class="faq-item">

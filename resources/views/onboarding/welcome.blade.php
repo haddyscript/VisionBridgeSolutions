@@ -25,7 +25,7 @@
             'Verify your email address',
             'Complete your business information',
             'Select a Website Package',
-            'Select a Website Care Plan',
+            'Choose a Website Care Plan (optional — or pay per revision)',
             'Review your Agreement Summary',
             'Read the Master Client Agreement',
             'Confirm your acknowledgments',

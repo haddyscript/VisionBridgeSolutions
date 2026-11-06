@@ -19,7 +19,7 @@ A plain-language summary of everything the site and client portal offer today.
 | Contact form | A simple "Get in Touch" form that emails us directly |
 | Book a Consultation | A calendar booking tool — visitors pick a day and an open time slot (weekdays, 9am–5pm) to request a consultation |
 | Create an account | Visitors can also sign up for a client account directly, without going through the intake form; they must verify their email before they can use the portal. Passwords must be at least 8 characters with an uppercase letter, a lowercase letter, and a number — enforced the same way on password reset and portal/admin account settings. The Password field also shows a live Weak / Strong / Very Strong strength meter as they type |
-| Required Care Plan Agreement | The very first onboarding step: new clients must pick one of our Website Care Plans and agree to its terms before they can even see the Service Agreement — a Care Plan is required for every website we build. Billing doesn't start yet; it's set up automatically once the website launches |
+| Care Plan Agreement (Optional) | An onboarding step: new clients pick one of our Website Care Plans **or "No Care Plan — pay per revision"** and agree to the terms before they can see the Service Agreement. Care Plans are optional (see §125). For a chosen plan, billing doesn't start yet; it's set up automatically once the website launches |
 | Digital Service Agreement | After agreeing to a Care Plan, clients must review and digitally sign (typed name + drawn signature) the Service Agreement before any other portal feature unlocks; they get an emailed PDF copy and we get notified. If the agreement is one of our uploaded PDF documents, clients review it in an embedded viewer (or open it full-size) before signing, and receive both their completed, filled-in agreement PDF and a signed certificate by email |
 | Onboarding Questionnaire | After signing, clients fill out one in-portal form covering organization info, mission/vision, brand colors, requested pages, services, and social links — required before the rest of the portal unlocks; logo/image/content uploads happen separately in Project Files |
 | Client sign in | Standard login, with "remember me" and a "forgot password" recovery option; already-logged-in users get sent straight to their portal or admin dashboard instead of the homepage |
@@ -1801,3 +1801,24 @@ The public `GET /reset-database` route (`DatabaseResetController::reset`, route 
 Original 404 notes:
 
 `resources/views/errors/404.blade.php` rebuilt around a brand metaphor — an animated **broken bridge** ("Looks like this bridge is out.") under a shimmering gold "404". Shows the exact address the visitor tried, a **Back to Home** button plus a **Go Back** button (only shown when the visitor arrived from another page on this site), and four quick-link cards to keep lost visitors on the site: Our Work, Free Website Check, Book a Consultation, and Client Login (which already forwards a logged-in user to their portal/admin dashboard — the 404 page itself can't tell who's logged in, since Laravel doesn't start the session for unmatched URLs). Subtle background (dot grid, drifting glows, pointer-following glow on mouse devices), staggered entrance, full `prefers-reduced-motion` support, single-column on phones, `noindex` so search engines don't index error pages. Still self-contained (inline CSS, no Tailwind), same as before.
+
+## 125. Care Plans Optional — "No Care Plan, Pay Per Revision" at Onboarding (2026-11-06)
+
+Phase 1 of the "No Monthly Fees Required" work order: a client can now finish onboarding and buy a website without a monthly Care Plan.
+
+- **New option on the Care Plan step** (`portal/care-plan-agreement`). Under the plan cards there's a "No Care Plan — $0/month, pay per revision" choice, and the page copy now says "No monthly fees required." Picking it records a `care_plan_agreements` row with a **NULL `maintenance_plan_id`** (`Project::hasDeclinedCarePlan()`). It creates **no Subscription**, skips the payment-method (card/SetupIntent) step, and goes straight to the Agreement Summary (`onboarding_step` 10).
+- **Migration** `2026_11_06_000001_…` makes `care_plan_agreements.maintenance_plan_id` nullable. This is additive; existing rows are untouched.
+- **Downstream handling.** The Agreement Summary (client and admin preview) shows "No Care Plan — pay per revision ($0/month)" and swaps the recurring-billing authorization text for a per-revision note. The filled agreement PDF writes "No Care Plan - Pay Per Revision / 0.00" on the Care Plan page. The admin project page and onboarding preview show the opt-out. Marking the project Completed starts no billing, and the team alert says so.
+- **Pay per revision** is messaging only for now: revisions are quoted and invoiced manually through the existing admin Payments tool.
+- **Existing subscriptions are unaffected.** Only new onboarding choices change.
+- Prompts for the non-code parts (social posters, the three package proposals, the agreement wording) are in `specs/NO_MONTHLY_FEES_AI_PROMPTS.md`.
+
+## 126. "No Monthly Fees Required" — Website & Portal Copy (2026-11-06)
+
+Phase 2 of the work order. The public site and portal copy now present Care Plans as optional. This builds on §125.
+
+- **Homepage, Website Care Plans section (`#plans`)**: a navy and gold banner sits above the plan cards. It reads **"NO MONTHLY FEES REQUIRED!"** with the subline "Monthly Website Care Plans Are Optional — Pay Per Revision!". A dashed **"No Care Plan — $0/month, pay per revision"** card sits below the plans. The section subtitle now ends "— completely optional". The redesign-teaser care-plan line mentions paying per revision.
+- **Care Plan detail pages**: a second trust line, "Care Plans Are Optional — No Monthly Fees Required, Pay Per Revision Instead".
+- **Contact page FAQ**: "Do I need a Care Plan?" now answers **No**. The hosting and post-launch-support answers no longer imply a plan is required.
+- **Portal FAQ, onboarding welcome checklist**: describe the plan as optional, with pay per revision as the alternative.
+- **Client AI assistant** (`AssistantService::accountFacts`): it now knows when a client chose No Care Plan, so it explains pay per revision instead of treating them as missing a plan.
