@@ -1992,7 +1992,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                 </div>
                 <div id="values-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     @foreach([
-                        ['icon'=>'users',       'image'=>'image/Client_Ownership.png',    'title'=>'Client Ownership',    'desc'=>'Your website, your brand, your data — always. We ensure you retain full ownership of every digital asset we create for you.'],
+                        ['icon'=>'users',       'image'=>'image/Client_Ownership.png',    'title'=>'Client Ownership',    'desc'=>'Once your project is paid in full, you own your website design, content, branding, and domain. Hosting and third-party services are managed for you and billed separately.'],
                         ['icon'=>'shield',      'image'=>'image/Long_Term_Stability.png', 'title'=>'Long-Term Stability',  'desc'=>'We don\'t just build and disappear. We provide ongoing support to keep your website secure, updated, and performing.'],
                         ['icon'=>'sparkles',    'image'=>'image/Faith_Base_Values.png',    'title'=>'Faith-Based Values',   'desc'=>'Rooted in integrity and service, we bring faith-based principles to every client relationship and project we undertake.'],
                         ['icon'=>'swatch',      'image'=>'image/Custom_Solutions.png',     'title'=>'Custom Solutions',     'desc'=>'No templates, no shortcuts. Every website is custom-designed to reflect your unique brand and mission.'],
@@ -2273,7 +2273,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
         {{-- 4 premium feature cards --}}
         <div id="why-feature-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             @foreach([
-                ['image'=>'image/Ownership_First.png',       'title'=>'Ownership First',     'desc'=>'You own everything — domain, content, hosting, data. Always.'],
+                ['image'=>'image/Ownership_First.png',       'title'=>'Ownership First',     'desc'=>'Paid in full, your design, content, branding, and domain are yours. Hosting is a managed service.'],
                 ['image'=>'image/Mobile_First_Design.png',   'title'=>'Mobile-First Design',  'desc'=>'Every site is built to perform beautifully on any device.'],
                 ['image'=>'image/Partnership_Approach.png',  'title'=>'Partnership Approach', 'desc'=>'We work with you, not just for you, through every stage.'],
                 ['image'=>'image/Fast_Reliable.png',         'title'=>'Fast & Reliable',      'desc'=>'Optimized for speed, uptime, and a seamless user experience.'],
@@ -2658,7 +2658,7 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
                     </div>
                     <div>
                         <h4 class="font-extrabold text-sm md:text-lg mb-1 md:mb-2 transition-colors duration-200 group-hover:text-gold" style="color:#15202C;">Full Ownership</h4>
-                        <p class="text-xs md:text-base font-medium leading-relaxed" style="color:rgba(17,29,51,0.74);">VisionBridge Solutions retains full ownership of all client websites, branding, hosting accounts, and associated assets.</p>
+                        <p class="text-xs md:text-base font-medium leading-relaxed" style="color:rgba(17,29,51,0.74);">Once your project is paid in full, you own your website design, content, branding, and domain. Hosting and third-party services are provided as managed services and billed separately.</p>
                     </div>
                 </div>
             </div>

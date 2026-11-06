@@ -1835,3 +1835,10 @@ Phase 2 of the work order. The public site and portal copy now present Care Plan
 - Care Plan pricing, services and benefits are unchanged.
 - **GET STARTED** opens the intake form at `/get-started?service=Landing Page Development&promo=landing-149`. The intake form now preselects a service from `?service=` (only values in its own list match), and `promo=landing-149` pre-fills Website Requirements with a note naming the $149 offer, so the team can see it in the submission.
 - Ad and document prompts (Facebook, Instagram, TikTok; package proposals; agreements) were added as Prompts 4–5 in `specs/NO_MONTHLY_FEES_AI_PROMPTS.md`.
+
+## 128. Website Ownership Wording Corrected (2026-11-06)
+
+- Every public ownership statement now matches the approved client ownership policy: **"Once your project is paid in full, you own your website design, content, branding, and domain. Hosting and third-party services are provided as managed services and billed separately."**
+- Fixed the homepage **Our Team → Full Ownership** card. It wrongly said VisionBridge "retains full ownership of all client websites, branding, hosting accounts, and associated assets."
+- These no longer say the client owns **hosting**: the homepage "Client Ownership" and "Ownership First" cards, the Contact FAQ "Who owns the website?", and the welcome-back "You Own Your Website" card.
+- Prompt 6 in `specs/NO_MONTHLY_FEES_AI_PROMPTS.md` brings proposals and agreements in line with the same wording.

@@ -763,7 +763,7 @@
                     ['q' => 'Will my site work on mobile?', 'a' => "Every site we build is mobile-first and tested to perform beautifully across phones, tablets, and desktops alike — not an afterthought bolted on at the end."],
                     ['q' => 'Can I add pages or make changes later?', 'a' => "Yes. Once your site is live, you can request new pages, content updates, or design changes anytime through your client portal, and we track every request from submission through completion."],
                     ['q' => 'Do you handle hosting and launch?', 'a' => "We do. We handle the launch for you, and ongoing hosting management and security are included with every Care Plan — you never need to touch a server."],
-                    ['q' => 'Who owns the website?', 'a' => "You do — 100%. Domain, content, hosting, and data all belong to you, always. We build it, but it's yours from day one."],
+                    ['q' => 'Who owns the website?', 'a' => "You do. Once your project is paid in full, you own your website design, content, branding, and domain. Hosting and third-party services (such as hosting accounts, plugins, and integrations) are provided as managed services and billed separately."],
                     ['q' => 'What happens after I submit this form?', 'a' => "We'll review your details and reply within 24 hours with next steps — usually a short consultation to scope out your project before any work begins."],
                     ['q' => 'Do you offer support after launch?', 'a' => "Always. Every Care Plan includes ongoing updates, monitoring, and a direct line to our team for as long as you're with us. Without a Care Plan, you can still request changes anytime and pay per revision."],
                 ]; @endphp

@@ -179,3 +179,42 @@ INSTRUCTIONS:
 CURRENT DOCUMENT:
 [PASTE HERE]
 ```
+
+---
+
+# Website Ownership Correction (work order 2026-11-06)
+
+Approved ownership wording, used on the website as of this work order:
+
+> **Once your project is paid in full, you own your website design, content, branding, and domain. Hosting and third-party services are provided as managed services and billed separately.**
+
+## Prompt 6 — Make ownership language consistent in proposals & agreements
+
+```
+You are a proposal and contract editor for VisionBridge Solutions, a web design agency. I will
+paste a proposal or our client service agreement. Make every ownership statement consistent with
+our approved client ownership policy. This is a plain-language business edit, not legal advice.
+
+APPROVED OWNERSHIP POLICY (use this meaning everywhere):
+"Once your project is paid in full, you own your website design, content, branding, and domain.
+Hosting and third-party services are provided as managed services and billed separately."
+
+CUSTOMER-OWNED (after payment in full): website design, written/visual content, branding assets
+created for the client, and the client's domain name.
+NOT CUSTOMER-OWNED (managed or third-party): hosting accounts/servers we manage, third-party
+software, plugins, themes, fonts, stock media, and integrations — these remain subject to their
+providers' licenses and are billed separately.
+
+INSTRUCTIONS:
+1. Remove or rewrite any statement that VisionBridge retains ownership of client websites,
+   branding, or assets.
+2. Remove or rewrite any statement that the client owns hosting accounts or third-party services.
+3. Tie ownership transfer to payment in full; before that, VisionBridge may withhold transfer.
+4. Add one clearly labeled "Ownership" section using the approved wording, plus a short list
+   separating customer-owned assets from managed hosting and third-party services.
+5. Do not change pricing, scope, Care Plan, or payment terms.
+6. Output: (a) each changed clause as BEFORE / AFTER, then (b) the full revised document.
+
+CURRENT DOCUMENT:
+[PASTE HERE]
+```

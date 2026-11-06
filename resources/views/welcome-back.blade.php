@@ -188,8 +188,8 @@
                     <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                 </div>
                 <div>
-                    <p class="text-sm font-bold" style="color:#fff;">You Own Everything</p>
-                    <p class="text-xs mt-1" style="color:rgba(255,255,255,.55);">Domain, content, and hosting are always yours — no lock-in.</p>
+                    <p class="text-sm font-bold" style="color:#fff;">You Own Your Website</p>
+                    <p class="text-xs mt-1" style="color:rgba(255,255,255,.55);">Paid in full, your design, content, branding, and domain are yours. Hosting is a managed service, billed separately.</p>
                 </div>
             </div>
             <div class="wb-recap-card flex items-start gap-3.5">
