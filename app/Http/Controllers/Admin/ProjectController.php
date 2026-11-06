@@ -108,7 +108,9 @@ class ProjectController extends Controller
 
                 Mail::to($teamRecipients)->send(new SystemAlertMail(
                     'Project Completed — '.$project->name,
-                    "{$project->user->name}'s project was marked Completed — paid in full, approved, and the Website Care Plan is now active.",
+                    $project->hasDeclinedCarePlan()
+                        ? "{$project->user->name}'s project was marked Completed — paid in full and approved. The client chose No Care Plan (pay per revision), so no recurring billing was started."
+                        : "{$project->user->name}'s project was marked Completed — paid in full, approved, and the Website Care Plan is now active.",
                     [
                         'Client' => $project->user->name,
                         'Project' => $project->name,

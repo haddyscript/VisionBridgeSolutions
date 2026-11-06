@@ -27,6 +27,13 @@ class CarePlanPaymentMethodController extends Controller
 
         abort_unless($project, 404);
 
+        // Chose "No Care Plan — pay per revision": no card to collect.
+        if ($project->hasDeclinedCarePlan()) {
+            $request->user()->update(['onboarding_step' => max($request->user()->onboarding_step ?? 1, 10)]);
+
+            return redirect()->route('portal.agreement.summary');
+        }
+
         $subscription = $project->subscription;
 
         abort_unless($subscription && $subscription->isPending(), 422, 'No pending Care Plan found for this project.');

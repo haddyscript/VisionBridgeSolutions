@@ -21,7 +21,7 @@
         @php
             $confirmations = [
                 ['label' => '50% Deposit Received', 'done' => $project->depositPayment()?->isPaid() ?? false],
-                ['label' => 'Website Care Plan Selected', 'done' => $project->carePlanAgreement !== null],
+                ['label' => $project->hasDeclinedCarePlan() ? 'Care Plan Option Selected (Pay Per Revision)' : 'Website Care Plan Selected','done' => $project->carePlanAgreement !== null],
                 ['label' => 'Agreement Signed', 'done' => $project->hasSignedCurrentAgreement()],
                 ['label' => 'Project Successfully Created', 'done' => true],
             ];

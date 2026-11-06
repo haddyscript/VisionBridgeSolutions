@@ -57,6 +57,26 @@ class CarePlanAgreementController extends Controller
             return redirect()->route('portal.deposit.show');
         }
 
+        // Care Plans are optional: "No Care Plan — pay per revision" records
+        // the choice (agreement row with no plan) but creates no Subscription
+        // and skips the payment-method step entirely, so nothing recurring
+        // is ever set up in Stripe for this project.
+        if ($request->input('maintenance_plan_id') === 'none') {
+            $request->validate(['agree' => ['accepted']]);
+
+            $project->carePlanAgreement()->create([
+                'maintenance_plan_id' => null,
+                'agreed_at' => now(),
+                'ip_address' => $request->ip(),
+                'user_agent' => (string) $request->userAgent(),
+            ]);
+
+            $request->user()->update(['onboarding_step' => 10]);
+
+            return redirect()->route('portal.agreement.summary')
+                ->with('status', 'No Care Plan selected — revisions will be quoted and billed individually.');
+        }
+
         $validated = $request->validate([
             'maintenance_plan_id' => ['required', 'exists:maintenance_plans,id'],
             'agree' => ['accepted'],

@@ -58,6 +58,17 @@ class Project extends Model
     }
 
     /**
+     * Care Plans are optional — true when the client completed the Care Plan
+     * onboarding step by choosing "No Care Plan — pay per revision" (an
+     * agreement row with no plan). No Subscription is created for them.
+     */
+    public function hasDeclinedCarePlan(): bool
+    {
+        return $this->carePlanAgreement !== null
+            && $this->carePlanAgreement->maintenance_plan_id === null;
+    }
+
+    /**
      * The onboarding deposit gate — Care Plan selection is not reachable
      * until this is true (see Portal\CarePlanAgreementController), same as
      * every other onboarding step guards its own prerequisite directly,

@@ -779,7 +779,13 @@
     {{-- Care Plan Agreement --}}
     <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <h3 class="font-semibold text-navy dark:text-white mb-4">Care Plan Agreement</h3>
-        @if ($project->carePlanAgreement)
+        @if ($project->hasDeclinedCarePlan())
+            <p class="text-sm text-gray-600 dark:text-gray-300">
+                Chose <strong class="text-navy dark:text-white">No Care Plan — pay per revision</strong>
+                on {{ $project->carePlanAgreement->agreed_at->format('M j, Y \a\t g:i A') }}.
+                No recurring billing; quote revisions via Payments.
+            </p>
+        @elseif ($project->carePlanAgreement)
             <p class="text-sm text-gray-600 dark:text-gray-300">
                 Agreed to <strong class="text-navy dark:text-white">{{ $project->carePlanAgreement->maintenancePlan->name }}</strong>
                 ({{ $project->carePlanAgreement->maintenancePlan->formattedPrice() }}/{{ $project->carePlanAgreement->maintenancePlan->interval }})

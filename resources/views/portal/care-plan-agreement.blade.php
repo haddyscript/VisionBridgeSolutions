@@ -8,9 +8,10 @@
 @include('portal.partials.onboarding-progress', ['step' => 4, 'label' => 'Select Website Care Plan'])
 
 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
-    A Website Care Plan is required for every website we build — it keeps your site secure, updated, and supported
-    long after launch. Please select a plan and agree to its terms below before we can begin your project. Billing
-    won't start until your website is officially launched.
+    <strong class="text-navy dark:text-white">No monthly fees required.</strong> A Website Care Plan is optional — it
+    keeps your site secure, updated, and supported long after launch for one monthly price, and billing won't start
+    until your website is officially launched. Prefer not to subscribe? Choose <strong class="text-navy dark:text-white">No Care Plan</strong>
+    and simply pay per revision whenever you need changes.
 </p>
 
 @if ($errors->any())
@@ -59,24 +60,43 @@
         @endforeach
     </div>
 
+    <label class="care-plan-option relative flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 p-6 mb-6 cursor-pointer transition-colors hover:border-gold/50">
+        <input type="radio" name="maintenance_plan_id" value="none" {{ old('maintenance_plan_id') === 'none' ? 'checked' : '' }} required
+               class="absolute top-5 right-5 w-4 h-4 text-gold focus:ring-gold">
+        <div class="sm:w-1/3">
+            <h3 class="font-display text-lg font-bold text-navy dark:text-white mb-1">No Care Plan</h3>
+            <p class="mb-0">
+                <span class="text-3xl font-extrabold text-navy dark:text-white">$0</span>
+                <span class="text-sm text-gray-400 dark:text-gray-500">/month</span>
+            </p>
+        </div>
+        <p class="text-sm text-gray-500 dark:text-gray-400 sm:pr-8">
+            Pay per revision instead. No recurring charges — whenever you need changes to your website, submit a
+            revision request and our team will quote it before any work begins. You can add a Care Plan later at any time.
+        </p>
+    </label>
+
     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
         <h3 class="font-semibold text-navy dark:text-white mb-3">Care Plan Agreement</h3>
         <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-4 max-h-48 overflow-y-auto border border-gray-100 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
-            By selecting a Website Care Plan above, you agree to recurring monthly billing for the plan selected,
-            beginning once your website is officially launched — not before. A Website Care Plan is required for
-            every website VisionBridge Solutions builds, and covers the ongoing security, updates, and support
-            described for your selected plan. Billing will be set up through our secure payment provider (Stripe)
-            once your project launches; you'll receive an email with a link to complete that setup at that time.
-            You may contact our team at any time to change your plan or ask questions about your billing.
+            Website Care Plans are optional. If you select a Website Care Plan above, you agree to recurring monthly
+            billing for the plan selected, beginning once your website is officially launched — not before. The plan
+            covers the ongoing security, updates, and support described for your selected plan. Billing will be set up
+            through our secure payment provider (Stripe) once your project launches; you'll receive an email with a link
+            to complete that setup at that time.
+            <br><br>
+            If you select No Care Plan, no recurring fees will be charged. Website changes after launch are billed per
+            revision: each revision request is quoted by our team and requires your approval before work begins.
+            You may contact our team at any time to add or change a plan or ask questions about your billing.
         </div>
 
         <label class="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-300 mb-6">
             <input type="checkbox" name="agree" required class="mt-0.5 rounded border-gray-300 text-gold focus:ring-gold">
-            I have read and agree to the Care Plan Agreement for the plan selected above.
+            I have read and agree to the Care Plan Agreement for the option selected above.
         </label>
 
         <button type="submit" class="w-full bg-gold hover:bg-gold-dark text-navy font-bold text-lg py-3.5 rounded-lg transition-colors shadow">
-            Select Plan &amp; Continue
+            Confirm Selection &amp; Continue
         </button>
     </div>
 </form>

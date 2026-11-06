@@ -40,7 +40,12 @@
 <div class="bg-white dark:bg-navy rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
     <h3 class="font-semibold text-navy dark:text-white mb-3">Care Plan Agreement</h3>
 
-    @if ($project->carePlanAgreement)
+    @if ($project->hasDeclinedCarePlan())
+        <p class="text-sm text-gray-600 dark:text-gray-300">
+            The client chose <strong class="text-navy dark:text-white">No Care Plan — pay per revision</strong> on
+            {{ $project->carePlanAgreement->agreed_at->format('M j, Y \a\t g:i A') }}.
+        </p>
+    @elseif ($project->carePlanAgreement)
         <label class="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-300">
             <input type="checkbox" checked class="mt-0.5 rounded border-gray-300 text-gold">
             Agreed to the Care Plan Agreement for the plan selected above, on

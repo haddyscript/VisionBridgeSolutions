@@ -36,6 +36,11 @@
                     {{ $plan->formattedPrice() }} / {{ $plan->interval ?? 'month' }}
                 </span>
             </div>
+        @else
+            <div class="flex items-start justify-between gap-4 px-6 py-4">
+                <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 shrink-0 w-48">Website Care Plan Selected</span>
+                <span class="text-sm text-navy dark:text-white font-medium text-right">No Care Plan — pay per revision ($0/month)</span>
+            </div>
         @endif
 
         @if ($template)
@@ -64,9 +69,14 @@
 <div class="bg-gold/10 dark:bg-gold/10 border border-gold/30 dark:border-gold/30 rounded-xl px-5 py-4 mb-6">
     <p class="text-sm text-gold-dark font-semibold mb-1">Billing Authorization Notice</p>
     <p class="text-sm text-gold-dark">
-        By signing the Master Agreement on the next step, you authorize VisionBridge Solutions to process
-        the recurring monthly subscription fee for the Website Care Plan selected above. Recurring billing
-        continues until properly canceled in accordance with the terms of the Agreement.
+        @if ($plan)
+            By signing the Master Agreement on the next step, you authorize VisionBridge Solutions to process
+            the recurring monthly subscription fee for the Website Care Plan selected above. Recurring billing
+            continues until properly canceled in accordance with the terms of the Agreement.
+        @else
+            You chose No Care Plan, so no recurring monthly fees will be charged. After launch, website changes
+            are billed per revision — each request is quoted and requires your approval before work begins.
+        @endif
     </p>
 </div>
 

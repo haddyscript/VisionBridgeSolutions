@@ -86,12 +86,20 @@ class AgreementPdfFiller
     {
         $plan = $signature->project->carePlanAgreement?->maintenancePlan;
 
-        if (! $plan) {
+        $pdf->SetFont('Helvetica', '', 11);
+        $pdf->SetTextColor(20, 20, 20);
+
+        // Care Plans are optional — record the opt-out on the plan line.
+        if (! $plan && $signature->project->hasDeclinedCarePlan()) {
+            $pdf->Text(72.024, 651.5, 'No Care Plan - Pay Per Revision');
+            $pdf->Text(85, 702, '0.00');
+
             return;
         }
 
-        $pdf->SetFont('Helvetica', '', 11);
-        $pdf->SetTextColor(20, 20, 20);
+        if (! $plan) {
+            return;
+        }
 
         $pdf->Text(72.024, 651.5, $plan->name);
         $pdf->Text(85, 702, number_format($plan->price / 100, 2));
