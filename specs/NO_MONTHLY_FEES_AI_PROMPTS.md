@@ -218,3 +218,69 @@ INSTRUCTIONS:
 CURRENT DOCUMENT:
 [PASTE HERE]
 ```
+
+---
+
+## Prompt 7 — Final consistency check: client proposal & agreement (all details filled in)
+
+Use this one prompt for the final proposal and the final agreement. It contains every approved detail, so nothing needs filling in. Paste the document at the bottom, and run it once per document.
+
+```
+You are the final reviewer for VisionBridge Solutions, a web design agency. I will paste our
+client PROPOSAL or client SERVICE AGREEMENT. Check it against the approved facts below. Correct
+anything that is missing, inconsistent, or contradicts them. This is a plain-language business
+edit, not legal advice.
+
+APPROVED FACTS — must match exactly across the website, social media, proposal, and agreement:
+
+1. Headline: "NO MONTHLY FEES REQUIRED!"
+   Subline: "Monthly Website Care Plans Are Optional — Pay Per Revision!"
+
+2. $149 Limited-Time Landing Page Promotion
+   - Label: "LIMITED TIME ONLY". Do NOT add an expiration date, countdown, or "ends soon".
+   - "Landing pages starting at $149" — a one-time design fee
+   - Included: up to 5 sections, mobile-friendly design, contact form, basic SEO,
+     one revision round
+   - Not included: hosting and domain fees (billed separately). Extra sections, pages, features,
+     or revision rounds beyond one are quoted separately.
+   - Promotional pricing is offered for a limited time and may be withdrawn for new clients at
+     VisionBridge's discretion (no date named).
+
+3. Website Care Plans are OPTIONAL (never required, never a condition of the build)
+   - Essential Care — $59/month
+   - Growth Care — $149/month
+   - Elite Care — $249/month
+   - A Care Plan is billed monthly only after the website launches, and can be added, changed,
+     or cancelled later.
+   - Recurring billing authorization applies ONLY if the client selected a Care Plan.
+
+4. No Care Plan — Pay Per Revision ($0/month)
+   - No recurring fees.
+   - Every post-launch change is quoted by VisionBridge and approved by the client BEFORE work
+     begins. Payment is due per the quote.
+   - Without a Care Plan, ongoing backups, security monitoring, software updates, and priority
+     support are NOT included. These are available through a Care Plan or quoted per request.
+
+5. Hosting and domain fees are always separate from design fees.
+
+6. Ownership: "Once your project is paid in full, you own your website design, content, branding,
+   and domain. Hosting and third-party services are provided as managed services and billed
+   separately." VisionBridge does NOT retain ownership of client websites or branding.
+
+FOR THE AGREEMENT SPECIFICALLY, make sure it has:
+- A Care Plan selection block:
+    [ ] Website Care Plan: ________ (Essential / Growth / Elite)   Monthly fee: $________
+    [ ] No Care Plan — Pay Per Revision                            Monthly fee: $0.00
+- A "Revisions After Launch" clause (quote → client approval → work → payment)
+- A scope clause for the $149 Landing Page package (as in fact 2)
+- An "Ownership" clause (as in fact 6)
+
+OUTPUT:
+(a) A checklist of facts 1–6 marked ✅ already correct / ✏️ corrected / ➕ added
+(b) Each changed clause as BEFORE / AFTER
+(c) The full final document, ready to use
+(d) Anything you were unsure about, for me to confirm
+
+DOCUMENT:
+[PASTE THE PROPOSAL OR AGREEMENT HERE]
+```
