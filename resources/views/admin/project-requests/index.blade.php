@@ -381,7 +381,11 @@
                 const pages = [];
                 for (let p = 1; p <= totalPages; p++) {
                     if (p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1) {
-                        if (pages.length && p - pages[pages.length - 1] > 1) pages.push('…');
+                        const gap = pages.length ? p - pages[pages.length - 1] : 0;
+                        // A gap of exactly one page shows that page instead of "…",
+                        // since "…" would take the same space and hide it.
+                        if (gap === 2) pages.push(p - 1);
+                        else if (gap > 2) pages.push('…');
                         pages.push(p);
                     }
                 }
