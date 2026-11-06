@@ -417,7 +417,7 @@
                         ] as $service)
                             <label class="flex items-center gap-2.5 text-base font-medium text-gray-700">
                                 <input type="checkbox" name="services[]" value="{{ $service }}"
-                                       {{ in_array($service, old('services', [])) ? 'checked' : '' }}
+                                       {{ in_array($service, old('services', request()->filled('service') ? [(string) request('service')] : [])) ? 'checked' : '' }}
                                        class="rounded border-gray-300 text-gold focus:ring-gold">
                                 {{ $service }}
                             </label>
@@ -430,7 +430,7 @@
                     <h3 class="font-display text-lg font-bold text-navy mb-5">Website Requirements</h3>
                     <p class="text-sm text-gray-600 mb-1.5">Pages you need, key features, deadlines, or anything else relevant to your project.</p>
                     <textarea name="website_requirements" rows="4" placeholder="e.g. We need a Home, About, Events, and Donate page. We'd like online giving and an events calendar. Hoping to launch by end of next month."
-                              class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('website_requirements') }}</textarea>
+                              class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold">{{ old('website_requirements', request('promo') === 'landing-149' ? "I'm interested in the Limited-Time \$149 Landing Page offer (up to 5 sections, mobile-friendly design, contact form, basic SEO, one revision round).\n\n" : '') }}</textarea>
                     <div class="mt-2">
                         <button type="button" class="ai-suggest-btn inline-flex items-center gap-1.5 text-xs font-medium text-gold-dark bg-gold/10 hover:bg-gold/20 px-3 py-1.5 rounded-full transition-colors"
                                 data-target="website_requirements" data-pool="requirements">

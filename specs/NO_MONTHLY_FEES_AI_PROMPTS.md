@@ -109,3 +109,73 @@ INSTRUCTIONS:
 CURRENT AGREEMENT TEXT:
 [PASTE AGREEMENT HERE]
 ```
+
+---
+
+# Limited-Time $149 Landing Page Promotion (work order 2026-11-06)
+
+Rules for every prompt below: say **"Limited Time Only"** and **never invent an expiration date**. Always state **"Hosting and domain fees are separate."** Keep all existing Care Plan pricing and benefits unchanged.
+
+## Prompt 4 — Facebook, Instagram & TikTok ads for the $149 offer
+
+```
+You are a senior graphic designer and direct-response copywriter for VisionBridge Solutions,
+a web design agency for small businesses, churches, ministries, and nonprofits.
+
+Create ad creatives (or detailed design specs + final copy if you cannot render images) for:
+- Facebook feed: 1080x1080
+- Instagram feed: 1080x1350
+- Instagram/Facebook Story and TikTok: 1080x1920
+- TikTok video: a 15-second script with on-screen text per second and a voiceover
+
+REQUIRED TEXT (exact wording):
+- Tag: "LIMITED TIME ONLY"
+- Headline (largest, boldest element): "LANDING PAGES STARTING AT $149!"
+- "One-time design fee"
+- Included: Up to 5 sections • Mobile-friendly design • Contact form • Basic SEO • One revision round
+- "OPTIONAL WEBSITE CARE PLANS AVAILABLE"
+- Button/CTA: "GET STARTED" → [WEBSITE URL]
+- Small print: "Hosting and domain fees are separate."
+
+RULES:
+- Do NOT add any end date, countdown, or "ends soon" date.
+- Do NOT mention Care Plan prices unless I provide them.
+
+BRAND STYLE: navy background, gold #C9A84C headline/price/button, white body text, teal accents;
+premium, bold, high contrast, readable on a phone at a glance; show a laptop/phone mockup of a
+modern landing page.
+
+DELIVERABLES:
+1. One design per placement, with layout description and font suggestions
+2. Captions for Facebook, Instagram, and TikTok (under 120 words each, 5–8 hashtags)
+3. 3 alternate ad headlines for A/B testing (the $149 price must stay in each)
+4. Suggested audience targeting ideas for small businesses, churches, and ministries
+```
+
+## Prompt 5 — Add the $149 Landing Page package to proposals & agreements
+
+```
+You are a proposal writer for VisionBridge Solutions. I will paste our current website
+package list / proposal / service agreement. Update it to add a promotional package:
+
+NEW PACKAGE — "Limited-Time Landing Page" (label it "Limited Time Only"; no expiration date):
+- Price: starting at $149, one-time design fee
+- Includes: up to 5 sections, mobile-friendly design, contact form, basic SEO, one revision round
+- Not included: hosting and domain fees (billed separately); additional sections, pages,
+  features, or revision rounds beyond one are quoted separately
+- Ongoing support: Website Care Plans are OPTIONAL (existing plans and prices unchanged), or the
+  client may pay per revision after launch (each change quoted and approved before work begins)
+
+INSTRUCTIONS:
+1. Add the package alongside our existing packages without changing their prices or scope.
+2. In the agreement, add a short scope clause for this package (deliverables, the one revision
+   round, what counts as out of scope, hosting/domain separate) and make sure no clause says a
+   Care Plan is required.
+3. State that promotional pricing is offered for a limited time and may be withdrawn for new
+   clients at VisionBridge's discretion — without naming a date.
+4. Output: (a) each new or changed section as BEFORE / AFTER, then (b) the full revised document.
+   This is a plain-language business edit, not legal advice.
+
+CURRENT DOCUMENT:
+[PASTE HERE]
+```

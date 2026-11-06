@@ -774,6 +774,66 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
 </script>
 
 {{-- ============================================================
+     LIMITED-TIME $149 LANDING PAGE PROMOTION (2026-11-06 work order)
+     First thing on the page, deliberately static: no opacity-0 / intro
+     animation and no click needed to see it (unlike the hero below).
+     "Limited Time Only" with NO expiration date — none is approved.
+     ============================================================ --}}
+<section id="landing-promo" aria-label="Limited-time $149 landing page offer" class="relative overflow-hidden"
+         style="background:linear-gradient(155deg,#0A0D11 0%,#111D33 45%,#0A0D11 100%);border-bottom:3px solid #C9A84C;">
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true"
+         style="background:radial-gradient(ellipse 60% 70% at 85% 40%,rgba(201,168,76,.16) 0%,transparent 70%);"></div>
+
+    <div class="relative max-w-7xl mx-auto px-5 sm:px-6 lg:px-12 pt-28 sm:pt-32 pb-14 sm:pb-16 grid grid-cols-1 lg:grid-cols-5 gap-10 items-center">
+        <div class="lg:col-span-3 text-center lg:text-left">
+            <span class="inline-block bg-gold text-navy text-xs sm:text-sm font-extrabold tracking-widest uppercase px-4 py-1.5 mb-5"
+                  style="clip-path:polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);">Limited Time Only</span>
+
+            <h2 class="font-display font-extrabold uppercase text-white leading-[1.05]" style="font-size:clamp(2.2rem,5.5vw,4.4rem);">
+                Landing Pages<br class="hidden sm:block">
+                Starting At <span class="text-gold">$149!</span>
+            </h2>
+
+            <p class="mt-4 text-lg sm:text-xl text-white/80 font-medium">
+                One-time design fee. A professional, mobile-friendly landing page for your business, church, or ministry.
+            </p>
+
+            <div class="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+                <a href="{{ route('intake.create', ['service' => 'Landing Page Development', 'promo' => 'landing-149']) }}"
+                   class="inline-flex items-center gap-2.5 bg-gold hover:bg-gold-dark text-navy font-extrabold text-lg uppercase tracking-wide px-10 py-4 shadow-xl transition-colors"
+                   style="clip-path:polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);">
+                    Get Started
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+                <a href="#plans" class="text-sm font-bold uppercase tracking-widest text-white/85 hover:text-gold border-b border-white/30 hover:border-gold pb-0.5 transition-colors">
+                    Optional Website Care Plans Available
+                </a>
+            </div>
+
+            <p class="mt-5 text-xs sm:text-sm text-white/55">Hosting and domain fees are separate.</p>
+        </div>
+
+        <div class="lg:col-span-2 bg-white/[.06] border border-gold/40 px-7 py-7 sm:px-8"
+             style="clip-path:polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);">
+            <p class="text-gold text-sm font-extrabold uppercase tracking-widest mb-5">What's Included</p>
+            <ul class="space-y-3.5">
+                @foreach (['Up to 5 sections', 'Mobile-friendly design', 'Contact form', 'Basic SEO', 'One revision round'] as $promoItem)
+                    <li class="flex items-center gap-3 text-white text-base sm:text-lg font-semibold">
+                        <span class="w-7 h-7 rounded-full bg-gold/15 text-gold flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                        </span>
+                        {{ $promoItem }}
+                    </li>
+                @endforeach
+            </ul>
+            <p class="mt-6 pt-5 border-t border-white/10 text-sm text-white/70">
+                <strong class="text-white">No monthly fees required.</strong> Add a Website Care Plan anytime — or pay per revision.
+            </p>
+        </div>
+    </div>
+</section>
+
+{{-- ============================================================
      HERO SECTION — dark theme
      ============================================================ --}}
 <section id="hero" class="hero-dark relative min-h-screen flex items-center overflow-hidden" style="background:#0B0F17;">

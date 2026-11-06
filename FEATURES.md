@@ -1822,3 +1822,16 @@ Phase 2 of the work order. The public site and portal copy now present Care Plan
 - **Contact page FAQ**: "Do I need a Care Plan?" now answers **No**. The hosting and post-launch-support answers no longer imply a plan is required.
 - **Portal FAQ, onboarding welcome checklist**: describe the plan as optional, with pay per revision as the alternative.
 - **Client AI assistant** (`AssistantService::accountFacts`): it now knows when a client chose No Care Plan, so it explains pay per revision instead of treating them as missing a plan.
+
+## 127. Limited-Time $149 Landing Page Promotion — Homepage (2026-11-06)
+
+- **New `#landing-promo` section at the very top of the homepage**, above the hero. It is deliberately **static**: no intro or fade-in animation and no click needed, so it's the first thing visitors see. It has a navy and gold design, with:
+  - a "LIMITED TIME ONLY" tag (no expiration date shown, since none is approved);
+  - the headline "LANDING PAGES STARTING AT $149!" and "One-time design fee";
+  - a "What's Included" card: up to 5 sections, mobile-friendly design, contact form, basic SEO, one revision round;
+  - a prominent **GET STARTED** button;
+  - an "Optional Website Care Plans Available" link that jumps to `#plans`;
+  - the line "Hosting and domain fees are separate."
+- Care Plan pricing, services and benefits are unchanged.
+- **GET STARTED** opens the intake form at `/get-started?service=Landing Page Development&promo=landing-149`. The intake form now preselects a service from `?service=` (only values in its own list match), and `promo=landing-149` pre-fills Website Requirements with a note naming the $149 offer, so the team can see it in the submission.
+- Ad and document prompts (Facebook, Instagram, TikTok; package proposals; agreements) were added as Prompts 4–5 in `specs/NO_MONTHLY_FEES_AI_PROMPTS.md`.
