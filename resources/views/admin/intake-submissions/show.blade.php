@@ -185,6 +185,13 @@
             </div>
         @endif
 
+        @if ($promoPackage = \App\Models\Project::PROMOS[$submission->promo] ?? null)
+            <div class="bg-gold/10 border border-gold/40 rounded-xl px-5 py-4 text-sm text-navy dark:text-white">
+                <strong>Promo lead: {{ $promoPackage['name'] }}</strong> — ${{ number_format($promoPackage['price'] / 100, 2) }} one-time design fee.
+                Approving this submission sets the project price to ${{ number_format($promoPackage['price'] / 100, 2) }} and creates the 50% deposit automatically (no separate quote email).
+            </div>
+        @endif
+
         @if (! empty($submission->services) || $submission->website_requirements)
             <div class="bg-white dark:bg-navy rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-5">
                 @if (! empty($submission->services))

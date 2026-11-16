@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Mail\WelcomeClientMail;
 use App\Models\IntakeSubmission;
+use App\Models\Project;
 use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -198,6 +199,8 @@ class IntakeSubmissionController extends Controller
                         'description' => $validated['project_description'],
                     ]);
 
+                    $this->applyPromo($project, $locked->promo);
+
                     $locked->update([
                         'status' => 'converted',
                         'project_id' => $project->id,
@@ -220,6 +223,8 @@ class IntakeSubmissionController extends Controller
                     'name' => $validated['project_name'],
                     'description' => $validated['project_description'],
                 ]);
+
+                $this->applyPromo($project, $locked->promo);
 
                 $locked->update([
                     'status' => 'converted',
@@ -244,6 +249,35 @@ class IntakeSubmissionController extends Controller
                 ? 'Project created and linked to the existing account for this email — no new welcome email was sent, since the account already exists.'
                 : 'Client account and project created. A welcome email has been sent.'
         );
+    }
+
+    /**
+     * A lead that came in on a fixed-price promo (e.g. the $149 Landing Page)
+     * gets its price set up front instead of waiting on a manual quote: the
+     * project is tagged with the promo, priced at the promo price, and the
+     * standard 50% deposit row is created — same shape Admin\ProjectController::update
+     * creates when a price is first set, minus the "quote ready" email (the
+     * welcome email already brings them into the portal, where the deposit
+     * step shows the $149 package). Admins can still adjust the price later.
+     */
+    private function applyPromo(Project $project, ?string $promo): void
+    {
+        $package = Project::PROMOS[$promo] ?? null;
+
+        if (! $package) {
+            return;
+        }
+
+        $project->update([
+            'promo' => $promo,
+            'total_price' => $package['price'],
+        ]);
+
+        $project->payments()->create([
+            'description' => 'Initial 50% Project Deposit',
+            'kind' => 'deposit',
+            'amount' => (int) round($package['price'] / 2),
+        ]);
     }
 
     public function resendWelcomeEmail(IntakeSubmission $intakeSubmission)

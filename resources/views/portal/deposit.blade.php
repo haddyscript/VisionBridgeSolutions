@@ -56,9 +56,15 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="text-xs font-bold uppercase tracking-widest text-gold mb-1">Quote Ready</p>
-                    <h2 class="font-display text-xl font-bold text-white">Your custom quote is ready</h2>
-                    <p class="text-sm text-white/60 mt-1">Pay your initial deposit below to kick off development.</p>
+                    @if ($promoPackage = $project->promoPackage())
+                        <p class="text-xs font-bold uppercase tracking-widest text-gold mb-1">Limited Time Only</p>
+                        <h2 class="font-display text-xl font-bold text-white">{{ $promoPackage['name'] }}</h2>
+                        <p class="text-sm text-white/60 mt-1">{{ implode(' · ', $promoPackage['includes']) }}</p>
+                    @else
+                        <p class="text-xs font-bold uppercase tracking-widest text-gold mb-1">Quote Ready</p>
+                        <h2 class="font-display text-xl font-bold text-white">Your custom quote is ready</h2>
+                        <p class="text-sm text-white/60 mt-1">Pay your initial deposit below to kick off development.</p>
+                    @endif
                 </div>
             </div>
         </div>
@@ -68,7 +74,7 @@
             <div class="rounded-xl border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700 mb-6">
                 @if ($project->total_price)
                     <div class="flex items-center justify-between px-5 py-3.5">
-                        <span class="text-sm text-gray-500 dark:text-gray-400">Total Project Price</span>
+                        <span class="text-sm text-gray-500 dark:text-gray-400">{{ $project->promoPackage() ? 'Total Price — one-time design fee' : 'Total Project Price' }}</span>
                         <span class="text-sm font-semibold text-navy dark:text-white">{{ $project->formattedTotalPrice() }}</span>
                     </div>
                 @endif
@@ -93,6 +99,11 @@
                     <div class="flex items-center justify-between px-5 py-3.5">
                         <span class="text-sm text-gray-400 dark:text-gray-500">Due at Completion</span>
                         <span class="text-sm font-medium text-gray-400 dark:text-gray-500">{{ '$'.number_format(($project->discountedTotalPrice() - $deposit->amount) / 100, 2) }}</span>
+                    </div>
+                @endif
+                @if ($project->promoPackage())
+                    <div class="px-5 py-3 text-xs text-gray-400 dark:text-gray-500">
+                        No monthly fees required — Website Care Plans are optional. Hosting and domain fees are separate.
                     </div>
                 @endif
             </div>

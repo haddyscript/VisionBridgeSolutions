@@ -1842,3 +1842,19 @@ Phase 2 of the work order. The public site and portal copy now present Care Plan
 - Fixed the homepage **Our Team → Full Ownership** card. It wrongly said VisionBridge "retains full ownership of all client websites, branding, hosting accounts, and associated assets."
 - These no longer say the client owns **hosting**: the homepage "Client Ownership" and "Ownership First" cards, the Contact FAQ "Who owns the website?", and the welcome-back "You Own Your Website" card.
 - Prompt 6 in `specs/NO_MONTHLY_FEES_AI_PROMPTS.md` brings proposals and agreements in line with the same wording.
+
+## 129. $149 Promotion — Shown Immediately + Carried Through the Portal (2026-11-16)
+
+Follow-up to §127 (work order created 2026-11-14).
+
+- **Homepage intro video no longer autoplays.** It used to cover the page for up to 12 seconds, hiding the $149 offer. The `#landing-promo` section is now visible the moment the page loads, on desktop, tablet and phone. The video only plays if a visitor clicks the nav logo. The hero entrance animation starts right away.
+- **Fix: the Get Started form errored after every submission.** It showed a 500 page instead of "Thank You", because the thank-you screen referenced `$orgPlaceholders`, which only exists while the form is shown. The curtain intro is also skipped on the thank-you screen.
+- **Get Started → intake form.** For `?promo=landing-149` visitors:
+  - the ~3-second "Starting Your Project" curtain is skipped;
+  - a $149 package card (one-time design fee, what's included, hosting and domain separate) appears above the form;
+  - the promo is saved on the submission in a new `intake_submissions.promo` column.
+- **Admin.** A promo submission shows a "Promo lead" banner. **Approve & Create Client** tags the project (`projects.promo`), sets its price to **$149**, and creates the standard 50% deposit ($74.50) automatically. No manual quote and no separate "quote ready" email are needed. The project page shows a promo reminder next to the price field.
+- **Client portal.** The deposit step shows "Limited-Time $149 Landing Page" with "Total Price — one-time design fee". The Care Plan step notes that the $149 is one-time, not monthly, to avoid confusion with Growth Care at $149/month. The Agreement Summary lists the Website Package and the one-time design fee. The Agreement page shows the package scope line.
+- Promo definitions (name, price, inclusions) live in `Project::PROMOS`.
+- **Requires `php artisan migrate`**: migration `2026_11_16_000001` adds two nullable columns and does not touch existing rows.
+- Non-promo clients and existing Care Plan subscriptions are unaffected. The Agreement Summary now also shows the project price for every client who has one.

@@ -238,8 +238,38 @@
                 </div>
             @endif
 
+            @php
+                $promoKey = old('promo', request('promo'));
+                $promoPackage = \App\Models\Project::PROMOS[$promoKey] ?? null;
+            @endphp
+
+            @if ($promoPackage)
+                {{-- $149 promo visitors (homepage "Get Started") — confirms the
+                     offer they clicked, so the price they saw carries straight
+                     into the form with no second-guessing. --}}
+                <div class="mb-6 bg-navy text-white p-6 sm:p-7 border-l-4 border-gold flex flex-col md:flex-row md:items-center gap-5 md:gap-8">
+                    <div class="flex-1">
+                        <span class="inline-block bg-gold text-navy text-xs font-extrabold tracking-widest uppercase px-3 py-1 mb-3">Limited Time Only</span>
+                        <h2 class="font-display text-2xl font-bold">{{ $promoPackage['name'] }}</h2>
+                        <p class="text-white/80 mt-1">
+                            <span class="text-gold font-bold text-xl">${{ number_format($promoPackage['price'] / 100) }}</span>
+                            one-time design fee &middot; no monthly fees required
+                        </p>
+                        <p class="text-xs text-white/55 mt-2">Hosting and domain fees are separate. Website Care Plans are optional.</p>
+                    </div>
+                    <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-1.5 text-sm font-semibold">
+                        @foreach ($promoPackage['includes'] as $item)
+                            <li class="flex items-center gap-2"><span class="text-gold">&#10003;</span> {{ $item }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('intake.store') }}" enctype="multipart/form-data">
                 @csrf
+                @if ($promoPackage)
+                    <input type="hidden" name="promo" value="{{ $promoKey }}">
+                @endif
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
@@ -746,7 +776,10 @@
         // Emitted straight from the same PHP $orgPlaceholders map that rendered
         // this page's initial placeholder text, rather than hand-duplicated here
         // — one source of truth, no risk of the two drifting apart.
-        const ORG_PLACEHOLDERS = @json($orgPlaceholders);
+        // `?? []` — the map is only defined while the form is rendered; the
+        // post-submit "Thank You" screen has no form, and without this
+        // fallback it 500'd on every successful submission.
+        const ORG_PLACEHOLDERS = @json($orgPlaceholders ?? []);
         const nameField = document.querySelector('[name="organization_name"]');
         const missionField = document.querySelector('[name="mission_statement"]');
         const visionField = document.querySelector('[name="vision_statement"]');

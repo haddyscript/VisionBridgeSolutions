@@ -35,6 +35,7 @@ class IntakeController extends Controller
             'services' => ['nullable', 'array'],
             'services.*' => ['string'],
             'website_requirements' => ['nullable', 'string', 'max:5000'],
+            'promo' => ['nullable', 'string', 'in:'.implode(',', array_keys(\App\Models\Project::PROMOS))],
             'social_links' => ['nullable', 'array'],
             'social_links.*' => ['nullable', 'string', 'max:255'],
             'photos' => ['nullable', 'array'],
@@ -54,6 +55,7 @@ class IntakeController extends Controller
             'contact_email' => $validated['contact_email'],
             'contact_phone' => $validated['contact_phone'] ?? null,
             'services' => array_values($validated['services'] ?? []),
+            'promo' => $validated['promo'] ?? null,
             'website_requirements' => $validated['website_requirements'] ?? null,
             'social_links' => array_filter($validated['social_links'] ?? []),
         ]);

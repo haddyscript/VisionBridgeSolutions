@@ -24,6 +24,26 @@
             <span class="text-sm text-navy dark:text-white font-medium text-right">{{ $project->name }}</span>
         </div>
 
+        @if ($promoPackage = $project->promoPackage())
+            <div class="flex items-start justify-between gap-4 px-6 py-4">
+                <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 shrink-0 w-48">Website Package</span>
+                <span class="text-sm text-navy dark:text-white font-medium text-right">
+                    {{ $promoPackage['name'] }}
+                    <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ implode(' · ', $promoPackage['includes']) }}</span>
+                </span>
+            </div>
+        @endif
+
+        @if ($project->total_price)
+            <div class="flex items-start justify-between gap-4 px-6 py-4">
+                <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 shrink-0 w-48">{{ $project->promoPackage() ? 'Design Fee (one-time)' : 'Project Price' }}</span>
+                <span class="text-sm text-navy dark:text-white font-medium text-right">
+                    {{ $project->formattedDiscountedTotalPrice() }}
+                    <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">Hosting and domain fees are separate</span>
+                </span>
+            </div>
+        @endif
+
         @if ($plan)
             <div class="flex items-start justify-between gap-4 px-6 py-4">
                 <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 shrink-0 w-48">Website Care Plan Selected</span>

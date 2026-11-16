@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="@if(request()->routeIs('careers', 'website-redesign', 'contact', 'intake.create')) intro-locked @endif">
+<html lang="en" class="@if(request()->routeIs('careers', 'website-redesign', 'contact') || (request()->routeIs('intake.create') && ! request()->filled('promo') && session('status') !== 'submitted')) intro-locked @endif">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -2697,12 +2697,14 @@
 </head>
 <body class="font-sans antialiased text-gray-800 bg-white">
 
-    {{-- Full-page video intro — homepage only. Plays once, then shrinks
-         away (gravity-pull) to reveal the site. See #intro-overlay script
+    {{-- Full-page video intro — homepage only. Hidden on page load (2026-11-14
+         $149 promo work order: visitors must see the $149 offer immediately,
+         without watching an intro), so it no longer autoplays; it only plays
+         when a visitor clicks the nav logo. See #intro-overlay script
          further down for behavior. --}}
     @if (request()->routeIs('home'))
-        <div id="intro-overlay" style="position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden;">
-            <video id="intro-video" autoplay muted playsinline preload="metadata"
+        <div id="intro-overlay" style="position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden;display:none;">
+            <video id="intro-video" muted playsinline preload="none"
                    style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
                 <source src="@assetv('videos/Web_development_company_hero_video.mp4')" type="video/mp4">
             </video>
@@ -2774,8 +2776,10 @@
          only. Same reasoning as the three overlays above, restyled with the
          white/gold palette; staged logo → kicker → headline/bar reveal, and
          runs longer than the others (see pageIntros in the shared driver
-         script further down for the duration/startDelay override). --}}
-    @if (request()->routeIs('intake.create'))
+         script further down for the duration/startDelay override). Skipped
+         for $149 promo visitors (?promo=…) so the offer flows straight into
+         the form with no extra wait (2026-11-14 work order). --}}
+    @if (request()->routeIs('intake.create') && ! request()->filled('promo') && session('status') !== 'submitted')
         <div id="get-started-intro" role="presentation" aria-hidden="true">
             <div id="get-started-intro-glow"></div>
             <div id="get-started-intro-content">
@@ -3976,7 +3980,11 @@
                 return;
             }
 
-            document.body.style.overflow = 'hidden';
+            // No autoplay on page load — the overlay starts hidden (display:none
+            // in its markup) so the $149 promo at the top of the page is
+            // visible immediately. Start "revealed"; the nav-logo click
+            // handler below resets this to replay the intro on demand.
+            revealed = true;
 
             function revealSite() {
                 if (revealed) return;
@@ -4016,16 +4024,10 @@
             if (video) {
                 video.addEventListener('ended', revealSite);
                 video.addEventListener('error', revealSite);
-                video.play().catch(revealSite); // autoplay blocked → reveal immediately
             }
             if (skip) skip.addEventListener('click', revealSite);
 
-            // Safety net: never trap a visitor on the intro. Registered
-            // immediately (not gated behind GSAP being loaded), since this
-            // is the last line of defense against a stuck full-page overlay.
-            setTimeout(revealSite, 12000);
-
-            // Clicking the logo always replays the intro from the start —
+            // Clicking the logo replays the intro from the start —
             // only reachable here since the overlay (and this whole
             // function) only exists on the homepage; from other pages the
             // logo's href just navigates back to the homepage, where the
@@ -4050,6 +4052,8 @@
                     } else {
                         revealSite();
                     }
+                    // Safety net: never trap a visitor on the intro.
+                    setTimeout(revealSite, 12000);
                 });
             }
         }

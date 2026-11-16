@@ -14,6 +14,15 @@
     and simply pay per revision whenever you need changes.
 </p>
 
+@if ($promoPackage = auth()->user()->projects()->first()?->promoPackage())
+    {{-- Keeps the $149 one-time promo visually separate from the monthly
+         plan prices below (Growth Care is also $149, but per month). --}}
+    <div class="mb-6 rounded-xl border border-gold/40 bg-gold/10 px-5 py-4 text-sm text-navy dark:text-white">
+        Your <strong>{{ $promoPackage['name'] }}</strong> is a <strong>${{ number_format($promoPackage['price'] / 100) }} one-time design fee</strong> — it is not a monthly charge.
+        The plans below are separate, optional monthly services billed only after your website launches.
+    </div>
+@endif
+
 @if ($errors->any())
     <div class="mb-6 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
         @foreach ($errors->all() as $error)

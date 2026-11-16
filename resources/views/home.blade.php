@@ -3590,7 +3590,8 @@ $bridgeCableDivider = '<svg viewBox="0 0 800 60" preserveAspectRatio="none" widt
             .fromTo('.hero-rating-card', { opacity:0, y:18 }, { opacity:1, y:0, duration:0.55, stagger:0.12 }, '-=0.35')
             .fromTo('#hero-scroll-cue', { opacity:0 }, { opacity:1, duration:0.70 }, '-=1.60');
 
-        if (document.getElementById('intro-overlay')) {
+        var introOverlayEl = document.getElementById('intro-overlay');
+        if (introOverlayEl && introOverlayEl.style.display !== 'none') {
             window.addEventListener('intro:complete', () => heroTl.play(), { once: true });
         } else {
             heroTl.play(); // no intro overlay present — play immediately as before

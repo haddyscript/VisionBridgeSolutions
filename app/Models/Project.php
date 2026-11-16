@@ -9,12 +9,28 @@ class Project extends Model
     /** Days a client has to approve or request a refund once a project enters 'review'. */
     public const REVIEW_WINDOW_DAYS = 7;
 
+    /**
+     * $149 Limited-Time Landing Page promotion (2026-11-14 work order). The
+     * key is what the homepage "Get Started" link passes as ?promo=, stored
+     * on the intake submission and copied onto the project on conversion.
+     */
+    public const PROMO_LANDING_149 = 'landing-149';
+
+    public const PROMOS = [
+        self::PROMO_LANDING_149 => [
+            'name' => 'Limited-Time $149 Landing Page',
+            'price' => 14900, // cents — one-time design fee
+            'includes' => ['Up to 5 sections', 'Mobile-friendly design', 'Contact form', 'Basic SEO', 'One revision round'],
+        ],
+    ];
+
     protected $fillable = [
         'user_id',
         'developer_id',
         'name',
         'description',
         'website_type',
+        'promo',
         'preview_url',
         'status',
         'status_message',
@@ -191,6 +207,12 @@ class Project extends Model
         return ($this->depositPayment()?->isPaid() ?? false)
             && ($this->finalPayment()?->isPaid() ?? false)
             && $this->client_approved_at !== null;
+    }
+
+    /** The promo package this project came in on (name/price/includes), or null. */
+    public function promoPackage(): ?array
+    {
+        return self::PROMOS[$this->promo] ?? null;
     }
 
     public function formattedTotalPrice(): ?string

@@ -15,6 +15,7 @@ class IntakeSubmission extends Model
         'contact_email',
         'contact_phone',
         'services',
+        'promo',
         'website_requirements',
         'social_links',
         'status',

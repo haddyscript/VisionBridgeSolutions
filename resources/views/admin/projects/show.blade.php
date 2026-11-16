@@ -278,6 +278,12 @@
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Shown to client as a "View Live Preview" button on their dashboard.</p>
                 </div>
 
+                @if ($promoPackage = $project->promoPackage())
+                    <p class="text-xs font-semibold text-navy dark:text-white bg-gold/10 border border-gold/40 rounded-lg px-2.5 py-2">
+                        Promo project: {{ $promoPackage['name'] }} (${{ number_format($promoPackage['price'] / 100, 2) }} one-time). Keep the price at ${{ number_format($promoPackage['price'] / 100, 2) }} so it matches what the client saw on the website.
+                    </p>
+                @endif
+
                 {{-- Row 3: Total Project Price / Discount, side by side --}}
                 <div class="grid grid-cols-2 gap-4">
                     <div>

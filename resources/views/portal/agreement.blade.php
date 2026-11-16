@@ -11,6 +11,16 @@
     Please review and sign your Client Service Agreement below. No project work can begin until this is signed.
 </p>
 
+@if (($agreementProject = auth()->user()->projects()->first()) && ($promoPackage = $agreementProject->promoPackage()))
+    <div class="mb-6 rounded-xl border border-gold/40 bg-gold/10 px-5 py-4 text-sm text-navy dark:text-white">
+        <p class="font-semibold">Website Package: {{ $promoPackage['name'] }} — {{ $agreementProject->formattedDiscountedTotalPrice() }} one-time design fee</p>
+        <p class="text-xs mt-1 text-gray-600 dark:text-gray-300">
+            Includes {{ strtolower(implode(', ', $promoPackage['includes'])) }}. Hosting and domain fees are separate;
+            additional sections, pages, features, or revision rounds are quoted separately.
+        </p>
+    </div>
+@endif
+
 @if ($template->isPdfBased())
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <div class="flex items-center justify-between gap-4 mb-3">
