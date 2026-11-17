@@ -270,7 +270,12 @@ Route::middleware(['auth', 'verified', 'project.not-suspended', 'onboarding.comp
     Route::post('/portal/chat-messages/{message}/react', [PortalChatController::class, 'react'])->name('portal.chat.react');
     Route::post('/portal/projects/{project}/chat/typing', [PortalChatController::class, 'typing'])->middleware('throttle:30,1')->name('portal.chat.typing');
     Route::get('/portal/project-requests', [PortalProjectRequestController::class, 'show'])->name('portal.project-requests.show');
-    Route::post('/portal/project-requests', [PortalProjectRequestController::class, 'store'])->name('portal.project-requests.store');
+    // Pinged by the project request form while the client is still typing,
+    // so a long write-up doesn't outlive the login session (SESSION_LIFETIME).
+    Route::get('/portal/keepalive', fn () => response()->noContent())->middleware('throttle:30,1')->name('portal.keepalive');
+    Route::post('/portal/project-requests', [PortalProjectRequestController::class, 'store'])
+        ->middleware(\App\Http\Middleware\LogProjectRequestSubmission::class)
+        ->name('portal.project-requests.store');
     Route::get('/portal/consultation', [PortalConsultationController::class, 'create'])->name('portal.consultation.create');
     Route::post('/portal/consultation', [PortalConsultationController::class, 'store'])->name('portal.consultation.store');
     Route::get('/portal/consultation/{consultation}/ics', [PortalConsultationController::class, 'ics'])->name('portal.consultation.ics');

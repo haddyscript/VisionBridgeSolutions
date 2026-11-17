@@ -53,6 +53,40 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        // Project request submissions rejected before the route even runs
+        // (upload over the server's size limit, or an expired session) —
+        // log them to project-requests.log, then return null so the normal
+        // handling below still applies. Registered first so it always runs.
+        // Matched by status code: Laravel converts TokenMismatchException into
+        // a plain 419 HttpException before render callbacks ever see it.
+        $exceptions->render(function (Throwable $e, Request $request) {
+            if ($request->isMethod('post') && $request->is('portal/project-requests') && $e instanceof HttpExceptionInterface) {
+                if ($e->getStatusCode() === 413) {
+                    \App\Http\Middleware\LogProjectRequestSubmission::logRejected($request, 'upload larger than the server allows (post_max_size)');
+                } elseif ($e->getStatusCode() === 419) {
+                    \App\Http\Middleware\LogProjectRequestSubmission::logRejected($request, 'session expired before sending (client sent back to the form; draft kept in their browser)');
+
+                    // Instead of the "Page Expired" page: back to the form,
+                    // where the browser-saved draft is restored. If they were
+                    // logged out, the auth middleware sends them to login
+                    // first and returns them here afterwards.
+                    $message = 'Your session expired, so your project request was not sent. Your text was saved on this device — sign in if asked, then click Send Request again.';
+
+                    if (! $request->user()) {
+                        // Logged out: go straight to login (so the message
+                        // shows there), then back to the form after sign-in.
+                        redirect()->setIntendedUrl(route('portal.project-requests.show'));
+
+                        return redirect()->route('login')->with('status', $message);
+                    }
+
+                    return redirect()->route('portal.project-requests.show')->with('status', $message);
+                }
+            }
+
+            return null;
+        });
+
         // A stale session/CSRF token (e.g. a tab left open too long, then the
         // user clicks Logout or any other form) throws this — by default
         // Laravel shows a raw "419 Page Expired" error page instead of just

@@ -51,6 +51,9 @@ class ProjectRequestController extends Controller
 
         $projectRequest = $request->user()->projectRequests()->create($validated);
 
+        // Read by LogProjectRequestSubmission to log this attempt as saved.
+        $request->attributes->set('project_request_id', $projectRequest->id);
+
         SiteConversion::record($request, 'project_request', $projectRequest);
 
         dispatch(function () use ($projectRequest) {
@@ -58,6 +61,8 @@ class ProjectRequestController extends Controller
         })->afterResponse();
 
         return redirect()->route('portal.project-requests.show')
-            ->with('status', 'Your project request has been sent — we\'ll be in touch soon.');
+            ->with('status', 'Your project request has been sent — we\'ll be in touch soon.')
+            // Tells the form's script to clear the saved browser draft.
+            ->with('project_request_saved', true);
     }
 }

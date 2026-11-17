@@ -10,7 +10,16 @@
 </p>
 
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
-    <form method="POST" action="{{ route('portal.project-requests.store') }}" enctype="multipart/form-data" class="space-y-4">
+    <div id="draft-restored-note" class="hidden mb-4 flex items-center justify-between gap-3 rounded-lg bg-gold/10 border border-gold/30 px-4 py-2.5 text-sm text-gold-dark">
+        <span>We restored your unsent draft. Attachments aren't saved, so please re-attach any file.</span>
+        <button type="button" id="draft-discard" class="shrink-0 text-xs font-semibold underline hover:no-underline">Discard draft</button>
+    </div>
+
+    <form method="POST" action="{{ route('portal.project-requests.store') }}" enctype="multipart/form-data" class="space-y-4"
+          id="project-request-form"
+          data-draft-key="vbs-project-request-draft-{{ auth()->id() }}"
+          data-draft-saved="{{ session('project_request_saved') ? '1' : '' }}"
+          data-keepalive-url="{{ route('portal.keepalive') }}">
         @csrf
         <div>
             <label class="block text-sm font-semibold text-navy dark:text-white mb-1.5">Project Title</label>
@@ -336,6 +345,69 @@
         title.addEventListener('input', validate);
         description.addEventListener('input', validate);
         validate();
+    })();
+
+    // Draft protection — a long write-up must never be lost to an expired
+    // session. The title/description are saved in this browser as the client
+    // types (keyed per account, since one person may have several client
+    // logins), restored on return, and cleared only once the server confirms
+    // the request saved. While there's unsent text, the session is kept alive
+    // with a light ping. Attachments can't be stored in the browser.
+    (function () {
+        const form = document.getElementById('project-request-form');
+        if (!form) return;
+
+        const title = document.getElementById('project-request-title');
+        const description = document.getElementById('project-request-description');
+        const note = document.getElementById('draft-restored-note');
+        const key = form.dataset.draftKey;
+
+        function read() {
+            try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch (e) { return null; }
+        }
+        function write() {
+            try {
+                if (title.value.trim() || description.value.trim()) {
+                    localStorage.setItem(key, JSON.stringify({ title: title.value, description: description.value }));
+                } else {
+                    localStorage.removeItem(key);
+                }
+            } catch (e) {}
+        }
+        function clear() {
+            try { localStorage.removeItem(key); } catch (e) {}
+        }
+
+        if (form.dataset.draftSaved) {
+            clear(); // the request was just saved — nothing left to restore
+        } else if (!title.value && !description.value) {
+            // Server-side old() input (validation errors) wins; otherwise restore.
+            const draft = read();
+            if (draft && (draft.title || draft.description)) {
+                title.value = draft.title || '';
+                description.value = draft.description || '';
+                title.dispatchEvent(new Event('input'));
+                note.classList.remove('hidden');
+            }
+        }
+
+        title.addEventListener('input', write);
+        description.addEventListener('input', write);
+
+        document.getElementById('draft-discard').addEventListener('click', function () {
+            clear();
+            title.value = '';
+            description.value = '';
+            title.dispatchEvent(new Event('input'));
+            note.classList.add('hidden');
+        });
+
+        // Keep the login session alive while there's unsent text (every 10
+        // min; SESSION_LIFETIME is 120). Skipped once the fields are empty.
+        setInterval(function () {
+            if (!title.value.trim() && !description.value.trim()) return;
+            fetch(form.dataset.keepaliveUrl, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } }).catch(function () {});
+        }, 10 * 60 * 1000);
     })();
 </script>
 

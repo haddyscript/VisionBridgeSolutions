@@ -65,6 +65,16 @@ return [
             'replace_placeholders' => true,
         ],
 
+        // Every client project request submission, saved or not — see
+        // App\Http\Middleware\LogProjectRequestSubmission. Fixed 'info' level
+        // so it records even when production's LOG_LEVEL is stricter.
+        'project_requests' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/project-requests.log'),
+            'level' => 'info',
+            'replace_placeholders' => true,
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),

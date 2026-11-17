@@ -1843,6 +1843,29 @@ Phase 2 of the work order. The public site and portal copy now present Care Plan
 - These no longer say the client owns **hosting**: the homepage "Client Ownership" and "Ownership First" cards, the Contact FAQ "Who owns the website?", and the welcome-back "You Own Your Website" card.
 - Prompt 6 in `specs/NO_MONTHLY_FEES_AI_PROMPTS.md` brings proposals and agreements in line with the same wording.
 
+## 130. Project Request Submission Log (2026-11-17)
+
+- Every client **Request a New Project** submission is now recorded in `storage/logs/project-requests.log`, whether it saved or not. Open it in **Admin → Laravel Log** (pick `project-requests.log` from the file list).
+- Each entry records the client (name and email), title, description length, attachment name and size, request size, IP and browser. The outcome is one of:
+  - **SAVED** (with the request #);
+  - **NOT SAVED — rejected by validation**, with the exact error, e.g. a description over 5,000 characters;
+  - **NOT SAVED — session expired**: the client was idle too long, saw "Page Expired", and lost what they typed;
+  - **NOT SAVED — upload larger than the server allows**;
+  - **NOT SAVED — HTTP 500/503** for a server error.
+- Added because none of these failures appeared in `laravel.log` before, so a client's lost submissions left no trace.
+- **Limit:** an upload rejected by the web server itself (nginx/LiteSpeed body-size cap) never reaches the app, so it can't be logged.
+- Code: `App\Http\Middleware\LogProjectRequestSubmission`, the `project_requests` log channel in `config/logging.php`, and a hook in `bootstrap/app.php`.
+- Note: the Laravel Log page opens the most recently written log file by default, which may now be `project-requests.log`.
+
+### 130a. Project Requests No Longer Lost to an Expired Session
+
+- **Draft auto-save.** The title and description are saved in the client's browser as they type, keyed per account since one person may have several client logins.
+  - The draft comes back automatically if they return to the form, with a "We restored your unsent draft" note and a **Discard draft** link.
+  - It's cleared only after the server confirms the request saved.
+  - Attachments can't be stored in the browser, so the note asks them to re-attach any file.
+- **Session keep-alive.** While unsent text is in the form, the page pings `GET /portal/keepalive` every 10 minutes, so a long write-up doesn't outlast the 2-hour login session.
+- **No more "Page Expired" page on this form.** If the session still expires, the client is sent back to the form, or to the login page first if they were logged out, and then returned to the form. A message explains the request wasn't sent and their text was saved. The log records this as "session expired … draft kept in their browser".
+
 ## 129. $149 Promotion — Shown Immediately + Carried Through the Portal (2026-11-16)
 
 Follow-up to §127 (work order created 2026-11-14).
